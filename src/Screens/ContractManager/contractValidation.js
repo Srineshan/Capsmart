@@ -1,6 +1,6 @@
 import React from 'react';
 import { GET } from './../dataSaver';
-import { CLINIC, SURGERY, SUPPLEMENTAL, ADDON, ADMINISTRATIVE, PROCEDUREREADING } from '../../Constants';
+import { CLINIC, SURGERY, SUPPLEMENTAL, ADDON, ADMINISTRATIVE, PROCEDUREREADING, ONCALL } from '../../Constants';
 
 export const validateContractIDTermLimit = (contract) => {
   let fieldData = [{ field: 'Contract Name', value: contract?.contractName?.contractName },
@@ -12,7 +12,6 @@ export const validateContractIDTermLimit = (contract) => {
   { field: 'contract Effective date', value: contract?.contractDetail?.contractTerm?.effectiveDate },
   { field: 'Time Commitment - value', value: contract?.contractDetail?.timeCommitment?.value },
   { field: 'Time Commitment - frequency', value: contract?.contractDetail?.timeCommitment?.frequency },
-  { field: 'contract Effective date', value: contract?.contractDetail?.contractTerm?.effectiveDate },
   { field: 'Contract Continuation Policy', value: contract?.contractDetail?.continuationPolicy?.contractPolicyType },
   ];
   let temp = fieldData;
@@ -21,7 +20,7 @@ export const validateContractIDTermLimit = (contract) => {
       temp.push({ field: 'Auto Renewal Term', value: contract?.contractDetail?.continuationPolicy?.autoRenewalPeriod?.autoRenewalTerm?.term });
       temp.push({ field: 'Allowable Auto Renewal Terms', value: contract?.contractDetail?.continuationPolicy?.autoRenewalPeriod?.allowableAutoRenewalTerm?.term });
     } else {
-      temp.push({ field: 'Renewal Reminder List', value: contract?.contractDetail?.continuationPolicy?.reminderList?.renewalReminderList?.filter(data => data?.days === 0)?.map(data => data)?.length });
+      temp.push({ field: 'Renewal Reminder List', value: contract?.contractDetail?.continuationPolicy?.reminderList?.renewalReminderList?.filter(data => data?.days !== 0)?.map(data => data)?.length });
     }
   })
   const emptyFields = fieldData?.filter(data => data?.value === null || data?.value === '' || data?.value === undefined || data?.value === 0)?.map(data => data?.field);
@@ -77,34 +76,98 @@ export const validateBusinessEntity = (contract) => {
 }
 
 export const validateServices = (contract) => {
+  console.log('contract Data', contract);
   let services = contract?.contractedServices;
   let emptyFields = [];
   if (services?.length === 0) {
-    emptyFields.push(['Sites', 'Activities', 'Service Schedule', 'Service Schedule Frequecy', 'Duration', 'Service Days', 'Total Session', 'Working Hours - From', 'Working Hours - To']);
-
+    emptyFields.push(['Sites', 'Activities', 'Service Schedule', 'Service Schedule Frequency', 'Duration', 'Service Days', 'Total Session', 'Working Hours - From', 'Working Hours - To']);
   }
+  console.log('services data', services)
   services?.map((service, index) => {
-    if (service?.activityType?.activityType !== ADMINISTRATIVE && service?.activityType?.activityType !== ADDON) {
-      let fieldData = [{ field: 'sites', value: service?.sites?.length },
-      { field: 'Activities', value: service?.activities?.length },
-
-      { field: 'Service Days', value: service?.serviceDays },
-      { field: 'Total Sessions', value: service?.totalSessions?.value },
-      { field: 'Working Hours - From', value: service?.workingPeriod?.from },
-      { field: 'Working Hours - To', value: service?.workingPeriod?.to }
-      ];
-      if (service?.activityType?.activityType !== SUPPLEMENTAL) {
-        fieldData.push({ field: 'Duration', value: service?.duration?.hours });
-      }
-      if (service?.activityType?.activityType === CLINIC || service?.activityType?.activityType === SURGERY || service?.activityType?.activityType === PROCEDUREREADING) {
-        fieldData.push(...[{ field: 'Service Schedule', value: service?.contractedSchedule?.minimum?.value },
-        { field: 'Service Schedule Frequency', value: service?.contractedSchedule?.frequency }])
-      }
-      let temp = fieldData?.filter(data => data?.value === null || data?.value === '' || data?.value === undefined || data?.value === 0)?.map(data => data?.field);
-      emptyFields[index] = temp;
-    } else {
-      emptyFields.push([])
+    let fieldData = [{ field: 'sites', value: service?.sites?.length },
+    { field: 'Service Days', value: service?.serviceDays !== undefined && service?.serviceDays !== null && Object.keys(service?.serviceDays || {})?.filter(data => service?.serviceDays[data] === true)?.map(data => data)?.length },
+    { field: 'Total Sessions', value: service?.totalSessions?.value },
+    { field: 'Working Hours - From', value: service?.workingPeriod?.from },
+    { field: 'Working Hours - To', value: service?.workingPeriod?.to }
+    ];
+    if (service?.additionalSchedule?.scheduleRequired) {
+      emptyFields.push(...['Additional Schedule Value', 'Additional Schedule Frequency']);
+      fieldData.push(...[{ field: 'Additional Schedule Value', value: service?.additionalSchedule?.value }, { field: 'Additional Schedule Frequency', value: service?.additionalSchedule?.frequency }]);
     }
+    if (service?.billableService) {
+      emptyFields.push(...['Payment Amount']);
+      fieldData.push(...[{ field: 'Payment Amount', value: service?.payableAmount?.value }]);
+    }
+    if (service?.activityApprovalWFRequired && service?.activityType?.activityType === ADDON) {
+      emptyFields.push(...['Approval Workflow']);
+      fieldData.push(...[{ field: 'Approval Workflow', value: service?.workflow }]);
+    }
+    if (service?.activityType?.activityType === SUPPLEMENTAL || service?.activityType?.activityType === ADMINISTRATIVE) {
+      if (!service?.dedicatedHoursSpecified) {
+        emptyFields.push(...['Dedicated Hours Borrowed From']);
+        fieldData.push({ field: 'Dedicated Hours Borrowed From', value: service?.hoursBorrowed });
+      }
+    }
+    if (service?.activityType?.activityType !== SUPPLEMENTAL) {
+      fieldData.push({ field: 'Duration', value: service?.duration?.hours });
+    }
+    if (service?.activityType?.activityType === CLINIC || service?.activityType?.activityType === SURGERY || service?.activityType?.activityType === PROCEDUREREADING) {
+      service?.contractedSchedules?.map(schedule => {
+        fieldData.push(...[{ field: 'Service Schedule', value: schedule?.minimum?.value },
+        { field: 'Service Schedule Frequency', value: schedule?.frequency }])
+      })
+      service?.patientsSeenTargets?.map(schedule => {
+        if (!schedule?.noTargetApplicable) {
+          if (schedule?.withNurse?.value === 0) {
+            emptyFields.push(...['Patients Seen Target - With Nurse'])
+          }
+          if (schedule?.withoutNurse?.value === 0) {
+            emptyFields.push(...['Patients Seen Target - Without Nurse'])
+          }
+          // emptyFields.push(...['Patients Seen Target - With Nurse', 'Patients Seen Target - Without Nurse']);
+          // fieldData.push(...[{ field: 'Patients Seen Target - With Nurse', value: schedule?.withNurse?.value },
+          // { field: 'Patients Seen Target - Without Nurse', value: schedule?.withoutNurse?.value },
+          // ])
+        }
+      })
+      if (service?.activityType?.activityType !== SURGERY) {
+        service?.scheduledPatientsTargets?.map(schedule => {
+          if (!schedule?.noTargetApplicable) {
+            emptyFields.push(...['Scheduled Patients Target - With Nurse', 'Scheduled Patients Target - Without Nurse']);
+            fieldData.push(...[{ field: 'Scheduled Patients Target - With Nurse', value: schedule?.withNurse?.value },
+            { field: 'Scheduled Patients Target - Without Nurse', value: schedule?.withoutNurse?.value },
+            ])
+          }
+        })
+      }
+    }
+    if (service?.activityType?.activityType === ONCALL) {
+      emptyFields.push(...['On Call Coverage For']);
+      fieldData.push(...[{ field: 'On Call Coverage For', value: service?.activityResponse?.dataMap?.onCallCoverageFor ?? null },
+      ])
+      if (service?.dependantServiceIncluded) {
+        emptyFields.push(...['Additional Activity']);
+        service?.dependentService?.additionalServices?.map(data => {
+          if (data?.activity?.activity === '') {
+            emptyFields.push(...['Dependent Service Activity Name']);
+          }
+          if (service?.dependentService?.billableService) {
+            fieldData.push(...[{ field: 'Additional Activity - Payable Amount', value: service?.dependentService?.payableAmount?.value }]);
+            emptyFields.push(...['Additional Activity - Payable Amount']);
+          }
+          if (service?.dependentService?.paymentApprovalRequired) {
+            fieldData.push(...[{ field: 'Additional Activity - Payment Approver', value: service?.dependentService?.workFlow }]);
+            emptyFields.push(...['Additional Activity - Payment Approver']);
+          }
+          // if(service?.customizedSchedule){
+
+          // }
+        })
+      }
+    }
+    console.log('field Data', fieldData);
+    let temp = fieldData?.filter(data => data?.value === null || data?.value === '' || data?.value === undefined || data?.value === 0)?.map(data => data?.field);
+    emptyFields[index] = temp;
   });
   return emptyFields;
 }
@@ -124,13 +187,15 @@ export const validatePaymentsAndCompensation = (contract) => {
       'Individual Timesheet Details'];
   }
 
-  fieldData = [{ field: 'Compensation Basis', value: payments?.compensationBasis },
-  { field: `Dollar Rate`, value: payments?.dollarRate?.hour },
+  fieldData = [{ field: 'Compensation Basis', value: payments?.compensationBasis }
   ];
+  if (!payments?.dollarRate?.notApplicable) {
+    fieldData.push({ field: `Dollar Rate`, value: payments?.dollarRate?.hour })
+  }
   if (payments?.compensationBasis === 'RVUBASED') {
     fieldData.push(...[
       { field: 'RVU Quantity', value: payments?.rvuQuantity?.quantity },
-      { field: 'Frequecy', value: payments?.frequency },
+      { field: 'Frequency', value: payments?.frequency },
       { field: 'FTE Equivalent', value: payments?.fteEquivalent?.value },
       { field: 'RVU Reference Used', value: payments?.rvuQuantityVariance?.value },
       { field: 'RVU Quantity Variance', value: payments?.rvuQuantityVariance?.value },
@@ -139,14 +204,22 @@ export const validatePaymentsAndCompensation = (contract) => {
   }
   payments?.timesheetPayments?.map((data, index) => {
     fieldData?.push(...[{ field: `Timesheet Label ${index + 1}`, value: data?.timesheetLabel?.label },
-    { field: `Payment Frequecy ${index + 1}`, value: data?.paymentFrequency },
-    { field: `Max Payment Per Timesheet Submission ${index + 1}`, value: data?.maxPaymentPerTimesheetSubmission },
     { field: `Max Payment Per Contract ${index + 1}`, value: data?.maxPaymentPerContract },
-    { field: `Reduced Number Of Services ${index + 1}`, value: data?.reducedNumberOfServices },
     { field: `Providing Additional Services ${index + 1}`, value: data?.providingAdditionalServices },
     // { field: `OverUnderPayment ${index + 1}`, value: data?.overUnderPayment },
     { field: `Payment Based on Fixed Hours Vs Actual ${index + 1}`, value: data?.paymentBasedonFixedHoursVsActual }]
     );
+    if (contract?.contractDetail?.continuationPolicy?.contractPolicyType !== 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET' && contract?.contractDetail?.continuationPolicy?.contractPolicyType !== 'ACTIVITY_BASED') {
+      fieldData.push(...[{ field: `Max Payment Per Timesheet Submission ${index + 1}`, value: data?.maxPaymentPerTimesheetSubmission },
+      { field: `Reduced Number Of Services ${index + 1}`, value: data?.reducedNumberOfServices },
+      ])
+    } else if (contract?.contractDetail?.continuationPolicy?.contractPolicyType === 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET') {
+      fieldData.push(...[{ field: `Max Payment Per Timesheet Submission ${index + 1}`, value: data?.maxPaymentPerTimesheetSubmission },
+      ])
+    } else {
+
+    }
+
   })
 
   let temp = fieldData?.filter(data => data?.value === null || data?.value === '' || data?.value === undefined || data?.value === 0)?.map(data => data?.field);
@@ -193,21 +266,10 @@ export const validateTimesheetSubmission = (contract) => {
 
 export const validateTimesheetProcessingWorkflow = (contract) => {
   let isValid = false;
-  if (contract?.workFlowDetails?.length !== 0) {
+  if (contract?.workFlowDetails?.length === contract?.timesheetSubmissionTerms?.timesheetActivitiesPeriods?.length) {
     isValid = true;
   };
   return isValid;
-}
-
-export const validateRequestProcessingWorkflow = (contract) => {
-  let emptyFields = [];
-  if (contract?.addOnRequestWorkFlow === null) {
-    emptyFields.push('Add-On Request Workflow');
-  }
-  if (contract?.absenceRequestWorkFlow === null) {
-    emptyFields.push('Absence Request Wokflow');
-  }
-  return emptyFields;
 }
 
 export const validateTabs = async (contractId) => {
@@ -220,7 +282,6 @@ export const validateTabs = async (contractId) => {
   let tab5 = validateTimesheetSubmission(contract);
   let tab6 = validatePaymentsAndCompensation(contract);
   let tab7 = validateTimesheetProcessingWorkflow(contract);
-  let tab8 = validateRequestProcessingWorkflow(contract);
   let isTabsValid = {
     tab1: tab1?.length === 0, value1: tab1,
     tab2: tab2?.length === 0, value2: tab2,
@@ -229,7 +290,7 @@ export const validateTabs = async (contractId) => {
     tab5: tab5?.length === 0, value5: tab5,
     tab6: tab6?.length === 0, value6: tab6,
     tab7: tab7, value7: tab7,
-    tab8: tab8?.length === 0, value8: tab8,
   };
+  console.log('tab validation values', isTabsValid);
   return isTabsValid;
 }

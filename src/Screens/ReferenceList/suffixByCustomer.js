@@ -21,24 +21,21 @@ import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
 
 const SuffixByCustomer = () => {
-  const [isSelected, setIsSelected] = useState(false);
   const [addEditDialog, setAddEditDialog] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [nameList, setNameList] = useState([]);
   const [selectedTitle, setSelectedTitle] = useState("HEALTHCARE");
-  const [selectedSuffixList, setSelectedSuffixList] = useState([]);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [masterNameSuffix, setMasterNameSuffix] = useState([]);
   const [entityNameSuffix, setEntityNameSuffix] = useState([]);
   const [selectedIndustry, setSelectedIndustry] = useState();
   const [selectedSuffix, setSelectedSuffix] = useState([]);
   const [selectedCustomerData, setSelectedCustomerData] = useState({});
-  const [suffixId, setSuffixId] = useState([]);
-  const [suffixData, setSuffixData] = useState([]);
-  const [selectedItem, setSelectedItem] = useState("");
   const [isExpanded, setIsExpanded] = useState(true);
   const [entityId, setEntityId] = useState("");
   const [lastUpdatedDate, setLastUpdatedDate] = useState("");
+
+  const [selectAllList, setSelectAllList] = useState([]);
+  const [checkedAll, setCheckedAll] = useState(false);
 
   const getIsExpanded = (value) => {
     setIsExpanded(value);
@@ -115,12 +112,55 @@ const SuffixByCustomer = () => {
     }
   };
 
+  const selectAll = (value) => {
+    if (value) {
+      let tempSuffix = masterNameSuffix
+        ?.filter(
+          (data) =>
+            !entityNameSuffix?.some((suffix) => suffix?.suffix === data?.suffix)
+        )
+        ?.map((data) => {
+          return { ...data };
+        });
+      setSelectedSuffix(tempSuffix);
+    } else {
+      setSelectedSuffix([]);
+    }
+    setCheckedAll(value);
+  };
+
+  useEffect(() => {
+    const tempSuffix = masterNameSuffix
+      ?.filter(
+        (data) =>
+          !entityNameSuffix?.some((suffix) => suffix?.suffix === data?.suffix)
+      )
+      ?.map((data) => {
+        return { ...data };
+      });
+
+    setSelectAllList(tempSuffix);
+
+    let allChecked = true;
+
+    if (tempSuffix.length > selectedSuffix.length) {
+      allChecked = false;
+    }
+
+    if (allChecked) {
+      setCheckedAll(true);
+    } else {
+      setCheckedAll(false);
+    }
+  }, [selectedSuffix]);
+
   const handlePostSuffix = async () => {
     let data = selectedSuffix?.map((data) => ({
       ...data,
       customized: true,
       entityId: { id: TenantID },
     }));
+
     if (selectedSuffix?.length !== 0) {
       await POST("entity-service/nameSuffix", JSON.stringify(data))
         .then((response) => {
@@ -166,36 +206,11 @@ const SuffixByCustomer = () => {
           <div>
             <LevelTwoHeader
               heading={"NAME SUFFIX"}
-              updatedTime={`UPDATED ON ${lastUpdatedDate.toUpperCase()} EST`}
+              updatedTime={`UPDATED ON ${lastUpdatedDate}`}
               path={"/Screens/ReferenceList/customerAdminDashboard"}
               callingFrom={"Customer Admin"}
               needHeader={true}
             />
-            {/* <div className={`${style.displayInRow} ${style.marginTop10}`}>
-              <div
-                className={`${style.userNameStyle} ${style.alignCenter} ${style.reduce} `}
-              >
-                NAME SUFFIX
-              </div>
-              <div
-                className={`${style.loginStatus} ${style.alignCenter} ${style.marginLeft20}`}
-              >
-                UPDATED ON FEB 16, 2022 16:45 EST
-              </div>
-              <div className={style.crossStyle}>
-                <Link
-                  to="/Screens/ReferenceList/customerAdminDashboard"
-                  className={style.linkStyle}
-                >
-                  {" "}
-                  <img
-                    src={CrossPink}
-                    alt=""
-                    className={`${style.colorFileStyle2} ${style.marginLeft20}`}
-                  />
-                </Link>
-              </div>
-            </div> */}
 
             <div className={style.marginTop35}>
               <div className={style.centreCardStyle}>
@@ -212,43 +227,77 @@ const SuffixByCustomer = () => {
                       <div
                         className={`${style.customersAdminCardStyle1} ${style.scrollbar}`}
                       >
-                        {masterNameSuffix
-                          ?.filter(
+                        <>
+                          {masterNameSuffix?.filter(
                             (data) =>
                               !entityNameSuffix?.some(
                                 (suffix) => suffix?.suffix === data?.suffix
                               )
-                          )
-                          ?.map((data, index) => (
-                            <div
-                              key={index}
-                              className={
-                                index % 2 !== 0
-                                  ? `${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground3} ${style.displayInRow}`
-                                  : `${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground2} ${style.displayInRow}`
-                              }
-                            >
-                              <CommonPurpleCheckBox
-                                checked={
-                                  selectedSuffix?.filter(
-                                    (innerData) => innerData?.id === data?.id
-                                  )?.length !== 0
-                                }
-                                onChange={(e) => handleSelectSuffix(e, data)}
-                              />
-                              <p
-                                className={`${style.TextStyle4} ${style.marginLeft10}`}
+                          )?.length > 1 ? (
+                            <>
+                              <div
+                                className={`${style.customersAdminInnerRowsStyle5} ${style.customersAdminBackground3} ${style.displayInRow}`}
                               >
-                                {data?.suffix}
-                              </p>
-                            </div>
-                          ))}
+                                <CommonPurpleCheckBox
+                                  name="allSelect"
+                                  onChange={(event) =>
+                                    selectAll(event.target.checked)
+                                  }
+                                  checked={
+                                    selectAllList.length !== 0
+                                      ? checkedAll
+                                      : false
+                                  }
+                                />
+                                <p
+                                  className={`${style.TextStyle4} ${style.marginLeft10}`}
+                                >
+                                  SELECT ALL
+                                </p>
+                              </div>
+                            </>
+                          ) : (
+                            <></>
+                          )}
+
+                          {masterNameSuffix
+                            ?.filter(
+                              (data) =>
+                                !entityNameSuffix?.some(
+                                  (suffix) => suffix?.suffix === data?.suffix
+                                )
+                            )
+                            ?.map((data, index) => (
+                              <div
+                                key={index}
+                                className={
+                                  index % 2 !== 0
+                                    ? `${style.customersAdminInnerRowsStyle5} ${style.customersAdminBackground3} ${style.displayInRow}`
+                                    : `${style.customersAdminInnerRowsStyle5} ${style.customersAdminBackground2} ${style.displayInRow}`
+                                }
+                              >
+                                <CommonPurpleCheckBox
+                                  name={data?.suffix}
+                                  checked={
+                                    selectedSuffix?.filter(
+                                      (innerData) => innerData?.id === data?.id
+                                    )?.length !== 0
+                                  }
+                                  onChange={(e) => handleSelectSuffix(e, data)}
+                                />
+                                <p
+                                  className={`${style.TextStyle4} ${style.marginLeft10}`}
+                                >
+                                  {data?.suffix}
+                                </p>
+                              </div>
+                            ))}
+                        </>
                       </div>
                     </div>
                     <div
                       className={style.customersAdminCardStyle2}
                       onClick={() => {
-                        setIsSelected(true);
                         handlePostSuffix();
                       }}
                     >
@@ -326,8 +375,7 @@ const SuffixByCustomer = () => {
                             if you would like to setup your custom list for your
                             site(s) you can select from the default list on the
                             left, edit to change labels as needed, and also add
-                            new departments/ service area by clicking on the add
-                            icon
+                            new Name Suffix by clicking on the add icon
                           </p>
                         </div>
                       )}
@@ -340,8 +388,8 @@ const SuffixByCustomer = () => {
         </div>
       </div>
       <div className={style.spaceBetween}>
-        <p className={style.poweredBy}>Powered by - TimeSmartAI LLP</p>
-        <p className={style.poweredBy}>© TimeSmartAI</p>
+        <p className={style.poweredBy}>Powered by - TimeSmartAI.Inc LLP</p>
+        <p className={style.poweredBy}>© TimeSmartAI.Inc</p>
       </div>
 
       {showDeleteConfirmation && (

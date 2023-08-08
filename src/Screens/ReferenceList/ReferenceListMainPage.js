@@ -23,7 +23,7 @@ const ReferenceListMainPage = () => {
   const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [lastDate, setLastDate] = useState("");
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
 
   const getAddEntityDialog = (value) => {
     setShowAddEntityDialog(value);
@@ -150,7 +150,7 @@ const ReferenceListMainPage = () => {
             {headerName?.map((data) => (
               <LevelTwoHeader
                 heading={data.name}
-                updatedTime={`UPDATED ON ${lastDate}`}
+                updatedTime={`UPDATED ON ${lastDate.toUpperCase()} EST`}
                 getAddEntityDialog={getAddEntityDialog}
                 isEdit={isEdit}
                 setIsEdit={setIsEdit}
@@ -181,8 +181,8 @@ const ReferenceListMainPage = () => {
           </div>
         </div>
         <div className={style.spaceBetween}>
-          <p className={style.poweredBy}>Powered by - TimeSmartAI LLP</p>
-          <p className={style.poweredBy}>© TimeSmartAI</p>
+          <p className={style.poweredBy}>Powered by - TimeSmartAI.Inc LLP</p>
+          <p className={style.poweredBy}>© TimeSmartAI.Inc</p>
         </div>
       </div>
     </Fragment>

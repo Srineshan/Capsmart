@@ -57,15 +57,22 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
     const userDetail = jwt(userDetails);
     const [currentUserDetails, setCurrentUserDetails] = useState();
     const [userId, setUserId] = useState(userDetail?.id);
+    const [contractedServiceProviders, setContractedServiceProviders] = useState([]);
 
     useEffect(() => {
         setUserId(userDetail?.id);
         setUserDetails();
+        getActivityLogger();
     }, [])
 
     const setUserDetails = async () => {
         const { data: user } = await GET(`user-management-service/user/${userId}`);
         setCurrentUserDetails(user);
+    }
+
+    const getActivityLogger = async () => {
+        const { data: user } = await GET(`user-management-service/user?userType=CONTRACTED_SERVICE_PROVIDER_USER`);
+        setContractedServiceProviders(user);
     }
 
     let dataToUseInReport = {
@@ -102,8 +109,13 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
     useEffect(() => {
         getSites();
         getContracts();
-        setSelectedContractedServiceProvider(currentUserDetails?.id);
-        setSelectedContractedServiceProviderToSend(currentUserDetails);
+        if ((currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Reviewer") || currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Approver") || currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Accounts Payable")) && !currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Activity Logger")) {
+            setSelectedContractedServiceProvider(contractedServiceProviders?.[0]?.id);
+            setSelectedContractedServiceProviderToSend(contractedServiceProviders?.[0]);
+        } else {
+            setSelectedContractedServiceProvider(currentUserDetails?.id);
+            setSelectedContractedServiceProviderToSend(currentUserDetails);
+        }
         if (reportFilter) {
             setFrom(new Date(reportFilter?.startDate));
             setTo(new Date(reportFilter?.endDate));
@@ -112,7 +124,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
             setSelectedDepartments(reportFilter?.departments);
             setReportingTimePeriod(reportFilter?.reportingTimePeriod);
         }
-    }, [currentUserDetails])
+    }, [currentUserDetails, contractedServiceProviders])
 
     useEffect(() => {
         getDataToUseInReport(dataToUseInReport);
@@ -133,7 +145,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
     }, [selectedSitesToSend]);
 
     useEffect(() => {
-        if (reportType === "activitiesOrServices" || reportType === "paymentsProcessingSummary") {
+        if (reportType === "activitiesOrServices" || reportType === "paymentsProcessingSummary" || reportType === "addOnActivities" || reportType === "timesheetProcessingSummary" || reportType === "listingOfTimesheetsNotPaid" || reportType === "submittedTimesheetsPaymentStatus") {
             const quarter = Math.floor((new Date().getMonth() / 3));
             const lastyear = new Date(new Date().getFullYear() - 1, 0, 1);
             if (reportingTimePeriod === 'Current Week') {
@@ -340,7 +352,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                             </FormControl>
                         )}
                     </>
-                ) : (reportType === "activitiesOrServices" || reportType === "paymentsProcessingSummary") ? (
+                ) : (reportType === "activitiesOrServices" || reportType === "paymentsProcessingSummary" || reportType === "addOnActivities" || reportType === "timesheetProcessingSummary" || reportType === "listingOfTimesheetsNotPaid" || reportType === "submittedTimesheetsPaymentStatus") ? (
                     <>
                         <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                             <InputLabel id="demo-multiple-name-label1">Reporting Time Period</InputLabel>
@@ -421,7 +433,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 </Select>
                             </FormControl>
                         )}
-                        {reportType === "activitiesOrServices" && (
+                        {(reportType === "activitiesOrServices" || reportType === "addOnActivities" || reportType === "timesheetProcessingSummary" || reportType === "listingOfTimesheetsNotPaid" || reportType === "submittedTimesheetsPaymentStatus") && (
                             <>
                                 <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                     <InputLabel id="demo-multiple-name-label2">Site</InputLabel>
@@ -483,22 +495,62 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                         ))}
                                     </Select>
                                 </FormControl>
-                                <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                    <InputLabel id="demo-multiple-name-label5">Contracted Service Provider</InputLabel>
-                                    <Select
-                                        labelId="demo-multiple-name-label5"
-                                        id="demo-multiple-name5"
-                                        value={selectedContractedServiceProvider}
-                                        onChange={handleChangeContractedServiceProviders}
-                                        MenuProps={MenuProps}
-                                    >
-                                        <MenuItem
-                                            value={currentUserDetails?.id}
+                                {(currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Reviewer") || currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Approver") || currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Accounts Payable")) ? (
+                                    !currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Activity Logger") ? (
+                                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                            <InputLabel id="demo-multiple-name-label5">Contracted Service Provider</InputLabel>
+                                            <Select
+                                                labelId="demo-multiple-name-label5"
+                                                id="demo-multiple-name5"
+                                                value={selectedContractedServiceProvider}
+                                                onChange={handleChangeContractedServiceProviders}
+                                                MenuProps={MenuProps}
+                                            >
+                                                {contractedServiceProviders?.map((data, index) => (
+                                                    <MenuItem
+                                                        key={index}
+                                                        value={data?.id}
+                                                    >
+                                                        {`${data?.name?.firstName} ${data?.name?.lastName}`}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    ) : (
+                                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                            <InputLabel id="demo-multiple-name-label5">Contracted Service Provider</InputLabel>
+                                            <Select
+                                                labelId="demo-multiple-name-label5"
+                                                id="demo-multiple-name5"
+                                                value={selectedContractedServiceProvider}
+                                                onChange={handleChangeContractedServiceProviders}
+                                                MenuProps={MenuProps}
+                                            >
+                                                <MenuItem
+                                                    value={currentUserDetails?.id}
+                                                >
+                                                    {`${currentUserDetails?.name?.firstName} ${currentUserDetails?.name?.lastName}`}
+                                                </MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    )) : (
+                                    <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                        <InputLabel id="demo-multiple-name-label5">Contracted Service Provider</InputLabel>
+                                        <Select
+                                            labelId="demo-multiple-name-label5"
+                                            id="demo-multiple-name5"
+                                            value={selectedContractedServiceProvider}
+                                            onChange={handleChangeContractedServiceProviders}
+                                            MenuProps={MenuProps}
                                         >
-                                            {`${currentUserDetails?.name?.firstName} ${currentUserDetails?.name?.lastName}`}
-                                        </MenuItem>
-                                    </Select>
-                                </FormControl>
+                                            <MenuItem
+                                                value={currentUserDetails?.id}
+                                            >
+                                                {`${currentUserDetails?.name?.firstName} ${currentUserDetails?.name?.lastName}`}
+                                            </MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                )}
                             </>
                         )}
                     </>
@@ -596,6 +648,29 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                             </Select>
                         </FormControl>
                     </>
+                ) : reportType === "compensationCostAnalysis" ? (
+                    <>
+                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                            <InputLabel id="demo-multiple-name-label5">Contract</InputLabel>
+                            <Select
+                                labelId="demo-multiple-name-label5"
+                                id="demo-multiple-name5"
+                                multiple
+                                value={selectedContracts}
+                                onChange={handleChangeContracts}
+                                MenuProps={MenuProps}
+                            >
+                                {contracts?.map((data) => (
+                                    <MenuItem
+                                        key={data?.id}
+                                        value={data?.id}
+                                    >
+                                        {data?.contractName?.contractName}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </>
                 ) : (
                     <>
                         <div className={`${style.darkLabel} ${style.marginTop20}`}>Time Range:</div>
@@ -659,10 +734,12 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                 )}
                 {/* <button className={`${style.primaryButtonStyle} ${style.marginTop20}`} onClick={()=> setShowSaveReport(true)} >Save Parameter Selection As My Report</button> */}
             </div>
-            {showSaveReport && (
-                <SaveReport getSaveReportDialog={getSaveReportDialog} />
-            )}
-        </div>
+            {
+                showSaveReport && (
+                    <SaveReport getSaveReportDialog={getSaveReportDialog} />
+                )
+            }
+        </div >
     )
 }
 

@@ -4,6 +4,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import AddIcon from '@mui/icons-material/Add';
 import { TimePicker } from "@blueprintjs/datetime";
 import { GetDateFromHours } from './../../utils/formatting';
+import { GET } from '../../Screens/dataSaver.js';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
 import CommonInputField from '../../Components/CommonFields/CommonInputField';
 import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
@@ -16,10 +17,11 @@ import style from './index.module.scss';
 import EditableTable from './editableTable';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
-const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, isReset, getIsReset }) => {
+const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, isReset, getIsReset, sites, contractId }) => {
+    const [timesheetWorkFlow, setTimesheetWorkflow] = useState([]);
     const [metadata, setMetadata] = useState({
-        min: '0',
-        max: '0',
+        min: 0,
+        max: 99999999,
         frequency: 'NA',
         onCallCoverageFor: [],
         additionalScheduleValue: '0',
@@ -55,7 +57,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         dependencyFrequency: 'PER_DAY',
         patientMRNRequired: false,
         attendingDocRequired: false,
-        customizedSchedule: true,
+        customizedSchedule: false,
         weekdayFrom: null,
         weekdayTo: null,
         weekdayDuration: 0,
@@ -98,8 +100,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
 
     const resetMetadata = () => {
         setMetadata({
-            min: '0',
-            max: '0',
+            min: 0,
+            max: 99999999,
             frequency: 'NA',
             onCallCoverageFor: [],
             additionalScheduleValue: '0',
@@ -135,7 +137,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
             dependencyFrequency: 'PER_DAY',
             patientMRNRequired: false,
             attendingDocRequired: false,
-            customizedSchedule: true,
+            customizedSchedule: false,
             weekdayFrom: null,
             weekdayTo: null,
             weekdayDuration: 0,
@@ -218,105 +220,177 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         }
     }
 
+    const [user, setUsers] = useState([]);
+    const [addOnWorkFlow, setAddOnWorkFlow] = useState([]);
+    const [specified, setSpecified] = useState(0);
+    const [title, setTitle] = useState([]);
+
+    const getTimeSheetWorkFlow = async () => {
+        const { data: timesheetWorkFlow } = await GET('timesheet-management-service/workflow');
+        if (timesheetWorkFlow) {
+            setAddOnWorkFlow(timesheetWorkFlow);
+        }
+    }
+
     const getAdditionalActivityData = (value) => {
         setMetadata({ ...metadata, additionalActivity: value });
     }
 
-    const [specified, setSpecified] = useState(0);
 
     useEffect(() => {
-        let contractedSchedules = [{
-            minimum: { value: metadata?.min },
-            maximum: { value: metadata?.max },
-            frequency: metadata?.frequency
-        }]
-        setSpecified(SpecifiedCountCalculator(contractedSchedules, timeCommitment, metadata?.additionalScheduleFrequency, metadata?.additionalScheduleValue));
-    }, [metadata?.frequency, metadata?.min, metadata?.additionalScheduleValue, metadata?.additionalScheduleFrequency, timeCommitment?.value])
+        if (!metadata?.customizedSchedule) {
+            let contractedSchedules = [{
+                minimum: { value: metadata?.min },
+                maximum: { value: metadata?.max },
+                frequency: metadata?.frequency
+            }]
 
-    useEffect(() => {
-        if (Object.entries(serviceSelected)?.length !== 0) {
-            setSelectedValues();
+            setSpecified(SpecifiedCountCalculator(contractedSchedules, timeCommitment, metadata?.additionalScheduleFrequency, metadata?.additionalScheduleValue));
+        } else {
+            let contractedSchedules = [{
+                minimum: { value: metadata?.weekdayMin },
+                maximum: { value: metadata?.weekdayMax },
+                frequency: metadata?.weekdayFrequency
+            }, {
+                minimum: { value: metadata?.weekendMin },
+                maximum: { value: metadata?.weekendMax },
+                frequency: metadata?.weekendFrequency
+            }, {
+                minimum: { value: metadata?.holidayMin },
+                maximum: { value: metadata?.holidayMax },
+                frequency: metadata?.holidayFrequency
+            }]
+            setSpecified(SpecifiedCountCalculator(contractedSchedules, timeCommitment, metadata?.additionalScheduleFrequency, metadata?.additionalScheduleValue));
         }
-    }, [serviceSelected]);
+    }, [metadata?.frequency, metadata?.min, metadata?.additionalScheduleValue, metadata?.additionalScheduleFrequency, timeCommitment?.value, metadata?.weekdayMin, metadata?.weekdayFrequency, metadata?.weekendMin, metadata?.weekendFrequency, metadata?.holidayMin, metadata?.holidayFrequency, metadata?.customizedSchedule])
+
+    useEffect(() => {
+        setSelectedValues();
+    }, [serviceSelected, addOnWorkFlow, user]);
 
 
     const setSelectedValues = () => {
         let dependentActivities = [];
         serviceSelected?.dependentService?.additionalServices?.map(data => {
-            console.log('data-in', data?.holiday?.from);
             dependentActivities.push(
                 { activity: data?.activity?.activity, weekdayFrom: GetDateFromHours(data?.weekday?.from?.toString() || ''), weekdayTo: GetDateFromHours(data?.weekday?.to?.toString() || ''), weekendFrom: GetDateFromHours(data?.weekend?.from?.toString() || ''), weekendTo: GetDateFromHours(data?.weekend?.to?.toString() || ''), holidayFrom: GetDateFromHours(data?.holiday?.from?.toString() || ''), holidayTo: GetDateFromHours(data?.holiday?.to?.toString() || ''), patientMRNRequired: data?.patientMRNRequired, attendingDocRequired: data?.attendingDocRequired }
             )
-            console.log('dependent-after', dependentActivities);
         })
 
-        setMetadata({
-            ...metadata,
-            refId: serviceSelected?.refId,
-            min: serviceSelected?.contractedSchedules?.[0]?.minimum?.value,
-            max: serviceSelected?.contractedSchedules?.[0]?.maximum?.value,
-            frequency: serviceSelected?.contractedSchedules?.[0]?.frequency,
-            onCallCoverageFor: serviceSelected?.activityResponse?.dataMap?.onCallCoverageFor,
-            additionalScheduleValue: serviceSelected?.additionalSchedule?.value,
-            additionalScheduleFrequency: serviceSelected?.additionalSchedule?.frequency,
-            additionalScheduleRequired: serviceSelected?.additionalSchedule?.scheduleRequired,
-            billableService: serviceSelected?.billableService,
-            rateType: serviceSelected?.rateType,
-            sessionDuration: serviceSelected?.duration?.hours || '0',
-            sessionAmount: serviceSelected?.payableAmount?.value,
-            totalSession: serviceSelected?.totalSessions?.value,
-            totalSessionFrequency: serviceSelected?.totalSessions?.frequency,
-            workingTimeFrom: GetDateFromHours(serviceSelected?.workingPeriod?.from?.toString() || ''),
-            workingTimeTo: GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
-            serviceDays: serviceSelected?.serviceDays,
-            additionalActivity: dependentActivities,
-            additionalActivityBillable: serviceSelected?.dependentService?.billableService,
-            additionalActivityPaymentApprovalRequired: serviceSelected?.dependentService?.paymentApprovalRequired,
-            dependencyPayableAmount: serviceSelected?.dependentService?.payableAmount?.value,
-            dependencyFrequency: serviceSelected?.dependentService?.frequency,
-            dependantServiceIncluded: serviceSelected?.dependantServiceIncluded,
-            weekdayFrom: GetDateFromHours(serviceSelected?.customschedule?.weekday?.from?.toString() || ''),
-            weekdayTo: GetDateFromHours(serviceSelected?.customschedule?.weekday?.to?.toString() || ''),
-            weekdayDuration: serviceSelected?.customschedule?.weekday?.duration?.hours,
-            weekdayMin: serviceSelected?.customschedule?.weekday?.target?.minimum?.value,
-            weekdayMax: serviceSelected?.customschedule?.weekday?.target?.maximum?.value,
-            weekdayPayment: serviceSelected?.customschedule?.weekday?.payableAmount?.value,
-            weekdayPaymentNa: serviceSelected?.customschedule?.weekday?.paymentNotApplicable,
-            weekdayFrequency: serviceSelected?.customschedule?.weekday?.target?.frequency,
-            weekendFrom: GetDateFromHours(serviceSelected?.customschedule?.weekend?.from?.toString() || ''),
-            weekendTo: GetDateFromHours(serviceSelected?.customschedule?.weekend?.to?.toString() || ''),
-            weekendStartday: serviceSelected?.customschedule?.weekend?.startDay,
-            weekendEndday: serviceSelected?.customschedule?.weekend?.endDay,
-            weekendDuration: serviceSelected?.customschedule?.weekend?.duration?.hours,
-            weekendMin: serviceSelected?.customschedule?.weekend?.target?.minimum?.value,
-            weekendMax: serviceSelected?.customschedule?.weekend?.target?.maximum?.value,
-            weekendPayment: serviceSelected?.customschedule?.weekend?.payableAmount?.value,
-            weekendPaymentNa: serviceSelected?.customschedule?.weekend?.paymentNotApplicable,
-            weekendFrequency: serviceSelected?.customschedule?.weekend?.target?.frequency,
-            holidayFrom: GetDateFromHours(serviceSelected?.customschedule?.holiday?.from?.toString() || ''),
-            holidayTo: GetDateFromHours(serviceSelected?.customschedule?.holiday?.to?.toString() || ''),
-            holidayFrequency: serviceSelected?.customschedule?.holiday?.target?.frequency,
-            holidayTerm: serviceSelected?.customschedule?.holiday?.holidayTerm,
-            holidayDuration: serviceSelected?.customschedule?.holiday?.duration?.hours,
-            holidayMin: serviceSelected?.customschedule?.holiday?.target?.minimum?.value,
-            holidayMax: serviceSelected?.customschedule?.holiday?.target?.maximum?.value,
-            holidayPayment: serviceSelected?.customschedule?.holiday?.payableAmount?.value,
-            holidayPaymentNa: serviceSelected?.customschedule?.holiday?.paymentNotApplicable,
-            patientMRNRequired: serviceSelected?.patientMRNRequired,
-            attendingDocRequired: serviceSelected?.attendingDocRequired,
-            customizedSchedule: serviceSelected?.customizedSchedule,
-        });
-    }
+        let workflowData = addOnWorkFlow?.filter(data => data?.id === serviceSelected?.dependentService?.workFlow?.id)?.map(data => data?.workFlowMap?.workflow)[0] || {};
+        let workFlowValues = Object?.values(workflowData);
+        let approver = user?.filter(data => data?.id === workFlowValues?.[0]?.workFlowUser?.id)?.map(data => data)[0];
 
+        if (Object.keys(serviceSelected)?.length !== 0) {
+            setMetadata({
+                ...metadata,
+                refId: serviceSelected?.refId,
+                min: serviceSelected?.contractedSchedules?.[0]?.minimum?.value,
+                max: serviceSelected?.contractedSchedules?.[0]?.maximum?.value,
+                frequency: serviceSelected?.contractedSchedules?.[0]?.frequency,
+                onCallCoverageFor: serviceSelected?.activityResponse?.dataMap?.onCallCoverageFor,
+                additionalScheduleValue: serviceSelected?.additionalSchedule?.value,
+                additionalScheduleFrequency: serviceSelected?.additionalSchedule?.frequency,
+                additionalScheduleRequired: serviceSelected?.additionalSchedule?.scheduleRequired,
+                billableService: serviceSelected?.billableService,
+                rateType: serviceSelected?.rateType,
+                sessionDuration: serviceSelected?.duration?.hours || '0',
+                sessionAmount: serviceSelected?.payableAmount?.value,
+                totalSession: serviceSelected?.totalSessions?.value,
+                totalSessionFrequency: serviceSelected?.totalSessions?.frequency,
+                workingTimeFrom: GetDateFromHours(serviceSelected?.workingPeriod?.from?.toString() || ''),
+                workingTimeTo: GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
+                serviceDays: serviceSelected?.serviceDays,
+                additionalActivity: dependentActivities,
+                additionalActivityBillable: serviceSelected?.dependentService?.billableService,
+                additionalActivityPaymentApprovalRequired: serviceSelected?.dependentService?.paymentApprovalRequired,
+                dependencyPayableAmount: serviceSelected?.dependentService?.payableAmount?.value,
+                dependencyFrequency: serviceSelected?.dependentService?.frequency,
+                dependantServiceIncluded: serviceSelected?.dependantServiceIncluded,
+                weekdayFrom: GetDateFromHours(serviceSelected?.customschedule?.weekday?.from?.toString() || ''),
+                weekdayTo: GetDateFromHours(serviceSelected?.customschedule?.weekday?.to?.toString() || ''),
+                weekdayDuration: serviceSelected?.customschedule?.weekday?.duration?.hours,
+                weekdayMin: serviceSelected?.customschedule?.weekday?.target?.minimum?.value,
+                weekdayMax: serviceSelected?.customschedule?.weekday?.target?.maximum?.value,
+                weekdayPayment: serviceSelected?.customschedule?.weekday?.payableAmount?.value,
+                weekdayPaymentNa: serviceSelected?.customschedule?.weekday?.paymentNotApplicable,
+                weekdayFrequency: serviceSelected?.customschedule?.weekday?.target?.frequency,
+                weekendFrom: GetDateFromHours(serviceSelected?.customschedule?.weekend?.from?.toString() || ''),
+                weekendTo: GetDateFromHours(serviceSelected?.customschedule?.weekend?.to?.toString() || ''),
+                weekendStartday: serviceSelected?.customschedule?.weekend?.startDay,
+                weekendEndday: serviceSelected?.customschedule?.weekend?.endDay,
+                weekendDuration: serviceSelected?.customschedule?.weekend?.duration?.hours,
+                weekendMin: serviceSelected?.customschedule?.weekend?.target?.minimum?.value,
+                weekendMax: serviceSelected?.customschedule?.weekend?.target?.maximum?.value,
+                weekendPayment: serviceSelected?.customschedule?.weekend?.payableAmount?.value,
+                weekendPaymentNa: serviceSelected?.customschedule?.weekend?.paymentNotApplicable,
+                weekendFrequency: serviceSelected?.customschedule?.weekend?.target?.frequency,
+                holidayFrom: GetDateFromHours(serviceSelected?.customschedule?.holiday?.from?.toString() || ''),
+                holidayTo: GetDateFromHours(serviceSelected?.customschedule?.holiday?.to?.toString() || ''),
+                holidayFrequency: serviceSelected?.customschedule?.holiday?.target?.frequency,
+                holidayTerm: serviceSelected?.customschedule?.holiday?.holidayTerm,
+                holidayDuration: serviceSelected?.customschedule?.holiday?.duration?.hours,
+                holidayMin: serviceSelected?.customschedule?.holiday?.target?.minimum?.value,
+                holidayMax: serviceSelected?.customschedule?.holiday?.target?.maximum?.value,
+                holidayPayment: serviceSelected?.customschedule?.holiday?.payableAmount?.value,
+                holidayPaymentNa: serviceSelected?.customschedule?.holiday?.paymentNotApplicable,
+                patientMRNRequired: serviceSelected?.patientMRNRequired,
+                attendingDocRequired: serviceSelected?.attendingDocRequired,
+                customizedSchedule: serviceSelected?.customizedSchedule,
+                approver: approver,
+                workflowId: serviceSelected?.dependentService?.workFlow?.id,
+                workflowName: serviceSelected?.dependentService?.workFlow?.workFlowName?.name,
+            });
+        }
+    }
     const limit5 = 5;
 
-
     useEffect(() => {
-        getMetaData(metadata)
+        getMetaData(metadata);
     }, [metadata])
 
+    useEffect(() => {
+        getTimeSheetWorkFlow();
+        getUserData();
+    }, [])
+
     const handleValueChange = (name, value) => {
-        setMetadata({ ...metadata, [name]: value });
+        if (name === 'frequency' && value === 'NA' || value === '') {
+            setMetadata({ ...metadata, [name]: 'NA', min: 0, max: 99999999 })
+        }
+        else {
+            setMetadata({ ...metadata, [name]: value });
+        }
+    }
+
+
+    const getUserData = async () => {
+        let siteId = sites?.map(data => data?.id);
+        let deptId = [];
+        sites?.map(data => data?.departmentList?.departments?.map(dept => {
+            deptId.push(`${data?.id}#${dept?.id}`);
+        }))
+        let encodedDept = encodeURIComponent(deptId);
+        let uri = `user-management-service/user/workFlowUser?sites=${siteId}&sitedepartments=${encodedDept}&contractIdToIgnore=${contractId}`;
+        const { data: userList } = await GET(uri);
+        if (userList) {
+            setUsers(userList);
+            let temp = [];
+            userList?.map(data => data?.sites?.sites?.map(site => {
+                if (data?.name?.firstName && site?.siteName?.siteName && site?.siteResponsibility?.title) {
+                    if (site?.siteResponsibility?.title !== "" && site?.siteResponsibility?.title !== undefined && site?.siteResponsibility?.title !== null) {
+                        temp.push({ fname: data?.name?.firstName, lname: data?.name?.lastName, suffix: data?.name?.suffix?.suffix || '', site: site?.siteName?.siteName, title: site?.siteResponsibility?.title, id: data?.id, approver: data?.roles?.filter(role => role?.roleName === 'Approver')?.map(data => data)?.length !== 0 ? true : false, reviewer: data?.roles?.filter(role => role?.roleName === 'Reviewer')?.map(data => data)?.length !== 0 ? true : false });
+                    }
+
+                    site?.departmentList?.departments?.map(dept => {
+                        if (dept?.departmentResponsibility?.title !== "" && dept?.departmentResponsibility?.title !== undefined && dept?.departmentResponsibility?.title !== null) {
+                            temp.push({ fname: data?.name?.firstName, lname: data?.name?.lastName, suffix: data?.name?.suffix?.suffix || '', site: dept?.departmentName?.name, title: dept?.departmentResponsibility?.title, id: data?.id, approver: data?.roles?.filter(role => role?.roleName === 'Approver')?.map(data => data)?.length !== 0 ? true : false, reviewer: data?.roles?.filter(role => role?.roleName === 'Reviewer')?.map(data => data)?.length !== 0 ? true : false });
+                        }
+                    })
+                }
+            }))
+            setTitle(temp);
+        }
     }
 
     const getServiceDaysMetadata = (serviceDays) => {
@@ -336,7 +410,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
 
     const onTotalSessionChange = (e) => {
         if (e >= 0) {
-            let value = e.slice(0, e.slice());
+            let value = e.slice(0, 5);
             handleValueChange('totalSession', value);
         }
     }
@@ -368,16 +442,17 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         }
     }
 
+    console.log('metadata', metadata);
 
     return (
         <div>
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='On Call Coverage For *' />
                 <div className={style.spaceBetween}>
-                    <CommonCheckBox checked={metadata?.onCallCoverageFor?.includes('InPatient')} className={`${style.threeFieldWidth}`} onChange={(e) => handleOnCallCoverageFor('InPatient', e)} label="Inpatient" />
-                    <CommonCheckBox checked={metadata?.onCallCoverageFor?.includes('Ambulatory')} className={`${style.marginLeft10} ${style.threeFieldWidth}`} onChange={(e) => handleOnCallCoverageFor('Ambulatory', e)} label="Ambulatory" />
-                    <CommonCheckBox checked={metadata?.onCallCoverageFor?.includes('ED')} className={`${style.marginLeft10} ${style.threeFieldWidth}`} onChange={(e) => handleOnCallCoverageFor('ED', e)} label="ED" />
-                    <CommonCheckBox checked={metadata?.onCallCoverageFor?.includes('L & D')} className={`${style.marginLeft10} ${style.threeFieldWidth}`} onChange={(e) => handleOnCallCoverageFor('L & D', e)} label="L & D" />
+                    <CommonCheckBox checked={metadata?.onCallCoverageFor?.includes('InPatient')} className={`${style.fourFieldWidth}`} onChange={(e) => handleOnCallCoverageFor('InPatient', e)} label="Inpatient" />
+                    <CommonCheckBox checked={metadata?.onCallCoverageFor?.includes('Ambulatory')} className={`${style.marginLeft10} ${style.fourFieldWidth}`} onChange={(e) => handleOnCallCoverageFor('Ambulatory', e)} label="Ambulatory" />
+                    <CommonCheckBox checked={metadata?.onCallCoverageFor?.includes('L & D')} className={`${style.marginLeft10} ${style.fourFieldWidth}`} onChange={(e) => handleOnCallCoverageFor('L & D', e)} label="L & D" />
+                    <CommonCheckBox checked={metadata?.onCallCoverageFor?.includes('ED')} className={`${style.marginLeft10} ${style.fourFieldWidth}`} onChange={(e) => handleOnCallCoverageFor('ED', e)} label="ED" />
                 </div>
             </div>
 
@@ -389,10 +464,10 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Same On Call Schedule For All Days' />
                 <div className={style.onCallBillableGrid}>
-                    <CommonSwitch checked={metadata?.customizedSchedule} label={metadata?.customizedSchedule ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} onChange={(e) => onCustomizeFieldOptionChange(!metadata?.customizedSchedule)} />
+                    <CommonSwitch checked={!metadata?.customizedSchedule} label={!metadata?.customizedSchedule ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} onChange={(e) => onCustomizeFieldOptionChange(!metadata?.customizedSchedule)} />
                 </div>
             </div>
-            {!metadata?.customizedSchedule && (
+            {metadata?.customizedSchedule && (
                 <div className={`${style.addonAddBox} ${style.marginTop20}`}>
                     <div className={`${style.addManagerGrid}`}>
                         <CommonLabel value='Weekday' />
@@ -433,21 +508,49 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                             <CommonLabel value='Number of On Call Duty Days*' />
                         </div>
                         <div className={style.displayInRow}>
-                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MIN</div>
                                 <EditableText disabled={metadata?.weekdayFrequency === 'NA' || !metadata?.serviceDays?.weekDays} value={metadata?.weekdayMin} placeholder='' onChange={(e) => e >= 0 && onCustomizeFieldChange(e, 'weekdayMin')} type='tel' maxLength='2' className={style.serviceProvidedEditableTextStyle} />
-                            </div>
-                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                            </div> */}
+                            <CommonTextField
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>MIN</InputAdornment>,
+                                }}
+                                className={style.threeFieldWidth}
+                                onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'weekdayMin')}
+                                value={metadata?.weekdayMin === 0 ? '' : metadata?.weekdayMin}
+                                type='number'
+                                disabled={metadata?.weekdayFrequency === 'NA' || !metadata?.serviceDays?.weekDays}
+                            />
+                            {/* <CommonTextField
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>Days</InputAdornment>,
+                                }}
+                                className={style.serviceProvidedEditableTextStyle}
+                                onChange={(e) => e >= 0 && onCustomizeFieldChange(e, 'weekdayMin')}
+                                defaultValue={metadata?.weekdayMin}
+                            /> */}
+                            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MAX</div>
                                 <EditableText disabled={metadata?.weekdayFrequency === 'NA' || !metadata?.serviceDays?.weekDays} value={metadata?.weekdayMax} placeholder='' onChange={(e) => e >= 0 && onCustomizeFieldChange(e, 'weekdayMax')} type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} />
-                            </div>
+                            </div> */}
+                            <CommonTextField
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>MAX</InputAdornment>,
+                                }}
+                                className={style.threeFieldWidth}
+                                onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'weekdayMax')}
+                                value={metadata?.weekdayMax === 0 ? '' : metadata?.weekdayMax}
+                                type='number'
+                                disabled={metadata?.weekdayFrequency === 'NA' || !metadata?.serviceDays?.weekDays}
+                            />
                             <CommonSelectField className={`${style.fullWidth} ${style.marginLeft20}`}
                                 value={metadata?.weekdayFrequency || ''}
                                 onChange={(e) => onCustomizeFieldChange(e.target.value, 'weekdayFrequency')}
                                 disabledSelect={!metadata?.serviceDays?.weekDays}
-                                firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
-                                valueList={['NA', 'WEEK', 'MONTH']}
-                                labelList={['Not Applicable', 'Per Week', 'Per Month']}
+                                firstOptionLabel={'Select Frequency'} firstOptionValue={''}
+                                valueList={['NA', 'WEEK', 'MONTH', 'CONTRACT_YEAR', 'EVERY_OTHER_WEEK']}
+                                labelList={['As Needed', 'Per Week', 'Per Month', 'Per Year', 'Every Other Week']}
                                 disabledList={[false, false, false]} />
                         </div>
                     </div>
@@ -530,21 +633,41 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                             <CommonLabel value='Number of On Call Weekends*' />
                         </div>
                         <div className={style.displayInRow}>
-                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MIN</div>
                                 <EditableText disabled={metadata?.weekendFrequency === 'NA' || !metadata?.serviceDays?.weekEnds} value={metadata?.weekendMin} placeholder='' onChange={(e) => e >= 0 && onCustomizeFieldChange(e, 'weekendMin')} type='tel' maxLength='2' className={style.serviceProvidedEditableTextStyle} />
-                            </div>
-                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                            </div> */}
+                            <CommonTextField
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>MIN</InputAdornment>,
+                                }}
+                                className={style.threeFieldWidth}
+                                onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'weekendMin')}
+                                value={metadata?.weekendMin === 0 ? '' : metadata?.weekendMin}
+                                type='number'
+                                disabled={metadata?.weekendFrequency === 'NA' || !metadata?.serviceDays?.weekEnds}
+                            />
+                            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MAX</div>
                                 <EditableText disabled={metadata?.weekendFrequency === 'NA' || !metadata?.serviceDays?.weekEnds} value={metadata?.weekendMax} placeholder='' onChange={(e) => e >= 0 && onCustomizeFieldChange(e, 'weekendMax')} type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} />
-                            </div>
+                            </div> */}
+                            <CommonTextField
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>MAX</InputAdornment>,
+                                }}
+                                className={style.threeFieldWidth}
+                                onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'weekendMax')}
+                                value={metadata?.weekendMax === 0 ? '' : metadata?.weekendMax}
+                                type='number'
+                                disabled={metadata?.weekendFrequency === 'NA' || !metadata?.serviceDays?.weekEnds}
+                            />
                             <CommonSelectField className={`${style.fullWidth} ${style.marginLeft20}`}
                                 value={metadata?.weekendFrequency || ''}
                                 onChange={(e) => onCustomizeFieldChange(e.target.value, 'weekendFrequency')}
                                 disabled={!metadata?.serviceDays?.weekEnds}
-                                firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
-                                valueList={['NA', 'WEEK', 'MONTH']}
-                                labelList={['Not Applicable', 'Per Week', 'Per Month']}
+                                firstOptionLabel={'Select Frequency'} firstOptionValue={''}
+                                valueList={['NA', 'WEEK', 'MONTH', 'CONTRACT_YEAR', 'EVERY_OTHER_WEEK']}
+                                labelList={['As Needed', 'Per Week', 'Per Month', 'Per Year', 'Every Other Week']}
                                 disabledList={[false, false, false]} />
                         </div>
                     </div>
@@ -646,22 +769,42 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                             <CommonLabel value='Number of On Call Holiday Days*' />
                         </div>
                         <div className={style.displayInRow}>
-                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MIN</div>
                                 <EditableText disabled={metadata?.holidayFrequency === 'NA' || !metadata?.serviceDays?.isholidays} value={metadata?.holidayMin} placeholder='' onChange={(e) => e >= 0 && onCustomizeFieldChange(e, 'holidayMin')} type='tel' maxLength='2' className={style.serviceProvidedEditableTextStyle} />
-                            </div>
-                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                            </div> */}
+                            <CommonTextField
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>MIN</InputAdornment>,
+                                }}
+                                className={style.threeFieldWidth}
+                                onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'holidayMin')}
+                                value={metadata?.holidayMin === 0 ? '' : metadata?.holidayMin}
+                                type='number'
+                                disabled={metadata?.holidayFrequency === 'NA' || !metadata?.serviceDays?.isholidays}
+                            />
+                            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MAX</div>
                                 <EditableText disabled={metadata?.holidayFrequency === 'NA' || !metadata?.serviceDays?.isholidays} value={metadata?.holidayMax} placeholder='' onChange={(e) => e >= 0 && onCustomizeFieldChange(e, 'holidayMax')} type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} />
-                            </div>
+                            </div> */}
+                            <CommonTextField
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>MAX</InputAdornment>,
+                                }}
+                                className={style.threeFieldWidth}
+                                onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'holidayMax')}
+                                value={metadata?.holidayMax === 0 ? '' : metadata?.holidayMax}
+                                type='number'
+                                disabled={metadata?.holidayFrequency === 'NA' || !metadata?.serviceDays?.isholidays}
+                            />
                             <CommonSelectField className={`${style.fullWidth} ${style.marginLeft20}`}
                                 value={metadata?.holidayFrequency || ''}
                                 onChange={(e) => onCustomizeFieldChange(e.target.value, 'holidayFrequency')}
                                 disabled={!metadata?.serviceDays?.isholidays}
-                                firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
-                                valueList={['NA', 'WEEK', 'MONTH']}
-                                labelList={['Not Applicable', 'Per Week', 'Per Month']}
-                                disabledList={[false, false, false]} />
+                                firstOptionLabel={'Select Frequency'} firstOptionValue={''}
+                                valueList={['NA', 'WEEK', 'MONTH', 'CONTRACT_YEAR']}
+                                labelList={['As Needed', 'Per Week', 'Per Month', 'Per Year']}
+                                disabledList={[false, false, false, false]} />
                         </div>
                     </div>
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -700,25 +843,45 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                     </div> */}
                 </div>
             )}
-            {metadata?.customizedSchedule && (
+            {!metadata?.customizedSchedule && (
                 <>
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                         <CommonLabel value='Number of On Call Duty Days*' />
                         <div className={style.displayInRow}>
-                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MIN</div>
                                 <EditableText value={metadata?.min} placeholder='' onChange={(e) => e >= 0 && handleValueChange('min', e)} type='tel' maxLength='2' className={style.serviceProvidedEditableTextStyle} />
-                            </div>
-                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                            </div> */}
+                            <CommonTextField
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>MIN</InputAdornment>,
+                                }}
+                                className={style.threeFieldWidth}
+                                onChange={(e) => e.target.value >= 0 && handleValueChange('min', parseFloat(e.target.value.slice(0, 5)))}
+                                value={metadata?.min === 0 ? '' : metadata?.min}
+                                type='number'
+                                disabled={metadata?.frequency === 'NA'}
+                            />
+                            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MAX</div>
                                 <EditableText value={metadata?.max} placeholder='' onChange={(e) => e >= 0 && handleValueChange('max', e)} type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} />
-                            </div>
+                            </div> */}
+                            <CommonTextField
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>MAX</InputAdornment>,
+                                }}
+                                className={style.threeFieldWidth}
+                                onChange={(e) => e.target.value >= 0 && handleValueChange('max', parseFloat(e.target.value.slice(0, 5)))}
+                                value={(metadata?.max === 0 || metadata?.max === 99999999) ? '' : metadata?.max}
+                                type='number'
+                                disabled={metadata?.frequency === 'NA'}
+                            />
                             <CommonSelectField className={`${style.fullWidth}`}
                                 value={metadata?.frequency}
                                 onChange={(e) => handleValueChange('frequency', e.target.value)}
-                                firstOptionLabel={'Select Frequecy'} firstOptionValue={'NA'}
-                                valueList={['WEEK', 'MONTH']}
-                                labelList={['Per Week', 'Per Month']}
+                                firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
+                                valueList={['NA', 'WEEK', 'MONTH', 'CONTRACT_YEAR']}
+                                labelList={['As Needed', 'Per Week', 'Per Month', 'Per Year']}
                                 disabledList={[false, false]} />
                         </div>
                     </div>
@@ -740,7 +903,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 //     value={metadata?.rateType}
                                 //     onChange={(e)=>handleValueChange('rateType',e.target.value)}
                                 // >
-                                //     <MenuItem value="">Select Frequecy</MenuItem>
+                                //     <MenuItem value="">Select Frequency</MenuItem>
                                 //     <MenuItem value={'HOURLY'}>Hourly</MenuItem>
                                 // </Select>
                             }
@@ -806,12 +969,12 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                     </div>
                 </>
             )}
-            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+            {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Require Patient MRN' />
                 <div className={style.onCallBillableGrid}>
                     <CommonSwitch checked={metadata?.patientMRNRequired} label={metadata?.patientMRNRequired ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} onChange={() => handleValueChange('patientMRNRequired', !metadata?.patientMRNRequired)} />
                 </div>
-            </div>
+            </div> */}
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Attending Doc Required' />
                 <div className={style.onCallBillableGrid}>
@@ -836,7 +999,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                             <CommonSelectField className={`${style.fullWidth}`}
                                 value={metadata?.additionalScheduleFrequency || ''}
                                 onChange={(e) => handleValueChange('additionalScheduleFrequency', e.target.value)}
-                                firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
+                                firstOptionLabel={'Select Frequency'} firstOptionValue={''}
                                 valueList={['WEEK', 'EVERY_OTHER_WEEK', 'MONTH', 'EVERY_OTHER_MONTH']}
                                 labelList={['Every Week', 'Every Other Week', 'Every Month', 'Every Other Month']}
                                 disabledList={[false, false, false, false]} />
@@ -850,7 +1013,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                 <CommonLabel value='Total Contracted Service Sessions*' />
                 <div className={style.twoCol}>
                     <div className={`${style.spaceBetween} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
-                        <EditableText placeholder='' value={metadata?.totalSession} type='tel' maxLength="3"
+                        <EditableText placeholder='' value={metadata?.totalSession} type='tel' maxLength="5"
                             className={style.editableSessionTextStyle}
                             onChange={(e) => onTotalSessionChange(e)} />
                         <div className={`${style.textElement} ${parseInt(metadata?.totalSession) === specified ? style.greenBase : style.redBase}`}>{specified} Minimum Specified</div>
@@ -916,25 +1079,29 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                             <CommonLabel value='Require Approval For Payment' />
                             <CommonSwitch
                                 checked={metadata?.additionalActivityPaymentApprovalRequired} label={metadata?.additionalActivityPaymentApprovalRequired ? 'YES' : 'NO'}
-                                onChange={e => setMetadata({ ...metadata, additionalActivityPaymentApprovalRequired: !metadata?.additionalActivityPaymentApprovalRequired })} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} />
+                                onChange={e => setMetadata({ ...metadata, additionalActivityPaymentApprovalRequired: !metadata?.additionalActivityPaymentApprovalRequired, approver: undefined })} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} />
                         </div>
                         {metadata?.additionalActivityPaymentApprovalRequired &&
                             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                                 <CommonLabel value='Designate Request Approver*' />
-                                <CommonSelectField className={`${style.fullWidth}`}
-                                    value={''}
-                                    firstOptionLabel={'Select Approver'} firstOptionValue={''}
-                                    valueList={[]}
-                                    labelList={[]}
-                                    disabledList={[]} />
+                                <CommonSelectField className={`${style.fullWidth} `}
+                                    defaultValue={metadata?.approver}
+                                    value={metadata?.approver ? metadata?.approver?.id : '0'}
+                                    onChange={(e) => { setMetadata({ ...metadata, approver: user.filter(data => data?.id === e.target.value)?.map(data => data)[0], approverTitle: title?.filter(titleData => titleData?.approver === true)?.map(data => data)[0] }) }}
+                                    firstOptionLabel={'Select Payment Approver'}
+                                    firstOptionValue={'0'}
+                                    valueList={title?.filter(titleData => titleData?.approver === true)?.map(data => data?.id)}
+                                    labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`)}
+                                    disabledList={title?.map(data => false)} />
                             </div>
                         }
                     </>
 
 
                 </>
-            )}
-        </div>
+            )
+            }
+        </div >
     )
 }
 

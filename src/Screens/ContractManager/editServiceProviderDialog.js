@@ -14,7 +14,7 @@ import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
 import style from './index.module.scss';
 
-const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractId, isEditable }) => {
+const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractId, isEditable, users }) => {
   const [selectedContract, setSelectedContract] = useState('Written Contract Extension For Fixed Term');
   const [startDate, setStartDate] = useState(new Date);
   const [terminationTrigger, setTerminationTrigger] = useState('Contract Expiration');
@@ -22,7 +22,10 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
   const [workFlowUser, setWorkFlowUser] = useState([]);
   const [selectedRoles, setSelectedRoles] = useState(userProviderData?.roles);
   const [npin, setNpin] = useState({ npin: '', missing: false, na: false });
-  const [userDetails, setUserDetails] = useState({ firstName: '', middleName: '', lastName: '', suffix: { suffix: '', id: '' }, email: '', phone: '' });
+  const [userDetails, setUserDetails] = useState({
+    firstName: '', middleName: '', lastName: '', suffix: { suffix: '', id: '' }, email: '', phone: '',
+    ssoId: { id: '' }
+  });
   const [providerType, setProviderType] = useState({ contractedServiceProviderType: '', id: '' });
   const [address, setAddress] = useState({ addressLine: '', city: '', state: '', zipcode: '' });
   const [contractName, setContractName] = useState('');
@@ -60,7 +63,10 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
   useEffect(() => {
     setNpin({ npin: userProviderData?.npin?.npin, missing: userProviderData?.npin?.missing, na: userProviderData?.npin?.notApplicable });
     setSelectedRoles(userProviderData?.roles || []);
-    setUserDetails({ ...userDetails, firstName: userProviderData?.name?.firstName || '', middleName: userProviderData?.name?.middleName || '', lastName: userProviderData?.name?.lastName || '', suffix: userProviderData?.name?.suffix || '', email: userProviderData?.email?.officialEmail || '', phone: userProviderData?.communication?.mobileNumber || '' });
+    setUserDetails({
+      ...userDetails, firstName: userProviderData?.name?.firstName || '', middleName: userProviderData?.name?.middleName || '', lastName: userProviderData?.name?.lastName || '', suffix: { suffix: userProviderData?.name?.suffix?.suffix || '', id: userProviderData?.name?.suffix?.id }, email: userProviderData?.email?.officialEmail || '', phone: userProviderData?.communication?.mobileNumber || '',
+      ssoId: userProviderData?.ssoId || ''
+    });
     setProviderType(userProviderData?.serviceProviderType || {});
     setAllowPersonalMail(userProviderData?.personalEmailAddressAllowed);
     setAddress({ addressLine: userProviderData?.address?.addressLine || '', city: userProviderData?.address?.city || '', state: userProviderData?.address?.state || '', zipcode: userProviderData?.address?.zipcode || '' });
@@ -80,7 +86,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
       data?.departmentList?.departments?.map(deptData => {
         dept.push({ id: deptData?.id, name: deptData?.departmentName?.name, title: deptData?.departmentResponsibility?.title || '', title_id: deptData?.departmentResponsibility?.id });
         if (deptData?.departmentResponsibility?.title !== '' && deptData?.departmentResponsibility?.title !== undefined) {
-          let valueString = `${data?.siteName?.siteName} - ${deptData?.departmentName?.name} - ${deptData?.departmentResponsibility?.title}`
+          let valueString = `${data?.siteName?.siteName} -- ${deptData?.departmentName?.name} -- ${deptData?.departmentResponsibility?.title}`
           if (!deptValue.includes(valueString)) {
             deptValue.push(valueString);
           }
@@ -88,7 +94,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
       })
       temp.push({ id: data?.id, name: data?.siteName?.siteName, title: data?.siteResponsibility?.title || '', title_id: data?.siteResponsibility?.id, department: dept });
       if (data?.siteResponsibility?.title !== '' && data?.siteResponsibility?.title !== undefined) {
-        let valueString = `${data?.siteName?.siteName} - ${data?.siteResponsibility?.title}`;
+        let valueString = `${data?.siteName?.siteName} -- ${data?.siteResponsibility?.title}`;
         if (!siteValue.includes(valueString)) {
           siteValue.push(valueString);
         }
@@ -181,7 +187,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
       ErrorToaster('Selecting all the fields is mandatory');
       return;
     }
-    setSiteTitleValues([...siteTitleValues, `${siteLevelSite?.name} - ${siteLevelTitle?.title}`]);
+    setSiteTitleValues([...siteTitleValues, `${siteLevelSite?.name} -- ${siteLevelTitle?.title}`]);
     let temp = sites;
     temp?.filter(data => data?.id === siteLevelSite?.id)?.map(data => {
       data.title = siteLevelTitle?.title;
@@ -197,7 +203,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
       ErrorToaster('Selecting all the fields is mandatory');
       return;
     }
-    let valueString = `${departmentLevelSite?.name} - ${departmentLevelDepartment?.name} - ${departmentLevelTitle?.title}`
+    let valueString = `${departmentLevelSite?.name} -- ${departmentLevelDepartment?.name} -- ${departmentLevelTitle?.title}`
     setDepartmentTitleValues([...departmentTitleValues, valueString]);
     let temp = sites;
     let siteDepartment = sites?.filter(data => data?.id === departmentLevelSite?.id)?.map(data => data?.department)[0];
@@ -218,28 +224,51 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
     setDepartmentLevelSite({ id: id, name: sites?.filter(data => data?.id === id)?.map(data => data?.name)[0] });
   }
 
-  const handleDeptRemove = (values, index) => {
-    let data = values?.split(' - ');
-    let site = data?.[0];
-    let dept = data?.[1];
-    let title = data?.[2];
+  const deptTitleReset = () => {
     let temp = sites;
-    let siteDepartment = sites?.filter(data => data?.name === site)?.map(data => data?.department)[0];
-    siteDepartment?.filter(data => data?.name === dept && data?.title === title)?.map(data => {
-      data.title = '';
-      data.title_id = '';
-    });
-    temp?.filter(data => data?.name === site && data?.title)?.map(data => {
-      data.department = siteDepartment;
-    });
+    temp?.map(site => {
+      site?.department?.map(dept => {
+        dept.title = '';
+        dept.title_id = '';
+      })
+    })
     setSites(temp);
+    setDepartmentTitleValues([]);
+  }
+
+  const siteTitleReset = () => {
+    let temp = sites;
+    temp?.map(site => {
+      site.title = '';
+      site.title_id = '';
+    })
+    setSites(temp);
+    setSiteTitleValues([]);
+  }
+
+  const handleDeptRemove = (values, index) => {
+    let data = values?.split('--');
+    let site = data?.[0]?.trim();
+    let dept = data?.[1]?.trim();
+    let title = data?.[2]?.trim();
+    console.log('dept value', data);
+    sites?.filter(data => data?.name === site)?.map(data => {
+      data?.department?.map(deptData => {
+        if (deptData?.name === dept && deptData?.title === title) {
+          console.log('inside condition')
+          deptData.title = '';
+          deptData.title_id = null;
+        }
+      }
+      )
+    });
     setDepartmentTitleValues(departmentTitleValues?.filter((data, indexVal) => index !== indexVal)?.map(data => data));
   }
 
   const handleSiteRemove = (values, index) => {
-    let data = values?.split(' - ');
-    let site = data?.[0];
-    let title = data?.[1];
+    let data = values?.split('--');
+    let site = data?.[0]?.trim();
+    let title = data?.[1]?.trim();
     let temp = sites;
     temp?.filter(data => data?.name === site && data?.title === title)?.map(data => {
       data.title = '';
@@ -249,20 +278,21 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
     setSiteTitleValues(siteTitleValues?.filter((data, indexVal) => index !== indexVal)?.map(data => data));
   }
 
-  const resetSiteLevel = (value) => {
-    if (!value) {
-      getTitleData();
-    }
-  }
+  // const resetSiteLevel = (value) => {
+  //   if (!value) {
+  //     getTitleData();
+  //   }
+  // }
 
-  const resetDeptvalue = (value) => {
-    if (!value) {
-      getTitleData();
-    }
-  }
+  // const resetDeptvalue = (value) => {
+  //   if (!value) {
+  //     getTitleData();
+  //   }
+  // }
 
   const handleSuffixChange = (id, value) => {
-    setUserDetails({ ...userDetails, suffix: { id: id, value: value } });
+    console.log('value', value);
+    setUserDetails({ ...userDetails, suffix: { id: id, suffix: value } });
   }
 
   const getSiteData = () => {
@@ -362,7 +392,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
         "firstName": userDetails?.firstName,
         "middleName": userDetails?.middleName,
         "lastName": userDetails?.lastName,
-        "suffix": userDetails?.suffix
+        "suffix": userDetails?.suffix,
       },
       "userType": "CONTRACTED_SERVICE_PROVIDER_USER",
       "contracts": contractData,
@@ -372,6 +402,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
       "email": {
         "officialEmail": userDetails?.email
       },
+      "ssoId": userDetails?.ssoId,
       "communication": {
         "personalEmail": userDetails?.email,
         "mobileNumber": userDetails?.phone,
@@ -496,7 +527,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <CommonLabel value='Suffix*' />
             <div className={style.grid3}>
-              <SuffixList value={userDetails?.suffix?.id} onChangeFunc={(id, value) => handleSuffixChange(id, value)} className={[style.fullWidth]} />
+              <SuffixList value={userDetails?.suffix?.id || ''} onChangeFunc={(id, value) => handleSuffixChange(id, value)} className={[style.fullWidth]} />
             </div>
           </div>
 
@@ -519,6 +550,12 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
               </div>
             </div>
           }
+          {/* <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+            <CommonLabel value='SSO ID*' />
+            <div className={style.displayInRow}>
+              <CommonInputField placeholder="Enter SSO Id" value={userDetails?.ssoId?.id} className={`${style.entityFieldWidth}`} onChange={(e) => setUserDetails({ ...userDetails, ssoId: { id: e.target.value } })} />
+            </div>
+          </div> */}
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <CommonLabel value='Service Provider Type*' />
             <div className={style.grid3}>
@@ -554,7 +591,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
             <CommonLabel value='Site Level Responsibility*' />
             <div>
               <div className={style.flexLeft}>
-                <CommonSwitch checked={siteLevel} className={`${style.flexLeft} ${style.switchFontStyle}`} onChange={() => { setSiteLevel(!siteLevel); resetSiteLevel(!siteLevel); }} label={siteLevel ? 'YES' : "NO"} />
+                <CommonSwitch checked={siteLevel} className={`${style.flexLeft} ${style.switchFontStyle}`} onChange={() => { setSiteLevel(!siteLevel); siteTitleReset(); }} label={siteLevel ? 'YES' : "NO"} />
               </div>
               {siteLevel && (
                 <div className={`${style.siteLevelBoxStyle}`}>
@@ -593,7 +630,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
             <CommonLabel value='Department Level Responsibility*' />
             <div>
               <div className={style.flexLeft}>
-                <CommonSwitch checked={departmentLevel} className={`${style.flexLeft} ${style.switchFontStyle}`} onChange={() => { setDepartmentLevel(!departmentLevel); resetDeptvalue(!departmentLevel) }} label={departmentLevel ? 'YES' : "NO"} />
+                <CommonSwitch checked={departmentLevel} className={`${style.flexLeft} ${style.switchFontStyle}`} onChange={() => { setDepartmentLevel(!departmentLevel); deptTitleReset(); }} label={departmentLevel ? 'YES' : "NO"} />
               </div>
               <div>
                 {departmentLevel && (
@@ -648,9 +685,10 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
               <CommonSelectField onChange={(e) => handleRoles(e.target.value)}
                 className={style.fullWidth}
                 firstOptionLabel={'Select Role...'} firstOptionValue={''}
-                valueList={roles?.map(data => data?.roleName)}
-                labelList={roles?.map(data => data?.roleName)}
-                disabledList={roles?.map(data => false)} />
+                valueList={users?.filter(data => data?.roles?.map(role => role?.roleName)?.includes('Aggregator'))?.length === 0 ? roles?.map(data => data?.roleName) : roles?.filter(data => data?.roleName !== 'Aggregator')?.map(data => data?.roleName)}
+                labelList={users?.filter(data => data?.roles?.map(role => role?.roleName)?.includes('Aggregator'))?.length === 0 ? roles?.map(data => data?.roleName) : roles?.filter(data => data?.roleName !== 'Aggregator')?.map(data => data?.roleName)}
+                disabledList={users?.filter(data => data?.roles?.map(role => role?.roleName)?.includes('Aggregator'))?.length === 0 ? roles?.map(data => false) : roles?.filter(data => data?.roleName !== 'Aggregator')?.map(data => false)}
+              />
               <div className={`${style.marginTop20} ${style.marginLeft20}`}>{rolesTags}</div>
             </div>
           </div>

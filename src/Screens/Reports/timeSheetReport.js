@@ -64,7 +64,8 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                 (reportType === 'contractPerformance') ?
                     'CONTRACT_PERFORMANCE' :
                     (reportType === 'payments') ?
-                        'PAYMENT' : '';
+                        'PAYMENT' :
+                        (reportType === 'timesheets') ? 'TIMESHEETS' : '';
 
     useEffect(() => {
         sessionStorage.removeItem('reportFilter');
@@ -82,6 +83,8 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
             return 'activitiesOrServices';
         } else if (value === 'ADDON_ACTIVITES_SERVICES_LOG_SUMMARY') {
             return 'addOnActivities';
+        } else if (value === 'PAYMENT_PROCESSING_SUMMARY') {
+            return 'paymentsProcessingSummary';
         } else {
             return '';
         }
@@ -224,7 +227,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                             <Run />
                                         </Link>
                                     </div>
-                                    {/* <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
                                         <div className={style.tableDataReportsFontStyle}>2</div>
                                         <Link to="/reportTypeOverview/addOnActivities" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Add On Activities/ Services Requests Status Summary</div></Link>
                                         <div className={style.tableDataReportsFontStyle}>Add On Activities/ Services Requests Status Summary</div>
@@ -233,7 +236,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                         <div className={style.tableDataReportsFontStyle}>Feb 11 2022</div>
                                         <Run link={"/reportTypeOverview/addOnActivities"} />
                                     </div>
-                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                    {/* <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
                                         <div className={style.tableDataReportsFontStyle}>3</div>
                                         <Link to="/reportTypeOverview/scheduledActivity" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Scheduled Activity/ Services - forcasted to actual</div></Link>
                                         <div className={style.tableDataReportsFontStyle}>Scheduled Activity/ Services - forcasted to actual</div>
@@ -331,6 +334,17 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                             <Run />
                                         </Link>
                                     </div>
+                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                        <div className={style.tableDataReportsFontStyle}>2</div>
+                                        <Link to="/reportTypeOverview/compensationCostAnalysis" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Compensation Cost Analysis</div></Link>
+                                        <div className={style.tableDataReportsFontStyle}>This report provides a comprehensive summary of statistics with regards to status of payments being made to contracted service providers</div>
+                                        <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'MMM d yyyy, H:m')} </div>
+                                        <div className={style.tableDataReportsFontStyle}>{currentUserDetails?.fullName}</div>
+                                        <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'MMM d yyyy')} </div>
+                                        <Link to={"/reportTypeOverview/compensationCostAnalysis"} className={style.linkStyle}>
+                                            <Run />
+                                        </Link>
+                                    </div>
                                     {/* <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
                                         <div className={style.tableDataReportsFontStyle}>2</div>
                                         <Link to="/reportTypeOverview/addOnActivities" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Time and Payment Log for Contracted Services</div></Link>
@@ -344,6 +358,42 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                             <Run />
                                         </Link>
                                     </div> */}
+                                </div>
+                            ) : reportType === 'timesheets' ? (
+                                <div className={style.scrollStyle}>
+                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                        <div className={style.tableDataReportsFontStyle}>1</div>
+                                        <Link to="/reportTypeOverview/timesheetProcessingSummary" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Timesheet Processing Summary</div></Link>
+                                        <div className={style.tableDataReportsFontStyle}>Timesheet Processing Summary</div>
+                                        <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'MMM d yyyy, H:m')} </div>
+                                        <div className={style.tableDataReportsFontStyle}>{currentUserDetails?.fullName}</div>
+                                        <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'MMM d yyyy')} </div>
+                                        <Link to={"/reportTypeOverview/timesheetProcessingSummary"} className={style.linkStyle}>
+                                            <Run />
+                                        </Link>
+                                    </div>
+                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                        <div className={style.tableDataReportsFontStyle}>2</div>
+                                        <Link to="/reportTypeOverview/listingOfTimesheetsNotPaid" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Listing Of Timesheets Not Paid</div></Link>
+                                        <div className={style.tableDataReportsFontStyle}>Listing Of Timesheets Not Paid</div>
+                                        <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'MMM d yyyy, H:m')} </div>
+                                        <div className={style.tableDataReportsFontStyle}>{currentUserDetails?.fullName}</div>
+                                        <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'MMM d yyyy')} </div>
+                                        <Link to={"/reportTypeOverview/listingOfTimesheetsNotPaid"} className={style.linkStyle}>
+                                            <Run />
+                                        </Link>
+                                    </div>
+                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                        <div className={style.tableDataReportsFontStyle}>3</div>
+                                        <Link to="/reportTypeOverview/submittedTimesheetsPaymentStatus" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Submitted Timesheets Payment Status</div></Link>
+                                        <div className={style.tableDataReportsFontStyle}>Submitted Timesheets Payment Status</div>
+                                        <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'MMM d yyyy, H:m')} </div>
+                                        <div className={style.tableDataReportsFontStyle}>{currentUserDetails?.fullName}</div>
+                                        <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'MMM d yyyy')} </div>
+                                        <Link to={"/reportTypeOverview/submittedTimesheetsPaymentStatus"} className={style.linkStyle}>
+                                            <Run />
+                                        </Link>
+                                    </div>
                                 </div>
                             ) : (
                                 <div className={style.scrollStyle}>

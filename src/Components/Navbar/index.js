@@ -14,10 +14,11 @@ import LogoutIcon from "./../../images/logoutIcon.png";
 import Cookies from "universal-cookie";
 import Popover from "@mui/material/Popover";
 import { isSuperAdminAccess } from "../../Screens/dataSaver";
-import { TenantID, GET } from "./../../Screens/dataSaver";
+import { TenantID, GET, POST, PUT } from "./../../Screens/dataSaver";
 import { ErrorToaster } from "./../../utils/toaster";
 import html2canvas from "html2canvas";
 import jwt from "jwt-decode";
+import axios from "axios";
 
 import style from "./index.module.scss";
 
@@ -163,28 +164,71 @@ const Navbar = () => {
 
   const idHelp = open ? "mouse-over-popover" : undefined;
 
-  const logout = () => {
+  const logoutURL = () => {
+    window.location.href = `http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/logout`;
+  }
+
+  const logout = async () => {
     const cookies = new Cookies();
     let token = cookies.get("user");
     let entityId = cookies.get("entityId");
-    const requestOptions = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-tenantID": entityId,
-        Authorization: `Bearer ${token}`,
-      },
-    };
-    fetch(
-      "https://rest.mytimesmart.com/user-management-service/auth/logout",
-      requestOptions
-    )
-      .then((response) => {
-        cookies.remove("user");
-        cookies.remove("entityId");
-        window.location.href = "/";
+    // await fetch(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/logout`, {
+    //   // redirect: 'manual',
+    //   method: 'PUT',
+    //   body: JSON.stringify({}),
+    // }).then(response => {
+    //   console.log('response', response.headers, response.status, response);
+    //   const logouturi = response.headers.get('location') || '';
+    //   console.log('logouturi', logouturi)
+    //   window.location.href = logouturi;
+    // })
+
+    // let data = JSON.stringify({});
+    // await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/logout`, {
+    //   method: 'PUT',
+    //   data,
+    // }).then(response => {
+    //   const logouturi = response.headers.get('location') || '';
+    //   cookies.remove("user", { path: '/' });
+    //   cookies.remove("entityId", { path: '/' });
+    //   if (logouturi) {
+    //     window.location.href = logouturi;
+    //   }
+    // })
+
+
+
+
+    // window.location.href = respose.headers?.get('Location')
+    // axios.post(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/logout`, {
+    //   // Add parameters here
+    //   // transformRequest: (data, headers) => {
+    //   //   delete headers.common['X-XSRF-TOKEN'];
+    //   //   return data;
+    //   // }
+    // })
+    //   .then((response) => {
+    //     const logouturi = response.headers.get('location') || '';
+    //     cookies.remove("user", { path: '/' });
+    //     cookies.remove("entityId", { path: '/' });
+    //     if (logouturi) {
+    //       window.location.href = logouturi;
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   })
+    await PUT(`logout`, null)
+      .then(response => {
+        const logouturi = response.headers['location'] || '';
+        cookies.remove("user", { path: '/' });
+        cookies.remove("entityId", { path: '/' });
+        if (logouturi) {
+          window.location.href = logouturi;
+        }
+      }).catch(error => {
+        ErrorToaster('Unexpected Error');
       })
-      .catch((data) => ErrorToaster("Unexpected Error Occured"));
   };
 
   useEffect(() => {
@@ -227,7 +271,7 @@ const Navbar = () => {
   let homeLink = currentUserRoles?.includes("Contract Manager")
     ? "/contracts"
     : isFlutterRoles?.length !== 0
-      ? `/dashboard/#/dashboardRoute`
+      ? `/home/#/dashboardRoute`
       : currentUserRoles?.includes("Super Sys Admin")
         ? "/partnerPortal"
         : currentUserRoles?.includes("Entity Sys Admin")
@@ -245,7 +289,7 @@ const Navbar = () => {
             : "/entitySitePortal";
     console.log(homeLink);
     if (homeLink === "/") {
-      window.location.href = "/dashboard/#/dashboardRoute";
+      window.location.href = "/home/#/dashboardRoute";
     } else {
       navigate(homeLink);
     }
@@ -320,18 +364,22 @@ const Navbar = () => {
                       </div>
                     </Link>
                   )}
-                  {/* <Link to={'/reports/timesheets'} className={style.noFontStyle}>
-                                    <div className={style.options}>Timesheets</div>
-                                </Link>
-                                <Link to={'/reports/reviewsAndApprovals'} className={style.noFontStyle}>
+                  {isTimesheetsAvailable && (
+                    <Link to={'/reports/timesheets'} className={style.noFontStyle}>
+                      <div className={style.options}>Timesheets</div>
+                    </Link>
+                  )}
+                  {/* <Link to={'/reports/reviewsAndApprovals'} className={style.noFontStyle}>
                                     <div className={style.options}>Reviews & Approvals</div>
                                 </Link>
                                 <Link to={'/reports/taskManagement'} className={style.noFontStyle}>
                                     <div className={style.options}>Task Management</div>
                                 </Link> */}
-                  <Link to={"/reports/payments"} className={style.noFontStyle}>
-                    <div className={style.options}>Payments</div>
-                  </Link>
+                  {isPaymentsAvailable && (
+                    <Link to={"/reports/payments"} className={style.noFontStyle}>
+                      <div className={style.options}>Payments</div>
+                    </Link>
+                  )}
                   {isContractManagementAvailable && (
                     <Link
                       to={"/reports/contractManagement"}
@@ -400,7 +448,7 @@ const Navbar = () => {
                       </Link>
                     )}
                     <Link
-                      to={isSuperAdminAccess ? "/partnerPortal" : "/welcome"}
+                      to={isSuperAdminAccess ? "/partnerPortal" : `/entitySetup/${TenantID}/appSubscription`}
                       className={style.noFontStyle}
                     >
                       <div className={style.options}>ENTITY MANAGEMENT</div>
@@ -442,7 +490,7 @@ const Navbar = () => {
                   <Link to={"/help"} className={style.noFontStyle}>
                     <div className={style.options}>OPEN FEEDBACK TICKET</div>
                   </Link>
-                  <div className={style.options} onClick={handleScreenshot}>
+                  <div className={`${style.options} ${style.cursorPointer}`} onClick={handleScreenshot}>
                     SUPPORT PORTAL
                   </div>
                 </div>
@@ -457,9 +505,11 @@ const Navbar = () => {
                         <img src={PrintIcon} alt="print" className={style.icons} />
                     </>
                 )} */}
-          {/* <img src={NotificationsIcon} alt="print" className={style.icons} />
-                <img src={RedBackground} alt="print" className={style.notificationIcon} />
-                <img src={NotificationCount} alt="print" className={style.notificationCount} /> */}
+          {/* <img src={File} alt="print" className={style.icons} />
+          <img src={PrintIcon} alt="print" className={style.icons} />
+          <img src={NotificationsIcon} alt="print" className={style.icons} />
+          <img src={RedBackground} alt="print" className={style.notificationIcon} />
+          <img src={NotificationCount} alt="print" className={style.notificationCount} /> */}
           <div className={`${style.logoutStyle} ${style.cursorPointer}`} onClick={logout}>
             <p>Logout</p>
           </div>

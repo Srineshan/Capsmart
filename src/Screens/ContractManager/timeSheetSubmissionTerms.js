@@ -12,6 +12,7 @@ import SiteDepartmentField from '../../Components/ReusableSmallComponents/siteDe
 import Typography from '@mui/material/Typography';
 import { POST, GET, PUT, TenantID } from './../dataSaver';
 import ReviewerApproverField from './reviewerApproverField';
+import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import CommonInputField from '../../Components/CommonFields/CommonInputField';
 import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
@@ -22,7 +23,7 @@ import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
 const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, isMultiSiteEntity, getShowAlert, isEditable, getTabDataStatus }) => {
   const [timeSheetCount, setTimeSheetCount] = useState(0);
-  const [absence, setAbsence] = useState({ id: '', reviewer: '', approver: '' });
+  const [absence, setAbsence] = useState({ id: '', reviewer: '', reviewerTitle: {}, approver: '', approverTitle: {} });
   const [timesheetWorkFlow, setTimeSheetWorkFlow] = useState([]);
   const [showSelectBox, setShowSelectBox] = useState(false);
   const [selectBoxIndex, setSelectBoxIndex] = useState(-1);
@@ -43,6 +44,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
   const [timesheetSubmissionTerms, setTimesheetSubmissionTerms] = useState({});
   const [timesheetFields, setTimesheetFields] = useState([]);
   const [contractedServices, setContractedServices] = useState([]);
+  const [maxPlannedAbsence, setMaxPlannedAbsence] = useState({ days: 0, includingHoliday: false, notApplicable: false })
   const [activityTypes, setActivityTypes] = useState([]);
   const [selectedItems, setSelectedItems] = useState();
   const limit = 3;
@@ -57,6 +59,11 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
   const [paymentSource, setPaymentSource] = useState(new Array(timeSheetCount || 0));
   const [contractName, setContractName] = useState('');
   const [continueLoading, setContinueLoading] = useState(false);
+  const [paymentSourceState, setPaymentSourceState] = useState([]);
+  const [addApprover, setAddApprover] = useState(false);
+  const [workFlowId, setWorkFlowId] = useState('');
+  const [paymentAndCompensation, setPaymentAndCompensation] = useState();
+  const [isNameEdited, setIsNameEdited] = useState(false);
 
   const menuRef = useRef(null);
   useOptionsHide(menuRef);
@@ -78,11 +85,15 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     getTimeSheetSubmissionTerms();
     getTimesheetFields();
     getContractSites();
-    getUserData();
     getTimeSheetWorkFlow();
     getAbsenceRequestWorkFlow();
+    getPaymentAndCompensation()
     setPaymentSource(new Array(timeSheetCount || 0));
   }, [])
+
+  useEffect(() => {
+    getUserData();
+  }, [sites])
 
   useEffect(() => {
     getTimesheetFields();
@@ -94,26 +105,16 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
   useEffect(() => {
     formatActivities();
     getTimesheetFields();
-  }, [contractedActivityTags?.length, timeSheetLabelData, contractedServices, showSelectBox, sites])
+  }, [contractedActivityTags?.length, timeSheetLabelData, contractedServices, showSelectBox, sites, timesheetSubmissionTerms])
 
   useEffect(() => {
     getAbsenceRequestWorkFlow();
   }, [timesheetWorkFlow])
 
-  // useEffect(() => {
-  //   if (selectedIndex !== undefined) {
-  //     let temp = paymentSource;
-  //     temp[selectedIndex] = selectedSites;
-  //     setPaymentSource(temp);
-  //     formatActivities();
-  //   }
-  // }, [selectedSites])
-
-  // useEffect(() => {
-
-  // }, [paymentSource])
-
-  console.log('paymentSource', paymentSource);
+  const getPaymentAndCompensation = async () => {
+    const { data: paymentAndCompensation } = await GET(`contract-managment-service/contracts/${contractId}/paymentAndCompensation`);
+    setPaymentAndCompensation(paymentAndCompensation);
+  };
 
   const getTimeSheetWorkFlow = async () => {
     const { data: timesheetWorkFlow } = await GET('timesheet-management-service/workflow');
@@ -123,18 +124,30 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
   }
 
   const getAbsenceRequestWorkFlow = async () => {
-    const { data: absenceWorkFlow } = await GET(`contract-managment-service/contracts/${contractId}/absenceRequestWorkFlow`);
-    if (absenceWorkFlow) {
-      let workflowData = timesheetWorkFlow?.filter(data => data?.id === absenceWorkFlow?.workFlow?.id)?.map(data => data?.workFlowMap?.workflow)[0] || {};
-      let workFlowValues = Object.values(workflowData);
-      let reviewer = workFlowValues?.[0]?.workFlowUser?.id;
-      let approver = workFlowValues?.[1]?.workFlowUser?.id;
-      setAbsence({ ...absence, id: absenceWorkFlow?.workFlow?.id, reviewer: reviewer, approver: approver });
+    try {
+      const { data: absenceWorkFlow } = await GET(`contract-managment-service/contracts/${contractId}/absenceRequestWorkFlow`);
+      if (absenceWorkFlow) {
+        let workflowData = timesheetWorkFlow?.filter(data => data?.id === absenceWorkFlow?.workFlow?.id)?.map(data => data?.workFlowMap?.workflow)[0] || {};
+        let workFlowValues = Object.values(workflowData);
+        setAddApprover(absenceWorkFlow?.workFlowRequired);
+        let reviewer = workFlowValues?.[0]?.workFlowUser?.id;
+        let approver = workFlowValues?.[1]?.workFlowUser?.id;
+        setAbsence({ ...absence, id: absenceWorkFlow?.workFlow?.id, reviewer: reviewer, reviewerTitle: workFlowValues?.[0]?.workFlowUser?.title, approver: approver, approverTitle: workFlowValues?.[1]?.workFlowUser?.title });
+      }
+    } catch (e) {
+      console.log('error', e);
     }
   }
 
   const getUserData = async () => {
-    const { data: userList } = await GET(`contract-managment-service/contracts/workFlowUser`)
+    let siteId = sites?.map(data => data?.id);
+    let deptId = [];
+    sites?.map(data => data?.departmentList?.departments?.map(dept => {
+      deptId.push(`${data?.id}#${dept?.id}`);
+    }))
+    let encodedDept = encodeURIComponent(deptId);
+    let uri = `user-management-service/user/workFlowUser?sites=${siteId}&sitedepartments=${encodedDept}&contractIdToIgnore=${contractId}`;
+    const { data: userList } = await GET(uri);
     if (userList) {
       setUsers(userList);
     }
@@ -258,8 +271,12 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     getTimesheetFields();
   }
 
-  const handleContractedActivityTagsRemove = (index) => {
-    setContractedActivityTags(contractedActivityTags?.filter((data, indexValue) => index !== indexValue)?.map(data => data));
+  const handleContractedActivityTagsRemove = (index, dataIndex) => {
+    let temp = contractedActivityTags;
+    let selectedIndexValues = temp?.filter((data, indexValue) => dataIndex === data?.index)?.map(data => data);
+    let afterRemoving = selectedIndexValues?.filter((data, indexValue) => index !== indexValue)?.map(data => data)
+    afterRemoving = afterRemoving.concat(contractedActivityTags?.filter((data, indexValue) => dataIndex !== data?.index)?.map(data => data));
+    setContractedActivityTags(afterRemoving);
   }
 
   const isGroupChecked = (type) => {
@@ -280,16 +297,16 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     getTimesheetFields();
   }
 
+
   const getTimesheetFields = () => {
     let temp = [];
     for (let i = 0; i < timeSheetCount; i++) {
-      console.log('data check', timeSheetLabelData?.[i]?.value);
       temp[i] = (
         <div key={`${i}temp${timeSheetCount + 1}`} className={`${timeSheetCount > 1 && style.contractedBorderStyle} ${style.marginTop20}`}>
           <div className={`${style.extentionGrid}`}>
             <CommonLabel value={`Timesheets label ${i + 1} for processing`} />
             <CommonInputField className={style.fullWidth} value={timeSheetLabelData?.[i]?.label}
-              onChange={(e) => handleTimesheetValue(i, 'label', e.target.value)}
+              onChange={(e) => { handleTimesheetValue(i, 'label', e.target.value); setIsNameEdited(true); }}
             />
           </div>
           {timeSheetCount > 1 && (
@@ -320,23 +337,29 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
                 </div>
                 {(showSelectBox && i === selectBoxIndex) && (
                   <div className={style.selectOptionsBox} ref={menuRef}>
-                    <div className={`${style.selectOptionsMenuStyle}`}>
+                    {/* <div className={`${style.selectOptionsMenuStyle}`}>
                       <CommonCheckBox disabled={contractedServices?.length === contractedActivityTags?.length} checked={contractedServices?.length === contractedActivityTags?.length} onChange={() => handleContractedActivityTagsAdd('all', 'all', i)} label="All Activities" />
-                    </div>
+                    </div> */}
                     {activityTypes?.map(data => (
                       <>
-                        <div className={`${style.selectOptionsMenuStyle} ${style.selectedOptionstyle}`}>
-                          <CommonCheckBox onChange={() => handleContractedActivityTagsAdd(data, 'all', i)} disabled={isGroupChecked(data)} checked={isGroupChecked(data)} label={data} />
-                        </div>
                         {
-                          contractedServices?.filter(service => service?.activityType?.activityType === data)?.map(service => (
-                            <div className={`${style.selectOptionsMenuStyle} ${style.marginLeft30}`}>
-                              <FormGroup>
-                                <FormControlLabel control={<Checkbox onChange={() => handleContractedActivityTagsAdd(data, service?.performingActivity?.activity, i)} disabled={contractedActivityTags?.map(data => data?.activity)?.includes(service?.performingActivity?.activity)} checked={contractedActivityTags?.map(data => data?.activity)?.includes(service?.performingActivity?.activity)} />} label={<Typography variant="body2" className={style.disabledView}>{service?.performingActivity?.activity}</Typography>} />
-                              </FormGroup>
+                          !isGroupChecked(data) &&
+                          <div>
+                            <div className={`${style.selectOptionsMenuStyle} ${style.selectedOptionstyle}`}>
+                              <CommonCheckBox onChange={() => handleContractedActivityTagsAdd(data, 'all', i)} disabled={isGroupChecked(data)} checked={isGroupChecked(data)} label={data} />
                             </div>
-                          ))
+                            {
+                              contractedServices?.filter(service => service?.activityType?.activityType === data)?.map(service => (
+                                <div className={`${style.selectOptionsMenuStyle} ${style.marginLeft30}`}>
+                                  <FormGroup>
+                                    <FormControlLabel control={<Checkbox onChange={() => handleContractedActivityTagsAdd(data, service?.performingActivity?.activity, i)} disabled={contractedActivityTags?.map(data => data?.activity)?.includes(service?.performingActivity?.activity)} checked={contractedActivityTags?.map(data => data?.activity)?.includes(service?.performingActivity?.activity)} />} label={<Typography variant="body2" className={style.disabledView}>{service?.performingActivity?.activity}</Typography>} />
+                                  </FormGroup>
+                                </div>
+                              ))
+                            }
+                          </div>
                         }
+
                       </>
                     ))
                     }
@@ -348,7 +371,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
                       contractedActivityTags?.filter((data, index) => data?.index === i)?.map((data, index) => (
                         <div className={`${style.deptCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
                           <div className={`${style.siteDeptTextStyle} ${style.marginLeft10}`}>{data?.type}-{data?.activity}</div>
-                          <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => handleContractedActivityTagsRemove(index)} />
+                          <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => handleContractedActivityTagsRemove(index, data?.index)} />
                         </div>
                       ))
                     }
@@ -392,17 +415,18 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
         data?.activities?.map(activityData => {
           temp.push({ index: index, type: activityData?.activityType?.activityType, activity: activityData?.performingActivity?.activity });
         })
-        paymentSourceTemp?.push(data?.paymentSource?.site !== null ? data?.paymentSource?.site : undefined);
+        paymentSourceTemp?.push(data?.paymentSource?.site);
+        setPaymentSourceState(paymentSourceTemp)
+        console.log(data?.paymentSource?.site, 'payment', paymentSourceTemp);
       });
       setTimeSheetLabelData(labelTemp);
       setContractedActivityTags(temp);
       setPaymentSource(paymentSourceTemp);
     }
-    getTimesheetFields();
   };
 
   const getSelectedUserDetails = (id) => {
-    let user = users?.filter(user => user?.userId === id)?.map(data => data)[0];
+    let user = users?.filter(user => user?.id === id)?.map(data => data)[0];
     return user;
   }
 
@@ -417,17 +441,11 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
           "1": {
             "workFlowUser": {
               "id": reviewer,
-              "title": {
-                "title": getSelectedUserDetails(reviewer)?.title?.title || '',
-                "id": null,
-              },
+              "title": { id: absence?.reviewerTitle?.id, title: absence?.reviewerTitle?.title },
               "name": {
                 "name": getSelectedUserDetails(reviewer)?.name?.firstName || '',
               },
-              "suffix": {
-                "id": getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
-                "suffix": getSelectedUserDetails(reviewer)?.name?.suffix?.suffix || '',
-              }
+              "suffix": getSelectedUserDetails(reviewer)?.name?.suffix
             },
             "workFlowStatus": {
               "status": "APPROVED"
@@ -440,14 +458,21 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
   }
 
   const updateWorkflow = async (workflowId, workFlowName, type) => {
-    let data = {
+    let workFlowValue = {
       "workFlow": {
         "id": workflowId,
         "workFlowName": {
           "name": workFlowName,
         }
-      }
+      },
+      "workFlowRequired": addApprover,
+    };
+    let workFlowNull = {
+      "workFlow": null,
+      "workFlowRequired": addApprover,
     }
+    let workflow = addApprover ? workFlowValue : workFlowNull;
+    let data = workflow;
     if (type === 'AddOn') {
       await PUT(`contract-managment-service/contracts/${contractId}/addOnRequestWorkFlow`, data)
         .then(response => {
@@ -471,26 +496,36 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     getTimeSheetWorkFlow();
   }
 
+  console.log('timesheet', absence);
+
 
   const updateTimeSheetWorkflow = async (data, workFlowName, type) => {
     let id = absence?.id;
-    if (id === '') {
-      await POST(`timesheet-management-service/workflow`, JSON.stringify(data))
-        .then(response => {
-          updateWorkflow(response?.data, workFlowName, type);
-        })
-        .catch(error => {
-          ErrorToaster('Unexpected Error');
-        })
-    }
-    else {
-      await PUT(`timesheet-management-service/workflow/${id}`, data)
-        .then(response => {
-          console.log('Success!');
-        })
-        .catch(error => {
-          ErrorToaster('Unexpected Error');
-        })
+    if (addApprover) {
+      if (id === '') {
+        console.log('inside post id is empty')
+        await POST(`timesheet-management-service/workflow`, JSON.stringify(data))
+          .then(response => {
+            updateWorkflow(response?.data, workFlowName, type);
+          })
+          .catch(error => {
+            ErrorToaster('Unexpected Error');
+          })
+      }
+      else {
+        console.log('inside put id has value')
+        await PUT(`timesheet-management-service/workflow/${id}`, data)
+          .then(response => {
+            updateWorkflow(absence.id, workFlowName, type);
+            console.log('Success!');
+          })
+          .catch(error => {
+            ErrorToaster('Unexpected Error');
+          })
+      }
+    } else {
+      console.log('inside else')
+      updateWorkflow(absence.id, workFlowName, type);
     }
     getTabDataStatus();
     refresh();
@@ -500,10 +535,10 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
 
   const handleContinue = async (buttonType) => {
     setContinueLoading(true);
-    if (absence?.reviewer === null || absence?.reviewer === '0') {
-      ErrorToaster('Select Approver for Absence Request');
-      return;
-    }
+    // if (absence?.reviewer === null || absence?.reviewer === '0') {
+    //   ErrorToaster('Select Approver for Absence Request');
+    //   return;
+    // }
     let absenceData = handleTimeSheetWorkFlow(`Absence-${contractName}`, absence.reviewer, absence.approver, 'requests');
     await updateTimeSheetWorkflow(absenceData, `Absence-${contractName}`, 'Absence');
 
@@ -522,6 +557,11 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
       },
       "maximumAbsenceAllowed": {
         "days": maxUnplannedAbsence
+      },
+      "maxPlannedAbsence": {
+        "days": maxPlannedAbsence?.days,
+        "holidaysIncluded": maxPlannedAbsence?.includingHoliday,
+        "notApplicable": maxPlannedAbsence?.notApplicable,
       },
       "invoiceProcessing": {
         "days": invoiceProcessingDay,
@@ -545,6 +585,22 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     else {
       ErrorToaster('Unexpected Error');
     }
+    if (isNameEdited && paymentAndCompensation.timesheetPayments?.length) {
+      let data = paymentAndCompensation;
+      data.timesheetPayments?.map((payment, index) => {
+        payment.timesheetLabel = timesheetValues?.[index].timesheetLabel;
+      })
+
+      console.log('payments data', data);
+
+      const response = await PUT(`contract-managment-service/contracts/${contractId}/paymentAndCompensation`, JSON.stringify(data));
+      if (response) {
+        console.log('Timesheet name updated')
+      }
+      else {
+        console.log('Unexpected Error')
+      }
+    }
     setContinueLoading(false);
     if (buttonType !== 'Continue') {
       getShowAlert(true);
@@ -562,6 +618,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     setContractedTimeCommitmentFrequency(timesheetSubmissionTerms?.contractorBusinessContact?.frequency);
     setPlannedAbsence(timesheetSubmissionTerms?.plannedAbsenceLimit?.days);
     setMaxUnplannedAbsence(timesheetSubmissionTerms?.maximumAbsenceAllowed?.days);
+    setMaxPlannedAbsence({ days: timesheetSubmissionTerms?.maxPlannedAbsence?.days, includingHoliday: timesheetSubmissionTerms?.maxPlannedAbsence?.holidaysIncluded, notApplicable: timesheetSubmissionTerms?.maxPlannedAbsence?.notApplicable });
     setInvoiceProcessingDay(timesheetSubmissionTerms?.invoiceProcessing?.days);
     setInvoiceProcessingDayThreshold(timesheetSubmissionTerms?.invoiceProcessing?.threshold);
     setInvoiceProcessingDayGoal(timesheetSubmissionTerms?.invoiceProcessing?.goal);
@@ -570,13 +627,15 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     setTimesheetValues(timesheetSubmissionTerms?.timesheetActivitiesPeriods);
   }, [timesheetSubmissionTerms]);
 
+  console.log(Array.isArray(paymentSource?.[0]), paymentSource?.[0], new Array(1).fill(paymentSource?.[0]))
+
 
   return (
     <div className={style.cloneBlockStyle}>
       <div className={`${style.newContractFromCloneBoxStyle}`}>
         <div className={`${style.extentionGrid}`}>
           <CommonLabel value='Number of Timesheets to Submit for Services Performed' />
-          <CommonInputField className={style.fourFieldWidth} type="number" min="0" value={timeSheetCount} onChange={(e) => setTimeSheetCount(parseInt(e.target.value))} />
+          <CommonInputField className={style.fourFieldWidth} type="number" min="0" value={timeSheetCount} onChange={(e) => e.target.value <= 5 && setTimeSheetCount(parseInt(e.target.value))} />
         </div>
         <div>
           {timesheetFields}
@@ -594,7 +653,18 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
           <div className={style.purpleTitle}>
             PLANNED ABSENCE REQUESTS
           </div>
-          <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { setAbsence({ ...absence, reviewer: value }) }} value={absence?.reviewer} />
+          <div className={`${style.addManagerGrid}  ${style.marginTop20}`}>
+            <CommonLabel value='Only Allow Upon Request / Notification Approval' />
+            <CommonSwitch onChange={() => {
+              setAddApprover(!addApprover);
+              setAbsence({ ...absence, reviewer: '', reviewerTitle: '', id: '' })
+            }}
+              checked={addApprover}
+            />
+          </div>
+          {addApprover &&
+            <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value, title) => { setAbsence({ ...absence, reviewer: value, reviewerTitle: title }) }} value={absence?.reviewer} approverReviewer='approver' />
+          }
         </div>
 
         {/* <div className={`${style.welcomeBorder} ${style.marginTop20}`}></div> */}
@@ -611,6 +681,21 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
           <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
             <EditableText value={maxUnplannedAbsence} placeholder="0" type='number' onChange={(e) => setMaxUnplannedAbsence(e.slice(0, limit))} className={style.editableTextStyleDays} />
             <div className={style.textElementWithoutBackgroundDays}>Days</div>
+          </div>
+        </div>
+        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+          <CommonLabel value='Maximum Absence Period*' />
+          <div className={style.displayInRow}>
+            <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
+              <EditableText value={maxPlannedAbsence?.days} placeholder="0" type='number' onChange={(e) => setMaxPlannedAbsence({ ...maxPlannedAbsence, days: e.slice(0, limit) })} className={style.editableTextStyleDays} disabled={maxPlannedAbsence?.notApplicable} />
+              <div className={style.textElementWithoutBackgroundDays}>Days</div>
+            </div>
+            <div className={style.marginLeft20}>
+              <CommonCheckBox value="NA" disabled={maxPlannedAbsence?.notApplicable} checked={maxPlannedAbsence?.includingHoliday} onChange={(e) => setMaxPlannedAbsence({ ...maxPlannedAbsence, includingHoliday: e.target.checked })} label="Including Holidays" />
+            </div>
+            <div className={style.marginLeft20}>
+              <CommonCheckBox value="NA" checked={maxPlannedAbsence?.notApplicable} onChange={(e) => setMaxPlannedAbsence({ ...maxPlannedAbsence, notApplicable: e.target.checked, includingHoliday: false, days: 0 })} label="NA" />
+            </div>
           </div>
         </div>
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>

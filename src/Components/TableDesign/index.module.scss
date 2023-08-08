@@ -72,6 +72,13 @@
     background-color: #00C07F;
 }
 
+.purpleDotStyle {
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    background-color: #948BEA;
+}
+
 .yellowDotStyle {
     height: 12px;
     width: 12px;
@@ -92,6 +99,8 @@
     color: #52575D;
     text-transform: uppercase;
     text-align: left;
+    word-break: break-word;
+    width: auto;
 }
 
 .cursorPointer {
@@ -266,4 +275,12 @@
     height: 20px;
     width: 20px;
     object-fit: contain;
+}
+
+.addStyle {
+    background: #7165E3 0% 0% no-repeat padding-box;
+    box-shadow: 0px 0px 6px #00000029;
+    border-radius: 8px;
+    height: 33px;
+    min-width: 35px;
 }

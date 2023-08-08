@@ -13,15 +13,13 @@ import Warning from "./../../images/warning.png";
 import { GET, DELETE } from "../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import DeleteConfirmation from "../../Components/DeleteConfirmation";
-import format from "date-fns/format";
+import { format } from "date-fns";
+import Navbar from "../../Components/Navbar";
+import LevelTwoHeader from "../../Components/LevelTwoHeader";
+import SideBar from "../../Components/Sidebar";
 
-const DepartmentsByEntityTypes = ({
-  getAddEntityDialog,
-  showAddEntityDialog,
-  isEdit,
-  setIsEdit,
-  sendLastDate,
-}) => {
+const DepartmentsByEntityTypes = () => {
+  const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
   const [allData, setAllData] = useState([]);
   const [clicked, setClicked] = useState(0);
   const [selectedEntity, setSelectedEntity] = useState({});
@@ -31,6 +29,17 @@ const DepartmentsByEntityTypes = ({
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deleteEntityId, setDeleteEntityId] = useState("");
   const [isService, setIsService] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
+  const [lastUpdatedDate, setLastUpdatedDate] = useState("");
+
+  const getAddEntityDialog = (value) => {
+    setShowAddEntityDialog(value);
+  };
+
+  const getIsExpanded = (value) => {
+    setIsExpanded(value);
+  };
 
   const entityAllData = async (industry) => {
     const { data: entities } = await GET(
@@ -56,22 +65,8 @@ const DepartmentsByEntityTypes = ({
       `entity-service/referenceList/master`
     );
 
-    const date = new Date(lastModifiedDate.departments.lastModified);
-
-    sendLastDate(
-      date
-        .toLocaleString("en-US", {
-          timeZone: "America/New_York",
-          month: "short",
-          day: "2-digit",
-          hour: "numeric",
-          minute: "numeric",
-          year: "numeric",
-          timeZoneName: "short",
-          hour12: false,
-        })
-        .toUpperCase()
-    );
+    const date = new Date(lastModifiedDate.departments?.lastModified);
+    setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
   };
 
   const getDepartmentData = async () => {
@@ -143,302 +138,341 @@ const DepartmentsByEntityTypes = ({
 
   return (
     <Fragment>
-      <div className={style.departmentCardColumnsGrid}>
-        <div>
-          {allData?.map((data, index) => {
-            return data.entities.length !== 0 ? (
-              <>
-                <div
-                  className={`${style.healthCareListHeader} ${style.HealthCareListBackground1} ${style.spaceBetween}`}
-                  key={index}
-                  onClick={() => handleToggle(index, data)}
-                >
-                  <img
-                    src={TransparentFolder}
-                    className={`${style.colorFileStyle2} ${style.marginLeft15}`}
-                    alt=""
-                  />
-                  <p className={style.healthCareHeaderTextStyle}>
-                    {data.industry}
-                  </p>
-                  <img
-                    src={ArrowDown}
-                    className={
-                      clicked === index
-                        ? `${style.colorFileStyle2} ${style.ArrowUp} ${style.marginRight}`
-                        : `${style.colorFileStyle2} ${style.marginRight}`
-                    }
-                    alt=""
-                  />
-                </div>
-                <div
-                  className={
-                    clicked === index
-                      ? `${style.listWrapper} ${style.open}`
-                      : `${style.listWrapper}`
-                  }
-                >
-                  {data?.entities?.map((entity) => (
-                    <div
-                      className={
-                        entity?.type === selectedTitle
-                          ? `${style.healthCareListCardStyle}  ${style.HealthCareListBackground2} ${style.marginTop}`
-                          : `${style.healthCareListCardStyle} ${style.marginTop}`
-                      }
-                      onClick={() => {
-                        setSelectedTitle(entity.type);
-                        setIsEdit(false);
-                        setSelectedEntity(entity);
-                      }}
-                    >
-                      <div
-                        className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop}`}
-                      >
-                        <p
-                          className={
-                            entity?.type === selectedTitle
-                              ? style.healthCareHeaderTextStyle7
-                              : style.healthCareLeftCardFontStyle
-                          }
-                        >
-                          {entity.type}
-                        </p>
-                        <p
-                          className={
-                            entity?.type === selectedTitle
-                              ? style.healthCareHeaderTextStyle7
-                              : style.healthCareLeftCardFontStyle
-                          }
-                        >
-                          {entity.departmentData.length}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </>
-            ) : (
-              <></>
-            );
-          })}
-        </div>
+      <Navbar />
 
-        {departmentList?.length === 0 ? (
-          <>
-            <div className={style.emptyCradStyle}>
-              <div className={style.displayInCol}>
-                <div className={style.justifyCenter}>
-                  <img
-                    src={Warning}
-                    alt="warning"
-                    className={style.warningImage}
-                  />
-                </div>
-                <div className={style.warningFontContainer}>
-                  <p className={style.warningFont}>
-                    Departments / Services Area reference list by entity needs
-                    to be created and setup in order to be made available as a
-                    default list for customer accounts that are created.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </>
-        ) : (
-          <div className={style.DepartmentEntityCardStyle}>
-            <div className={style.tableHeaderIndustriesEntity}>
-              <p
-                className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft40}`}
-              >
-                DEPARTMENT / SERVICES AREA
-              </p>
-              <p className={style.tableHeaderIndustriesFontStyle}>
-                {/* CREATED DATE */}
-              </p>
-              <p className={style.tableHeaderIndustriesFontStyle}>
-                LAST UPDATED
-              </p>
-            </div>
-            {
-              <div className={style.healthCareIndustriesHeader}>
-                <img
-                  src={IndustriesEntityFolder}
-                  alt="IndustriesEntityFolder"
-                  className={`${style.colorFileStyle} ${style.marginLeft5}`}
-                />
-                <p className={style.tableHeaderIndustriesFontStyle5}>
-                  {selectedEntity.type}
-                </p>
-              </div>
-            }
-            {departmentList?.map((data, index) => {
-              if (data?.serviceAreas.length !== 0) {
-                return (
-                  <>
-                    <div
-                      className={
-                        index % 2 === 0
-                          ? `${style.departmentTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
-                          : `${style.departmentTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
-                      }
-                    >
-                      <img
-                        src={SemiTransparentFolder}
-                        alt="SemiTransparentFolder"
-                        className={`${style.colorFileStyle} ${style.marginLeft10}`}
-                      />
-                      <p className={style.tableDataFontStyle}>
-                        {data?.departmentName.name}
-                      </p>
-                      <p className={style.tableDataFontStyle}>
-                        {/* {data.createdDate
+      <div className={style.margin20}>
+        <div
+          className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid}`}
+        >
+          <div>
+            <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
+              <div></div>
+            </SideBar>
+          </div>
+
+          <div>
+            <LevelTwoHeader
+              heading={`DEPARTMENTS / SERVICE AREAS BY ENTITY TYPES`}
+              updatedTime={`UPDATED ON ${lastUpdatedDate}`}
+              path={"/Screens/ReferenceList/superAdminDashboard"}
+              callingFrom={"Super Admin"}
+              needHeader={true}
+              getAddEntityDialog={getAddEntityDialog}
+              Title={"ADD DEPARTMENT"}
+            />
+
+            <div className={style.marginTop35}>
+              <div className={style.centreCardStyle}>
+                <div className={style.margin20}>
+                  <div className={style.departmentCardColumnsGrid}>
+                    <div>
+                      {allData?.map((data, index) => {
+                        return data.entities.length !== 0 ? (
+                          <>
+                            <div
+                              className={`${style.healthCareListHeader} ${style.HealthCareListBackground1} ${style.spaceBetween}`}
+                              key={index}
+                              onClick={() => handleToggle(index, data)}
+                            >
+                              <img
+                                src={TransparentFolder}
+                                className={`${style.colorFileStyle2} ${style.marginLeft15}`}
+                                alt=""
+                              />
+                              <p className={style.healthCareHeaderTextStyle}>
+                                {data.industry}
+                              </p>
+                              <img
+                                src={ArrowDown}
+                                className={
+                                  clicked === index
+                                    ? `${style.colorFileStyle2} ${style.ArrowUp} ${style.marginRight}`
+                                    : `${style.colorFileStyle2} ${style.marginRight}`
+                                }
+                                alt=""
+                              />
+                            </div>
+                            <div
+                              className={
+                                clicked === index
+                                  ? `${style.listWrapper} ${style.open}`
+                                  : `${style.listWrapper}`
+                              }
+                            >
+                              {data?.entities?.map((entity) => (
+                                <div
+                                  className={
+                                    entity?.type === selectedTitle
+                                      ? `${style.healthCareListCardStyle}  ${style.HealthCareListBackground2} ${style.marginTop}`
+                                      : `${style.healthCareListCardStyle} ${style.marginTop}`
+                                  }
+                                  onClick={() => {
+                                    setSelectedTitle(entity.type);
+                                    setIsEdit(false);
+                                    setSelectedEntity(entity);
+                                  }}
+                                >
+                                  <div
+                                    className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop}`}
+                                  >
+                                    <p
+                                      className={
+                                        entity?.type === selectedTitle
+                                          ? style.healthCareHeaderTextStyle7
+                                          : style.healthCareLeftCardFontStyle
+                                      }
+                                    >
+                                      {entity.type}
+                                    </p>
+                                    <p
+                                      className={
+                                        entity?.type === selectedTitle
+                                          ? style.healthCareHeaderTextStyle7
+                                          : style.healthCareLeftCardFontStyle
+                                      }
+                                    >
+                                      {entity.departmentData.length}
+                                    </p>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </>
+                        ) : (
+                          <></>
+                        );
+                      })}
+                    </div>
+
+                    {departmentList?.length === 0 ? (
+                      <>
+                        <div className={style.emptyCradStyle}>
+                          <div className={style.displayInCol}>
+                            <div className={style.justifyCenter}>
+                              <img
+                                src={Warning}
+                                alt="warning"
+                                className={style.warningImage}
+                              />
+                            </div>
+                            <div className={style.warningFontContainer}>
+                              <p className={style.warningFont}>
+                                Departments / Services Area reference list by
+                                entity needs to be created and setup in order to
+                                be made available as a default list for customer
+                                accounts that are created.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <div className={style.DepartmentEntityCardStyle}>
+                        <div className={style.tableHeaderDepartment}>
+                          <p
+                            className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft40}`}
+                          >
+                            DEPARTMENT / SERVICES AREA
+                          </p>
+                          <p className={style.tableHeaderIndustriesFontStyle}>
+                            {/* CREATED DATE */}
+                          </p>
+                          <p className={style.tableHeaderIndustriesFontStyle}>
+                            LAST UPDATED
+                          </p>
+                        </div>
+                        {
+                          <div className={style.healthCareIndustriesHeader}>
+                            <img
+                              src={IndustriesEntityFolder}
+                              alt="IndustriesEntityFolder"
+                              className={`${style.colorFileStyle} ${style.marginLeft5}`}
+                            />
+                            <p
+                              className={style.tableHeaderIndustriesFontStyle5}
+                            >
+                              {selectedEntity.type}
+                            </p>
+                          </div>
+                        }
+                        {departmentList?.map((data, index) => {
+                          if (data?.serviceAreas.length !== 0) {
+                            return (
+                              <>
+                                <div
+                                  className={
+                                    index % 2 === 0
+                                      ? `${style.departmentTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
+                                      : `${style.departmentTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
+                                  }
+                                >
+                                  <img
+                                    src={SemiTransparentFolder}
+                                    alt="SemiTransparentFolder"
+                                    className={`${style.colorFileStyle} ${style.marginLeft10}`}
+                                  />
+                                  <p className={style.tableDataFontStyle}>
+                                    {data?.departmentName.name}
+                                  </p>
+                                  <p className={style.tableDataFontStyle}>
+                                    {/* {data.createdDate
                           .split("T")[0]
                           .split("-")
                           .reverse()
                           .join("-")} */}
-                      </p>
-                      <p className={style.tableDataFontStyle}>
-                        {format(
-                          new Date(`${data.lastModifiedDate}`),
-                          "MM-dd-yyyy"
-                        )}
-                      </p>
-                      <img
-                        src={EditHcFolder}
-                        onClick={() => {
-                          getAddEntityDialog(true);
-                          setIsEdit(true);
-                          setIsService(false);
-                          setSelectedDepart(data);
-                        }}
-                        className={style.colorFileStyle}
-                        alt=""
-                      />
-                      <img
-                        src={DeleteHcFolder}
-                        className={style.colorFileStyle}
-                        alt=""
-                        // onClick={() => {
-                        //   deleteHandler(data);
-                        // }}
-                      />
-                    </div>
-                    {data?.serviceAreas.map((service, idx) => {
-                      return (
-                        <div
-                          className={
-                            idx % 2 === 0
-                              ? `${style.departmentTableInnerFolderData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
-                              : `${style.departmentTableInnerFolderData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
-                          }
-                        >
-                          <p></p>
-                          <p className={style.tableDataFontStyle}>
-                            {service?.name}
-                          </p>
-                          <p className={style.tableDataFontStyle}>
-                            {/* {data.createdDate
+                                  </p>
+                                  <p className={style.tableDataFontStyle}>
+                                    {format(
+                                      new Date(`${data.lastModifiedDate}`),
+                                      "MM-dd-yyyy"
+                                    )}
+                                  </p>
+                                  <img
+                                    src={EditHcFolder}
+                                    onClick={() => {
+                                      getAddEntityDialog(true);
+                                      setIsEdit(true);
+                                      setIsService(false);
+                                      setSelectedDepart(data);
+                                    }}
+                                    className={style.colorFileStyle}
+                                    alt=""
+                                  />
+                                  <img
+                                    src={DeleteHcFolder}
+                                    className={style.colorFileStyle}
+                                    alt=""
+                                  // onClick={() => {
+                                  //   deleteHandler(data);
+                                  // }}
+                                  />
+                                </div>
+                                {data?.serviceAreas.map((service, idx) => {
+                                  return (
+                                    <div
+                                      className={
+                                        idx % 2 === 0
+                                          ? `${style.departmentTableInnerFolderData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
+                                          : `${style.departmentTableInnerFolderData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
+                                      }
+                                    >
+                                      <p></p>
+                                      <p className={style.tableDataFontStyle}>
+                                        {service?.name}
+                                      </p>
+                                      <p className={style.tableDataFontStyle}>
+                                        {/* {data.createdDate
                               .split("T")[0]
                               .split("-")
                               .reverse()
                               .join("-")} */}
-                          </p>
-                          <p className={style.tableDataFontStyle}>
-                            {format(
-                              new Date(`${data.lastModifiedDate}`),
-                              "MM-dd-yyyy"
-                            )}
-                          </p>
-                          <img
-                            src={EditHcRow}
-                            className={style.colorFileStyle}
-                            onClick={() => {
-                              setIsEdit(true);
-                              setIsService(true);
-                              getAddEntityDialog(true);
-                              setSelectedDepart(data);
-                            }}
-                            alt=""
-                          />
-                          <img
-                            src={DeleteHcRow}
-                            className={style.colorFileStyle}
-                            alt=""
-                            // onClick={() => {
-                            //   DeleteSecondaryBoardHandler(
-                            //     data?.id,
-                            //     secondary?.name
-                            //   );
-                            // }}
-                          />
-                        </div>
-                      );
-                    })}
-                  </>
-                );
-              } else {
-                return (
-                  <>
-                    <div
-                      className={
-                        index % 2 === 0
-                          ? `${style.departmentTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
-                          : `${style.departmentTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
-                      }
-                    >
-                      <p></p>
-                      <p className={style.tableDataFontStyle}>
-                        {data?.departmentName?.name}
-                      </p>
-                      <p className={style.tableDataFontStyle}>
-                        {/* {data.createdDate
+                                      </p>
+                                      <p className={style.tableDataFontStyle}>
+                                        {format(
+                                          new Date(`${data.lastModifiedDate}`),
+                                          "MM-dd-yyyy"
+                                        )}
+                                      </p>
+                                      <img
+                                        src={EditHcRow}
+                                        className={style.colorFileStyle}
+                                        onClick={() => {
+                                          setIsEdit(true);
+                                          setIsService(true);
+                                          getAddEntityDialog(true);
+                                          setSelectedDepart(data);
+                                        }}
+                                        alt=""
+                                      />
+                                      <img
+                                        src={DeleteHcRow}
+                                        className={style.colorFileStyle}
+                                        alt=""
+                                      // onClick={() => {
+                                      //   DeleteSecondaryBoardHandler(
+                                      //     data?.id,
+                                      //     secondary?.name
+                                      //   );
+                                      // }}
+                                      />
+                                    </div>
+                                  );
+                                })}
+                              </>
+                            );
+                          } else {
+                            return (
+                              <>
+                                <div
+                                  className={
+                                    index % 2 === 0
+                                      ? `${style.departmentTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
+                                      : `${style.departmentTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
+                                  }
+                                >
+                                  <p></p>
+                                  <p className={style.tableDataFontStyle}>
+                                    {data?.departmentName?.name}
+                                  </p>
+                                  <p className={style.tableDataFontStyle}>
+                                    {/* {data.createdDate
                           .split("T")[0]
                           .split("-")
                           .reverse()
                           .join("-")} */}
-                      </p>
-                      <p className={style.tableDataFontStyle}>
-                        {format(
-                          new Date(`${data.lastModifiedDate}`),
-                          "MM-dd-yyyy"
-                        )}
-                      </p>
-                      <img
-                        src={EditHcRow}
-                        className={style.colorFileStyle}
-                        onClick={() => {
-                          setIsEdit(true);
-                          getAddEntityDialog(true);
-                          setSelectedDepart(data);
-                        }}
-                        alt=""
-                      />
-                      <img
-                        src={DeleteHcRow}
-                        className={style.colorFileStyle}
-                        onClick={() => {
-                          deleteHandler(data);
-                        }}
-                        alt=""
-                      />
+                                  </p>
+                                  <p className={style.tableDataFontStyle}>
+                                    {format(
+                                      new Date(`${data.lastModifiedDate}`),
+                                      "MM-dd-yyyy"
+                                    )}
+                                  </p>
+                                  <img
+                                    src={EditHcRow}
+                                    className={style.colorFileStyle}
+                                    onClick={() => {
+                                      setIsEdit(true);
+                                      getAddEntityDialog(true);
+                                      setSelectedDepart(data);
+                                    }}
+                                    alt=""
+                                  />
+                                  <img
+                                    src={DeleteHcRow}
+                                    className={style.colorFileStyle}
+                                    onClick={() => {
+                                      deleteHandler(data);
+                                    }}
+                                    alt=""
+                                  />
+                                </div>
+                              </>
+                            );
+                          }
+                        })}
+                      </div>
+                    )}
+                  </div>
+                  {departmentList?.length === 0 && (
+                    <div className={`${style.floatRight} ${style.marginTop20}`}>
+                      <button
+                        className={`${style.buttonStyle} ${style.marginLeft20}`}
+                        onClick={() => getAddEntityDialog(true)}
+                      >
+                        CLICK TO SETUP
+                      </button>
                     </div>
-                  </>
-                );
-              }
-            })}
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
-        )}
-      </div>
-      {departmentList?.length === 0 && (
-        <div className={`${style.floatRight} ${style.marginTop20}`}>
-          <button
-            className={`${style.buttonStyle} ${style.marginLeft20}`}
-            onClick={() => getAddEntityDialog(true)}
-          >
-            CLICK TO SETUP
-          </button>
         </div>
-      )}
+        <div className={style.spaceBetween}>
+          <p className={style.poweredBy}>Powered by - TimeSmartAI.Inc LLP</p>
+          <p className={style.poweredBy}>© TimeSmartAI.Inc</p>
+        </div>
+      </div>
 
       {showAddEntityDialog && (
         <AddNewDepartments

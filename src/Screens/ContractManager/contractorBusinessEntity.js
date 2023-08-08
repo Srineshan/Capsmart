@@ -25,13 +25,15 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
     npin: "",
     missing: false
   });
+  const [ssoId, setSsoId] = useState('');
   const [contractorEntityTaxId, setContractorEntityTaxId] = useState({
     taxId: "",
     missing: false,
     notApplicable: false,
   });
   const [businessEntity, setBusinessEntity] = useState({
-    name: ''
+    name: '',
+    notApplicable: false,
   });
   const [businessEntityUser, setBusinessEntityUser] = useState({
     name: {
@@ -61,8 +63,6 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
   const [allowAggregator, setAllowAggregator] = useState(false);
   const [selectedRoles, setSelectedRoles] = useState([]);
   const [continueLoading, setContinueLoading] = useState(false);
-
-  console.log('contractorNPIN', contractorNPIN);
 
   useEffect(() => {
     getUserData();
@@ -106,15 +106,25 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
       temp.push(roles?.filter(role => role?.roleName === 'Aggregator')?.map(data => data)[0]);
       setAllowAggregator(value);
     } else {
-      temp = selectedRoles?.filter(role => role?.roleName === 'Aggregator')?.map(data => data);
+      temp = selectedRoles?.filter(role => role?.roleName !== 'Aggregator')?.map(data => data);
       setAllowAggregator(value)
     }
     setSelectedRoles(temp);
   }
 
+  console.log(selectedRoles)
+
   const handleContinue = async (buttonType) => {
+    if ((!businessEntity?.notApplicable && EmptyStringCheck(businessEntity?.name, 'Business Entity Name is Mandatory')) ||
+      ((!contractorNPIN?.notApplicable && !contractorNPIN?.missing) && EmptyStringCheck(contractorNPIN?.npin, 'NPIN is Mandatory')) ||
+      ((!contractorEntityTaxId?.missing && !contractorEntityTaxId?.notApplicable) && EmptyStringCheck(contractorEntityTaxId?.taxId, 'Tax Id is Mandatory')) ||
+      EmptyStringCheck(businessEntityUser?.name?.firstName, 'First Name is Mandatory') ||
+      EmptyStringCheck(businessEntityUser?.name?.lastName, 'Last Name is Mandatory') ||
+      EmailValidator(businessEntityUser?.email?.officialEmail) ||
+      (!businessEntityUser?.contactNumber?.missing && PhoneValidator(businessEntityUser?.contactNumber?.number))) {
+      return;
+    }
     if (!continueLoading) {
-      console.log('inside', buttonType);
       setContinueLoading(true);
 
       if (allowBEM || allowAggregator) {
@@ -135,7 +145,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
             "contractName": {
               "contractName": contractName
             },
-            "roles": roles?.filter(data => data?.roleName === 'Contract Business Entity Manager' || data?.roleName === 'Aggregator')?.map(data => data),
+            "roles": selectedRoles,
             "sites": {
               "sites": []
             },
@@ -155,10 +165,11 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
             "mobileNumber": businessEntityUser?.contactNumber?.number,
             "landlineNumber": ""
           },
-          "roles": roles?.filter(data => data?.roleName === 'Contract Business Entity Manager' || data?.roleName === 'Aggregator')?.map(data => data),
+          "roles": selectedRoles,
           "tenant": {
             "tenantId": TenantID
           },
+          "ssoId": { "id": businessEntityUser?.email?.officialEmail }
         }
 
         if (userId === '0') {
@@ -181,22 +192,12 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
         }
       }
 
-      if (EmptyStringCheck(businessEntity?.name, 'Business Entity Name is Mandatory') ||
-        !contractorNPIN?.notApplicable && !contractorNPIN?.missing && EmptyStringCheck(contractorNPIN?.npin, 'NPIN is Mandatory') ||
-        !contractorEntityTaxId?.missing && !contractorEntityTaxId?.notApplicable && EmptyStringCheck(contractorEntityTaxId?.taxId, 'Tax Id is Mandatory') ||
-        EmptyStringCheck(businessEntityUser?.name?.firstName, 'First Name is Mandatory') ||
-        EmptyStringCheck(businessEntityUser?.name?.lastName, 'Last Name is Mandatory') ||
-        EmailValidator(businessEntityUser?.email?.officialEmail) ||
-        !businessEntityUser?.contactNumber?.missing && PhoneValidator(businessEntityUser?.contactNumber?.number)) {
-        return;
-      }
-
       const data = {
         contractorNPIN: contractorNPIN,
         contractorEntityTaxId: contractorEntityTaxId,
         businessEntity: businessEntity,
         businessEntityUser: businessEntityUser,
-        roles: roles?.filter(data => data?.id === 'Contract Business Entity Manager')?.map(data => data),
+        roles: roles?.filter(data => data?.roleName === 'Contract Business Entity Manager')?.map(data => data),
         mailingAddress: mailingAddress,
         contractorContact: sameAsContractor,
         appRoleRequired: appRoleRequired,
@@ -256,6 +257,9 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
     setBusinessEntityData();
   }, [contractorBusinessEntity])
 
+  // useEffect(() => {
+  //   setSsoId(contractUser?.ssoId?.id);
+  // }, [contractUser])
 
   const handleInput = (e) => {
     const formattedPhoneNumber = FormatPhoneNumber(e.target.value);
@@ -272,6 +276,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
           missing: contractUser?.communication?.mobileNumberNotApplicable,
         }
       });
+      setSsoId(contractUser?.ssoId?.id)
       setMailingAddress({
         addressLine: contractUser?.address?.addressLine,
         city: contractUser?.address?.city,
@@ -329,6 +334,8 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
     setSameAsContractor(value);
     getContractorData(value);
   }
+
+  console.log(ssoId, contractUser?.ssoId?.id)
 
   if (isLoading) {
     return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />
@@ -393,11 +400,18 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
               </div>
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Business Entity Name*' />
-                <CommonInputField className={style.fullWidth}
-                  value={businessEntity?.name}
-                  onFocus={() => { checkFieldAndPopAlert(businessEntity?.name, 'Business Entity Name') }}
-                  placeholder="Enter Business Entity Name"
-                  onChange={(e) => setBusinessEntity({ ...businessEntity, name: e.target.value })} />
+                <div className={style.twoCol}>
+                  <CommonInputField className={style.fullWidth}
+                    value={businessEntity?.name}
+                    disabled={businessEntity?.notApplicable}
+                    onFocus={() => { checkFieldAndPopAlert(businessEntity?.name, 'Business Entity Name') }}
+                    placeholder="Enter Business Entity Name"
+                    onChange={(e) => setBusinessEntity({ ...businessEntity, name: e.target.value })} />
+                  <CommonCheckBox value="NA"
+                    checked={businessEntity?.notApplicable}
+                    onChange={(e) => setBusinessEntity({ ...businessEntity, notApplicable: e.target.checked, name: '' })}
+                    label="Not Applicable" />
+                </div>
               </div>
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Business Point of Contact*' />
@@ -428,6 +442,15 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                   }}
                 />
               </div>
+              {/* <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                <CommonLabel value='SSO ID*' />
+                <CommonInputField className={style.fullWidth} value={ssoId} placeholder="Enter SSO ID"
+                  onChange={(e) => {
+                    setSsoId(e.target.value);
+                    setIsUserUpdated(true);
+                  }}
+                />
+              </div> */}
               <div className={`${style.extentionGrid} ${style.marginTop20}`}
                 onFocus={() => { checkFieldAndPopAlert(businessEntityUser?.contactNumber?.number, 'Cell Phone') }}
               >
@@ -493,7 +516,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
               </div>
 
               {
-                selectContractInfo !== 'INDIVIDUAL' &&
+                (selectContractInfo !== 'INDIVIDUAL' && allowBEM) &&
                 (
                   <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <CommonLabel value='Allow user as Aggregator*' />
@@ -503,7 +526,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
               }
 
               {
-                selectContractInfo !== 'INDIVIDUAL' &&
+                (selectContractInfo !== 'INDIVIDUAL' && allowBEM) &&
                 (
                   <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <CommonLabel value='Keep Contract Payment Data Confidential*' />

@@ -30,9 +30,9 @@ const SetPasswordWithoutPassword = () => {
 
 
   const getEntityId = async () => {
-    await axios(`https://rest.mytimesmart.com/entity-service/entityID`, {
+    await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/entity-service/entityID`, {
       method: 'GET',
-      // headers: { 'X-subdomain': 'demo' }
+      // headers: { 'X-subdomain': 'smmc-trial' }
     }).then(response => {
       var cookie = new Cookie();
       cookie.set('entityId', response?.data?.id);
@@ -48,7 +48,7 @@ const SetPasswordWithoutPassword = () => {
   }
 
   const getUser = async () => {
-    await axios('https://rest.mytimesmart.com/user-management-service/user', {
+    await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/user-management-service/user`, {
       method: 'GET',
       headers: headers,
     }).then(response => {
@@ -81,7 +81,7 @@ const SetPasswordWithoutPassword = () => {
           "password": password,
         }
       }
-      axios('https://rest.mytimesmart.com/user-management-service/user/setpassword', {
+      axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/user-management-service/user/setpassword`, {
         method: 'POST',
         headers: headers,
         data: JSON.stringify(data),

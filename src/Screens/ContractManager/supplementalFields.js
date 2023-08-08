@@ -1,25 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import InputAdornment from '@mui/material/InputAdornment';
+import DatalistInput, { useComboboxControls } from 'react-datalist-input';
 import { CLINIC, SURGERY, ONCALL, PROCEDUREREADING } from '../../Constants';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
 import { TimePicker } from "@blueprintjs/datetime";
+import FormControl from '@mui/material/FormControl';
 import { GetDateFromHours } from './../../utils/formatting';
 import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
 import CommonTextField from '../../Components/CommonFields/CommonTextField';
 import CommonLabel from '../../Components/CommonFields/CommonLabel';
-
+import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
 import style from './index.module.scss';
 import MultiSelectDisplay from '../../Components/ReusableSmallComponents/multiSelectDisplay';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
 const SupplementalFields = ({ getMetaData, services, serviceSelected, editService, isReset, getIsReset }) => {
-    const [additionalClinicSchedule, setAdditionalClinicSchedule] = useState(0);
-    const [additionalSchedule, setAdditionalSchedule] = useState(false);
-    const [totalContractedService, setTotalContractedService] = useState(0);
-    const [isDedicatedHours, setIsDedicatedHours] = useState(false);
     const [availableActivities, setAvailableActivities] = useState([]);
-
+    const { setValue, value } = useComboboxControls({ initialValue: '' });
+    const [newServiceName, setNewServiceName] = useState('');
     const [supplementServiceName, setSupplementServiceName] = useState('');
 
     let specificDedicatedHoursList = [];
@@ -58,7 +57,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
             let activities = data?.activities?.map(data => data?.activity);
             if (`${activityName} (${activities?.map(data => data)?.join(', ')})` === index) {
                 let dedicatedHoursActivityType = data?.activityType?.activityType;
-                let dedicatedHoursPerformingActivity = data?.activities?.map(data => data?.activity)?.join('-');
+                let dedicatedHoursPerformingActivity = data?.activities?.map(data => data?.activity)?.join(', ');
                 setMetadata({
                     ...metadata,
                     dedicatedHoursActivityType: dedicatedHoursActivityType,
@@ -70,6 +69,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                     sessionDuration: data?.duration?.hours,
                     totalSession: data?.totalSessions?.value,
                     totalSessionFrequency: data?.totalSessions?.frequency,
+                    hourlyRate: data?.hourlyRate?.value,
                 });
             }
         });
@@ -86,6 +86,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
         totalSessionFrequency: 'NA',
         sessionAmount: '',
         sessionDuration: '0',
+        sessionsAsNeeded: false,
         workingTimeFrom: null,
         workingTimeTo: null,
         serviceDays: {
@@ -115,6 +116,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
             totalSessionFrequency: 'NA',
             sessionAmount: '',
             sessionDuration: '0',
+            sessionsAsNeeded: false,
             workingTimeFrom: null,
             workingTimeTo: null,
             serviceDays: {
@@ -165,6 +167,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
             sessionAmount: serviceSelected?.payableAmount?.value,
             sessionDuration: serviceSelected?.duration?.hours || '0',
             totalSession: serviceSelected?.totalSessions?.value,
+            sessionsAsNeeded: serviceSelected?.sessionsAsNeeded,
             totalSessionFrequency: serviceSelected?.totalSessions?.frequency,
             workingTimeFrom: GetDateFromHours(serviceSelected?.workingPeriod?.from?.toString() || ''),
             workingTimeTo: GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
@@ -204,11 +207,27 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
             temp?.push(value);
             setMetadata({ ...metadata, supplementServiceName: temp });
         }
+        setValue('');
     }
 
     const removeSupplementServiceName = (index) => {
         let temp = metadata?.supplementServiceName;
         setMetadata({ ...metadata, supplementServiceName: temp?.filter((data, indexValue) => index !== indexValue)?.map(data => data) });
+    }
+
+    const avilableActivityItems = useMemo(
+        () =>
+            availableActivities?.map((data) => ({
+                value: data,
+            })),
+        [availableActivities],
+    );
+
+    const serviceNameToAdd = () => {
+        let services = metadata.supplementServiceName;
+        services.push(newServiceName);
+        setMetadata({ ...metadata, supplementServiceName: services });
+        setValue('');
     }
 
     return (
@@ -218,17 +237,19 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                 <div className={`${style.displayInRow} `}>
                     <CommonSwitch className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} label={metadata?.dedicatedHoursSpecified ? 'YES' : 'NO'} checked={metadata?.dedicatedHoursSpecified} onChange={(e) => handleValueChange('dedicatedHoursSpecified', !metadata?.dedicatedHoursSpecified)} />
                     {!metadata?.dedicatedHoursSpecified && (
-                        <CommonSelectField className={`${style.fullWidth}`}
-                            value={getSelectedActivity() || ''}
-                            onChange={(e) => selectedHours(e.target.value)}
-                            firstOptionLabel={'Select source of hours for this service'} firstOptionValue={''}
-                            valueList={specificDedicatedHoursList}
-                            labelList={specificDedicatedHoursList}
-                            disabledList={specificDedicatedHoursList?.map(data => false)} />
+                        <FormControl sx={{ width: 480 }}>
+                            <CommonSelectField className={`${style.fullWidth}`}
+                                value={getSelectedActivity() || ''}
+                                onChange={(e) => selectedHours(e.target.value)}
+                                firstOptionLabel={'Select source of hours for this service'} firstOptionValue={''}
+                                valueList={specificDedicatedHoursList}
+                                labelList={specificDedicatedHoursList}
+                                disabledList={specificDedicatedHoursList?.map(data => false)} />
+                        </FormControl>
                     )}
                 </div>
             </div>
-
+            {/* 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Supplemental Services To Perform*' />
                 <div>
@@ -242,6 +263,39 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                         metadata?.supplementServiceName?.length !== 0 && metadata?.supplementServiceName &&
                         <MultiSelectDisplay values={metadata?.supplementServiceName} removeItem={removeSupplementServiceName} />
                     }
+                </div>
+            </div> */}
+            <div>
+                <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
+                    <CommonLabel value='Supplement Services To Perform*' />
+                    <div>
+                        <div className={style.addGrid}>
+                            <DatalistInput
+                                value={value}
+                                setValue={setValue}
+                                items={avilableActivityItems || []} onSelect={(item) => addSupplementService(item.value)} className={style.fullWidth}
+                                onChange={(e) => {
+                                    setNewServiceName(e.target.value);
+                                    const caret = e.target.selectionStart
+                                    const element = e.target
+                                    window.requestAnimationFrame(() => {
+                                        element.selectionStart = caret
+                                        element.selectionEnd = caret
+                                    })
+
+                                }}
+                            />
+                            <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer} `}>
+                                <AddIcon sx={{ fontSize: 25, color: 'white' }}
+                                    onClick={value !== '' && serviceNameToAdd}
+                                />
+                            </div>
+                        </div>
+                        {
+                            metadata?.supplementServiceName?.length !== 0 && metadata?.supplementServiceName &&
+                            <MultiSelectDisplay values={metadata?.supplementServiceName} removeItem={removeSupplementServiceName} />
+                        }
+                    </div>
                 </div>
             </div>
             <>
@@ -273,10 +327,11 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                             <CommonLabel value='Separate Service Hours Specified*' />
                             <div className={style.grid3WithoutGap}>
-                                <div className={`${style.fullWidth}`}>
+                                <div className={`${style.threeFieldWidth}`}>
                                     <CommonTextField
                                         type="tel"
                                         maxLength="3"
+                                        disabled={metadata?.sessionsAsNeeded}
                                         InputProps={{
                                             endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                                         }}
@@ -284,13 +339,20 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                                         value={metadata?.totalSession}
                                     />
                                 </div>
-                                <CommonSelectField className={`${style.fullWidth} ${style.marginLeft20}`}
+                                <CommonSelectField className={`${style.threeFieldWidth} ${style.marginLeft20}`}
                                     onChange={(e) => handleValueChange('totalSessionFrequency', e.target.value)}
                                     value={metadata?.totalSessionFrequency || 'NA'}
-                                    firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
+                                    firstOptionLabel={'Select Frequency'} firstOptionValue={''}
                                     valueList={['WEEK', 'MONTH', 'YEAR']}
                                     labelList={['Per Week', 'Per Month', 'Per Contract Year']}
-                                    disabledList={[false, false, false]} />
+                                    disabledList={[false, false, false]}
+                                    disabledSelect={metadata?.sessionsAsNeeded} />
+                                <div className={`${style.threeFieldWidth} ${style.marginLeft20}`}>
+                                    <CommonCheckBox value="NA"
+                                        checked={metadata?.sessionsAsNeeded}
+                                        onChange={(e) => setMetadata({ ...metadata, sessionsAsNeeded: e.target.checked, totalSession: 0, totalSessionFrequency: 'NA' })}
+                                        label="As Needed" />
+                                </div>
                             </div>
                         </div>
 
@@ -331,7 +393,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                                     </div>
 
                                     <div className={style.verticalAlignCenter}>
-                                        <CommonLabel className={`${style.marginLeft20}`} value={`$ ${(metadata?.sessionAmount / metadata?.totalSession || 0).toFixed(2)} per Hour (Pro Rata)`} />
+                                        {metadata?.sessionAmount !== '' && metadata?.sessionAmount !== '0' && <CommonLabel className={`${style.marginLeft20}`} value={metadata?.sessionsAsNeeded ? `${parseInt(metadata?.sessionAmount)?.toFixed(2)} per Hour (Pro Rata)` : `${(metadata?.sessionAmount / metadata?.totalSession || 0)?.toFixed(2)} per Hour (Pro Rata)`} />}
                                     </div>
                                 </div>
                             </div>
@@ -365,7 +427,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                 </div>
             </>
 
-        </div>
+        </div >
     )
 }
 

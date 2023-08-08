@@ -34,10 +34,22 @@ const AbsenceReasonsForCustomer = () => {
   const [showPlanned, setShowPlanned] = useState(true);
   const [showUnPlanned, setShowUnPlanned] = useState(false);
   const [selectedAbsence, setSelectedAbsence] = useState({});
-  const [selectedAbsenceReasons, setSelectedAbsenceReasons] = useState([]);
+
+  const [selectedPlannedAbsenceReasons, setSelectedPlannedAbsenceReasons] =
+    useState([]);
+  const [selectedUnPlannedAbsenceReasons, setSelectedUnPlannedAbsenceReasons] =
+    useState([]);
+
   const [isExpanded, setIsExpanded] = useState(true);
   const [lastUpdatedDate, setLastUpdatedDate] = useState("");
   const [entityId, setEntityId] = useState("");
+  const [selectedTitle, setSelectedTitle] = useState("");
+
+  const [selectAllPlannedList, setSelectAllPlannedList] = useState([]);
+  const [checkedAllPlanned, setCheckedAllPlanned] = useState(false);
+
+  const [selectAllUnPlannedList, setSelectAllUnPlannedList] = useState([]);
+  const [checkedAllUnPlanned, setCheckedAllUnPlanned] = useState(false);
 
   const getIsExpanded = (value) => {
     setIsExpanded(value);
@@ -102,31 +114,157 @@ const AbsenceReasonsForCustomer = () => {
       });
   };
 
-  const handleSelectAbsenceReasons = (e, innerData) => {
+  const handleSelectPlannedReasons = (e, innerData) => {
     if (e.target.checked) {
-      setSelectedAbsenceReasons([...selectedAbsenceReasons, innerData]);
+      setSelectedPlannedAbsenceReasons([
+        ...selectedPlannedAbsenceReasons,
+        innerData,
+      ]);
     } else {
-      setSelectedAbsenceReasons(
-        selectedAbsenceReasons
+      setSelectedPlannedAbsenceReasons(
+        selectedPlannedAbsenceReasons
           ?.filter((data) => data?.id !== innerData?.id)
           ?.map((data) => data)
       );
     }
   };
 
+  const handleSelectUnPlannedReasons = (e, innerData) => {
+    if (e.target.checked) {
+      setSelectedUnPlannedAbsenceReasons([
+        ...selectedUnPlannedAbsenceReasons,
+        innerData,
+      ]);
+    } else {
+      setSelectedUnPlannedAbsenceReasons(
+        selectedUnPlannedAbsenceReasons
+          ?.filter((data) => data?.id !== innerData?.id)
+          ?.map((data) => data)
+      );
+    }
+  };
+
+  const selectAllPlanned = (value) => {
+    setCheckedAllPlanned(value);
+    if (value) {
+      const tempAbsenceReasons = absenceReasonMaster
+        ?.filter(
+          (data) =>
+            data?.absenceType === "PLANNED" &&
+            !absenceReason.some(
+              (customerData) =>
+                customerData?.absenceReason === data?.absenceReason
+            )
+        )
+        ?.map((data) => {
+          return { ...data };
+        });
+      setSelectedPlannedAbsenceReasons(tempAbsenceReasons);
+    } else {
+      setSelectedPlannedAbsenceReasons([]);
+    }
+  };
+
+  const selectAllUnPlanned = (value) => {
+    setCheckedAllUnPlanned(value);
+    if (value) {
+      let tempAbsenceReasons = absenceReasonMaster
+        ?.filter(
+          (data) =>
+            data?.absenceType === "UNPLANNED" &&
+            !absenceReason.some(
+              (customerData) =>
+                customerData?.absenceReason === data?.absenceReason
+            )
+        )
+        ?.map((data) => {
+          return { ...data };
+        });
+      // console.log(tempAbsenceReasons);
+      setSelectedUnPlannedAbsenceReasons(tempAbsenceReasons);
+    } else {
+      setSelectedUnPlannedAbsenceReasons([]);
+    }
+  };
+
+  useEffect(() => {
+    let tempAbsenceReasons = absenceReasonMaster
+      ?.filter(
+        (data) =>
+          data?.absenceType === "PLANNED" &&
+          !absenceReason.some(
+            (customerData) =>
+              customerData?.absenceReason === data?.absenceReason
+          )
+      )
+      ?.map((data) => {
+        return { ...data };
+      });
+
+    setSelectAllPlannedList(tempAbsenceReasons);
+
+    let allChecked = true;
+
+    if (tempAbsenceReasons.length > selectedPlannedAbsenceReasons.length) {
+      allChecked = false;
+    }
+
+    if (allChecked) {
+      setCheckedAllPlanned(true);
+    } else {
+      setCheckedAllPlanned(false);
+    }
+  }, [selectedPlannedAbsenceReasons]);
+
+  useEffect(() => {
+    let tempAbsenceReasons = absenceReasonMaster
+      ?.filter(
+        (data) =>
+          data?.absenceType === "UNPLANNED" &&
+          !absenceReason.some(
+            (customerData) =>
+              customerData?.absenceReason === data?.absenceReason
+          )
+      )
+      ?.map((data) => {
+        return { ...data };
+      });
+
+    setSelectAllUnPlannedList(tempAbsenceReasons);
+
+    let allChecked = true;
+
+    if (tempAbsenceReasons.length > selectedUnPlannedAbsenceReasons.length) {
+      allChecked = false;
+    }
+
+    if (allChecked) {
+      setCheckedAllUnPlanned(true);
+    } else {
+      setCheckedAllUnPlanned(false);
+    }
+  }, [selectedUnPlannedAbsenceReasons]);
+
   const handlePostAbsenceReasons = async () => {
     setIsSelected(true);
-    let data = selectedAbsenceReasons?.map((data) => ({
+    const SelectAllAbsenceReasons = [
+      ...selectedPlannedAbsenceReasons,
+      ...selectedUnPlannedAbsenceReasons,
+    ];
+
+    let data = SelectAllAbsenceReasons?.map((data) => ({
       ...data,
       customized: true,
       entityId: { id: TenantID },
     }));
-    if (selectedAbsenceReasons?.length !== 0) {
+
+    if (SelectAllAbsenceReasons?.length !== 0) {
       await POST("entity-service/absenceReason", JSON.stringify(data))
         .then((response) => {
           SuccessToaster("Absence Added Successfully");
           getAbsenceReason();
-          setSelectedAbsenceReasons([]);
+          setSelectedPlannedAbsenceReasons([]);
+          setSelectedUnPlannedAbsenceReasons([]);
           getLastModifiedDate();
         })
         .catch((error) => {
@@ -154,7 +292,7 @@ const AbsenceReasonsForCustomer = () => {
           <div>
             <LevelTwoHeader
               heading={"ABSENCE REASON"}
-              updatedTime={`UPDATED ON ${lastUpdatedDate.toUpperCase()} EST`}
+              updatedTime={`UPDATED ON ${lastUpdatedDate}`}
               path={"/Screens/ReferenceList/customerAdminDashboard"}
               callingFrom={"Customer Admin"}
               needHeader={true}
@@ -183,10 +321,10 @@ const AbsenceReasonsForCustomer = () => {
                             <img
                               src={IndustriesEntityFolder}
                               alt="IndustriesEntityFolder"
-                              className={`${style.colorFileStyle} ${style.marginLeft5}`}
+                              className={`${style.colorFileStyle} ${style.marginLeft}`}
                             />
                             <p
-                              className={`${style.TextStyle2} ${style.marginLeft5}`}
+                              className={`${style.TextStyle2} ${style.marginLeft15}`}
                             >
                               PLANNED
                             </p>
@@ -195,62 +333,102 @@ const AbsenceReasonsForCustomer = () => {
                                 showPlanned ? CloseFolderBlue : OpenFolderBlue
                               }
                               alt="OpenFolder"
-                              className={`${style.colorFileStyle2} ${style.marginLeft5}`}
+                              className={`${style.colorFileStyle2} ${style.marginRight10}`}
                               onClick={() => setShowPlanned(!showPlanned)}
                             />
                           </div>
-                          {showPlanned &&
-                            absenceReasonMaster
-                              ?.filter(
+                          {showPlanned && (
+                            <>
+                              {absenceReasonMaster?.filter(
                                 (data) =>
                                   data?.absenceType === "PLANNED" &&
                                   !absenceReason.some(
                                     (customerData) =>
-                                      customerData?.id === data?.id
+                                      customerData?.absenceReason ===
+                                      data?.absenceReason
                                   )
-                              )
-                              ?.map((data, index) => (
-                                <div
-                                  className={
-                                    index % 2 !== 0
-                                      ? `${style.customersAdminInnerRowsStyle6} ${style.customersAdminBackground3} ${style.displayInRow}`
-                                      : `${style.customersAdminInnerRowsStyle6} ${style.customersAdminBackground2} ${style.displayInRow}`
-                                  }
-                                  key={index}
-                                >
-                                  <CommonPurpleCheckBox
-                                    checked={
-                                      selectedAbsenceReasons?.filter(
-                                        (innerData) =>
-                                          innerData?.id === data?.id
-                                      )?.length !== 0
-                                    }
-                                    onChange={(e) =>
-                                      handleSelectAbsenceReasons(e, data)
-                                    }
-                                  />
-
-                                  <p
-                                    className={`${style.tableDataFontStyle2} ${style.marginRight5}`}
+                              )?.length > 1 ? (
+                                <>
+                                  <div
+                                    className={`${style.customersAdminInnerRowsStyle6}  ${style.customersAdminBackground1} ${style.displayInRow}`}
                                   >
-                                    {data?.absenceReason}
-                                  </p>
-                                  <p className={style.tableDataFontStyle2}>
-                                    {data?.notificationPeriod?.numberOfDays}{" "}
-                                    days prior
-                                  </p>
-                                </div>
-                              ))}
+                                    <CommonPurpleCheckBox
+                                      name="allSelect"
+                                      onChange={(event) =>
+                                        selectAllPlanned(event.target.checked)
+                                      }
+                                      checked={
+                                        selectAllPlannedList.length !== 0
+                                          ? checkedAllPlanned
+                                          : false
+                                      }
+                                    />
+                                    <p
+                                      className={`${style.TextStyle4} ${style.marginLeft10}`}
+                                    >
+                                      SELECT ALL
+                                    </p>
+                                  </div>
+                                </>
+                              ) : (
+                                <></>
+                              )}
+
+                              {absenceReasonMaster
+                                ?.filter(
+                                  (data) =>
+                                    data?.absenceType === "PLANNED" &&
+                                    !absenceReason.some(
+                                      (customerData) =>
+                                        customerData?.absenceReason ===
+                                        data?.absenceReason
+                                    )
+                                )
+                                ?.map((data, index) => (
+                                  <div
+                                    className={
+                                      index % 2 !== 0
+                                        ? `${style.customersAdminInnerRowsStyle6} ${style.customersAdminBackground3} ${style.displayInRow}`
+                                        : `${style.customersAdminInnerRowsStyle6} ${style.customersAdminBackground2} ${style.displayInRow}`
+                                    }
+                                    key={index}
+                                  >
+                                    <CommonPurpleCheckBox
+                                      checked={
+                                        selectedPlannedAbsenceReasons?.filter(
+                                          (innerData) =>
+                                            innerData?.id === data?.id
+                                        )?.length !== 0
+                                      }
+                                      onChange={(e) =>
+                                        handleSelectPlannedReasons(e, data)
+                                      }
+                                    />
+
+                                    <p
+                                      className={`${style.tableDataFontStyle2} ${style.marginRight5}`}
+                                    >
+                                      {data?.absenceReason}
+                                    </p>
+                                    <p className={style.tableDataFontStyle2}>
+                                      {data?.notificationPeriod?.numberOfDays}{" "}
+                                      days prior
+                                    </p>
+                                  </div>
+                                ))}
+                            </>
+                          )}
+
                           <div
                             className={`${style.customersAdminOuterRowsStyle1} ${style.displayInRow}`}
                           >
                             <img
                               src={IndustriesEntityFolder}
                               alt="IndustriesEntityFolder"
-                              className={`${style.colorFileStyle} ${style.marginLeft5}`}
+                              className={`${style.colorFileStyle} ${style.marginLeft}`}
                             />
                             <p
-                              className={`${style.TextStyle2} ${style.marginLeft5}`}
+                              className={`${style.TextStyle2} ${style.marginLeft15}`}
                             >
                               {" "}
                               UNPLANNED{" "}
@@ -260,51 +438,92 @@ const AbsenceReasonsForCustomer = () => {
                                 showUnPlanned ? CloseFolderBlue : OpenFolderBlue
                               }
                               alt="OpenFolder"
-                              className={`${style.colorFileStyle2} ${style.marginLeft5}`}
+                              className={`${style.colorFileStyle2} ${style.marginRight10}`}
                               onClick={() => setShowUnPlanned(!showUnPlanned)}
                             />
                           </div>
-                          {showUnPlanned &&
-                            absenceReasonMaster
-                              ?.filter(
+
+                          {showUnPlanned && (
+                            <>
+                              {absenceReasonMaster?.filter(
                                 (data) =>
                                   data?.absenceType === "UNPLANNED" &&
                                   !absenceReason.some(
                                     (customerData) =>
-                                      customerData?.id === data?.id
+                                      customerData?.absenceReason ===
+                                      data?.absenceReason
                                   )
-                              )
-                              ?.map((data, index) => (
-                                <div
-                                  className={
-                                    index % 2 !== 0
-                                      ? `${style.customersAdminInnerRowsStyle6} ${style.customersAdminBackground3} ${style.displayInRow}`
-                                      : `${style.customersAdminInnerRowsStyle6} ${style.customersAdminBackground2} ${style.displayInRow}`
-                                  }
-                                  key={index}
-                                >
-                                  <CommonPurpleCheckBox
-                                    checked={
-                                      selectedAbsenceReasons?.filter(
-                                        (innerData) =>
-                                          innerData?.id === data?.id
-                                      )?.length !== 0
-                                    }
-                                    onChange={(e) =>
-                                      handleSelectAbsenceReasons(e, data)
-                                    }
-                                  />
-                                  <p
-                                    className={`${style.tableDataFontStyle2} ${style.marginRight5}`}
+                              )?.length > 1 ? (
+                                <>
+                                  <div
+                                    className={`${style.customersAdminInnerRowsStyle6}  ${style.customersAdminBackground1} ${style.displayInRow}`}
                                   >
-                                    {data?.absenceReason}
-                                  </p>
-                                  <p className={style.tableDataFontStyle2}>
-                                    {data?.notificationPeriod?.numberOfDays}{" "}
-                                    days prior
-                                  </p>
-                                </div>
-                              ))}
+                                    <CommonPurpleCheckBox
+                                      name="allSelect"
+                                      onChange={(event) =>
+                                        selectAllUnPlanned(event.target.checked)
+                                      }
+                                      checked={
+                                        selectAllUnPlannedList.length !== 0
+                                          ? checkedAllUnPlanned
+                                          : false
+                                      }
+                                    />
+                                    <p
+                                      className={`${style.TextStyle4} ${style.marginLeft10}`}
+                                    >
+                                      SELECT ALL
+                                    </p>
+                                  </div>
+                                </>
+                              ) : (
+                                <></>
+                              )}
+
+                              {absenceReasonMaster
+                                ?.filter(
+                                  (data) =>
+                                    data?.absenceType === "UNPLANNED" &&
+                                    !absenceReason.some(
+                                      (customerData) =>
+                                        customerData?.absenceReason ===
+                                        data?.absenceReason
+                                    )
+                                )
+                                ?.map((data, index) => (
+                                  <div
+                                    className={
+                                      index % 2 !== 0
+                                        ? `${style.customersAdminInnerRowsStyle6} ${style.customersAdminBackground3} ${style.displayInRow}`
+                                        : `${style.customersAdminInnerRowsStyle6} ${style.customersAdminBackground2} ${style.displayInRow}`
+                                    }
+                                    key={index}
+                                  >
+                                    <CommonPurpleCheckBox
+                                      checked={
+                                        selectedUnPlannedAbsenceReasons?.filter(
+                                          (innerData) =>
+                                            innerData?.id === data?.id
+                                        )?.length !== 0
+                                      }
+                                      onChange={(e) =>
+                                        handleSelectUnPlannedReasons(e, data)
+                                      }
+                                    />
+
+                                    <p
+                                      className={`${style.tableDataFontStyle2} ${style.marginRight5}`}
+                                    >
+                                      {data?.absenceReason}
+                                    </p>
+                                    <p className={style.tableDataFontStyle2}>
+                                      {data?.notificationPeriod?.numberOfDays}{" "}
+                                      days prior
+                                    </p>
+                                  </div>
+                                ))}
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -334,7 +553,13 @@ const AbsenceReasonsForCustomer = () => {
                             ? "MY CUSTOM LIST"
                             : "MY CUSTOM LIST TO USE "}
                         </p>
-                        <div onClick={() => setAddAbsenseReasonsDialog(true)}>
+                        <div
+                          onClick={() => {
+                            setIsEdit(false);
+                            setAddAbsenseReasonsDialog(true);
+                            setSelectedTitle("PLANNED / UNPLANNED");
+                          }}
+                        >
                           <img
                             src={AddNewEntity}
                             alt="AddNewEntity"
@@ -346,31 +571,41 @@ const AbsenceReasonsForCustomer = () => {
                       <div className={style.customersAdminCardStyle3}>
                         {absenceReason?.length !== 0 ? (
                           <div>
-                            <div className={style.terminationHeader}>
-                              <img
-                                src={IndustriesEntityFolder}
-                                alt="IndustriesEntityFolder"
-                                className={`${style.colorFileStyle} ${style.marginLeft5}`}
-                              />
-                              <p
-                                className={style.tableHeaderIndustriesFontStyle}
-                              >
-                                PLANNED ABSENCE REASONS
-                              </p>
-                              <img
-                                src={EditHcBlue}
-                                alt="EditHcBlue"
-                                className={style.colorFileStyle}
-                                onClick={() => {
-                                  setAddAbsenseReasonsDialog(true);
-                                }}
-                              />
-                              <img
-                                src={DeleteHcRow}
-                                alt="DeleteHcRow"
-                                className={style.colorFileStyle}
-                              />
-                            </div>
+                            {absenceReason?.filter(
+                              (data) => data?.absenceType === "PLANNED"
+                            ).length !== 0 ? (
+                              <div className={style.terminationHeader}>
+                                <img
+                                  src={IndustriesEntityFolder}
+                                  alt="IndustriesEntityFolder"
+                                  className={`${style.colorFileStyle} ${style.marginLeft5}`}
+                                />
+                                <p
+                                  className={
+                                    style.tableHeaderIndustriesFontStyle
+                                  }
+                                >
+                                  PLANNED ABSENCE REASONS
+                                </p>
+                                <img
+                                  src={EditHcBlue}
+                                  alt="EditHcBlue"
+                                  className={style.colorFileStyle}
+                                  onClick={() => {
+                                    setIsEdit(false);
+                                    setAddAbsenseReasonsDialog(true);
+                                    setSelectedTitle("PLANNED");
+                                  }}
+                                />
+                                <img
+                                  src={DeleteHcRow}
+                                  alt="DeleteHcRow"
+                                  className={style.colorFileStyle}
+                                />
+                              </div>
+                            ) : (
+                              <></>
+                            )}
                             {absenceReason
                               ?.filter(
                                 (data) => data?.absenceType === "PLANNED"
@@ -399,6 +634,7 @@ const AbsenceReasonsForCustomer = () => {
                                       setIsEdit(true);
                                       setAddAbsenseReasonsDialog(true);
                                       setSelectedAbsence(data);
+                                      setSelectedTitle("PLANNED");
                                     }}
                                   />
                                   <img
@@ -422,31 +658,43 @@ const AbsenceReasonsForCustomer = () => {
                                                             <p></p>
                                                             <p className={`${style.tableDataFontStyle} ${style.specifyOtherBox}`}> Specify Other</p>
                                                         </div> */}
-                            <div className={style.terminationHeader}>
-                              <img
-                                src={IndustriesEntityFolder}
-                                alt="IndustriesEntityFolder"
-                                className={`${style.colorFileStyle} ${style.marginLeft5}`}
-                              />
-                              <p
-                                className={style.tableHeaderIndustriesFontStyle}
-                              >
-                                UNPLANNED ABSENCE REASONS
-                              </p>
-                              <img
-                                src={EditHcBlue}
-                                alt="EditHcBlue"
-                                className={style.colorFileStyle}
-                                onClick={() => {
-                                  setAddAbsenseReasonsDialog(true);
-                                }}
-                              />
-                              <img
-                                src={DeleteHcRow}
-                                alt="DeleteHcRow"
-                                className={style.colorFileStyle}
-                              />
-                            </div>
+
+                            {absenceReason?.filter(
+                              (data) => data?.absenceType === "UNPLANNED"
+                            ).length !== 0 ? (
+                              <div className={style.terminationHeader}>
+                                <img
+                                  src={IndustriesEntityFolder}
+                                  alt="IndustriesEntityFolder"
+                                  className={`${style.colorFileStyle} ${style.marginLeft5}`}
+                                />
+                                <p
+                                  className={
+                                    style.tableHeaderIndustriesFontStyle
+                                  }
+                                >
+                                  UNPLANNED ABSENCE REASONS
+                                </p>
+                                <img
+                                  src={EditHcBlue}
+                                  alt="EditHcBlue"
+                                  className={style.colorFileStyle}
+                                  onClick={() => {
+                                    setIsEdit(false);
+                                    setAddAbsenseReasonsDialog(true);
+                                    setSelectedTitle("UNPLANNED");
+                                  }}
+                                />
+                                <img
+                                  src={DeleteHcRow}
+                                  alt="DeleteHcRow"
+                                  className={style.colorFileStyle}
+                                />
+                              </div>
+                            ) : (
+                              <></>
+                            )}
+
                             {absenceReason
                               ?.filter(
                                 (data) => data?.absenceType === "UNPLANNED"
@@ -475,6 +723,7 @@ const AbsenceReasonsForCustomer = () => {
                                       setIsEdit(true);
                                       setAddAbsenseReasonsDialog(true);
                                       setSelectedAbsence(data);
+                                      setSelectedTitle("UNPLANNED");
                                     }}
                                   />
                                   <img
@@ -487,25 +736,13 @@ const AbsenceReasonsForCustomer = () => {
                                   />
                                 </div>
                               ))}
-                            {/* <div className={`${style.absenseLayer3Card} ${style.healthCareTableDataColor3} ${style.displayInRow}`}>
-                                                            <p></p>
-                                                            <p className={style.tableDataFontStyle}>Other Reason for your UnPlanned Absence</p>
-                                                            <p className={style.tableDataFontStyle}>14 Days Prior</p>
-                                                            <img src={EditHcBlue} className={style.colorFileStyle} />
-                                                            <img src={DeleteHcRow} className={style.colorFileStyle} />
-                                                        </div>
-                                                        <div className={`${style.customerAdminTableData3} ${style.healthCareTableDataColor2} ${style.displayInRow}`}>
-                                                            <p></p>
-                                                            <p className={`${style.tableDataFontStyle} ${style.specifyOtherBox}`}> Specify Other</p>
-                                                        </div> */}
                           </div>
                         ) : (
                           <p className={style.holidayScheduleCardtextStyle1}>
                             if you would like to setup your custom list for your
                             site(s) you can select from the default list on the
                             left, edit to change labels as needed, and also add
-                            new departments/ service area by clicking on the add
-                            icon
+                            new Absence Reason by clicking on the add icon
                           </p>
                         )}
                       </div>
@@ -529,8 +766,8 @@ const AbsenceReasonsForCustomer = () => {
           </div>
         </div>
         <div className={style.spaceBetween}>
-          <p className={style.poweredBy}>Powered by - TimeSmartAI LLP</p>
-          <p className={style.poweredBy}>© TimeSmartAI</p>
+          <p className={style.poweredBy}>Powered by - TimeSmartAI.Inc LLP</p>
+          <p className={style.poweredBy}>© TimeSmartAI.Inc</p>
         </div>
       </div>
       {showAddAbsenseReasonsDialog && (
@@ -541,6 +778,7 @@ const AbsenceReasonsForCustomer = () => {
           absenceReasonCustomer={true}
           getAbsenceReason={getAbsenceReason}
           IndustryId={industryId}
+          selectedTitle={selectedTitle}
         />
       )}
     </Fragment>

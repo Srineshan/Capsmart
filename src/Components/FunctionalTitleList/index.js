@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { GET } from './../../Screens/dataSaver';
 import SelectField from './../SelectField';
 
-const FunctionalTitleList = ({ onChangeFunc, value, className, providerId }) => {
+const FunctionalTitleList = ({ onChangeFunc, value, className, providerId, disable }) => {
   const [functionalTitle, setFunctionalTitle] = useState([]);
   const [provider, setProvider] = useState([]);
   const defaultProviderId = provider?.filter(data => data?.contractedServiceProviderType === 'Physician / Doctor')?.map(data => data?.id)[0] || '';
   const selectedProvider = providerId !== '' ? providerId : defaultProviderId;
   const siteTypeId = sessionStorage.getItem('entityTypeId') || '6335e452bb13e2088b208b99'
-
+  console.log('disabled', disable)
   useEffect(() => {
     getFunctionalTitle();
   }, [selectedProvider])
@@ -42,7 +42,7 @@ const FunctionalTitleList = ({ onChangeFunc, value, className, providerId }) => 
   }
 
   return (
-    <SelectField className={className} value={value} selectLabel="Select Title" valueList={functionalTitle?.map(data => data?.id)} dataList={functionalTitle} displayList={functionalTitle?.map(data => data?.title)} onChangeFunc={onSelectHandle} />
+    <SelectField className={className} value={value} selectLabel="Select Title" valueList={disable?.length > 0 ? functionalTitle?.filter(data => !disable?.includes(data?.id))?.map(data => data?.id) : functionalTitle?.map(data => data?.id)} dataList={functionalTitle} displayList={disable?.length > 0 ? functionalTitle?.filter(data => !disable?.includes(data?.id))?.map(data => data?.title) : functionalTitle?.map(data => data?.title)} onChangeFunc={onSelectHandle} />
   )
 }
 

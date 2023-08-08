@@ -8,23 +8,29 @@ import Select from '@mui/material/Select';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import { FormatPhoneNumber } from '../../utils/formatting';
+import CommonLabel from '../../Components/CommonFields/CommonLabel';
+import SuffixList from './../../Components/SuffixList';
 
 import style from './index.module.scss';
 
 const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
     const [selectedDepartments, setSelectedDepartments] = useState([])
     const [selectedSites, setSelectedSites] = useState([])
-    const [addUser, setAddUser] = useState({ firstName: "", lastName: "", email: "", phone: "", roles: [], sites: [], title: { title: "", id: "" } });
+    const [addUser, setAddUser] = useState({ firstName: "", lastName: "", email: "", phone: "", roles: [], sites: [], title: { title: "", id: "" }, ssoId: { id: '' } });
     const [userDataById, setUserDataById] = useState([]);
     const [roles, setRoles] = useState([]);
     const [selectedRolesToShow, setSelectedRolesToShow] = useState([]);
     const [sites, setSites] = useState([]);
+    const [siteTitle, setSiteTitle] = useState();
+    const [deptTitle, setDeptTitle] = useState();
+    const [suffix, setSuffix] = useState();
     const [functionalTitle, setFunctionalTitle] = useState([]);
     const [workFlowUser, setWorkFlowUser] = useState([]);
     const defaultProviderId = "6335e77dbb13e2088b208bb0";
     const selectedProvider = defaultProviderId;
 
     useEffect(() => {
+        // getUserById();
         getSites();
         getFunctionalTitle();
         getRoles();
@@ -41,8 +47,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
         if (selectedRolesToShow?.length !== 0) {
             let temp = [];
             selectedRolesToShow?.map(data => {
-                console.log(data)
-                temp.push({ id: data, roleName: roles?.filter(roleData => roleData?.id === data)?.map(roleData => roleData?.roleName)?.[0] })
+                temp.push(roles?.filter(roleData => roleData?.id === data)?.map(roleData => roleData)?.[0])
             })
             setAddUser({ ...addUser, roles: temp });
         }
@@ -58,17 +63,35 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
         }
     }, [selectedSites]);
 
+
     useEffect(() => {
         if (isEdit) {
             let tempDepartmentList = [];
+            // let siteTemp = addUser?.sites?.sites || [];
+
             selectedSites?.map(data => {
+                //     console.log('inside initial map', data);
                 addUser?.sites?.sites?.filter(siteData => siteData?.id === data)?.map(siteData => siteData)?.[0]?.departmentList?.departments?.map(deptData => {
                     tempDepartmentList.push(`${deptData?.id}-${data}`);
                 })
+                //     siteTemp.push(sites?.filter(data => data?.id === data)?.map(data => data)[0]);
+                //     sites?.filter(data => data?.id === data)?.map(data => data)?.[0]?.departmentList?.departments?.map(deptData => {
+                //         tempDepartmentList.push(`${deptData?.id}-${data?.id}`);
+                //     })
+                //     // tempDepartmentList = selectedDepartments?.filter(deptData => data?.departmentList?.departments?.map(dept => dept?.id)?.includes(deptData?.split('-')?.[-1]))?.map(data => data);
+                //     siteTemp.filter(site => site?.id === data)?.map(site => {
+                //         site = {
+                //             departmentList: {
+                //                 departments: tempDepartmentList,
+                //             }
+                //         };
+                //     })
+
             })
+            // setAddUser({ ...addUser, sites: { sites: siteTemp } });
             setSelectedDepartments(tempDepartmentList);
         }
-    }, [selectedSites, sites, addUser]);
+    }, [sites, addUser, selectedSites]);
 
     const getContractWorkFlowUser = async () => {
         const { data: contractWorkflow } = await GET(`contract-managment-service/contracts/workFlowUser`);
@@ -87,8 +110,13 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             })
     }
 
-    const handleTitle = (value) => {
-        setAddUser({ ...addUser, title: { id: value, title: functionalTitle?.filter(data => data?.id === value)?.map(data => data?.title)[0] } });
+    const handleSiteTitle = (value) => {
+        setSiteTitle(functionalTitle?.filter(data => data?.id === value)?.map(data => data)[0]);
+        // setAddUser({ ...addUser, title: { id: value, title: functionalTitle?.filter(data => data?.id === value)?.map(data => data?.title)[0] } });
+    }
+
+    const handleDeptTitle = (value) => {
+        setDeptTitle(functionalTitle?.filter(data => data?.id === value)?.map(data => data)[0]);
     }
 
     const handleSitesChange = (value) => {
@@ -121,8 +149,13 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                 phone: user?.communication?.mobileNumber,
                 roles: user?.roles,
                 sites: { sites: user?.sites?.sites },
-                title: user?.title
+                title: user?.title,
+                userType: user?.userType,
+                ssoId: user?.ssoId
             });
+            setSiteTitle(user?.sites?.sites?.[0]?.siteResponsibility);
+            setDeptTitle(user?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.departmentResponsibility)
+            setSuffix(user?.name?.suffix);
             let rolesToShow = [];
             user?.roles?.map(data => {
                 rolesToShow.push(data?.id)
@@ -136,32 +169,55 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
         }
     }
 
+    console.log('site title', siteTitle, deptTitle, addUser);
+
     const handleRolesChange = (value) => {
         setSelectedRolesToShow(typeof value === 'string' ? value.split(',') : value,)
     }
 
     const getFinalSiteValueWithDepartments = () => {
-        addUser?.sites?.sites?.map(data => {
-            let departments = [];
-            data?.departmentList?.departments?.map(deptData => {
-                if (selectedDepartments?.includes(`${deptData?.id}-${data?.id}`)) {
-                    departments.push(deptData);
-                }
-            })
-            data.departmentList.departments = departments;
+        console.log('edit inside function', addUser, addUser);
+        console.log('selectedSites', selectedSites);
+        console.log('selectedDepartments', selectedDepartments);
+        let siteData = [];
+        sites?.filter(site => selectedSites?.includes(site?.id))?.map(site => {
+            let deptData = [];
+            site?.departmentList?.departments?.filter(dept => selectedDepartments?.map(dept => dept?.split('-')[0])?.includes(dept?.id))?.map(dept => {
+                dept.departmentResponsibility = deptTitle;
+                deptData.push(dept);
+            });
+            site.departmentList.departments = deptData;
+            site.siteResponsibility = siteTitle;
+            siteData.push(site);
         })
-        console.log(addUser?.sites?.sites)
-        return addUser?.sites?.sites;
+        // let siteValue = { sites: siteData }
+        // setAddUser({ ...addUser, sites: siteValue })
+        // addUser?.sites?.sites?.map(data => {
+        //     let departments = [];
+        //     data.siteResponsibility = siteTitle;
+        //     data?.departmentList?.departments?.map(deptData => {
+        //         deptData.departmentResponsibility = deptTitle;
+        //         if (selectedDepartments?.includes(`${deptData?.id}-${data?.id}`)) {
+        //             departments.push(deptData);
+        //         }
+        //     })
+        //     data.departmentList.departments = departments;
+        // })
+        return siteData;
     }
 
-    // console.log(selectedRolesToShow, addUser, sites, selectedSites, selectedDepartments)
-    const submitUserDetails = async () => {
 
-        if (!addUser?.email.includes('@') || !addUser?.email.includes('.')) {
+    const submitUserDetails = async () => {
+        console.log('roles', addUser?.roles);
+        if (addUser?.firstName === '') {
+            ErrorToaster('First Name is Mandatory');
+            return;
+        }
+        if (!addUser?.email.includes('@') || !addUser?.email.includes('.') || addUser?.email === '') {
             ErrorToaster('Enter a valid mail-id');
             return;
         }
-        if (addUser?.firstName === '' && addUser?.email === '' && addUser?.roles?.length === 0 && getFinalSiteValueWithDepartments()?.length === 0) {
+        if (addUser?.roles?.length === 0 && getFinalSiteValueWithDepartments()?.length === 0) {
             ErrorToaster('All Fields are Mandatory');
             return;
         }
@@ -170,11 +226,12 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             "name": {
                 "firstName": addUser?.firstName,
                 "lastName": addUser?.lastName,
-                ...(isEdit ? { "suffix": userDataById?.name?.suffix } : { "suffix": {} }),
+                "suffix": suffix,
             },
-            "userType": "REGISTERED_USER",
+            "userType": isEdit ? addUser?.userType : "REGISTERED_USER",
             ...(isEdit && { "contracts": userDataById?.contracts }),
             "title": addUser?.title,
+            "ssoId": addUser?.ssoId,
             "email": {
                 "officialEmail": addUser?.email
             },
@@ -202,6 +259,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             ...(isEdit && { "serviceProviderType": userDataById?.serviceProviderType }),
             ...(isEdit && { "npin": userDataById?.npin }),
         }
+        console.log('user role details', user);
         if (isEdit) {
             await PUT('user-management-service/user', JSON.stringify(user))
                 .then(response => {
@@ -213,7 +271,6 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
         } else {
             await POST('user-management-service/user/register', JSON.stringify(user))
                 .then(response => {
-                    console.log('response', response);
                     SuccessToaster('User Added Successfully');
                 })
                 .catch(error => {
@@ -228,7 +285,6 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
         //         workFlowUserData.userId = userId;
         //         await POST('contract-managment-service/contracts/workFlowUser', JSON.stringify(user))
         //             .then(response => {
-        //                 console.log('Success!');
         //                 // SuccessToaster('Workflow User Updated Successfully');
         //             })
         //             .catch(error => {
@@ -251,6 +307,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
 
         getManageUserDialog(false);
     };
+
 
     return (
         <Dialog isOpen={getManageUserDialog} onClose={() => getManageUserDialog(false)} className={`${style.addManagerDialogBackground} ${style.addProofDialog}`}>
@@ -301,6 +358,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                     multiple
                                     value={selectedRolesToShow}
                                     onChange={(e) => handleRolesChange(e.target.value)}
+                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                                 >
                                     {roles?.map((data, index) =>
                                         <MenuItem value={data?.id} key={index}>{data?.roleName}</MenuItem>
@@ -308,22 +366,13 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                 </Select>
                             </FormControl>
                         </div>
-                        <div>
-                            <div className={style.extentionLableStyle}>TITLE</div>
-                            <FormControl className={style.fullWidth} size="small">
-                                <Select
-                                    labelId="demo-select-small"
-                                    id="demo-select-small"
-                                    value={addUser?.title?.id}
-                                    className={style.selectFontStyle}
-                                    onChange={(e) => handleTitle(e.target.value)}
-                                >
-                                    {functionalTitle?.map((data, index) =>
-                                        <MenuItem value={data?.id} key={index}>{data?.title}</MenuItem>
-                                    )}
-                                </Select>
-                            </FormControl>
+                        <div >
+                            <CommonLabel value='Suffix*' />
+                            <div className={style.grid3}>
+                                <SuffixList value={suffix?.id || ''} onChangeFunc={(id, value) => { setSuffix({ id: id, suffix: value }) }} className={[style.fullWidth]} />
+                            </div>
                         </div>
+
                     </div>
                     <div className={`${style.twoCol} ${style.marginTop20}`}>
                         <div>
@@ -336,6 +385,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                     value={selectedSites}
                                     onChange={(e) => handleSitesChange(e.target.value)}
                                     className={style.selectFontStyle}
+                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                                 >
                                     {sites?.map((data, index) =>
                                         <MenuItem value={data?.id} key={index}>{data?.siteName?.siteName}</MenuItem>
@@ -343,6 +393,25 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                 </Select>
                             </FormControl>
                         </div>
+                        <div>
+                            <div className={style.extentionLableStyle}>SITE LEVEL TITLE</div>
+                            <FormControl className={style.fullWidth} size="small">
+                                <Select
+                                    labelId="demo-select-small"
+                                    id="demo-select-small"
+                                    value={siteTitle?.id || ''}
+                                    className={style.selectFontStyle}
+                                    onChange={(e) => handleSiteTitle(e.target.value)}
+                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                >
+                                    {functionalTitle?.map((data, index) =>
+                                        <MenuItem value={data?.id} key={index}>{data?.title}</MenuItem>
+                                    )}
+                                </Select>
+                            </FormControl>
+                        </div>
+                    </div>
+                    <div className={`${style.twoCol} ${style.marginTop20}`}>
                         <div>
                             <div className={style.extentionLableStyle}>DEPARTMENT</div>
                             <FormControl sx={{ maxWidth: '300px' }} className={style.fullWidth} size="small">
@@ -353,6 +422,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                     value={selectedDepartments}
                                     onChange={(e) => handleDepartmentsChange(e.target.value)}
                                     className={style.selectFontStyle}
+                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                                 >
                                     {sites?.filter(data => selectedSites?.includes(data?.id))?.map((data, index) =>
                                         data?.departmentList?.departments?.map((deptData, deptIndex) => (
@@ -360,6 +430,30 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                         )))}
                                 </Select>
                             </FormControl>
+                        </div>
+                        <div>
+                            <div className={style.extentionLableStyle}>DEPARTMENT LEVEL TITLE</div>
+                            <FormControl className={style.fullWidth} size="small">
+                                <Select
+                                    labelId="demo-select-small"
+                                    id="demo-select-small"
+                                    value={deptTitle?.id || ''}
+                                    className={style.selectFontStyle}
+                                    onChange={(e) => handleDeptTitle(e.target.value)}
+                                    selected={deptTitle?.id}
+                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                >
+                                    {functionalTitle?.map((data, index) =>
+                                        <MenuItem value={data?.id} key={index}>{data?.title}</MenuItem>
+                                    )}
+                                </Select>
+                            </FormControl>
+                        </div>
+                    </div>
+                    <div className={`${style.marginTop20} ${style.twoCol}`}>
+                        <div>
+                            <div className={style.extentionLableStyle}>SSO ID*</div>
+                            <TextField size="small" className={style.fullWidth} value={addUser?.ssoId?.id} onChange={(e) => setAddUser({ ...addUser, ssoId: { id: e.target.value } })} />
                         </div>
                     </div>
                 </div>

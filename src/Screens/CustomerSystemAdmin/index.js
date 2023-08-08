@@ -22,8 +22,10 @@ const Home = () => {
   const [isExpanded, setIsExpanded] = useState(true);
   let selectedOptionValue = sessionStorage.getItem("selectedOption");
   const [entityId, setEntityId] = useState("");
+  const [refMetadata, setRefMetadata] = useState({ customCount: [], defaultCount: [], setupRequired: [], reviewForUse: [] })
   const [customCount, setCustomCount] = useState([]);
   const [defaultCount, setDefaultCount] = useState([]);
+
 
   useEffect(() => {
     setSelectedOption(selectedOptionValue);
@@ -41,7 +43,7 @@ const Home = () => {
     }
   }, [entityId]);
 
-  const togglePin = () => {};
+  const togglePin = () => { };
 
   const getSelectedOption = (value) => {
     setSelectedOption(value);
@@ -79,19 +81,26 @@ const Home = () => {
       mappedDataArray.push(mappedData);
     }
 
-    let DefaultData = mappedDataArray.filter((data) => {
-      if (data.standardList === false) {
-        return data;
-      }
-    });
-    setDefaultCount(DefaultData);
-
-    let CustomData = mappedDataArray.filter((data) => {
+    let DefaultData = mappedDataArray?.filter((data) => {
       if (data.standardList === true) {
         return data;
       }
     });
-    setCustomCount(CustomData);
+    // setRefMetadata({ ...refMetadata, defaultCount: DefaultData });
+
+    let CustomData = mappedDataArray?.filter((data) => {
+      if (data.standardList === false) {
+        return data;
+      }
+    });
+    // setRefMetadata({ ...refMetadata, customCount: CustomData });
+
+    let setupRequired = mappedDataArray?.filter((data) => {
+      if (data.lastModified === null) {
+        return data;
+      }
+    });
+    setRefMetadata({ ...refMetadata, setupRequired: setupRequired, defaultCount: DefaultData, customCount: CustomData });
   };
 
   const tableHeaderValues = [
@@ -194,13 +203,14 @@ const Home = () => {
     setIsExpanded(value);
   };
 
+  console.log('ref', refMetadata);
+
   return (
     <Fragment>
       <Navbar />
       <div
-        className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid} ${
-          style.margin20
-        }`}
+        className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid} ${style.margin20
+          }`}
       >
         <div>
           <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
@@ -257,12 +267,12 @@ const Home = () => {
                   selectedContract={selectedOption}
                   getSelectedContract={getSelectedOption}
                   tileLabel="REFERENCE LISTS"
-                  bigNumber={customCount?.length}
+                  bigNumber={refMetadata?.customCount?.length || 0}
                   bigText="CUSTOM"
-                  bigNumber2={defaultCount?.length}
+                  bigNumber2={refMetadata?.defaultCount?.length || 0}
                   bigText2="DEFAULT IN USE"
                   smallNum1={5}
-                  smallNum2={5}
+                  smallNum2={refMetadata?.setupRequired?.length || 0}
                   smallText1="REVIEW FOR USE"
                   smallText2="SETUP REQUIRED"
                   currentTile="REFERENCE LISTS"

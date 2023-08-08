@@ -8,6 +8,8 @@ import Pagination from './../Pagination';
 import AscendingSort from './../../images/ascendingSort.png';
 import DescendingSort from './../../images/descendingSort.png';
 import Sort from './../../images/sort.png';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import NoDataBox from '../ReusableSmallComponents/noDataBox';
 
 import style from './index.module.scss';
 
@@ -21,7 +23,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues }) => {
+const Table = ({ tableHeaderValues, tableDataValues, tableData, hidePagination, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, onClickText, onClickFunction, buttonComponent }) => {
     const [showOptions, setShowOptions] = useState(false);
     const [selectedMenuIndex, setSelectedMenuIndex] = useState(-1);
     const [selectedMenuColIndex, setSelectedMenuColIndex] = useState(-1);
@@ -137,14 +139,11 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                 <div className={`${style.tableHeader} ${gridStyle} ${style.marginTop10}`}>
                     {tableHeaderValues?.map((data, index) => (
                         <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} key={index}>
-                            {
-                                // tableSortValues?.[index] && (
-                                //     <img src={AscendingSort} alt="" className={`${style.sortImgStyle} ${style.cursorPointer}`} />
-                                // )
-                                //  : (
-                                //     <img src={DescendingSort} alt="" className={style.sortImgStyle} />
-                                // )
-                            }
+                            {/* {tableSortValues?.[index] ? (
+                                <img src={AscendingSort} alt="" className={`${style.sortImgStyle} ${style.cursorPointer}`} />
+                            ) : (
+                                <img src={DescendingSort} alt="" className={style.sortImgStyle} />
+                            )} */}
                             <div className={`${data === "" && style.marginLeft30} ${style.tableHeaderFontStyle}`}>{data}</div>
                         </div>
                     ))}
@@ -157,7 +156,7 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                     tableData?.type === "dot" ? (
                                         <div className={`${style.displayInRow} ${style.marginLeft30} ${style.verticalAlignCenter}`}>
                                             <Tooltip title={tableData?.tooltipValue?.[index]} arrow>
-                                                <div className={`${tableData?.value?.[index] === "green" ? style.green : tableData?.value?.[index] === "yellow" ? style.yellow : tableData?.value?.[index] === "grey" ? style.grey : ''} ${tableData?.value?.[index] === "green" ? style.greenDotStyle : tableData?.value?.[index] === "yellow" ? style.yellowDotStyle : tableData?.value?.[index] === "grey" ? style.greyDotStyle : ''}`}></div>
+                                                <div className={`${tableData?.value?.[index] === "green" ? style.green : tableData?.value?.[index] === "yellow" ? style.yellow : tableData?.value?.[index] === "grey" ? style.grey : ''} ${tableData?.value?.[index] === "green" ? style.greenDotStyle : tableData?.value?.[index] === "yellow" ? style.yellowDotStyle : tableData?.value?.[index] === "grey" ? style.greyDotStyle : tableData?.value?.[index] === 'purple' ? style.purpleDotStyle : ''}`}></div>
                                             </Tooltip>
                                         </div>
                                     ) : tableData?.type === "text" ? (
@@ -382,16 +381,23 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                             </div>
                         </>
                     )) : (
-                        <div>
-                            <div className={style.noDataTextStyle}>Bad news!</div>
-                            <p className={style.noDataTextStyle}>no records found so far...</p>
-                        </div>
+                        // <div>
+                        //     <div className={style.noDataTextStyle}>Bad news!</div>
+                        //     <p className={style.noDataTextStyle}>no records found so far...</p>
+                        // </div>
+                        <NoDataBox
+                            heading={heading}
+                            subHeading={subHeading}
+                            onClickText={onClickText}
+                            buttonComponent={buttonComponent}
+                            onClickFunction={onClickFunction}
+                        />
                     )}
                 </div>
 
 
                 {
-                    (totalCount || tableData?.length) > 10 &&
+                    !hidePagination && (totalCount || tableData?.length) > 10 &&
                     <Pagination selectPage={getSelectedPage} totalCount={totalCount || tableData?.length} selectedPage={page || 1} />
                 }
                 {

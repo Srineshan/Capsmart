@@ -1,0 +1,693 @@
+{
+    "activities": [
+      {
+        "activityType": "Clinic Block",
+        "activityPerformed": "Opthalmology Clinic Session",
+        "activityGroup": "Clinic BlockOpthalmology Clinic Session",
+        "activities": [
+          {
+            "activityType": "Clinic Block",
+            "activityPerformed": "Opthalmology Clinic Session",
+            "activity": "Opthalmology Clinic Session",
+            "done": 1,
+            "notDone": 0,
+            "expected": 40,
+            "actualInvoiceAmount": 400,
+            "expectedInvoiceAmount": 4000,
+            "varianceAmount": -3600,
+            "hours": 4,
+            "actualRate": 400,
+            "actualCost": 400,
+            "hourlyRate": 0,
+            "billable": true
+          }
+        ],
+        "done": 1,
+        "notDone": 0,
+        "expected": 40,
+        "actualInvoiceAmount": 400,
+        "expectedInvoiceAmount": 4000,
+        "varianceAmount": -3600,
+        "hours": 4,
+        "actualCost": 400,
+        "billable": true
+      },
+      {
+        "activityType": "On Call Coverage Duty",
+        "activityPerformed": "On Call Opthalmology Coverage",
+        "activityGroup": "On Call Coverage DutyOn Call Opthalmology Coverage",
+        "activities": [
+          {
+            "activityType": "On Call Coverage Duty",
+            "activityPerformed": "On Call Opthalmology Coverage",
+            "activity": "On Call Opthalmology Coverage",
+            "done": 1,
+            "notDone": 0,
+            "expected": 240,
+            "actualInvoiceAmount": 199.92,
+            "expectedInvoiceAmount": 1999.1999816894531,
+            "varianceAmount": -1799.279981689453,
+            "hours": 24,
+            "actualRate": 200,
+            "actualCost": 199.92,
+            "hourlyRate": 0,
+            "billable": true
+          }
+        ],
+        "done": 1,
+        "notDone": 0,
+        "expected": 240,
+        "actualInvoiceAmount": 199.92,
+        "expectedInvoiceAmount": 1999.1999816894531,
+        "varianceAmount": -1799.279981689453,
+        "hours": 24,
+        "actualCost": 199.92,
+        "billable": true
+      }
+    ],
+    "paidAdminActivities": [],
+    "addONActivities": [
+      {
+        "activityType": "Add-On Service",
+        "activityPerformed": "Surgery Block (General Opthalmology Surgery, Special Opthalmology Session)",
+        "activityGroup": "Add-On ServiceSurgery Block (General Opthalmology Surgery, Special Opthalmology Session)",
+        "activities": [
+          {
+            "activityType": "Add-On Service",
+            "activityPerformed": "Surgery Block (General Opthalmology Surgery, Special Opthalmology Session)",
+            "activity": "Special Opthalmology Session",
+            "done": 1,
+            "notDone": 0,
+            "expected": 0,
+            "actualInvoiceAmount": 400,
+            "expectedInvoiceAmount": 0,
+            "varianceAmount": 400,
+            "hours": 4,
+            "actualRate": 400,
+            "actualCost": 400,
+            "hourlyRate": 0,
+            "billable": true
+          }
+        ],
+        "done": 1,
+        "notDone": 0,
+        "expected": 0,
+        "actualInvoiceAmount": 400,
+        "expectedInvoiceAmount": 0,
+        "varianceAmount": 400,
+        "hours": 4,
+        "actualCost": 400,
+        "billable": true
+      }
+    ],
+    "plannedAbsenceActivities": [],
+    "unplannedAbsenceActivties": [
+      {
+        "id": "64bb17a881d9f836c006c55c",
+        "activityType": {
+          "activityType": "Absence"
+        },
+        "activityTypeTemplate": null,
+        "activityPerformed": null,
+        "activity": null,
+        "location": null,
+        "patientsSeen": null,
+        "activityTimeFrame": {
+          "stateDate": "2023-05-15",
+          "endDate": "2023-05-15",
+          "startTime": "00:00:00",
+          "endTme": "23:59:00",
+          "delayHours": null,
+          "delayMinutes": null,
+          "duration": {
+            "hours": 23.983334
+          },
+          "startTimeCategory": null,
+          "endTimeCategory": null
+        },
+        "activityNotes": {
+          "notes": "Un Planned"
+        },
+        "activityStatus": "NOTDONE",
+        "site": {
+          "id": "642471431b70b07241d37aa2",
+          "name": "San Mateo Medical Center"
+        },
+        "department": {
+          "id": "646a525ddd188e17cd2025a0",
+          "name": "Surgery - Ophthalmology"
+        },
+        "user": {
+          "id": "64263b21a994e4607d92efc6",
+          "name": "Esther Chang"
+        },
+        "serviceLocation": null,
+        "contract": {
+          "id": "b57ec8f6-3715-4629-894b-6f22638b82f5",
+          "name": "Esther Chang Opthamology Contract",
+          "contractType": null
+        },
+        "activityWorkFlowStatus": null,
+        "workFlowAction": null,
+        "absenceType": "UNPLANNEDABSENCE",
+        "absenceNote": {
+          "note": "Medical Emergency"
+        },
+        "schedule": null,
+        "disputeStatus": "NA",
+        "expectedDuration": null,
+        "requestStatus": "SUBMITTED",
+        "activityApprovalWFRequired": false,
+        "patient": null,
+        "icd": null,
+        "externalToolDetails": null,
+        "uploadedFileDetails": null,
+        "activityFor": null,
+        "additionalActivities": [],
+        "actualCost": 0,
+        "createdDate": "2023-07-21T23:41:28.179Z",
+        "lastModifiedDate": "2023-07-21T23:41:28.179Z",
+        "sessionCount": 0,
+        "sendNotificationTo": [
+          {
+            "emailGroupName": "un",
+            "email": "un@qa.com"
+          }
+        ],
+        "makeupActivityRequest": true,
+        "makeupActivityTimeBlock": "Unplanned",
+        "activityReminder": null,
+        "absenceRequest": true,
+        "billable": false,
+        "requestOrAbsence": true,
+        "disputed": false,
+        "podrequired": false
+      },
+      {
+        "id": "64bb18c181d9f836c006c55e",
+        "activityType": {
+          "activityType": "Absence"
+        },
+        "activityTypeTemplate": null,
+        "activityPerformed": null,
+        "activity": null,
+        "location": null,
+        "patientsSeen": null,
+        "activityTimeFrame": {
+          "stateDate": "2023-05-08",
+          "endDate": "2023-05-08",
+          "startTime": "00:00:00",
+          "endTme": "23:59:00",
+          "delayHours": null,
+          "delayMinutes": null,
+          "duration": {
+            "hours": 23.983334
+          },
+          "startTimeCategory": null,
+          "endTimeCategory": null
+        },
+        "activityNotes": {
+          "notes": "A"
+        },
+        "activityStatus": "NOTDONE",
+        "site": {
+          "id": "642471431b70b07241d37aa2",
+          "name": "San Mateo Medical Center"
+        },
+        "department": {
+          "id": "646a525ddd188e17cd2025a0",
+          "name": "Surgery - Ophthalmology"
+        },
+        "user": {
+          "id": "64263b21a994e4607d92efc6",
+          "name": "Esther Chang"
+        },
+        "serviceLocation": null,
+        "contract": {
+          "id": "b57ec8f6-3715-4629-894b-6f22638b82f5",
+          "name": "Esther Chang Opthamology Contract",
+          "contractType": null
+        },
+        "activityWorkFlowStatus": null,
+        "workFlowAction": null,
+        "absenceType": "UNPLANNEDABSENCE",
+        "absenceNote": {
+          "note": "Special Personal / Family Circumstances"
+        },
+        "schedule": null,
+        "disputeStatus": "NA",
+        "expectedDuration": null,
+        "requestStatus": "SUBMITTED",
+        "activityApprovalWFRequired": false,
+        "patient": null,
+        "icd": null,
+        "externalToolDetails": null,
+        "uploadedFileDetails": null,
+        "activityFor": null,
+        "additionalActivities": [],
+        "actualCost": 0,
+        "createdDate": "2023-07-21T23:46:09.608Z",
+        "lastModifiedDate": "2023-07-21T23:46:09.608Z",
+        "sessionCount": 0,
+        "sendNotificationTo": [
+          {
+            "emailGroupName": "AAA",
+            "email": "nn@qa.com"
+          }
+        ],
+        "makeupActivityRequest": true,
+        "makeupActivityTimeBlock": "SPPP",
+        "activityReminder": null,
+        "absenceRequest": true,
+        "billable": false,
+        "requestOrAbsence": true,
+        "disputed": false,
+        "podrequired": false
+      },
+      {
+        "id": "64bb1bcc81d9f836c006c55f",
+        "activityType": {
+          "activityType": "Absence"
+        },
+        "activityTypeTemplate": null,
+        "activityPerformed": null,
+        "activity": null,
+        "location": null,
+        "patientsSeen": null,
+        "activityTimeFrame": {
+          "stateDate": "2023-05-09",
+          "endDate": "2023-05-09",
+          "startTime": "08:00:00",
+          "endTme": "10:00:00",
+          "delayHours": null,
+          "delayMinutes": null,
+          "duration": {
+            "hours": 2
+          },
+          "startTimeCategory": null,
+          "endTimeCategory": null
+        },
+        "activityNotes": {
+          "notes": "Partial"
+        },
+        "activityStatus": "NOTDONE",
+        "site": {
+          "id": "642471431b70b07241d37aa2",
+          "name": "San Mateo Medical Center"
+        },
+        "department": {
+          "id": "646a525ddd188e17cd2025a0",
+          "name": "Surgery - Ophthalmology"
+        },
+        "user": {
+          "id": "64263b21a994e4607d92efc6",
+          "name": "Esther Chang"
+        },
+        "serviceLocation": null,
+        "contract": {
+          "id": "b57ec8f6-3715-4629-894b-6f22638b82f5",
+          "name": "Esther Chang Opthamology Contract",
+          "contractType": null
+        },
+        "activityWorkFlowStatus": null,
+        "workFlowAction": null,
+        "absenceType": "UNPLANNEDABSENCE",
+        "absenceNote": {
+          "note": "Special Personal / Family Circumstances"
+        },
+        "schedule": null,
+        "disputeStatus": "NA",
+        "expectedDuration": null,
+        "requestStatus": "SUBMITTED",
+        "activityApprovalWFRequired": false,
+        "patient": null,
+        "icd": null,
+        "externalToolDetails": null,
+        "uploadedFileDetails": null,
+        "activityFor": null,
+        "additionalActivities": [],
+        "actualCost": 0,
+        "createdDate": "2023-07-21T23:59:08.805Z",
+        "lastModifiedDate": "2023-07-21T23:59:08.805Z",
+        "sessionCount": 0,
+        "sendNotificationTo": [
+          {
+            "emailGroupName": "par",
+            "email": "par@qa.com"
+          }
+        ],
+        "makeupActivityRequest": true,
+        "makeupActivityTimeBlock": "PAR",
+        "activityReminder": null,
+        "absenceRequest": true,
+        "billable": false,
+        "requestOrAbsence": true,
+        "disputed": false,
+        "podrequired": false
+      },
+      {
+        "id": "64bc62ede8dadf768b5cd9fe",
+        "activityType": {
+          "activityType": "Absence"
+        },
+        "activityTypeTemplate": null,
+        "activityPerformed": null,
+        "activity": null,
+        "location": null,
+        "patientsSeen": null,
+        "activityTimeFrame": {
+          "stateDate": "2023-05-29",
+          "endDate": "2023-05-29",
+          "startTime": "00:00:00",
+          "endTme": "23:59:00",
+          "delayHours": null,
+          "delayMinutes": null,
+          "duration": {
+            "hours": 23.983334
+          },
+          "startTimeCategory": null,
+          "endTimeCategory": null
+        },
+        "activityNotes": {
+          "notes": "UN"
+        },
+        "activityStatus": "NOTDONE",
+        "site": {
+          "id": "642471431b70b07241d37aa2",
+          "name": "San Mateo Medical Center"
+        },
+        "department": {
+          "id": "646a525ddd188e17cd2025a0",
+          "name": "Surgery - Ophthalmology"
+        },
+        "user": {
+          "id": "64263b21a994e4607d92efc6",
+          "name": "Esther Chang"
+        },
+        "serviceLocation": null,
+        "contract": {
+          "id": "b57ec8f6-3715-4629-894b-6f22638b82f5",
+          "name": "Esther Chang Opthamology Contract",
+          "contractType": null
+        },
+        "activityWorkFlowStatus": null,
+        "workFlowAction": null,
+        "absenceType": "UNPLANNEDABSENCE",
+        "absenceNote": {
+          "note": "Personal / Family Vacation"
+        },
+        "schedule": null,
+        "disputeStatus": "NA",
+        "expectedDuration": null,
+        "requestStatus": "SUBMITTED",
+        "activityApprovalWFRequired": false,
+        "patient": null,
+        "icd": null,
+        "externalToolDetails": null,
+        "uploadedFileDetails": null,
+        "activityFor": null,
+        "additionalActivities": [],
+        "actualCost": 0,
+        "createdDate": "2023-07-22T23:14:53.268Z",
+        "lastModifiedDate": "2023-07-22T23:14:53.268Z",
+        "sessionCount": 0,
+        "sendNotificationTo": [
+          {
+            "emailGroupName": "nn",
+            "email": "un@qa.com"
+          }
+        ],
+        "makeupActivityRequest": true,
+        "makeupActivityTimeBlock": "UN ",
+        "activityReminder": null,
+        "absenceRequest": true,
+        "billable": false,
+        "requestOrAbsence": true,
+        "disputed": false,
+        "podrequired": false
+      }
+    ],
+    "addONActivitiesWithLogger": [
+      {
+        "activity": {
+          "id": "64bebaf551a5c60bd94a8a09",
+          "activityType": {
+            "activityType": "Add-On Service"
+          },
+          "activityTypeTemplate": {
+            "activityTypeTemplate": "Add-On Service"
+          },
+          "activityPerformed": {
+            "activity": "Surgery Block (General Opthalmology Surgery, Special Opthalmology Session)"
+          },
+          "activity": {
+            "activity": "Special Opthalmology Session"
+          },
+          "location": null,
+          "patientsSeen": {
+            "withNurseCount": -1,
+            "withOutNurseCount": -1
+          },
+          "activityTimeFrame": {
+            "stateDate": "2023-05-16",
+            "endDate": "2023-05-16",
+            "startTime": "14:00:00",
+            "endTme": "18:00:00",
+            "delayHours": {
+              "delayHours": "00"
+            },
+            "delayMinutes": {
+              "delayMinutes": "00"
+            },
+            "duration": {
+              "hours": 4
+            },
+            "startTimeCategory": null,
+            "endTimeCategory": null
+          },
+          "activityNotes": {
+            "notes": ""
+          },
+          "activityStatus": "DONE",
+          "site": {
+            "id": "642471431b70b07241d37aa2",
+            "name": "San Mateo Medical Center"
+          },
+          "department": {
+            "id": "646a525ddd188e17cd2025a0",
+            "name": "Surgery - Ophthalmology"
+          },
+          "user": {
+            "id": "64263b21a994e4607d92efc6",
+            "name": "Esther Chang"
+          },
+          "serviceLocation": {
+            "id": "6424c0211b70b07241d37c0a",
+            "entityId": {
+              "id": "64246d491b70b07241d37aa1"
+            },
+            "location": "Main Operating Room (OR)",
+            "code": "OR",
+            "status": "ACTIVE",
+            "costCenter": {
+              "id": "6424c0211b70b07241d37c09",
+              "code": "66410",
+              "name": "Surgery"
+            },
+            "departments": [
+              {
+                "id": "6424d5da1b70b07241d37c2a",
+                "departmentName": {
+                  "name": "Surgery - Operating Room (OR)"
+                }
+              },
+              {
+                "id": "6424ad2e1b70b07241d37bb2",
+                "departmentName": {
+                  "name": "Medicine - Gastroenterology"
+                }
+              },
+              {
+                "id": "6424ad2e1b70b07241d37bb3",
+                "departmentName": {
+                  "name": "Medicine - Opthalmology"
+                }
+              }
+            ]
+          },
+          "contract": {
+            "id": "b57ec8f6-3715-4629-894b-6f22638b82f5",
+            "name": "Esther Chang Opthamology Contract",
+            "contractType": null
+          },
+          "activityWorkFlowStatus": "REVIEW",
+          "workFlowAction": "APPROVED",
+          "absenceType": null,
+          "absenceNote": null,
+          "schedule": null,
+          "disputeStatus": "NA",
+          "expectedDuration": {
+            "hours": 4
+          },
+          "requestStatus": "APPROVED",
+          "activityApprovalWFRequired": true,
+          "patient": {
+            "firstName": "",
+            "lastName": "",
+            "medicalRecordNumber": ""
+          },
+          "icd": {
+            "code": ""
+          },
+          "externalToolDetails": null,
+          "uploadedFileDetails": null,
+          "activityFor": "wd",
+          "additionalActivities": [],
+          "actualCost": 400,
+          "createdDate": "2023-07-24T17:55:01.867Z",
+          "lastModifiedDate": "2023-07-24T17:56:37.892Z",
+          "sessionCount": 1,
+          "sendNotificationTo": [],
+          "makeupActivityRequest": false,
+          "makeupActivityTimeBlock": "",
+          "activityReminder": null,
+          "absenceRequest": false,
+          "billable": true,
+          "requestOrAbsence": true,
+          "disputed": false,
+          "podrequired": false
+        },
+        "logs": [
+          {
+            "id": "64bebaf751a5c60bd94a8a0b",
+            "timesheet": null,
+            "activity": {
+              "id": "64bebaf551a5c60bd94a8a09"
+            },
+            "notes": null,
+            "esign": null,
+            "workFlow": {
+              "id": "64b5533dfa1daf1043d1d3a3"
+            },
+            "workFlowAction": "SUBMITTED",
+            "currentWorkFlowLevel": {
+              "id": 0
+            },
+            "workFlowUser": {
+              "id": "64263b21a994e4607d92efc6",
+              "title": null,
+              "name": null,
+              "suffix": null
+            },
+            "workFlowStatus": {
+              "status": "SUBMITTED"
+            },
+            "tenant": {
+              "id": "64246d491b70b07241d37aa1"
+            },
+            "createdDate": "2023-07-24T17:55:03.570Z",
+            "lastModifiedDate": "2023-07-24T17:55:03.570Z",
+            "workFlowUserAgreed": false
+          },
+          {
+            "id": "64bebb5551a5c60bd94a8a0c",
+            "timesheet": null,
+            "activity": {
+              "id": "64bebaf551a5c60bd94a8a09"
+            },
+            "notes": {
+              "notes": null
+            },
+            "esign": null,
+            "workFlow": {
+              "id": "64b5533dfa1daf1043d1d3a3"
+            },
+            "workFlowAction": "APPROVED",
+            "currentWorkFlowLevel": {
+              "id": 1
+            },
+            "workFlowUser": {
+              "id": "6424cc6b1a6c0d4b84d543a4",
+              "title": {
+                "title": null,
+                "id": null
+              },
+              "name": {
+                "name": "Aileen Shieu"
+              },
+              "suffix": {
+                "id": "",
+                "suffix": ""
+              }
+            },
+            "workFlowStatus": {
+              "status": "COMPLETED"
+            },
+            "tenant": {
+              "id": "64246d491b70b07241d37aa1"
+            },
+            "createdDate": "2023-07-24T17:56:37.856Z",
+            "lastModifiedDate": "2023-07-24T17:56:37.856Z",
+            "workFlowUserAgreed": false
+          }
+        ]
+      }
+    ],
+    "actualCost": 0,
+    "addONCost": 400,
+    "obligatedActivitiesCost": 599.92,
+    "policyBasedCost": 999.92,
+    "expectedCost": 15000,
+    "cumulativePaymentByContract": 0,
+    "expectedPaymentByContract": 255000,
+    "workflow": {
+      "id": "6453f29089a4e33ac2d41fdf",
+      "name": {
+        "name": "Esther Chang Clinical Services Timesheet"
+      },
+      "workFlowMap": {
+        "workflow": {
+          "1": {
+            "workFlowUser": {
+              "id": "6424cc6b1a6c0d4b84d543a4",
+              "title": {
+                "title": "Medical Director",
+                "id": "6424cc6b1a6c0d4b84d543a4"
+              },
+              "name": {
+                "name": "Aileen"
+              },
+              "suffix": {
+                "id": "642473881b70b07241d37b68",
+                "suffix": "MD"
+              }
+            },
+            "workFlowStatus": {
+              "status": "APPROVED"
+            }
+          }
+        }
+      },
+      "createdDate": null,
+      "lastModifiedDate": "2023-07-19T12:52:36.966Z"
+    },
+    "offsetCostBreakUp": {
+      "totalOffsetCost": 0,
+      "offsetCostBreakUp": [
+        {
+          "timesheetLabel": "Esther Chang Clinical Services Timesheet",
+          "fromDate": "2023-04-01",
+          "toDate": "2023-04-30",
+          "additionalServicesCost": 0,
+          "reducedServicesCost": 0
+        }
+      ]
+    },
+    "reducedCost": -9399.279981689453,
+    "additionalCost": 0,
+    "compensationPolicy": "FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITH_OFFSET",
+    "reducedServiceOffsetBasis": "CONTRACT_END",
+    "additionalServiceOffsetBasis": "CONTRACT_END",
+    "maxPaymentPerTimesheetSubmission": 15000
+  }
+  

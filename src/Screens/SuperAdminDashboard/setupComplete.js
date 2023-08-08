@@ -6,7 +6,7 @@ import SetupCompleteImg from './../../images/setupCompleteImg.png';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import style from './index.module.scss';
 
-const SetupComplete = ({ data, setCompleteValue, operation }) => {
+const SetupComplete = ({ data, setCompleteValue, operation, isSuperAdminAccess }) => {
     const { id } = useParams();
     const navigate = useNavigate();
 
@@ -26,26 +26,17 @@ const SetupComplete = ({ data, setCompleteValue, operation }) => {
             <div className={style.completedContentMargin}>
 
                 <div className={style.completedHeading}>
-                    {data} Setup {operation} Successfully
+                    {data} Account {operation} Successfully
                 </div>
                 <div className={style.alignCenter}>
                     <img src={SetupCompleteImg} alt="Welcome Img" className={style.setupCompleteImgStyle} />
                 </div>
                 <div className={style.thanksTextStyle}>Thankyou, Mr. Doel Joe</div>
 
-                <div className={`${style.welcomeDescription} ${style.marginTop30}`}>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tristique,
-                    lacus eget pulvinar aliquet, nibh turpis ultricies eros, nec scelerisque
-                    ligula leo pharetra dui. Maecenas facilisis auctor sem, id eleifend mi
-                    tristique vel. In vitae mattis magna. Donec faucibus lorem ac ligula elementum,
-                    sit amet bibendum nisi viverra. Donec pharetra sodales nisl, sed tincidunt turpis
-                    pulvinar et. Quisque sapien tortor, facilisis et efficitur in, ullamcorper non dolor.
-                    Pellentesque odio magna, euismod eleifend massa nec, tincidunt consequat metus.
-                    Phasellus luctus et metus nec dictum. Vivamus feugiat varius ex, dignissim gravida
-                    dui accumsan sed. Proin a lorem a augue consectetur varius sit amet non sapien.
-                    Nullam auctor lacus sit amet lectus efficitur bibendum.
+                <div className={`${style.createdSuccessfullyDescription} ${style.marginTop30}`}>
+                    Your customer account has been created and the entity is ready to be activated for use. You can opt to activate the entity right now or do so at a later point in time.
                 </div>
-                <div className={`${style.welcomeDescription} ${style.marginTop20}`}>
+                {/* <div className={`${style.welcomeDescription} ${style.marginTop20}`}>
                     Nullam mollis, urna vel pharetra tempor, sem quam condimentum tellus, consequat
                     vehicula purus urna ut turpis. Pellentesque sit amet vehicula sapien. Sed in interdum
                     quam, vitae dapibus massa. Sed condimentum pellentesque purus, pellentesque pharetra
@@ -59,17 +50,19 @@ const SetupComplete = ({ data, setCompleteValue, operation }) => {
                     suscipit lacinia tempus. Nam vitae luctus tortor, ac tempus magna. Aliquam erat
                     volutpat. In et vestibulum leo, sodales lobortis tortor. Nulla quis neque neque.
                     Aliquam erat volutpat.
-                </div>
+                </div> */}
                 <div className={style.marginTop50}>
                     <button className={`${style.setupCompleteButton} ${style.cursor}`} onClick={() => setCompleteValue(false)}>CANCEL</button>
                     <button className={`${style.setupCompleteButton} ${style.marginLeft20} ${style.cursor}`}
                         onClick={() => {
-                            navigate('/user');
+                            navigate(isSuperAdminAccess ? '/activeCustomers' : '/entitySitePortal');
                         }}>DONE & EXIT SETUP</button>
-                    <button className={`${style.setupCompleteButton} ${style.marginLeft20} ${style.cursor}`}
-                        onClick={() => {
-                            activateEntity();
-                        }}>ACTIVATE ENTITY</button>
+                    {isSuperAdminAccess && (
+                        <button className={`${style.setupCompleteButton} ${style.marginLeft20} ${style.cursor}`}
+                            onClick={() => {
+                                activateEntity();
+                            }}>ACTIVATE ENTITY</button>
+                    )}
                 </div>
             </div>
 

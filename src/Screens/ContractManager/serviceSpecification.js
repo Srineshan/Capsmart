@@ -23,9 +23,11 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
   const [users, setUsers] = useState([]);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [selectedContractServiceIndex, setSelectedContractServiceIndex] = useState();
+  const [contractToDelete, setContractToDelete] = useState([]);
   const [userLength, setUserLength] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [servicesValid, setServicesValid] = useState([]);
+  const [serviceToDelete, setServiceToDelete] = useState('');
   let tableHeaderValues = selectContractInfo === 'INDIVIDUAL' ? ['', 'ACTIVITY TYPE', 'SPECIFIC ACTIVITY', 'BILLABLE', ''] : ['', 'ACTIVITY TYPE', 'SPECIFIC ACTIVITY', 'APPLIES TO', 'BILLABLE', ''];
 
   useEffect(() => {
@@ -71,14 +73,16 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
   const getUserData = async () => {
     const { data: userData } = await GET(`user-management-service/user?contractID=${contractId}`);
     if (userData) {
-      setUsers(userData);
+      setUsers(userData?.filter(user => !user?.contracts?.map(data => data?.id)?.includes(''))?.map(data => data));
     }
     setIsLoading(false);
   }
 
   const handleDeleteService = async () => {
+    setServiceToDelete(contractedServices?.filter((data, index) => contractToDelete?.includes(index))?.map(data => data?.refId)[0])
+    updateTimesheet(contractedServices, contractedServices?.filter((data, index) => !contractToDelete?.includes(index))?.map(data => data)[0]);
     let formattedData = {
-      contractedServices: contractedServices?.filter((data, index) => selectedContractServiceIndex !== index)?.map(data => data)
+      contractedServices: contractedServices?.filter((data, index) => !contractToDelete?.includes(index))?.map(data => data)
     }
 
     const response = await PUT(`contract-managment-service/contracts/${contractId}/ContractedService`, JSON.stringify(formattedData));
@@ -90,6 +94,32 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
     }
     setShowDeleteConfirmation(false);
     setSelectedContractServiceIndex();
+    getContractedServices();
+    getTabDataStatus();
+  }
+
+  const updateTimesheet = async (services, serviceSelected) => {
+    const { data: timesheetSubmissionTerms } = await GET(`contract-managment-service/contracts/${contractId}/timesheetSubmissionTerms`);
+    let temp = [];
+
+    if (timesheetSubmissionTerms?.timesheetActivitiesPeriods?.length === 1) {
+      services?.filter(data => data?.refId !== serviceToDelete)?.map(data => {
+        temp.push({ activityType: { activityType: data?.activityType?.activityType }, performingActivity: { activity: data?.activities?.map(data => data?.activity)?.join('-') } })
+      })
+      timesheetSubmissionTerms.timesheetActivitiesPeriods[0].activities = temp;
+    } else {
+      timesheetSubmissionTerms.timesheetActivitiesPeriods?.map(data => {
+        data.activities = [];
+      })
+    }
+    const response = await PUT(`contract-managment-service/contracts/${contractId}/timesheetSubmissionTerms`, JSON.stringify(timesheetSubmissionTerms));
+    if (response) {
+      console.log('Successfully Updated Timesheet Activities')
+    }
+    else {
+      console.log('Unexpected Error');
+    }
+
   }
 
   const onClickFunction = (data, index) => {
@@ -99,8 +129,12 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
   }
 
   const onClickCrossFunction = (data, index) => {
+    let temp = [];
+    setServiceToDelete(data?.refId);
     setShowDeleteConfirmation(true);
-    setSelectedContractServiceIndex(index);
+    temp.push(index);
+    temp.push(contractedServices?.findIndex(service => service?.activityResponse?.dataMap?.selectedActivityId === data?.refId));
+    setContractToDelete(temp);
   }
 
   let dataStatus = [];
@@ -142,7 +176,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
       }
       dataStatus.push(servicesValid?.[index]?.length === 0 ? <TaskAltOutlinedIcon style={{ color: "#14B15A" }} /> : <WarningAmberIcon style={{ color: "#FF6562" }} />);
       activityType.push(data?.activityType?.activityType);
-      specificActivity.push(data?.activities?.length > 1 ? `${data?.activities?.[0]?.activity}...` : data?.activities?.[0]?.activity || '-');
+      specificActivity.push(data?.activities?.length > 1 ? data?.activities?.length : data?.activities?.[0]?.activity || '-');
       specificActivityHoverText.push(data?.activities?.map(data => data?.activity) || '-');
       appliesTo.push(data?.users?.[0]?.name?.firstName || '-');
       appliesToHoverText.push(data?.users?.map(user => user?.name?.firstName) || '-');
@@ -156,14 +190,15 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
       { "type": "textWithHover", "value": specificActivity, "hoverText": specificActivityHoverText, "onClickFunction": onClickFunction },
       // { "type": "textWithHover", "value": appliesTo, "hoverText": appliesToHoverText, "onClickFunction": onClickFunction },
       { "type": "text", "value": billable, "onClickFunction": onClickFunction },
-      { "type": "text", "value": deleteIcon, "onClickFunction": onClickCrossFunction },
+      isEditable && { "type": "text", "value": deleteIcon, "onClickFunction": onClickCrossFunction },
+
     ] : [
       { "type": "icon", "icon": dataStatus },
       { "type": "text", "value": activityType, "onClickFunction": onClickFunction },
       { "type": "textWithHover", "value": specificActivity, "hoverText": specificActivityHoverText, "onClickFunction": onClickFunction },
       { "type": "textWithHover", "value": appliesTo, "hoverText": appliesToHoverText, "onClickFunction": onClickFunction },
       { "type": "text", "value": billable, "onClickFunction": onClickFunction },
-      { "type": "text", "value": deleteIcon, "onClickFunction": onClickCrossFunction },
+      isEditable && { "type": "text", "value": deleteIcon, "onClickFunction": onClickCrossFunction },
     ];
   }
 
@@ -176,7 +211,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
       {userLength !== 0 ? (
         <div className={style.cloneBlockStyle}>
           <div className={style.tableHeight}>
-            {isEditable && <button className={`${style.addCotractorButton} ${style.selectedColor} ${style.cursorPointer} ${style.floatRight} ${style.marginBottom}`} onClick={() => getAddServiceDialog(true)}>ADD SERVICE</button>}
+            {isEditable && <button className={`${style.addCotractorButton} ${style.selectedColor} ${style.cursorPointer} ${style.floatRight} ${style.marginBottom}`} onClick={() => setAddService(true)}>ADD SERVICE</button>}
             {/* <div className={`${style.serviceSpecificationTableHeader} ${style.marginTop20}`}>
               <p className={style.documentProofTextWidth}></p>
               <p className={`${style.documentProofTextWidth}`}>ACTIVITIES TYPE</p>
@@ -196,10 +231,11 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
             ))} */}
             <div className={style.marginTop20}>
               <Table
+                hidePagination={true}
                 tableHeaderValues={tableHeaderValues}
                 tableDataValues={getServiceProviderValues()}
                 tableData={contractedServices}
-                gridStyle={selectContractInfo === 'INDIVIDUAL' ? style.serviceSpecificationGridIndividual : style.serviceSpecificationGrid}
+                gridStyle={selectContractInfo === 'INDIVIDUAL' && !isEditable ? style.serviceSpecificationGridIndividualActive : selectContractInfo === 'INDIVIDUAL' ? style.serviceSpecificationGridIndividual : selectContractInfo === 'MULTIPLE' && !isEditable ? style.serviceSpecificationGridActive : style.serviceSpecificationGrid}
               />
             </div>
           </div>
@@ -236,9 +272,11 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
           </Dialog>
         </div>
       ) : (
-        (
+        <>
+          (
           <RedirectingPopUp getCurrentPage={getCurrentPage} tabName={'Contracted Services Provider(s)'} title={'NO USERS FOUND'} description={'No Contracted Service Provider Is Found.'} buttonText={'ADD CONTRACTOR'} />
-        )
+          )
+        </>
       )}
     </>
   )

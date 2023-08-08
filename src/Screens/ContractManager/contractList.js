@@ -27,14 +27,18 @@ import { validateTimesheetSubmission } from './contractValidation';
 
 import style from './index.module.scss';
 import SideBar from '../../Components/Sidebar';
+import PreImplementationDataDialog from './preImplementationDataDialog';
 
-const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelectedContract, getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page }) => {
+const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelectedContract, getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page, getActiveContractView }) => {
+  const [selectedContractId, setSelectedContractId] = useState();
   const activeHeaderValues = ["", "", "CONTRACT TYPE", "ID",
-    // "",
+    "",
     "NAME", "CONTRACTORS",
     "EFFECTIVE DATE",
     // "POD STATUS",
-    "LAST UPDATED"];
+    "LAST UPDATED",
+    "ACTION"
+  ];
   const draftHeaderValues = ["", "CONTRACT TYPE", "ID",
     // "",
     "NAME", "ACTIVATION STATUS", "LAST UPDATED",
@@ -43,7 +47,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
   const activationPendingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "REVIEWS", "APPROVALS", "REF DOCS", "GO LIVE DATE", "EFFECTIVE DATE", "MANAGER", "ACTION"];
   const upcomingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "EXPIRATION DATE", "EXPIRING IN", "LAST UPDATE", "MANAGER", "ACTION"];
   const expiredHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "TERMINATION DATE", "NEW CONTRACT ID", "LAST UPDATE", "MANAGER"];
-  const activeColSortValues = [false, false, false, true, true, false, false, false];
+  const activeColSortValues = [false, false, false, false, true, true, false, false, false, false];
   const draftColSortValues = [false, false, true, true, false, false, false, false, false];
   const upcomingColSortValues = [false, false, true, true, false, false, false, false, false];
   const expiredColSortValues = [false, false, true, true, false, false, false, false];
@@ -54,9 +58,11 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
   const [isMyContract, setIsMyContract] = useState(true);
   const [isDraft, setIsDraft] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [showPreImplementationDialog, setShowPreImplementationDialog] = useState(false);
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
   const currentUserData = currentUser();
+  const [selectedContractPreImplementationData, setSelectedContractPreImplementationData] = useState();
   const [metadata, setMetadata] = useState();
   const activateContracts = async (data) => {
     let status = 'ACTIVE';
@@ -106,6 +112,16 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
     getContractIdFromActive(data?.id);
   }
 
+  const getShowPreImplementationDialog = (data) => {
+    setShowPreImplementationDialog(true);
+    setSelectedContractId(data?.id);
+    setSelectedContractPreImplementationData(data);
+  }
+
+  const getPreImplementationDialogBoolean = (value) => {
+    setShowPreImplementationDialog(value);
+  }
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -130,9 +146,13 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
   }
 
   const onClickFunction = (data) => {
-    getNewContract(true);
-    getContractType(data?.contractType);
-    getSelectedContractType('New Contract');
+    if (selectedContract === 'activecontracts') {
+      getActiveContractView(true);
+    } else {
+      getNewContract(true);
+      getContractType(data?.contractType);
+      getSelectedContractType('New Contract');
+    }
     getContractIdFromActive(data?.id);
   }
 
@@ -186,6 +206,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
 
     contracts?.map(data => {
       let contractorList = getContractors(data?.id);
+      console.log('contractorList', contractorList);
       dot.push(data?.subStatus === 'EXPIRING_IN_30_DAYS' ? 'yellow' : 'green');
       dotTooltipValues.push(data?.subStatus === 'EXPIRING_IN_30_DAYS' ? 'Expiring in 30 days' : 'Auto Renewed');
       warningHoverText.push('Submitted Timesheets not in compliance with contract terms. contract requires specific terms to be modified');
@@ -212,14 +233,14 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
       { "type": "icon", "icon": notification, "hoverText": warningHoverText, 'isShowHoverText': true },
       { "type": "text", "value": contractType, "onClickFunction": onClickFunction },
       { "type": "text", "value": contractId, "onClickFunction": onClickFunction },
-      // { "type": "icon", "icon": lock, "hoverText": lockHoverText, 'isShowHoverText': true },
+      { "type": "icon", "icon": lock, "hoverText": lockHoverText, 'isShowHoverText': true },
       { "type": "text", "value": name, "onClickFunction": onClickFunction },
       { "type": "iconWithCount", "value": contractors, "hoverText": contractorHoverText, 'isShowHoverText': true, "icon": contractorsIcon },
       { "type": "text", "value": effectiveDate, "onClickFunction": onClickFunction },
       // { "type": "iconWithCount", "value": podStatus, "hoverText": podHoverText, 'isShowHoverText': true, "icon": <TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#14B15A' }} /> },
       // {"type": "text", "value": manager, "onClickFunction": onClickFunction},
       { "type": "text", "value": lastUpdated, "onClickFunction": onClickFunction },
-      // {"type": "action", "value": action},
+      { "type": "action", "value": action },
     ];
   }
 
@@ -238,11 +259,9 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
     lastUpdatedBy = [];
     action = [];
 
-    console.log('validateContractIDTermLimit', validateTimesheetSubmission(contracts?.[0]), contracts)
-
     contracts?.map(data => {
       dot.push('yellow');
-      contractType.push(data?.contractType === 'MULTIPLE' ? 'MULTI - PROVIDER' : data?.contractType);
+      contractType.push(data?.contractType === 'MULTIPLE' ? `MULTI - PROVIDER ${data?.newContract ? '(New)' : '(Existing)'}` : `${data?.contractType} ${data?.newContract ? '(New)' : '(Existing)'}`);
       dotTooltipValues.push('In-Progress');
       contractId.push(data?.contractDetail?.contractId?.id);
       lock.push(<LockOpenOutlinedIcon style={{ color: '#14B15A' }} />)
@@ -328,14 +347,15 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
 
   const activeActionsData = [
     // {'data': 'Contract Extension', 'onClick': contractExtension, 'requiredValue': 'boolean'},
-    //   {'data': 'Contract Termination', 'onClick': contractTermination, 'requiredValue': 'boolean'},
-    //   {'data': 'Clone Contract', 'onClick': contractClone, 'requiredValue': 'boolean'}
+    { 'data': 'Terminate Contract', 'onClick': contractTermination, 'requiredValue': 'boolean' },
+    //   {'data': 'Clone Contract', 'onClick': contractClone, 'requiredValue': 'boolean'},
+    { 'data': 'Pre Implementation Data', 'onClick': getShowPreImplementationDialog, 'requiredValue': 'boolean' }
   ]
 
   const draftActionsData = [
     { 'data': 'Delete Contract', 'onClick': deleteDraft, 'requiredValue': 'boolean' },
     { 'data': 'Activate Contract', 'onClick': activateContracts, 'requiredValue': 'id' },
-    // {'data': 'Share', 'onClick': activateContracts, 'requiredValue': 'id'}
+    // {'data': 'Share', 'onClick': activateContracts, 'requiredValue': 'id'},
   ]
 
   const upcomingActionsData = [
@@ -362,8 +382,8 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
   let tableSortValues = selectedContract === 'activecontracts' ? activeColSortValues : selectedContract === 'draft' ? (isDraft ? draftColSortValues : activationPendingColSortValues) : selectedContract === 'upcomingrenewals' ? upcomingColSortValues : expiredColSortValues;
   let tableDataValues = selectedContract === 'activecontracts' ? getActiveContractsValues() : selectedContract === "draft" ? getDraftContractsValues() : getUpcomingContractsValues();
   let actions = selectedContract === 'activecontracts' ? activeActionsData : draftActionsData;
-  let gridStyle = selectedContract === 'activecontracts' ? style.activeContractGridWithoutAction : selectedContract === "draft" ? (isDraft ? style.draftContractGrid : style.activationPendingContractGrid) : selectedContract === "upcomingrenewals" ? style.upcomingContractGrid : style.expiredContractGrid;
-  // let gridStyle = selectedContract === 'activecontracts' ? style.activeContractGrid : style.draftContractGrid;
+  // let gridStyle = selectedContract === 'activecontracts' ? style.activeContractGridWithoutAction : selectedContract === "draft" ? (isDraft ? style.draftContractGrid : style.activationPendingContractGrid) : selectedContract === "upcomingrenewals" ? style.upcomingContractGrid : style.expiredContractGrid;
+  let gridStyle = selectedContract === 'activecontracts' ? style.activeContractGrid : selectedContract === "draft" ? (isDraft ? style.draftContractGrid : style.activationPendingContractGrid) : selectedContract === "upcomingrenewals" ? style.upcomingContractGrid : style.expiredContractGrid;
 
   return (
     <div className={style.margin20}>
@@ -382,9 +402,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
                 {selectedContract === 'activecontracts' ? (
                   <>
                     <button className={isMyContract ? style.myActiveContractsButton : style.otherContractsButton} onClick={() => setIsMyContract(true)}>My Active Contracts ( {metadata?.activeContract?.activeContractCount} )</button>
-                    {
-                      // <button className={`${!isMyContract ? style.myActiveContractsButton : style.otherContractsButton} ${style.marginLeft20}`} onClick={() => setIsMyContract(false)}>Other Contracts ( 150 )</button>
-                    }
+                    <button className={`${!isMyContract ? style.myActiveContractsButton : style.otherContractsButton} ${style.marginLeft20}`} onClick={() => setIsMyContract(false)}>Other Contracts ( 150 )</button>
                   </>
                 ) : selectedContract === 'draft' ? (
                   <>
@@ -455,6 +473,13 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
               page={page}
               scrollStyle={style.contractScrollStyle}
               tableSortValues={tableSortValues}
+              heading={'There are no contracts for you to manage'}
+              subHeading={'To add a new contract click on'}
+              onClickText={'Click To View A Short Tutorial On How To Add A Contract'}
+              buttonComponent={<div className={`${style.addStyle} ${style.alignCenter} ${style.marginLeft20}`}>
+                <AddCircleOutlineIcon sx={{ fontSize: 20, color: 'white' }} />
+              </div>}
+              onClickFunction={() => { }}
             />
             {
               //   <div className={`${style.noContractsBox} ${style.alignCenter}`}>
@@ -479,9 +504,9 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
           <p className={`${style.poweredBy} ${style.marginTop10}`}>Powered by -</p>
           <img src={TimeSmartLogo} alt="footer" className={`${style.footerIconStyle} ${style.marginLeft10}`} />
         </div>
-        <p className={style.poweredBy}>© {new Date().getFullYear()} TimeSmartAI</p>
+        <p className={style.poweredBy}>© {new Date().getFullYear()} TimeSmartAI.Inc</p>
       </div>
-    </div>
+      <PreImplementationDataDialog showPreImplementationDialog={showPreImplementationDialog} getPreImplementationDialogBoolean={getPreImplementationDialogBoolean} contractId={selectedContractId} selectedContractPreImplementationData={selectedContractPreImplementationData} />    </div>
   )
 }
 

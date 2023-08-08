@@ -23,7 +23,6 @@ const AddAbsenseReasonsForHealthcare = ({
   const [notificationPeriod, setNotificationPeriod] = useState("14");
   const [createdDate, setCreatedDate] = useState("");
 
-  console.log(selectedAbsence);
   const arrowDown = () => {
     return (
       <img
@@ -68,7 +67,7 @@ const AddAbsenseReasonsForHealthcare = ({
         await POST("entity-service/absenceReasonMaster", JSON.stringify(data))
           .then((response) => {
             SuccessToaster("Absence Added Successfully");
-            getIndustryData();
+            getEntityData();
           })
           .catch((error) => {
             ErrorToaster(error);
@@ -80,7 +79,7 @@ const AddAbsenseReasonsForHealthcare = ({
         )
           .then((response) => {
             SuccessToaster("Absence Updated Successfully");
-            getIndustryData();
+            getEntityData();
           })
           .catch((error) => {
             ErrorToaster(error);
@@ -89,7 +88,7 @@ const AddAbsenseReasonsForHealthcare = ({
 
       if (type !== "Add More") {
         getAddEntityDialog(false);
-        getIndustryData();
+        getEntityData();
       } else {
         setAbsenseReason("");
         document.getElementById("absenceEl").focus();
@@ -170,16 +169,37 @@ const AddAbsenseReasonsForHealthcare = ({
         <div className={style.spaceBetween}>
           <p className={style.extensionStyle}>
             {isEdit
-              ? "Add/Edit Absence Reasons"
-              : `New Absence Reason For ${selectedTitle}`}
+              ? `Add/Edit Absence Reasons ${selectedTitle}`
+              : `New Absence Reason For ${selectedTitle ? selectedTitle : ""}`}
           </p>
-          <Icon
-            icon="cross"
-            size={20}
-            intent={Intent.DANGER}
-            className={style.dialogCrossStyle}
-            onClick={() => getAddEntityDialog(false)}
-          />
+          <div className={`${style.displayInRow}`}>
+            <div className={`${style.displayInRow} ${style.marginRight20}`}>
+              <img
+                src={
+                  "https://upload.wikimedia.org/wikipedia/en/thumb/a/a4/Flag_of_the_United_States.svg/125px-Flag_of_the_United_States.svg.png"
+                }
+                alt="refresh"
+                className={`${style.headerFlag} ${style.marginRight15}`}
+              />
+              <span
+                className={`${style.headerCountryName} ${style.marginLeft10}`}
+              >
+                USA
+              </span>
+              <img
+                src={ArrowDown}
+                className={`${style.colorFileStyle2} ${style.marginLeft10}  ${style.marginTop10}`}
+                alt=""
+              />
+            </div>
+            <Icon
+              icon="cross"
+              size={20}
+              intent={Intent.DANGER}
+              className={style.dialogCrossStyle}
+              onClick={() => getAddEntityDialog(false)}
+            />
+          </div>
         </div>
         <div className={style.ReferenceListEntityBorder}></div>
         <div className={`${style.addHealthCareBoxStyle}`}>

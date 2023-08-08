@@ -21,7 +21,6 @@ import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
 
 const FunctionalTitleForCustomer = () => {
-  const [isSelected, setIsSelected] = useState(false);
   const [showFunctionalTitlesDialog, setShowFunctionalTitleDialog] =
     useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
@@ -30,8 +29,13 @@ const FunctionalTitleForCustomer = () => {
   const [siteTypeId, setSiteTypeId] = useState("");
   const [contractedServiceProviderMaster, setContractedServiceProviderMaster] =
     useState([]);
+  const [contractedServiceProvider, setContractedServiceProvider] = useState(
+    []
+  );
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [CSPTypeId, setCSPTypeId] = useState("");
+  const [CusCSPTypeId, setCusCSPTypeId] = useState("");
+
   const [CSPTypeName, setCSPTypeName] = useState("");
   const [
     functionalTitlesForCSPTypeMaster,
@@ -51,6 +55,9 @@ const FunctionalTitleForCustomer = () => {
   const [lastUpdatedDate, setLastUpdatedDate] = useState("");
   const [entityId, setEntityId] = useState("");
 
+  const [selectAllList, setSelectAllList] = useState([]);
+  const [checkedAll, setCheckedAll] = useState(false);
+
   const getAddFunctionalTitlesDialog = (value) => {
     setShowFunctionalTitleDialog(value);
   };
@@ -67,15 +74,21 @@ const FunctionalTitleForCustomer = () => {
   useEffect(() => {
     if (siteTypeId !== "" && siteTypeId !== undefined) {
       getContractedServiceProviderMaster();
+      getContractedServiceProvider();
     }
   }, [siteTypeId, entityDetails]);
 
   useEffect(() => {
     if (CSPTypeId !== "" && CSPTypeId !== undefined) {
       getFunctionalTitlesMaster();
-      getFunctionalTitlesCustometData();
     }
   }, [CSPTypeId]);
+
+  useEffect(() => {
+    if (CusCSPTypeId !== "" && CusCSPTypeId !== undefined) {
+      getFunctionalTitlesCustometData();
+    }
+  }, [CusCSPTypeId]);
 
   useEffect(() => {
     if (entityId !== "" && entityId !== undefined) {
@@ -115,6 +128,14 @@ const FunctionalTitleForCustomer = () => {
     );
   };
 
+  const getContractedServiceProvider = async () => {
+    const { data: contractedServiceProvider } = await GET(
+      `entity-service/contractedServiceProvider?X-tenantID=${TenantID}&siteTypeId=${siteTypeId}`
+    );
+    setContractedServiceProvider(contractedServiceProvider);
+    setCusCSPTypeId(contractedServiceProvider?.[0]?.id);
+  };
+
   const getFunctionalTitlesMaster = async () => {
     const { data: functionalTitlesForCSPTypeMaster } = await GET(
       `entity-service/functionalTitlesForCSPTypeMaster?contractedServiceProviderTypeId=${CSPTypeId}`
@@ -124,27 +145,94 @@ const FunctionalTitleForCustomer = () => {
 
   const getFunctionalTitlesCustometData = async () => {
     const { data: functionalTitlesForCSPTypeCustomerData } = await GET(
-      `entity-service/functionalTitlesForCSPType?contractedServiceProviderTypeId=${CSPTypeId}`
+      `entity-service/functionalTitlesForCSPType?X-tenantID=${TenantID}&contractedServiceProviderTypeId=${CusCSPTypeId}`
     );
     setFunctionalTitlesForCSPTypeCustomerData(
       functionalTitlesForCSPTypeCustomerData
     );
   };
 
+  const handleClickSelected = (index, data) => {
+    if (selectedIndex === index) {
+      return setSelectedIndex("0");
+    }
+    setSelectedIndex(index);
+    setCSPTypeId(data?.id);
+
+    const CustomerCSPTypeId = contractedServiceProvider?.filter(
+      (CustomerData) =>
+        data?.contractedServiceProviderType ===
+        CustomerData?.contractedServiceProviderType
+    );
+    setCusCSPTypeId(CustomerCSPTypeId?.[0]?.id);
+    setCSPTypeName(data?.contractedServiceProviderType);
+  };
+
   const handleSelectFunctionalTitleCSPType = (e, innerData) => {
+    const NewInnerData = {
+      ...innerData,
+      contractedServiceProviderTypeId: { id: CusCSPTypeId },
+    };
+
     if (e.target.checked) {
       setSelectedFunctionalTitlesCSPType([
         ...selectedFunctionalTitlesCSPType,
-        innerData,
+        NewInnerData,
       ]);
     } else {
       setSelectedFunctionalTitlesCSPType(
         selectedFunctionalTitlesCSPType
-          ?.filter((data) => data?.id !== innerData?.id)
+          ?.filter((data) => data?.id !== NewInnerData?.id)
           ?.map((data) => data)
       );
     }
   };
+
+  const selectAll = (value) => {
+    if (value) {
+      let tempFunctionalTitles = functionalTitlesForCSPTypeMaster
+        ?.filter(
+          (data) =>
+            !functionalTitlesForCSPTypeCustomerData.some(
+              (customerData) => customerData?.title === data?.title
+            )
+        )
+        ?.map((data) => {
+          return { ...data };
+        });
+      setSelectedFunctionalTitlesCSPType(tempFunctionalTitles);
+    } else {
+      setSelectedFunctionalTitlesCSPType([]);
+    }
+    setCheckedAll(value);
+  };
+
+  useEffect(() => {
+    let tempFunctionalTitles = functionalTitlesForCSPTypeMaster
+      ?.filter(
+        (data) =>
+          !functionalTitlesForCSPTypeCustomerData.some(
+            (customerData) => customerData?.title === data?.title
+          )
+      )
+      ?.map((data) => {
+        return { ...data };
+      });
+
+    setSelectAllList(tempFunctionalTitles);
+
+    let allChecked = true;
+
+    if (tempFunctionalTitles.length > selectedFunctionalTitlesCSPType.length) {
+      allChecked = false;
+    }
+
+    if (allChecked) {
+      setCheckedAll(true);
+    } else {
+      setCheckedAll(false);
+    }
+  }, [selectedFunctionalTitlesCSPType]);
 
   const handlePostFunctionalTitlesCSPType = async () => {
     let data = selectedFunctionalTitlesCSPType?.map((data) => ({
@@ -202,7 +290,7 @@ const FunctionalTitleForCustomer = () => {
             <LevelTwoHeader
               heading={`FUNCTIONAL TITLES FOR CONTRACTED SERVICE PROVIDERS FOR HOSPITAL
               / ACUTE CARE FACILITY (ACF)`}
-              updatedTime={`UPDATED ON ${lastUpdatedDate.toUpperCase()} EST`}
+              updatedTime={`UPDATED ON ${lastUpdatedDate}`}
               path={"/Screens/ReferenceList/customerAdminDashboard"}
               callingFrom={"Customer Admin"}
               needHeader={true}
@@ -221,83 +309,115 @@ const FunctionalTitleForCustomer = () => {
                         </p>
                       </div>
                       <div className={style.customersAdminCardStyle1}>
-                        {contractedServiceProviderMaster?.map((data, index) => {
-                          return (
-                            <>
-                              <div
-                                className={`${style.boardCertificationSideRows1} ${style.displayInRow}`}
-                                key={index}
+                        {contractedServiceProviderMaster?.map((data, index) => (
+                          <>
+                            <div
+                              className={`${style.boardCertificationSideRows1} ${style.displayInRow}`}
+                              key={index}
+                              onClick={() => handleClickSelected(index, data)}
+                            >
+                              <img
+                                src={IndustriesEntityFolder}
+                                alt=""
+                                className={`${style.colorFileStyle} ${style.marginLeft5}`}
+                              />
+                              <p
+                                className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft10}`}
                               >
-                                <img
-                                  src={IndustriesEntityFolder}
-                                  alt=""
-                                  className={`${style.colorFileStyle} ${style.marginLeft5}`}
-                                />
-                                <p
-                                  className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft10}`}
-                                >
-                                  {data?.contractedServiceProviderType.toUpperCase()}
-                                </p>
-                                <img
-                                  src={
-                                    selectedIndex === index
-                                      ? CloseFolderBlue
-                                      : OpenFolderBlue
-                                  }
-                                  alt="OpenFolder"
-                                  className={`${style.colorFileStyle2} ${style.marginLeft5}`}
-                                  onClick={() => {
-                                    setSelectedIndex(index);
-                                    setCSPTypeId(data?.id);
-                                    setCSPTypeName(
-                                      data?.contractedServiceProviderType
-                                    );
-                                  }}
-                                />
-                              </div>
-                              {selectedIndex === index &&
-                                functionalTitlesForCSPTypeMaster
-                                  ?.filter(
-                                    (data) =>
-                                      !functionalTitlesForCSPTypeCustomerData.some(
-                                        (customerData) =>
-                                          customerData?.title === data?.title
-                                      )
+                                {data?.contractedServiceProviderType.toUpperCase()}
+                              </p>
+                              <img
+                                src={
+                                  selectedIndex === index
+                                    ? CloseFolderBlue
+                                    : OpenFolderBlue
+                                }
+                                alt="OpenFolder"
+                                className={`${style.colorFileStyle2} ${style.marginLeft5}`}
+                              />
+                            </div>
+
+                            <div
+                              className={
+                                selectedIndex === index
+                                  ? `${style.listWrapper} ${style.open}`
+                                  : `${style.listWrapper}`
+                              }
+                            >
+                              {functionalTitlesForCSPTypeMaster?.filter(
+                                (data) =>
+                                  !functionalTitlesForCSPTypeCustomerData.some(
+                                    (customerData) =>
+                                      customerData?.title === data?.title
                                   )
-                                  ?.map((data, index) => (
-                                    <div
-                                      className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}`}
-                                      key={index}
+                              )?.length > 1 ? (
+                                <>
+                                  <div
+                                    className={`${style.customersAdminInnerRowsStyle5}  ${style.customersAdminBackground1} ${style.displayInRow}`}
+                                  >
+                                    <CommonPurpleCheckBox
+                                      name="allSelect"
+                                      onChange={(event) =>
+                                        selectAll(event.target.checked)
+                                      }
+                                      checked={
+                                        selectAllList.length !== 0
+                                          ? checkedAll
+                                          : false
+                                      }
+                                    />
+                                    <p
+                                      className={`${style.TextStyle4} ${style.marginLeft10}`}
                                     >
-                                      <CommonPurpleCheckBox
-                                        checked={
-                                          selectedFunctionalTitlesCSPType?.filter(
-                                            (innerData) =>
-                                              innerData?.id === data?.id
-                                          )?.length !== 0
-                                        }
-                                        onChange={(e) =>
-                                          handleSelectFunctionalTitleCSPType(
-                                            e,
-                                            data
-                                          )
-                                        }
-                                      />
-                                      <p
-                                        className={`${style.TextStyle4} ${style.marginLeft5}`}
-                                      >
-                                        {data?.title}
-                                      </p>
-                                    </div>
-                                  ))}
-                            </>
-                          );
-                        })}
+                                      SELECT ALL
+                                    </p>
+                                  </div>
+                                </>
+                              ) : (
+                                <></>
+                              )}
+
+                              {functionalTitlesForCSPTypeMaster
+                                ?.filter(
+                                  (data) =>
+                                    !functionalTitlesForCSPTypeCustomerData.some(
+                                      (customerData) =>
+                                        customerData?.title === data?.title
+                                    )
+                                )
+                                ?.map((data, index) => (
+                                  <div
+                                    className={`${style.customersAdminInnerRowsStyle5} ${style.customersAdminBackground1} ${style.displayInRow}`}
+                                    key={index}
+                                  >
+                                    <CommonPurpleCheckBox
+                                      checked={
+                                        selectedFunctionalTitlesCSPType?.filter(
+                                          (innerData) =>
+                                            innerData?.id === data?.id
+                                        )?.length !== 0
+                                      }
+                                      onChange={(e) =>
+                                        handleSelectFunctionalTitleCSPType(
+                                          e,
+                                          data
+                                        )
+                                      }
+                                    />
+                                    <p
+                                      className={`${style.TextStyle4} ${style.marginLeft5}`}
+                                    >
+                                      {data?.title}
+                                    </p>
+                                  </div>
+                                ))}
+                            </div>
+                          </>
+                        ))}
                       </div>
                     </div>
                     <div
                       className={style.customersAdminCardStyle2}
-                      // onClick={() => setIsSelected(true)}
                       onClick={() => {
                         handlePostFunctionalTitlesCSPType();
                       }}
@@ -331,95 +451,89 @@ const FunctionalTitleForCustomer = () => {
                           }}
                         ></img>
                       </div>
+
                       <div className={style.customersAdminCardStyle3}>
                         {functionalTitlesForCSPTypeCustomerData?.length !==
                         0 ? (
-                          contractedServiceProviderMaster?.map(
-                            (data, index) => (
-                              <>
-                                <div>
-                                  <div
-                                    className={`${style.ContractedServiceProviderHeaderInsideContainer} ${style.displayInRow}`}
-                                  >
-                                    <img
-                                      src={IndustriesEntityFolder}
-                                      alt=""
-                                      className={`${style.colorFileStyle} ${style.marginLeft5}`}
-                                    />
-                                    <p
-                                      className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft10}`}
+                          contractedServiceProvider?.map((data, index) => (
+                            <>
+                              <div
+                                className={`${style.ContractedServiceProviderHeaderInsideContainer} ${style.displayInRow}`}
+                                onClick={() => handleClickSelected(index, data)}
+                              >
+                                <img
+                                  src={IndustriesEntityFolder}
+                                  alt=""
+                                  className={`${style.colorFileStyle} ${style.marginLeft5}`}
+                                />
+                                <p
+                                  className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft10}`}
+                                >
+                                  {data?.contractedServiceProviderType.toUpperCase()}
+                                </p>
+                                <img
+                                  src={
+                                    selectedIndex === index
+                                      ? CloseFolderBlue
+                                      : OpenFolderBlue
+                                  }
+                                  alt="OpenFolder"
+                                  className={`${style.colorFileStyle2} ${style.marginLeft5}`}
+                                  // onClick={() => {
+                                  //   setSelectedIndex(index);
+                                  //   setCSPTypeId(data?.id);
+                                  //   setCSPTypeName(
+                                  //     data?.contractedServiceProviderType
+                                  //   );
+                                  // }}
+                                />
+                              </div>
+                              {selectedIndex === index &&
+                                functionalTitlesForCSPTypeCustomerData?.map(
+                                  (data, index) => (
+                                    <div
+                                      className={`${style.contractedServiceProviderCard} ${style.healthCareTableDataColor1} ${style.spaceBetween}`}
+                                      key={index}
                                     >
-                                      {data?.contractedServiceProviderType}
-                                    </p>
-                                    <img
-                                      src={
-                                        selectedIndex === index
-                                          ? CloseFolderBlue
-                                          : OpenFolderBlue
-                                      }
-                                      alt="OpenFolder"
-                                      className={`${style.colorFileStyle2} ${style.marginLeft5}`}
-                                      onClick={() => {
-                                        setSelectedIndex(index);
-                                        setCSPTypeId(data?.id);
-                                        setCSPTypeName(
-                                          data?.contractedServiceProviderType
-                                        );
-                                      }}
-                                    />
-                                  </div>
-                                  {selectedIndex === index &&
-                                    functionalTitlesForCSPTypeCustomerData?.map(
-                                      (data, index) => (
-                                        <div
-                                          className={`${style.contractedServiceProviderCard} ${style.healthCareTableDataColor1} ${style.spaceBetween}`}
-                                          key={index}
-                                        >
-                                          <p
-                                            className={style.tableDataFontStyle}
-                                          >
-                                            {data?.title}
-                                          </p>
-                                          <div className={style.displayInRow}>
-                                            <img
-                                              src={EditHcRow}
-                                              alt=""
-                                              className={style.colorFileStyle}
-                                              onClick={() => {
-                                                setIsEdit(true);
-                                                getAddFunctionalTitlesDialog(
-                                                  true
-                                                );
-                                                setSelectedFunctionalTitlesCSPTypeCutomer(
-                                                  data
-                                                );
-                                              }}
-                                            />
-                                            <img
-                                              src={DeleteHcRow}
-                                              alt=""
-                                              className={`${style.colorFileStyle} ${style.marginLeft20}`}
-                                              onClick={() =>
-                                                handleDeleteFunctionalTitlesCSPType(
-                                                  data?.id
-                                                )
-                                              }
-                                            />
-                                          </div>
-                                        </div>
-                                      )
-                                    )}
-                                </div>
-                              </>
-                            )
-                          )
+                                      <p className={style.tableDataFontStyle}>
+                                        {data?.title}
+                                      </p>
+                                      <div className={style.displayInRow}>
+                                        <img
+                                          src={EditHcRow}
+                                          alt=""
+                                          className={style.colorFileStyle}
+                                          onClick={() => {
+                                            setIsEdit(true);
+                                            getAddFunctionalTitlesDialog(true);
+                                            setSelectedFunctionalTitlesCSPTypeCutomer(
+                                              data
+                                            );
+                                          }}
+                                        />
+                                        <img
+                                          src={DeleteHcRow}
+                                          alt=""
+                                          className={`${style.colorFileStyle} ${style.marginLeft20}`}
+                                          onClick={() =>
+                                            handleDeleteFunctionalTitlesCSPType(
+                                              data?.id
+                                            )
+                                          }
+                                        />
+                                      </div>
+                                    </div>
+                                  )
+                                )}
+                            </>
+                          ))
                         ) : (
                           <p className={style.holidayScheduleCardtextStyle1}>
                             if you would like to setup your custom list for your
                             site(s) you can select from the default list on the
                             left, edit to change labels as needed, and also add
-                            new departments/ service area by clicking on the add
-                            icon
+                            new Functional Titles for Contracted Service
+                            Providers by clicking on the add icon
                           </p>
                         )}
                       </div>
@@ -431,6 +545,7 @@ const FunctionalTitleForCustomer = () => {
           </div>
         </div>
       </div>
+
       {showFunctionalTitlesDialog && (
         <AddFunctionalTitlesForCustomer
           getAddFunctionalTitlesDialog={getAddFunctionalTitlesDialog}

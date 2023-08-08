@@ -13,12 +13,14 @@ const CommonPurpleCheckBox = ({
   value,
   disabled,
   checked,
+  name,
 }) => {
   return (
     <div className={style.CommonCheckBoxStyle}>
       <input
         className={`${style.CheckedBefore} ${style.marginBottom10}`}
         type="checkbox"
+        name={name}
         checked={checked}
         onChange={onChange}
       />

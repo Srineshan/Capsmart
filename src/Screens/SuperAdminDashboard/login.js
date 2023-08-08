@@ -16,24 +16,24 @@ const Login = (props) => {
   const [logo, setLogo] = useState({ logo: "", title: "" });
   var cookie = new Cookie();
 
-  useEffect(() => {
-    getEntityId();
-    getLogo();
-  }, []);
+  // useEffect(() => {
+  //   getEntityId();
+  //   getLogo();
+  // }, []);
 
-  const getEntityId = async () => {
-    await axios(`https://rest.mytimesmart.com/entity-service/entityID`, {
-      method: "GET",
-      // headers: { "X-subdomain": "demo" },
-    })
-      .then((response) => {
-        cookie.set("entityId", response?.data?.id);
-        setEntityId(response?.data?.id);
-      })
-      .catch((error) => {
-        console.log("error", error);
-      });
-  };
+  // const getEntityId = async () => {
+  //   await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/entity-service/entityID`, {
+  //     method: "GET",
+  //     headers: { "X-subdomain": "hopkins" },
+  //   })
+  //     .then((response) => {
+  //       cookie.set("entityId", response?.data?.id);
+  //       setEntityId(response?.data?.id);
+  //     })
+  //     .catch((error) => {
+  //       console.log("error", error);
+  //     });
+  // };
 
   const getLogo = async () => {
     const { data: data } = await GET(`entity-service/entity/${TenantID}`);
@@ -43,48 +43,48 @@ const Login = (props) => {
     });
   };
 
-  const login = () => {
-    const requestOptions = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-tenantID": entityId,
-      },
-      body: JSON.stringify(user),
-    };
-    fetch(
-      "https://rest.mytimesmart.com/user-management-service/auth/login",
-      requestOptions
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        cookie.set("user", data?.accessToken);
-        let roles = jwt(data?.accessToken)?.roles?.split(",");
-        let isAppUser =
-          roles.includes("Approver") ||
-          roles.includes("Reviewer") ||
-          roles.includes("Activity Logger");
-        let isContractManager = roles.includes("Contract Manager");
-        let isEntityLevelAdmin =
-          roles.includes("Super Sys Admin") ||
-          roles.includes("Entity Sys Admin") ||
-          roles.includes("Entity Sys User") ||
-          roles.includes("Distributor Admin");
-        if (isAppUser) {
-          window.location.href = "/";
-        } else if (isContractManager) {
-          navigate("/contracts");
-          window.location.reload();
-        } else if (isEntityLevelAdmin) {
-          navigate("/entitySitePortal");
-          window.location.reload();
-        } else {
-          navigate("/entitySitePortal");
-          window.location.reload();
-        }
-      });
-    return true;
-  };
+  // const login = () => {
+  //   const requestOptions = {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       "X-tenantID": entityId,
+  //     },
+  //     body: JSON.stringify(user),
+  //   };
+  //   fetch(
+  //     `http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/user-management-service/auth/login`,
+  //     requestOptions
+  //   )
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       cookie.set("user", data?.accessToken);
+  //       let roles = jwt(data?.accessToken)?.roles?.split(",");
+  //       let isAppUser =
+  //         roles.includes("Approver") ||
+  //         roles.includes("Reviewer") ||
+  //         roles.includes("Activity Logger");
+  //       let isContractManager = roles.includes("Contract Manager");
+  //       let isEntityLevelAdmin =
+  //         roles.includes("Super Sys Admin") ||
+  //         roles.includes("Entity Sys Admin") ||
+  //         roles.includes("Entity Sys User") ||
+  //         roles.includes("Distributor Admin");
+  //       if (isAppUser) {
+  //         window.location.href = "/";
+  //       } else if (isContractManager) {
+  //         navigate("/contracts");
+  //         window.location.reload();
+  //       } else if (isEntityLevelAdmin) {
+  //         navigate("/entitySitePortal");
+  //         window.location.reload();
+  //       } else {
+  //         navigate("/entitySitePortal");
+  //         window.location.reload();
+  //       }
+  //     });
+  //   return true;
+  // };
 
   const EyeOpenElement = (index) => {
     return (
@@ -101,6 +101,10 @@ const Login = (props) => {
       </div>
     );
   };
+
+  const login = () => {
+
+  }
 
   return (
     <div className={`${style.loginGrid} ${style.loginBackground}`}>
@@ -119,7 +123,7 @@ const Login = (props) => {
           // incididunt ut labore et dolore magna aliqua
           // </div>
         }
-        <div className={style.timeSmartStyle}>© TimeSmartAI</div>
+        <div className={style.timeSmartStyle}>© TimeSmartAI.Inc</div>
         <div className={style.termsStyle}>Term of use. Privacy policy</div>
       </div>
       <div className={style.padding100}>

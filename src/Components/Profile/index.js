@@ -166,33 +166,42 @@ const Profile = () => {
     };
 
     const changePassword = async () => {
-        if (profile?.newPassword !== "" && profile?.confirmPassword !== "") {
-            if (validatePassword(profile?.newPassword) && validatePassword(profile?.confirmPassword)) {
-                if (profile?.newPassword === profile?.confirmPassword) {
-                    let data = {
-                        oldPassword: {
-                            password: profile?.password
-                        },
-                        newPassword: {
-                            password: profile?.newPassword
-                        }
+        if (profile?.password === "") {
+            ErrorToaster('Enter Current Password');
+            return;
+        }
+        if (profile?.newPassword === "") {
+            ErrorToaster('Enter New Password');
+            return;
+        }
+        if (profile?.confirmPassword === "") {
+            ErrorToaster('Enter Confirm Password');
+            return;
+        }
+        if (validatePassword(profile?.newPassword) && validatePassword(profile?.confirmPassword)) {
+            if (profile?.newPassword === profile?.confirmPassword) {
+                let data = {
+                    oldPassword: {
+                        password: profile?.password
+                    },
+                    newPassword: {
+                        password: profile?.newPassword
                     }
-                    await PUT(`user-management-service/user/${user?.id}/changePassword`, JSON.stringify(data))
-                        .then(response => {
-                            SuccessToaster('Password Changed Successfully');
-                        })
-                        .catch(error => {
-                            ErrorToaster('Error in changing password');
-                        })
-                } else {
-                    ErrorToaster('New Password and Confirm Password should be same');
                 }
+                await PUT(`user-management-service/user/${user?.id}/changePassword`, JSON.stringify(data))
+                    .then(response => {
+                        SuccessToaster('Password Changed Successfully');
+                    })
+                    .catch(error => {
+                        ErrorToaster('Error in changing password');
+                    })
             } else {
-                ErrorToaster('Password must contain at least 8 characters, one letter, one number, and one special character.');
+                ErrorToaster('New Password and Confirm Password should be same');
             }
         } else {
-            ErrorToaster('Enter Both New and Confirm Password')
+            ErrorToaster('The password must contain at least 8 characters, one upper case letter, one lower case letter, one digit, and one special character.');
         }
+
 
     }
 

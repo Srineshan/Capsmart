@@ -4,14 +4,17 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import Checkbox from '@mui/material/Checkbox';
 
-const CommonCheckBox = ({ onChange, label, className, onFocus, value, disabled, checked }) => {
+const CommonCheckBox = ({ onChange, label, className, onFocus, value, disabled, checked, key }) => {
     return (
         <FormGroup className={className}>
-            <FormControlLabel control={<Checkbox value={value} checked={checked ? true : false} defaultChecked={checked} onChange={onChange} disabled={disabled}
+            <FormControlLabel control={<Checkbox value={value} checked={checked ? true : false} onChange={onChange} disabled={disabled} key={key}
                 sx={{
                     '&.Mui-checked': {
-                        color: '#7165e3',
+                        color: '#7165e3'
                     },
+                    '&.Mui-disabled': {
+                        color: 'rgba(0, 0, 0, 0.26)',
+                    }
                 }} />} label={<Typography variant="body2" color="textSecondary">{label}</Typography>} />
         </FormGroup>
     )

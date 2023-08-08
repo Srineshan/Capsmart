@@ -2,7 +2,7 @@ import React from 'react';
 import { InputGroup, Button, Intent } from "@blueprintjs/core";
 import style from './index.module.scss';
 
-const SearchBar = ({getSearchKey}) => {
+const SearchBar = ({getSearchKey,className}) => {
   const searchButton = (
      <Button
          icon={"search"}
@@ -19,7 +19,7 @@ const SearchBar = ({getSearchKey}) => {
           placeholder="Search here"
           rightElement={searchButton}
           onChange={(e)=>getSearchKey(e.target.value)}
-          className={`${style.searchBarStyle} .bp4-round`}
+          className={`${className} ${style.searchBarStyle} .bp4-round`}
       />
   )
 }
