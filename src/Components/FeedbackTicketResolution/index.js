@@ -12,6 +12,7 @@ import { useReactToPrint } from 'react-to-print';
 import Select from '@mui/material/Select';
 import UserLogo from './../../images/userLogo.jpg';
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
+import history from "../../routes/history";
 
 import style from './index.module.scss';
 import { getDaysAgo } from '../../utils/getDaysAgo';
@@ -270,7 +271,8 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     }
 
     const handleClose = () => {
-        getShowFeedbackTicketResolution(false);
+        // getShowFeedbackTicketResolution(false);
+        history.back();
         sessionStorage.removeItem('screenCapture');
         sessionStorage.removeItem('selectedOption');
         sessionStorage.removeItem('fromUpload');
