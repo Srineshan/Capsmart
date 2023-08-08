@@ -87,9 +87,9 @@ const HelpHome = () => {
             setExceptionTicket(exceptionTicket);
         } else {
             const { data: ticket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&userId=${currentUserData?.id}`);
-            const { data: exceptionTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&generationMode=SYSTEM&userId=${currentUserData?.id}`);
+            // const { data: exceptionTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&generationMode=SYSTEM&userId=${currentUserData?.id}`);
             setMyTicket(ticket?.map(data => data));
-            setExceptionTicket(exceptionTicket);
+            // setExceptionTicket(exceptionTicket);
         }
     };
 
@@ -240,8 +240,8 @@ const HelpHome = () => {
             exceptionCode.push('-');
             description.push(data?.description);
             openDateOrTime.push(format(new Date(data?.createdDateTime), 'MM-dd-yyyy HH:mm'));
-            contractorName.push('-');
-            submittedBy.push(`${data?.createdBy?.name?.firstName} ${data?.createdBy?.name?.lastName}`);
+            contractorName.push(data?.contractorName);
+            submittedBy.push(`${data?.createdBy?.name?.firstName}`);
             lastUpdated.push(format(new Date(data?.modifiedDateTime), 'MM-dd-yyyy'));
         })
 
@@ -289,7 +289,9 @@ const HelpHome = () => {
                             </div>
                             <div className={style.buttonGroupUsers}>
                                 <button className={selectedOption === "TICKETS" && style.activeButton} onClick={() => setSelectedOption('TICKETS')}>Tickets ( {myTicket?.length} )</button>
-                                <button className={selectedOption === "Exception Error Tickets" && style.activeButton} onClick={() => setSelectedOption('Exception Error Tickets')}>Exception Error ( {exceptionTicket?.length} )</button>
+                                {currentUserData?.roles?.includes('Entity Sys Admin') && (
+                                    <button className={selectedOption === "Exception Error Tickets" && style.activeButton} onClick={() => setSelectedOption('Exception Error Tickets')}>Exception Error ( {exceptionTicket?.length} )</button>
+                                )}
                                 <button className={selectedOption === "Messages" && style.activeButton} onClick={() => setSelectedOption('Messages')}>Messages ( {allMessages?.length} )</button>
                             </div>
                             {/* {selectedOption !== "Exception Error Tickets" && ( */}

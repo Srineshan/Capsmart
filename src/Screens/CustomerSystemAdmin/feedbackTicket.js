@@ -62,9 +62,11 @@ const FeedbackTicket = ({ getSelectedOption }) => {
         getTicket();
     }, [currentUser]);
 
+    console.log(currentUser, currentUser?.[0]?.roles?.filter(data => data?.roleName === 'Entity Sys Admin')?.map(data => data)?.length !== 0)
+
 
     const getTicket = async () => {
-        if (currentUser?.[0]?.roles?.includes('Entity Sys Admin')) {
+        if (currentUser?.[0]?.roles?.filter(data => data?.roleName === 'Entity Sys Admin')?.map(data => data)?.length !== 0) {
             const { data: ticket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}`);
             const { data: exceptionTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&generationMode=SYSTEM`);
             setOpenTicket(ticket?.filter(data => (data?.status !== "NEW" && data?.status !== "RESOLVED"))?.map(data => data));
@@ -275,8 +277,8 @@ const FeedbackTicket = ({ getSelectedOption }) => {
             exceptionCode.push('-');
             description.push(data?.description);
             openDateOrTime.push(format(new Date(data?.createdDateTime), 'MM-dd-yyyy HH:mm'));
-            contractorName.push('-');
-            submittedBy.push(`${data?.createdBy?.name?.firstName} ${data?.createdBy?.name?.lastName}`);
+            contractorName.push(data?.contractorName);
+            submittedBy.push(`${data?.createdBy?.name?.firstName}`);
             lastUpdated.push(format(new Date(data?.modifiedDateTime), 'MM-dd-yyyy'));
         })
 
