@@ -251,6 +251,7 @@ body {
         border: 0.4000000059604645px solid #B3B8BD;
         font-weight: 600;
         border-radius: 6px;
+        cursor: pointer;
     }
 }
 
@@ -413,7 +414,7 @@ body {
 
 .ticketTableDataGrid {
     display: grid;
-    grid-template-columns: 5% 10% 10% 12% 12% 12% 10% 10% 10%;
+    grid-template-columns: 5% 12% 12% 12% 13% 13% 12% 12%;
     grid-gap: 1%;
 }
 
