@@ -32,7 +32,7 @@ const FeedbackTicket = ({ getSelectedOption }) => {
     var cookie = new Cookie();
     let authValue = cookie.get('user');
     const loggedUser = jwt(authValue);
-    const ticketsTableHeaderValues = ["", "TKT ID", "TYPE", "GENERATION MODE", "SUBJECT", "OPEN DATE/TIME", "IMPACT", "APP IN USE", "SUBMITTED BY’", "MESSAGES", "LAST UPDATED", "ACTION"];
+    const ticketsTableHeaderValues = ["", "TKT ID", "TYPE", "SUBJECT", "OPEN DATE/TIME", "IMPACT", "APP IN USE", "SUBMITTED BY’", "MESSAGES", "LAST UPDATED", "ACTION"];
     const exceptionTableHeaderValues = ["", "TICKET ID", "EXCEPTION CODE", "DESCRIPTION", "DATE/TIME", "CONTRACTOR NAME", "USER NAME", "LAST UPDATED", "ACTION"];
     const messagesTableHeaderValues = ["", "TYPE", "RELATED TO", "MESSAGE / COMMENT", "LAST RESPONDED", "DATE / TIME", "ACTION"];
 
@@ -66,14 +66,18 @@ const FeedbackTicket = ({ getSelectedOption }) => {
     const getTicket = async () => {
         if (currentUser?.[0]?.roles?.includes('Entity Sys Admin')) {
             const { data: ticket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}`);
+            const { data: exceptionTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&generationMode=SYSTEM`);
             setOpenTicket(ticket?.filter(data => (data?.status !== "NEW" && data?.status !== "RESOLVED"))?.map(data => data));
             setNewTicket(ticket?.filter(data => data?.status === "NEW")?.map(data => data));
             setResolvedTicket(ticket?.filter(data => data?.status === "RESOLVED")?.map(data => data));
+            setExceptionErrors(exceptionTicket);
         } else {
             const { data: ticket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&userId=${currentUser?.[0]?.id}`);
+            const { data: exceptionTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&userId=${currentUser?.[0]?.id}&generationMode=SYSTEM`);
             setOpenTicket(ticket?.filter(data => (data?.status !== "NEW" && data?.status !== "RESOLVED"))?.map(data => data));
             setNewTicket(ticket?.filter(data => data?.status === "NEW")?.map(data => data));
             setResolvedTicket(ticket?.filter(data => data?.status === "RESOLVED")?.map(data => data));
+            setExceptionErrors(exceptionTicket);
         }
         // const { data: ticket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}`);
         // setOpenTicket(ticket?.filter(data => (data?.status !== "NEW" && data?.status !== "RESOLVED"))?.map(data => data));
@@ -187,7 +191,7 @@ const FeedbackTicket = ({ getSelectedOption }) => {
 
     let dot = [];
     let dotTooltipValues = [];
-    let generationMode = [];
+    // let generationMode = [];
     let tktId = [];
     let type = [];
     let subject = [];
@@ -203,7 +207,7 @@ const FeedbackTicket = ({ getSelectedOption }) => {
     const getTicketValues = () => {
         dot = [];
         dotTooltipValues = [];
-        generationMode = [];
+        // generationMode = [];
         tktId = [];
         type = [];
         subject = [];
@@ -219,7 +223,7 @@ const FeedbackTicket = ({ getSelectedOption }) => {
         ticket?.map(data => {
             dot.push('green');
             dotTooltipValues.push('In-Progress');
-            generationMode.push(data?.generationMode);
+            // generationMode.push(data?.generationMode);
             tktId.push(data?.ticketId);
             type.push(data?.type);
             subject.push(data?.subject);
@@ -237,7 +241,7 @@ const FeedbackTicket = ({ getSelectedOption }) => {
             { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
             { "type": "text", "value": tktId, "onClickFunction": onClickFunction },
             { "type": "text", "value": type, "onClickFunction": onClickFunction },
-            { "type": "text", "value": generationMode, "onClickFunction": onClickFunction },
+            // { "type": "text", "value": generationMode, "onClickFunction": onClickFunction },
             { "type": "text", "value": subject, "onClickFunction": onClickFunction },
             { "type": "text", "value": openDateOrTime, "onClickFunction": onClickFunction },
             { "type": "icon", "icon": impact },
@@ -246,6 +250,45 @@ const FeedbackTicket = ({ getSelectedOption }) => {
             { "type": "iconWithCount", "value": messages, "icon": messagesIcon },
             { "type": "text", "value": lastUpdated, "onClickFunction": onClickFunction },
             { "type": "action", "value": action },
+        ];
+    }
+
+    let exceptionCode = [];
+    let description = [];
+    let contractorName = [];
+
+    const getExceptionTicketValues = () => {
+        dot = [];
+        dotTooltipValues = [];
+        tktId = [];
+        exceptionCode = [];
+        description = [];
+        openDateOrTime = [];
+        contractorName = [];
+        submittedBy = [];
+        lastUpdated = [];
+
+        exceptionErrors?.map(data => {
+            dot.push(data?.status === 'RESOLVED' ? 'green' : data?.status === 'INPROGRESS' ? 'yellow' : data?.status === 'NEW' ? 'grey' : '');
+            dotTooltipValues.push(data?.status === 'RESOLVED' ? 'Resolved' : data?.status === 'INPROGRESS' ? 'In-Progress' : data?.status === 'NEW' ? 'New' : '');
+            tktId.push(data?.ticketId);
+            exceptionCode.push('-');
+            description.push(data?.description);
+            openDateOrTime.push(format(new Date(data?.createdDateTime), 'MM-dd-yyyy HH:mm'));
+            contractorName.push('-');
+            submittedBy.push(`${data?.createdBy?.name?.firstName} ${data?.createdBy?.name?.lastName}`);
+            lastUpdated.push(format(new Date(data?.modifiedDateTime), 'MM-dd-yyyy'));
+        })
+
+        return [
+            { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
+            { "type": "text", "value": tktId, "onClickFunction": onClickFunction },
+            { "type": "text", "value": exceptionCode, "onClickFunction": onClickFunction },
+            { "type": "text", "value": description, "onClickFunction": onClickFunction },
+            { "type": "text", "value": openDateOrTime, "onClickFunction": onClickFunction },
+            { "type": "text", "value": contractorName, "onClickFunction": onClickFunction },
+            { "type": "text", "value": submittedBy, "onClickFunction": onClickFunction },
+            { "type": "text", "value": lastUpdated, "onClickFunction": onClickFunction },
         ];
     }
 
@@ -260,20 +303,20 @@ const FeedbackTicket = ({ getSelectedOption }) => {
             <div className={`${style.grid4} ${style.marginTop20}`}>
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="OPEN TICKETS" bigNumber={openTicket?.length} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="OPEN TICKETS" topText='' />
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="NEW TICKETS" bigNumber={newTicket?.length} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="NEW TICKETS" topText='' />
-                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="EXCEPTION ERRORS" bigNumber={0} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="EXCEPTION ERRORS" topText='' />
+                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="EXCEPTION ERRORS" bigNumber={exceptionErrors?.length} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="EXCEPTION ERRORS" topText='' />
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="RESOLVED TICKETS" bigNumber={resolvedTicket?.length} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="RESOLVED TICKETS" topText='' />
             </div>
             <div className={`${style.bigCardStyle} ${style.marginTop20}`}>
                 <div className={style.buttonGroupUsers}>
                     <button className={selectedOption === "OPEN TICKETS" && style.activeButton} onClick={() => setSelectedOption('OPEN TICKETS')}>Open Tickets ( {openTicket?.length} )</button>
-                    <button className={selectedOption === "EXCEPTION ERRORS" && style.activeButton} onClick={() => setSelectedOption('EXCEPTION ERRORS')}>Exception Error ( 0 )</button>
+                    <button className={selectedOption === "EXCEPTION ERRORS" && style.activeButton} onClick={() => setSelectedOption('EXCEPTION ERRORS')}>Exception Error ( {exceptionErrors?.length} )</button>
                     <button className={selectedOption === "MESSAGES" && style.activeButton} onClick={() => setSelectedOption('MESSAGES')}>Messages ( {allMessages?.length} )</button>
                     <button className={selectedOption === "RESOLVED TICKETS" && style.activeButton} onClick={() => setSelectedOption('RESOLVED TICKETS')}>Resolved Tickets ( {resolvedTicket?.length} )</button>
                 </div>
                 <Table
                     tableHeaderValues={tableHeaderValues}
                     tableDataValues={(selectedOption === 'OPEN TICKETS' || selectedOption === "RESOLVED TICKETS" || selectedOption === "NEW TICKETS")
-                        ? getTicketValues() : selectedOption === "EXCEPTION ERRORS" ? getTicketValues()
+                        ? getTicketValues() : selectedOption === "EXCEPTION ERRORS" ? getExceptionTicketValues()
                             : getMessagesValues()}
                     tableData={(selectedOption === 'OPEN TICKETS' || selectedOption === "RESOLVED TICKETS" || selectedOption === "EXCEPTION ERRORS" || selectedOption === "NEW TICKETS")
                         ? ticket : allMessages}

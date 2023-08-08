@@ -617,7 +617,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                                                     ))}
                                                     <TextArea placeholder='reply here...' value={comment} onChange={(e) => setComment(e.target.value)} rows={4} className={`${style.fullWidth} ${style.marginTop10}`} />
                                                     <div className={`${style.alignRight} ${style.marginTop10}`}>
-                                                        <button className={style.sendButton} onClick={() => handleComment()}>{ticketStatus !== 'In-Progress' ? 'SEND' : 'REPLY'}</button>
+                                                        <button className={`${style.sendButton} ${comment === '' ? style.disabledView : ''}`} onClick={() => comment !== '' ? handleComment() : {}}>{ticketStatus !== 'In-Progress' ? 'SEND' : 'REPLY'}</button>
                                                     </div>
                                                 </div>
                                             </>
