@@ -993,17 +993,14 @@ const ReportTypeOverview = () => {
     }
     let oneColValue = []
     const getCompensationCostAnalysisValues = () => {
-        let leftHeadings = ['Obligated Expected', 'Obligated (Actual)', 'Add-ON', 'Obligated Variance', 'Additional Services', 'Reduced Services', 'Actual', 'Invoice By Contractor', 'Fixed (Budgeted)'];
+        let leftHeadings = ['Obligated Expected', 'Obligated (Actual)', 'Add-ON', 'Obligated Variance', 'Contract Year Balance', 'Contract Year Projected Balance', 'Contract Period Balance', 'Contract Period Projected Balance', 'Additional Services', 'Reduced Services', 'Actual', 'Invoice By Contractor', 'Fixed (Budgeted)'];
         let allColValues = [];
         allColValues.push(leftHeadings)
         oneColValue = []
         compensationCostAnalysis?.map(data => {
-            oneColValue = [data?.obligatedExpected, data?.obligatedActivitiesCosts, data?.addOnActivitiesCost, '-', data?.additionalServicesCost, data?.reducedServicesCost, data?.totalActivitiesCost, data?.policyBasedPayment, data?.maxPaymentPerTimesheetSubmission]
+            oneColValue = [data?.obligatedExpected.toFixed(2), data?.obligatedActivitiesCosts.toFixed(2), data?.addOnActivitiesCost.toFixed(2), data?.obligatedVariance.toFixed(2), data?.contractYearBalance.toFixed(2), data?.contractYearProjectedBalance.toFixed(2), data?.contractPeriodBalance.toFixed(2), data?.contractPeriodProjectedBalance.toFixed(2), data?.additionalServicesCost.toFixed(2), data?.reducedServicesCost.toFixed(2), data?.totalActivitiesCost.toFixed(2), data?.policyBasedPayment.toFixed(2), data?.maxPaymentPerTimesheetSubmission.toFixed(2)]
             allColValues.push(oneColValue)
         })
-
-        console.log(leftHeadings, allColValues)
-
         return allColValues;
     }
 
@@ -1101,9 +1098,6 @@ const ReportTypeOverview = () => {
         let headerValues = [];
         headerValues.push('');
         compensationCostAnalysis?.map(data => headerValues.push(`${months[data?.month]}, ${data?.year}`));
-        compensationCostAnalysis?.map(data =>
-            console.log(months[data?.month])
-        )
         return headerValues;
     }
 
@@ -1509,7 +1503,7 @@ const ReportTypeOverview = () => {
                                                             <ReportsTable
                                                                 tableType={'Compensation Cost Analysis'}
                                                                 tableHeader={getHeaderValues()}
-                                                                tableValue={['Obligated Expected', 'Obligated (Actual)', 'Add-ON', 'Obligated Variance', 'Additional Services', 'Reduced Services', 'Actual', 'Invoice By Contractor', 'Fixed (Budgeted)']}
+                                                                tableValue={['Obligated Expected', 'Obligated (Actual)', 'Add-ON', 'Obligated Variance', 'Contract Year Balance', 'Contract Year Projected Balance', 'Contract Period Balance', 'Contract Period Projected Balance', 'Additional Services', 'Reduced Services', 'Actual', 'Invoice By Contractor', 'Fixed (Budgeted)']}
                                                                 activitiesServicesValues={getCompensationCostAnalysisValues()}
                                                                 styleName={style.gridAuto}
                                                             />

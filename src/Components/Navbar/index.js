@@ -271,7 +271,7 @@ const Navbar = () => {
   let homeLink = currentUserRoles?.includes("Contract Manager")
     ? "/contracts"
     : isFlutterRoles?.length !== 0
-      ? `/dashboard/#/dashboardRoute`
+      ? `/home/#/dashboardRoute`
       : currentUserRoles?.includes("Super Sys Admin")
         ? "/partnerPortal"
         : currentUserRoles?.includes("Entity Sys Admin")
@@ -289,7 +289,7 @@ const Navbar = () => {
             : "/entitySitePortal";
     console.log(homeLink);
     if (homeLink === "/") {
-      window.location.href = "/dashboard/#/dashboardRoute";
+      window.location.href = "/home/#/dashboardRoute";
     } else {
       navigate(homeLink);
     }
@@ -490,7 +490,7 @@ const Navbar = () => {
                   <Link to={"/help"} className={style.noFontStyle}>
                     <div className={style.options}>OPEN FEEDBACK TICKET</div>
                   </Link>
-                  <div className={style.options} onClick={handleScreenshot}>
+                  <div className={`${style.options} ${style.cursorPointer}`} onClick={handleScreenshot}>
                     SUPPORT PORTAL
                   </div>
                 </div>

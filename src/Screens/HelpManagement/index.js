@@ -198,8 +198,8 @@ const HelpHome = () => {
         lastUpdated = [];
 
         myTicket?.map(data => {
-            dot.push(data?.status === 'RESOLVED' ? 'green' : data?.status === 'INPROGRESS' ? 'yellow' : data?.status === 'NEW' ? 'grey' : '');
-            dotTooltipValues.push(data?.status === 'RESOLVED' ? 'Resolved' : data?.status === 'INPROGRESS' ? 'In-Progress' : data?.status === 'NEW' ? 'New' : '');
+            dot.push(data?.status === 'RESOLVED' ? 'green' : data?.status === 'INPROGRESS' ? 'yellow' : data?.status === 'NEW' ? 'purple' : data?.status === 'CLOSED' ? 'green' : '');
+            dotTooltipValues.push(data?.status === 'RESOLVED' ? 'Resolved' : data?.status === 'INPROGRESS' ? 'In-Progress' : data?.status === 'NEW' ? 'New' : data?.status === 'CLOSED' ? 'Closed' : '');
             tktId.push(data?.ticketId);
             type.push(data?.type);
             subject.push(data?.subject);
