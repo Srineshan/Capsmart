@@ -9,6 +9,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import { format } from 'date-fns';
 import { useReactToPrint } from 'react-to-print';
+import DoctorAnime from './../../images/doctorAnime.png';
 import Select from '@mui/material/Select';
 import UserLogo from './../../images/userLogo.jpg';
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
@@ -21,6 +22,8 @@ import FeedbackTicketResolutionLog from './feedbackTicketResolutionLog';
 import { formatInTimeZone } from 'date-fns-tz';
 
 const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, isEdit }) => {
+
+    console.log('ticket id', ticketId)
     const loggedInUser = currentUser();
     const [ticketStatus, setTicketStatus] = useState('NEW');
     const [screenCapture, setScreenCapture] = useState('');
@@ -33,7 +36,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     const [assignToId, setAssignToId] = useState();
     const [users, setUsers] = useState([]);
     const [entityAndSiteLevelUsers, setEntityAndSiteLevelUsers] = useState([]);
-    const [currentUserData, setCurrentUserData] = useState(users?.filter(data => data?.id === loggedInUser?.id)?.map(data => data));
+    const [currentUserData, setCurrentUserData] = useState([]);
     const [ticketDetails, setTicketDetails] = useState();
     const [ticketName, setTicketName] = useState('');
     const [fileName, setFileName] = useState(`${currentUserData?.[0]?.id}${new Date().getTime().toString()}.png`);
@@ -44,6 +47,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     const [comment, setComment] = useState('');
     const [allComments, setAllComments] = useState();
     const [allMessages, setAllMessages] = useState();
+    const [userIdList, setUserIdList] = useState([]);
     let screenCaptureImg = sessionStorage.getItem('screenCapture');
     let fromUpload = sessionStorage.getItem('fromUpload');
     let customerName = sessionStorage.getItem('title');
@@ -59,7 +63,11 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
 
     useEffect(() => {
         setCurrentUserData(users?.filter(data => data?.id === loggedInUser?.id)?.map(data => data))
-    }, [users, loggedInUser?.id]);
+    }, [users]);
+
+    useEffect(() => {
+        getUserIdList();
+    }, [allComments])
 
     useEffect(() => {
         setFileName(`${currentUserData?.[0]?.id}${new Date().getTime().toString()}.png`);
@@ -70,13 +78,17 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     }, [screenCapture]);
 
     useEffect(() => {
-        getUser();
+
         if (isEdit) {
             getTicketById();
             getComments();
             getCommentMessages();
         }
     }, [isEdit]);
+
+    useEffect(() => {
+        getUser();
+    }, [userIdList])
 
     useEffect(() => {
         if (isEdit && currentUserData) {
@@ -103,11 +115,15 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     }, [ticketDetails])
 
     const getUser = async () => {
-        const { data: user } = await GET('user-management-service/user');
+        const { data: user } = await GET(`user-management-service/user/ListOfId?userIds=${userIdList}`);
         const { data: entityUsers } = await GET(`user-management-service/user/role?role=Entity Sys User&role=Entity Sys Admin`);
-        setUsers(user);
+        if (user?.length !== 0) {
+            setUsers(user);
+        }
         setEntityAndSiteLevelUsers(entityUsers)
     };
+
+    console.log('users', users);
 
     const getTicketById = async () => {
         const { data: ticket } = await GET(`feedback-management-service/ticket/${ticketId}`);
@@ -119,11 +135,23 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
         setAllComments(comments);
     }
 
+    const getUserIdList = () => {
+        let userId = [loggedInUser?.id];
+        allComments?.map(data => {
+            if (!userId?.includes(data?.commentedBy?.id)) {
+                userId.push(data?.commentedBy?.id);
+            }
+        });
+        setUserIdList(userId);
+    }
+
+    console.log('userId', userIdList);
+
     const getCommentMessages = async () => {
         const { data: messages } = await GET(`feedback-management-service/ticket_comment/message?userId=${currentUserData?.[0]?.id}`);
         setAllMessages(messages);
     }
-
+    console.log('Messages', allMessages);
     const getImgBlob = async () => {
         setBlobFormat(await fetch(screenCapture).then((res) => res.blob()));
     };
@@ -307,6 +335,8 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
         setFileName(e.target.files[0]?.name);
     }
 
+    console.log('users', users?.map(data => data?.profilePic?.file?.fileURL));
+
     return (
         <>
             <Dialog isOpen={getShowFeedbackTicketResolution} onClose={() => handleClose()} className={`${style.addManagerDialogBackground} ${style.feedbackDialog}`} ref={componentRef}>
@@ -344,12 +374,27 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                                 </div>
                                 <div>
                                     <p className={style.extentionLableStyle}>Feedback SUBJECT</p>
-                                    <InputGroup value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Subject" />
+                                    <InputGroup value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Subject" readOnly={ticketDetails?.generationMode === 'SYSTEM'} />
                                 </div>
                                 <div className={style.marginLeft}>
                                     <p className={style.extentionLableStyle}>FEEDBACK DESCRIPTION</p>
-                                    <TextArea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description" rows={3} className={`${style.fullWidth}`} />
+                                    <TextArea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description" rows={3} className={`${style.fullWidth}`} readOnly={ticketDetails?.generationMode === 'SYSTEM'} />
                                 </div>
+                                {
+                                    isEdit && ticketDetails?.generationMode === 'SYSTEM' && (
+                                        <>
+                                            <div>
+                                                <p className={style.extentionLableStyle}>Feedback Trace</p>
+                                                <TextArea value={ticketDetails?.exceptionDetails?.trace} onChange={(e) => setDescription(e.target.value)} placeholder="Trace" rows={3} className={`${style.fullWidth}`} readOnly={ticketDetails?.generationMode === 'SYSTEM'} />
+                                            </div>
+                                            <div className={style.marginLeft}>
+                                                <p className={style.extentionLableStyle}>Feedback Message</p>
+                                                <TextArea value={ticketDetails?.exceptionDetails?.message} onChange={(e) => setDescription(e.target.value)} placeholder="Message" rows={3} className={`${style.fullWidth}`} readOnly={ticketDetails?.generationMode === 'SYSTEM'} />
+                                            </div>
+                                        </>
+                                    )
+                                }
+
                             </div>
                             <div className={`${style.extensionBorder} ${style.marginTop20}`}></div>
                             <div className={`${style.feedbackContentGrid} ${style.marginTop20}`}>
@@ -357,6 +402,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                                     <p className={style.extentionLableStyle}>Feedback TYPE</p>
                                     <FormControl sx={{ maxWidth: 180 }} className={style.reduceMarginTop} size="small">
                                         <Select
+                                            readOnly={ticketDetails?.generationMode === 'SYSTEM'}
                                             labelId="demo-select-small"
                                             id="demo-select-small"
                                             value={type}
@@ -372,6 +418,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                                         <p className={style.extentionLableStyle}>Work impact</p>
                                         <FormControl sx={{ maxWidth: 180 }} className={style.reduceMarginTop} size="small">
                                             <Select
+                                                readOnly={ticketDetails?.generationMode === 'SYSTEM'}
                                                 labelId="demo-select-small"
                                                 id="demo-select-small"
                                                 value={impact}
@@ -388,7 +435,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                                         <p className={style.extentionLableStyle}>SCREEN CAPTURE</p>
                                         <FormControlLabel
                                             control={
-                                                <Switch checked={screenCaptured} size="small" onChange={(e) => setScreenCaptured(e.target.checked)} />
+                                                <Switch checked={screenCaptured} size="small" onChange={(e) => { ticketDetails?.generationMode !== 'SYSTEM' && setScreenCaptured(e.target.checked) }} />
                                             }
                                             className={`${style.switchFontStyle}`}
                                             label={screenCaptured ? 'YES' : 'NO'}
@@ -603,7 +650,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                                                             <div className={style.commentGrid}>
                                                                 <div>
                                                                     {(index === 0 || allComments[index - 1]?.commentedBy?.id !== data?.commentedBy?.id) && (
-                                                                        <img src={UserLogo} alt="logo" className={style.userLogo} />
+                                                                        <img src={users?.filter(user => user?.id === data?.commentedBy?.id)?.map(user => user?.profilePic?.file?.fileURL)[0] || DoctorAnime} alt="logo" className={style.userLogo} />
                                                                     )}
                                                                 </div>
                                                                 <div>
@@ -628,7 +675,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                                 )}
                             </div>
                             <div className={`${style.alignRight} ${style.marginTop20}`}>
-                                <button className={style.doneButton} onClick={() => handleSave()}>Done</button>
+                                <button className={style.doneButton} onClick={() => handleSave()} disabled={ticketDetails?.generationMode === 'SYSTEM'}>Done</button>
                             </div>
                         </div>
                     </div>
