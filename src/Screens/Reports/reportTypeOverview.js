@@ -326,12 +326,12 @@ const ReportTypeOverview = () => {
             let tempStackedSeries = [];
             keysForChart?.map((data, index) => {
                 tempStackedSeries.push({
-                    'data': stackedTemp?.map(stackedData => stackedData?.[data]),
+                    'data': stackedTemp?.map(stackedData => stackedData?.[data] ? stackedData?.[data] : 0),
                     'name': data
                 })
-                setStackedSeries(tempStackedSeries);
             })
-            setStackedData(stackedTemp);
+            setStackedSeries(tempStackedSeries);
+            // setStackedData(stackedTemp);
             setStackedCategories(stackedTemp?.map(stackedData => stackedData?.name));
         }
     }
@@ -403,7 +403,7 @@ const ReportTypeOverview = () => {
                 })
                 setStackedSeries(tempStackedSeries);
             })
-            setStackedData(stackedTemp);
+            // setStackedData(stackedTemp);
             setStackedCategories(stackedTemp?.map(stackedData => stackedData?.name));
         }
     }
@@ -472,9 +472,9 @@ const ReportTypeOverview = () => {
                     'data': stackedTemp?.map(stackedData => stackedData?.[data]),
                     'name': data
                 })
-                setStackedSeries(tempStackedSeries);
             })
-            setStackedData(stackedTemp);
+            // setStackedData(stackedTemp);
+            setStackedSeries(tempStackedSeries);
             setStackedCategories(stackedTemp?.map(stackedData => stackedData?.name));
         }
     }
@@ -535,15 +535,18 @@ const ReportTypeOverview = () => {
             let tempStackedSeries = [];
             keysForChart?.map((data, index) => {
                 tempStackedSeries.push({
-                    'data': stackedTemp?.map(stackedData => stackedData?.[data]),
+                    'data': stackedTemp?.map(stackedData => stackedData?.[data] ? stackedData?.[data] : 0),
                     'name': data
                 })
-                setStackedSeries(tempStackedSeries);
             })
-            setStackedData(stackedTemp);
+            setStackedSeries(tempStackedSeries);
+            // setStackedData(stackedTemp);
             setStackedCategories(stackedTemp?.map(stackedData => stackedData?.name));
         }
     }
+
+    console.log(stackedCategories, stackedSeries, 'stacked')
+
 
     const getCompensationCostAnalysis = async () => {
         const { data: chartData } = await GET(`timesheet-management-service/timesheet/compensationCostAnalysis?contractId=${dataToUseInReport?.selectedContracts}`);

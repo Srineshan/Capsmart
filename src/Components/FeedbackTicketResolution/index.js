@@ -248,27 +248,31 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     }
 
     const handleComment = async () => {
-        let data = {
-            "commentedBy": {
-                "id": currentUserData?.[0]?.id,
-                "name": currentUserData?.[0]?.name,
-                "email": currentUserData?.[0]?.email,
-                "communication": currentUserData?.[0]?.communication
-            },
-            "comment": comment,
-            "ticketId": {
-                "id": ticketId
+        let message = comment;
+        setComment('');
+        if (message !== '') {
+            let data = {
+                "commentedBy": {
+                    "id": currentUserData?.[0]?.id,
+                    "name": currentUserData?.[0]?.name,
+                    "email": currentUserData?.[0]?.email,
+                    "communication": currentUserData?.[0]?.communication
+                },
+                "comment": message,
+                "ticketId": {
+                    "id": ticketId
+                }
             }
+            await POST(`feedback-management-service/ticket_comment`, data)
+                .then(response => {
+                    SuccessToaster('Comment Added Successfully');
+                    setComment('');
+                    getComments();
+                })
+                .catch(error => {
+                    ErrorToaster('Unexpected Error Occured');
+                })
         }
-        await POST(`feedback-management-service/ticket_comment`, data)
-            .then(response => {
-                SuccessToaster('Comment Added Successfully');
-                setComment('');
-                getComments();
-            })
-            .catch(error => {
-                ErrorToaster('Unexpected Error Occured');
-            })
     }
 
     const handleClose = () => {

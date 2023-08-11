@@ -234,7 +234,9 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                         <div className={style.tableDataReportsFontStyle}>Feb 11 2022, 18:09 </div>
                                         <div className={style.tableDataReportsFontStyle}>Carlos C</div>
                                         <div className={style.tableDataReportsFontStyle}>Feb 11 2022</div>
-                                        <Run link={"/reportTypeOverview/addOnActivities"} />
+                                        <Link to={"/reportTypeOverview/addOnActivities"} className={style.linkStyle}>
+                                            <Run />
+                                        </Link>
                                     </div>
                                     {/* <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
                                         <div className={style.tableDataReportsFontStyle}>3</div>
