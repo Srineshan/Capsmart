@@ -325,12 +325,11 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                         <div className={style.displayInRow}>
                             <div className={`${style.twoFieldWidth}`}>
                                 <CommonTextField
-                                    type="tel"
-                                    maxLength="3"
+                                    type="number"
                                     InputProps={{
                                         endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                                     }}
-                                    onChange={(e) => e.target.value >= 0 && handleValueChange('totalSession', e.target.value)}
+                                    onChange={(e) => e.target.value >= 0 && handleValueChange('totalSession', e.target.value.slice(0, 4))}
                                     value={metadata?.totalSession}
                                 />
                             </div>
@@ -349,17 +348,16 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                         <div className={`${style.displayInRow}`}>
                             <div className={`${style.threeFieldWidth}`}>
                                 <CommonTextField
-                                    type="tel"
-                                    maxLength="5"
+                                    type="number"
                                     InputProps={{
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                     }}
-                                    onChange={(e) => e.target.value >= 0 && handleValueChange('sessionAmount', e.target.value)}
+                                    onChange={(e) => e.target.value >= 0 && handleValueChange('sessionAmount', (e.target.value).slice(0, 6))}
                                     value={metadata?.sessionAmount}
                                 />
                             </div>
                             <div className={style.verticalAlignCenter}>
-                                <CommonLabel className={` ${style.marginLeft20}`} value={metadata?.totalSession !== 0 && metadata?.totalSession !== '' ? `${(metadata?.sessionAmount / metadata?.totalSession).toFixed(2)} per Hour` : ''} />
+                                <CommonLabel className={` ${style.marginLeft20}`} value={metadata?.totalSession !== 0 && metadata?.totalSession !== '' && metadata?.totalSession !== NaN ? `${(metadata?.sessionAmount / metadata?.totalSession).toFixed(2)} per Hour` : ''} />
                             </div>
                         </div>
                     </div>

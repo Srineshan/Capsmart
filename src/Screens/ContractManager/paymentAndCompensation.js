@@ -118,27 +118,27 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
 
 
     const setTimesheetPaymentsValue = () => {
-        if (timeSheetTabs?.length !== timesheetPayments?.length) {
-            let temp = [];
-            console.log('inside func', timesheetPayments);
-            timeSheetTabs?.map((data, index) => {
-                // let reducedNumberOfServices = (compensationPolicy === 'ACTIVITY_BASED' || compensationPolicy === 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET') ? 'NA' : timesheetPayments?.[index]?.reducedNumberOfServices || 'NA';
-                // let maxPaymentPerTimesheetSubmission = compensationPolicy === 'ACTIVITY_BASED' ? parseFloat(0) : timesheetPayments?.[index]?.maxPaymentPerTimesheetSubmission || parseFloat(0);
-                temp.push({
-                    timesheetLabel: {
-                        label: timeSheetTabs?.[index]?.timesheetLabel?.label
-                    },
-                    paymentFrequency: data?.servicePeriod?.value,
-                    maxPaymentPerTimesheetSubmission: timesheetPayments?.[index]?.maxPaymentPerTimesheetSubmission || parseFloat(0),
-                    maxPaymentPerContract: timesheetPayments?.[index]?.maxPaymentPerContract || parseFloat(0),
-                    reducedNumberOfServices: timesheetPayments?.[index]?.reducedNumberOfServices || 'NA',
-                    providingAdditionalServices: timesheetPayments?.[index]?.providingAdditionalServices || "NA",
-                    paymentBasedonFixedHoursVsActual: timesheetPayments?.[index]?.paymentBasedonFixedHoursVsActual || true
-                });
+        // if (timeSheetTabs?.length !== timesheetPayments?.length) {
+        let temp = [];
+        console.log('inside func', timesheetPayments);
+        timeSheetTabs?.map((data, index) => {
+            // let reducedNumberOfServices = (compensationPolicy === 'ACTIVITY_BASED' || compensationPolicy === 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET') ? 'NA' : timesheetPayments?.[index]?.reducedNumberOfServices || 'NA';
+            // let maxPaymentPerTimesheetSubmission = compensationPolicy === 'ACTIVITY_BASED' ? parseFloat(0) : timesheetPayments?.[index]?.maxPaymentPerTimesheetSubmission || parseFloat(0);
+            temp.push({
+                timesheetLabel: {
+                    label: timeSheetTabs?.[index]?.timesheetLabel?.label
+                },
+                paymentFrequency: data?.servicePeriod?.value,
+                maxPaymentPerTimesheetSubmission: timesheetPayments?.[index]?.maxPaymentPerTimesheetSubmission || parseFloat(0),
+                maxPaymentPerContract: timesheetPayments?.[index]?.maxPaymentPerContract || parseFloat(0),
+                reducedNumberOfServices: timesheetPayments?.[index]?.reducedNumberOfServices || 'NA',
+                providingAdditionalServices: timesheetPayments?.[index]?.providingAdditionalServices || "NA",
+                paymentBasedonFixedHoursVsActual: timesheetPayments?.[index]?.paymentBasedonFixedHoursVsActual || true
             });
-            setTimesheetPayments(temp);
-            getPaymentFields();
-        }
+        });
+        setTimesheetPayments(temp);
+        getPaymentFields();
+        // }
     }
 
     useEffect(() => {
