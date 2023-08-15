@@ -682,10 +682,10 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         ...(((serviceTypeTemplate !== CLINIC && serviceTypeTemplate !== PROCEDUREREADING) && {
           "contractedSchedules": [{
             "minimum": {
-              "value": parseInt(dataValues?.min || '0')
+              "value": parseFloat(dataValues?.min || '0')
             },
             "maximum": {
-              "value": parseInt(dataValues?.max || '0')
+              "value": parseFloat(dataValues?.max || '0')
             },
             "frequency": dataValues?.frequency,
             "startDate": contractTermPeriod?.start,
@@ -716,7 +716,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         })),
         ...(serviceTypeTemplate !== SUPPLEMENTAL && {
           "additionalSchedule": {
-            "value": parseInt(dataValues?.additionalScheduleValue),
+            "value": parseFloat(dataValues?.additionalScheduleValue),
             "frequency": dataValues?.additionalScheduleFrequency,
             "scheduleRequired": dataValues?.additionalScheduleRequired
           }
@@ -762,7 +762,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           },
         }),
         "totalSessions": {
-          "value": parseInt(dataValues?.totalSession),
+          "value": parseFloat(dataValues?.totalSession),
           "frequency": dataValues?.totalSessionFrequency
         },
         "sessionsAsNeeded": dataValues?.sessionsAsNeeded || false,
