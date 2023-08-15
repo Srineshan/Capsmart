@@ -77,22 +77,71 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
     const [showDeliveryDialog, setShowDeliveryDialog] = useState(false);
     const [isAddRecipients, setIsAddRecipients] = useState(false);
     const [userDetails, setUserDetails] = useState({});
-    const category = (reportType === 'activitiesOrServices' || reportType === 'addOnActivities' || reportType === 'scheduledActivity') ?
-        'SERVICES_ACTIVITIES' :
-        (reportType === 'upcomingContractRenewals' || reportType === 'oneTimeContract') ?
-            'CONTRACT_MANAGEMENT' :
-            (reportType === 'complianceStatus' || reportType === 'nonCompliant') ?
-                'CONTRACT_COMPLIANCE' :
-                (reportType === 'complianceStatus' || reportType === 'scheduledActivityByContract') ?
-                    'CONTRACT_PERFORMANCE' :
-                    (reportType === 'paymentsProcessingSummary') ?
-                        'PAYMENT' : '';
+    // const category = (reportType === 'activitiesOrServices' || reportType === 'addOnActivities' || reportType === 'scheduledActivity') ?
+    //     'SERVICES_ACTIVITIES' :
+    //     (reportType === 'upcomingContractRenewals' || reportType === 'oneTimeContract') ?
+    //         'CONTRACT_MANAGEMENT' :
+    //         (reportType === 'complianceStatus' || reportType === 'nonCompliant') ?
+    //             'CONTRACT_COMPLIANCE' :
+    //             (reportType === 'complianceStatus' || reportType === 'scheduledActivityByContract') ?
+    //                 'CONTRACT_PERFORMANCE' :
+    //                 (reportType === 'paymentsProcessingSummary') ?
+    //                     'PAYMENT' : '';
 
-    const type = (reportType === 'activitiesOrServices' ?
-        'ACTIVITES_SERVICES_LOG_SUMMARY' :
-        reportType === 'addOnActivities' ? 'ADDON_ACTIVITES_SERVICES_LOG_SUMMARY' :
-            reportType === 'paymentsProcessingSummary' ? 'PAYMENT_PROCESSING_SUMMARY' : ''
-    );
+    // const availableCategories = {
+    //     servicesOrActivities: 'SERVICES_ACTIVITIES',
+    //     contractManagement: 'CONTRACT_MANAGEMENT',
+    //     contractCompliance: 'CONTRACT_COMPLIANCE',
+    //     contractPerformance: 'CONTRACT_PERFORMANCE',
+    //     payments: 'PAYMENT',
+    //     timesheets: 'TIMESHEET',
+    //     reviewsApprovals: 'REVIEWS_APPROVALS',
+    //     systemAdministrative: 'SYSTEM_ADMINISTRATIVE',
+    // }
+
+    const availableCategories = {
+        'activitiesOrServices': 'SERVICES_ACTIVITIES',
+        'addOnActivities': 'SERVICES_ACTIVITIES',
+        'scheduledActivity': 'SERVICES_ACTIVITIES',
+        'upcomingContractRenewals': 'CONTRACT_MANAGEMENT',
+        'oneTimeContract': 'CONTRACT_COMPLIANCE',
+        'complianceStatus': 'CONTRACT_COMPLIANCE',
+        'nonCompliant': 'CONTRACT_COMPLIANCE',
+        'paidConsultingHours': 'CONTRACT_PERFORMANCE',
+        'scheduledActivityByContract': 'CONTRACT_PERFORMANCE',
+        'paymentsProcessingSummary': 'PAYMENT',
+        'compensationCostAnalysis': 'PAYMENT',
+        'timeAndPaymentLog': 'PAYMENT',
+        'siteDepartmentSpecificContractorSummary': 'PAYMENT',
+        'timesheetProcessingSummary': 'TIMESHEET',
+        'listingOfTimesheetsNotPaid': 'TIMESHEET',
+        'submittedTimesheetsPaymentStatus': 'TIMESHEET'
+    }
+
+    // const type = (reportType === 'activitiesOrServices' ?
+    //     'ACTIVITES_SERVICES_LOG_SUMMARY' :
+    //     reportType === 'addOnActivities' ? 'ADDON_ACTIVITES_SERVICES_LOG_SUMMARY' :
+    //         reportType === 'paymentsProcessingSummary' ? 'PAYMENT_PROCESSING_SUMMARY' : ''
+    // );
+
+    const typeList = {
+        'activitiesOrServices': 'ACTIVITES_SERVICES_LOG_SUMMARY',
+        'addOnActivities': 'ADDON_ACTIVITES_SERVICES_LOG_SUMMARY',
+        'scheduledActivity': '',
+        'upcomingContractRenewals': 'UPCOMING_CONTRACT_RENEWALS',
+        'oneTimeContract': '',
+        'complianceStatus': '',
+        'nonCompliant': '',
+        'paidConsultingHours': '',
+        'scheduledActivityByContract': '',
+        'paymentsProcessingSummary': 'PAYMENT_PROCESSING_SUMMARY',
+        'compensationCostAnalysis': 'COST_REPORT_FOR_CONTRACTED_SERVICES_PERFORMED',
+        'timeAndPaymentLog': 'TIME_AND_PAYEMENT_LOG_FOR_CONTRACTED_SERVICES',
+        'siteDepartmentSpecificContractorSummary': 'SITE_DEPARTMENT_SPECIFIC_CONTRACTOR_SUMMARY',
+        'timesheetProcessingSummary': 'TIMESHEET_PROCESSING_SUMMARY',
+        'listingOfTimesheetsNotPaid': 'LISTING_OF_TIMESHEETS_NOTPAID',
+        'submittedTimesheetsPaymentStatus': 'SUBMITTED_TIMESHEETS_PAYMENT_STATUS'
+    }
 
     const filters = {
         reportingTimePeriod: dataToUseInReport?.reportingTimePeriod,
@@ -112,15 +161,14 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
         const { data: user } = await GET(`user-management-service/user/${currentUserData?.id}`);
         setUserDetails(user);
     }
-
     const handleSave = async () => {
         let data = {
             "tenant": {
                 "id": TenantID
             },
             "report": {
-                "category": category,
-                "type": type,
+                "category": availableCategories[reportType],
+                "type": typeList[reportType],
                 "title": reportName,
                 "description": reportDescription,
                 "schedule": {
@@ -154,6 +202,8 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
             ErrorToaster('All Fields are Mandatory');
         }
     }
+    console.log(availableCategories[reportType], 'savereport')
+
     return (
         <div>
             <Dialog isOpen={getSaveReportDialog} onClose={() => getSaveReportDialog(false)} className={`${style.dialogStyle} ${style.dialogPaddingBottom}`}>

@@ -29,7 +29,6 @@ import ReportsTable from '../../Components/ReportsTable';
 import ReportNoDataBox from '../../Components/ReusableSmallComponents/reportNoDataBox';
 
 const ReportTypeOverview = () => {
-    const data = [{ label: 'Done', value: 60 }, { label: 'To Do', value: 20 }, { label: 'Not Done', value: 20 }];
     const pieSampleData = [{ key: 'Done', value: 60 }, { key: 'To Do', value: 20 }, { key: 'Not Done', value: 20 }];
     const { reportType } = useParams();
     const handle = useFullScreenHandle();
@@ -216,7 +215,7 @@ const ReportTypeOverview = () => {
     }, [isNonCompliantReportTileClicked]);
 
     useEffect(() => {
-        setIsNoData(paymentsReportLog?.paymentContracts?.length !== 0 ? false : true);
+        setIsNoData((paymentsReportLog?.paymentContracts?.length === 0 && paymentsReportLog?.rejected?.length === 0 && paymentsReportLog?.paymentPastDue?.length === 0 && paymentsReportLog?.paymentNotDone?.length === 0 && paymentsReportLog?.paymentDelayed?.length === 0 && paymentsReportLog?.paidOnTime?.length === 0) ? true : false);
     }, [paymentsReportLog])
 
     useEffect(() => {
@@ -270,8 +269,8 @@ const ReportTypeOverview = () => {
 
     const getAcvityAndServices = async () => {
         const { data: chartData } = await GET(`timesheet-management-service/report/activityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
-        const { data: reportLogData } = await GET(`timesheet-management-service/report/activityServiceLog?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
-        setReportLog(reportLogData);
+        // const { data: reportLogData } = await GET(`timesheet-management-service/report/activityServiceLog?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
+        setReportLog(chartData?.activities);
         if (chartData) {
             let temp = [];
             chartData?.activityServiceReports?.map((pie, index) => {
@@ -338,9 +337,9 @@ const ReportTypeOverview = () => {
 
     const getAddOnServices = async () => {
         const { data: chartData } = await GET(`timesheet-management-service/report/addOnActivityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
-        const { data: reportLogData } = await GET(`timesheet-management-service/report/addOnActivityServiceLog?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
-        setAddOnAcceptedReportLog(reportLogData?.approvedActivities);
-        setAddOnRejectedReportLog(reportLogData?.rejectedActivities);
+        // const { data: reportLogData } = await GET(`timesheet-management-service/report/addOnActivityServiceLog?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
+        setAddOnAcceptedReportLog(chartData?.approvedActivities);
+        setAddOnRejectedReportLog(chartData?.rejectedActivities);
         if (chartData) {
             let temp = [];
             chartData?.addOnActivityServiceReports?.map((pie, index) => {
@@ -410,9 +409,9 @@ const ReportTypeOverview = () => {
 
     const getAddOnServicesWithParameter = async () => {
         const { data: chartData } = await GET(`timesheet-management-service/report/addOnActivityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
-        const { data: reportLogData } = await GET(`timesheet-management-service/report/addOnActivityServiceLog?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
-        setAddOnAcceptedReportLog(reportLogData?.approvedActivities);
-        setAddOnRejectedReportLog(reportLogData?.rejectedActivities);
+        // const { data: reportLogData } = await GET(`timesheet-management-service/report/addOnActivityServiceLog?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
+        setAddOnAcceptedReportLog(chartData?.approvedActivities);
+        setAddOnRejectedReportLog(chartData?.rejectedActivities);
         // setIsLoading(false);
         if (chartData) {
             let temp = [];
@@ -481,8 +480,8 @@ const ReportTypeOverview = () => {
 
     const getAcvityAndServicesWithParameter = async () => {
         const { data: chartData } = await GET(`timesheet-management-service/report/activityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
-        const { data: reportLogData } = await GET(`timesheet-management-service/report/activityServiceLog?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
-        setReportLog(reportLogData);
+        // const { data: reportLogData } = await GET(`timesheet-management-service/report/activityServiceLog?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
+        setReportLog(chartData?.activities);
         // setIsLoading(false);
         if (chartData) {
             let temp = [];
@@ -526,7 +525,12 @@ const ReportTypeOverview = () => {
             let keysForChart = [];
             chartData?.completedActivitiesBycategoryAndMonth?.map((stack, index) => {
                 let values = stack.types;
-                keysForChart = Object.keys(stack.types);
+                let keysInObject = Object.keys(stack.types);
+                keysInObject?.map(data => {
+                    if (!keysForChart?.includes(data)) {
+                        keysForChart.push(data);
+                    }
+                })
                 setStackedKeys(keysForChart);
                 values['name'] = months[stack?.month];
                 values['type'] = 1;
@@ -1193,7 +1197,7 @@ const ReportTypeOverview = () => {
                                                     </div>
                                                     <div>
                                                         <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Contracted Service Provider </div>
-                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedContractedServiceProviderToSend?.name?.firstName}</div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{`${dataToUseInReport?.selectedContractedServiceProviderToSend?.name?.firstName} ${dataToUseInReport?.selectedContractedServiceProviderToSend?.name?.lastName}`}</div>
                                                     </div>
                                                 </div>
                                             ) : (reportType === "paymentsProcessingSummary") ? (
