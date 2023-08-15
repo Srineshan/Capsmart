@@ -38,5 +38,5 @@ export const SpecifiedCountCalculator = (contractedSchedules, timeCommitment, ad
 
         }
     }
-    return schedulesTotal;
+    return (schedulesTotal).toFixed(2);
 }
