@@ -932,14 +932,13 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                             <div className={`${style.displayInRow}`}>
                                 <div className={`${style.threeFieldWidth}`}>
                                     <CommonTextField
-                                        type="tel"
-                                        maxLength="5"
+                                        type="number"
                                         disabled={metadata?.sessionDuration === '' || metadata?.sessionDuration === '0' || metadata?.sessionDuration === undefined}
                                         InputProps={{
                                             startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
                                         }}
                                         value={metadata?.sessionAmount}
-                                        onChange={(e) => e.target.value >= 0 && handleValueChange('sessionAmount', e.target.value)}
+                                        onChange={(e) => e.target.value >= 0 && handleValueChange('sessionAmount', (e.target.value).slice(0, 7))}
                                     />
                                 </div>
                                 <div className={style.verticalAlignCenter}>
@@ -994,7 +993,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                         metadata?.additionalScheduleRequired &&
                         <>
                             <CommonInputField value={metadata?.additionalScheduleValue}
-                                onChange={(e) => e.target.value >= 0 && handleValueChange('additionalScheduleValue', e.target.value)}
+                                onChange={(e) => handleValueChange('additionalScheduleValue', (e.target.value).slice(0, 4))}
                                 className={` ${style.fullWidth}`} />
                             <CommonSelectField className={`${style.fullWidth}`}
                                 value={metadata?.additionalScheduleFrequency || ''}
@@ -1016,7 +1015,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                         <EditableText placeholder='' value={metadata?.totalSession} type='tel' maxLength="5"
                             className={style.editableSessionTextStyle}
                             onChange={(e) => onTotalSessionChange(e)} />
-                        <div className={`${style.textElement} ${parseInt(metadata?.totalSession) === specified ? style.greenBase : style.redBase}`}>{specified} Minimum Specified</div>
+                        <div className={`${style.textElement} ${parseFloat(metadata?.totalSession) === parseFloat(specified) ? style.greenBase : style.redBase}`}>{specified} Minimum Specified</div>
                     </div>
                     <div className={style.verticalAlignCenter}>
                         <CommonLabel value={`For ${timeCommitment?.value} ${timeCommitment?.frequency === 'WEEK' ? 'Weeks' : 'Months'} Per Contract Year`} />

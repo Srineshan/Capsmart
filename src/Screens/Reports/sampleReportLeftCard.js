@@ -142,6 +142,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
         });
         let uniqueDepartments = tempDept.filter((ele, ind) => ind === tempDept.findIndex(elem => elem.id === ele.id && elem.id === ele.id));
         setDepartments(uniqueDepartments);
+        setSelectedDepartments([uniqueDepartments?.[0]?.id]);
+        setSelectedDepartmentsToSend([uniqueDepartments?.[0]]);
     }, [selectedSitesToSend]);
 
     useEffect(() => {

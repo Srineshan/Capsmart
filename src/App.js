@@ -208,7 +208,7 @@ const App = ({ props }) => {
   axios.interceptors.response.use((response) => {
     return response;
   }, (error) => {
-    logError(error);
+    // logError(error);
     console.log('response error', error);
     return error;
   })

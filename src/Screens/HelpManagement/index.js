@@ -31,6 +31,7 @@ import SearchBar from '../../Components/SearchBar';
 
 const HelpHome = () => {
     const [myTicket, setMyTicket] = useState([]);
+    const [exceptionTicket, setExceptionTicket] = useState([]);
     const [showVideoOptions, setShowVideoOptions] = useState(false);
     const [showVideoConnectingDialog, setShowVideoConnectingDialog] = useState(false);
     const [showChatView, setShowChatView] = useState(false);
@@ -43,12 +44,13 @@ const HelpHome = () => {
     const [from, setFrom] = useState(subDays(new Date(), 30));
     const [to, setTo] = useState(new Date());
     const [currentUserDetails, setCurrentUserDetails] = useState({});
-    const ticketsTableHeaderValues = ["", "TICKET ID", "TYPE", "GENERATION MODE", "SUBJECT/ ISSUE", "CUSTOMER", "START DATE/TIME", "LAST UPDATED", "USER NAME"];
+    const ticketsTableHeaderValues = ["", "TICKET ID", "TYPE", "SUBJECT/ ISSUE", "CUSTOMER", "START DATE/TIME", "LAST UPDATED", "USER NAME"];
+    const exceptionTicketsTableHeaderValues = ["", "TICKET ID", "EXCEPTION CODE", "DESCRIPTION", "DATE/TIME", "CONTRACTOR NAME", "USER NAME", "LAST UPDATED"];
     const tutorialsTableHeaderValues = ["", "TITLE", "DESCRIPTION", "AUTHOR", "TYPE", "DATE / TIME", "LINK", "COMMENT"];
     const releaseTableHeaderValues = ["", "TITLE", "DESCRIPTION", "AUTHOR", "TYPE", "DATE / TIME", "UPLOAD", "COMMENT", "ACTION"];
     const messageTableHeaderValues = ["", "TYPE", "RELATED TO", "MESSAGE / COMMENT", "LAST RESPONDED", "DATE / TIME", "ACTION"];
     const tableHeaderValues = (selectedOption === 'TICKETS') ? ticketsTableHeaderValues : (selectedOption === "TUTORIALS & VIDEOS") ? tutorialsTableHeaderValues :
-        (selectedOption === "RELEASE NOTES") ? releaseTableHeaderValues : selectedOption === "Messages" ? messageTableHeaderValues : '';
+        (selectedOption === "RELEASE NOTES") ? releaseTableHeaderValues : selectedOption === "Messages" ? messageTableHeaderValues : selectedOption === 'Exception Error Tickets' ? exceptionTicketsTableHeaderValues : '';
     const [allMessages, setAllMessages] = useState();
     let customerName = sessionStorage.getItem('title');
     const currentUserData = currentUser();
@@ -80,10 +82,14 @@ const HelpHome = () => {
     const getTicket = async () => {
         if (currentUserData?.roles?.includes('Entity Sys Admin')) {
             const { data: ticket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}`);
+            const { data: exceptionTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&generationMode=SYSTEM`);
             setMyTicket(ticket?.map(data => data));
+            setExceptionTicket(exceptionTicket);
         } else {
             const { data: ticket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&userId=${currentUserData?.id}`);
+            // const { data: exceptionTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&generationMode=SYSTEM&userId=${currentUserData?.id}`);
             setMyTicket(ticket?.map(data => data));
+            // setExceptionTicket(exceptionTicket);
         }
     };
 
@@ -170,6 +176,9 @@ const HelpHome = () => {
     let tktId = [];
     let generationMode = [];
     let type = [];
+    let exceptionCode = [];
+    let description = [];
+    let contractorName = [];
     let subject = [];
     let openDateOrTime = [];
     let customer = [];
@@ -192,7 +201,6 @@ const HelpHome = () => {
             dot.push(data?.status === 'RESOLVED' ? 'green' : data?.status === 'INPROGRESS' ? 'yellow' : data?.status === 'NEW' ? 'purple' : data?.status === 'CLOSED' ? 'green' : '');
             dotTooltipValues.push(data?.status === 'RESOLVED' ? 'Resolved' : data?.status === 'INPROGRESS' ? 'In-Progress' : data?.status === 'NEW' ? 'New' : data?.status === 'CLOSED' ? 'Closed' : '');
             tktId.push(data?.ticketId);
-            generationMode.push(data?.generationMode);
             type.push(data?.type);
             subject.push(data?.subject);
             openDateOrTime.push(format(new Date(data?.createdDateTime), 'MM-dd-yyyy HH:mm'));
@@ -205,12 +213,47 @@ const HelpHome = () => {
             { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
             { "type": "text", "value": tktId, "onClickFunction": onClickFunction },
             { "type": "text", "value": type, "onClickFunction": onClickFunction },
-            { "type": "text", "value": generationMode, "onClickFunction": onClickFunction },
             { "type": "text", "value": subject, "onClickFunction": onClickFunction },
             { "type": "text", "value": customer, "onClickFunction": onClickFunction },
             { "type": "text", "value": openDateOrTime, "onClickFunction": onClickFunction },
             { "type": "text", "value": lastUpdated, "onClickFunction": onClickFunction },
             { "type": "text", "value": submittedBy, "onClickFunction": onClickFunction },
+        ];
+    }
+
+    const getExceptionTicketValues = () => {
+        dot = [];
+        dotTooltipValues = [];
+        generationMode = [];
+        tktId = [];
+        exceptionCode = [];
+        description = [];
+        openDateOrTime = [];
+        contractorName = [];
+        submittedBy = [];
+        lastUpdated = [];
+
+        exceptionTicket?.map(data => {
+            dot.push(data?.status === 'RESOLVED' ? 'green' : data?.status === 'INPROGRESS' ? 'yellow' : data?.status === 'NEW' ? 'grey' : '');
+            dotTooltipValues.push(data?.status === 'RESOLVED' ? 'Resolved' : data?.status === 'INPROGRESS' ? 'In-Progress' : data?.status === 'NEW' ? 'New' : '');
+            tktId.push(data?.ticketId);
+            exceptionCode.push('-');
+            description.push(data?.description);
+            openDateOrTime.push(format(new Date(data?.createdDateTime), 'MM-dd-yyyy HH:mm'));
+            contractorName.push(data?.contractorName);
+            submittedBy.push(`${data?.createdBy?.name?.firstName}`);
+            lastUpdated.push(format(new Date(data?.modifiedDateTime), 'MM-dd-yyyy'));
+        })
+
+        return [
+            { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
+            { "type": "text", "value": tktId, "onClickFunction": onClickFunction },
+            { "type": "text", "value": exceptionCode, "onClickFunction": onClickFunction },
+            { "type": "text", "value": description, "onClickFunction": onClickFunction },
+            { "type": "text", "value": openDateOrTime, "onClickFunction": onClickFunction },
+            { "type": "text", "value": contractorName, "onClickFunction": onClickFunction },
+            { "type": "text", "value": submittedBy, "onClickFunction": onClickFunction },
+            { "type": "text", "value": lastUpdated, "onClickFunction": onClickFunction },
         ];
     }
 
@@ -246,24 +289,26 @@ const HelpHome = () => {
                             </div>
                             <div className={style.buttonGroupUsers}>
                                 <button className={selectedOption === "TICKETS" && style.activeButton} onClick={() => setSelectedOption('TICKETS')}>Tickets ( {myTicket?.length} )</button>
-                                {/* <button className={selectedOption === "Exception Error Tickets" && style.activeButton} onClick={() => setSelectedOption('Exception Error Tickets')}>Exception Error ( 0 )</button> */}
+                                {currentUserData?.roles?.includes('Entity Sys Admin') && (
+                                    <button className={selectedOption === "Exception Error Tickets" && style.activeButton} onClick={() => setSelectedOption('Exception Error Tickets')}>Exception Error ( {exceptionTicket?.length} )</button>
+                                )}
                                 <button className={selectedOption === "Messages" && style.activeButton} onClick={() => setSelectedOption('Messages')}>Messages ( {allMessages?.length} )</button>
                             </div>
-                            {selectedOption !== "Exception Error Tickets" && (
-                                <Table
-                                    tableHeaderValues={tableHeaderValues}
-                                    tableDataValues={selectedOption === 'TICKETS' ? getTicketValues() : (selectedOption === "TUTORIALS & VIDEOS"
-                                        || selectedOption === "RELEASE NOTES") ? []
-                                        : selectedOption === "Messages" ? getMessagesValues() : []}
-                                    tableData={selectedOption === 'TICKETS' ? myTicket : (selectedOption === "TUTORIALS & VIDEOS" || selectedOption === "RELEASE NOTES")
-                                        ? [] : selectedOption === "Messages" ? allMessages : []}
-                                    gridStyle={selectedOption === 'TICKETS' ? style.ticketTableDataGrid : selectedOption === "TUTORIALS & VIDEOS" ? style.tutorialTableDataGrid
-                                        : selectedOption === "RELEASE NOTES" ? style.releaseTableDataGrid
-                                            : selectedOption === "Messages" ? style.messageTableDataGrid : ''}
-                                    scrollStyle={style.helpScrollStyle}
-                                    actions={selectedOption === 'Messages' ? messagesActionsData : []}
-                                />
-                            )}
+                            {/* {selectedOption !== "Exception Error Tickets" && ( */}
+                            <Table
+                                tableHeaderValues={tableHeaderValues}
+                                tableDataValues={selectedOption === 'TICKETS' ? getTicketValues() : (selectedOption === "TUTORIALS & VIDEOS"
+                                    || selectedOption === "RELEASE NOTES") ? []
+                                    : selectedOption === "Messages" ? getMessagesValues() : selectedOption === 'Exception Error Tickets' ? getExceptionTicketValues() : []}
+                                tableData={selectedOption === 'TICKETS' ? myTicket : (selectedOption === "TUTORIALS & VIDEOS" || selectedOption === "RELEASE NOTES")
+                                    ? [] : selectedOption === "Messages" ? allMessages : selectedOption === 'Exception Error Tickets' ? exceptionTicket : []}
+                                gridStyle={(selectedOption === 'TICKETS' || selectedOption === 'Exception Error Tickets') ? style.ticketTableDataGrid : selectedOption === "TUTORIALS & VIDEOS" ? style.tutorialTableDataGrid
+                                    : selectedOption === "RELEASE NOTES" ? style.releaseTableDataGrid
+                                        : selectedOption === "Messages" ? style.messageTableDataGrid : ''}
+                                scrollStyle={style.helpScrollStyle}
+                                actions={selectedOption === 'Messages' ? messagesActionsData : []}
+                            />
+                            {/* )} */}
                             {showFeedbackTicketResolution && (
                                 <FeedbackTicketResolution getShowFeedbackTicketResolution={getShowFeedbackTicketResolution} ticketId={ticketId} isEdit={isEdit} />
                             )}
