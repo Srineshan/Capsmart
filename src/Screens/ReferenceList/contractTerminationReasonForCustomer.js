@@ -160,26 +160,43 @@ const TerminationReasonForCustomer = () => {
   };
 
   const handlePostContractTerminationReason = async () => {
-    let temp = selectedTerminationReasons;
+    let temp = [...selectedTerminationReasons];
     let selectedSecondaryReasonListPerTerminationReasons = temp?.map((data) =>
       data?.secondary_reasons?.filter((item) =>
         selectedSubReasons.includes(item)
       )
     );
-    let changedReasons = selectedTerminationReasons?.map((data, index) => ({
-      ...data,
-      secondary_reasons:
-        selectedSecondaryReasonListPerTerminationReasons[index],
-    }));
+
+    let changedReasons = [...selectedTerminationReasons]?.map((data, index) => {
+      let existingReason = terminationReason?.find(
+        (temp) => temp.primary_reason == data.primary_reason
+      )?.secondary_reasons;
+      if (existingReason) {
+        return {
+          ...data,
+          secondary_reasons: [
+            ...new Set([
+              ...selectedSecondaryReasonListPerTerminationReasons[index],
+              ...existingReason,
+            ]),
+          ],
+        };
+      } else {
+        return {
+          ...data,
+          secondary_reasons: [
+            ...selectedSecondaryReasonListPerTerminationReasons[index],
+          ],
+        };
+      }
+    });
+
+    // console.log(changedReasons);
+
     let data = changedReasons?.map((data) => ({
       ...data,
       entityId: { id: TenantID },
     }));
-
-    // console.log(
-    //   selectedSecondaryReasonListPerTerminationReasons,
-    //   changedReasons
-    // );
 
     if (selectedTerminationReasons?.length !== 0) {
       await POST("entity-service/terminationReason", JSON.stringify(data))
@@ -204,6 +221,7 @@ const TerminationReasonForCustomer = () => {
       .then((response) => {
         SuccessToaster("Termination Reason Deleted Successfully");
         getTerminationReason();
+        setSelectedTerminationReasons([]);
         getLastModifiedDate();
       })
       .catch((error) => {
@@ -222,11 +240,11 @@ const TerminationReasonForCustomer = () => {
         ?.map((data) => data);
     temp.secondary_reasons = selectedSecondaryReasonListPerTerminationReasons;
     temp.entityId = { id: TenantID };
-    console.log(
-      selectedData,
-      temp,
-      selectedSecondaryReasonListPerTerminationReasons
-    );
+    // console.log(
+    //   selectedData,
+    //   temp,
+    //   selectedSecondaryReasonListPerTerminationReasons
+    // );
     await PUT(
       `entity-service/terminationReason/${selectedData?.id}`,
       JSON.stringify(temp)
@@ -235,6 +253,8 @@ const TerminationReasonForCustomer = () => {
         SuccessToaster("Termination Reason Updated Successfully");
         getTerminationReason();
         setSelectedTerminationReason({});
+        setSelectedTerminationReasons([]);
+        getLastModifiedDate();
       })
       .catch((error) => {
         ErrorToaster(error);
@@ -242,6 +262,46 @@ const TerminationReasonForCustomer = () => {
   };
 
   // console.log(selectedTerminationReasons, selectedSubReasons);
+
+  const FindSubReasonsHandler = (data) => {
+    if (data?.terminationBy === "ENTITY") {
+      let currentTerminationReason = terminationReason?.find(
+        (reason) => reason.primary_reason == data.primary_reason
+      )?.secondary_reasons;
+      let response = currentTerminationReason
+        ? data.secondary_reasons
+            .map((secReason) => !currentTerminationReason.includes(secReason))
+            .some(Boolean)
+        : !terminationReason?.find(
+            (reason) => reason.primary_reason == data.primary_reason
+          )
+        ? true
+        : false;
+
+      return response;
+    }
+    return false;
+  };
+
+  const FindSubReasonsHandlerContractor = (data) => {
+    if (data?.terminationBy === "CONTRACTOR") {
+      let currentTerminationReason = terminationReason?.find(
+        (reason) => reason.primary_reason == data.primary_reason
+      )?.secondary_reasons;
+      let response = currentTerminationReason
+        ? data.secondary_reasons
+            .map((secReason) => !currentTerminationReason.includes(secReason))
+            .some(Boolean)
+        : !terminationReason?.find(
+            (reason) => reason.primary_reason == data.primary_reason
+          )
+        ? true
+        : false;
+
+      return response;
+    }
+    return false;
+  };
 
   return (
     <Fragment>
@@ -344,16 +404,11 @@ const TerminationReasonForCustomer = () => {
                                     }
                                   />
                                 </div>
+
                                 {selectedCause === "Contractor" &&
                                   terminationReasonMaster
-                                    ?.filter(
-                                      (data) =>
-                                        data?.terminationBy === "CONTRACTOR" &&
-                                        !terminationReason.some(
-                                          (customerData) =>
-                                            customerData?.primary_reason ===
-                                            data?.primary_reason
-                                        )
+                                    ?.filter((data) =>
+                                      FindSubReasonsHandlerContractor(data)
                                     )
                                     ?.map((data, index) => (
                                       <>
@@ -371,8 +426,21 @@ const TerminationReasonForCustomer = () => {
                                             {data?.primary_reason}
                                           </p>
                                         </div>
-                                        {data?.secondary_reasons?.map(
-                                          (subData, subIndex) => (
+                                        {data?.secondary_reasons
+                                          ?.filter(
+                                            (secReasondata) =>
+                                              !terminationReason
+                                                .find(
+                                                  (reason) =>
+                                                    reason.primary_reason ==
+                                                    data.primary_reason
+                                                )
+                                                ?.secondary_reasons?.some(
+                                                  (subReasons) =>
+                                                    subReasons === secReasondata
+                                                )
+                                          )
+                                          ?.map((subData, subIndex) => (
                                             <div
                                               className={`${style.customersAdminInnerRowsStyle4} ${style.customersAdminBackground1} ${style.displayInRow}`}
                                               key={subIndex}
@@ -398,8 +466,7 @@ const TerminationReasonForCustomer = () => {
                                                 {subData}
                                               </p>
                                             </div>
-                                          )
-                                        )}
+                                          ))}
                                       </>
                                     ))}
                                 <div
@@ -428,14 +495,8 @@ const TerminationReasonForCustomer = () => {
                                 </div>
                                 {selectedCause === "Entity" &&
                                   terminationReasonMaster
-                                    ?.filter(
-                                      (data) =>
-                                        data?.terminationBy === "ENTITY" &&
-                                        !terminationReason.some(
-                                          (customerData) =>
-                                            customerData?.primary_reason ===
-                                            data?.primary_reason
-                                        )
+                                    ?.filter((data) =>
+                                      FindSubReasonsHandler(data)
                                     )
                                     ?.map((data, index) => (
                                       <>
@@ -453,8 +514,21 @@ const TerminationReasonForCustomer = () => {
                                             {data?.primary_reason}
                                           </p>
                                         </div>
-                                        {data?.secondary_reasons?.map(
-                                          (subData, subIndex) => (
+                                        {data?.secondary_reasons
+                                          ?.filter(
+                                            (secReasondata) =>
+                                              !terminationReason
+                                                .find(
+                                                  (reason) =>
+                                                    reason.primary_reason ==
+                                                    data.primary_reason
+                                                )
+                                                ?.secondary_reasons?.some(
+                                                  (subReasons) =>
+                                                    subReasons === secReasondata
+                                                )
+                                          )
+                                          ?.map((subData, subIndex) => (
                                             <div
                                               className={`${style.customersAdminInnerRowsStyle4} ${style.customersAdminBackground1} ${style.displayInRow}`}
                                               key={subIndex}
@@ -480,8 +554,7 @@ const TerminationReasonForCustomer = () => {
                                                 {subData}
                                               </p>
                                             </div>
-                                          )
-                                        )}
+                                          ))}
                                       </>
                                     ))}
                               </>
@@ -605,61 +678,27 @@ const TerminationReasonForCustomer = () => {
                                         (data) =>
                                           data?.terminationBy === "CONTRACTOR"
                                       )
-                                      ?.map((data, index) => (
-                                        <div key={index}>
-                                          <div
-                                            className={
-                                              style.customTerminationPrimaryReason
-                                            }
-                                          >
-                                            <p></p>
-                                            <p
-                                              className={
-                                                style.customersAdminTableFontStyle
-                                              }
-                                            >
-                                              {data?.primary_reason}
-                                            </p>
-                                            <img
-                                              src={EditHcFolder}
-                                              alt="OpenFolder"
-                                              className={style.colorFileStyle}
-                                              onClick={() => {
-                                                setSelectedTerminationReason(
-                                                  data
-                                                );
-                                                getAddEntityDialog(true);
-                                                setIsEdit(true);
-                                              }}
-                                            />
-                                            <img
-                                              src={DeleteHcRow}
-                                              alt="OpenFolder"
-                                              className={style.colorFileStyle}
-                                              onClick={() =>
-                                                handleDeleteTerminationReason(
-                                                  data?.id
-                                                )
-                                              }
-                                            />
-                                          </div>
-                                          {data?.secondary_reasons?.map(
-                                            (secondaryReason, index) => (
+                                      ?.map((data, index) => {
+                                        if (
+                                          data?.secondary_reasons.length !== 0
+                                        ) {
+                                          return (
+                                            <div key={index}>
                                               <div
-                                                className={`${style.customerAdminTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}
+                                                className={
+                                                  style.customTerminationPrimaryReason
+                                                }
                                               >
                                                 <p></p>
                                                 <p
                                                   className={
-                                                    style.tableDataFontStyle
+                                                    style.customersAdminTableFontStyle
                                                   }
                                                 >
-                                                  {secondaryReason}
+                                                  {data?.primary_reason}
                                                 </p>
-                                                <p></p>
-                                                <p></p>
                                                 <img
-                                                  src={EditHcRow}
+                                                  src={EditHcFolder}
                                                   alt="OpenFolder"
                                                   className={
                                                     style.colorFileStyle
@@ -669,7 +708,6 @@ const TerminationReasonForCustomer = () => {
                                                       data
                                                     );
                                                     getAddEntityDialog(true);
-                                                    setIsEdit(true);
                                                   }}
                                                 />
                                                 <img
@@ -678,21 +716,66 @@ const TerminationReasonForCustomer = () => {
                                                   className={
                                                     style.colorFileStyle
                                                   }
-                                                  onClick={() => {
-                                                    setSelectedTerminationReason(
-                                                      data
-                                                    );
-                                                    handlePutContractTerminationReason(
-                                                      data,
-                                                      secondaryReason
-                                                    );
-                                                  }}
+                                                  onClick={() =>
+                                                    handleDeleteTerminationReason(
+                                                      data?.id
+                                                    )
+                                                  }
                                                 />
                                               </div>
-                                            )
-                                          )}
-                                        </div>
-                                      ))}
+                                              {data?.secondary_reasons?.map(
+                                                (secondaryReason, index) => (
+                                                  <div
+                                                    className={`${style.customerAdminTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}
+                                                  >
+                                                    <p></p>
+                                                    <p
+                                                      className={
+                                                        style.tableDataFontStyle
+                                                      }
+                                                    >
+                                                      {secondaryReason}
+                                                    </p>
+                                                    <p></p>
+                                                    <p></p>
+                                                    <img
+                                                      src={EditHcRow}
+                                                      alt="OpenFolder"
+                                                      className={
+                                                        style.colorFileStyle
+                                                      }
+                                                      onClick={() => {
+                                                        setSelectedTerminationReason(
+                                                          data
+                                                        );
+                                                        getAddEntityDialog(
+                                                          true
+                                                        );
+                                                      }}
+                                                    />
+                                                    <img
+                                                      src={DeleteHcRow}
+                                                      alt="OpenFolder"
+                                                      className={
+                                                        style.colorFileStyle
+                                                      }
+                                                      onClick={() => {
+                                                        setSelectedTerminationReason(
+                                                          data
+                                                        );
+                                                        handlePutContractTerminationReason(
+                                                          data,
+                                                          secondaryReason
+                                                        );
+                                                      }}
+                                                    />
+                                                  </div>
+                                                )
+                                              )}
+                                            </div>
+                                          );
+                                        }
+                                      })}
 
                                   {/* //Entity */}
                                   {selectedIndex === index &&
@@ -740,60 +823,27 @@ const TerminationReasonForCustomer = () => {
                                         (data) =>
                                           data?.terminationBy === "ENTITY"
                                       )
-                                      ?.map((data, index) => (
-                                        <div key={index}>
-                                          <div
-                                            className={
-                                              style.customTerminationPrimaryReason
-                                            }
-                                          >
-                                            <p></p>
-                                            <p
-                                              className={
-                                                style.customersAdminTableFontStyle
-                                              }
-                                            >
-                                              {data?.primary_reason}
-                                            </p>
-                                            <img
-                                              src={EditHcFolder}
-                                              alt="OpenFolder"
-                                              className={style.colorFileStyle}
-                                              onClick={() => {
-                                                setSelectedTerminationReason(
-                                                  data
-                                                );
-                                                getAddEntityDialog(true);
-                                              }}
-                                            />
-                                            <img
-                                              src={DeleteHcRow}
-                                              alt="OpenFolder"
-                                              className={style.colorFileStyle}
-                                              onClick={() =>
-                                                handleDeleteTerminationReason(
-                                                  data?.id
-                                                )
-                                              }
-                                            />
-                                          </div>
-                                          {data?.secondary_reasons?.map(
-                                            (secondaryReason, index) => (
+                                      ?.map((data, index) => {
+                                        if (
+                                          data?.secondary_reasons.length !== 0
+                                        ) {
+                                          return (
+                                            <div key={index}>
                                               <div
-                                                className={`${style.customerAdminTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}
+                                                className={
+                                                  style.customTerminationPrimaryReason
+                                                }
                                               >
                                                 <p></p>
                                                 <p
                                                   className={
-                                                    style.tableDataFontStyle
+                                                    style.customersAdminTableFontStyle
                                                   }
                                                 >
-                                                  {secondaryReason}
+                                                  {data?.primary_reason}
                                                 </p>
-                                                <p></p>
-                                                <p></p>
                                                 <img
-                                                  src={EditHcRow}
+                                                  src={EditHcFolder}
                                                   alt="OpenFolder"
                                                   className={
                                                     style.colorFileStyle
@@ -811,21 +861,66 @@ const TerminationReasonForCustomer = () => {
                                                   className={
                                                     style.colorFileStyle
                                                   }
-                                                  onClick={() => {
-                                                    setSelectedTerminationReason(
-                                                      data
-                                                    );
-                                                    handlePutContractTerminationReason(
-                                                      data,
-                                                      secondaryReason
-                                                    );
-                                                  }}
+                                                  onClick={() =>
+                                                    handleDeleteTerminationReason(
+                                                      data?.id
+                                                    )
+                                                  }
                                                 />
                                               </div>
-                                            )
-                                          )}
-                                        </div>
-                                      ))}
+                                              {data?.secondary_reasons?.map(
+                                                (secondaryReason, index) => (
+                                                  <div
+                                                    className={`${style.customerAdminTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}
+                                                  >
+                                                    <p></p>
+                                                    <p
+                                                      className={
+                                                        style.tableDataFontStyle
+                                                      }
+                                                    >
+                                                      {secondaryReason}
+                                                    </p>
+                                                    <p></p>
+                                                    <p></p>
+                                                    <img
+                                                      src={EditHcRow}
+                                                      alt="OpenFolder"
+                                                      className={
+                                                        style.colorFileStyle
+                                                      }
+                                                      onClick={() => {
+                                                        setSelectedTerminationReason(
+                                                          data
+                                                        );
+                                                        getAddEntityDialog(
+                                                          true
+                                                        );
+                                                      }}
+                                                    />
+                                                    <img
+                                                      src={DeleteHcRow}
+                                                      alt="OpenFolder"
+                                                      className={
+                                                        style.colorFileStyle
+                                                      }
+                                                      onClick={() => {
+                                                        setSelectedTerminationReason(
+                                                          data
+                                                        );
+                                                        handlePutContractTerminationReason(
+                                                          data,
+                                                          secondaryReason
+                                                        );
+                                                      }}
+                                                    />
+                                                  </div>
+                                                )
+                                              )}
+                                            </div>
+                                          );
+                                        }
+                                      })}
                                 </>
                               </div>
                             </>
