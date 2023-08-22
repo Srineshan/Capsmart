@@ -31,6 +31,8 @@ import ReportNoDataBox from '../../Components/ReusableSmallComponents/reportNoDa
 const ReportTypeOverview = () => {
     const pieSampleData = [{ key: 'Done', value: 60 }, { key: 'To Do', value: 20 }, { key: 'Not Done', value: 20 }];
     const { reportType } = useParams();
+    const isMyReport = window.location.pathname.includes("/myReport");
+    const myReportId = sessionStorage.getItem('myReportId')
     const handle = useFullScreenHandle();
     const componentRef = useRef(null);
     const PDFRef = createRef();
@@ -130,7 +132,6 @@ const ReportTypeOverview = () => {
     }, [])
 
     useEffect(() => {
-        // if (!isUpdated) {
         if (reportType === 'upcomingContractRenewals') {
             getContractRenewalReportWithParameters();
         }
@@ -165,7 +166,6 @@ const ReportTypeOverview = () => {
         if (reportType === 'submittedTimesheetsPaymentStatus') {
             getSubmittedTimesheetsPaymentStatus('withParameter');
         }
-        // }
     }, [dataToUseInReport, selectedPodTypeFromTile])
 
     useEffect(() => {
@@ -268,7 +268,14 @@ const ReportTypeOverview = () => {
     }
 
     const getAcvityAndServices = async () => {
-        const { data: chartData } = await GET(`timesheet-management-service/report/activityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
+        let chartData;
+        if (!isMyReport) {
+            const { data: chartDataValues } = await GET(`timesheet-management-service/report/activityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
+            chartData = chartDataValues;
+        } else {
+            const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/activityServiceReport?id=${myReportId}`);
+            chartData = chartDataValues;
+        }
         // const { data: reportLogData } = await GET(`timesheet-management-service/report/activityServiceLog?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
         setReportLog(chartData?.activities);
         if (chartData) {
@@ -336,7 +343,14 @@ const ReportTypeOverview = () => {
     }
 
     const getAddOnServices = async () => {
-        const { data: chartData } = await GET(`timesheet-management-service/report/addOnActivityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
+        let chartData;
+        if (!isMyReport) {
+            const { data: chartDataValues } = await GET(`timesheet-management-service/report/addOnActivityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
+            chartData = chartDataValues;
+        } else {
+            const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/addOnActivityServiceReport?id=${myReportId}`);
+            chartData = chartDataValues;
+        }
         // const { data: reportLogData } = await GET(`timesheet-management-service/report/addOnActivityServiceLog?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
         setAddOnAcceptedReportLog(chartData?.approvedActivities);
         setAddOnRejectedReportLog(chartData?.rejectedActivities);
@@ -408,7 +422,14 @@ const ReportTypeOverview = () => {
     }
 
     const getAddOnServicesWithParameter = async () => {
-        const { data: chartData } = await GET(`timesheet-management-service/report/addOnActivityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
+        let chartData;
+        if (!isMyReport) {
+            const { data: chartDataValues } = await GET(`timesheet-management-service/report/addOnActivityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
+            chartData = chartDataValues;
+        } else {
+            const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/addOnActivityServiceReport?id=${myReportId}`);
+            chartData = chartDataValues;
+        }
         // const { data: reportLogData } = await GET(`timesheet-management-service/report/addOnActivityServiceLog?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
         setAddOnAcceptedReportLog(chartData?.approvedActivities);
         setAddOnRejectedReportLog(chartData?.rejectedActivities);
@@ -479,7 +500,14 @@ const ReportTypeOverview = () => {
     }
 
     const getAcvityAndServicesWithParameter = async () => {
-        const { data: chartData } = await GET(`timesheet-management-service/report/activityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
+        let chartData;
+        if (!isMyReport) {
+            const { data: chartDataValues } = await GET(`timesheet-management-service/report/activityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
+            chartData = chartDataValues;
+        } else {
+            const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/activityServiceReport?id=${myReportId}`);
+            chartData = chartDataValues;
+        }
         // const { data: reportLogData } = await GET(`timesheet-management-service/report/activityServiceLog?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
         setReportLog(chartData?.activities);
         // setIsLoading(false);
@@ -558,7 +586,14 @@ const ReportTypeOverview = () => {
     }
 
     const getPayments = async () => {
-        const { data: chartData } = await GET(`timesheet-management-service/report/paymentProcessingSummary?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}`);
+        let chartData;
+        if (!isMyReport) {
+            const { data: chartDataValues } = await GET(`timesheet-management-service/report/paymentProcessingSummary?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}`);
+            chartData = chartDataValues;
+        } else {
+            const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/paymentProcessingSummary?id=${myReportId}`);
+            chartData = chartDataValues;
+        }
         setPaymentsReportLog(chartData);
         if (chartData?.paymentStats?.minPayment !== 0 && chartData !== undefined) {
             let temp = [];
@@ -582,10 +617,24 @@ const ReportTypeOverview = () => {
 
     const getTimesheetProcessingSummary = async (filter) => {
         if (filter === 'withoutParameter') {
-            const { data: chartData } = await GET(`timesheet-management-service/report/timesheetProcessingSummary?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
+            let chartData;
+            if (!isMyReport) {
+                const { data: chartDataValues } = await GET(`timesheet-management-service/report/timesheetProcessingSummary?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
+                chartData = chartDataValues;
+            } else {
+                const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/timesheetProcessingSummary?id=${myReportId}`);
+                chartData = chartDataValues;
+            }
             setTimesheetProcessingSummaryData(chartData);
         } else {
-            const { data: chartData } = await GET(`timesheet-management-service/report/timesheetProcessingSummary?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
+            let chartData;
+            if (!isMyReport) {
+                const { data: chartDataValues } = await GET(`timesheet-management-service/report/timesheetProcessingSummary?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
+                chartData = chartDataValues;
+            } else {
+                const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/timesheetProcessingSummary?id=${myReportId}`);
+                chartData = chartDataValues;
+            }
             setTimesheetProcessingSummaryData(chartData);
         }
     }
@@ -614,12 +663,26 @@ const ReportTypeOverview = () => {
 
     const getListingOfTimesheetNotPaid = async (filter) => {
         if (filter === 'withoutParameter') {
-            const { data: chartData } = await GET(`timesheet-management-service/report/notPaidTimesheets?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
+            let chartData;
+            if (!isMyReport) {
+                const { data: chartDataValues } = await GET(`timesheet-management-service/report/notPaidTimesheets?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
+                chartData = chartDataValues;
+            } else {
+                const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/notPaidTimesheets?id=${myReportId}`);
+                chartData = chartDataValues;
+            }
             if (chartData) {
                 setNotPaidTimesheetsData(chartData);
             }
         } else {
-            const { data: chartData } = await GET(`timesheet-management-service/report/notPaidTimesheets?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
+            let chartData;
+            if (!isMyReport) {
+                const { data: chartDataValues } = await GET(`timesheet-management-service/report/notPaidTimesheets?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
+                chartData = chartDataValues;
+            } else {
+                const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/notPaidTimesheets?id=${myReportId}`);
+                chartData = chartDataValues;
+            }
             if (chartData) {
                 setNotPaidTimesheetsData(chartData);
             }
@@ -628,12 +691,26 @@ const ReportTypeOverview = () => {
 
     const getSubmittedTimesheetsPaymentStatus = async (filter) => {
         if (filter === 'withoutParameter') {
-            const { data: chartData } = await GET(`timesheet-management-service/report/submittedTimesheetsPaymentStatus?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
+            let chartData;
+            if (!isMyReport) {
+                const { data: chartDataValues } = await GET(`timesheet-management-service/report/submittedTimesheetsPaymentStatus?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
+                chartData = chartDataValues;
+            } else {
+                const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/submittedTimesheetsPaymentStatus?id=${myReportId}`);
+                chartData = chartDataValues;
+            }
             if (chartData) {
                 setSubmittedTimesheetsPaymentStatusData(chartData);
             }
         } else {
-            const { data: chartData } = await GET(`timesheet-management-service/report/submittedTimesheetsPaymentStatus?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
+            let chartData;
+            if (!isMyReport) {
+                const { data: chartDataValues } = await GET(`timesheet-management-service/report/submittedTimesheetsPaymentStatus?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
+                chartData = chartDataValues;
+            } else {
+                const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/submittedTimesheetsPaymentStatus?id=${myReportId}`);
+                chartData = chartDataValues;
+            }
             if (chartData) {
                 setSubmittedTimesheetsPaymentStatusData(chartData);
             }

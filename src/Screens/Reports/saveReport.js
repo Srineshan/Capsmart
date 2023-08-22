@@ -184,7 +184,13 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
                 },
                 "lastUpdated": format(new Date(), 'yyyy-MM-dd'),
                 "filters": {
-                    "dataMap": filters
+                    'reportingTimePeriod': dataToUseInReport?.reportingTimePeriod,
+                    'startDate': dataToUseInReport?.from,
+                    'endDate': dataToUseInReport?.to,
+                    'contracts': dataToUseInReport?.selectedContracts,
+                    'users': [dataToUseInReport?.selectedContractedServiceProvider],
+                    'sites': dataToUseInReport?.selectedSites,
+                    'departments': dataToUseInReport?.selectedDepartments
                 },
                 "private": isPrivate
             }
