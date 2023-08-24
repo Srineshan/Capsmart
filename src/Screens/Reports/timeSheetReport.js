@@ -273,7 +273,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                 <p className={style.headingStyle}>Report Title</p>
                                 <p className={style.headingStyle}>Description</p>
                                 <p className={style.headingStyle}>Last Run Date/ Time</p>
-                                <p className={style.headingStyle}>Last Updated By</p>
+                                {/* <p className={style.headingStyle}>Last Updated By</p> */}
                                 {/* <p className={style.headingStyle}>Owner</p> */}
                                 <p className={style.headingStyle}>Updated</p>
                             </div>
@@ -284,7 +284,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                         <Link to={`/reportTypeOverview/${routeList[data?.subCategory]}`} className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>{titleList[data?.title]}</div></Link>
                                         <div className={style.tableDataReportsFontStyle}>{descriptionList[data?.description]}</div>
                                         <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(data?.lastRun), 'America/New_York', 'd MMM yyyy H:m')} </div>
-                                        <div className={style.tableDataReportsFontStyle}>{currentUserDetails?.fullName}</div>
+                                        {/* <div className={style.tableDataReportsFontStyle}>{currentUserDetails?.fullName}</div> */}
                                         <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(data?.lastUpdate), 'America/New_York', 'd MMM yyyy')}</div>
                                         <Link to={`/reportTypeOverview/${routeList[data?.subCategory]}`} className={style.linkStyle}>
                                             <Run />
