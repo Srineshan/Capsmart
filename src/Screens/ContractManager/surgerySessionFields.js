@@ -199,9 +199,9 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment, is
                         onChange={(e) => handleValueChange('frequency', e.target.value)}
                         value={metadata?.frequency}
                         firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
-                        valueList={['NA', 'WEEK', 'MONTH']}
-                        labelList={['As Needed', 'Per Week', 'Per Month']}
-                        disabledList={[false, false]} />
+                        valueList={['NA', 'WEEK', 'MONTH', 'YEAR']}
+                        labelList={['As Needed', 'Per Week', 'Per Month', 'Per Year']}
+                        disabledList={[false, false, false]} />
                 </div>
             </div>
 

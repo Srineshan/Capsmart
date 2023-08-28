@@ -627,6 +627,10 @@ const App = ({ props }) => {
                 path="/reportTypeOverview/:reportType"
                 element={<ReportTypeOverview />}
               />
+              <Route
+                path="/myReport/:reportType"
+                element={<ReportTypeOverview />}
+              />
             </Routes>
           </>
           {/* ) : (

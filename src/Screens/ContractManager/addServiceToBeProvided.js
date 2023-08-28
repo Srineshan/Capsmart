@@ -85,6 +85,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const [conflict, setConflict] = useState({ isPresent: false, data: [] });
   const [activityUpdated, setActivityUpdated] = useState(false);
   const [activityItems, setActivityItems] = useState([]);
+  const [reducedOffsetApplicable, setReducedOffsetApplicable] = useState(false);
 
   useEffect(() => {
     getContractedServices();
@@ -111,6 +112,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       });
       setSelectedActivity(temp);
       setShowLocation(selectedService?.locationSpecified);
+      setReducedOffsetApplicable(selectedService?.compensationReductionApplicable);
       setSelectedLocation(selectedService?.serviceLocations?.map(data => data));
       removeSelectedLocationFromList();
       setServiceTypeId(serviceTypeList?.filter(type => type?.serviceType === selectedService?.activityType?.activityType)?.map(data => data?.id)[0]);
@@ -416,10 +418,13 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         data.activityResponse = { dataMap: dataMap };
         data.sites = siteData;
         data.activityType.activityType = serviceType;
+        if (data?.selectedActivityId) {
+          data.addOnActivityType = { "activityType": serviceType };
+        }
         // data.activityType.id = serviceTypeId;
         data.activityTypeTemplate = { activityTypeTemplate: serviceTypeTemplate };
         data.performingActivity =
-          typeof data.performingActivity !== 'object' ? { activity: data?.performingActivity } : data?.performingActivity
+          typeof data.performingActivity !== 'object' ? { activity: data?.performingActivity?.split('(')?.[1]?.split(')')?.[0] } : data?.performingActivity?.split('(')?.[1]?.split(')')?.[0]
           ;
         data.users = selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers;
         if (data?.approver !== undefined) {
@@ -641,6 +646,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       let dataValues = metadata;
       if (serviceTypeTemplate === ADDON) {
         dataValues = metadata?.[0];
+        console.log('performigActivity', performingActivity);
+        performingActivity = performingActivity?.split('(')?.[1]?.split(')')?.[0];
       }
       if (activities?.length === 0 && serviceTypeTemplate !== ADDON) {
         let message = serviceTypeTemplate === SUPPLEMENTAL ? 'Supplement Services' : serviceTypeTemplate === ADMINISTRATIVE ? 'Allowable Administrative Duties' : 'Activity To Be Performed';
@@ -656,6 +663,11 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         "activityTypeTemplate": {
           "activityTypeTemplate": serviceTypeTemplate,
         },
+        ...((serviceTypeTemplate === ADDON && dataValues?.activityResponse?.dataMap?.selectedActivityId !== null) && {
+          "addOnActivityType": {
+            "activityType": serviceType
+          }
+        }),
         "users": selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers,
         "performingActivity": {
           "activity": performingActivity
@@ -871,11 +883,14 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         "billableService": dataValues?.billableService,
         "dependantServiceIncluded": dataValues?.dependantServiceIncluded || false,
         "customizedSchedule": dataValues?.customizedSchedule || false,
+        ...((serviceTypeTemplate !== ADDON && !(serviceTypeTemplate === ADMINISTRATIVE && !metadata?.dedicatedHoursSpecified) && !(serviceTypeTemplate === SUPPLEMENTAL && !metadata?.dedicatedHoursSpecified)) && {
+          "compensationReductionApplicable": reducedOffsetApplicable
+        }),
       }]
     }
     if (editService && serviceTypeTemplate === ADDON) {
       data[0].activities = metadata?.[0]?.activities;
-      data[0].performingActivity = { activity: metadata?.[0]?.performingActivity };
+      data[0].performingActivity = { activity: metadata?.[0]?.performingActivity?.split('(')?.[1]?.split(')')?.[0] };
       data[0].workingHours = metadata?.[0]?.workingHours;
     }
     let services = existingServices || [];
@@ -912,7 +927,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           services[conflictedIndex].contractedSchedules = [];
           services[conflictedIndex].patientsSeenTargets = [];
           services[conflictedIndex].scheduledPatientsTargets = [];
-          services[conflictedIndex].performingActivity.activity = `${selectedService?.activityType?.activityType} (${selectedActivity?.map(data => data?.activity?.activity)?.join(', ')})`
+          services[conflictedIndex].performingActivity.activity = `${selectedActivity?.map(data => data?.activity?.activity)?.join(', ')}`
         }
         if (conflictData?.type === SUPPLEMENTAL || conflictData?.type === ADMINISTRATIVE) {
           services[conflictedIndex].hoursBorrowed = {
@@ -1245,6 +1260,12 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                           </div>
                         )}
                       </div>
+                    </div>
+                  )}
+                  {(serviceTypeTemplate !== ADDON && !(serviceTypeTemplate === ADMINISTRATIVE && !metadata?.dedicatedHoursSpecified) && !(serviceTypeTemplate === SUPPLEMENTAL && !metadata?.dedicatedHoursSpecified)) && (
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                      <CommonLabel value='Reduced offset applicable' />
+                      <CommonSwitch checked={reducedOffsetApplicable} className={`${style.switchFontStyle} ${style.flexLeft} `} onChange={() => setReducedOffsetApplicable(!reducedOffsetApplicable)} label={reducedOffsetApplicable ? 'YES' : 'NO'} />
                     </div>
                   )}
                   {

@@ -433,8 +433,8 @@
 
 .reportsTableGrid {
     display: grid;
-    grid-template-columns: 25px 15% 30% 12% 12% 10% 10%;
-    grid-gap: 10px;
+    grid-template-columns: 5% 18% 29% 14% 14% 14%;
+    grid-gap: 1%;
 }
 
 .headingStyle {
@@ -866,11 +866,11 @@
     grid-gap: 20px;
 }
 
-.gridAuto{
+.gridAuto {
     display: grid;
-   grid-auto-columns: 1fr;
-   grid-auto-flow: column;
-   grid-gap: 20px;
+    grid-auto-columns: 1fr;
+    grid-auto-flow: column;
+    grid-gap: 20px;
 }
 
 .grid4 {
@@ -1398,6 +1398,7 @@
 
 .reportWidthToFitFullScreen {
     width: 85%;
+    height: 500px;
 }
 
 @page {
