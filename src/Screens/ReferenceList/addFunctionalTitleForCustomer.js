@@ -60,7 +60,7 @@ const AddFunctionalTitlesForCustomer = ({
       title: functionalTitle,
       alias1: alias1,
       alias2: alias2,
-      contractedServiceProviderType: CSPTypeId,
+      contractedServiceProviderTypeId: CSPTypeId,
       siteTypeId: {
         id: siteTypeId,
       },
