@@ -1438,8 +1438,7 @@ const ReportTypeOverview = () => {
                                                     */}
                                                     <div className={style.marginTop40}>
                                                         <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20} `}>Percentage Of Add On Activities / Services Requests Approved</div>
-                                                        <div className={style.reportWidthToFitFullScreen}>
-                                                            {/* <ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} /> */}
+                                                        <div className={style.addOnReportWidthToFitFullScreen}>
                                                             {apexStackedBarChartDisplay}
                                                         </div>
                                                     </div>
