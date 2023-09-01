@@ -10,7 +10,7 @@ import TextField from '@mui/material/TextField';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subMonths, subDays, startOfQuarter, endOfQuarter, startOfYear, endOfYear } from 'date-fns';
+import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subMonths, subDays, startOfQuarter, endOfQuarter, startOfYear, endOfYear, add, sub } from 'date-fns';
 import SaveReport from './saveReport';
 import { useParams } from 'react-router-dom';
 
@@ -388,6 +388,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                                 }
                                             }}
                                             value={from}
+                                            minDate={sub(new Date(to), { years: 3 })}
+                                            maxDate={new Date(to)}
                                             onChange={(e) => { setFrom(e) }}
                                             renderInput={(params) => <TextField {...params} inputProps={{
                                                 ...params.inputProps,
@@ -406,6 +408,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                                 }
                                             }}
                                             value={to}
+                                            minDate={new Date(from)}
+                                            maxDate={add(new Date(from), { years: 3 })}
                                             onChange={(e) => { setTo(e) }}
                                             renderInput={(params) => <TextField {...params} inputProps={{
                                                 ...params.inputProps,

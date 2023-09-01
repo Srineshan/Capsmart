@@ -337,14 +337,20 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
   }
 
+  console.log('metadata', metadata);
+
   const addOnWorkFlow = async (buttonType) => {
     setContinueLoading(true);
     setAddOnButton(buttonType);
     if (serviceTypeTemplate === ADDON && editService && metadata?.[0]?.approver !== undefined) {
       let dataValue = [];
       let temp = metadata;
+      console.log('temp', temp);
       temp?.map((data, index) => {
         data.serviceLocations = data?.locationSpecified ? data?.locations : locationItems;
+        data.performingActivity = data?.activities?.map(data => data?.activity)?.join('-');
+        data.addOnActivityType = data?.addOnActivityType;
+        console.log('performing Activity and addOnActivityType', data.performingActivity, data.addOnActivityType);
         if (data?.approver !== undefined) {
           let workFlowData;
           data.activityType.activityType = serviceType;
@@ -419,13 +425,13 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         data.sites = siteData;
         data.activityType.activityType = serviceType;
         if (data?.selectedActivityId) {
-          data.addOnActivityType = { "activityType": serviceType };
+          data.addOnActivityType = data?.addOnActivityType;
         }
         // data.activityType.id = serviceTypeId;
         data.activityTypeTemplate = { activityTypeTemplate: serviceTypeTemplate };
-        data.performingActivity =
-          typeof data.performingActivity !== 'object' ? { activity: data?.performingActivity?.split('(')?.[1]?.split(')')?.[0] } : data?.performingActivity?.split('(')?.[1]?.split(')')?.[0]
-          ;
+        data.performingActivity = data?.activities?.map(data => data?.activity)?.join('-');
+        // typeof data.performingActivity !== 'object' ? { activity: data?.performingActivity?.split('(')?.[1]?.split(')')?.[0] } : data?.performingActivity?.split('(')?.[1]?.split(')')?.[0]
+        // ;
         data.users = selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers;
         if (data?.approver !== undefined) {
           let workFlowData;
@@ -577,7 +583,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       ErrorToaster('Payment Amount field is mandatory if the service is Billable');
       return;
     }
-    let performingActivity = '';
+    var performingActivity = '';
+    var parentActivity = '';
     let activities = [];
     let dependentActivities = [];
     if (serviceTypeTemplate !== SUPPLEMENTAL && serviceTypeTemplate !== ADDON && serviceTypeTemplate !== ADMINISTRATIVE) {
@@ -635,6 +642,13 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         item.duration = {
           "hours": parseInt(item?.sessionDuration)
         };
+        console.log('performing Activity', metadata?.[index]?.parentActivity);
+        item.addOnActivityType = {
+          "activityType": metadata?.[index]?.parentActivity
+        }
+        item.performingActivity = {
+          "activity": metadata?.[index]?.activities?.map(data => data?.activity)?.join('-')
+        }
       })
       // data.workingPeriod = {
       //   "from": metadata?.workingTimeFrom?.toLocaleTimeString('it-IT').toString(),
@@ -644,16 +658,21 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
     else {
       let dataValues = metadata;
+      console.log('metadata outside if', metadata);
       if (serviceTypeTemplate === ADDON) {
         dataValues = metadata?.[0];
-        console.log('performigActivity', performingActivity);
-        performingActivity = performingActivity?.split('(')?.[1]?.split(')')?.[0];
+        console.log('data test', dataValues, metadata);
+        parentActivity = dataValues?.addOnActivityType;
+        performingActivity = dataValues?.activities?.map(data => data?.activity)?.join('-');
+        console.log('dataValues', parentActivity, performingActivity);
+        console.log('performigActivity 3', dataValues);
       }
       if (activities?.length === 0 && serviceTypeTemplate !== ADDON) {
         let message = serviceTypeTemplate === SUPPLEMENTAL ? 'Supplement Services' : serviceTypeTemplate === ADMINISTRATIVE ? 'Allowable Administrative Duties' : 'Activity To Be Performed';
         ErrorToaster(`Atleast One ${message} needs to be added to create a service`);
         return;
       }
+      console.log('parentActivity', parentActivity, performingActivity);
       data = [{
         "refId": dataValues?.refId?.toString() ? dataValues?.refId?.toString() : (new Date()).getTime()?.toString(),
         "sites": siteData,
@@ -665,7 +684,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         },
         ...((serviceTypeTemplate === ADDON && dataValues?.activityResponse?.dataMap?.selectedActivityId !== null) && {
           "addOnActivityType": {
-            "activityType": serviceType
+            "activityType": parentActivity,
           }
         }),
         "users": selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers,
@@ -890,7 +909,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
     if (editService && serviceTypeTemplate === ADDON) {
       data[0].activities = metadata?.[0]?.activities;
-      data[0].performingActivity = { activity: metadata?.[0]?.performingActivity?.split('(')?.[1]?.split(')')?.[0] };
       data[0].workingHours = metadata?.[0]?.workingHours;
     }
     let services = existingServices || [];
