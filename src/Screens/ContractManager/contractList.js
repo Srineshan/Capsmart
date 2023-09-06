@@ -28,6 +28,7 @@ import { validateTimesheetSubmission } from './contractValidation';
 import style from './index.module.scss';
 import SideBar from '../../Components/Sidebar';
 import PreImplementationDataDialog from './preImplementationDataDialog';
+import ReviewAndApprovalStatusSummary from './reviewAndApprovalStatusSummary';
 
 const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelectedContract, getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page, getActiveContractView }) => {
   const [selectedContractId, setSelectedContractId] = useState();
@@ -59,6 +60,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
   const [isDraft, setIsDraft] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
   const [showPreImplementationDialog, setShowPreImplementationDialog] = useState(false);
+  const [showReviewAndApprovalStatusSummaryDialog, setShowReviewAndApprovalStatusSummaryDialog] = useState(false);
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
   const currentUserData = currentUser();
@@ -120,6 +122,14 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
 
   const getPreImplementationDialogBoolean = (value) => {
     setShowPreImplementationDialog(value);
+  }
+
+  const getReviewAndApprovalStatusSummaryDialog = (data) => {
+    setShowReviewAndApprovalStatusSummaryDialog(true);
+  }
+
+  const getReviewAndApprovalStatusSummaryDialogBoolean = (value) => {
+    setShowReviewAndApprovalStatusSummaryDialog(value);
   }
 
   const handleClick = (event) => {
@@ -358,6 +368,12 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
     // {'data': 'Share', 'onClick': activateContracts, 'requiredValue': 'id'},
   ]
 
+  const activationPendingActionsData = [
+    { 'data': 'Status Summary', 'onClick': getReviewAndApprovalStatusSummaryDialog, 'requiredValue': 'boolean' },
+    { 'data': 'Activate', 'onClick': activateContracts, 'requiredValue': 'id' },
+    { 'data': 'Send Reminder', 'onClick': {}, 'requiredValue': 'boolean' },
+  ]
+
   const upcomingActionsData = [
     // {'data': 'Renew Existing Contract', 'onClick': deleteDraft, 'requiredValue': 'boolean'},
     { 'data': 'Extend Contract', 'onClick': activateContracts, 'requiredValue': 'id' },
@@ -381,7 +397,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
   let tableHeaderValues = selectedContract === 'activecontracts' ? activeHeaderValues : selectedContract === 'draft' ? (isDraft ? draftHeaderValues : activationPendingHeaderValues) : selectedContract === 'upcomingrenewals' ? upcomingHeaderValues : expiredHeaderValues;
   let tableSortValues = selectedContract === 'activecontracts' ? activeColSortValues : selectedContract === 'draft' ? (isDraft ? draftColSortValues : activationPendingColSortValues) : selectedContract === 'upcomingrenewals' ? upcomingColSortValues : expiredColSortValues;
   let tableDataValues = selectedContract === 'activecontracts' ? getActiveContractsValues() : selectedContract === "draft" ? getDraftContractsValues() : getUpcomingContractsValues();
-  let actions = selectedContract === 'activecontracts' ? activeActionsData : draftActionsData;
+  let actions = selectedContract === 'activecontracts' ? activeActionsData : selectedContract === 'draft' ? (isDraft ? draftActionsData : activationPendingActionsData) : draftActionsData;
   // let gridStyle = selectedContract === 'activecontracts' ? style.activeContractGridWithoutAction : selectedContract === "draft" ? (isDraft ? style.draftContractGrid : style.activationPendingContractGrid) : selectedContract === "upcomingrenewals" ? style.upcomingContractGrid : style.expiredContractGrid;
   let gridStyle = selectedContract === 'activecontracts' ? style.activeContractGrid : selectedContract === "draft" ? (isDraft ? style.draftContractGrid : style.activationPendingContractGrid) : selectedContract === "upcomingrenewals" ? style.upcomingContractGrid : style.expiredContractGrid;
 
@@ -407,10 +423,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
                 ) : selectedContract === 'draft' ? (
                   <>
                     <button className={isDraft ? style.myActiveContractsButton : style.otherContractsButton} onClick={() => setIsDraft(true)}>Draft Contracts ( {metadata?.draft?.draftCount} )</button>
-
-                    {
-                      // <button className={`${!isDraft ? style.myActiveContractsButton : style.otherContractsButton} ${style.marginLeft20}`} onClick={() => setIsDraft(false)}>Activation Pending ( 2 )</button>
-                    }
+                    <button className={`${!isDraft ? style.myActiveContractsButton : style.otherContractsButton} ${style.marginLeft20}`} onClick={() => setIsDraft(false)}>Activation Pending ( 2 )</button>
                   </>
                 ) : selectedContract === 'upcomingrenewals' ? (
                   <>
@@ -506,7 +519,10 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
         </div>
         <p className={style.poweredBy}>© {new Date().getFullYear()} TimeSmartAI.Inc</p>
       </div>
-      <PreImplementationDataDialog showPreImplementationDialog={showPreImplementationDialog} getPreImplementationDialogBoolean={getPreImplementationDialogBoolean} contractId={selectedContractId} selectedContractPreImplementationData={selectedContractPreImplementationData} />    </div>
+      <PreImplementationDataDialog showPreImplementationDialog={showPreImplementationDialog} getPreImplementationDialogBoolean={getPreImplementationDialogBoolean} contractId={selectedContractId} selectedContractPreImplementationData={selectedContractPreImplementationData} />
+      <ReviewAndApprovalStatusSummary showReviewAndApprovalStatusSummaryDialog={showReviewAndApprovalStatusSummaryDialog} getReviewAndApprovalStatusSummaryDialogBoolean={getReviewAndApprovalStatusSummaryDialogBoolean} contractId={selectedContractId} />
+
+    </div>
   )
 }
 
