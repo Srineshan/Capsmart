@@ -33,6 +33,7 @@ import ServiceConflict from './serviceConflict';
 import { checkActivityChange } from './checkDependentData';
 
 import style from './index.module.scss';
+import { weekdays } from 'moment';
 
 const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectContractInfo, selectedService, editService, getEditServiceDialog, isMultiSiteEntity, selectedIndex, isEditable, getTabDataStatus }) => {
   const [serviceTypeList, setServiceTypeList] = useState([]);
@@ -601,7 +602,20 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
     if (serviceTypeTemplate === ONCALL) {
       let temp = metadata?.additionalActivity;
-
+      activities = [];
+      metadata?.serviceDaysArray?.map(serviceDays => {
+        if (serviceDays === 'Weekdays' && metadata?.customizedSchedule) {
+          if (metadata?.weekdayMin || metadata?.weekdayMax || metadata?.weekdayPayment !== 0) {
+            activities?.push({ "activity": 'Weekday Days' })
+          }
+          if (metadata?.weekdayNightsMin || metadata?.weekdayNightsMax || metadata?.weekdayNightsPayment !== 0) {
+            activities?.push({ "activity": 'Weekday Nights' })
+          }
+        } else {
+          activities?.push({ "activity": serviceDays })
+        }
+      })
+      performingActivity = activities?.map(activity => activity?.activity)?.join('-')
       temp?.map(activity => {
         dependentActivities.push({
           "activity": {
@@ -658,21 +672,19 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
     else {
       let dataValues = metadata;
-      console.log('metadata outside if', metadata);
       if (serviceTypeTemplate === ADDON) {
         dataValues = metadata?.[0];
-        console.log('data test', dataValues, metadata);
         parentActivity = dataValues?.addOnActivityType;
         performingActivity = dataValues?.activities?.map(data => data?.activity)?.join('-');
-        console.log('dataValues', parentActivity, performingActivity);
-        console.log('performigActivity 3', dataValues);
       }
       if (activities?.length === 0 && serviceTypeTemplate !== ADDON) {
         let message = serviceTypeTemplate === SUPPLEMENTAL ? 'Supplement Services' : serviceTypeTemplate === ADMINISTRATIVE ? 'Allowable Administrative Duties' : 'Activity To Be Performed';
         ErrorToaster(`Atleast One ${message} needs to be added to create a service`);
         return;
       }
-      console.log('parentActivity', parentActivity, performingActivity);
+
+      console.log('Activities On call', activities)
+
       data = [{
         "refId": dataValues?.refId?.toString() ? dataValues?.refId?.toString() : (new Date()).getTime()?.toString(),
         "sites": siteData,
@@ -692,7 +704,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           "activity": performingActivity
         },
         "activities": activities,
-
         ...(((serviceTypeTemplate === SUPPLEMENTAL && !dataValues?.dedicatedHoursSpecified) || (serviceTypeTemplate === ADMINISTRATIVE && !dataValues?.dedicatedHoursSpecified)) &&
         {
           "hoursBorrowed": {
@@ -812,7 +823,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           },
           ...(!dataValues?.customizeSchedule && {
             "customschedule": {
-              "weekday": {
+              "weekdayDay": {
                 "from": dataValues?.weekdayFrom?.toLocaleTimeString('it-IT').toString(),
                 "to": dataValues?.weekdayTo?.toLocaleTimeString('it-IT').toString(),
                 "target": {
@@ -834,6 +845,29 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                   "value": (dataValues?.weekdayPayment / dataValues?.weekdayDuration)?.toFixed(2)
                 },
                 "paymentNotApplicable": dataValues?.weekdayPaymentNa
+              },
+              "weekdayNight": {
+                "from": dataValues?.weekdayNightsFrom?.toLocaleTimeString('it-IT').toString(),
+                "to": dataValues?.weekdayNightsTo?.toLocaleTimeString('it-IT').toString(),
+                "target": {
+                  "minimum": {
+                    "value": parseInt(dataValues?.weekdayNightsMin)
+                  },
+                  "maximum": {
+                    "value": parseInt(dataValues?.weekdayNightsMax)
+                  },
+                  "frequency": dataValues?.weekdayNightsFrequency,
+                },
+                "duration": {
+                  "hours": parseInt(dataValues?.weekdayNightsDuration)
+                },
+                "payableAmount": {
+                  "value": parseFloat(dataValues?.weekdayNightsPayment)
+                },
+                "hourlyRate": {
+                  "value": (dataValues?.weekdayNightsPayment / dataValues?.weekdayNightsDuration)?.toFixed(2)
+                },
+                "paymentNotApplicable": dataValues?.weekdayNightsPaymentNa
               },
               "weekend": {
                 "from": dataValues?.weekendFrom?.toLocaleTimeString('it-IT').toString(),
@@ -1288,7 +1322,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                     </div>
                   )}
                   {
-                    serviceTypeTemplate !== ADMINISTRATIVE && serviceTypeTemplate !== ADDON && serviceTypeTemplate !== SUPPLEMENTAL &&
+                    serviceTypeTemplate !== ADMINISTRATIVE && serviceTypeTemplate !== ADDON && serviceTypeTemplate !== SUPPLEMENTAL && serviceTypeTemplate !== ONCALL &&
                     <div>
                       <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
                         <CommonLabel value='Activities To Be Performed*' />
@@ -1392,9 +1426,9 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             }
 
           </div>
-        </Dialog>
+        </Dialog >
 
-      </div>
+      </div >
     </>
   )
 }
