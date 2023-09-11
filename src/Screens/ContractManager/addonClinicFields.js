@@ -378,7 +378,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       activities: [{ activity: newServices?.name }],
       activityType: { activityType: ADDON },
       performingActivity: newServices?.name,
-      parentActivity: newServices?.name,
+      parentActivity: "Add-On Service",
       sessionAmount: newServices?.rate,
       sessionDuration: newServices?.sessionDuration,
       hourlyRate: { value: (newServices?.rate / newServices?.sessionDuration).toFixed(2) },

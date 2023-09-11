@@ -120,25 +120,19 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
     }, [paymentAndCompensation])
 
     useEffect(() => {
-        setTimesheetPaymentsValue()
-    }, [timeSheetTabs?.length, compensationPolicy, timeSheetTabs])
-
-    useEffect(() => {
-        getPaymentFields();
-    }, [timesheetPayments, timesheetPayments?.length])
-
-    console.log('Compensation Policy', compensationPolicy, timesheetPayments);
+        if (timeSheetTabs?.length > 0) {
+            setTimesheetPaymentsValue()
+        }
+    }, [compensationPolicy, timeSheetTabs])
 
 
     const setTimesheetPaymentsValue = () => {
         // if (timeSheetTabs?.length !== timesheetPayments?.length) {
         let temp = [];
-        console.log('inside func', timesheetPayments);
         timeSheetTabs?.map((data, index) => {
             let reducedNumberOfServices = (compensationPolicy === 'ACTIVITY_BASED' || compensationPolicy === 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET') ? 'NA' : timesheetPayments?.[index]?.reducedNumberOfServices || 'NA';
             let maxPaymentPerTimesheetSubmission = compensationPolicy === 'ACTIVITY_BASED' ? parseFloat(0) : timesheetPayments?.[index]?.maxPaymentPerTimesheetSubmission || parseFloat(0);
             let providingAdditionalServices = (compensationPolicy === 'ACTIVITY_BASED' || compensationPolicy === 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET') ? 'NA' : timesheetPayments?.[index]?.providingAdditionalServices || 'NA';
-            console.log('reducedNumberOfServices', reducedNumberOfServices)
             temp.push({
                 timesheetLabel: {
                     label: timeSheetTabs?.[index]?.timesheetLabel?.label
@@ -152,9 +146,13 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
             });
         });
         setTimesheetPayments(temp);
-        getPaymentFields();
+        // getPaymentFields();
         // }
     }
+
+    useEffect(() => {
+        getPaymentFields();
+    }, [timesheetPayments]);
 
     useEffect(() => {
         getPaymentAndCompensation();
@@ -277,7 +275,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                                 startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                             }}
                                             onChange={(e) => fixedCompensationValue(e.target.value.slice(0, limit9).replace(/,/g, ""), 'maxPaymentPerTimesheetSubmission', i)}
-                                            value={Number(timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission)?.toLocaleString()}
+                                            value={Number(timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission || 0)?.toLocaleString()}
                                         />
                                     </div>
                                     {compensationPolicy !== 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET' &&
@@ -302,7 +300,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                     }}
                                     onChange={(e) => updateTimesheetPayment(e.target.value.slice(0, limit9).replace(/,/g, ""), 'maxPaymentPerContract', i)}
-                                    value={(timesheetPayments?.[i]?.maxPaymentPerContract)?.toLocaleString()}
+                                    value={(timesheetPayments?.[i]?.maxPaymentPerContract || 0)?.toLocaleString()}
                                 // onChange={(e) => updateTimesheetPayment(e.target.value.slice(0, limit9).replace(/,/g, ""), 'maxPaymentPerContract', i)}
                                 // value={Number(timesheetPayments?.[i]?.maxPaymentPerContract)?.toLocaleString()}
 
