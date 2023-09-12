@@ -32,6 +32,7 @@ const Contracts = () => {
     const [totalCount, setTotalCount] = useState(0);
     const [isEditable, setIsEditable] = useState(false);
     const [activeContractView, setActiveContractView] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         getContracts();
@@ -109,9 +110,11 @@ const Contracts = () => {
     }
 
     const getContracts = async () => {
+        setIsLoading(true);
         const { data: contracts } = await GET(`contract-managment-service/contracts?limit=${10}&offset=${page - 1}&searchText=${searchKey}&tab=${selectedContract}`);
         setContracts(contracts?.contractList);
         setTotalCount(contracts?.numberOfElements);
+        setIsLoading(false);
     };
 
     const getUserData = async () => {
@@ -129,6 +132,10 @@ const Contracts = () => {
         setPage(value);
     }
 
+    // if (isLoading) {
+    //     return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />;
+    // }
+
     return (
         addContract ? (
             <AddContract getAddContract={getAddContract} getNewContract={getNewContract} getContractType={getContractType} getSelectedContractType={getSelectedContractType} getMethod={getMethod} />
@@ -138,6 +145,7 @@ const Contracts = () => {
             <Fragment>
                 <Navbar />
                 <ContractList
+                    isLoading={isLoading}
                     getDeleteDraftDialog={getDeleteDraftDialog}
                     getContractActivationDialog={getContractActivationDialog}
                     getSelectedContract={getSelectedContract}

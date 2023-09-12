@@ -234,7 +234,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                             labelList={['End of the month', 'End of Every Week', 'Every 2 Weeks', 'Every 4 Weeks', 'On Day of Service']}
                             disabledList={[false, false, false, false, false]} />
                     </div> */}
-                    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                    {/* <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                         <CommonLabel value='Payment Based On Fixed Hours Vs Actual *' />
                         <div className={`${style.displayInRow}  ${style.verticalAlignCenter}`}>
                             <CommonSwitch label={timesheetPayments?.[i]?.paymentBasedonFixedHoursVsActual ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.textAlignLeft}`} checked={timesheetPayments?.[i]?.paymentBasedonFixedHoursVsActual} onChange={(e) => updateTimesheetPayment(e.target.checked, 'paymentBasedonFixedHoursVsActual', i)} />
@@ -260,7 +260,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                 // </div>
                             }
                         </div>
-                    </div>
+                    </div> */}
                     {timesheetPayments?.[i]?.paymentBasedonFixedHoursVsActual &&
                         <>
                             {compensationPolicy !== 'ACTIVITY_BASED' && (

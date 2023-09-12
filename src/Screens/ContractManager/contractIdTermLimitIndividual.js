@@ -684,7 +684,7 @@ const ContractIdTermLimitIndividual = (
           <div className={style.displayInRow}>
             <CommonInputField placeholder="Contract ID / Resolution No" value={contractId.id} disabled={contractId.missing}
               maxLength={TEXTFIELDLEN}
-              onFocus={() => { checkFieldAndPopAlert(contractId?.id, 'Contract ID') }} className={`${style.entityFieldWidth} ${dataCheck(contractId.id) ? style.redBorder : ''}`} onChange={(e) => setContractId({ ...contractId, id: e.target.value, missing: false })} />
+              onFocus={() => { checkFieldAndPopAlert(contractId?.id, 'Contract ID') }} className={`${style.entityFieldWidth}`} onChange={(e) => setContractId({ ...contractId, id: e.target.value, missing: false })} />
             <CommonCheckBox label="Missing" checked={contractId.missing} onChange={(e) => { setContractId({ ...contractId, missing: e.target.checked, id: '' }) }} className={` ${style.marginLeft20}`} />
           </div>
         </div>

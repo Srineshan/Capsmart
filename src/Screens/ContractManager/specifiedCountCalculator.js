@@ -1,7 +1,9 @@
 export const SpecifiedCountCalculator = (contractedSchedules, timeCommitment, additionalFreq, additionalValue) => {
     let temp = contractedSchedules;
     let schedulesTotal = 0;
+
     temp?.map(data => {
+        console.log('frequency', data?.frequency);
         if (data?.frequency?.includes(timeCommitment?.frequency)) {
             if (data?.frequency === 'EVERY_OTHER_WEEK') {
                 schedulesTotal = schedulesTotal + ((data?.minimum?.value || 0) * ((timeCommitment?.value / 2) || 0));
@@ -11,12 +13,11 @@ export const SpecifiedCountCalculator = (contractedSchedules, timeCommitment, ad
         } else {
             if (data?.frequency === 'WEEK') {
                 schedulesTotal = schedulesTotal + ((data?.minimum?.value || 0) * 52);
-            } else if (data?.frequency === 'CONTRACT_YEAR') {
+            } else if (data?.frequency === 'CONTRACT_YEAR' || data?.frequency === 'YEAR') {
                 schedulesTotal = schedulesTotal + (data?.minimum?.value || 0);
             } else if (data?.frequency === 'EVERY_OTHER_WEEK') {
                 schedulesTotal = schedulesTotal + ((data?.minimum?.value || 0) * (52 / 2));
-            }
-            else {
+            } else {
                 schedulesTotal = schedulesTotal + ((data?.minimum?.value || 0) * 12);
             }
         }
