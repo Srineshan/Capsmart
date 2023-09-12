@@ -476,6 +476,8 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
 
                         ) : ''}
                 <div className={style.cloneBlockStyle}>
+                    {contractName !== '' && (<div><p className={`${style.smallHeadingStyle}`}>{contractName}</p>
+                        <div className={style.welcomeBorder}></div></div>)}
                     <p className={`${style.smallHeadingStyle}`}>{currentPage}</p>
                     <div className={style.welcomeBorder}></div>
                     <div>

@@ -308,9 +308,9 @@ const ContractIdTermLimitIndividual = (
   const addContract = async (buttonType) => {
     let sites = getSiteData();
     let conflictedData = checkSiteAndDepartment(contracts, sites, contractIdFromActive);
-    // if (conflictedData?.length !== 0) {
-    //   setConflict({ isPresent: true, conflict: conflictedData });
-    // }
+    if (conflictedData?.length !== 0) {
+      setConflict({ isPresent: true, conflict: conflictedData });
+    }
     console.log('conflict Data', conflictedData);
     if (conflictedData?.length === 0) {
       setContinueLoading(true);
@@ -668,7 +668,7 @@ const ContractIdTermLimitIndividual = (
     setConflict({ ...conflict, isPresent: value, data: [] });
   }
 
-  console.log('selected Sites', selectedSites);
+  console.log('Conflict', conflict);
 
   return (
     <div className={style.cloneBlockStyle}>
@@ -1036,8 +1036,8 @@ const ContractIdTermLimitIndividual = (
       </div>
       {isEditable &&
         (<div className={`${style.floatRight} ${style.marginTop20}`}>
-          <button className={`${style.newContractOutlinedButton} ${style.cursorPointer} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => checkAndUpdateDate('Save In Progress') : {}}>SAVE IN-PROGRESS</button>
-          <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => { checkAndUpdateDate('Continue') } : {}}>CONTINUE</button>
+          <button className={`${style.newContractOutlinedButton} ${style.cursorPointer} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => checkAndUpdateDate('Save In Progress') : null}>SAVE IN-PROGRESS</button>
+          <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => checkAndUpdateDate('Continue') : null}>CONTINUE</button>
         </div>)
       }
 
