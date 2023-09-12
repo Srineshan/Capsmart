@@ -397,7 +397,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
     }, [])
 
     const handleValueChange = (name, value) => {
-        if (name === 'frequency' && value === 'NA' || value === '') {
+        if (name === 'frequency' && (value === 'NA' || value === '')) {
             setMetadata({ ...metadata, [name]: 'NA', min: 0, max: 99999999 })
         }
         else {

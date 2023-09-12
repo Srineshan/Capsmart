@@ -14,13 +14,13 @@ import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
 import style from './index.module.scss';
 import MultiSelectDisplay from '../../Components/ReusableSmallComponents/multiSelectDisplay';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
+import CommonMultiSelectField from '../../Components/CommonFields/CommonMultiSelectField';
+
 
 const SupplementalFields = ({ getMetaData, services, serviceSelected, editService, isReset, getIsReset }) => {
     const [availableActivities, setAvailableActivities] = useState([]);
     const { setValue, value } = useComboboxControls({ initialValue: '' });
     const [newServiceName, setNewServiceName] = useState('');
-    const [supplementServiceName, setSupplementServiceName] = useState('');
-    const [supplementalActivityType, setSupplementalActivityType] = useState('');
 
     console.log('selected Service', serviceSelected);
 
@@ -32,6 +32,8 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
         specificDedicatedHoursList.push(result);
     });
 
+
+
     let supplementServiceType = [];
     services?.filter(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => {
         let activityName = data?.activityType?.activityType;
@@ -42,17 +44,25 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
     });
 
     const getAvailableActivities = () => {
-        let activitType = metadata?.supplementalActivityType !== '' ? `[${metadata?.supplementalActivityType}]` : [CLINIC, SURGERY, ONCALL, PROCEDUREREADING];
         let temp = [];
-        services?.filter(data => activitType?.includes(data?.activityType?.activityType))?.map(data => {
-            let activityName = data?.activityType?.activityType;
-            let activities = data?.activities?.map(data => data?.activity);
-            activities?.map(data => {
-                temp.push(`${activityName} - ${data}`);
-            })
-        });
+        metadata?.supplementalActivityType?.map(supplementalActivityType => {
+            console.log('supplemental Activity Type', supplementalActivityType);
+            let activityType = supplementalActivityType !== '' ? `[${supplementalActivityType}]` : [CLINIC, SURGERY, ONCALL, PROCEDUREREADING];
+
+            services?.filter(data => activityType?.includes(data?.activityType?.activityType))?.map(data => {
+                let activityName = data?.activityType?.activityType;
+                let activities = data?.activities?.map(data => data?.activity);
+                console.log('selected activity type', data?.activities?.activityType, activityType);
+                activities?.map(data => {
+                    temp.push(`${activityName} - ${data}`);
+                })
+            });
+        })
+
         setAvailableActivities(temp);
     }
+
+    console.log('available activities', availableActivities);
 
     const getSelectedActivity = () => {
         let activityName = metadata?.dedicatedHoursActivityType;
@@ -91,7 +101,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
         dedicatedHoursSpecified: false,
         dedicatedHoursActivityType: '',
         dedicatedHoursPerformingActivity: '',
-        supplementalActivityType: '',
+        supplementalActivityType: [],
         supplementServiceName: [],
         baseServices: [],
         billableService: true,
@@ -123,7 +133,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
             dedicatedHoursSpecified: false,
             dedicatedHoursActivityType: '',
             dedicatedHoursPerformingActivity: '',
-            supplementalActivityType: '',
+            supplementalActivityType: [],
             supplementServiceName: [],
             baseServices: [],
             billableService: true,
@@ -165,30 +175,33 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
         console.log('services', services);
         // if (!editService) {
         let temp = [];
-        services?.filter(service => service?.activityType?.activityType === metadata?.supplementalActivityType)?.map(service => {
-            console.log('inside service', metadata?.supplementServiceName);
-            metadata?.supplementServiceName?.filter(serviceName => service?.activities?.map(activity => activity?.activity)?.includes(serviceName?.split(' - ')?.[1]))?.map(serviceName => {
-                console.log('inside servicename')
-                temp.push({
-                    "activityType": {
-                        "activityType": metadata?.supplementalActivityType
-                    },
-                    "performingActivity": {
-                        "activity": service?.performingActivity?.activity
-                    },
-                    "activity": {
-                        "activity": serviceName?.split(' - ')?.[1]
-                    }
+        metadata?.supplementalActivityType?.map(supplementalActivityType => {
+            services?.filter(service => service?.activityType?.activityType === supplementalActivityType)?.map(service => {
+                console.log('inside service', metadata?.supplementServiceName);
+                metadata?.supplementServiceName?.filter(serviceName => service?.activities?.map(activity => activity?.activity)?.includes(serviceName?.split(' - ')?.[1]))?.map(serviceName => {
+                    console.log('inside servicename')
+                    temp.push({
+                        "activityType": {
+                            "activityType": supplementalActivityType
+                        },
+                        "performingActivity": {
+                            "activity": service?.performingActivity?.activity
+                        },
+                        "activity": {
+                            "activity": serviceName?.split(' - ')?.[1]
+                        }
+                    })
                 })
             })
         })
+
         setMetadata({ ...metadata, 'baseServices': temp });
         // }
     }, [metadata?.supplementalActivityType, metadata?.supplementServiceName?.length, services])
 
     useEffect(() => {
         getAvailableActivities();
-    }, [metadata?.supplementalActivityType])
+    }, [metadata?.supplementalActivityType?.length])
 
     useEffect(() => {
         if (editService) {
@@ -261,6 +274,15 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
         setMetadata({ ...metadata, supplementServiceName: temp?.filter((data, indexValue) => index !== indexValue)?.map(data => data) });
     }
 
+    const removeSupplementActivityType = (index) => {
+        let temp = metadata?.supplementalActivityType;
+        let activityName = metadata?.supplementalActivityType?.filter((activityName, indexValue) => index === indexValue)?.map(data => data)[0];
+        console.log('supplemental service name', metadata?.supplementServiceName?.map(data => data?.split(' - ')?.[0]));
+        let tempActivities = metadata?.supplementServiceName?.filter(activity => activity?.split(' - ')?.[0] !== activityName)?.map(data => data);
+        let baseServiceTemp = metadata?.baseServices?.filter(service => service?.activityType?.activityType !== activityName)?.map(data => data);
+        setMetadata({ ...metadata, supplementalActivityType: temp?.filter((data, indexValue) => index !== indexValue)?.map(data => data), supplementServiceName: tempActivities, baseServices: baseServiceTemp });
+    }
+
     const avilableActivityItems = useMemo(
         () =>
             availableActivities?.map((data) => ({
@@ -274,6 +296,12 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
         services.push(newServiceName);
         setMetadata({ ...metadata, supplementServiceName: services });
         setValue('');
+    }
+
+    const updateSupplementalActivity = (value) => {
+        let temp = metadata?.supplementalActivityType;
+        temp.push(value);
+        setMetadata({ ...metadata, 'supplementalActivityType': temp })
     }
 
     console.log('metadata', metadata);
@@ -317,13 +345,20 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                 <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
                     <CommonLabel value='Supplemental Service Type*' />
                     <div>
-                        <CommonSelectField className={`${style.fullWidth}`}
-                            value={metadata?.supplementalActivityType}
-                            onChange={(e) => setMetadata({ ...metadata, 'supplementalActivityType': e.target.value })}
-                            firstOptionLabel={'Select Supplemental Service Type'} firstOptionValue={''}
-                            valueList={supplementServiceType}
-                            labelList={supplementServiceType}
-                            disabledList={supplementServiceType?.map(data => false)} />
+                        <div>
+                            <CommonSelectField className={`${style.fullWidth}`}
+                                value={metadata?.supplementalActivityType}
+                                onChange={(e) => updateSupplementalActivity(e.target.value)}
+                                firstOptionLabel={'Select Supplemental Service Type'} firstOptionValue={''}
+                                valueList={supplementServiceType?.filter(data => !metadata?.supplementalActivityType?.includes(data))?.map(data => data)}
+                                labelList={supplementServiceType?.filter(data => !metadata?.supplementalActivityType?.includes(data))?.map(data => data)}
+                                disabledList={supplementServiceType?.filter(data => !metadata?.supplementalActivityType?.includes(data))?.map(data => false)} />
+                        </div>
+
+                        {
+                            metadata?.supplementalActivityType?.length !== 0 && metadata?.supplementalActivityType &&
+                            <MultiSelectDisplay values={metadata?.supplementalActivityType} removeItem={removeSupplementActivityType} />
+                        }
                     </div>
                 </div>
             </div>

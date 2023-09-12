@@ -323,9 +323,11 @@ const NewServiceProvider = ({
       return;
     } else if (
       (allowPersonalMail && !userDetails?.email?.includes("@")) ||
+      (allowPersonalMail &&
+        userDetails?.email?.includes(`@${CSPSubDomain}`)) ||
       (allowPersonalMail && !userDetails?.email?.includes("."))
     ) {
-      ErrorToaster("Enter a Valid Email");
+      ErrorToaster("Enter a Valid Personal Email");
       setContinueLoading(false);
       return;
     }
@@ -1016,8 +1018,8 @@ const NewServiceProvider = ({
                   )?.length === 0
                     ? roles?.map((data) => data?.roleName)
                     : roles
-                        ?.filter((data) => data?.roleName !== "Aggregator")
-                        ?.map((data) => data?.roleName)
+                      ?.filter((data) => data?.roleName !== "Aggregator")
+                      ?.map((data) => data?.roleName)
                 }
                 labelList={
                   contractUsers?.filter((data) =>
@@ -1027,8 +1029,8 @@ const NewServiceProvider = ({
                   )?.length === 0
                     ? roles?.map((data) => data?.roleName)
                     : roles
-                        ?.filter((data) => data?.roleName !== "Aggregator")
-                        ?.map((data) => data?.roleName)
+                      ?.filter((data) => data?.roleName !== "Aggregator")
+                      ?.map((data) => data?.roleName)
                 }
                 disabledList={
                   contractUsers?.filter((data) =>
@@ -1038,8 +1040,8 @@ const NewServiceProvider = ({
                   )?.length === 0
                     ? roles?.map((data) => false)
                     : roles
-                        ?.filter((data) => data?.roleName !== "Aggregator")
-                        ?.map((data) => false)
+                      ?.filter((data) => data?.roleName !== "Aggregator")
+                      ?.map((data) => false)
                 }
               />
               <div className={`${style.marginTop20} ${style.marginLeft20}`}>
@@ -1051,17 +1053,15 @@ const NewServiceProvider = ({
         <div>
           <div className={`${style.floatRight} ${style.marginTop20}`}>
             <button
-              className={`${style.buttonStyle}  ${style.cursorPointer} ${
-                continueLoading ? style.disabled : ""
-              }`}
+              className={`${style.buttonStyle}  ${style.cursorPointer} ${continueLoading ? style.disabled : ""
+                }`}
               onClick={!continueLoading ? () => handleSave("Add More") : {}}
             >
               ADD MORE
             </button>
             <button
-              className={`${style.buttonStyle}  ${style.cursorPointer} ${
-                style.marginLeft20
-              } ${continueLoading ? style.disabled : ""}`}
+              className={`${style.buttonStyle}  ${style.cursorPointer} ${style.marginLeft20
+                } ${continueLoading ? style.disabled : ""}`}
               onClick={!continueLoading ? () => handleSave("Save & Exit") : {}}
             >
               SAVE & EXIT

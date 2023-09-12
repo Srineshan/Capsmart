@@ -332,12 +332,21 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     }
   }
 
-  const updateWorkingHours = (name, value) => {
+  const updateWorkingHours = (name, value, index) => {
+
     let temp = metadata;
-    temp?.map(data => {
-      data[name] = value;
-    })
+    if (name === 'workingTimeFrom') {
+      temp[index]['workingPeriod']['from'] = value;
+    }
+    if (name === 'workingTimeTo') {
+      temp[index]['workingPeriod']['to'] = value;
+    }
+    temp[index][name] = value;
+    // temp?.map(data => {
+    //   data[name] = value;
+    // })
     setMetadata(temp);
+    console.log('temp', temp);
   }
 
   const handleNewServiceLocation = (selectedItem) => {
@@ -577,7 +586,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       }
 
       {
-        metadata?.[0]?.activityResponse?.dataMap?.selectedActivityId === undefined && metadata?.filter(data => !serviceList?.map(service => service)?.includes(data?.performingActivity) || editService)?.map(data => (
+        metadata?.[0]?.activityResponse?.dataMap?.selectedActivityId === undefined && metadata?.filter(data => !serviceList?.map(service => service)?.includes(data?.performingActivity) || editService)?.map((data, index) => (
           <div className={style.marginTop20} onClick={() => setSelectedService(data?.performingActivity)}>
             <CommonCheckBox checked={selectedServices?.includes(data?.performingActivity)} onChange={(e) => selectService(data?.performingActivity, e.target.checked)} label={data?.performingActivity?.activity || data?.performingActivity} />
             <div className={`${style.addonBoxStyle} ${style.marginTop20}`}>
@@ -701,15 +710,15 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                   <TimePicker
                     useAmPm={false}
                     onChange={(e) => {
-                      updateWorkingHours('workingTimeFrom', e);
+                      updateWorkingHours('workingTimeFrom', e, index);
                     }}
-                    value={data?.workingTimeFrom === null ? null : new Date(data?.workingTimeFrom)}
+                    value={data?.workingPeriod?.from === null ? null : new Date(data?.workingPeriod?.from)}
                   />
                   <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
                   <TimePicker
                     useAmPm={false}
-                    onChange={(e) => updateWorkingHours('workingTimeTo', e)}
-                    value={data?.workingTimeTo === null ? null : new Date(data?.workingTimeTo) || null}
+                    onChange={(e) => updateWorkingHours('workingTimeTo', e, index)}
+                    value={data?.workingPeriod?.to === null ? null : new Date(data?.workingPeriod?.to)}
                   // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
                   />
                 </div>
@@ -928,7 +937,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
               <TimePicker
                 useAmPm={false}
                 onChange={(e) => handleNewServiceChange('workingTimeTo', e)}
-                value={newServices?.workingTimeTo === null ? null : new Date(newServices?.workingTimeTo) || null}
+                value={newServices?.workingTimeTo === null ? null : new Date(newServices?.workingTimeTo)}
               // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
               />
             </div>
