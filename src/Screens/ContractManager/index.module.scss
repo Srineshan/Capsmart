@@ -115,10 +115,6 @@ body::-webkit-scrollbar {
     height: 100%;
 }
 
-.redBorder{
-    border: solid 1px red;
-}
-
 .rightAlign {
     text-align: right;
 }
@@ -2014,6 +2010,10 @@ input[type=number] {
 
 .redBorder {
     border: 0.6000000238418579px solid #F54646;
+}
+
+.redLable {
+    color: #F54646 !important;
 }
 
 .validationTopicText {
