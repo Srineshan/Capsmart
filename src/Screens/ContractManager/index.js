@@ -40,7 +40,7 @@ const Contracts = () => {
 
     useEffect(() => {
         getContracts();
-    }, [selectedContract, searchKey, page])
+    }, [selectedContract, searchKey, page, newContractFromClone])
 
     useEffect(() => {
         sessionStorage.setItem('isEditable', selectedContract === 'draft' ? true : false)
