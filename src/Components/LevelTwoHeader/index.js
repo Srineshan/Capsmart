@@ -24,6 +24,7 @@ import { Icon, Intent } from "@blueprintjs/core";
 import ArrowDown from "./../../images/arrowDown.png";
 
 import style from "./index.module.scss";
+import { formatInTimeZone } from "date-fns-tz";
 
 const LevelTwoHeader = ({
   heading,
@@ -109,8 +110,13 @@ const LevelTwoHeader = ({
         {needDateFilter && (
           <>
             <div className={`${style.marginRight} ${style.dateRangeTextStyle}`}>
-              {`${format(new Date(from), "MM-dd-yyyy")} to ${format(
+              {`${formatInTimeZone(
+                new Date(from),
+                "America/New_York",
+                "MM-dd-yyyy"
+              )} to ${formatInTimeZone(
                 new Date(to),
+                "America/New_York",
                 "MM-dd-yyyy"
               )}`}
             </div>

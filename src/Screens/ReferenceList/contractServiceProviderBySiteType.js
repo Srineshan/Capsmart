@@ -19,6 +19,7 @@ import DeleteHcRow from "./../../images/deleteHcRow.png";
 import { format } from "date-fns";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
+import { formatInTimeZone } from "date-fns-tz";
 
 const ContractServiceProviderBySite = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -94,7 +95,9 @@ const ContractServiceProviderBySite = () => {
     const date = new Date(
       lastModifiedDate.contractedServiceProviders?.lastModified
     );
-    setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
+    setLastUpdatedDate(
+      formatInTimeZone(date, "America/New_York", "MMM d, yyyy HH:mm zzz")
+    );
   };
 
   const getEntityTypes = async () => {
