@@ -630,10 +630,10 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                     })}
                                 />
                             </div>
-                            <div className={style.verticalAlignCenter}>
-                                <CommonLabel className={`${style.marginLeft20}`} value={`Per Weekday Days`} />
-                            </div>
-                            <CommonCheckBox value="NA" className={`${style.marginLeft20}`} label="NA" checked={metadata?.weekdayPaymentNa} onChange={(e) => setMetadata({ ...metadata, weekdayPayment: 0, weekdayPaymentNa: e.target.checked })} />
+                            {/* <div className={style.verticalAlignCenter}> */}
+                            <CommonLabel className={`${style.marginLeft20} ${style.threeFieldWidth}`} value={`Per Weekday Days`} />
+                            {/* </div> */}
+                            <CommonCheckBox value="NA" className={`${style.marginLeft20} ${style.fullWidth}`} label="NA" checked={metadata?.weekdayPaymentNa} onChange={(e) => setMetadata({ ...metadata, weekdayPayment: 0, weekdayPaymentNa: e.target.checked })} />
                         </div>
                     </div>
                     <div className={`${style.addManagerGrid}`}>
@@ -740,10 +740,10 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                     })}
                                 />
                             </div>
-                            <div className={style.verticalAlignCenter}>
-                                <CommonLabel className={`${style.marginLeft20}`} value={`Per Weekday Nights`} />
-                            </div>
-                            <CommonCheckBox className={style.marginLeft20} value="NA" label="NA" checked={metadata?.weekdayNightsPaymentNa} onChange={(e) => setMetadata({ ...metadata, weekdayNightsPayment: 0, weekdayNightsPaymentNa: e.target.checked })} />
+                            {/* <div className={style.verticalAlignCenter}> */}
+                            <CommonLabel className={`${style.marginLeft20} ${style.threeFieldWidth}`} value={`Per Weekday Nights`} />
+                            {/* </div> */}
+                            <CommonCheckBox className={`${style.marginLeft20} ${style.fullWidth}`} value="NA" label="NA" checked={metadata?.weekdayNightsPaymentNa} onChange={(e) => setMetadata({ ...metadata, weekdayNightsPayment: 0, weekdayNightsPaymentNa: e.target.checked })} />
                         </div>
                     </div>
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -862,10 +862,10 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                     })}
                                 />
                             </div>
-                            <div className={style.verticalAlignCenter}>
-                                <CommonLabel className={`${style.marginLeft20}`} value={`Per Weekend`} />
-                            </div>
-                            <CommonCheckBox className={style.marginLeft20} value="NA" label="NA" checked={metadata?.weekendPaymentNa} onChange={(e) => setMetadata({ ...metadata, weekendPayment: 0, weekendPaymentNa: e.target.checked })} />
+                            {/* <div className={style.verticalAlignCenter}> */}
+                            <CommonLabel className={`${style.marginLeft20} ${style.threeFieldWidth}`} value={`Per Weekend`} />
+                            {/* </div> */}
+                            <CommonCheckBox className={`${style.marginLeft20} ${style.fullWidth}`} value="NA" label="NA" checked={metadata?.weekendPaymentNa} onChange={(e) => setMetadata({ ...metadata, weekendPayment: 0, weekendPaymentNa: e.target.checked })} />
                         </div>
                     </div>
                     {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -1003,10 +1003,10 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                     })}
                                 />
                             </div>
-                            <div className={style.verticalAlignCenter}>
-                                <CommonLabel className={`${style.marginLeft20}`} value={`Per Holiday`} />
-                            </div>
-                            <CommonCheckBox value="NA" label="NA" checked={metadata?.holidayPaymentNa} onChange={(e) => setMetadata({ ...metadata, holidayPayment: 0, holidayPaymentNa: e.target.checked })} className={style.marginLeft20} />
+                            {/* <div className={style.verticalAlignCenter}> */}
+                            <CommonLabel className={`${style.marginLeft20} ${style.threeFieldWidth}`} value={`Per Holiday`} />
+                            {/* </div> */}
+                            <CommonCheckBox value="NA" label="NA" checked={metadata?.holidayPaymentNa} onChange={(e) => setMetadata({ ...metadata, holidayPayment: 0, holidayPaymentNa: e.target.checked })} className={`${style.marginLeft20} ${style.fullWidth}`} />
                         </div>
                     </div>
                     {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
