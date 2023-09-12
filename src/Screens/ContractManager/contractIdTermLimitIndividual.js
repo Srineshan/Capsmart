@@ -1037,7 +1037,7 @@ const ContractIdTermLimitIndividual = (
         <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
           <div className={style.spaceBetween}>
             <p className={style.extensionStyle}>ADD FILE DETAILS</p>
-            <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => updateConflict(false)} />
+            <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => setIsShowUploadDialog(false)} />
           </div>
           <div className={style.extensionBorder}></div>
           {/* {fullyExecutedContract && ( */}

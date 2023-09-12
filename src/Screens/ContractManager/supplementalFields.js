@@ -371,7 +371,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                             <DatalistInput
                                 value={value}
                                 setValue={setValue}
-                                items={avilableActivityItems || []} onSelect={(item) => { addSupplementService(item.value); }} className={style.fullWidth}
+                                items={avilableActivityItems?.filter(data => !metadata?.supplementServiceName?.includes(data?.value)) || []} onSelect={(item) => { addSupplementService(item.value); }} className={style.fullWidth}
                                 onChange={(e) => {
                                     setNewServiceName(e.target.value);
                                     const caret = e.target.selectionStart
