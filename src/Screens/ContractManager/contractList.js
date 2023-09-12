@@ -460,7 +460,7 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
               </div>
             </div>
             {isLoading ?
-              <div className={style.pageAlignCenter}>
+              <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
                 <CircularProgress sx={{ color: "#7165E3" }} />
               </div> :
               <Table
