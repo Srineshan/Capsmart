@@ -20,6 +20,7 @@ import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 import { checkSiteAndDepartment } from './checkDependentData';
 import ConflictPopUp from './conflictPopUp';
 import style from './index.module.scss';
+import { validateContractIDTermLimit } from './contractValidation';
 
 const TEXTFIELDLEN = 100;
 const DESCLEN = 250;
@@ -84,6 +85,7 @@ const ContractIdTermLimitIndividual = (
   const [isSiteDeptUpdated, setIsSiteDeptUpdated] = useState(false);
   const [contractUsers, setContractUsers] = useState([]);
   const [isShowUploadDialog, setIsShowUploadDialog] = useState(false);
+  const [validationData, setValidationData] = useState([]);
 
 
   useEffect(() => {
@@ -169,6 +171,9 @@ const ContractIdTermLimitIndividual = (
   const getContractDetail = async () => {
     const { data: contractData } = await GET(`contract-managment-service/contracts/${createdContractId}/contractDetail`);
     if (contractData) {
+      let validateTab = validateContractIDTermLimit(contractData);
+      setValidationData(validateTab);
+      console.log('validation Data', validationData);
       let contractDetail = contractData?.contractDetail;
       setContractData(contractData?.contractDetail);
       setName(contractData?.contractName?.contractName || '');
@@ -648,6 +653,21 @@ const ContractIdTermLimitIndividual = (
     );
   }
 
+  const valueCheck = (value) => {
+    var result = false;
+    console.log('method', method);
+    if (createdContractId !== '') {
+      console.log('inside put');
+      if (value === null || value === undefined || value === [] || value === 0 || value === '0' || value === '') {
+        console.log('inside if');
+        result = true
+      }
+    }
+    return result;
+  }
+
+  console.log('value check', valueCheck(contractId?.id))
+
   const updateConflict = (value) => {
     setConflict({ ...conflict, isPresent: value, data: [] });
   }
@@ -659,7 +679,7 @@ const ContractIdTermLimitIndividual = (
       <div className={`${style.newContractFromCloneBoxStyle}`}>
         <div className={`${style.extentionGrid}`}>
           <CommonLabel value='Contract / Agreement Name*' />
-          <CommonInputField placeholder="Contract Name" className={style.fullWidth} value={contractName}
+          <CommonInputField placeholder="Contract Name" className={`${style.fullWidth}`} value={contractName}
             maxLength={TEXTFIELDLEN} onChange={(e) => { setContractName(e.target.value); setName(e.target.value) }}
             onFocus={() => { checkFieldAndPopAlert(contractName, 'Contract / Agreement Name') }} />
         </div>
@@ -668,8 +688,8 @@ const ContractIdTermLimitIndividual = (
           <div className={style.displayInRow}>
             <CommonInputField placeholder="Contract ID / Resolution No" value={contractId.id} disabled={contractId.missing}
               maxLength={TEXTFIELDLEN}
-              onFocus={() => { checkFieldAndPopAlert(contractId?.id, 'Contract ID') }} className={`${style.entityFieldWidth}`} onChange={(e) => setContractId({ ...contractId, id: e.target.value, missing: false })} />
-            <CommonCheckBox label="Missing" checked={contractId.missing} onChange={(e) => setContractId({ ...contractId, missing: e.target.checked, id: '' })} className={` ${style.marginLeft20}`} />
+              onFocus={() => { checkFieldAndPopAlert(contractId?.id, 'Contract ID') }} className={`${style.entityFieldWidth} ${valueCheck(contractId.id) ? style.redBorder : ''}`} onChange={(e) => setContractId({ ...contractId, id: e.target.value, missing: false })} />
+            <CommonCheckBox label="Missing" checked={contractId.missing} onChange={(e) => { setContractId({ ...contractId, missing: e.target.checked, id: '' }) }} className={` ${style.marginLeft20}`} />
           </div>
         </div>
         {selectedContractType !== "New Contract" && (
