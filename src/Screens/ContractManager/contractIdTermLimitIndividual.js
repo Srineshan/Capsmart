@@ -21,6 +21,7 @@ import { checkSiteAndDepartment } from './checkDependentData';
 import ConflictPopUp from './conflictPopUp';
 import style from './index.module.scss';
 import { validateContractIDTermLimit } from './contractValidation';
+import { valueCheck } from "./../../utils/valueCheck";
 
 const TEXTFIELDLEN = 100;
 const DESCLEN = 250;
@@ -653,20 +654,15 @@ const ContractIdTermLimitIndividual = (
     );
   }
 
-  const valueCheck = (value) => {
-    var result = false;
+  const dataCheck = (value) => {
     console.log('method', method);
     if (createdContractId !== '') {
-      console.log('inside put');
-      if (value === null || value === undefined || value === [] || value === 0 || value === '0' || value === '') {
-        console.log('inside if');
-        result = true
-      }
+      return valueCheck(value);
+    } else {
+      return false
     }
-    return result;
   }
 
-  console.log('value check', valueCheck(contractId?.id))
 
   const updateConflict = (value) => {
     setConflict({ ...conflict, isPresent: value, data: [] });
@@ -688,7 +684,7 @@ const ContractIdTermLimitIndividual = (
           <div className={style.displayInRow}>
             <CommonInputField placeholder="Contract ID / Resolution No" value={contractId.id} disabled={contractId.missing}
               maxLength={TEXTFIELDLEN}
-              onFocus={() => { checkFieldAndPopAlert(contractId?.id, 'Contract ID') }} className={`${style.entityFieldWidth} ${valueCheck(contractId.id) ? style.redBorder : ''}`} onChange={(e) => setContractId({ ...contractId, id: e.target.value, missing: false })} />
+              onFocus={() => { checkFieldAndPopAlert(contractId?.id, 'Contract ID') }} className={`${style.entityFieldWidth} ${dataCheck(contractId.id) ? style.redBorder : ''}`} onChange={(e) => setContractId({ ...contractId, id: e.target.value, missing: false })} />
             <CommonCheckBox label="Missing" checked={contractId.missing} onChange={(e) => { setContractId({ ...contractId, missing: e.target.checked, id: '' }) }} className={` ${style.marginLeft20}`} />
           </div>
         </div>
