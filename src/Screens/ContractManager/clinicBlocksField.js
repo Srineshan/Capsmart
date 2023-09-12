@@ -12,11 +12,12 @@ import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
 import CommonTextField from '../../Components/CommonFields/CommonTextField';
 import CommonLabel from '../../Components/CommonFields/CommonLabel';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
+import { valueCheck } from '../../utils/valueCheck';
 import { SpecifiedCountCalculator } from './specifiedCountCalculator';
 import style from './index.module.scss';
 import AddScheduleAndTargetForDifferentPeriods from './addScheduleAndTrgetForDifferentPeriods';
 
-const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, contractTermPeriod, isReset, getIsReset }) => {
+const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, contractTermPeriod, isReset, getIsReset, editService }) => {
     const [selectedScheduleRow, setSelectedScheduleRow] = useState();
     const [addScheduleAndTargetForDifferentPeriods, setAddScheduleAndTargetForDifferentPeriods] = useState(false);
     const [newClinicRow, setNewClinicRow] = useState({ startDate: new Date(), endDate: new Date(), min: 0, max: 0, frequency: 'WEEK', seenWithNurse: 0, seenWithoutNurse: 0, seenNoTarget: false, targetWithNurse: 0, targetWithoutNurse: 0, targetNoTarget: false })
@@ -310,6 +311,8 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
         setMetadata({ ...metadata, serviceDays: serviceDays })
     }
 
+    console.log(metadata?.serviceDays)
+
     const onAdditionalScheduleChange = (value) => {
         if (!value) {
             setMetadata({ ...metadata, additionalScheduleRequired: value, additionalScheduleValue: '0', additionalScheduleFrequency: 'NA' })
@@ -400,7 +403,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
 
     const limit5 = 5;
 
-    console.log('selected', format(new Date(contractTermPeriod?.start), 'MMMM d, yyyy'));
+    console.log('selected', format(new Date(contractTermPeriod?.start), 'MMMM d, yyyy'), GetDateFromHours(serviceSelected?.workingPeriod?.from?.toString() || ''));
 
     const deleteRow = (index) => {
         let contractSchedule = metadata?.contractedSchedules?.filter((data, indexVal) => indexVal !== index)?.map(data => data);
@@ -408,6 +411,15 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
         let scheduledPatientsTargets = metadata?.scheduledPatientsTargets?.filter((data, indexVal) => indexVal !== index)?.map(data => data);
         setMetadata({ ...metadata, contractedSchedules: contractSchedule, patientsSeenTargets: patientsSeenTarget, scheduledPatientsTargets: scheduledPatientsTargets })
     }
+
+    const dataCheck = (value) => {
+        if (editService) {
+            return valueCheck(value);
+        } else {
+            return false
+        }
+    }
+
 
     return (
         <div>
@@ -431,7 +443,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
             {(metadata?.scheduleAndTargetSame && metadata?.contractedSchedules?.length === 1) && (
                 <>
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        <CommonLabel value='Regular Service Schedule*' />
+                        <CommonLabel value='Regular Service Schedule*' className={dataCheck(metadata?.contractedSchedules?.[0]?.minimum?.value) ? style.redLable : ''} />
                         <div className={style.displayInRow}>
                             {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MIN</div>
@@ -469,7 +481,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                         </div>
                     </div>
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        <CommonLabel value='Patients Seen Target*' />
+                        <CommonLabel value='Patients Seen Target*' className={!metadata?.patientsSeenTargets?.[0]?.noTargetApplicable ? (dataCheck(metadata?.patientsSeenTargets?.[0]?.withNurse?.value) || dataCheck(metadata?.patientsSeenTargets?.[0]?.withoutNurse?.value)) ? style.redLable : '' : ''} />
                         <div className={style.withNurseGrid}>
                             {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
                                 <div className={style.textElement}>WITH NURSE</div>
@@ -504,7 +516,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                     </div>
 
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        <CommonLabel value='Scheduled Patient Target*' />
+                        <CommonLabel value='Scheduled Patient Target*' className={!metadata?.scheduledPatientsTargets?.[0]?.noTargetApplicable ? (dataCheck(metadata?.scheduledPatientsTargets?.[0]?.withNurse?.value) || dataCheck(metadata?.scheduledPatientsTargets?.[0]?.withoutNurse?.value)) ? style.redLable : '' : ''} />
                         <div className={`${style.withNurseGrid} ${style.fullWidth}`}>
                             {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
                                 <div className={style.textElement}>WITH NURSE</div>
@@ -640,7 +652,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <CommonLabel value='Service Session Duration' />
+                <CommonLabel value='Service Session Duration' className={dataCheck(metadata?.sessionDuration) ? style.redLable : ''} />
                 <div className={`${style.threeFieldWidth}`}>
                     <CommonTextField
                         type="tel"
@@ -656,7 +668,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
             {
                 metadata?.billableService &&
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                    <CommonLabel value='Service Session payment Amount*' />
+                    <CommonLabel value='Service Session payment Amount*' className={dataCheck(metadata?.sessionAmount) ? style.redLable : ''} />
                     <div className={`${style.displayInRow}`}>
                         <div className={`${style.threeFieldWidth}`}>
                             <CommonTextField
@@ -677,7 +689,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                 </div>
             }
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <CommonLabel value='Total Contracted Service Sessions*' />
+                <CommonLabel value='Total Contracted Service Sessions*' className={dataCheck(metadata?.totalSession) ? style.redLable : ''} />
                 <div className={style.twoCol}>
                     <div className={`${style.spaceBetween} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
                         <EditableText value={metadata?.totalSession} placeholder="" type='tel' onChange={(e) => onTotalSessionChange(e.slice(0, 6))}
@@ -691,12 +703,12 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <CommonLabel value='Service Days*' />
+                <CommonLabel value='Service Days*' className={(metadata?.serviceDays === null || (metadata?.serviceDays !== undefined && Object?.values(metadata?.serviceDays)?.filter(data => data === true)?.length === 0)) ? style.redLable : ''} />
                 <ServiceDays setMetaData={getServiceDaysMetadata} selectedService={serviceSelected} isReset={isReset} setIsReset={getIsReset} />
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <CommonLabel value='Allowable Working Day Hours For Service*' />
+                <CommonLabel value='Allowable Working Day Hours For Service*' className={(format(metadata?.workingTimeTo || new Date(), 'H') === '0' && format(metadata?.workingTimeFrom || new Date(), 'H') === '0') ? style.redLable : ''} />
                 <div className={style.displayInRow}>
                     <TimePicker
                         useAmPm={false}

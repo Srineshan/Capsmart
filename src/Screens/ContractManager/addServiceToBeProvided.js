@@ -1384,7 +1384,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                   </div>}
 
                   {serviceTypeTemplate === CLINIC
-                    ? <ClinicBlocksFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} contractTermPeriod={contractTermPeriod} isReset={isReset} getIsReset={getIsReset} />
+                    ? <ClinicBlocksFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} contractTermPeriod={contractTermPeriod} isReset={isReset} getIsReset={getIsReset} editService={editService} />
                     : serviceTypeTemplate === SURGERY
                       ? <SurgerySessionFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} isReset={isReset} getIsReset={getIsReset} />
                       : serviceTypeTemplate === ONCALL
