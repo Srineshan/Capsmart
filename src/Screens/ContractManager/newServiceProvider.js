@@ -236,7 +236,7 @@ const NewServiceProvider = ({
   const getEntityData = async () => {
     const { data: entityData } = await GET(`entity-service/entity/${TenantID}`);
     // console.log("entity", entityData.subdomain);
-    setCSPSubDomain(entityData.subdomain);
+    setCSPSubDomain(entityData.officialEmailDomain?.officialEmail);
   };
 
   const handleUserData = (name, value) => {

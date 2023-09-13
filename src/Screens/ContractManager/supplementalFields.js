@@ -84,7 +84,6 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                     ...metadata,
                     dedicatedHoursActivityType: dedicatedHoursActivityType,
                     dedicatedHoursPerformingActivity: dedicatedHoursPerformingActivity,
-                    supplementServiceName: [],
                     billableService: data?.billableService,
                     rateType: data?.rateType,
                     sessionAmount: data?.payableAmount?.value,
@@ -175,6 +174,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
         console.log('services', services);
         // if (!editService) {
         let temp = [];
+        console.log('value check', metadata?.supplementalActivityType);
         metadata?.supplementalActivityType?.map(supplementalActivityType => {
             services?.filter(service => service?.activityType?.activityType === supplementalActivityType)?.map(service => {
                 console.log('inside service', metadata?.supplementServiceName);
@@ -230,7 +230,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
             workingTimeTo: GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
             serviceDays: serviceSelected?.serviceDays,
             baseServices: serviceSelected?.baseServices,
-            supplementalActivityType: serviceSelected?.baseServices?.map(data => data?.activityType?.activityType)?.[0],
+            supplementalActivityType: serviceSelected?.baseServices?.map(data => data?.activityType?.activityType),
         });
     }
 
