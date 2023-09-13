@@ -627,8 +627,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     setTimesheetValues(timesheetSubmissionTerms?.timesheetActivitiesPeriods);
   }, [timesheetSubmissionTerms]);
 
-  console.log(Array.isArray(paymentSource?.[0]), paymentSource?.[0], new Array(1).fill(paymentSource?.[0]))
-
+  console.log('goal', invoiceProcessingDayGoal);
 
   return (
     <div className={style.cloneBlockStyle}>
