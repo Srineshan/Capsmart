@@ -54,6 +54,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
     const [isLoading, setIsLoading] = useState(false);
     const [timeSheetTabs, setTimeSheetTabs] = useState([]);
     const [continueLoading, setContinueLoading] = useState(false);
+    const [contractPeriod, setContractPeriod] = useState({ start: null, end: null });
     const limit3 = 3;
     const limit4 = 4;
     const limit5 = 5;
@@ -63,6 +64,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
 
     const getContractDetail = async () => {
         const { data: contractData } = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
+        setContractPeriod({ ...contractPeriod, start: contractData?.contractDetail?.contractTerm?.effectiveDate, end: contractData?.contractDetail?.contractTerm?.endDate })
         setCompensationPolicy(contractData?.contractDetail?.compensationPolicy);
     }
 
@@ -124,6 +126,14 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
             setTimesheetPaymentsValue()
         }
     }, [compensationPolicy, timeSheetTabs])
+
+    const monthDiff = (date1, date2) => {
+        let months;
+        months = (date2.getFullYear() - date1.getFullYear()) * 12;
+        months -= date1.getMonth();
+        months += date2.getMonth();
+        return months <= 0 ? 0 : months;
+    }
 
 
     const setTimesheetPaymentsValue = () => {
@@ -292,19 +302,22 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                 </>)}
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <CommonLabel value='Max. Compensation Value for Contract Period*' />
-                                <CommonTextField
-                                    className={style.twoFieldWidth}
-                                    // type="number"
-                                    min="0"
-                                    InputProps={{
-                                        startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
-                                    }}
-                                    onChange={(e) => updateTimesheetPayment(e.target.value.slice(0, limit9).replace(/,/g, ""), 'maxPaymentPerContract', i)}
-                                    value={(timesheetPayments?.[i]?.maxPaymentPerContract || 0)?.toLocaleString()}
-                                // onChange={(e) => updateTimesheetPayment(e.target.value.slice(0, limit9).replace(/,/g, ""), 'maxPaymentPerContract', i)}
-                                // value={Number(timesheetPayments?.[i]?.maxPaymentPerContract)?.toLocaleString()}
+                                <div className={style.displayInRow}>
+                                    <CommonTextField
+                                        className={style.twoFieldWidth}
+                                        // type="number"
+                                        min="0"
+                                        InputProps={{
+                                            startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
+                                        }}
+                                        onChange={(e) => updateTimesheetPayment(e.target.value.slice(0, limit9).replace(/,/g, ""), 'maxPaymentPerContract', i)}
+                                        value={(timesheetPayments?.[i]?.maxPaymentPerContract || 0)?.toLocaleString()}
+                                    // onChange={(e) => updateTimesheetPayment(e.target.value.slice(0, limit9).replace(/,/g, ""), 'maxPaymentPerContract', i)}
+                                    // value={Number(timesheetPayments?.[i]?.maxPaymentPerContract)?.toLocaleString()}
 
-                                />
+                                    />
+                                    <CommonLabel className={`${style.marginLeft20} ${style.threeFieldWidth}`} value={`$ ${(timesheetPayments?.[i]?.maxPaymentPerContract / ((monthDiff(new Date(contractPeriod?.start), new Date(contractPeriod?.end))) / 12) || 0)?.toLocaleString()} Per Contract Year`} />
+                                </div>
                             </div>
                             {compensationPolicy !== 'ACTIVITY_BASED' && compensationPolicy !== 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET' && (
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
