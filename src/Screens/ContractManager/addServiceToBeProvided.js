@@ -87,6 +87,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const [activityUpdated, setActivityUpdated] = useState(false);
   const [activityItems, setActivityItems] = useState([]);
   const [reducedOffsetApplicable, setReducedOffsetApplicable] = useState(false);
+  const [compensationPolicy, setCompensationPolicy] = useState('');
 
   useEffect(() => {
     getContractedServices();
@@ -326,6 +327,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     const { data: contractData } = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
     let contractDetail = contractData?.contractDetail;
     setTimeCommitment(contractDetail?.timeCommitment);
+    setCompensationPolicy(contractDetail?.compensationPolicy ?? '')
     setContractTermPeriod({ start: contractDetail?.contractTerm?.effectiveDate, end: contractDetail?.contractTerm?.endDate });
     let temp = [];
     contractDetail?.contractFiles?.map(data => {
@@ -1315,7 +1317,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                       </div>
                     </div>
                   )}
-                  {(serviceTypeTemplate !== ADDON && !(serviceTypeTemplate === ADMINISTRATIVE && !metadata?.dedicatedHoursSpecified) && !(serviceTypeTemplate === SUPPLEMENTAL && !metadata?.dedicatedHoursSpecified)) && (
+                  {['FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITH_OFFSET', 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET']?.includes(compensationPolicy) && (serviceTypeTemplate !== ADDON && !(serviceTypeTemplate === ADMINISTRATIVE && !metadata?.dedicatedHoursSpecified) && !(serviceTypeTemplate === SUPPLEMENTAL && !metadata?.dedicatedHoursSpecified)) && (
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                       <CommonLabel value='Reduced offset applicable' />
                       <CommonSwitch checked={reducedOffsetApplicable} className={`${style.switchFontStyle} ${style.flexLeft} `} onChange={() => setReducedOffsetApplicable(!reducedOffsetApplicable)} label={reducedOffsetApplicable ? 'YES' : 'NO'} />

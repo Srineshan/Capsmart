@@ -243,7 +243,7 @@ const ContractedServicesProviderIndividual = ({
   const getEntityData = async () => {
     const { data: entityData } = await GET(`entity-service/entity/${TenantID}`);
     // console.log("entity", entityData.subdomain);
-    setCSPSubDomain(entityData.subdomain);
+    setCSPSubDomain(entityData.officialEmailDomain?.officialEmail);
   };
 
   const getSites = async () => {
@@ -480,9 +480,10 @@ const ContractedServicesProviderIndividual = ({
       return;
     } else if (
       (allowPersonalMail && !contractorEmail?.includes("@")) ||
+      allowPersonalMail && contractorEmail?.includes(`@${CSPSubDomain}`) ||
       (allowPersonalMail && !contractorEmail?.includes("."))
     ) {
-      ErrorToaster("Enter a Valid Email");
+      ErrorToaster("Enter a Valid Personal Email");
       setContinueLoading(false);
       return;
     }
@@ -1219,19 +1220,16 @@ const ContractedServicesProviderIndividual = ({
           </button>
           <div>
             <button
-              className={`${style.newContractOutlinedButton}  ${
-                style.cursorPointer
-              } ${continueLoading ? style.disabled : ""}`}
+              className={`${style.newContractOutlinedButton}  ${style.cursorPointer
+                } ${continueLoading ? style.disabled : ""}`}
               onClick={() => !continueLoading && handleSave("Save In Progress")}
             >
               SAVE IN-PROGRESS
             </button>
             <button
-              className={`${style.newContractButtonStyle} ${
-                style.marginLeft20
-              }  ${style.cursorPointer} ${
-                continueLoading ? style.disabled : ""
-              }`}
+              className={`${style.newContractButtonStyle} ${style.marginLeft20
+                }  ${style.cursorPointer} ${continueLoading ? style.disabled : ""
+                }`}
               onClick={() => {
                 !continueLoading && handleSave("Continue");
               }}
