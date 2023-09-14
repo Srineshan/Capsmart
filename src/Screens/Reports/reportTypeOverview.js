@@ -421,7 +421,7 @@ const ReportTypeOverview = () => {
                     'data': addOnServicesValues?.addOnActivityStatusByCategorys?.map(data => data?.rejected),
                     'name': 'Rejected'
                 }])
-                setCategories(addOnServicesValues?.addOnActivityStatusByCategorys?.map(data => data?.activityType));
+                setCategories(addOnServicesValues?.addOnActivityStatusByCategorys?.map(data => data?.activity));
             } else {
                 setSeries([]);
                 setCategories([]);
@@ -431,7 +431,12 @@ const ReportTypeOverview = () => {
             let keysForChart = [];
             addOnServicesValues?.approvedAddOnActivitiesByCategoryAndMonth?.map((stack, index) => {
                 let values = stack.types;
-                keysForChart = Object.keys(stack.types);
+                let keysInObject = Object.keys(stack.types);
+                keysInObject?.map(data => {
+                    if (!keysForChart?.includes(data)) {
+                        keysForChart.push(data);
+                    }
+                })
                 setStackedKeys(keysForChart);
                 values['name'] = months[stack?.month];
                 values['type'] = 1;
