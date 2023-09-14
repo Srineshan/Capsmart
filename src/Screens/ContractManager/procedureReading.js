@@ -546,9 +546,9 @@ const ProcedureReading = ({ getMetaData, serviceSelected, timeCommitment, contra
                                 value={metadata?.contractedSchedules?.[0]?.frequency || ''}
                                 onChange={(e) => onSameTargetChange('contractedSchedules', e.target.value, 'frequency')}
                                 firstOptionLabel={'Select Frequency'} firstOptionValue={''}
-                                valueList={['WEEK', 'MONTH']}
-                                labelList={['Per Week', 'Per Month']}
-                                disabledList={[false, false]} />
+                                valueList={['WEEK', 'MONTH', "YEAR"]}
+                                labelList={['Per Week', 'Per Month', 'Per Year']}
+                                disabledList={[false, false, false]} />
                         </div>
                     </div>
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>

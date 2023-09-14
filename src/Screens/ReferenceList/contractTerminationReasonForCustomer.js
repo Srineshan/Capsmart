@@ -160,26 +160,44 @@ const TerminationReasonForCustomer = () => {
   };
 
   const handlePostContractTerminationReason = async () => {
-    let temp = selectedTerminationReasons;
+    let temp = [...selectedTerminationReasons];
     let selectedSecondaryReasonListPerTerminationReasons = temp?.map((data) =>
       data?.secondary_reasons?.filter((item) =>
         selectedSubReasons.includes(item)
       )
     );
-    let changedReasons = selectedTerminationReasons?.map((data, index) => ({
-      ...data,
-      secondary_reasons:
-        selectedSecondaryReasonListPerTerminationReasons[index],
-    }));
+
+    let changedReasons = [...selectedTerminationReasons]?.map((data, index) => {
+      let existingReason = terminationReason?.find(
+        (temp) => temp.primary_reason == data.primary_reason
+      )?.secondary_reasons;
+      if (existingReason) {
+        return {
+          ...data,
+          secondary_reasons: [
+            ...new Set([
+              ...selectedSecondaryReasonListPerTerminationReasons[index],
+              ...existingReason,
+            ]),
+          ],
+        };
+      } else {
+        return {
+          ...data,
+          secondary_reasons: [
+            ...selectedSecondaryReasonListPerTerminationReasons[index],
+          ],
+        };
+      }
+    });
+
+    // console.log(changedReasons);
+
     let data = changedReasons?.map((data) => ({
       ...data,
+      customized: true,
       entityId: { id: TenantID },
     }));
-
-    // console.log(
-    //   selectedSecondaryReasonListPerTerminationReasons,
-    //   changedReasons
-    // );
 
     if (selectedTerminationReasons?.length !== 0) {
       await POST("entity-service/terminationReason", JSON.stringify(data))
@@ -188,6 +206,7 @@ const TerminationReasonForCustomer = () => {
           getTerminationReason();
           setSelectedTerminationReasons([]);
           getLastModifiedDate();
+          setSelectedSubReasons([]);
         })
         .catch((error) => {
           ErrorToaster(error);
@@ -204,6 +223,7 @@ const TerminationReasonForCustomer = () => {
       .then((response) => {
         SuccessToaster("Termination Reason Deleted Successfully");
         getTerminationReason();
+        setSelectedTerminationReasons([]);
         getLastModifiedDate();
       })
       .catch((error) => {
@@ -222,11 +242,7 @@ const TerminationReasonForCustomer = () => {
         ?.map((data) => data);
     temp.secondary_reasons = selectedSecondaryReasonListPerTerminationReasons;
     temp.entityId = { id: TenantID };
-    console.log(
-      selectedData,
-      temp,
-      selectedSecondaryReasonListPerTerminationReasons
-    );
+
     await PUT(
       `entity-service/terminationReason/${selectedData?.id}`,
       JSON.stringify(temp)
@@ -242,6 +258,42 @@ const TerminationReasonForCustomer = () => {
   };
 
   // console.log(selectedTerminationReasons, selectedSubReasons);
+
+  const FindSubReasonsContractorHandler = (data) => {
+    if (data?.terminationBy === "CONTRACTOR") {
+      let currentTerminationReason = terminationReason?.find(
+        (reason) => reason.id == data.id
+      )?.secondary_reasons;
+      let response = currentTerminationReason
+        ? data.secondary_reasons
+            .map((secReason) => !currentTerminationReason.includes(secReason))
+            .some(Boolean)
+        : !terminationReason?.find((reason) => reason.id == data.id)
+        ? true
+        : false;
+
+      return response;
+    }
+    return false;
+  };
+
+  const FindSubReasonsHandler = (data) => {
+    if (data?.terminationBy === "ENTITY") {
+      let currentTerminationReason = terminationReason?.find(
+        (reason) => reason.id == data.id
+      )?.secondary_reasons;
+      let response = currentTerminationReason
+        ? data.secondary_reasons
+            .map((secReason) => !currentTerminationReason.includes(secReason))
+            .some(Boolean)
+        : !terminationReason?.find((reason) => reason.id == data.id)
+        ? true
+        : false;
+
+      return response;
+    }
+    return false;
+  };
 
   return (
     <Fragment>
@@ -346,14 +398,14 @@ const TerminationReasonForCustomer = () => {
                                 </div>
                                 {selectedCause === "Contractor" &&
                                   terminationReasonMaster
-                                    ?.filter(
-                                      (data) =>
-                                        data?.terminationBy === "CONTRACTOR" &&
-                                        !terminationReason.some(
-                                          (customerData) =>
-                                            customerData?.primary_reason ===
-                                            data?.primary_reason
-                                        )
+                                    ?.filter((data) =>
+                                      //   data?.terminationBy === "CONTRACTOR" &&
+                                      //   !terminationReason.some(
+                                      //     (customerData) =>
+                                      //       customerData?.primary_reason ===
+                                      //       data?.primary_reason
+                                      //   )
+                                      FindSubReasonsContractorHandler(data)
                                     )
                                     ?.map((data, index) => (
                                       <>
@@ -371,8 +423,21 @@ const TerminationReasonForCustomer = () => {
                                             {data?.primary_reason}
                                           </p>
                                         </div>
-                                        {data?.secondary_reasons?.map(
-                                          (subData, subIndex) => (
+                                        {data?.secondary_reasons
+                                          ?.filter(
+                                            (secReasondata) =>
+                                              !terminationReason
+                                                .find(
+                                                  (reason) =>
+                                                    reason.primary_reason ==
+                                                    data.primary_reason
+                                                )
+                                                ?.secondary_reasons?.some(
+                                                  (subReasons) =>
+                                                    subReasons === secReasondata
+                                                )
+                                          )
+                                          ?.map((subData, subIndex) => (
                                             <div
                                               className={`${style.customersAdminInnerRowsStyle4} ${style.customersAdminBackground1} ${style.displayInRow}`}
                                               key={subIndex}
@@ -398,8 +463,7 @@ const TerminationReasonForCustomer = () => {
                                                 {subData}
                                               </p>
                                             </div>
-                                          )
-                                        )}
+                                          ))}
                                       </>
                                     ))}
                                 <div
@@ -428,14 +492,8 @@ const TerminationReasonForCustomer = () => {
                                 </div>
                                 {selectedCause === "Entity" &&
                                   terminationReasonMaster
-                                    ?.filter(
-                                      (data) =>
-                                        data?.terminationBy === "ENTITY" &&
-                                        !terminationReason.some(
-                                          (customerData) =>
-                                            customerData?.primary_reason ===
-                                            data?.primary_reason
-                                        )
+                                    ?.filter((data) =>
+                                      FindSubReasonsHandler(data)
                                     )
                                     ?.map((data, index) => (
                                       <>
@@ -453,8 +511,21 @@ const TerminationReasonForCustomer = () => {
                                             {data?.primary_reason}
                                           </p>
                                         </div>
-                                        {data?.secondary_reasons?.map(
-                                          (subData, subIndex) => (
+                                        {data?.secondary_reasons
+                                          ?.filter(
+                                            (secReasondata) =>
+                                              !terminationReason
+                                                .find(
+                                                  (reason) =>
+                                                    reason.primary_reason ==
+                                                    data.primary_reason
+                                                )
+                                                ?.secondary_reasons?.some(
+                                                  (subReasons) =>
+                                                    subReasons === secReasondata
+                                                )
+                                          )
+                                          ?.map((subData, subIndex) => (
                                             <div
                                               className={`${style.customersAdminInnerRowsStyle4} ${style.customersAdminBackground1} ${style.displayInRow}`}
                                               key={subIndex}
@@ -480,8 +551,7 @@ const TerminationReasonForCustomer = () => {
                                                 {subData}
                                               </p>
                                             </div>
-                                          )
-                                        )}
+                                          ))}
                                       </>
                                     ))}
                               </>

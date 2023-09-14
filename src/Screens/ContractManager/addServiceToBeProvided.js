@@ -33,6 +33,7 @@ import ServiceConflict from './serviceConflict';
 import { checkActivityChange } from './checkDependentData';
 
 import style from './index.module.scss';
+import { weekdays } from 'moment';
 
 const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectContractInfo, selectedService, editService, getEditServiceDialog, isMultiSiteEntity, selectedIndex, isEditable, getTabDataStatus }) => {
   const [serviceTypeList, setServiceTypeList] = useState([]);
@@ -85,6 +86,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const [conflict, setConflict] = useState({ isPresent: false, data: [] });
   const [activityUpdated, setActivityUpdated] = useState(false);
   const [activityItems, setActivityItems] = useState([]);
+  const [reducedOffsetApplicable, setReducedOffsetApplicable] = useState(false);
 
   useEffect(() => {
     getContractedServices();
@@ -111,6 +113,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       });
       setSelectedActivity(temp);
       setShowLocation(selectedService?.locationSpecified);
+      setReducedOffsetApplicable(selectedService?.compensationReductionApplicable);
       setSelectedLocation(selectedService?.serviceLocations?.map(data => data));
       removeSelectedLocationFromList();
       setServiceTypeId(serviceTypeList?.filter(type => type?.serviceType === selectedService?.activityType?.activityType)?.map(data => data?.id)[0]);
@@ -335,14 +338,20 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
   }
 
+  console.log('metadata', metadata);
+
   const addOnWorkFlow = async (buttonType) => {
     setContinueLoading(true);
     setAddOnButton(buttonType);
     if (serviceTypeTemplate === ADDON && editService && metadata?.[0]?.approver !== undefined) {
       let dataValue = [];
       let temp = metadata;
+      console.log('temp', temp);
       temp?.map((data, index) => {
         data.serviceLocations = data?.locationSpecified ? data?.locations : locationItems;
+        data.performingActivity = data?.activities?.map(data => data?.activity)?.join('-');
+        data.addOnActivityType = data?.addOnActivityType;
+        console.log('performing Activity and addOnActivityType', data.performingActivity, data.addOnActivityType);
         if (data?.approver !== undefined) {
           let workFlowData;
           data.activityType.activityType = serviceType;
@@ -416,11 +425,14 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         data.activityResponse = { dataMap: dataMap };
         data.sites = siteData;
         data.activityType.activityType = serviceType;
+        if (data?.selectedActivityId) {
+          data.addOnActivityType = data?.addOnActivityType;
+        }
         // data.activityType.id = serviceTypeId;
         data.activityTypeTemplate = { activityTypeTemplate: serviceTypeTemplate };
-        data.performingActivity =
-          typeof data.performingActivity !== 'object' ? { activity: data?.performingActivity } : data?.performingActivity
-          ;
+        data.performingActivity = data?.activities?.map(data => data?.activity)?.join('-');
+        // typeof data.performingActivity !== 'object' ? { activity: data?.performingActivity?.split('(')?.[1]?.split(')')?.[0] } : data?.performingActivity?.split('(')?.[1]?.split(')')?.[0]
+        // ;
         data.users = selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers;
         if (data?.approver !== undefined) {
           let workFlowData;
@@ -572,7 +584,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       ErrorToaster('Payment Amount field is mandatory if the service is Billable');
       return;
     }
-    let performingActivity = '';
+    var performingActivity = '';
+    var parentActivity = '';
     let activities = [];
     let dependentActivities = [];
     if (serviceTypeTemplate !== SUPPLEMENTAL && serviceTypeTemplate !== ADDON && serviceTypeTemplate !== ADMINISTRATIVE) {
@@ -589,7 +602,20 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
     if (serviceTypeTemplate === ONCALL) {
       let temp = metadata?.additionalActivity;
-
+      activities = [];
+      metadata?.serviceDaysArray?.map(serviceDays => {
+        if (serviceDays === 'Weekdays' && metadata?.customizedSchedule) {
+          if (metadata?.weekdayMin || metadata?.weekdayMax || metadata?.weekdayPayment !== 0) {
+            activities?.push({ "activity": 'Weekday Days' })
+          }
+          if (metadata?.weekdayNightsMin || metadata?.weekdayNightsMax || metadata?.weekdayNightsPayment !== 0) {
+            activities?.push({ "activity": 'Weekday Nights' })
+          }
+        } else {
+          activities?.push({ "activity": serviceDays })
+        }
+      })
+      performingActivity = activities?.map(activity => activity?.activity)?.join('-')
       temp?.map(activity => {
         dependentActivities.push({
           "activity": {
@@ -630,6 +656,13 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         item.duration = {
           "hours": parseInt(item?.sessionDuration)
         };
+        console.log('performing Activity', metadata?.[index]?.parentActivity);
+        item.addOnActivityType = {
+          "activityType": metadata?.[index]?.parentActivity
+        }
+        item.performingActivity = {
+          "activity": metadata?.[index]?.activities?.map(data => data?.activity)?.join('-')
+        }
       })
       // data.workingPeriod = {
       //   "from": metadata?.workingTimeFrom?.toLocaleTimeString('it-IT').toString(),
@@ -641,12 +674,17 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       let dataValues = metadata;
       if (serviceTypeTemplate === ADDON) {
         dataValues = metadata?.[0];
+        parentActivity = dataValues?.addOnActivityType;
+        performingActivity = dataValues?.activities?.map(data => data?.activity)?.join('-');
       }
       if (activities?.length === 0 && serviceTypeTemplate !== ADDON) {
         let message = serviceTypeTemplate === SUPPLEMENTAL ? 'Supplement Services' : serviceTypeTemplate === ADMINISTRATIVE ? 'Allowable Administrative Duties' : 'Activity To Be Performed';
         ErrorToaster(`Atleast One ${message} needs to be added to create a service`);
         return;
       }
+
+      console.log('Activities On call', activities)
+
       data = [{
         "refId": dataValues?.refId?.toString() ? dataValues?.refId?.toString() : (new Date()).getTime()?.toString(),
         "sites": siteData,
@@ -656,12 +694,16 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         "activityTypeTemplate": {
           "activityTypeTemplate": serviceTypeTemplate,
         },
+        ...((serviceTypeTemplate === ADDON && dataValues?.activityResponse?.dataMap?.selectedActivityId !== null) && {
+          "addOnActivityType": {
+            "activityType": parentActivity,
+          }
+        }),
         "users": selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers,
         "performingActivity": {
           "activity": performingActivity
         },
         "activities": activities,
-
         ...(((serviceTypeTemplate === SUPPLEMENTAL && !dataValues?.dedicatedHoursSpecified) || (serviceTypeTemplate === ADMINISTRATIVE && !dataValues?.dedicatedHoursSpecified)) &&
         {
           "hoursBorrowed": {
@@ -673,6 +715,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             }
           }
         }),
+        "baseServices": serviceTypeTemplate === SUPPLEMENTAL ? dataValues?.baseServices : [],
         "serviceLocations": serviceTypeTemplate === ADDON ? dataValues?.locationSpecified ? dataValues?.locations : locationItems : showLocation ? selectedLocation : locationItems,
         ...(((serviceTypeTemplate === CLINIC || serviceTypeTemplate === PROCEDUREREADING) && {
           "contractedSchedules": metadata?.contractedSchedules,
@@ -780,7 +823,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           },
           ...(!dataValues?.customizeSchedule && {
             "customschedule": {
-              "weekday": {
+              "weekdayDay": {
                 "from": dataValues?.weekdayFrom?.toLocaleTimeString('it-IT').toString(),
                 "to": dataValues?.weekdayTo?.toLocaleTimeString('it-IT').toString(),
                 "target": {
@@ -802,6 +845,29 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                   "value": (dataValues?.weekdayPayment / dataValues?.weekdayDuration)?.toFixed(2)
                 },
                 "paymentNotApplicable": dataValues?.weekdayPaymentNa
+              },
+              "weekdayNight": {
+                "from": dataValues?.weekdayNightsFrom?.toLocaleTimeString('it-IT').toString(),
+                "to": dataValues?.weekdayNightsTo?.toLocaleTimeString('it-IT').toString(),
+                "target": {
+                  "minimum": {
+                    "value": parseInt(dataValues?.weekdayNightsMin)
+                  },
+                  "maximum": {
+                    "value": parseInt(dataValues?.weekdayNightsMax)
+                  },
+                  "frequency": dataValues?.weekdayNightsFrequency,
+                },
+                "duration": {
+                  "hours": parseInt(dataValues?.weekdayNightsDuration)
+                },
+                "payableAmount": {
+                  "value": parseFloat(dataValues?.weekdayNightsPayment)
+                },
+                "hourlyRate": {
+                  "value": (dataValues?.weekdayNightsPayment / dataValues?.weekdayNightsDuration)?.toFixed(2)
+                },
+                "paymentNotApplicable": dataValues?.weekdayNightsPaymentNa
               },
               "weekend": {
                 "from": dataValues?.weekendFrom?.toLocaleTimeString('it-IT').toString(),
@@ -871,11 +937,13 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         "billableService": dataValues?.billableService,
         "dependantServiceIncluded": dataValues?.dependantServiceIncluded || false,
         "customizedSchedule": dataValues?.customizedSchedule || false,
+        ...((serviceTypeTemplate !== ADDON && !(serviceTypeTemplate === ADMINISTRATIVE && !metadata?.dedicatedHoursSpecified) && !(serviceTypeTemplate === SUPPLEMENTAL && !metadata?.dedicatedHoursSpecified)) && {
+          "compensationReductionApplicable": reducedOffsetApplicable
+        }),
       }]
     }
     if (editService && serviceTypeTemplate === ADDON) {
       data[0].activities = metadata?.[0]?.activities;
-      data[0].performingActivity = { activity: metadata?.[0]?.performingActivity };
       data[0].workingHours = metadata?.[0]?.workingHours;
     }
     let services = existingServices || [];
@@ -912,7 +980,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           services[conflictedIndex].contractedSchedules = [];
           services[conflictedIndex].patientsSeenTargets = [];
           services[conflictedIndex].scheduledPatientsTargets = [];
-          services[conflictedIndex].performingActivity.activity = `${selectedService?.activityType?.activityType} (${selectedActivity?.map(data => data?.activity?.activity)?.join(', ')})`
+          services[conflictedIndex].performingActivity.activity = `${selectedActivity?.map(data => data?.activity?.activity)?.join(', ')}`
         }
         if (conflictData?.type === SUPPLEMENTAL || conflictData?.type === ADMINISTRATIVE) {
           services[conflictedIndex].hoursBorrowed = {
@@ -1247,8 +1315,14 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                       </div>
                     </div>
                   )}
+                  {(serviceTypeTemplate !== ADDON && !(serviceTypeTemplate === ADMINISTRATIVE && !metadata?.dedicatedHoursSpecified) && !(serviceTypeTemplate === SUPPLEMENTAL && !metadata?.dedicatedHoursSpecified)) && (
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                      <CommonLabel value='Reduced offset applicable' />
+                      <CommonSwitch checked={reducedOffsetApplicable} className={`${style.switchFontStyle} ${style.flexLeft} `} onChange={() => setReducedOffsetApplicable(!reducedOffsetApplicable)} label={reducedOffsetApplicable ? 'YES' : 'NO'} />
+                    </div>
+                  )}
                   {
-                    serviceTypeTemplate !== ADMINISTRATIVE && serviceTypeTemplate !== ADDON && serviceTypeTemplate !== SUPPLEMENTAL &&
+                    serviceTypeTemplate !== ADMINISTRATIVE && serviceTypeTemplate !== ADDON && serviceTypeTemplate !== SUPPLEMENTAL && serviceTypeTemplate !== ONCALL &&
                     <div>
                       <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
                         <CommonLabel value='Activities To Be Performed*' />
@@ -1352,9 +1426,9 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             }
 
           </div>
-        </Dialog>
+        </Dialog >
 
-      </div>
+      </div >
     </>
   )
 }

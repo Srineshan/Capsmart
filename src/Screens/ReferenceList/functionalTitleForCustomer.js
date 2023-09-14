@@ -453,8 +453,7 @@ const FunctionalTitleForCustomer = () => {
                       </div>
 
                       <div className={style.customersAdminCardStyle3}>
-                        {functionalTitlesForCSPTypeCustomerData?.length !==
-                        0 ? (
+                        {contractedServiceProvider?.length !== 0 ? (
                           contractedServiceProvider?.map((data, index) => (
                             <>
                               <div

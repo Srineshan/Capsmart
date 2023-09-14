@@ -108,6 +108,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
         payableAmount: { value: serviceSelected?.payableAmount?.value },
         locations: serviceSelected?.serviceLocations,
         locationSpecified: serviceSelected?.locationSpecified,
+        addOnActivityType: serviceSelected?.addOnActivityType?.activityType,
         workingHours: {
           normalWorkingHours: serviceSelected?.workingHours?.normalWorkingHours,
           afterWorkingHours: serviceSelected?.workingHours?.afterWorkingHours,
@@ -127,7 +128,6 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       if (workFlowValues?.length === 1) {
         data.approver = users?.filter(data => data?.id === workFlowValues?.[0]?.workFlowUser?.id)?.map(data => data)[0];
         data.paymentApprover = users?.filter(data => data?.id === workFlowValues?.[0]?.workFlowUser?.id)?.map(data => data)[0];
-        console.log('approver', data?.approver);
       } else {
         data.approver = users?.filter(data => data?.id === workFlowValues?.[0]?.workFlowUser?.id)?.map(data => data)[0];
         data.paymentApprover = users?.filter(data => data?.id === workFlowValues?.[1]?.workFlowUser?.id)?.map(data => data)[0];
@@ -246,7 +246,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     let activityName = data?.activityType?.activityType;
     let activities = data?.activities?.map(data => data?.activity);
     let result = activities?.length !== 0 ? `${activityName} (${activities?.map(data => data)?.join(', ')})` : `${activityName}`;
-    let alreadyExist = services?.filter(data => data?.activityTypeTemplate?.activityTypeTemplate === ADDON && data?.performingActivity?.activity === result)?.map(data => data);
+    let alreadyExist = services?.filter(data => data?.activityTypeTemplate?.activityTypeTemplate === ADDON && data?.performingActivity?.activity === (`${activities?.map(data => data)?.join('-')}`))?.map(data => data);
     if (alreadyExist?.length === 0) {
       serviceList.push(result);
     }
@@ -275,6 +275,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     if (checked) {
       let temp = metadata;
       const selectedData = cloneDeep(services?.filter(data => getServiceName(data?.activityType?.activityType, data?.activities?.map(data => data?.activity)) === name)?.map(data => data)[0]);
+      selectedData.parentActivity = cloneDeep(services?.filter(data => getServiceName(data?.activityType?.activityType, data?.activities?.map(data => data?.activity)) === name)?.map(data => data)[0])?.activityType?.activityType;
       selectedData.performingActivity = name;
       selectedData.activityType = { activityType: ADDON };
       selectedData.selectedActivityId = selectedData?.refId;
@@ -289,8 +290,13 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       temp.push(selectedData);
       setSelectedServices(temp?.map(data => data?.performingActivity));
       setMetadata(temp);
+      console.log('temp', temp);
     } else {
+      metadata?.filter(data => data?.performingActivity !== name)?.map(data => {
+        data.parentActivity = data?.activityType?.activityType
+      })
       let temp = metadata?.filter(data => data?.performingActivity !== name)?.map(data => data);
+      console.log('temp 2', temp);
       setMetadata(temp);
       setSelectedServices(temp?.map(data => data?.performingActivity));
     }
@@ -372,6 +378,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       activities: [{ activity: newServices?.name }],
       activityType: { activityType: ADDON },
       performingActivity: newServices?.name,
+      parentActivity: "Add-On Service",
       sessionAmount: newServices?.rate,
       sessionDuration: newServices?.sessionDuration,
       hourlyRate: { value: (newServices?.rate / newServices?.sessionDuration).toFixed(2) },
@@ -524,9 +531,9 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
               {metadata?.filter(item => item?.performingActivity === service)?.map(item => item)[0]?.activityApprovalWFRequired &&
                 // <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { onApproverSelected(users?.filter(data => data?.userId === value)?.map(data => data)[0], service) }} value={metadata?.filter(data => data?.performingActivity === service)?.map(data => data?.approver?.userId)[0]} approverReviewer='approver' />
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                  <CommonLabel value={'Designate Request Approver* '} />
+                  <CommonLabel value={'Designate Request Approver*'} />
                   <div className={style.fullWidth}>
-                    <CommonSelectField className={`${style.fullWidth} `}
+                    <CommonSelectField className={`${style.fullWidth}`}
                       defaultValue={metadata?.filter(data => data?.performingActivity === service)?.map(data => data?.approver?.id)[0]}
                       value={metadata?.filter(data => data?.performingActivity === service)?.map(data => data?.approver?.id)[0] ? metadata?.filter(data => data?.performingActivity === service)?.map(data => data?.approver?.id)[0] : '0'}
                       onChange={(e) => { onApproverSelected(users?.filter(data => data?.id === e.target.value)?.map(data => data)[0], service, title?.filter(titleData => titleData?.approver === true)?.map(titleData => titleData)) }}
@@ -716,7 +723,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       {
         editService && metadata?.filter(data => data?.activityResponse?.dataMap?.selectedActivityId)?.map(data => (
           <div className={style.marginTop20}>
-            <CommonCheckBox checked={true} label={data?.performingActivity} />
+            <CommonCheckBox checked={true} label={`${data?.addOnActivityType} (${data?.performingActivity?.replaceAll('-', ', ')})`} />
             <div className={`${style.addonBoxStyle}`}>
               <div className={`${style.addManagerGrid}`}>
                 <CommonLabel value='Only Allow Upon Request / Notification Approval' />

@@ -198,7 +198,7 @@ const HelpHome = () => {
         lastUpdated = [];
 
         myTicket?.map(data => {
-            dot.push(data?.status === 'RESOLVED' ? 'green' : data?.status === 'INPROGRESS' ? 'yellow' : data?.status === 'NEW' ? 'purple' : data?.status === 'CLOSED' ? 'green' : '');
+            dot.push(data?.status === 'RESOLVED' ? 'green' : data?.status === 'INPROGRESS' ? 'yellow' : data?.status === 'NEW' ? 'purple' : data?.status === 'CLOSED' ? 'grey' : '');
             dotTooltipValues.push(data?.status === 'RESOLVED' ? 'Resolved' : data?.status === 'INPROGRESS' ? 'In-Progress' : data?.status === 'NEW' ? 'New' : data?.status === 'CLOSED' ? 'Closed' : '');
             tktId.push(data?.ticketId);
             type.push(data?.type);
@@ -220,6 +220,8 @@ const HelpHome = () => {
             { "type": "text", "value": submittedBy, "onClickFunction": onClickFunction },
         ];
     }
+
+    console.log('exception Tickets', exceptionTicket);
 
     const getExceptionTicketValues = () => {
         dot = [];
