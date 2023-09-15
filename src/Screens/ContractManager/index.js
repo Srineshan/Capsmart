@@ -13,6 +13,8 @@ import { GET, PUT, POST, TenantID } from "./../dataSaver";
 import ContractList from "./contractList";
 import ActiveContract from "./activeContract";
 import ActivationAlertDraftContract from "./activationAlertDraftContract";
+import MissedMandatoryFieldAlert from "./missedMandatoryFieldAlert";
+import SaveInProgressDialog from "./saveInProgressDialog";
 
 const Contracts = () => {
   const [selectedContract, setSelectedContract] = useState("activecontracts");
@@ -22,6 +24,9 @@ const Contracts = () => {
   const [deleteDraftDialog, setDeleteDraftDialog] = useState(false);
   const [activeDraftDialog, setActiveDraftDialog] = useState(false);
   const [activationAlertDraftDialog, setActivationAlertDraftDialog] =
+    useState(false);
+  const [saveInProgressDialog, setSaveInProgressDialog] = useState(false);
+  const [missedMandatoryFieldAlertDialog, setMissedMandatoryFieldAlertDialog] =
     useState(false);
   const [contractActivationDialog, setContractActivationDialog] =
     useState(false);
@@ -111,6 +116,14 @@ const Contracts = () => {
     setActivationAlertDraftDialog(value);
   };
 
+  const getMissedMandatoryFieldAlertDialog = (value) => {
+    setMissedMandatoryFieldAlertDialog(value);
+  };
+
+  const getSaveInProgressDialog = (value) => {
+    setSaveInProgressDialog(value);
+  };
+
   const getContractActivationDialog = (value) => {
     setContractActivationDialog(value);
   };
@@ -185,6 +198,8 @@ const Contracts = () => {
         getDeleteDraftDialog={getDeleteDraftDialog}
         getActiveDraftDialog={getActiveDraftDialog}
         getActivationAlertDraftDialog={getActivationAlertDraftDialog}
+        getMissedMandatoryFieldAlertDialog={getMissedMandatoryFieldAlertDialog}
+        getSaveInProgressDialog={getSaveInProgressDialog}
         getContractActivationDialog={getContractActivationDialog}
         getSelectedContract={getSelectedContract}
         getAddContract={getAddContract}
@@ -238,6 +253,20 @@ const Contracts = () => {
       {activationAlertDraftDialog && (
         <ActivationAlertDraftContract
           getActivationAlertDraftDialog={getActivationAlertDraftDialog}
+        />
+      )}
+
+      {missedMandatoryFieldAlertDialog && (
+        <MissedMandatoryFieldAlert
+          getMissedMandatoryFieldAlertDialog={
+            getMissedMandatoryFieldAlertDialog
+          }
+        />
+      )}
+
+      {saveInProgressDialog && (
+        <SaveInProgressDialog
+          getSaveInProgressDialog={getSaveInProgressDialog}
         />
       )}
 

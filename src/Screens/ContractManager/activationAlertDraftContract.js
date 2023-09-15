@@ -11,9 +11,12 @@ import {
 import style from "./index.module.scss";
 
 const ActivationAlertDraftContract = ({ getActivationAlertDraftDialog }) => {
-  const [terminationTrigger, setTerminationTrigger] = useState(
-    "CONTRACT_EXPIRATION"
-  );
+  const [contractActivation, setContractActivation] =
+    useState("Without Automated");
+
+  const handleChangeHandler = (e) => {
+    setContractActivation(e.target.value);
+  };
 
   return (
     <Dialog
@@ -24,16 +27,6 @@ const ActivationAlertDraftContract = ({ getActivationAlertDraftDialog }) => {
       <div
         className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}  ${style.margin20}`}
       >
-        {/* <div className={style.textAlignEnd}>
-          <Icon
-            icon="cross"
-            size={20}
-            intent={Intent.DANGER}
-            className={style.crossStyle}
-            onClick={() => getActivationAlertDraftDialog(false)}
-          />
-        </div> */}
-
         <div className={`${style.spaceBetween}`}>
           <div
             className={`${style.extensionStyle} ${style.spaceBetween} ${style.marginAuto}`}
@@ -50,33 +43,14 @@ const ActivationAlertDraftContract = ({ getActivationAlertDraftDialog }) => {
         </div>
         <div className={style.extensionBorder}></div>
         <div className={`${style.marginTop30} ${style.marginLeft30}`}>
-          <RadioGroup
-            inline={true}
-            onChange={(e) => setTerminationTrigger(e.target.value)}
-            selectedValue={terminationTrigger}
-          >
-            <Radio
-              label="Activate your contract without automated review and approval workflow"
-              value="CONTRACT_EXPIRATION"
-              checked
-            />
-            <Radio
-              label={
-                <p className={`${style.deleteDescriptionStyle}`}>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor incididunt ut labore,
-                  <span className={`${style.blueColor} ${style.marginLeft20}`}>
-                    quis nostrud xercitation ullamco laboris nisi ut aliquip ex
-                    ea commodo consequat
-                  </span>
-                </p>
-              }
-              value="FOR_CAUSE_BY_CONTRACTOR"
-            />
-          </RadioGroup>
-
           <label className={style.container}>
-            <input type="radio" checked="checked" name="sexe" />
+            <input
+              type="radio"
+              value="Without Automated"
+              name="choose"
+              onChange={handleChangeHandler}
+              checked={contractActivation === "Without Automated"}
+            />
             <span className={style.checkmark}></span>
             <p
               className={`${style.deleteDescriptionStyle} ${style.marginTop20}`}
@@ -86,14 +60,22 @@ const ActivationAlertDraftContract = ({ getActivationAlertDraftDialog }) => {
             </p>
           </label>
           <label className={style.container}>
-            <input type="radio" checked="checked" name="sexe" />
+            <input
+              type="radio"
+              value="Paperless Automated"
+              name="choose"
+              onChange={handleChangeHandler}
+              checked={contractActivation === "Paperless Automated"}
+            />
             <span className={style.checkmark}></span>
             <p
               className={`${style.deleteDescriptionStyle} ${style.marginTop20}`}
             >
               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
               eiusmod tempor incididunt ut labore,
-              <span className={`${style.blueColor} ${style.marginLeft20}`}>
+              <span
+                className={`${style.blueColor} ${style.marginLeft20} ${style.textUnderline}`}
+              >
                 quis nostrud xercitation ullamco laboris nisi ut aliquip ex ea
                 commodo consequat
               </span>

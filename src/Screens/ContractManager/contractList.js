@@ -34,6 +34,8 @@ const ContractList = ({
   getActiveDraftDialog,
   getDeleteDraftDialog,
   getActivationAlertDraftDialog,
+  getMissedMandatoryFieldAlertDialog,
+  getSaveInProgressDialog,
   contracts,
   getSelectedContract,
   getContracts,
@@ -246,6 +248,14 @@ const ContractList = ({
   const activationAlertDraft = (data) => {
     getActivationAlertDraftDialog(true);
     // getContractIdFromActive(data?.id);
+  };
+
+  const missedMandatoryFieldAlert = (data) => {
+    getMissedMandatoryFieldAlertDialog(true);
+  };
+
+  const saveInProgress = (data) => {
+    getSaveInProgressDialog(true);
   };
 
   const getShowPreImplementationDialog = (data) => {
@@ -676,6 +686,16 @@ const ContractList = ({
     {
       data: "Activation Alert Contract",
       onClick: activationAlertDraft,
+      requiredValue: "boolean",
+    },
+    {
+      data: "Missed Mandatory Field Alert",
+      onClick: missedMandatoryFieldAlert,
+      requiredValue: "boolean",
+    },
+    {
+      data: "Save In Progress",
+      onClick: saveInProgress,
       requiredValue: "boolean",
     },
   ];
