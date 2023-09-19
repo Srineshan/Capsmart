@@ -717,6 +717,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             }
           }
         }),
+        "baseServiceAvailable": serviceTypeTemplate === SUPPLEMENTAL ? dataValues?.baseServiceAvailable : false,
         "baseServices": serviceTypeTemplate === SUPPLEMENTAL ? dataValues?.baseServices : [],
         "serviceLocations": serviceTypeTemplate === ADDON ? dataValues?.locationSpecified ? dataValues?.locations : locationItems : showLocation ? selectedLocation : locationItems,
         ...(((serviceTypeTemplate === CLINIC || serviceTypeTemplate === PROCEDUREREADING) && {

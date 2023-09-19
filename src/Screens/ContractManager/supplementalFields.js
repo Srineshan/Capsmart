@@ -103,6 +103,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
         dedicatedHoursPerformingActivity: '',
         supplementalActivityType: [],
         supplementServiceName: [],
+        baseServiceAvailable: false,
         baseServices: [],
         billableService: true,
         rateType: 'HOURLY',
@@ -135,6 +136,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
             dedicatedHoursPerformingActivity: '',
             supplementalActivityType: [],
             supplementServiceName: [],
+            baseServiceAvailable: false,
             baseServices: [],
             billableService: true,
             rateType: 'HOURLY',
@@ -229,6 +231,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
             workingTimeFrom: GetDateFromHours(serviceSelected?.workingPeriod?.from?.toString() || ''),
             workingTimeTo: GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
             serviceDays: serviceSelected?.serviceDays,
+            baseServiceAvailable: serviceSelected?.baseServiceAvailable,
             baseServices: serviceSelected?.baseServices,
             supplementalActivityType: serviceSelected?.baseServices?.map(data => data?.activityType?.activityType)?.[0],
         });
@@ -324,6 +327,10 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                     )}
                 </div>
             </div>
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                <CommonLabel value='Base Service Available*' />
+                <CommonSwitch className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} label={metadata?.baseServiceAvailable ? 'YES' : 'NO'} checked={metadata?.baseServiceAvailable} onChange={(e) => handleValueChange('baseServiceAvailable', !metadata?.baseServiceAvailable)} />
+            </div>
             {/* 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Supplemental Services To Perform*' />
@@ -340,29 +347,29 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                     }
                 </div>
             </div> */}
-
-            <div>
-                <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
-                    <CommonLabel value='Supplemental Service Type*' />
-                    <div>
+            {metadata?.baseServiceAvailable && (
+                <div>
+                    <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
+                        <CommonLabel value='Supplemental Service Type*' />
                         <div>
-                            <CommonSelectField className={`${style.fullWidth}`}
-                                value={metadata?.supplementalActivityType}
-                                onChange={(e) => updateSupplementalActivity(e.target.value)}
-                                firstOptionLabel={'Select Supplemental Service Type'} firstOptionValue={''}
-                                valueList={supplementServiceType?.filter(data => !metadata?.supplementalActivityType?.includes(data))?.map(data => data)}
-                                labelList={supplementServiceType?.filter(data => !metadata?.supplementalActivityType?.includes(data))?.map(data => data)}
-                                disabledList={supplementServiceType?.filter(data => !metadata?.supplementalActivityType?.includes(data))?.map(data => false)} />
-                        </div>
+                            <div>
+                                <CommonSelectField className={`${style.fullWidth}`}
+                                    value={metadata?.supplementalActivityType}
+                                    onChange={(e) => updateSupplementalActivity(e.target.value)}
+                                    firstOptionLabel={'Select Supplemental Service Type'} firstOptionValue={''}
+                                    valueList={supplementServiceType?.filter(data => !metadata?.supplementalActivityType?.includes(data))?.map(data => data)}
+                                    labelList={supplementServiceType?.filter(data => !metadata?.supplementalActivityType?.includes(data))?.map(data => data)}
+                                    disabledList={supplementServiceType?.filter(data => !metadata?.supplementalActivityType?.includes(data))?.map(data => false)} />
+                            </div>
 
-                        {
-                            metadata?.supplementalActivityType?.length !== 0 && metadata?.supplementalActivityType &&
-                            <MultiSelectDisplay values={metadata?.supplementalActivityType} removeItem={removeSupplementActivityType} />
-                        }
+                            {
+                                metadata?.supplementalActivityType?.length !== 0 && metadata?.supplementalActivityType &&
+                                <MultiSelectDisplay values={metadata?.supplementalActivityType} removeItem={removeSupplementActivityType} />
+                            }
+                        </div>
                     </div>
                 </div>
-            </div>
-
+            )}
             <div>
                 <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
                     <CommonLabel value='Supplement Services To Perform*' />
