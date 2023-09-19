@@ -1040,8 +1040,8 @@ const AddServiceProvided = ({
           serviceTypeTemplate === SUPPLEMENTAL
             ? "Supplement Services"
             : serviceTypeTemplate === ADMINISTRATIVE
-            ? "Allowable Administrative Duties"
-            : "Activity To Be Performed";
+              ? "Allowable Administrative Duties"
+              : "Activity To Be Performed";
         ErrorToaster(
           `Atleast One ${message} needs to be added to create a service`
         );
@@ -1064,11 +1064,11 @@ const AddServiceProvided = ({
           },
           ...(serviceTypeTemplate === ADDON &&
             dataValues?.activityResponse?.dataMap?.selectedActivityId !==
-              null && {
-              addOnActivityType: {
-                activityType: parentActivity,
-              },
-            }),
+            null && {
+            addOnActivityType: {
+              activityType: parentActivity,
+            },
+          }),
           users:
             selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers,
           performingActivity: {
@@ -1088,6 +1088,7 @@ const AddServiceProvided = ({
               },
             },
           }),
+          "baseServiceAvailable": serviceTypeTemplate === SUPPLEMENTAL ? dataValues?.baseServiceAvailable : false,
           baseServices:
             serviceTypeTemplate === SUPPLEMENTAL
               ? dataValues?.baseServices
@@ -1098,8 +1099,8 @@ const AddServiceProvided = ({
                 ? dataValues?.locations
                 : locationItems
               : showLocation
-              ? selectedLocation
-              : locationItems,
+                ? selectedLocation
+                : locationItems,
           ...((serviceTypeTemplate === CLINIC ||
             serviceTypeTemplate === PROCEDUREREADING) && {
             contractedSchedules: metadata?.contractedSchedules,
@@ -1108,46 +1109,46 @@ const AddServiceProvided = ({
           }),
           ...(serviceTypeTemplate !== CLINIC &&
             serviceTypeTemplate !== PROCEDUREREADING && {
-              contractedSchedules: [
-                {
-                  minimum: {
-                    value: parseFloat(dataValues?.min || "0"),
-                  },
-                  maximum: {
-                    value: parseFloat(dataValues?.max || "0"),
-                  },
-                  frequency: dataValues?.frequency,
-                  startDate: contractTermPeriod?.start,
-                  endDate: contractTermPeriod?.end,
+            contractedSchedules: [
+              {
+                minimum: {
+                  value: parseFloat(dataValues?.min || "0"),
                 },
-              ],
-              patientsSeenTargets: [
-                {
-                  withNurse: {
-                    value: parseInt(dataValues?.withNurse || "0"),
-                  },
-                  withoutNurse: {
-                    value: parseInt(dataValues?.withoutNurse || "0"),
-                  },
-                  noTargetApplicable: dataValues?.noTargetApplicable,
-                  startDate: contractTermPeriod?.start,
-                  endDate: contractTermPeriod?.end,
+                maximum: {
+                  value: parseFloat(dataValues?.max || "0"),
                 },
-              ],
-              scheduledPatientsTargets: [
-                {
-                  withNurse: {
-                    value: parseInt(dataValues?.targetWithNurse || "0"),
-                  },
-                  withoutNurse: {
-                    value: parseInt(dataValues?.targetWithoutNurse || "0"),
-                  },
-                  noTargetApplicable: dataValues?.targetNoTargetApplicable,
-                  startDate: contractTermPeriod?.start,
-                  endDate: contractTermPeriod?.end,
+                frequency: dataValues?.frequency,
+                startDate: contractTermPeriod?.start,
+                endDate: contractTermPeriod?.end,
+              },
+            ],
+            patientsSeenTargets: [
+              {
+                withNurse: {
+                  value: parseInt(dataValues?.withNurse || "0"),
                 },
-              ],
-            }),
+                withoutNurse: {
+                  value: parseInt(dataValues?.withoutNurse || "0"),
+                },
+                noTargetApplicable: dataValues?.noTargetApplicable,
+                startDate: contractTermPeriod?.start,
+                endDate: contractTermPeriod?.end,
+              },
+            ],
+            scheduledPatientsTargets: [
+              {
+                withNurse: {
+                  value: parseInt(dataValues?.targetWithNurse || "0"),
+                },
+                withoutNurse: {
+                  value: parseInt(dataValues?.targetWithoutNurse || "0"),
+                },
+                noTargetApplicable: dataValues?.targetNoTargetApplicable,
+                startDate: contractTermPeriod?.start,
+                endDate: contractTermPeriod?.end,
+              },
+            ],
+          }),
           ...(serviceTypeTemplate !== SUPPLEMENTAL && {
             additionalSchedule: {
               value: parseFloat(dataValues?.additionalScheduleValue),
@@ -1182,23 +1183,23 @@ const AddServiceProvided = ({
           ...((serviceTypeTemplate === SUPPLEMENTAL ||
             serviceTypeTemplate === ADMINISTRATIVE) &&
             dataValues?.dedicatedHoursSpecified && {
-              hourlyRate: {
-                value:
-                  serviceTypeTemplate === SUPPLEMENTAL &&
+            hourlyRate: {
+              value:
+                serviceTypeTemplate === SUPPLEMENTAL &&
                   dataValues?.totalSession === 0
-                    ? Number(dataValues?.sessionAmount)?.toFixed(2)
-                    : Number(
-                        dataValues?.sessionAmount / dataValues?.totalSession
-                      )?.toFixed(2),
-              },
-            }),
+                  ? Number(dataValues?.sessionAmount)?.toFixed(2)
+                  : Number(
+                    dataValues?.sessionAmount / dataValues?.totalSession
+                  )?.toFixed(2),
+            },
+          }),
           ...((serviceTypeTemplate === SUPPLEMENTAL ||
             serviceTypeTemplate === ADMINISTRATIVE) &&
             !dataValues?.dedicatedHoursSpecified && {
-              hourlyRate: {
-                value: dataValues?.hourlyRate,
-              },
-            }),
+            hourlyRate: {
+              value: dataValues?.hourlyRate,
+            },
+          }),
           ...(serviceTypeTemplate === ADDON && {
             hourlyRate: dataValues?.hourlyRate,
           }),
@@ -1213,8 +1214,8 @@ const AddServiceProvided = ({
               )
                 ? 0
                 : (
-                    dataValues?.sessionAmount / dataValues?.sessionDuration
-                  )?.toFixed(2),
+                  dataValues?.sessionAmount / dataValues?.sessionDuration
+                )?.toFixed(2),
             },
           }),
           totalSessions: {
@@ -1403,8 +1404,8 @@ const AddServiceProvided = ({
               serviceTypeTemplate === SUPPLEMENTAL &&
               !metadata?.dedicatedHoursSpecified
             ) && {
-              compensationReductionApplicable: reducedOffsetApplicable,
-            }),
+            compensationReductionApplicable: reducedOffsetApplicable,
+          }),
         },
       ];
     }
@@ -1734,9 +1735,8 @@ const AddServiceProvided = ({
             getAddServiceDialog(false);
             getEditServiceDialog(false);
           }}
-          className={`${style.manageServiceDialog} ${
-            style.addManagerDialogBackground
-          } ${rightHelpArea && style.moveDialogPosition}`}
+          className={`${style.manageServiceDialog} ${style.addManagerDialogBackground
+            } ${rightHelpArea && style.moveDialogPosition}`}
           canOutsideClickClose={false}
         >
           <div className={`${Classes.DIALOG_BODY} `}>
@@ -2061,23 +2061,21 @@ const AddServiceProvided = ({
                                 onChange={(e) => setNewActivity(e.target.value)}
                               />
                               <div
-                                className={`${style.addStyle} ${
-                                  style.alignCenter
-                                } ${style.cursorPointer} ${
-                                  newActivity === "" ||
-                                  activity?.some((data) =>
-                                    data?.activity?.activity
-                                      ?.replace(" ", "")
-                                      ?.toLowerCase()
-                                      ?.includes(
-                                        newActivity
-                                          ?.replace(" ", "")
-                                          ?.toLowerCase()
-                                      )
-                                  )
+                                className={`${style.addStyle} ${style.alignCenter
+                                  } ${style.cursorPointer} ${newActivity === "" ||
+                                    activity?.some((data) =>
+                                      data?.activity?.activity
+                                        ?.replace(" ", "")
+                                        ?.toLowerCase()
+                                        ?.includes(
+                                          newActivity
+                                            ?.replace(" ", "")
+                                            ?.toLowerCase()
+                                        )
+                                    )
                                     ? style.disabledUploadButton
                                     : ""
-                                }`}
+                                  }`}
                               >
                                 <AddIcon
                                   sx={{ fontSize: 25, color: "white" }}
@@ -2269,9 +2267,8 @@ const AddServiceProvided = ({
               <div className={`${style.floatRight} `}>
                 {!editService && (
                   <button
-                    className={`${style.buttonStyle}  ${style.cursorPointer} ${
-                      style.marginLeft20
-                    } ${continueLoading ? style.disabled : ""}`}
+                    className={`${style.buttonStyle}  ${style.cursorPointer} ${style.marginLeft20
+                      } ${continueLoading ? style.disabled : ""}`}
                     onClick={
                       !continueLoading ? () => addOnWorkFlow("ADD MORE") : null
                     }
@@ -2280,9 +2277,8 @@ const AddServiceProvided = ({
                   </button>
                 )}
                 <button
-                  className={`${style.buttonStyle}  ${style.cursorPointer} ${
-                    style.marginLeft20
-                  } ${continueLoading ? style.disabled : ""}`}
+                  className={`${style.buttonStyle}  ${style.cursorPointer} ${style.marginLeft20
+                    } ${continueLoading ? style.disabled : ""}`}
                   onClick={
                     !continueLoading
                       ? () => addOnWorkFlow("SAVE AND EXIT")

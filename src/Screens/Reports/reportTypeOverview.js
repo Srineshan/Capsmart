@@ -106,60 +106,49 @@ const ReportTypeOverview = () => {
     }, [addOnServicesValues]);
 
     useEffect(() => {
-        if (reportType === 'upcomingContractRenewals') {
-            getContractRenewalReport();
-        }
-        if (reportType === 'oneTimeContract') {
-            getOneTimeContract();
-        }
-        if (reportType === 'nonCompliant') {
-            getNonCompliantContractReportTile();
-        }
-        if (reportType === 'activitiesOrServices') {
-            getAcvityAndServices();
-        }
-        if (reportType === 'addOnActivities') {
-            getAddOnServices();
-        }
-        if (reportType === 'timesheetProcessingSummary') {
-            getTimesheetProcessingSummary('withoutParameter');
-        }
-        if (reportType === 'listingOfTimesheetsNotPaid') {
-            getListingOfTimesheetNotPaid('withoutParameter');
-        }
-        if (reportType === 'submittedTimesheetsPaymentStatus') {
-            getSubmittedTimesheetsPaymentStatus('withoutParameter');
-        }
-        if (reportType === 'paymentsProcessingSummary') {
-            getPayments();
-        }
-        if (reportType === 'compensationCostAnalysis') {
-            getCompensationCostAnalysis();
-        }
+        // if (reportType === 'upcomingContractRenewals') {
+        //     getContractRenewalReport();
+        // }
+        // if (reportType === 'oneTimeContract') {
+        //     getOneTimeContract();
+        // }
+        // if (reportType === 'nonCompliant') {
+        //     getNonCompliantContractReportTile();
+        // }
+        // if (reportType === 'activitiesOrServices') {
+        //     getAcvityAndServices();
+        // }
+        // if (reportType === 'addOnActivities') {
+        //     getAddOnServices();
+        // }
+        // if (reportType === 'timesheetProcessingSummary') {
+        //     getTimesheetProcessingSummary('withoutParameter');
+        // }
+        // if (reportType === 'listingOfTimesheetsNotPaid') {
+        //     getListingOfTimesheetNotPaid('withoutParameter');
+        // }
+        // if (reportType === 'submittedTimesheetsPaymentStatus') {
+        //     getSubmittedTimesheetsPaymentStatus('withoutParameter');
+        // }
+        // if (reportType === 'paymentsProcessingSummary') {
+        //     getPayments();
+        // }
+        // if (reportType === 'compensationCostAnalysis') {
+        //     getCompensationCostAnalysis();
+        // }
         getUsersData();
+        console.log('initial one');
     }, [])
 
     useEffect(() => {
-        // // setLoading(true);
-        // setTimeout(function () {
         getUpdatedValuesWithParams();
-        // }, 1000);
-    }, [dataToUseInReport, selectedPodTypeFromTile])
-    // }, [selectedPodTypeFromTile])
-
-    // useEffect(() => {
-    //     setTimeout(function () {
-    //         getIsRefresh(true);
-    //     }, 3000);
-    // }, [dataToUseInReport])
-
+    }, [selectedPodTypeFromTile, dataToUseInReport?.from, dataToUseInReport?.to, dataToUseInReport?.selectedContracts, dataToUseInReport?.selectedContractedServiceProvider, dataToUseInReport?.selectedSites, dataToUseInReport?.selectedDepartments])
 
     useEffect(() => {
         setApexStackedBarChartDisplay(<ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} />);
     }, [stackedCategories, stackedSeries])
 
     const getUpdatedValuesWithParams = () => {
-        // setTimeout(function () {
         if (reportType === 'upcomingContractRenewals') {
             getContractRenewalReportWithParameters();
         }
@@ -194,9 +183,6 @@ const ReportTypeOverview = () => {
         if (reportType === 'submittedTimesheetsPaymentStatus') {
             getSubmittedTimesheetsPaymentStatus('withParameter');
         }
-        // setTimeout(function () {
-        //     getIsRefresh(true)
-        // }, 2000);
     }
 
     const getIsRefresh = (value) => {
@@ -435,7 +421,7 @@ const ReportTypeOverview = () => {
                     'data': addOnServicesValues?.addOnActivityStatusByCategorys?.map(data => data?.rejected),
                     'name': 'Rejected'
                 }])
-                setCategories(addOnServicesValues?.addOnActivityStatusByCategorys?.map(data => data?.activityType));
+                setCategories(addOnServicesValues?.addOnActivityStatusByCategorys?.map(data => data?.activity));
             } else {
                 setSeries([]);
                 setCategories([]);
@@ -445,7 +431,12 @@ const ReportTypeOverview = () => {
             let keysForChart = [];
             addOnServicesValues?.approvedAddOnActivitiesByCategoryAndMonth?.map((stack, index) => {
                 let values = stack.types;
-                keysForChart = Object.keys(stack.types);
+                let keysInObject = Object.keys(stack.types);
+                keysInObject?.map(data => {
+                    if (!keysForChart?.includes(data)) {
+                        keysForChart.push(data);
+                    }
+                })
                 setStackedKeys(keysForChart);
                 values['name'] = months[stack?.month];
                 values['type'] = 1;
