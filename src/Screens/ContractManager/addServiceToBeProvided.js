@@ -21,6 +21,7 @@ import ProcedureReading from "./procedureReading";
 import OnCallCoverageFields from "./onCallCoverageFields";
 import SupplementalFields from "./supplementalFields";
 import AddonClinicFields from "./addonClinicFields";
+import HospiceService from "./hospiceService";
 import AdministrativeFields from "./administrativeFields";
 import SurgerySessionFields from "./surgerySessionFields";
 import { workFlowDataGenerator } from "./workflowDataGenerator";
@@ -32,6 +33,7 @@ import {
   ADDON,
   ADMINISTRATIVE,
   PROCEDUREREADING,
+  HOSPICE,
 } from "../../Constants";
 import Notes from "../../Components/Notes";
 import CommonSwitch from "../../Components/CommonFields/CommonSwitch";
@@ -2194,6 +2196,20 @@ const AddServiceProvided = ({
                     />
                   ) : serviceTypeTemplate === ADDON ? (
                     <AddonClinicFields
+                      getMetaData={getMetaData}
+                      services={contractedServices}
+                      locationItems={locationItems}
+                      getNewLocation={getNewLocation}
+                      locationToAdd={locationToAdd}
+                      serviceSelected={selectedService}
+                      editService={editService}
+                      isReset={isReset}
+                      getIsReset={getIsReset}
+                      sites={siteList}
+                      contractId={contractId}
+                    />
+                  ) : serviceTypeTemplate === HOSPICE ? (
+                    <HospiceService
                       getMetaData={getMetaData}
                       services={contractedServices}
                       locationItems={locationItems}

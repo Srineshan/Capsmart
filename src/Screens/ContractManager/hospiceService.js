@@ -13,6 +13,16 @@ import {
     ADDON,
     ONCALL,
 } from "../../Constants";
+import {
+    FormControl,
+    InputLabel,
+    ListItemIcon,
+    ListItemText,
+    MenuItem,
+    Checkbox,
+    Select,
+} from "@material-ui/core";
+import OutlinedInput from '@mui/material/OutlinedInput';
 import MultiSelectDisplay from "../../Components/ReusableSmallComponents/multiSelectDisplay";
 import { GetDateFromHours } from "./../../utils/formatting";
 import { POST, GET, PUT } from "./../dataSaver";
@@ -27,6 +37,17 @@ import { valueCheck } from "../../utils/valueCheck";
 
 import style from "./index.module.scss";
 import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
+
+const ITEM_HEIGHT = 38;
+const ITEM_PADDING_TOP = 5;
+const MenuProps = {
+    PaperProps: {
+        style: {
+            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+            width: 300,
+        },
+    },
+};
 
 const HospiceService = ({
     getMetaData,
@@ -44,9 +65,10 @@ const HospiceService = ({
     const limit5 = 5;
     let additionalDetails = [
         "Require Patient Data",
+        "Require CPT / HCPCS code",
+        "Require Details Documentation for service",
         "Prior Pre-Authorization Required",
         "Administrative Approval For Payment Required",
-        "Require Reason For Add-On Service",
     ];
     const [fields, setFields] = useState();
     const [showNewService, setShowNewService] = useState(false);
@@ -64,7 +86,7 @@ const HospiceService = ({
         approver: undefined,
         approverTitle: {},
         paymentApprover: undefined,
-        billableService: false,
+        billableService: true,
         workingTimeFrom: null,
         workingTimeTo: null,
     });
@@ -73,7 +95,12 @@ const HospiceService = ({
     const [users, setUsers] = useState([]);
     const [title, setTitle] = useState([]);
     const { setValue, value } = useComboboxControls({ initialValue: "" });
-
+    const [codes, setCodes] = useState([{ id: '1', codeName: 'Code 1' },
+    { id: '2', codeName: 'Code 2' },
+    { id: '3', codeName: 'Code 3' },
+    { id: '4', codeName: 'Code 4' },
+    { id: '5', codeName: 'Code 5' },]);
+    const [selectedCodes, setSelectedCodes] = useState([]);
     useEffect(() => {
         getFields();
     }, [locationItems]);
@@ -299,6 +326,10 @@ const HospiceService = ({
         let locationList = location?.map((location) => location?.location) || [];
         return locationList;
     };
+
+    const handleCodeChange = (value) => {
+        setSelectedCodes(value);
+    }
 
     const removeLocation = (locationIndex) => {
         let locationTemp =
@@ -746,7 +777,7 @@ const HospiceService = ({
 
     return (
         <div>
-            {!editService &&
+            {/* {!editService &&
                 serviceList?.map((service, i) => (
                     <div
                         className={style.marginTop20}
@@ -851,35 +882,9 @@ const HospiceService = ({
                                         </div>
                                     </div>
                                 )}
-                            {/* <div className={`${ style.addManagerGrid } ${ style.marginTop20 }`}>
-                <div className={style.extentionLableStyle}>Specify Service Facility / Location</div>
-                <div>
-                  <div className={`${ style.displayInRow } `}>
-                    <ThemeProvider theme={switchTheme}>
-                      <FormControlLabel
-                        control={
-                          <Switch className={`${ style.textAlignLeft }`} onChange={() => switchShowLocation(service)} checked={metadata?.filter(item => item?.performingActivity === service)?.map(item => item)[0]?.locationSpecified} />
-                        }
-                        color='primary'
-                        className={`${ style.switchFontStyle } ${ style.flexLeft } `}
-                        label={metadata?.filter(data => data?.performingActivity === service)?.map(item => item)[0]?.locationSpecified ? 'YES' : 'NO'}
-                      />
-                    </ThemeProvider>
-                    <div className={`${ style.addGrid } ${ style.fullWidth }`}>
-                      <DatalistInput items={locationItems} onSelect={(location) => selectLocation(location, service)} className={style.fullWidth} onChange={(e) => getNewLocation(e.target.value)} />
-                      <div className={`${ style.addStyle } ${ style.alignCenter } ${ style.cursorPointer }`}>
-                        <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={locationToAdd} />
-                      </div>
-                    </div>
-                  </div>
-                  {getSelectedLocation(service)?.length !== 0 &&
-                    <MultiSelectDisplay values={getSelectedLocation(service)} removeItem={removeLocation} />
-                  }
-                </div>
-              </div> */}
                         </div>
                     </div>
-                ))}
+                ))} */}
 
             {metadata?.[0]?.activityResponse?.dataMap?.selectedActivityId ===
                 undefined &&
@@ -947,7 +952,7 @@ const HospiceService = ({
                                     <div
                                         className={`${style.addManagerGrid} ${style.marginTop20}`}
                                     >
-                                        <CommonLabel value="ADD-ON Payment Rate*" />
+                                        <CommonLabel value="Payment Rate*" />
                                         <div className={`${style.displayInRow}`}>
                                             <div className={`${style.threeFieldWidth}`}>
                                                 <CommonTextField
@@ -970,9 +975,7 @@ const HospiceService = ({
                                             <div className={style.verticalAlignCenter}>
                                                 <CommonLabel
                                                     className={`${style.marginLeft20}`}
-                                                    value={`${(
-                                                        data?.sessionAmount / data?.sessionDuration
-                                                    )?.toFixed(2)} Per Hour`}
+                                                    value={`Per Session`}
                                                 />
                                             </div>
                                         </div>
@@ -1302,33 +1305,7 @@ const HospiceService = ({
                                         </div>
                                     </div>
                                 )}
-                                {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Specify Service Facility / Location</div>
-                <div>
-                  <div className={`${style.displayInRow} `}>
-                    <ThemeProvider theme={switchTheme}>
-                      <FormControlLabel
-                        control={
-                          <Switch className={`${style.textAlignLeft}`} checked={data?.locationSpecified} onChange={() => switchShowLocation(data?.performingActivity)} />
-                        }
-                        color='primary'
-                        className={`${style.switchFontStyle} ${style.flexLeft} `}
-                        label={data?.locationSpecified ? 'YES' : 'NO'}
-                      />
-                    </ThemeProvider>
-                    <div className={`${style.addGrid} ${style.fullWidth}`}>
-                      <DatalistInput items={locationItems} onSelect={(location) => selectLocation(location, data?.performingActivity)} className={style.fullWidth} onChange={(e) => getNewLocation(e.target.value)} />
-                      <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
-                        <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={locationToAdd} />
-                      </div>
-                    </div>
-                  </div>
-                  {
-                    getSelectedLocation(data?.performingActivity)?.length !== 0 &&
-                    <MultiSelectDisplay values={getSelectedLocation(data?.performingActivity)} removeItem={removeLocation} />
-                  }
-                </div>
-              </div> */}
+
                             </div>
                         </div>
                     ))}
@@ -1337,7 +1314,7 @@ const HospiceService = ({
                 <div className={`${style.marginTop20} ${style.addAddonGrid}`}>
                     <CommonInputField
                         className={style.fullWidth}
-                        placeholder="Enter Add-On Service"
+                        placeholder="Enter Consult Service"
                         value={newServices?.name}
                         onChange={(e) =>
                             setNewServices({ ...newServices, name: e.target.value })
@@ -1347,7 +1324,7 @@ const HospiceService = ({
                         className={`${style.addAddonServiceButton} ${style.alignCenter}`}
                         onClick={handleNewServiceName}
                     >
-                        ADD ADD-ON SERVICES
+                        ADD CONSULTS
                     </div>
                 </div>
             )}
@@ -1355,7 +1332,7 @@ const HospiceService = ({
             {showNewService && (
                 <div className={`${style.addonAddBox} ${style.marginTop20}`}>
                     <div className={`${style.addManagerGrid}`}>
-                        <CommonLabel value="Add-On Service Name*" />
+                        <CommonLabel value="Consult Service Name*" />
                         <CommonInputField
                             value={newServices?.name}
                             className={style.fullWidth}
@@ -1402,7 +1379,7 @@ const HospiceService = ({
                     </div>
                     {newServices?.billableService && (
                         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                            <CommonLabel value="ADD-ON Payment Rate*" />
+                            <CommonLabel value="Payment Rate*" />
                             <div className={`${style.displayInRow}`}>
                                 <div className={`${style.threeFieldWidth}`}>
                                     <CommonTextField
@@ -1422,9 +1399,7 @@ const HospiceService = ({
                                 <div className={style.verticalAlignCenter}>
                                     <CommonLabel
                                         className={`${style.marginLeft20}`}
-                                        value={`${(
-                                            newServices?.rate / newServices?.sessionDuration
-                                        ).toFixed(2)} Per Hour`}
+                                        value={`Per Session`}
                                     />
                                 </div>
                             </div>
@@ -1509,6 +1484,41 @@ const HospiceService = ({
                                             {data}
                                         </div>
                                     </div>
+                                    {newServices?.additionalDetails?.includes(
+                                        "Require CPT / HCPCS code"
+                                    ) &&
+                                        data === "Require CPT / HCPCS code" && (
+                                            <div className={`${style.grid3} ${style.marginTop20}`}>
+
+                                                <CommonLabel value={"Applicable CPT / HCPCS Code*"} />
+                                                <FormControl sx={{ m: 1, width: 300 }} size="small">
+                                                    <Select
+                                                        labelId="demo-multiple-checkbox-label"
+                                                        id="demo-multiple-checkbox"
+                                                        multiple
+                                                        value={selectedCodes}
+                                                        onChange={(e) => handleCodeChange(e.target.value)}
+                                                        input={<OutlinedInput label="" />}
+                                                        SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                                        renderValue={selectedCodes => selectedCodes.map(data => data?.codeName)?.join(', ')}
+                                                        MenuProps={MenuProps}
+                                                    >
+                                                        {codes.map((name) => (
+                                                            <MenuItem key={name} value={name}>
+                                                                <Checkbox checked={selectedCodes?.map(data => data?.id)?.includes(name?.id)} style={{ color: '#7165E3' }} />
+                                                                <ListItemText primary={name?.codeName} />
+                                                            </MenuItem>
+                                                        ))}
+                                                    </Select>
+                                                </FormControl>
+                                                <div
+                                                    className={`${style.addCptCodeButton} ${style.alignCenter}`}
+                                                    onClick={() => { }}
+                                                >
+                                                    ADD CPT CODE
+                                                </div>
+                                            </div>
+                                        )}
                                     {newServices?.additionalDetails?.includes(
                                         "Prior Pre-Authorization Required"
                                     ) &&

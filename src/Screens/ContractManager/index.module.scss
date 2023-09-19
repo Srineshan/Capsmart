@@ -1685,6 +1685,18 @@ input[type="file"] {
     padding: 6px 20px;
 }
 
+.addCptCodeButton {
+    background: #7165E3 0% 0% no-repeat padding-box;
+    box-shadow: 0px 0px 6px #00000029;
+    border-radius: 6px;
+    font: normal normal medium 20px/22px Montserrat;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    padding: 6px 15px;
+    height: 32px;
+}
+
 .addAddonGrid {
     display: grid;
     grid-template-columns: 1fr 240px;
