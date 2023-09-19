@@ -1055,6 +1055,41 @@ const HospiceService = ({
                                                     </div>
                                                 </div>
                                                 {data?.activityResponse?.dataMap?.additionalDetails?.includes(
+                                                    "Require CPT / HCPCS code"
+                                                ) &&
+                                                    details === "Require CPT / HCPCS code" && (
+                                                        <div className={`${style.grid3} ${style.marginTop20}`}>
+
+                                                            <CommonLabel value={"Applicable CPT / HCPCS Code*"} />
+                                                            <FormControl sx={{ m: 1, width: 300 }} size="small">
+                                                                <Select
+                                                                    labelId="demo-multiple-checkbox-label"
+                                                                    id="demo-multiple-checkbox"
+                                                                    multiple
+                                                                    value={selectedCodes}
+                                                                    onChange={(e) => handleCodeChange(e.target.value)}
+                                                                    input={<OutlinedInput label="" />}
+                                                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                                                    renderValue={selectedCodes => selectedCodes.map(data => data?.codeName)?.join(', ')}
+                                                                    MenuProps={MenuProps}
+                                                                >
+                                                                    {codes.map((name) => (
+                                                                        <MenuItem key={name} value={name}>
+                                                                            <Checkbox checked={selectedCodes?.map(data => data?.id)?.includes(name?.id)} style={{ color: '#7165E3' }} />
+                                                                            <ListItemText primary={name?.codeName} />
+                                                                        </MenuItem>
+                                                                    ))}
+                                                                </Select>
+                                                            </FormControl>
+                                                            <div
+                                                                className={`${style.addCptCodeButton} ${style.alignCenter}`}
+                                                                onClick={() => { }}
+                                                            >
+                                                                ADD CPT CODE
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                {data?.activityResponse?.dataMap?.additionalDetails?.includes(
                                                     "Prior Pre-Authorization Required"
                                                 ) &&
                                                     details === "Prior Pre-Authorization Required" && (
