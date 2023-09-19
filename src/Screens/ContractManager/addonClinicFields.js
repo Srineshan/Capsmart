@@ -73,7 +73,8 @@ const AddonClinicFields = ({
   const [metadata, setMetadata] = useState([]);
   const [users, setUsers] = useState([]);
   const [title, setTitle] = useState([]);
-  const { setValue, value } = useComboboxControls({ initialValue: "" });
+  const { setValue, value } = useComboboxControls({ initialValue: '' });
+  const [customAddOnFields, setCustomAddOnFields] = useState([]);
 
   useEffect(() => {
     getFields();
@@ -82,7 +83,8 @@ const AddonClinicFields = ({
   useEffect(() => {
     console.log("metadata in useEffect", metadata);
     getMetaData(metadata);
-  }, [metadata]);
+    generateCustomAddOnFields();
+  }, [metadata])
 
   useEffect(() => {
     if (isReset) {
@@ -492,19 +494,20 @@ const AddonClinicFields = ({
 
   const updateWorkingHours = (name, value, index) => {
     let temp = metadata;
-    if (name === "workingTimeFrom") {
-      temp[index]["workingPeriod"]["from"] = value;
-    }
-    if (name === "workingTimeTo") {
-      temp[index]["workingPeriod"]["to"] = value;
-    }
+    // if (name === 'workingTimeFrom') {
+    //   temp[index]['workingPeriod']['from'] = value;
+    // }
+    // if (name === 'workingTimeTo') {
+    //   temp[index]['workingPeriod']['to'] = value;
+    // }
     temp[index][name] = value;
     // temp?.map(data => {
     //   data[name] = value;
     // })
     setMetadata(temp);
-    console.log("temp", temp);
-  };
+    generateCustomAddOnFields();
+    console.log('temp', temp);
+  }
 
   const handleNewServiceLocation = (selectedItem) => {
     if (newServices?.locations?.map((data) => data)?.includes(selectedItem)) {
@@ -590,7 +593,8 @@ const AddonClinicFields = ({
     setSelectedServices(selectedServiceTemp);
     resetNewServices();
     setShowNewService(false);
-  };
+    generateCustomAddOnFields();
+  }
 
   const handleNewServiceName = () => {
     if (newServices?.name === "") {
@@ -719,7 +723,153 @@ const AddonClinicFields = ({
     getFields();
   };
 
-  console.log("metadata", metadata);
+  const generateCustomAddOnFields = () => {
+    let temp = [];
+    metadata?.[0]?.activityResponse?.dataMap?.selectedActivityId === undefined && metadata?.filter(data => !serviceList?.map(service => service)?.includes(data?.performingActivity) || editService)?.map((data, index) => {
+      temp.push(
+        <div className={style.marginTop20} onClick={() => setSelectedService(data?.performingActivity)}>
+          <CommonCheckBox checked={selectedServices?.includes(data?.performingActivity)} onChange={(e) => selectService(data?.performingActivity, e.target.checked)} label={data?.performingActivity?.activity || data?.performingActivity} />
+          <div className={`${style.addonBoxStyle} ${style.marginTop20}`}>
+            <div className={`${style.addManagerGrid}`}>
+              <CommonLabel value='Billable Service*' />
+              <CommonSwitch label={data?.billableService ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} checked={data?.billableService} onChange={() => UpdateBillable(data?.performingActivity, !data?.billableService)} />
+            </div>
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+              <CommonLabel value='Service Session Duration' />
+              <div className={`${style.threeFieldWidth}`}>
+                <CommonTextField
+                  type="tel"
+                  maxLength="3"
+                  InputProps={{
+                    endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
+                  }}
+                  onChange={(e) => e.target.value >= 0 && updateSessionDuration(data?.performingActivity, e.target.value)}
+                  value={data?.sessionDuration}
+                />
+              </div>
+            </div>
+            {
+              data?.billableService &&
+              <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                <CommonLabel value='ADD-ON Payment Rate*' />
+                <div className={`${style.displayInRow}`}>
+                  <div className={`${style.threeFieldWidth}`}>
+                    <CommonTextField
+                      InputProps={{
+                        startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
+                      }}
+                      defaultValue={data?.sessionAmount}
+                      onChange={(e) => updateRate(data?.performingActivity, e.target.value)}
+                    />
+                  </div>
+                  <div className={style.verticalAlignCenter}>
+                    <CommonLabel className={`${style.marginLeft20}`} value={`${(data?.sessionAmount / data?.sessionDuration)?.toFixed(2)} Per Hour`} />
+                  </div>
+                </div>
+              </div>
+            }
+
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+              <CommonLabel value='Specify Service Facility / Location' />
+              <div>
+                <div className={`${style.displayInRow} `}>
+                  <CommonSwitch checked={data?.locationSpecified} className={`${style.textAlignLeft}`} onChange={() => switchShowLocation(data?.performingActivity)} label={data?.locationSpecified ? 'YES' : 'NO'} />
+                  {data?.locationSpecified && <div className={`${style.fullWidth}`}>
+                    <DatalistInput items={locationItems} setValue={setValue}
+                      onSelect={(location) => selectLocation(location, data?.performingActivity)} className={style.fullWidth} onChange={(e) => getNewLocation(e.target.value)} />
+                  </div>}
+                </div>
+                {data?.locationSpecified && data?.locations?.length !== 0 &&
+                  <MultiSelectDisplay values={data?.locations?.map(data => data?.location)} removeItem={removeLocation} />
+                }
+              </div>
+            </div>
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+              <CommonLabel value='Additional Details*' />
+              <div >
+                {
+                  additionalDetails?.map((details, index) => (
+                    <>
+                      <div className={`${style.additionalDetails} ${data?.activityResponse?.dataMap?.additionalDetails?.includes(details) ? style.additionalDetailsSelected : ''} ${style.cursorPointer} ${index !== 0 ? style.marginTop10 : ''}`} onClick={() => additionalDetailSelectionChange(details)}>
+                        <div className={style.alignCenter}>
+                          <TaskAltIcon sx={{ color: data?.activityResponse?.dataMap?.additionalDetails?.includes(details) ? '#7165E3' : '#E4E4E4' }} />
+                        </div>
+                        <div className={`${style.additionalDetailsTextStyle} ${style.verticalAlignCenter}`}>{details}</div>
+                      </div>
+                      {
+                        data?.activityResponse?.dataMap?.additionalDetails?.includes('Prior Pre-Authorization Required') && details === 'Prior Pre-Authorization Required' &&
+                        // <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { onAdditionalServiceApproverChange(data?.performingActivity, users?.filter(user => user?.userId === value)?.map(user => user)[0]) }} value={data?.approver?.userId} />
+                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                          <CommonLabel value={'Designate Request Approver*'} />
+                          <div className={style.fullWidth}>
+                            <CommonSelectField className={`${style.fullWidth} `}
+                              defaultValue={data?.approver?.id}
+                              value={data?.approver?.id ? data?.approver?.id : '0'}
+                              onChange={(e) => { onAdditionalServiceApproverChange(data?.performingActivity, users?.filter(user => user?.id === e.target.value)?.map(user => user)[0]) }}
+                              firstOptionLabel={'Select Approver'} firstOptionValue={'0'}
+                              valueList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => titleData?.id)}
+                              labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`)}
+                              disabledList={title?.filter(titleData => titleData?.approver === true)?.map(data => false)}
+                              widthValue={370} />
+                          </div>
+                        </div>
+                      }
+                      {
+                        data?.activityResponse?.dataMap?.additionalDetails?.includes('Administrative Approval For Payment Required') && details === 'Administrative Approval For Payment Required' &&
+                        // <ReviewerApproverField data={users} label="Designate Payment Approver*" selectLabel="Select Payment Approver" onValueChange={(value) => { onAdditionalServicePaymentApproverChange(data?.performingActivity, users.filter(user => user?.userId === value)?.map(user => user)[0]) }} value={data?.paymentApprover?.userId} />
+                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                          <CommonLabel value={'Designate Payment Approver*'} />
+                          <div className={style.fullWidth}>
+                            <CommonSelectField className={`${style.fullWidth} `}
+                              defaultValue={data?.paymentApprover?.id}
+                              value={data?.paymentApprover?.id ? data?.paymentApprover?.id : '0'}
+                              onChange={(e) => { onAdditionalServicePaymentApproverChange(data?.performingActivity, users.filter(user => user?.id === e.target.value)?.map(user => user)[0]) }}
+                              firstOptionLabel={'Select Payment Approver'} firstOptionValue={'0'}
+                              valueList={title?.filter(titleData => titleData?.approver === true)?.map(data => data?.id)}
+                              labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`)}
+                              disabledList={title?.map(data => false)}
+                              widthValue={370} />
+                          </div>
+                        </div>
+                      }
+                    </>
+                  ))
+                }
+              </div>
+            </div>
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+              <CommonLabel value='Allowable Add-On Working Hours*' />
+              <div className={style.twoCol}>
+                <CommonCheckBox checked={data?.workingHours?.normalWorkingHours} className={`${style.marginLeft10}`} onChange={(e) => handleWorkingHoursChange(data?.performingActivity, e.target.checked, 'normalWorkingHours')} label="During Normal Working Hours" />
+                <CommonCheckBox checked={data?.workingHours?.afterWorkingHours} className={`${style.marginLeft10}`} onChange={(e) => handleWorkingHoursChange(data?.performingActivity, e.target.checked, 'afterWorkingHours')} label="After Working Hours" />
+              </div>
+            </div>
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+              <CommonLabel value='Allowable Working Day Hours For Service*' />
+              <div className={style.displayInRow}>
+                <TimePicker
+                  useAmPm={false}
+                  onChange={(e) => {
+                    updateWorkingHours('workingTimeFrom', e, index);
+                  }}
+                  value={data?.workingTimeFrom === null ? null : new Date(data?.workingTimeFrom)}
+                />
+                <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
+                <TimePicker
+                  useAmPm={false}
+                  onChange={(e) => updateWorkingHours('workingTimeTo', e, index)}
+                  value={data?.workingTimeTo === null ? null : new Date(data?.workingTimeTo)}
+                // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
+                />
+              </div>
+            </div>
+          </div>
+        </div>)
+    })
+    setCustomAddOnFields(temp);
+  }
+
+  console.log('metadata', metadata);
 
   const dataCheck = (value) => {
     if (editService) {
@@ -866,357 +1016,8 @@ const AddonClinicFields = ({
           </div>
         ))}
 
-      {metadata?.[0]?.activityResponse?.dataMap?.selectedActivityId ===
-        undefined &&
-        metadata
-          ?.filter(
-            (data) =>
-              !serviceList
-                ?.map((service) => service)
-                ?.includes(data?.performingActivity) || editService
-          )
-          ?.map((data, index) => (
-            <div
-              className={style.marginTop20}
-              onClick={() => setSelectedService(data?.performingActivity)}
-            >
-              <CommonCheckBox
-                checked={selectedServices?.includes(data?.performingActivity)}
-                onChange={(e) =>
-                  selectService(data?.performingActivity, e.target.checked)
-                }
-                label={
-                  data?.performingActivity?.activity || data?.performingActivity
-                }
-              />
-              <div className={`${style.addonBoxStyle} ${style.marginTop20}`}>
-                <div className={`${style.addManagerGrid}`}>
-                  <CommonLabel value="Billable Service*" />
-                  <CommonSwitch
-                    label={data?.billableService ? "YES" : "NO"}
-                    className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`}
-                    checked={data?.billableService}
-                    onChange={() =>
-                      UpdateBillable(
-                        data?.performingActivity,
-                        !data?.billableService
-                      )
-                    }
-                  />
-                </div>
-                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                  <CommonLabel value="Service Session Duration" />
-                  <div className={`${style.threeFieldWidth}`}>
-                    <CommonTextField
-                      type="tel"
-                      maxLength="3"
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end" sx={{ fontSize: 10 }}>
-                            Hours
-                          </InputAdornment>
-                        ),
-                      }}
-                      onChange={(e) =>
-                        e.target.value >= 0 &&
-                        updateSessionDuration(
-                          data?.performingActivity,
-                          e.target.value
-                        )
-                      }
-                      value={data?.sessionDuration}
-                    />
-                  </div>
-                </div>
-                {data?.billableService && (
-                  <div
-                    className={`${style.addManagerGrid} ${style.marginTop20}`}
-                  >
-                    <CommonLabel value="ADD-ON Payment Rate*" />
-                    <div className={`${style.displayInRow}`}>
-                      <div className={`${style.threeFieldWidth}`}>
-                        <CommonTextField
-                          InputProps={{
-                            startAdornment: (
-                              <InputAdornment
-                                position="start"
-                                sx={{ fontSize: 10 }}
-                              >
-                                $
-                              </InputAdornment>
-                            ),
-                          }}
-                          defaultValue={data?.sessionAmount}
-                          onChange={(e) =>
-                            updateRate(data?.performingActivity, e.target.value)
-                          }
-                        />
-                      </div>
-                      <div className={style.verticalAlignCenter}>
-                        <CommonLabel
-                          className={`${style.marginLeft20}`}
-                          value={`${(
-                            data?.sessionAmount / data?.sessionDuration
-                          )?.toFixed(2)} Per Hour`}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
+      {customAddOnFields}
 
-                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                  <CommonLabel value="Specify Service Facility / Location" />
-                  <div>
-                    <div className={`${style.displayInRow} `}>
-                      <CommonSwitch
-                        checked={data?.locationSpecified}
-                        className={`${style.textAlignLeft}`}
-                        onChange={() =>
-                          switchShowLocation(data?.performingActivity)
-                        }
-                        label={data?.locationSpecified ? "YES" : "NO"}
-                      />
-                      {data?.locationSpecified && (
-                        <div className={`${style.fullWidth}`}>
-                          <DatalistInput
-                            items={locationItems}
-                            setValue={setValue}
-                            onSelect={(location) =>
-                              selectLocation(location, data?.performingActivity)
-                            }
-                            className={style.fullWidth}
-                            onChange={(e) => getNewLocation(e.target.value)}
-                          />
-                        </div>
-                      )}
-                    </div>
-                    {data?.locationSpecified &&
-                      data?.locations?.length !== 0 && (
-                        <MultiSelectDisplay
-                          values={data?.locations?.map(
-                            (data) => data?.location
-                          )}
-                          removeItem={removeLocation}
-                        />
-                      )}
-                  </div>
-                </div>
-                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                  <CommonLabel value="Additional Details*" />
-                  <div>
-                    {additionalDetails?.map((details, index) => (
-                      <>
-                        <div
-                          className={`${style.additionalDetails} ${data?.activityResponse?.dataMap?.additionalDetails?.includes(
-                            details
-                          )
-                            ? style.additionalDetailsSelected
-                            : ""
-                            } ${style.cursorPointer} ${index !== 0 ? style.marginTop10 : ""
-                            }`}
-                          onClick={() =>
-                            additionalDetailSelectionChange(details)
-                          }
-                        >
-                          <div className={style.alignCenter}>
-                            <TaskAltIcon
-                              sx={{
-                                color:
-                                  data?.activityResponse?.dataMap?.additionalDetails?.includes(
-                                    details
-                                  )
-                                    ? "#7165E3"
-                                    : "#E4E4E4",
-                              }}
-                            />
-                          </div>
-                          <div
-                            className={`${style.additionalDetailsTextStyle} ${style.verticalAlignCenter}`}
-                          >
-                            {details}
-                          </div>
-                        </div>
-                        {data?.activityResponse?.dataMap?.additionalDetails?.includes(
-                          "Prior Pre-Authorization Required"
-                        ) &&
-                          details === "Prior Pre-Authorization Required" && (
-                            // <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { onAdditionalServiceApproverChange(data?.performingActivity, users?.filter(user => user?.userId === value)?.map(user => user)[0]) }} value={data?.approver?.userId} />
-                            <div
-                              className={`${style.addManagerGrid} ${style.marginTop20}`}
-                            >
-                              <CommonLabel
-                                value={"Designate Request Approver*"}
-                              />
-                              <div className={style.fullWidth}>
-                                <CommonSelectField
-                                  className={`${style.fullWidth} `}
-                                  defaultValue={data?.approver?.id}
-                                  value={
-                                    data?.approver?.id
-                                      ? data?.approver?.id
-                                      : "0"
-                                  }
-                                  onChange={(e) => {
-                                    onAdditionalServiceApproverChange(
-                                      data?.performingActivity,
-                                      users
-                                        ?.filter(
-                                          (user) => user?.id === e.target.value
-                                        )
-                                        ?.map((user) => user)[0]
-                                    );
-                                  }}
-                                  firstOptionLabel={"Select Approver"}
-                                  firstOptionValue={"0"}
-                                  valueList={title
-                                    ?.filter(
-                                      (titleData) =>
-                                        titleData?.approver === true
-                                    )
-                                    ?.map((titleData) => titleData?.id)}
-                                  labelList={title
-                                    ?.filter(
-                                      (titleData) =>
-                                        titleData?.approver === true
-                                    )
-                                    ?.map(
-                                      (titleData) =>
-                                        `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`
-                                    )}
-                                  disabledList={title
-                                    ?.filter(
-                                      (titleData) =>
-                                        titleData?.approver === true
-                                    )
-                                    ?.map((data) => false)}
-                                  widthValue={370}
-                                />
-                              </div>
-                            </div>
-                          )}
-                        {data?.activityResponse?.dataMap?.additionalDetails?.includes(
-                          "Administrative Approval For Payment Required"
-                        ) &&
-                          details ===
-                          "Administrative Approval For Payment Required" && (
-                            // <ReviewerApproverField data={users} label="Designate Payment Approver*" selectLabel="Select Payment Approver" onValueChange={(value) => { onAdditionalServicePaymentApproverChange(data?.performingActivity, users.filter(user => user?.userId === value)?.map(user => user)[0]) }} value={data?.paymentApprover?.userId} />
-                            <div
-                              className={`${style.addManagerGrid} ${style.marginTop20}`}
-                            >
-                              <CommonLabel
-                                value={"Designate Payment Approver*"}
-                              />
-                              <div className={style.fullWidth}>
-                                <CommonSelectField
-                                  className={`${style.fullWidth} `}
-                                  defaultValue={data?.paymentApprover?.id}
-                                  value={
-                                    data?.paymentApprover?.id
-                                      ? data?.paymentApprover?.id
-                                      : "0"
-                                  }
-                                  onChange={(e) => {
-                                    onAdditionalServicePaymentApproverChange(
-                                      data?.performingActivity,
-                                      users
-                                        .filter(
-                                          (user) => user?.id === e.target.value
-                                        )
-                                        ?.map((user) => user)[0]
-                                    );
-                                  }}
-                                  firstOptionLabel={"Select Payment Approver"}
-                                  firstOptionValue={"0"}
-                                  valueList={title
-                                    ?.filter(
-                                      (titleData) =>
-                                        titleData?.approver === true
-                                    )
-                                    ?.map((data) => data?.id)}
-                                  labelList={title
-                                    ?.filter(
-                                      (titleData) =>
-                                        titleData?.approver === true
-                                    )
-                                    ?.map(
-                                      (titleData) =>
-                                        `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`
-                                    )}
-                                  disabledList={title?.map((data) => false)}
-                                  widthValue={370}
-                                />
-                              </div>
-                            </div>
-                          )}
-                      </>
-                    ))}
-                  </div>
-                </div>
-                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                  <CommonLabel value="Allowable Add-On Working Hours*" />
-                  <div className={style.twoCol}>
-                    <CommonCheckBox
-                      checked={data?.workingHours?.normalWorkingHours}
-                      className={`${style.marginLeft10}`}
-                      onChange={(e) =>
-                        handleWorkingHoursChange(
-                          data?.performingActivity,
-                          e.target.checked,
-                          "normalWorkingHours"
-                        )
-                      }
-                      label="During Normal Working Hours"
-                    />
-                    <CommonCheckBox
-                      checked={data?.workingHours?.afterWorkingHours}
-                      className={`${style.marginLeft10}`}
-                      onChange={(e) =>
-                        handleWorkingHoursChange(
-                          data?.performingActivity,
-                          e.target.checked,
-                          "afterWorkingHours"
-                        )
-                      }
-                      label="After Working Hours"
-                    />
-                  </div>
-                </div>
-                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                  <CommonLabel value="Allowable Working Day Hours For Service*" />
-                  <div className={style.displayInRow}>
-                    <TimePicker
-                      useAmPm={false}
-                      onChange={(e) => {
-                        updateWorkingHours("workingTimeFrom", e, index);
-                      }}
-                      value={
-                        data?.workingPeriod?.from === null
-                          ? null
-                          : new Date(data?.workingPeriod?.from)
-                      }
-                    />
-                    <p
-                      className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}
-                    >
-                      To
-                    </p>
-                    <TimePicker
-                      useAmPm={false}
-                      onChange={(e) =>
-                        updateWorkingHours("workingTimeTo", e, index)
-                      }
-                      value={
-                        data?.workingPeriod?.to === null
-                          ? null
-                          : new Date(data?.workingPeriod?.to)
-                      }
-                    // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
 
       {editService &&
         metadata

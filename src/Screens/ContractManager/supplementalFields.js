@@ -105,39 +105,27 @@ const SupplementalFields = ({
     const selectedHours = (index) => {
         // let temp = services?.findIndexOf(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType));
         // let temp;
-        services
-            ?.filter((data) =>
-                [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(
-                    data?.activityType?.activityType
-                )
-            )
-            ?.map((data) => {
-                let activityName = data?.activityType?.activityType;
-                let activities = data?.activities?.map((data) => data?.activity);
-                if (
-                    `${activityName} (${activities?.map((data) => data)?.join(", ")})` ===
-                    index
-                ) {
-                    let dedicatedHoursActivityType = data?.activityType?.activityType;
-                    let dedicatedHoursPerformingActivity = data?.activities
-                        ?.map((data) => data?.activity)
-                        ?.join(", ");
-                    setMetadata({
-                        ...metadata,
-                        dedicatedHoursActivityType: dedicatedHoursActivityType,
-                        dedicatedHoursPerformingActivity: dedicatedHoursPerformingActivity,
-                        supplementServiceName: [],
-                        billableService: data?.billableService,
-                        rateType: data?.rateType,
-                        sessionAmount: data?.payableAmount?.value,
-                        sessionDuration: data?.duration?.hours,
-                        totalSession: data?.totalSessions?.value,
-                        totalSessionFrequency: data?.totalSessions?.frequency,
-                        hourlyRate: data?.hourlyRate?.value,
-                    });
-                }
-            });
-    };
+        services?.filter(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => {
+            let activityName = data?.activityType?.activityType;
+            let activities = data?.activities?.map(data => data?.activity);
+            if (`${activityName} (${activities?.map(data => data)?.join(', ')})` === index) {
+                let dedicatedHoursActivityType = data?.activityType?.activityType;
+                let dedicatedHoursPerformingActivity = data?.activities?.map(data => data?.activity)?.join(', ');
+                setMetadata({
+                    ...metadata,
+                    dedicatedHoursActivityType: dedicatedHoursActivityType,
+                    dedicatedHoursPerformingActivity: dedicatedHoursPerformingActivity,
+                    billableService: data?.billableService,
+                    rateType: data?.rateType,
+                    sessionAmount: data?.payableAmount?.value,
+                    sessionDuration: data?.duration?.hours,
+                    totalSession: data?.totalSessions?.value,
+                    totalSessionFrequency: data?.totalSessions?.frequency,
+                    hourlyRate: data?.hourlyRate?.value,
+                });
+            }
+        });
+    }
 
     const [metadata, setMetadata] = useState({
         dedicatedHoursSpecified: false,
@@ -223,37 +211,28 @@ const SupplementalFields = ({
         console.log("services", services);
         // if (!editService) {
         let temp = [];
-        metadata?.supplementalActivityType?.map((supplementalActivityType) => {
-            services
-                ?.filter(
-                    (service) =>
-                        service?.activityType?.activityType === supplementalActivityType
-                )
-                ?.map((service) => {
-                    console.log("inside service", metadata?.supplementServiceName);
-                    metadata?.supplementServiceName
-                        ?.filter((serviceName) =>
-                            service?.activities
-                                ?.map((activity) => activity?.activity)
-                                ?.includes(serviceName?.split(" - ")?.[1])
-                        )
-                        ?.map((serviceName) => {
-                            console.log("inside servicename");
-                            temp.push({
-                                activityType: {
-                                    activityType: supplementalActivityType,
-                                },
-                                performingActivity: {
-                                    activity: service?.performingActivity?.activity,
-                                },
-                                activity: {
-                                    activity: serviceName?.split(" - ")?.[1],
-                                },
-                            });
-                        });
-                });
-        });
-        setMetadata({ ...metadata, baseServices: temp });
+        console.log('value check', metadata?.supplementalActivityType);
+        metadata?.supplementalActivityType?.map(supplementalActivityType => {
+            services?.filter(service => service?.activityType?.activityType === supplementalActivityType)?.map(service => {
+                console.log('inside service', metadata?.supplementServiceName);
+                metadata?.supplementServiceName?.filter(serviceName => service?.activities?.map(activity => activity?.activity)?.includes(serviceName?.split(' - ')?.[1]))?.map(serviceName => {
+                    console.log('inside servicename')
+                    temp.push({
+                        "activityType": {
+                            "activityType": supplementalActivityType
+                        },
+                        "performingActivity": {
+                            "activity": service?.performingActivity?.activity
+                        },
+                        "activity": {
+                            "activity": serviceName?.split(' - ')?.[1]
+                        }
+                    })
+                })
+            })
+        })
+
+        setMetadata({ ...metadata, 'baseServices': temp });
         // }
     }, [
         metadata?.supplementalActivityType,
@@ -302,9 +281,7 @@ const SupplementalFields = ({
             serviceDays: serviceSelected?.serviceDays,
             baseServiceAvailable: serviceSelected?.baseServiceAvailable,
             baseServices: serviceSelected?.baseServices,
-            supplementalActivityType: serviceSelected?.baseServices?.map(
-                (data) => data?.activityType?.activityType
-            )?.[0],
+            supplementalActivityType: serviceSelected?.baseServices?.map(data => data?.activityType?.activityType),
         });
     };
 

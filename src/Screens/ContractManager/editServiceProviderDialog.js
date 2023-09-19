@@ -219,7 +219,7 @@ const EditServiceProvider = ({
   const getEntityData = async () => {
     const { data: entityData } = await GET(`entity-service/entity/${TenantID}`);
     // console.log("entity", entityData.subdomain);
-    setCSPSubDomain(entityData.subdomain);
+    setCSPSubDomain(entityData.officialEmailDomain?.officialEmail);
   };
 
   const handleRoles = (value) => {
@@ -1042,8 +1042,8 @@ const EditServiceProvider = ({
                   )?.length === 0
                     ? roles?.map((data) => data?.roleName)
                     : roles
-                        ?.filter((data) => data?.roleName !== "Aggregator")
-                        ?.map((data) => data?.roleName)
+                      ?.filter((data) => data?.roleName !== "Aggregator")
+                      ?.map((data) => data?.roleName)
                 }
                 labelList={
                   users?.filter((data) =>
@@ -1053,8 +1053,8 @@ const EditServiceProvider = ({
                   )?.length === 0
                     ? roles?.map((data) => data?.roleName)
                     : roles
-                        ?.filter((data) => data?.roleName !== "Aggregator")
-                        ?.map((data) => data?.roleName)
+                      ?.filter((data) => data?.roleName !== "Aggregator")
+                      ?.map((data) => data?.roleName)
                 }
                 disabledList={
                   users?.filter((data) =>
@@ -1064,8 +1064,8 @@ const EditServiceProvider = ({
                   )?.length === 0
                     ? roles?.map((data) => false)
                     : roles
-                        ?.filter((data) => data?.roleName !== "Aggregator")
-                        ?.map((data) => false)
+                      ?.filter((data) => data?.roleName !== "Aggregator")
+                      ?.map((data) => false)
                 }
               />
               <div className={`${style.marginTop20} ${style.marginLeft20}`}>
@@ -1077,14 +1077,13 @@ const EditServiceProvider = ({
         {isEditable && (
           <div className={`${style.floatRight} ${style.marginTop20}`}>
             <button
-              className={`${style.buttonStyle}  ${style.cursorPointer} ${
-                style.marginLeft20
-              } ${continueLoading ? style.disabled : ""}`}
+              className={`${style.buttonStyle}  ${style.cursorPointer} ${style.marginLeft20
+                } ${continueLoading ? style.disabled : ""}`}
               onClick={
                 !continueLoading
                   ? () => {
-                      handleSave();
-                    }
+                    handleSave();
+                  }
                   : {}
               }
             >

@@ -393,7 +393,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                             onChange={(e) => { setFrom(e) }}
                                             renderInput={(params) => <TextField {...params} inputProps={{
                                                 ...params.inputProps,
-                                                placeholder: "From"
+                                                placeholder: "From", readOnly: true
                                             }} />}
                                         />
                                     </LocalizationProvider>
@@ -413,7 +413,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                             onChange={(e) => { setTo(e) }}
                                             renderInput={(params) => <TextField {...params} inputProps={{
                                                 ...params.inputProps,
-                                                placeholder: "To"
+                                                placeholder: "To", readOnly: true
                                             }} />}
                                         />
                                     </LocalizationProvider>

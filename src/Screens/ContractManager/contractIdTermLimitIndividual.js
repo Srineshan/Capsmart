@@ -307,171 +307,170 @@ const ContractIdTermLimitIndividual = (
 
   const addContract = async (buttonType) => {
     let sites = getSiteData();
-    let conflictedData = checkSiteAndDepartment(contracts, sites, contractIdFromActive);
-    if (conflictedData?.length !== 0) {
-      setConflict({ isPresent: true, conflict: conflictedData });
-    }
-    console.log('conflict Data', conflictedData);
-    if (conflictedData?.length === 0) {
-      setContinueLoading(true);
-      if (contractName === '') {
-        ErrorToaster('Enter Contract Name to proceed');
-        setContinueLoading(false);
-        return;
-      }
-      if (compensationPolicy === '') {
-        ErrorToaster('Select a Compensation Policy to proceed');
-        setContinueLoading(false);
-        return;
-      }
-      if (departmentSpecific && sites?.some(data => data?.departmentList?.departments?.length === 0)) {
-        ErrorToaster('Select Departments for all the selected Sites');
-        setContinueLoading(false);
-        return;
-      }
-      if (selectContractManager === null || selectContractManager === undefined) {
-        ErrorToaster('Select Contract Manager');
-        setContinueLoading(false);
-        return;
-      }
-
-      let contractFiles = [];
-      fullyExecutedContract && fullyExecutedContractData?.filter(data => data?.file !== null)?.map(data => {
-        contractFiles?.push({
-          fileName: data.fileName,
-          documentType: data.type,
-          documentDescription: data.desc,
-          documentName: data.name,
-        })
-      })
-
-
-      let data = {
-        ...(createdContractId !== '' && method !== 'POST' && { 'id': createdContractId }),
-        "contractName": {
-          "contractName": contractName
-        },
-        "contractType": contractType,
-        "contractStatus": "DRAFT",
-        "contractDetail": {
-          "contractId": {
-            "id": contractId?.id,
-          },
-          "priorContract": {
-            "id": contractPriorId?.id,
-            "notApplicable": contractPriorId?.na,
-          },
-          "contractManager": {
-            "userID": selectContractManager?.id,
-            "name": {
-              "firstName": selectContractManager?.name?.firstName,
-              "lastName": selectContractManager?.name?.lastName
-            },
-            "email": {
-              "officialEmail": selectContractManager?.email?.officialEmail
-            }
-          },
-          "contractFiles": contractFiles,
-          "site": {
-            "sites": sites
-          },
-          "contractTerm": {
-            "startDate": contractTermPeriodFrom === null ? null : format(contractTermPeriodFrom, 'yyyy-MM-dd').toString(),
-            "endDate": contractTermPeriodTo === null ? null : format(contractTermPeriodTo, 'yyyy-MM-dd').toString(),
-            "effectiveDate": contractEffectiveDate === null ? null : format(contractEffectiveDate, 'yyyy-MM-dd').toString(),
-          },
-          "compensationPolicy": compensationPolicy,
-          ...(selectedContractContinuationPolicy !== '' && {
-            "continuationPolicy": {
-              "contractPolicyType": selectedContractContinuationPolicy,
-              "autoRenewalPeriod": {
-                ...(parseInt(autoRenewal.renewalTerm) && {
-                  "autoRenewalTerm": {
-                    "term": selectedContractContinuationPolicy === 'AUTORENEWAL' ? parseInt(autoRenewal.renewalTerm) : 0,
-                  }
-                }),
-                ...(parseInt(autoRenewal.allowableRenewalTerm) && {
-                  "allowableAutoRenewalTerm": {
-                    "term": selectedContractContinuationPolicy === 'AUTORENEWAL' ? parseInt(autoRenewal.allowableRenewalTerm) : 0,
-                  }
-                }),
-                ...(autoRenewal.calendar !== '' &&
-                {
-                  "autoRenewalCalender": selectedContractContinuationPolicy === 'AUTORENEWAL' ? autoRenewal.calendar : 'WEEKS'
-                })
-              },
-              "reminderList": {
-                "renewalReminderList": renewalReminder
-              }
-            }
-          }),
-          "timeCommitment": {
-            "value": parseInt(contractedTimeCommitment?.value),
-            "frequency": contractedTimeCommitment?.frequency,
-          },
-          "contractIdMissing": contractId?.missing,
-          "fullyExecutedContract": fullyExecutedContract,
-          "siteSpecificContract": siteSpecific,
-          "departmentSpecificContract": departmentSpecific,
-        },
-        "newContract": selectedContractType === 'New Contract' ? true : false
-      }
-
-      const formData = new FormData();
-      let file = fullyExecutedContractData?.map(data => data.file);
-      formData.append('contractDetail', new Blob([JSON.stringify(data)], {
-        type: "application/json"
-      }));
-      file?.filter(data => data !== null)?.map(data => {
-        formData.append('contractFiles', data);
-      })
-      if (method === 'POST' && contractIdFromActive === '') {
-        await POST('contract-managment-service/contracts/contractDetail', formData)
-          .then(response => {
-            getContractId(response?.data);
-            getContractDetailFirstTime(response?.data);
-            SuccessToaster('Contract Draft Saved Successfully');
-          }).catch(error => {
-            ErrorToaster('Unexpected Error Creating Contract');
-          })
-      } else {
-        await PUT(`contract-managment-service/contracts/${contractIdFromActive}/contractDetail`, formData)
-          .then(response => {
-            getContractDetail();
-            SuccessToaster('Contract Updated Successfully');
-          }).catch(error => {
-            ErrorToaster('Unexpected Error Updating Contract');
-          })
-      }
+    // let conflictedData = checkSiteAndDepartment(contracts, sites, contractIdFromActive);
+    // if (conflictedData?.length !== 0) {
+    //   setConflict({ isPresent: true, conflict: conflictedData });
+    // }
+    // if (conflictedData?.length === 0) {
+    // setContinueLoading(true);
+    if (contractName === '') {
+      ErrorToaster('Enter Contract Name to proceed');
       setContinueLoading(false);
-      if (buttonType === 'Continue') {
-        getViewPage2(true);
-        getViewPage1(false);
-        getCurrentPage('Contracted Services Provider(s)')
-      } else {
-        getShowAlert(true);
-      }
-      if (isSiteDeptUpdated) {
-        let modifiedContractUser = contractUsers;
-        modifiedContractUser?.map(data => {
-          data?.contracts?.map(contract => {
-            if (contract?.id === contractIdFromActive) {
-              contract.sites = { sites: sites };
-            }
-          })
-          data.sites = { sites: sites };
-        })
-        console.log('modifiedContractUser', modifiedContractUser);
-        await PUT('user-management-service/user/bulk', JSON.stringify(modifiedContractUser))
-          .then(response => {
-            SuccessToaster('User Updated Successfully');
-          })
-          .catch(error => {
-            ErrorToaster('Unexpected Error');
-          });
-      }
-      getTabDataStatus();
+      return;
     }
+    if (compensationPolicy === '') {
+      ErrorToaster('Select a Compensation Policy to proceed');
+      setContinueLoading(false);
+      return;
+    }
+    if (departmentSpecific && sites?.some(data => data?.departmentList?.departments?.length === 0)) {
+      ErrorToaster('Select Departments for all the selected Sites');
+      setContinueLoading(false);
+      return;
+    }
+    if (selectContractManager === null || selectContractManager === undefined) {
+      ErrorToaster('Select Contract Manager');
+      setContinueLoading(false);
+      return;
+    }
+
+    let contractFiles = [];
+    fullyExecutedContract && fullyExecutedContractData?.filter(data => data?.file !== null)?.map(data => {
+      contractFiles?.push({
+        fileName: data.fileName,
+        documentType: data.type,
+        documentDescription: data.desc,
+        documentName: data.name,
+      })
+    })
+
+
+    let data = {
+      ...(createdContractId !== '' && method !== 'POST' && { 'id': createdContractId }),
+      "contractName": {
+        "contractName": contractName
+      },
+      "contractType": contractType,
+      "contractStatus": "DRAFT",
+      "contractDetail": {
+        "contractId": {
+          "id": contractId?.id,
+        },
+        "priorContract": {
+          "id": contractPriorId?.id,
+          "notApplicable": contractPriorId?.na,
+        },
+        "contractManager": {
+          "userID": selectContractManager?.id,
+          "name": {
+            "firstName": selectContractManager?.name?.firstName,
+            "lastName": selectContractManager?.name?.lastName
+          },
+          "email": {
+            "officialEmail": selectContractManager?.email?.officialEmail
+          }
+        },
+        "contractFiles": contractFiles,
+        "site": {
+          "sites": sites
+        },
+        "contractTerm": {
+          "startDate": contractTermPeriodFrom === null ? null : format(contractTermPeriodFrom, 'yyyy-MM-dd').toString(),
+          "endDate": contractTermPeriodTo === null ? null : format(contractTermPeriodTo, 'yyyy-MM-dd').toString(),
+          "effectiveDate": contractEffectiveDate === null ? null : format(contractEffectiveDate, 'yyyy-MM-dd').toString(),
+        },
+        "compensationPolicy": compensationPolicy,
+        ...(selectedContractContinuationPolicy !== '' && {
+          "continuationPolicy": {
+            "contractPolicyType": selectedContractContinuationPolicy,
+            "autoRenewalPeriod": {
+              ...(parseInt(autoRenewal.renewalTerm) && {
+                "autoRenewalTerm": {
+                  "term": selectedContractContinuationPolicy === 'AUTORENEWAL' ? parseInt(autoRenewal.renewalTerm) : 0,
+                }
+              }),
+              ...(parseInt(autoRenewal.allowableRenewalTerm) && {
+                "allowableAutoRenewalTerm": {
+                  "term": selectedContractContinuationPolicy === 'AUTORENEWAL' ? parseInt(autoRenewal.allowableRenewalTerm) : 0,
+                }
+              }),
+              ...(autoRenewal.calendar !== '' &&
+              {
+                "autoRenewalCalender": selectedContractContinuationPolicy === 'AUTORENEWAL' ? autoRenewal.calendar : 'WEEKS'
+              })
+            },
+            "reminderList": {
+              "renewalReminderList": renewalReminder
+            }
+          }
+        }),
+        "timeCommitment": {
+          "value": parseInt(contractedTimeCommitment?.value),
+          "frequency": contractedTimeCommitment?.frequency,
+        },
+        "contractIdMissing": contractId?.missing,
+        "fullyExecutedContract": fullyExecutedContract,
+        "siteSpecificContract": siteSpecific,
+        "departmentSpecificContract": departmentSpecific,
+      },
+      "newContract": selectedContractType === 'New Contract' ? true : false
+    }
+
+    const formData = new FormData();
+    let file = fullyExecutedContractData?.map(data => data.file);
+    formData.append('contractDetail', new Blob([JSON.stringify(data)], {
+      type: "application/json"
+    }));
+    file?.filter(data => data !== null)?.map(data => {
+      formData.append('contractFiles', data);
+    })
+    if (method === 'POST' && contractIdFromActive === '') {
+      await POST('contract-managment-service/contracts/contractDetail', formData)
+        .then(response => {
+          getContractId(response?.data);
+          getContractDetailFirstTime(response?.data);
+          SuccessToaster('Contract Draft Saved Successfully');
+        }).catch(error => {
+          ErrorToaster('Unexpected Error Creating Contract');
+        })
+    } else {
+      await PUT(`contract-managment-service/contracts/${contractIdFromActive}/contractDetail`, formData)
+        .then(response => {
+          getContractDetail();
+          SuccessToaster('Contract Updated Successfully');
+        }).catch(error => {
+          ErrorToaster('Unexpected Error Updating Contract');
+        })
+    }
+    setContinueLoading(false);
+    if (buttonType === 'Continue') {
+      getViewPage2(true);
+      getViewPage1(false);
+      getCurrentPage('Contracted Services Provider(s)')
+    } else {
+      getShowAlert(true);
+    }
+    if (isSiteDeptUpdated) {
+      let modifiedContractUser = contractUsers;
+      modifiedContractUser?.map(data => {
+        data?.contracts?.map(contract => {
+          if (contract?.id === contractIdFromActive) {
+            contract.sites = { sites: sites };
+          }
+        })
+        data.sites = { sites: sites };
+      })
+      console.log('modifiedContractUser', modifiedContractUser);
+      await PUT('user-management-service/user/bulk', JSON.stringify(modifiedContractUser))
+        .then(response => {
+          SuccessToaster('User Updated Successfully');
+        })
+        .catch(error => {
+          ErrorToaster('Unexpected Error');
+        });
+    }
+    getTabDataStatus();
+    // }
   }
 
   const onSelect = (selectedItem) => {
