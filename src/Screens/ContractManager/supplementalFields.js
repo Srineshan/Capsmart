@@ -1,101 +1,143 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import AddIcon from '@mui/icons-material/Add';
-import InputAdornment from '@mui/material/InputAdornment';
-import DatalistInput, { useComboboxControls } from 'react-datalist-input';
-import { CLINIC, SURGERY, ONCALL, PROCEDUREREADING } from '../../Constants';
-import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
+import React, { useState, useEffect, useMemo } from "react";
+import AddIcon from "@mui/icons-material/Add";
+import InputAdornment from "@mui/material/InputAdornment";
+import DatalistInput, { useComboboxControls } from "react-datalist-input";
+import { CLINIC, SURGERY, ONCALL, PROCEDUREREADING } from "../../Constants";
+import ServiceDays from "../../Components/ReusableSmallComponents/serviceDays";
 import { TimePicker } from "@blueprintjs/datetime";
-import FormControl from '@mui/material/FormControl';
-import { GetDateFromHours } from './../../utils/formatting';
-import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
-import CommonTextField from '../../Components/CommonFields/CommonTextField';
-import CommonLabel from '../../Components/CommonFields/CommonLabel';
-import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
-import style from './index.module.scss';
-import MultiSelectDisplay from '../../Components/ReusableSmallComponents/multiSelectDisplay';
-import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
-import CommonMultiSelectField from '../../Components/CommonFields/CommonMultiSelectField';
+import FormControl from "@mui/material/FormControl";
+import { GetDateFromHours } from "./../../utils/formatting";
+import CommonSwitch from "../../Components/CommonFields/CommonSwitch";
+import CommonTextField from "../../Components/CommonFields/CommonTextField";
+import CommonLabel from "../../Components/CommonFields/CommonLabel";
+import CommonCheckBox from "../../Components/CommonFields/CommonCheckBox";
+import style from "./index.module.scss";
+import MultiSelectDisplay from "../../Components/ReusableSmallComponents/multiSelectDisplay";
+import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
+import CommonMultiSelectField from "../../Components/CommonFields/CommonMultiSelectField";
+import { valueCheck } from "../../utils/valueCheck";
+import { format } from "date-fns";
 
-
-const SupplementalFields = ({ getMetaData, services, serviceSelected, editService, isReset, getIsReset }) => {
+const SupplementalFields = ({
+    getMetaData,
+    services,
+    serviceSelected,
+    editService,
+    isReset,
+    getIsReset,
+}) => {
     const [availableActivities, setAvailableActivities] = useState([]);
-    const { setValue, value } = useComboboxControls({ initialValue: '' });
-    const [newServiceName, setNewServiceName] = useState('');
+    const { setValue, value } = useComboboxControls({ initialValue: "" });
+    const [newServiceName, setNewServiceName] = useState("");
 
-    console.log('selected Service', serviceSelected);
+    console.log("selected Service", serviceSelected);
 
     let specificDedicatedHoursList = [];
-    services?.filter(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => {
-        let activityName = data?.activityType?.activityType;
-        let activities = data?.activities?.map(data => data?.activity);
-        let result = `${activityName} (${activities?.map(data => data)?.join(', ')})`
-        specificDedicatedHoursList.push(result);
-    });
-
-
+    services
+        ?.filter((data) =>
+            [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(
+                data?.activityType?.activityType
+            )
+        )
+        ?.map((data) => {
+            let activityName = data?.activityType?.activityType;
+            let activities = data?.activities?.map((data) => data?.activity);
+            let result = `${activityName} (${activities
+                ?.map((data) => data)
+                ?.join(", ")})`;
+            specificDedicatedHoursList.push(result);
+        });
 
     let supplementServiceType = [];
-    services?.filter(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => {
-        let activityName = data?.activityType?.activityType;
-        let result = activityName
-        if (!supplementServiceType?.map(data => data)?.includes(result)) {
-            supplementServiceType.push(result);
-        }
-    });
+    services
+        ?.filter((data) =>
+            [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(
+                data?.activityType?.activityType
+            )
+        )
+        ?.map((data) => {
+            let activityName = data?.activityType?.activityType;
+            let result = activityName;
+            if (!supplementServiceType?.map((data) => data)?.includes(result)) {
+                supplementServiceType.push(result);
+            }
+        });
 
     const getAvailableActivities = () => {
         let temp = [];
-        metadata?.supplementalActivityType?.map(supplementalActivityType => {
-            console.log('supplemental Activity Type', supplementalActivityType);
-            let activityType = supplementalActivityType !== '' ? `[${supplementalActivityType}]` : [CLINIC, SURGERY, ONCALL, PROCEDUREREADING];
+        metadata?.supplementalActivityType?.map((supplementalActivityType) => {
+            console.log("supplemental Activity Type", supplementalActivityType);
+            let activityType =
+                supplementalActivityType !== ""
+                    ? `[${supplementalActivityType}]`
+                    : [CLINIC, SURGERY, ONCALL, PROCEDUREREADING];
 
-            services?.filter(data => activityType?.includes(data?.activityType?.activityType))?.map(data => {
-                let activityName = data?.activityType?.activityType;
-                let activities = data?.activities?.map(data => data?.activity);
-                console.log('selected activity type', data?.activities?.activityType, activityType);
-                activities?.map(data => {
-                    temp.push(`${activityName} - ${data}`);
-                })
-            });
-        })
+            services
+                ?.filter((data) =>
+                    activityType?.includes(data?.activityType?.activityType)
+                )
+                ?.map((data) => {
+                    let activityName = data?.activityType?.activityType;
+                    let activities = data?.activities?.map((data) => data?.activity);
+                    console.log(
+                        "selected activity type",
+                        data?.activities?.activityType,
+                        activityType
+                    );
+                    activities?.map((data) => {
+                        temp.push(`${activityName} - ${data}`);
+                    });
+                });
+        });
 
         setAvailableActivities(temp);
-    }
+    };
 
-    console.log('available activities', availableActivities);
+    console.log("available activities", availableActivities);
 
     const getSelectedActivity = () => {
         let activityName = metadata?.dedicatedHoursActivityType;
         let activities = metadata?.dedicatedHoursPerformingActivity;
-        let result = `${activityName} (${activities})`
-        return result
-    }
+        let result = `${activityName} (${activities})`;
+        return result;
+    };
 
     const selectedHours = (index) => {
         // let temp = services?.findIndexOf(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType));
         // let temp;
-        services?.filter(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => {
-            let activityName = data?.activityType?.activityType;
-            let activities = data?.activities?.map(data => data?.activity);
-            if (`${activityName} (${activities?.map(data => data)?.join(', ')})` === index) {
-                let dedicatedHoursActivityType = data?.activityType?.activityType;
-                let dedicatedHoursPerformingActivity = data?.activities?.map(data => data?.activity)?.join(', ');
-                setMetadata({
-                    ...metadata,
-                    dedicatedHoursActivityType: dedicatedHoursActivityType,
-                    dedicatedHoursPerformingActivity: dedicatedHoursPerformingActivity,
-                    supplementServiceName: [],
-                    billableService: data?.billableService,
-                    rateType: data?.rateType,
-                    sessionAmount: data?.payableAmount?.value,
-                    sessionDuration: data?.duration?.hours,
-                    totalSession: data?.totalSessions?.value,
-                    totalSessionFrequency: data?.totalSessions?.frequency,
-                    hourlyRate: data?.hourlyRate?.value,
-                });
-            }
-        });
-    }
+        services
+            ?.filter((data) =>
+                [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(
+                    data?.activityType?.activityType
+                )
+            )
+            ?.map((data) => {
+                let activityName = data?.activityType?.activityType;
+                let activities = data?.activities?.map((data) => data?.activity);
+                if (
+                    `${activityName} (${activities?.map((data) => data)?.join(", ")})` ===
+                    index
+                ) {
+                    let dedicatedHoursActivityType = data?.activityType?.activityType;
+                    let dedicatedHoursPerformingActivity = data?.activities
+                        ?.map((data) => data?.activity)
+                        ?.join(", ");
+                    setMetadata({
+                        ...metadata,
+                        dedicatedHoursActivityType: dedicatedHoursActivityType,
+                        dedicatedHoursPerformingActivity: dedicatedHoursPerformingActivity,
+                        supplementServiceName: [],
+                        billableService: data?.billableService,
+                        rateType: data?.rateType,
+                        sessionAmount: data?.payableAmount?.value,
+                        sessionDuration: data?.duration?.hours,
+                        totalSession: data?.totalSessions?.value,
+                        totalSessionFrequency: data?.totalSessions?.frequency,
+                        hourlyRate: data?.hourlyRate?.value,
+                    });
+                }
+            });
+    };
 
     const [metadata, setMetadata] = useState({
         dedicatedHoursSpecified: false,
@@ -161,49 +203,67 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
             weekdaysCount: '0',
             weekendsCount: '0'
         })
+
     }
 
     useEffect(() => {
         if (isReset) {
-            console.log('inside reset function')
+            console.log("inside reset function");
             resetMetadata();
             getIsReset(false);
         }
-
-    }, [isReset])
+    }, [isReset]);
 
     useEffect(() => {
-        console.log('supplementServiceName', metadata?.supplementalActivityType, metadata?.supplementServiceName);
-        console.log('services', services);
+        console.log(
+            "supplementServiceName",
+            metadata?.supplementalActivityType,
+            metadata?.supplementServiceName
+        );
+        console.log("services", services);
         // if (!editService) {
         let temp = [];
-        metadata?.supplementalActivityType?.map(supplementalActivityType => {
-            services?.filter(service => service?.activityType?.activityType === supplementalActivityType)?.map(service => {
-                console.log('inside service', metadata?.supplementServiceName);
-                metadata?.supplementServiceName?.filter(serviceName => service?.activities?.map(activity => activity?.activity)?.includes(serviceName?.split(' - ')?.[1]))?.map(serviceName => {
-                    console.log('inside servicename')
-                    temp.push({
-                        "activityType": {
-                            "activityType": supplementalActivityType
-                        },
-                        "performingActivity": {
-                            "activity": service?.performingActivity?.activity
-                        },
-                        "activity": {
-                            "activity": serviceName?.split(' - ')?.[1]
-                        }
-                    })
-                })
-            })
-        })
-
-        setMetadata({ ...metadata, 'baseServices': temp });
+        metadata?.supplementalActivityType?.map((supplementalActivityType) => {
+            services
+                ?.filter(
+                    (service) =>
+                        service?.activityType?.activityType === supplementalActivityType
+                )
+                ?.map((service) => {
+                    console.log("inside service", metadata?.supplementServiceName);
+                    metadata?.supplementServiceName
+                        ?.filter((serviceName) =>
+                            service?.activities
+                                ?.map((activity) => activity?.activity)
+                                ?.includes(serviceName?.split(" - ")?.[1])
+                        )
+                        ?.map((serviceName) => {
+                            console.log("inside servicename");
+                            temp.push({
+                                activityType: {
+                                    activityType: supplementalActivityType,
+                                },
+                                performingActivity: {
+                                    activity: service?.performingActivity?.activity,
+                                },
+                                activity: {
+                                    activity: serviceName?.split(" - ")?.[1],
+                                },
+                            });
+                        });
+                });
+        });
+        setMetadata({ ...metadata, baseServices: temp });
         // }
-    }, [metadata?.supplementalActivityType, metadata?.supplementServiceName?.length, services])
+    }, [
+        metadata?.supplementalActivityType,
+        metadata?.supplementServiceName?.length,
+        services,
+    ]);
 
     useEffect(() => {
         getAvailableActivities();
-    }, [metadata?.supplementalActivityType?.length])
+    }, [metadata?.supplementalActivityType?.length]);
 
     useEffect(() => {
         if (editService) {
@@ -211,57 +271,86 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
         }
     }, [serviceSelected]);
 
-    console.log('Supplemental Service Name', metadata?.supplementalActivityType);
+
+    console.log("Supplemental Service Name", metadata?.supplementalActivityType);
 
     const setSelectedValues = () => {
         setMetadata({
             ...metadata,
             refId: serviceSelected?.refId,
             dedicatedHoursSpecified: serviceSelected?.dedicatedHoursSpecified,
-            dedicatedHoursActivityType: serviceSelected?.hoursBorrowed?.activityType?.activityType,
-            dedicatedHoursPerformingActivity: serviceSelected?.hoursBorrowed?.performingActivity?.activity,
-            supplementServiceName: serviceSelected?.activities?.map(data => data?.activity),
+            dedicatedHoursActivityType:
+                serviceSelected?.hoursBorrowed?.activityType?.activityType,
+            dedicatedHoursPerformingActivity:
+                serviceSelected?.hoursBorrowed?.performingActivity?.activity,
+            supplementServiceName: serviceSelected?.activities?.map(
+                (data) => data?.activity
+            ),
             billableService: serviceSelected?.billableService,
             rateType: serviceSelected?.rateType,
             sessionAmount: serviceSelected?.payableAmount?.value,
-            sessionDuration: serviceSelected?.duration?.hours || '0',
+            sessionDuration: serviceSelected?.duration?.hours || "0",
             totalSession: serviceSelected?.totalSessions?.value,
             sessionsAsNeeded: serviceSelected?.sessionsAsNeeded,
             totalSessionFrequency: serviceSelected?.totalSessions?.frequency,
-            workingTimeFrom: GetDateFromHours(serviceSelected?.workingPeriod?.from?.toString() || ''),
-            workingTimeTo: GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
+            workingTimeFrom: GetDateFromHours(
+                serviceSelected?.workingPeriod?.from?.toString() || ""
+            ),
+            workingTimeTo: GetDateFromHours(
+                serviceSelected?.workingPeriod?.to?.toString() || ""
+            ),
             serviceDays: serviceSelected?.serviceDays,
             baseServiceAvailable: serviceSelected?.baseServiceAvailable,
             baseServices: serviceSelected?.baseServices,
-            supplementalActivityType: serviceSelected?.baseServices?.map(data => data?.activityType?.activityType)?.[0],
+            supplementalActivityType: serviceSelected?.baseServices?.map(
+                (data) => data?.activityType?.activityType
+            )?.[0],
         });
-    }
+    };
 
     const limit5 = 5;
 
     useEffect(() => {
-        getMetaData(metadata)
-    }, [metadata])
+        getMetaData(metadata);
+    }, [metadata]);
 
     const handleValueChange = (name, value) => {
-        if (name === 'dedicatedHoursSpecified') {
+        if (name === "dedicatedHoursSpecified") {
             if (value) {
-                setMetadata({ ...metadata, sessionDuration: '1', totalSession: '0', sessionAmount: '', totalSessionFrequency: 'NA', dedicatedHoursActivityType: '', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
+                setMetadata({
+                    ...metadata,
+                    sessionDuration: "1",
+                    totalSession: "0",
+                    sessionAmount: "",
+                    totalSessionFrequency: "NA",
+                    dedicatedHoursActivityType: "",
+                    dedicatedHoursPerformingActivity: "",
+                    dedicatedHoursSpecified: value,
+                });
             } else {
-                setMetadata({ ...metadata, sessionDuration: '0', dedicatedHoursActivityType: '', sessionAmount: '', totalSession: '0', totalSessionFrequency: 'NA', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
+                setMetadata({
+                    ...metadata,
+                    sessionDuration: "0",
+                    dedicatedHoursActivityType: "",
+                    sessionAmount: "",
+                    totalSession: "0",
+                    totalSessionFrequency: "NA",
+                    dedicatedHoursPerformingActivity: "",
+                    dedicatedHoursSpecified: value,
+                });
             }
         }
         //  else if (name === 'dedicatedHoursActivityType') {
         //     setMetadata({ ...metadata, supplementServiceName: [], [name]: value });
-        // } 
+        // }
         else {
             setMetadata({ ...metadata, [name]: value });
         }
-    }
+    };
 
     const getServiceDaysMetadata = (serviceDays) => {
-        setMetadata({ ...metadata, serviceDays: serviceDays })
-    }
+        setMetadata({ ...metadata, serviceDays: serviceDays });
+    };
 
     const addSupplementService = (value) => {
         let temp = metadata?.supplementServiceName;
@@ -269,42 +358,75 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
             temp?.push(value);
             setMetadata({ ...metadata, supplementServiceName: temp });
         }
-        setValue('');
-    }
+        setValue("");
+    };
 
     const removeSupplementServiceName = (index) => {
         let temp = metadata?.supplementServiceName;
-        setMetadata({ ...metadata, supplementServiceName: temp?.filter((data, indexValue) => index !== indexValue)?.map(data => data) });
-    }
+        setMetadata({
+            ...metadata,
+            supplementServiceName: temp
+                ?.filter((data, indexValue) => index !== indexValue)
+                ?.map((data) => data),
+        });
+    };
 
     const removeSupplementActivityType = (index) => {
         let temp = metadata?.supplementalActivityType;
-        let activityName = metadata?.supplementalActivityType?.filter((activityName, indexValue) => index === indexValue)?.map(data => data)[0];
-        console.log('supplemental service name', metadata?.supplementServiceName?.map(data => data?.split(' - ')?.[0]));
-        let tempActivities = metadata?.supplementServiceName?.filter(activity => activity?.split(' - ')?.[0] !== activityName)?.map(data => data);
-        let baseServiceTemp = metadata?.baseServices?.filter(service => service?.activityType?.activityType !== activityName)?.map(data => data);
-        setMetadata({ ...metadata, supplementalActivityType: temp?.filter((data, indexValue) => index !== indexValue)?.map(data => data), supplementServiceName: tempActivities, baseServices: baseServiceTemp });
-    }
+        let activityName = metadata?.supplementalActivityType
+            ?.filter((activityName, indexValue) => index === indexValue)
+            ?.map((data) => data)[0];
+        console.log(
+            "supplemental service name",
+            metadata?.supplementServiceName?.map((data) => data?.split(" - ")?.[0])
+        );
+        let tempActivities = metadata?.supplementServiceName
+            ?.filter((activity) => activity?.split(" - ")?.[0] !== activityName)
+            ?.map((data) => data);
+        let baseServiceTemp = metadata?.baseServices
+            ?.filter(
+                (service) => service?.activityType?.activityType !== activityName
+            )
+            ?.map((data) => data);
+        setMetadata({
+            ...metadata,
+            supplementalActivityType: temp
+                ?.filter((data, indexValue) => index !== indexValue)
+                ?.map((data) => data),
+            supplementServiceName: tempActivities,
+            baseServices: baseServiceTemp,
+        });
+    };
 
     const avilableActivityItems = useMemo(
         () =>
             availableActivities?.map((data) => ({
                 value: data,
             })),
-        [availableActivities],
+        [availableActivities]
     );
 
     const serviceNameToAdd = () => {
         let services = metadata.supplementServiceName;
         services.push(newServiceName);
         setMetadata({ ...metadata, supplementServiceName: services });
-        setValue('');
-    }
+        setValue("");
+    };
 
     const updateSupplementalActivity = (value) => {
         let temp = metadata?.supplementalActivityType;
         temp.push(value);
-        setMetadata({ ...metadata, 'supplementalActivityType': temp })
+        setMetadata({ ...metadata, supplementalActivityType: temp });
+    };
+
+    console.log("metadata", metadata);
+
+    const dataCheck = (value) => {
+        if (editService) {
+            return valueCheck(value);
+        } else {
+            return false;
+        }
     }
 
     console.log('metadata', metadata);
@@ -347,72 +469,136 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                     }
                 </div>
             </div> */}
-            {metadata?.baseServiceAvailable && (
-                <div>
-                    <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
-                        <CommonLabel value='Supplemental Service Type*' />
-                        <div>
-                            <div>
-                                <CommonSelectField className={`${style.fullWidth}`}
-                                    value={metadata?.supplementalActivityType}
-                                    onChange={(e) => updateSupplementalActivity(e.target.value)}
-                                    firstOptionLabel={'Select Supplemental Service Type'} firstOptionValue={''}
-                                    valueList={supplementServiceType?.filter(data => !metadata?.supplementalActivityType?.includes(data))?.map(data => data)}
-                                    labelList={supplementServiceType?.filter(data => !metadata?.supplementalActivityType?.includes(data))?.map(data => data)}
-                                    disabledList={supplementServiceType?.filter(data => !metadata?.supplementalActivityType?.includes(data))?.map(data => false)} />
-                            </div>
+            {
+                metadata?.baseServiceAvailable && (
 
-                            {
-                                metadata?.supplementalActivityType?.length !== 0 && metadata?.supplementalActivityType &&
-                                <MultiSelectDisplay values={metadata?.supplementalActivityType} removeItem={removeSupplementActivityType} />
-                            }
+                    <div>
+                        <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
+                            <CommonLabel
+                                value="Supplemental Service Type*"
+                                className={
+                                    dataCheck(metadata?.supplementalActivityType)
+                                        ? style.redLable
+                                        : ""
+                                }
+                            />
+                            <div>
+                                <div>
+                                    <CommonSelectField
+                                        className={`${style.fullWidth}`}
+                                        value={metadata?.supplementalActivityType}
+                                        onChange={(e) => updateSupplementalActivity(e.target.value)}
+                                        firstOptionLabel={"Select Supplemental Service Type"}
+                                        firstOptionValue={""}
+                                        valueList={supplementServiceType
+                                            ?.filter(
+                                                (data) =>
+                                                    !metadata?.supplementalActivityType?.includes(data)
+                                            )
+                                            ?.map((data) => data)}
+                                        labelList={supplementServiceType
+                                            ?.filter(
+                                                (data) =>
+                                                    !metadata?.supplementalActivityType?.includes(data)
+                                            )
+                                            ?.map((data) => data)}
+                                        disabledList={supplementServiceType
+                                            ?.filter(
+                                                (data) =>
+                                                    !metadata?.supplementalActivityType?.includes(data)
+                                            )
+                                            ?.map((data) => false)}
+                                    />
+                                </div>
+
+                                {metadata?.supplementalActivityType?.length !== 0 &&
+                                    metadata?.supplementalActivityType && (
+                                        <MultiSelectDisplay
+                                            values={metadata?.supplementalActivityType}
+                                            removeItem={removeSupplementActivityType}
+                                        />
+                                    )}
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )}
+
             <div>
                 <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
-                    <CommonLabel value='Supplement Services To Perform*' />
+                    <CommonLabel
+                        value="Supplement Services To Perform*"
+                        className={
+                            dataCheck(
+                                metadata?.supplementServiceName ||
+                                metadata?.supplementServiceName.length === 0
+                            )
+                                ? style.redLable
+                                : ""
+                        }
+                    />
                     <div>
                         <div className={style.addGrid}>
                             <DatalistInput
                                 value={value}
                                 setValue={setValue}
-                                items={avilableActivityItems?.filter(data => !metadata?.supplementServiceName?.includes(data?.value)) || []} onSelect={(item) => { addSupplementService(item.value); }} className={style.fullWidth}
+                                items={
+                                    avilableActivityItems?.filter(
+                                        (data) =>
+                                            !metadata?.supplementServiceName?.includes(data?.value)
+                                    ) || []
+                                }
+                                onSelect={(item) => {
+                                    addSupplementService(item.value);
+                                }}
+                                className={style.fullWidth}
                                 onChange={(e) => {
                                     setNewServiceName(e.target.value);
-                                    const caret = e.target.selectionStart
-                                    const element = e.target
+                                    const caret = e.target.selectionStart;
+                                    const element = e.target;
                                     window.requestAnimationFrame(() => {
-                                        element.selectionStart = caret
-                                        element.selectionEnd = caret
-                                    })
-                                }
-                                }
+                                        element.selectionStart = caret;
+                                        element.selectionEnd = caret;
+                                    });
+                                }}
                             />
-                            <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer} `}>
-                                <AddIcon sx={{ fontSize: 25, color: 'white' }}
-                                    onClick={value !== '' && serviceNameToAdd}
+                            <div
+                                className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer} `}
+                            >
+                                <AddIcon
+                                    sx={{ fontSize: 25, color: "white" }}
+                                    onClick={value !== "" && serviceNameToAdd}
                                 />
                             </div>
                         </div>
-                        {
-                            metadata?.supplementServiceName?.length !== 0 && metadata?.supplementServiceName &&
-                            <MultiSelectDisplay values={metadata?.supplementServiceName} removeItem={removeSupplementServiceName} />
-                        }
+                        {metadata?.supplementServiceName?.length !== 0 &&
+                            metadata?.supplementServiceName && (
+                                <MultiSelectDisplay
+                                    values={metadata?.supplementServiceName}
+                                    removeItem={removeSupplementServiceName}
+                                />
+                            )}
                     </div>
                 </div>
             </div>
             <>
-                {metadata?.dedicatedHoursSpecified &&
+                {metadata?.dedicatedHoursSpecified && (
                     <>
                         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                            <CommonLabel value='Billable Service*' />
+                            <CommonLabel value="Billable Service*" />
                             <div className={style.displayInRow}>
-                                <div className={`${style.threeFieldWidth}`} >
-                                    <CommonSwitch checked={metadata?.billableService} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft} `}
-                                        onChange={() => setMetadata({ ...metadata, billableService: !metadata?.billableService, sessionAmount: '0' })}
-                                        label={metadata?.billableService ? 'YES' : 'NO'} />
+                                <div className={`${style.threeFieldWidth}`}>
+                                    <CommonSwitch
+                                        checked={metadata?.billableService}
+                                        className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft} `}
+                                        onChange={() =>
+                                            setMetadata({
+                                                ...metadata,
+                                                billableService: !metadata?.billableService,
+                                                sessionAmount: "0",
+                                            })
+                                        }
+                                        label={metadata?.billableService ? "YES" : "NO"}
+                                    />
                                 </div>
                                 {
                                     // metadata?.billableService &&
@@ -430,7 +616,12 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                         </div>
 
                         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                            <CommonLabel value='Separate Service Hours Specified*' />
+                            <CommonLabel
+                                value="Separate Service Hours Specified*"
+                                className={
+                                    dataCheck(metadata?.totalSession) ? style.redLable : ""
+                                }
+                            />
                             <div className={style.grid3WithoutGap}>
                                 <div className={`${style.threeFieldWidth}`}>
                                     <CommonTextField
@@ -438,25 +629,48 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                                         maxLength="3"
                                         disabled={metadata?.sessionsAsNeeded}
                                         InputProps={{
-                                            endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
+                                            endAdornment: (
+                                                <InputAdornment position="end" sx={{ fontSize: 10 }}>
+                                                    Hours
+                                                </InputAdornment>
+                                            ),
                                         }}
-                                        onChange={(e) => e.target.value >= 0 && handleValueChange('totalSession', e.target.value)}
+                                        onChange={(e) =>
+                                            e.target.value >= 0 &&
+                                            handleValueChange("totalSession", e.target.value)
+                                        }
                                         value={metadata?.totalSession}
                                     />
                                 </div>
-                                <CommonSelectField className={`${style.threeFieldWidth} ${style.marginLeft20}`}
-                                    onChange={(e) => handleValueChange('totalSessionFrequency', e.target.value)}
-                                    value={metadata?.totalSessionFrequency || 'NA'}
-                                    firstOptionLabel={'Select Frequency'} firstOptionValue={''}
-                                    valueList={['WEEK', 'MONTH', 'YEAR']}
-                                    labelList={['Per Week', 'Per Month', 'Per Contract Year']}
+                                <CommonSelectField
+                                    className={`${style.threeFieldWidth} ${style.marginLeft20}`}
+                                    onChange={(e) =>
+                                        handleValueChange("totalSessionFrequency", e.target.value)
+                                    }
+                                    value={metadata?.totalSessionFrequency || "NA"}
+                                    firstOptionLabel={"Select Frequency"}
+                                    firstOptionValue={""}
+                                    valueList={["WEEK", "MONTH", "YEAR"]}
+                                    labelList={["Per Week", "Per Month", "Per Contract Year"]}
                                     disabledList={[false, false, false]}
-                                    disabledSelect={metadata?.sessionsAsNeeded} />
-                                <div className={`${style.threeFieldWidth} ${style.marginLeft20}`}>
-                                    <CommonCheckBox value="NA"
+                                    disabledSelect={metadata?.sessionsAsNeeded}
+                                />
+                                <div
+                                    className={`${style.threeFieldWidth} ${style.marginLeft20}`}
+                                >
+                                    <CommonCheckBox
+                                        value="NA"
                                         checked={metadata?.sessionsAsNeeded}
-                                        onChange={(e) => setMetadata({ ...metadata, sessionsAsNeeded: e.target.checked, totalSession: 0, totalSessionFrequency: 'NA' })}
-                                        label="As Needed" />
+                                        onChange={(e) =>
+                                            setMetadata({
+                                                ...metadata,
+                                                sessionsAsNeeded: e.target.checked,
+                                                totalSession: 0,
+                                                totalSessionFrequency: "NA",
+                                            })
+                                        }
+                                        label="As Needed"
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -479,61 +693,129 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                             // </div>
                         }
 
-                        {
-                            metadata?.billableService &&
+                        {metadata?.billableService && (
                             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                <CommonLabel value='Supplemental Service Payment Amount*' />
+                                <CommonLabel
+                                    value="Supplemental Service Payment Amount*"
+                                    className={
+                                        dataCheck(metadata?.sessionAmount) ? style.redLable : ""
+                                    }
+                                />
                                 <div className={`${style.displayInRow}`}>
                                     <div className={`${style.threeFieldWidth}`}>
                                         <CommonTextField
                                             type="tel"
                                             maxLength="5"
-                                            disabled={metadata?.totalSession === '' || metadata?.totalSession === '0' || metadata?.totalSession === undefined}
+                                            disabled={
+                                                metadata?.totalSession === "" ||
+                                                metadata?.totalSession === "0" ||
+                                                metadata?.totalSession === undefined
+                                            }
                                             InputProps={{
-                                                startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
+                                                startAdornment: (
+                                                    <InputAdornment
+                                                        position="start"
+                                                        sx={{ fontSize: 10 }}
+                                                    >
+                                                        $
+                                                    </InputAdornment>
+                                                ),
                                             }}
                                             value={metadata?.sessionAmount}
-                                            onChange={(e) => e.target.value >= 0 && handleValueChange('sessionAmount', e.target.value)}
+                                            onChange={(e) =>
+                                                e.target.value >= 0 &&
+                                                handleValueChange("sessionAmount", e.target.value)
+                                            }
                                         />
                                     </div>
 
                                     <div className={style.verticalAlignCenter}>
-                                        {metadata?.sessionAmount !== '' && metadata?.sessionAmount !== '0' && <CommonLabel className={`${style.marginLeft20}`} value={metadata?.sessionsAsNeeded ? `${parseInt(metadata?.sessionAmount)?.toFixed(2)} per Hour (Pro Rata)` : `${(metadata?.sessionAmount / metadata?.totalSession || 0)?.toFixed(2)} per Hour (Pro Rata)`} />}
+                                        {metadata?.sessionAmount !== "" &&
+                                            metadata?.sessionAmount !== "0" && (
+                                                <CommonLabel
+                                                    className={`${style.marginLeft20}`}
+                                                    value={
+                                                        metadata?.sessionsAsNeeded
+                                                            ? `${parseInt(metadata?.sessionAmount)?.toFixed(
+                                                                2
+                                                            )} per Hour (Pro Rata)`
+                                                            : `${(
+                                                                metadata?.sessionAmount /
+                                                                metadata?.totalSession || 0
+                                                            )?.toFixed(2)} per Hour (Pro Rata)`
+                                                    }
+                                                />
+                                            )}
                                     </div>
                                 </div>
                             </div>
-                        }
+                        )}
                     </>
-                }
+                )}
 
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                    <CommonLabel value='Allowable Working Day Hours For Service*' />
+                    <CommonLabel
+                        value="Allowable Working Day Hours For Service*"
+                        className={
+                            format(metadata?.workingTimeTo || new Date(), "H") === "0" &&
+                                format(metadata?.workingTimeFrom || new Date(), "H") === "0"
+                                ? style.redLable
+                                : ""
+                        }
+                    />
                     <div className={style.displayInRow}>
                         <TimePicker
                             useAmPm={false}
                             onChange={(e) => {
-                                handleValueChange('workingTimeFrom', e)
+                                handleValueChange("workingTimeFrom", e);
                             }}
-                            value={metadata?.workingTimeFrom === null ? null : new Date(metadata?.workingTimeFrom)}
+                            value={
+                                metadata?.workingTimeFrom === null
+                                    ? null
+                                    : new Date(metadata?.workingTimeFrom)
+                            }
                         />
-                        <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
+                        <p
+                            className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}
+                        >
+                            To
+                        </p>
                         <TimePicker
                             useAmPm={false}
-                            onChange={(e) => handleValueChange('workingTimeTo', e)}
-                            value={metadata?.workingTimeTo === null ? null : new Date(metadata?.workingTimeTo)}
+                            onChange={(e) => handleValueChange("workingTimeTo", e)}
+                            value={
+                                metadata?.workingTimeTo === null
+                                    ? null
+                                    : new Date(metadata?.workingTimeTo)
+                            }
                         // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.totalSession * 60 * 60 * 1000))}
                         />
                     </div>
                 </div>
 
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                    <CommonLabel value='Applicable Supplemental Workdays*' />
-                    <ServiceDays setMetaData={getServiceDaysMetadata} selectedService={serviceSelected} isReset={isReset} setIsReset={getIsReset} />
+                    <CommonLabel
+                        value="Applicable Supplemental Workdays*"
+                        className={
+                            metadata?.serviceDays === null ||
+                                (metadata?.serviceDays !== undefined &&
+                                    Object?.values(metadata?.serviceDays)?.filter(
+                                        (data) => data === true
+                                    )?.length === 0)
+                                ? style.redLable
+                                : ""
+                        }
+                    />
+                    <ServiceDays
+                        setMetaData={getServiceDaysMetadata}
+                        selectedService={serviceSelected}
+                        isReset={isReset}
+                        setIsReset={getIsReset}
+                    />
                 </div>
             </>
-
-        </div >
-    )
-}
+        </div>
+    );
+};
 
 export default SupplementalFields;
