@@ -199,9 +199,9 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment, is
                         onChange={(e) => handleValueChange('frequency', e.target.value)}
                         value={metadata?.frequency}
                         firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
-                        valueList={['NA', 'WEEK', 'MONTH']}
-                        labelList={['As Needed', 'Per Week', 'Per Month']}
-                        disabledList={[false, false]} />
+                        valueList={['NA', 'WEEK', 'MONTH', 'YEAR']}
+                        labelList={['As Needed', 'Per Week', 'Per Month', 'Per Year']}
+                        disabledList={[false, false, false]} />
                 </div>
             </div>
 
@@ -223,7 +223,8 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment, is
                         (
                             <>
                                 <CommonInputField value={metadata?.additionalScheduleValue}
-                                    onChange={(e) => handleValueChange('additionalScheduleValue', e.target.value)}
+                                    onChange={(e) => handleValueChange('additionalScheduleValue', e.target.value.slice(0, 4))}
+                                    type="number"
                                     className={` ${style.fullWidth} ${style.marginLeft20}`} />
                                 <CommonSelectField className={`${style.fullWidth} ${style.marginLeft20}`}
                                     value={metadata?.additionalScheduleFrequency || 'NA'}
@@ -306,7 +307,7 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 let value = e.slice(0, 6);
                                 handleValueChange('totalSession', value);
                             }} />
-                        <div className={`${style.textElement} ${parseInt(metadata?.totalSession) === specified ? style.greenBase : style.redBase}`}>{specified} Minimum Specified</div>
+                        <div className={`${style.textElement} ${parseFloat(metadata?.totalSession) === parseFloat(specified) ? style.greenBase : style.redBase}`}>{specified} Minimum Specified</div>
                     </div>
                     <div className={style.verticalAlignCenter}>
                         <CommonLabel value={`For ${timeCommitment?.value} ${timeCommitment?.frequency === 'WEEK' ? 'Weeks' : 'Months'} Per Contract Year`} />

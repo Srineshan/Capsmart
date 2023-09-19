@@ -323,7 +323,7 @@ const Navbar = () => {
           }
           <div>
             <div
-              className={`${style.menuStyle} ${window.location.pathname.includes("/reports") &&
+              className={`${style.menuStyle} ${(window.location.pathname.includes("/reports") || window.location.pathname.includes("/reportTypeOverview")) &&
                 style.activeMenuColor
                 }`}
               ref={popoverAnchor}
@@ -332,7 +332,7 @@ const Navbar = () => {
               aria-owns={open ? "mouse-over-popover" : undefined}
               aria-haspopup="true"
             >
-              <p>REPORT</p>
+              <p>REPORTS</p>
               <Popover
                 id={"mouse-over-popover"}
                 open={open}

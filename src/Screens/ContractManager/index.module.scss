@@ -115,6 +115,10 @@ body::-webkit-scrollbar {
     height: 100%;
 }
 
+.redLabel {
+    color: red;
+}
+
 .rightAlign {
     text-align: right;
 }
@@ -1595,6 +1599,12 @@ input[type="file"] {
     height: 100%;
 }
 
+.pageAlignCenter {
+    // display: flex;
+    text-align: center;
+    height: 100%;
+}
+
 .purpleTitle {
     font: normal 15px/13px Montserrat;
     color: #7165E3;
@@ -2230,4 +2240,6 @@ input[type=number] {
     letter-spacing: 1.44px;
     color: #707070;
     opacity: 0.71;
+    word-break: break-word;
+    width: auto;
 }

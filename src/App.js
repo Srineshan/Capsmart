@@ -208,7 +208,7 @@ const App = ({ props }) => {
   axios.interceptors.response.use((response) => {
     return response;
   }, (error) => {
-    logError(error);
+    // logError(error);
     console.log('response error', error);
     return error;
   })
@@ -625,6 +625,10 @@ const App = ({ props }) => {
               <Route path="/reportType" element={<ReportType />} />
               <Route
                 path="/reportTypeOverview/:reportType"
+                element={<ReportTypeOverview />}
+              />
+              <Route
+                path="/myReport/:reportType"
                 element={<ReportTypeOverview />}
               />
             </Routes>

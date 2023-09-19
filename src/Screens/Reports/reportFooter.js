@@ -16,7 +16,7 @@ const ReportFooter = () => {
                     <div className={`${style.reportFooterTextStyle}`} id="pageFooter"></div>
                 </div> */}
                 <div className={style.marginTop20}>
-                    <div className={style.reportFooterTextStyle}>© Copyright {new Date()?.getFullYear()}. TimeSmartAI.Inc, Inc.</div>
+                    <div className={style.reportFooterTextStyle}>© Copyright {new Date()?.getFullYear()}. TimeSmartAI.Inc.</div>
                     <div className={style.reportFooterTextStyle}>All Rights Reserved.</div>
                 </div>
             </div>

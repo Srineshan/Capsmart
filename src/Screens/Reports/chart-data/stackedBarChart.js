@@ -8,6 +8,7 @@ const ApexStackedBarChart = ({ stackedSeries, stackedCategories }) => {
     setSeries(stackedSeries);
     setCategories(stackedCategories);
   }, [stackedSeries, stackedCategories])
+  console.log(series, categories)
   const chartData = {
     series: series,
     type: 'bar',
@@ -30,7 +31,7 @@ const ApexStackedBarChart = ({ stackedSeries, stackedCategories }) => {
       },
       color: ["#1DD174", "#FFD950", "#F46044"],
       responsive: [{
-        breakpoint: 580,
+        breakpoint: 480,
         options: {
           legend: {
             position: 'bottom',
@@ -60,7 +61,7 @@ const ApexStackedBarChart = ({ stackedSeries, stackedCategories }) => {
       legend: {
         show: true,
         position: 'bottom',
-        offsetY: 10,
+        offsetY: 0,
         onItemClick: {
           toggleDataSeries: false
         }

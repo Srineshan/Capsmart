@@ -200,10 +200,10 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
         let contractedScheduleTemp = metadata?.contractedSchedules;
         contractedScheduleTemp[index] = ({
             "minimum": {
-                "value": parseInt(value?.min)
+                "value": parseFloat(value?.min)
             },
             "maximum": {
-                "value": parseInt(value?.max)
+                "value": parseFloat(value?.max)
             },
             "frequency": value?.frequency,
             "startDate": format(new Date(value?.startDate), 'yyyy-MM-dd').toString(),
@@ -339,7 +339,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                         "value": 0
                     },
                     "maximum": {
-                        "value": 0
+                        "value": 99999999
                     },
                     "frequency": "WEEK",
                     "startDate": contractTermPeriod?.start,
@@ -463,9 +463,9 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                                 value={metadata?.contractedSchedules?.[0]?.frequency || ''}
                                 onChange={(e) => onSameTargetChange('contractedSchedules', e.target.value, 'frequency')}
                                 firstOptionLabel={'Select Frequency'} firstOptionValue={''}
-                                valueList={['WEEK', 'MONTH']}
-                                labelList={['Per Week', 'Per Month']}
-                                disabledList={[false, false]} />
+                                valueList={['WEEK', 'MONTH', "YEAR"]}
+                                labelList={['Per Week', 'Per Month', 'Per Year']}
+                                disabledList={[false, false, false]} />
                         </div>
                     </div>
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -600,7 +600,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                     </div>
                     {metadata?.additionalScheduleRequired &&
                         <>
-                            <CommonInputField value={metadata?.additionalScheduleValue} type="tel" maxLength="2" onChange={(e) => e.target.value >= 0 && handleValueChange('additionalScheduleValue', e.target.value)} className={` ${style.fullWidth}`} />
+                            <CommonInputField value={metadata?.additionalScheduleValue} type="number" onChange={(e) => e.target.value >= 0 && handleValueChange('additionalScheduleValue', e.target.value.slice(0, 4))} className={` ${style.fullWidth}`} />
                             <CommonSelectField className={`${style.fullWidth}`}
                                 value={metadata?.additionalScheduleFrequency || 'NA'}
                                 onChange={(e) => handleValueChange('additionalScheduleFrequency', e.target.value)}
@@ -682,7 +682,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                     <div className={`${style.spaceBetween} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
                         <EditableText value={metadata?.totalSession} placeholder="" type='tel' onChange={(e) => onTotalSessionChange(e.slice(0, 6))}
                             className={style.editableSessionTextStyle} />
-                        <div className={`${style.textElement} ${parseInt(metadata?.totalSession) === SpecifiedCountCalculator(metadata?.contractedSchedules, timeCommitment, metadata?.additionalScheduleFrequency, metadata?.additionalScheduleValue) ? style.greenBase : style.redBase} `}>{SpecifiedCountCalculator(metadata?.contractedSchedules, timeCommitment, metadata?.additionalScheduleFrequency, metadata?.additionalScheduleValue)} Minimum Specified</div>
+                        <div className={`${style.textElement} ${parseFloat(metadata?.totalSession) === parseFloat(SpecifiedCountCalculator(metadata?.contractedSchedules, timeCommitment, metadata?.additionalScheduleFrequency, metadata?.additionalScheduleValue)) ? style.greenBase : style.redBase} `}>{SpecifiedCountCalculator(metadata?.contractedSchedules, timeCommitment, metadata?.additionalScheduleFrequency, metadata?.additionalScheduleValue)} Minimum Specified</div>
                     </div>
                     <div className={style.verticalAlignCenter}>
                         <CommonLabel value={`For ${timeCommitment?.value} ${timeCommitment?.frequency === 'WEEK' ? 'Weeks' : 'Months'} Per Contract Year`} />

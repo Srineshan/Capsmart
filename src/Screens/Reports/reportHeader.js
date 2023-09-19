@@ -23,7 +23,8 @@ const ReportHeader = () => {
     const getLogo = async () => {
         const { data: data } = await GET(`entity-service/entity/${TenantID}`);
         setLogo({ logo: data?.logo?.file?.fileURL, title: data?.entityName?.entityName });
-        setCorsedLogo(`https://cors-anywhere-solai.fly.dev/${data?.logo?.file?.fileURL}`);
+        // setCorsedLogo(`https://cors-anywhere-solai.fly.dev/${data?.logo?.file?.fileURL}`);
+        setCorsedLogo(`https://cors-anywhere.herokuapp.com/${data?.logo?.file?.fileURL}`);
         setAddress(`${data?.sites?.[0]?.address?.addressLine}, ${data?.sites?.[0]?.address?.city}, ${data?.sites?.[0]?.address?.state}, ${data?.sites?.[0]?.address?.zipcode}.`)
     }
 
@@ -39,7 +40,7 @@ const ReportHeader = () => {
                 </div>
                 <div>
                     {logo.logo && (
-                        <img src={corsedLogo} alt="" className={`${style.headerLogo}`} />
+                        <img src={corsedLogo || logo?.logo} alt="" className={`${style.headerLogo}`} />
                     )}
                     <div className={style.entityNameBolderStyle}>{logo.title}</div>
                     <div className={style.entityNameHeaderStyle}>{address}</div>

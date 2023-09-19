@@ -16,6 +16,10 @@ const ApexPieChart = ({ pieData }) => {
       return 'Payments Delayed';
     else if (data === "rejected")
       return 'Rejected';
+    else if (data === "approved")
+      return 'Approved';
+    else if (data === "INPROGRESS")
+      return 'In-Progress';
     else if (data === "paidNotDone")
       return 'Payment Not Made';
     else if (data === "paidPastDue")
@@ -93,7 +97,7 @@ const ApexPieChart = ({ pieData }) => {
       chart: {
         events: {
           dataPointSelection: (event, chartContext, config) => {
-            console.log(config.w.config.labels[config.dataPointIndex]);
+            // console.log(config.w.config.labels[config.dataPointIndex]);
           }
         }
       }
