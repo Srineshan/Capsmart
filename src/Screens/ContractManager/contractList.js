@@ -404,7 +404,7 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
                 {selectedContract === 'activecontracts' ? (
                   <>
                     <button className={isMyContract ? style.myActiveContractsButton : style.otherContractsButton} onClick={() => setIsMyContract(true)}>My Active Contracts ( {metadata?.activeContract?.activeContractCount} )</button>
-                    <button className={`${!isMyContract ? style.myActiveContractsButton : style.otherContractsButton} ${style.marginLeft20}`} onClick={() => setIsMyContract(false)}>Other Contracts ( 150 )</button>
+                    <button className={`${!isMyContract ? style.myActiveContractsButton : style.otherContractsButton} ${style.marginLeft20}`} onClick={() => setIsMyContract(false)}>Other Contracts ( 0 )</button>
                   </>
                 ) : selectedContract === 'draft' ? (
                   <>
