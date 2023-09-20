@@ -486,7 +486,7 @@ const AddServiceProvided = ({
     setContinueLoading(true);
     setAddOnButton(buttonType);
     if (
-      serviceTypeTemplate === ADDON &&
+      (serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE) &&
       editService &&
       metadata?.[0]?.approver !== undefined
     ) {
@@ -610,7 +610,7 @@ const AddServiceProvided = ({
           };
         }
       });
-    } else if (serviceTypeTemplate === ADDON && !editService) {
+    } else if ((serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE) && !editService) {
       let dataValue = [];
       let data = [];
       let temp = metadata;
@@ -619,6 +619,10 @@ const AddServiceProvided = ({
         data.serviceLocations = data?.locationSpecified
           ? data?.locations
           : locationItems;
+        data.patientMRNRequired = data?.patientMRNRequired;
+        data.cptcodeRequired = data?.cptcodeRequired;
+        data.reasonRequired = data?.reasonRequired;
+        data.administrativeApprovalForPaymentRequired = data?.administrativeApprovalForPaymentRequired;
         data.refId = new Date().getTime()?.toString();
         let dataMap = {
           selectedActivityId: data?.selectedActivityId,
@@ -873,7 +877,7 @@ const AddServiceProvided = ({
     //   return;
     // }
     if (
-      serviceTypeTemplate !== ADDON &&
+      (serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE) &&
       showLocation &&
       selectedLocation?.length === 0
     ) {
@@ -913,7 +917,7 @@ const AddServiceProvided = ({
       return;
     }
     if (
-      serviceTypeTemplate !== ADDON &&
+      (serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE) &&
       metadata?.[0]?.billableService &&
       parseInt(metadata?.[0]?.sessionAmount) === 0
     ) {
@@ -929,6 +933,7 @@ const AddServiceProvided = ({
     if (
       serviceTypeTemplate !== SUPPLEMENTAL &&
       serviceTypeTemplate !== ADDON &&
+      serviceTypeTemplate !== HOSPICE &&
       serviceTypeTemplate !== ADMINISTRATIVE
     ) {
       performingActivity = selectedActivity
@@ -1003,7 +1008,7 @@ const AddServiceProvided = ({
       );
     }
     let data = [];
-    if (serviceTypeTemplate === ADDON && !editService) {
+    if ((serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE) && !editService) {
       data = metadata;
       data.map((item, index) => {
         item.workingPeriod = metadata?.[index]?.workingPeriod;
@@ -1030,14 +1035,14 @@ const AddServiceProvided = ({
       // data.serviceLocations = data?.locationSpecified ? data?.locations : locationItems;
     } else {
       let dataValues = metadata;
-      if (serviceTypeTemplate === ADDON) {
+      if (serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE) {
         dataValues = metadata?.[0];
         parentActivity = dataValues?.addOnActivityType;
         performingActivity = dataValues?.activities
           ?.map((data) => data?.activity)
           ?.join("-");
       }
-      if (activities?.length === 0 && serviceTypeTemplate !== ADDON) {
+      if (activities?.length === 0 && serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE) {
         let message =
           serviceTypeTemplate === SUPPLEMENTAL
             ? "Supplement Services"
@@ -1064,7 +1069,7 @@ const AddServiceProvided = ({
           activityTypeTemplate: {
             activityTypeTemplate: serviceTypeTemplate,
           },
-          ...(serviceTypeTemplate === ADDON &&
+          ...((serviceTypeTemplate === ADDON || serviceTypeTemplate) &&
             dataValues?.activityResponse?.dataMap?.selectedActivityId !==
             null && {
             addOnActivityType: {
@@ -1096,7 +1101,7 @@ const AddServiceProvided = ({
               ? dataValues?.baseServices
               : [],
           serviceLocations:
-            serviceTypeTemplate === ADDON
+            (serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE)
               ? dataValues?.locationSpecified
                 ? dataValues?.locations
                 : locationItems
@@ -1167,7 +1172,7 @@ const AddServiceProvided = ({
               ...(serviceTypeTemplate === ADMINISTRATIVE && {
                 adminActivities: dataValues?.selectedActivities,
               }),
-              ...(serviceTypeTemplate === ADDON && {
+              ...((serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE) && {
                 selectedActivityId:
                   dataValues?.activityResponse?.dataMap?.selectedActivityId,
                 additionalDetails:
@@ -1202,7 +1207,7 @@ const AddServiceProvided = ({
               value: dataValues?.hourlyRate,
             },
           }),
-          ...(serviceTypeTemplate === ADDON && {
+          ...((serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE) && {
             hourlyRate: dataValues?.hourlyRate,
           }),
           ...([CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(
@@ -1375,7 +1380,7 @@ const AddServiceProvided = ({
               ?.toLocaleTimeString("it-IT")
               .toString(),
           },
-          ...((serviceTypeTemplate === ADDON ||
+          ...((serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE ||
             serviceTypeTemplate === ADMINISTRATIVE) && {
             workFlow: dataValues?.workFlow,
           }),
@@ -1385,7 +1390,7 @@ const AddServiceProvided = ({
             dataValues?.activityApprovalWFRequired || false,
           designateSpecificContractor: isDesignatedSpecificContractor,
           locationSpecified:
-            serviceTypeTemplate === ADDON
+            (serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE)
               ? dataValues?.locationSpecified
               : showLocation,
           dedicatedHoursSpecified: [SUPPLEMENTAL, ADMINISTRATIVE].includes(
@@ -1397,7 +1402,7 @@ const AddServiceProvided = ({
           dependantServiceIncluded:
             dataValues?.dependantServiceIncluded || false,
           customizedSchedule: dataValues?.customizedSchedule || false,
-          ...(serviceTypeTemplate !== ADDON &&
+          ...((serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE) &&
             !(
               serviceTypeTemplate === ADMINISTRATIVE &&
               !metadata?.dedicatedHoursSpecified
@@ -1411,7 +1416,7 @@ const AddServiceProvided = ({
         },
       ];
     }
-    if (editService && serviceTypeTemplate === ADDON) {
+    if (editService && (serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE)) {
       data[0].activities = metadata?.[0]?.activities;
       data[0].workingHours = metadata?.[0]?.workingHours;
     }
@@ -2020,7 +2025,7 @@ const AddServiceProvided = ({
                     "FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITH_OFFSET",
                     "FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET",
                   ]?.includes(compensationPolicy) &&
-                    serviceTypeTemplate !== ADDON &&
+                    (serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE) &&
                     !(
                       serviceTypeTemplate === ADMINISTRATIVE &&
                       !metadata?.dedicatedHoursSpecified
@@ -2045,6 +2050,7 @@ const AddServiceProvided = ({
                     )}
                   {serviceTypeTemplate !== ADMINISTRATIVE &&
                     serviceTypeTemplate !== ADDON &&
+                    serviceTypeTemplate !== HOSPICE &&
                     serviceTypeTemplate !== SUPPLEMENTAL &&
                     serviceTypeTemplate !== ONCALL && (
                       <div>
@@ -2098,7 +2104,7 @@ const AddServiceProvided = ({
                       </div>
                     )}
 
-                  {serviceTypeTemplate !== ADDON && (
+                  {serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE && (
                     <div>
                       <div
                         className={`${style.addManagerGrid} ${style.marginTop20} `}

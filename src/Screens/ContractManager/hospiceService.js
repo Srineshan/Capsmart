@@ -10,7 +10,7 @@ import {
     CLINIC,
     PROCEDUREREADING,
     SURGERY,
-    ADDON,
+    HOSPICE,
     ONCALL,
 } from "../../Constants";
 import {
@@ -75,6 +75,8 @@ const HospiceService = ({
     const [selectedService, setSelectedService] = useState("");
     const [selectedServices, setSelectedServices] = useState([]);
     const [addOnWorkFlow, setAddOnWorkFlow] = useState([]);
+    const [CPTCode, setCPTCode] = useState([]);
+    const [hospiceServiceFields, setHospiceServiceFields] = useState([]);
     const [newServices, setNewServices] = useState({
         name: "",
         rate: "0",
@@ -89,6 +91,10 @@ const HospiceService = ({
         billableService: true,
         workingTimeFrom: null,
         workingTimeTo: null,
+        cptcodeRequired: false,
+        reasonRequired: false,
+        administrativeApprovalForPaymentRequired: false,
+        patientMRNRequired: false
     });
     const [currentServiceData, setCurrentServiceData] = useState();
     const [metadata, setMetadata] = useState([]);
@@ -108,6 +114,7 @@ const HospiceService = ({
     useEffect(() => {
         console.log("metadata in useEffect", metadata);
         getMetaData(metadata);
+        generateHospiceFields();
     }, [metadata]);
 
     useEffect(() => {
@@ -120,6 +127,7 @@ const HospiceService = ({
     useEffect(() => {
         getUserData();
         getTimeSheetWorkFlow();
+        getCPTCode();
     }, []);
 
     useEffect(() => {
@@ -129,6 +137,15 @@ const HospiceService = ({
     const resetMetadata = () => {
         setMetadata([]);
     };
+
+    const getCPTCode = async () => {
+        const { data: cptCode } = await GET("entity-service/cptCode");
+        if (cptCode) {
+            setCPTCode(cptCode)
+        }
+    }
+
+    console.log('cpt code', CPTCode);
 
     const getTimeSheetWorkFlow = async () => {
         const { data: timesheetWorkFlow } = await GET(
@@ -161,7 +178,7 @@ const HospiceService = ({
                 workingTimeFrom: serviceSelected?.workingPeriod?.from,
                 workingTimeTo: serviceSelected?.workingPeriod?.to,
                 serviceDays: serviceSelected?.serviceDays,
-                activityType: { activityType: ADDON },
+                activityType: { activityType: HOSPICE },
                 performingActivity: serviceSelected?.performingActivity?.activity,
                 payableAmount: { value: serviceSelected?.payableAmount?.value },
                 locations: serviceSelected?.serviceLocations,
@@ -171,6 +188,10 @@ const HospiceService = ({
                     normalWorkingHours: serviceSelected?.workingHours?.normalWorkingHours,
                     afterWorkingHours: serviceSelected?.workingHours?.afterWorkingHours,
                 },
+                cptcodeRequired: serviceSelected?.cptcodeRequired,
+                reasonRequired: serviceSelected?.reasonRequired,
+                administrativeApprovalForPaymentRequired: serviceSelected?.administrativeApprovalForPaymentRequired,
+                patientMRNRequired: serviceSelected?.patientMRNRequired,
                 billableService: serviceSelected?.billableService,
                 activityApprovalWFRequired: serviceSelected?.activityApprovalWFRequired,
                 activityResponse: serviceSelected?.activityResponse,
@@ -184,6 +205,7 @@ const HospiceService = ({
                 workingTimeTo: GetDateFromHours(
                     serviceSelected?.workingPeriod?.to?.toString() || ""
                 ),
+
             };
             let workflowData =
                 addOnWorkFlow
@@ -331,6 +353,8 @@ const HospiceService = ({
         setSelectedCodes(value);
     }
 
+    console.log('selectedCodes', selectedCodes);
+
     const removeLocation = (locationIndex) => {
         let locationTemp =
             metadata
@@ -410,7 +434,7 @@ const HospiceService = ({
             let alreadyExist = services
                 ?.filter(
                     (data) =>
-                        data?.activityTypeTemplate?.activityTypeTemplate === ADDON &&
+                        data?.activityTypeTemplate?.activityTypeTemplate === HOSPICE &&
                         data?.performingActivity?.activity ===
                         `${activities?.map((data) => data)?.join("-")}`
                 )
@@ -473,7 +497,7 @@ const HospiceService = ({
                     ?.map((data) => data)[0]
             )?.activityType?.activityType;
             selectedData.performingActivity = name;
-            selectedData.activityType = { activityType: ADDON };
+            selectedData.activityType = { activityType: HOSPICE };
             selectedData.selectedActivityId = selectedData?.refId;
             selectedData.refId = null;
             selectedData.sessionDuration = selectedData?.duration?.hours;
@@ -538,19 +562,22 @@ const HospiceService = ({
 
     const updateWorkingHours = (name, value, index) => {
         let temp = metadata;
-        if (name === "workingTimeFrom") {
-            temp[index]["workingPeriod"]["from"] = value;
-        }
-        if (name === "workingTimeTo") {
-            temp[index]["workingPeriod"]["to"] = value;
-        }
+        // if (name === 'workingTimeFrom') {
+        //   temp[index]['workingPeriod']['from'] = value;
+        // }
+        // if (name === 'workingTimeTo') {
+        //   temp[index]['workingPeriod']['to'] = value;
+        // }
         temp[index][name] = value;
         // temp?.map(data => {
         //   data[name] = value;
         // })
         setMetadata(temp);
-        console.log("temp", temp);
-    };
+        generateHospiceFields();
+        console.log('temp', temp);
+    }
+
+    console.log('New Services', newServices);
 
     const handleNewServiceLocation = (selectedItem) => {
         if (newServices?.locations?.map((data) => data)?.includes(selectedItem)) {
@@ -564,6 +591,8 @@ const HospiceService = ({
     };
 
     const handleAdditionalDetailSelection = (data) => {
+        console.log('Inside Handle Function', data)
+
         let temp = newServices?.additionalDetails || [];
         if (temp?.includes(data)) {
             if (data === "Prior Pre-Authorization Required") {
@@ -584,7 +613,19 @@ const HospiceService = ({
             }
             temp?.push(data);
         }
-        setNewServices({ ...newServices, additionalDetails: temp });
+        if (data === "Require Patient Data") {
+            setNewServices({ ...newServices, patientMRNRequired: !newServices?.patientMRNRequired, additionalDetails: temp })
+        } else if (data === "Prior Pre-Authorization Required") {
+            setNewServices({ ...newServices, activityApprovalWFRequired: !newServices?.activityApprovalWFRequired, additionalDetails: temp })
+        } else if (data === "Administrative Approval For Payment Required") {
+            setNewServices({ ...newServices, administrativeApprovalForPaymentRequired: !newServices?.administrativeApprovalForPaymentRequired, additionalDetails: temp })
+        } else if (data === "Require CPT / HCPCS code") {
+            setNewServices({ ...newServices, cptcodeRequired: !newServices?.cptcodeRequired, additionalDetails: temp })
+        }
+        else {
+            setNewServices({ ...newServices, reasonRequired: !newServices?.reasonRequired, additionalDetails: temp })
+        }
+        // setNewServices({ ...newServices, additionalDetails: temp });
     };
 
     const addToMetaData = () => {
@@ -596,13 +637,13 @@ const HospiceService = ({
         temp.push({
             sites: [],
             activities: [{ activity: newServices?.name }],
-            activityType: { activityType: ADDON },
+            activityType: { activityType: HOSPICE },
             performingActivity: newServices?.name,
-            parentActivity: "Add-On Service",
+            parentActivity: "Hospice Clinical Consult Services",
             sessionAmount: newServices?.rate,
-            sessionDuration: newServices?.sessionDuration,
+            sessionDuration: 1,
             hourlyRate: {
-                value: (newServices?.rate / newServices?.sessionDuration).toFixed(2),
+                value: newServices?.rate,
             },
             locations: newServices?.locations,
             locationSpecified: newServices?.showLocation,
@@ -626,6 +667,10 @@ const HospiceService = ({
             activityApprovalWFRequired: newServices?.additionalDetails?.includes(
                 "Prior Pre-Authorization Required"
             ),
+            patientMRNRequired: newServices?.patientMRNRequired,
+            cptcodeRequired: newServices?.cptcodeRequired,
+            reasonRequired: newServices?.reasonRequired,
+            administrativeApprovalForPaymentRequired: newServices?.administrativeApprovalForPaymentRequired,
             approver: newServices?.approver,
             paymentApprover: newServices?.paymentApprover,
             billableService: newServices?.billableService,
@@ -636,6 +681,7 @@ const HospiceService = ({
         setSelectedServices(selectedServiceTemp);
         resetNewServices();
         setShowNewService(false);
+        generateHospiceFields();
     };
 
     const handleNewServiceName = () => {
@@ -649,6 +695,313 @@ const HospiceService = ({
         }
         setShowNewService(true);
     };
+
+    const generateHospiceFields = () => {
+        let temp = [];
+        metadata?.[0]?.activityResponse?.dataMap?.selectedActivityId ===
+            undefined &&
+            metadata
+                ?.filter(
+                    (data) =>
+                        !serviceList
+                            ?.map((service) => service)
+                            ?.includes(data?.performingActivity) || editService
+                )
+                ?.map((data, index) => temp.push((
+                    <div
+                        className={style.marginTop20}
+                        onClick={() => setSelectedService(data?.performingActivity)}
+                    >
+                        <CommonCheckBox
+                            checked={selectedServices?.includes(data?.performingActivity)}
+                            onChange={(e) =>
+                                selectService(data?.performingActivity, e.target.checked)
+                            }
+                            label={
+                                data?.performingActivity?.activity || data?.performingActivity
+                            }
+                        />
+                        <div className={`${style.addonBoxStyle} ${style.marginTop20}`}>
+                            {data?.billableService && (
+                                <div
+                                    className={`${style.addManagerGrid} ${style.marginTop20}`}
+                                >
+                                    <CommonLabel value="Payment Rate*" />
+                                    <div className={`${style.displayInRow}`}>
+                                        <div className={`${style.threeFieldWidth}`}>
+                                            <CommonTextField
+                                                InputProps={{
+                                                    startAdornment: (
+                                                        <InputAdornment
+                                                            position="start"
+                                                            sx={{ fontSize: 10 }}
+                                                        >
+                                                            $
+                                                        </InputAdornment>
+                                                    ),
+                                                }}
+                                                defaultValue={data?.sessionAmount}
+                                                onChange={(e) =>
+                                                    updateRate(data?.performingActivity, e.target.value)
+                                                }
+                                            />
+                                        </div>
+                                        <div className={style.verticalAlignCenter}>
+                                            <CommonLabel
+                                                className={`${style.marginLeft20}`}
+                                                value={`Per Session`}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                                <CommonLabel value="Additional Details*" />
+                                <div>
+                                    {additionalDetails?.map((details, index) => (
+                                        <>
+                                            <div
+                                                className={`${style.additionalDetails} ${data?.activityResponse?.dataMap?.additionalDetails?.includes(
+                                                    details
+                                                )
+                                                    ? style.additionalDetailsSelected
+                                                    : ""
+                                                    } ${style.cursorPointer} ${index !== 0 ? style.marginTop10 : ""
+                                                    }`}
+                                                onClick={() =>
+                                                    additionalDetailSelectionChange(details)
+                                                }
+                                            >
+                                                <div className={style.alignCenter}>
+                                                    <TaskAltIcon
+                                                        sx={{
+                                                            color:
+                                                                data?.activityResponse?.dataMap?.additionalDetails?.includes(
+                                                                    details
+                                                                )
+                                                                    ? "#7165E3"
+                                                                    : "#E4E4E4",
+                                                        }}
+                                                    />
+                                                </div>
+                                                <div
+                                                    className={`${style.additionalDetailsTextStyle} ${style.verticalAlignCenter}`}
+                                                >
+                                                    {details}
+                                                </div>
+                                            </div>
+                                            {data?.activityResponse?.dataMap?.additionalDetails?.includes(
+                                                "Require CPT / HCPCS code"
+                                            ) &&
+                                                details === "Require CPT / HCPCS code" && (
+                                                    <div className={`${style.grid3} ${style.marginTop20}`}>
+
+                                                        <CommonLabel value={"Applicable CPT / HCPCS Code*"} />
+                                                        <FormControl sx={{ m: 1, width: 300 }} size="small">
+                                                            <Select
+                                                                labelId="demo-multiple-checkbox-label"
+                                                                id="demo-multiple-checkbox"
+                                                                multiple
+                                                                value={CPTCode?.map(data => data)}
+                                                                onChange={(e) => handleCodeChange(e.target.value)}
+                                                                input={<OutlinedInput label="" />}
+                                                                SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                                                renderValue={CPTCode => CPTCode.map(data => data?.description)?.join(', ')}
+                                                                MenuProps={MenuProps}
+                                                            >
+                                                                {CPTCode?.map((name) => (
+                                                                    <MenuItem key={name} value={name?.description}>
+                                                                        <Checkbox checked={CPTCode?.map(data => data?.description)?.includes(name?.description)} style={{ color: '#7165E3' }} />
+                                                                        <ListItemText primary={name?.description} />
+                                                                    </MenuItem>
+                                                                ))}
+                                                            </Select>
+                                                        </FormControl>
+                                                        <div
+                                                            className={`${style.addCptCodeButton} ${style.alignCenter}`}
+                                                            onClick={() => { }}
+                                                        >
+                                                            ADD CPT CODE
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            {data?.activityResponse?.dataMap?.additionalDetails?.includes(
+                                                "Prior Pre-Authorization Required"
+                                            ) &&
+                                                details === "Prior Pre-Authorization Required" && (
+                                                    // <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { onAdditionalServiceApproverChange(data?.performingActivity, users?.filter(user => user?.userId === value)?.map(user => user)[0]) }} value={data?.approver?.userId} />
+                                                    <div
+                                                        className={`${style.addManagerGrid} ${style.marginTop20}`}
+                                                    >
+                                                        <CommonLabel
+                                                            value={"Designate Request Approver*"}
+                                                        />
+                                                        <div className={style.fullWidth}>
+                                                            <CommonSelectField
+                                                                className={`${style.fullWidth} `}
+                                                                defaultValue={data?.approver?.id}
+                                                                value={
+                                                                    data?.approver?.id
+                                                                        ? data?.approver?.id
+                                                                        : "0"
+                                                                }
+                                                                onChange={(e) => {
+                                                                    onAdditionalServiceApproverChange(
+                                                                        data?.performingActivity,
+                                                                        users
+                                                                            ?.filter(
+                                                                                (user) => user?.id === e.target.value
+                                                                            )
+                                                                            ?.map((user) => user)[0]
+                                                                    );
+                                                                }}
+                                                                firstOptionLabel={"Select Approver"}
+                                                                firstOptionValue={"0"}
+                                                                valueList={title
+                                                                    ?.filter(
+                                                                        (titleData) =>
+                                                                            titleData?.approver === true
+                                                                    )
+                                                                    ?.map((titleData) => titleData?.id)}
+                                                                labelList={title
+                                                                    ?.filter(
+                                                                        (titleData) =>
+                                                                            titleData?.approver === true
+                                                                    )
+                                                                    ?.map(
+                                                                        (titleData) =>
+                                                                            `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`
+                                                                    )}
+                                                                disabledList={title
+                                                                    ?.filter(
+                                                                        (titleData) =>
+                                                                            titleData?.approver === true
+                                                                    )
+                                                                    ?.map((data) => false)}
+                                                                widthValue={370}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            {data?.activityResponse?.dataMap?.additionalDetails?.includes(
+                                                "Administrative Approval For Payment Required"
+                                            ) &&
+                                                details ===
+                                                "Administrative Approval For Payment Required" && (
+                                                    // <ReviewerApproverField data={users} label="Designate Payment Approver*" selectLabel="Select Payment Approver" onValueChange={(value) => { onAdditionalServicePaymentApproverChange(data?.performingActivity, users.filter(user => user?.userId === value)?.map(user => user)[0]) }} value={data?.paymentApprover?.userId} />
+                                                    <div
+                                                        className={`${style.addManagerGrid} ${style.marginTop20}`}
+                                                    >
+                                                        <CommonLabel
+                                                            value={"Designate Payment Approver*"}
+                                                        />
+                                                        <div className={style.fullWidth}>
+                                                            <CommonSelectField
+                                                                className={`${style.fullWidth} `}
+                                                                defaultValue={data?.paymentApprover?.id}
+                                                                value={
+                                                                    data?.paymentApprover?.id
+                                                                        ? data?.paymentApprover?.id
+                                                                        : "0"
+                                                                }
+                                                                onChange={(e) => {
+                                                                    onAdditionalServicePaymentApproverChange(
+                                                                        data?.performingActivity,
+                                                                        users
+                                                                            .filter(
+                                                                                (user) => user?.id === e.target.value
+                                                                            )
+                                                                            ?.map((user) => user)[0]
+                                                                    );
+                                                                }}
+                                                                firstOptionLabel={"Select Payment Approver"}
+                                                                firstOptionValue={"0"}
+                                                                valueList={title
+                                                                    ?.filter(
+                                                                        (titleData) =>
+                                                                            titleData?.approver === true
+                                                                    )
+                                                                    ?.map((data) => data?.id)}
+                                                                labelList={title
+                                                                    ?.filter(
+                                                                        (titleData) =>
+                                                                            titleData?.approver === true
+                                                                    )
+                                                                    ?.map(
+                                                                        (titleData) =>
+                                                                            `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`
+                                                                    )}
+                                                                disabledList={title?.map((data) => false)}
+                                                                widthValue={370}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                )}
+                                        </>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                                <CommonLabel value="Allowable Working Hours*" />
+                                <div className={style.twoCol}>
+                                    <CommonCheckBox
+                                        checked={data?.workingHours?.normalWorkingHours}
+                                        className={`${style.marginLeft10}`}
+                                        onChange={(e) =>
+                                            handleWorkingHoursChange(
+                                                data?.performingActivity,
+                                                e.target.checked,
+                                                "normalWorkingHours"
+                                            )
+                                        }
+                                        label="During Normal Working Hours"
+                                    />
+                                    <CommonCheckBox
+                                        checked={data?.workingHours?.afterWorkingHours}
+                                        className={`${style.marginLeft10}`}
+                                        onChange={(e) =>
+                                            handleWorkingHoursChange(
+                                                data?.performingActivity,
+                                                e.target.checked,
+                                                "afterWorkingHours"
+                                            )
+                                        }
+                                        label="After Working Hours"
+                                    />
+                                </div>
+                            </div>
+                            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                                <CommonLabel value="Allowable Working Day Hours For Service*" />
+                                <div className={style.displayInRow}>
+                                    <TimePicker
+                                        useAmPm={false}
+                                        onChange={(e) => {
+                                            updateWorkingHours("workingTimeFrom", e, index);
+                                        }}
+                                        value={data?.workingTimeFrom === null ? null : new Date(data?.workingTimeFrom)}
+
+                                    />
+                                    <p
+                                        className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}
+                                    >
+                                        To
+                                    </p>
+                                    <TimePicker
+                                        useAmPm={false}
+                                        onChange={(e) =>
+                                            updateWorkingHours("workingTimeTo", e, index)
+                                        }
+                                        value={data?.workingTimeTo === null ? null : new Date(data?.workingTimeTo)}
+                                    // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )))
+        setHospiceServiceFields(temp);
+    }
 
     const updateRate = (serviceName, value) => {
         let temp = metadata;
@@ -702,6 +1055,7 @@ const HospiceService = ({
             });
         setMetadata(temp);
         getFields();
+        generateHospiceFields();
     };
 
     const onAdditionalServiceApproverChange = (name, value) => {
@@ -714,6 +1068,7 @@ const HospiceService = ({
             });
         setMetadata(temp);
         getFields();
+        generateHospiceFields();
     };
 
     const onAdditionalServicePaymentApproverChange = (name, value) => {
@@ -725,6 +1080,7 @@ const HospiceService = ({
             });
         setMetadata(temp);
         getFields();
+        generateHospiceFields();
     };
 
     const additionalDetailSelectionChange = (data) => {
@@ -760,9 +1116,22 @@ const HospiceService = ({
         tempData[0].approver = approver;
         tempData[0].paymentApprover = paymentApprover;
         tempData[0].activityResponse = { dataMap: { additionalDetails: temp } };
+        if (data === "Require Patient Data") {
+            tempData[0].patientMRNRequired = !tempData[0]?.patientMRNRequired;
+        } else if (data === "Prior Pre-Authorization Required") {
+            tempData[0].activityApprovalWFRequired = !tempData[0]?.activityApprovalWFRequired;
+        } else if (data === "Administrative Approval For Payment Required") {
+            tempData[0].administrativeApprovalForPaymentRequired = !tempData[0]?.administrativeApprovalForPaymentRequired;
+        } else if (data === "Require CPT / HCPCS code") {
+            tempData[0].cptcodeRequired = !tempData[0]?.cptcodeRequired;
+        }
+        else {
+            tempData[0].reasonRequired = !tempData[0]?.reasonRequired;
+        }
         // setMetadata({ ...metadata, 'activityResponse': { 'dataMap': { 'additionalDetails': temp } } });
         setMetadata(tempData);
         getFields();
+        generateHospiceFields();
     };
 
     console.log("metadata", metadata);
@@ -777,573 +1146,83 @@ const HospiceService = ({
 
     return (
         <div>
-            {/* {!editService &&
-                serviceList?.map((service, i) => (
-                    <div
-                        className={style.marginTop20}
-                        onClick={() => setSelectedService(service || "")}
-                    >
-                        <CommonCheckBox
-                            onChange={(e) => selectService(service, e.target.checked)}
-                            checked={
-                                selectedServices
-                                    ?.filter((data) => data === service)
-                                    ?.map((data) => data)?.length !== 0
-                                    ? true
-                                    : false
-                            }
-                            label={service}
-                        />
-                        <div className={`${style.addonBoxStyle}`}>
-                            <div className={`${style.addManagerGrid}`}>
-                                <CommonLabel value="Only Allow Upon Request / Notification Approval" />
-                                <CommonSwitch
-                                    disabled={
-                                        selectedServices
-                                            ?.filter((data) => data === service)
-                                            ?.map((data) => data)?.length !== 0
-                                            ? false
-                                            : true
-                                    }
-                                    label={
-                                        metadata
-                                            ?.filter((item) => item?.performingActivity === service)
-                                            ?.map((item) => item)[0]?.activityApprovalWFRequired
-                                            ? "YES"
-                                            : "NO"
-                                    }
-                                    className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`}
-                                    onChange={() => handleRequestApprovalChange(service)}
-                                    checked={
-                                        metadata
-                                            ?.filter((item) => item?.performingActivity === service)
-                                            ?.map((item) => item)[0]?.activityApprovalWFRequired
-                                    }
-                                />
-                            </div>
-                            {metadata
-                                ?.filter((item) => item?.performingActivity === service)
-                                ?.map((item) => item)[0]?.activityApprovalWFRequired && (
-                                    // <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { onApproverSelected(users?.filter(data => data?.userId === value)?.map(data => data)[0], service) }} value={metadata?.filter(data => data?.performingActivity === service)?.map(data => data?.approver?.userId)[0]} approverReviewer='approver' />
-                                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                        <CommonLabel value={"Designate Request Approver*"} />
-                                        <div className={style.fullWidth}>
-                                            <CommonSelectField
-                                                className={`${style.fullWidth}`}
-                                                defaultValue={
-                                                    metadata
-                                                        ?.filter(
-                                                            (data) => data?.performingActivity === service
-                                                        )
-                                                        ?.map((data) => data?.approver?.id)[0]
-                                                }
-                                                value={
-                                                    metadata
-                                                        ?.filter(
-                                                            (data) => data?.performingActivity === service
-                                                        )
-                                                        ?.map((data) => data?.approver?.id)[0]
-                                                        ? metadata
-                                                            ?.filter(
-                                                                (data) => data?.performingActivity === service
-                                                            )
-                                                            ?.map((data) => data?.approver?.id)[0]
-                                                        : "0"
-                                                }
-                                                onChange={(e) => {
-                                                    onApproverSelected(
-                                                        users
-                                                            ?.filter((data) => data?.id === e.target.value)
-                                                            ?.map((data) => data)[0],
-                                                        service,
-                                                        title
-                                                            ?.filter(
-                                                                (titleData) => titleData?.approver === true
-                                                            )
-                                                            ?.map((titleData) => titleData)
-                                                    );
-                                                }}
-                                                firstOptionLabel={"Select Approver"}
-                                                firstOptionValue={"0"}
-                                                valueList={title
-                                                    ?.filter((titleData) => titleData?.approver === true)
-                                                    ?.map((titleData) => titleData?.id)}
-                                                labelList={title
-                                                    ?.filter((titleData) => titleData?.approver === true)
-                                                    ?.map(
-                                                        (titleData) =>
-                                                            `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`
-                                                    )}
-                                                disabledList={title
-                                                    ?.filter((titleData) => titleData?.approver === true)
-                                                    ?.map((data) => false)}
-                                                widthValue={550}
-                                            />
-                                        </div>
-                                    </div>
-                                )}
-                        </div>
-                    </div>
-                ))} */}
+            {hospiceServiceFields}
 
-            {metadata?.[0]?.activityResponse?.dataMap?.selectedActivityId ===
-                undefined &&
-                metadata
-                    ?.filter(
-                        (data) =>
-                            !serviceList
-                                ?.map((service) => service)
-                                ?.includes(data?.performingActivity) || editService
-                    )
-                    ?.map((data, index) => (
-                        <div
-                            className={style.marginTop20}
-                            onClick={() => setSelectedService(data?.performingActivity)}
-                        >
-                            <CommonCheckBox
-                                checked={selectedServices?.includes(data?.performingActivity)}
-                                onChange={(e) =>
-                                    selectService(data?.performingActivity, e.target.checked)
-                                }
-                                label={
-                                    data?.performingActivity?.activity || data?.performingActivity
-                                }
-                            />
-                            <div className={`${style.addonBoxStyle} ${style.marginTop20}`}>
-                                <div className={`${style.addManagerGrid}`}>
-                                    <CommonLabel value="Billable Service*" />
-                                    <CommonSwitch
-                                        label={data?.billableService ? "YES" : "NO"}
-                                        className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`}
-                                        checked={data?.billableService}
-                                        onChange={() =>
-                                            UpdateBillable(
-                                                data?.performingActivity,
-                                                !data?.billableService
-                                            )
-                                        }
-                                    />
-                                </div>
-                                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                    <CommonLabel value="Service Session Duration" />
-                                    <div className={`${style.threeFieldWidth}`}>
-                                        <CommonTextField
-                                            type="tel"
-                                            maxLength="3"
-                                            InputProps={{
-                                                endAdornment: (
-                                                    <InputAdornment position="end" sx={{ fontSize: 10 }}>
-                                                        Hours
-                                                    </InputAdornment>
-                                                ),
-                                            }}
-                                            onChange={(e) =>
-                                                e.target.value >= 0 &&
-                                                updateSessionDuration(
-                                                    data?.performingActivity,
-                                                    e.target.value
-                                                )
-                                            }
-                                            value={data?.sessionDuration}
-                                        />
-                                    </div>
-                                </div>
-                                {data?.billableService && (
-                                    <div
-                                        className={`${style.addManagerGrid} ${style.marginTop20}`}
-                                    >
-                                        <CommonLabel value="Payment Rate*" />
-                                        <div className={`${style.displayInRow}`}>
-                                            <div className={`${style.threeFieldWidth}`}>
-                                                <CommonTextField
-                                                    InputProps={{
-                                                        startAdornment: (
-                                                            <InputAdornment
-                                                                position="start"
-                                                                sx={{ fontSize: 10 }}
-                                                            >
-                                                                $
-                                                            </InputAdornment>
-                                                        ),
-                                                    }}
-                                                    defaultValue={data?.sessionAmount}
-                                                    onChange={(e) =>
-                                                        updateRate(data?.performingActivity, e.target.value)
-                                                    }
-                                                />
-                                            </div>
-                                            <div className={style.verticalAlignCenter}>
-                                                <CommonLabel
-                                                    className={`${style.marginLeft20}`}
-                                                    value={`Per Session`}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
+            {
+                // editService &&
+                //     metadata
+                //         ?.filter(
+                //             (data) => data?.activityResponse?.dataMap?.selectedActivityId
+                //         )
+                //         ?.map((data) => (
+                //             <div className={style.marginTop20}>
+                //                 <CommonCheckBox
+                //                     checked={true}
+                //                     label={`${data?.addOnActivityType
+                //                         } (${data?.performingActivity?.replaceAll("-", ", ")})`}
+                //                 />
+                //                 <div className={`${style.addonBoxStyle}`}>
+                //                     <div className={`${style.addManagerGrid}`}>
+                //                         <CommonLabel value="Only Allow Upon Request / Notification Approval" />
+                //                         <CommonSwitch
+                //                             label={data?.activityApprovalWFRequired ? "YES" : "NO"}
+                //                             className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`}
+                //                             checked={data?.activityApprovalWFRequired}
+                //                             onChange={() =>
+                //                                 handleRequestApprovalChange(data?.performingActivity)
+                //                             }
+                //                         />
+                //                     </div>
+                //                     {data?.activityApprovalWFRequired && (
+                //                         // <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { onApproverSelected(users?.filter(data => data?.userId === value)?.map(data => data)[0], data?.performingActivity) }} value={metadata?.[0]?.approver?.userId} />
+                //                         <div
+                //                             className={`${style.addManagerGrid} ${style.marginTop20}`}
+                //                         >
+                //                             <CommonLabel value={"Designate Request Approver*"} />
+                //                             <div className={style.fullWidth}>
+                //                                 <CommonSelectField
+                //                                     className={`${style.fullWidth} `}
+                //                                     defaultValue={metadata?.[0]?.approver?.id}
+                //                                     value={
+                //                                         metadata?.[0]?.approver?.id
+                //                                             ? metadata?.[0]?.approver?.id
+                //                                             : "0"
+                //                                     }
+                //                                     onChange={(e) => {
+                //                                         onApproverSelected(
+                //                                             users
+                //                                                 ?.filter((data) => data?.id === e.target.value)
+                //                                                 ?.map((data) => data)[0],
+                //                                             data?.performingActivity,
+                //                                             title
+                //                                                 ?.filter(
+                //                                                     (titleData) => titleData?.approver === true
+                //                                                 )
+                //                                                 ?.map((data) => data)[0]
+                //                                         );
+                //                                     }}
+                //                                     firstOptionLabel={"Select Approver"}
+                //                                     firstOptionValue={"0"}
+                //                                     valueList={title
+                //                                         ?.filter((titleData) => titleData?.approver === true)
+                //                                         ?.map((data) => data?.id)}
+                //                                     labelList={title
+                //                                         ?.filter((titleData) => titleData?.approver === true)
+                //                                         ?.map(
+                //                                             (titleData) =>
+                //                                                 `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`
+                //                                         )}
+                //                                     disabledList={title?.map((data) => false)}
+                //                                     widthValue={550}
+                //                                 />
+                //                             </div>
+                //                         </div>
+                //                     )}
 
-                                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                    <CommonLabel value="Specify Service Facility / Location" />
-                                    <div>
-                                        <div className={`${style.displayInRow} `}>
-                                            <CommonSwitch
-                                                checked={data?.locationSpecified}
-                                                className={`${style.textAlignLeft}`}
-                                                onChange={() =>
-                                                    switchShowLocation(data?.performingActivity)
-                                                }
-                                                label={data?.locationSpecified ? "YES" : "NO"}
-                                            />
-                                            {data?.locationSpecified && (
-                                                <div className={`${style.fullWidth}`}>
-                                                    <DatalistInput
-                                                        items={locationItems}
-                                                        setValue={setValue}
-                                                        onSelect={(location) =>
-                                                            selectLocation(location, data?.performingActivity)
-                                                        }
-                                                        className={style.fullWidth}
-                                                        onChange={(e) => getNewLocation(e.target.value)}
-                                                    />
-                                                </div>
-                                            )}
-                                        </div>
-                                        {data?.locationSpecified &&
-                                            data?.locations?.length !== 0 && (
-                                                <MultiSelectDisplay
-                                                    values={data?.locations?.map(
-                                                        (data) => data?.location
-                                                    )}
-                                                    removeItem={removeLocation}
-                                                />
-                                            )}
-                                    </div>
-                                </div>
-                                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                    <CommonLabel value="Additional Details*" />
-                                    <div>
-                                        {additionalDetails?.map((details, index) => (
-                                            <>
-                                                <div
-                                                    className={`${style.additionalDetails} ${data?.activityResponse?.dataMap?.additionalDetails?.includes(
-                                                        details
-                                                    )
-                                                        ? style.additionalDetailsSelected
-                                                        : ""
-                                                        } ${style.cursorPointer} ${index !== 0 ? style.marginTop10 : ""
-                                                        }`}
-                                                    onClick={() =>
-                                                        additionalDetailSelectionChange(details)
-                                                    }
-                                                >
-                                                    <div className={style.alignCenter}>
-                                                        <TaskAltIcon
-                                                            sx={{
-                                                                color:
-                                                                    data?.activityResponse?.dataMap?.additionalDetails?.includes(
-                                                                        details
-                                                                    )
-                                                                        ? "#7165E3"
-                                                                        : "#E4E4E4",
-                                                            }}
-                                                        />
-                                                    </div>
-                                                    <div
-                                                        className={`${style.additionalDetailsTextStyle} ${style.verticalAlignCenter}`}
-                                                    >
-                                                        {details}
-                                                    </div>
-                                                </div>
-                                                {data?.activityResponse?.dataMap?.additionalDetails?.includes(
-                                                    "Require CPT / HCPCS code"
-                                                ) &&
-                                                    details === "Require CPT / HCPCS code" && (
-                                                        <div className={`${style.grid3} ${style.marginTop20}`}>
-
-                                                            <CommonLabel value={"Applicable CPT / HCPCS Code*"} />
-                                                            <FormControl sx={{ m: 1, width: 300 }} size="small">
-                                                                <Select
-                                                                    labelId="demo-multiple-checkbox-label"
-                                                                    id="demo-multiple-checkbox"
-                                                                    multiple
-                                                                    value={selectedCodes}
-                                                                    onChange={(e) => handleCodeChange(e.target.value)}
-                                                                    input={<OutlinedInput label="" />}
-                                                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                                                                    renderValue={selectedCodes => selectedCodes.map(data => data?.codeName)?.join(', ')}
-                                                                    MenuProps={MenuProps}
-                                                                >
-                                                                    {codes.map((name) => (
-                                                                        <MenuItem key={name} value={name}>
-                                                                            <Checkbox checked={selectedCodes?.map(data => data?.id)?.includes(name?.id)} style={{ color: '#7165E3' }} />
-                                                                            <ListItemText primary={name?.codeName} />
-                                                                        </MenuItem>
-                                                                    ))}
-                                                                </Select>
-                                                            </FormControl>
-                                                            <div
-                                                                className={`${style.addCptCodeButton} ${style.alignCenter}`}
-                                                                onClick={() => { }}
-                                                            >
-                                                                ADD CPT CODE
-                                                            </div>
-                                                        </div>
-                                                    )}
-                                                {data?.activityResponse?.dataMap?.additionalDetails?.includes(
-                                                    "Prior Pre-Authorization Required"
-                                                ) &&
-                                                    details === "Prior Pre-Authorization Required" && (
-                                                        // <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { onAdditionalServiceApproverChange(data?.performingActivity, users?.filter(user => user?.userId === value)?.map(user => user)[0]) }} value={data?.approver?.userId} />
-                                                        <div
-                                                            className={`${style.addManagerGrid} ${style.marginTop20}`}
-                                                        >
-                                                            <CommonLabel
-                                                                value={"Designate Request Approver*"}
-                                                            />
-                                                            <div className={style.fullWidth}>
-                                                                <CommonSelectField
-                                                                    className={`${style.fullWidth} `}
-                                                                    defaultValue={data?.approver?.id}
-                                                                    value={
-                                                                        data?.approver?.id
-                                                                            ? data?.approver?.id
-                                                                            : "0"
-                                                                    }
-                                                                    onChange={(e) => {
-                                                                        onAdditionalServiceApproverChange(
-                                                                            data?.performingActivity,
-                                                                            users
-                                                                                ?.filter(
-                                                                                    (user) => user?.id === e.target.value
-                                                                                )
-                                                                                ?.map((user) => user)[0]
-                                                                        );
-                                                                    }}
-                                                                    firstOptionLabel={"Select Approver"}
-                                                                    firstOptionValue={"0"}
-                                                                    valueList={title
-                                                                        ?.filter(
-                                                                            (titleData) =>
-                                                                                titleData?.approver === true
-                                                                        )
-                                                                        ?.map((titleData) => titleData?.id)}
-                                                                    labelList={title
-                                                                        ?.filter(
-                                                                            (titleData) =>
-                                                                                titleData?.approver === true
-                                                                        )
-                                                                        ?.map(
-                                                                            (titleData) =>
-                                                                                `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`
-                                                                        )}
-                                                                    disabledList={title
-                                                                        ?.filter(
-                                                                            (titleData) =>
-                                                                                titleData?.approver === true
-                                                                        )
-                                                                        ?.map((data) => false)}
-                                                                    widthValue={370}
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    )}
-                                                {data?.activityResponse?.dataMap?.additionalDetails?.includes(
-                                                    "Administrative Approval For Payment Required"
-                                                ) &&
-                                                    details ===
-                                                    "Administrative Approval For Payment Required" && (
-                                                        // <ReviewerApproverField data={users} label="Designate Payment Approver*" selectLabel="Select Payment Approver" onValueChange={(value) => { onAdditionalServicePaymentApproverChange(data?.performingActivity, users.filter(user => user?.userId === value)?.map(user => user)[0]) }} value={data?.paymentApprover?.userId} />
-                                                        <div
-                                                            className={`${style.addManagerGrid} ${style.marginTop20}`}
-                                                        >
-                                                            <CommonLabel
-                                                                value={"Designate Payment Approver*"}
-                                                            />
-                                                            <div className={style.fullWidth}>
-                                                                <CommonSelectField
-                                                                    className={`${style.fullWidth} `}
-                                                                    defaultValue={data?.paymentApprover?.id}
-                                                                    value={
-                                                                        data?.paymentApprover?.id
-                                                                            ? data?.paymentApprover?.id
-                                                                            : "0"
-                                                                    }
-                                                                    onChange={(e) => {
-                                                                        onAdditionalServicePaymentApproverChange(
-                                                                            data?.performingActivity,
-                                                                            users
-                                                                                .filter(
-                                                                                    (user) => user?.id === e.target.value
-                                                                                )
-                                                                                ?.map((user) => user)[0]
-                                                                        );
-                                                                    }}
-                                                                    firstOptionLabel={"Select Payment Approver"}
-                                                                    firstOptionValue={"0"}
-                                                                    valueList={title
-                                                                        ?.filter(
-                                                                            (titleData) =>
-                                                                                titleData?.approver === true
-                                                                        )
-                                                                        ?.map((data) => data?.id)}
-                                                                    labelList={title
-                                                                        ?.filter(
-                                                                            (titleData) =>
-                                                                                titleData?.approver === true
-                                                                        )
-                                                                        ?.map(
-                                                                            (titleData) =>
-                                                                                `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`
-                                                                        )}
-                                                                    disabledList={title?.map((data) => false)}
-                                                                    widthValue={370}
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    )}
-                                            </>
-                                        ))}
-                                    </div>
-                                </div>
-                                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                    <CommonLabel value="Allowable Add-On Working Hours*" />
-                                    <div className={style.twoCol}>
-                                        <CommonCheckBox
-                                            checked={data?.workingHours?.normalWorkingHours}
-                                            className={`${style.marginLeft10}`}
-                                            onChange={(e) =>
-                                                handleWorkingHoursChange(
-                                                    data?.performingActivity,
-                                                    e.target.checked,
-                                                    "normalWorkingHours"
-                                                )
-                                            }
-                                            label="During Normal Working Hours"
-                                        />
-                                        <CommonCheckBox
-                                            checked={data?.workingHours?.afterWorkingHours}
-                                            className={`${style.marginLeft10}`}
-                                            onChange={(e) =>
-                                                handleWorkingHoursChange(
-                                                    data?.performingActivity,
-                                                    e.target.checked,
-                                                    "afterWorkingHours"
-                                                )
-                                            }
-                                            label="After Working Hours"
-                                        />
-                                    </div>
-                                </div>
-                                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                    <CommonLabel value="Allowable Working Day Hours For Service*" />
-                                    <div className={style.displayInRow}>
-                                        <TimePicker
-                                            useAmPm={false}
-                                            onChange={(e) => {
-                                                updateWorkingHours("workingTimeFrom", e, index);
-                                            }}
-                                            value={
-                                                data?.workingPeriod?.from === null
-                                                    ? null
-                                                    : new Date(data?.workingPeriod?.from)
-                                            }
-                                        />
-                                        <p
-                                            className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}
-                                        >
-                                            To
-                                        </p>
-                                        <TimePicker
-                                            useAmPm={false}
-                                            onChange={(e) =>
-                                                updateWorkingHours("workingTimeTo", e, index)
-                                            }
-                                            value={
-                                                data?.workingPeriod?.to === null
-                                                    ? null
-                                                    : new Date(data?.workingPeriod?.to)
-                                            }
-                                        // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-
-            {editService &&
-                metadata
-                    ?.filter(
-                        (data) => data?.activityResponse?.dataMap?.selectedActivityId
-                    )
-                    ?.map((data) => (
-                        <div className={style.marginTop20}>
-                            <CommonCheckBox
-                                checked={true}
-                                label={`${data?.addOnActivityType
-                                    } (${data?.performingActivity?.replaceAll("-", ", ")})`}
-                            />
-                            <div className={`${style.addonBoxStyle}`}>
-                                <div className={`${style.addManagerGrid}`}>
-                                    <CommonLabel value="Only Allow Upon Request / Notification Approval" />
-                                    <CommonSwitch
-                                        label={data?.activityApprovalWFRequired ? "YES" : "NO"}
-                                        className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`}
-                                        checked={data?.activityApprovalWFRequired}
-                                        onChange={() =>
-                                            handleRequestApprovalChange(data?.performingActivity)
-                                        }
-                                    />
-                                </div>
-                                {data?.activityApprovalWFRequired && (
-                                    // <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { onApproverSelected(users?.filter(data => data?.userId === value)?.map(data => data)[0], data?.performingActivity) }} value={metadata?.[0]?.approver?.userId} />
-                                    <div
-                                        className={`${style.addManagerGrid} ${style.marginTop20}`}
-                                    >
-                                        <CommonLabel value={"Designate Request Approver*"} />
-                                        <div className={style.fullWidth}>
-                                            <CommonSelectField
-                                                className={`${style.fullWidth} `}
-                                                defaultValue={metadata?.[0]?.approver?.id}
-                                                value={
-                                                    metadata?.[0]?.approver?.id
-                                                        ? metadata?.[0]?.approver?.id
-                                                        : "0"
-                                                }
-                                                onChange={(e) => {
-                                                    onApproverSelected(
-                                                        users
-                                                            ?.filter((data) => data?.id === e.target.value)
-                                                            ?.map((data) => data)[0],
-                                                        data?.performingActivity,
-                                                        title
-                                                            ?.filter(
-                                                                (titleData) => titleData?.approver === true
-                                                            )
-                                                            ?.map((data) => data)[0]
-                                                    );
-                                                }}
-                                                firstOptionLabel={"Select Approver"}
-                                                firstOptionValue={"0"}
-                                                valueList={title
-                                                    ?.filter((titleData) => titleData?.approver === true)
-                                                    ?.map((data) => data?.id)}
-                                                labelList={title
-                                                    ?.filter((titleData) => titleData?.approver === true)
-                                                    ?.map(
-                                                        (titleData) =>
-                                                            `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`
-                                                    )}
-                                                disabledList={title?.map((data) => false)}
-                                                widthValue={550}
-                                            />
-                                        </div>
-                                    </div>
-                                )}
-
-                            </div>
-                        </div>
-                    ))}
+                //                 </div>
+                //             </div>
+                //         ))
+            }
 
             {!editService && (
                 <div className={`${style.marginTop20} ${style.addAddonGrid}`}>
@@ -1376,42 +1255,6 @@ const HospiceService = ({
                             }}
                         />
                     </div>
-
-                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        <CommonLabel value="Billable Service*" />
-                        <CommonSwitch
-                            label={newServices?.billableService ? "YES" : "NO"}
-                            className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`}
-                            checked={newServices?.billableService}
-                            onChange={() =>
-                                handleNewServiceChange(
-                                    "billableService",
-                                    !newServices?.billableService
-                                )
-                            }
-                        />
-                    </div>
-                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        <CommonLabel value="Service Session Duration" />
-                        <div className={`${style.threeFieldWidth}`}>
-                            <CommonTextField
-                                type="tel"
-                                maxLength="3"
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end" sx={{ fontSize: 10 }}>
-                                            Hours
-                                        </InputAdornment>
-                                    ),
-                                }}
-                                onChange={(e) =>
-                                    e.target.value >= 0 &&
-                                    handleNewServiceChange("sessionDuration", e.target.value)
-                                }
-                                value={newServices?.sessionDuration}
-                            />
-                        </div>
-                    </div>
                     {newServices?.billableService && (
                         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                             <CommonLabel value="Payment Rate*" />
@@ -1441,55 +1284,6 @@ const HospiceService = ({
                         </div>
                     )}
 
-                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        <CommonLabel value="Specify Service Facility / Location" />
-                        <div>
-                            <div className={`${style.displayInRow}`}>
-                                <CommonSwitch
-                                    className={`${style.textAlignLeft}`}
-                                    checked={newServices?.showLocation}
-                                    onChange={(e) =>
-                                        handleNewServiceChange(
-                                            "showLocation",
-                                            !newServices?.showLocation
-                                        )
-                                    }
-                                    label={newServices?.showLocation ? "YES" : "NO"}
-                                />
-                                {newServices?.showLocation && (
-                                    <div className={` ${style.fullWidth}`}>
-                                        <DatalistInput
-                                            items={locationItems || []}
-                                            setValue={setValue}
-                                            onSelect={handleNewServiceLocation}
-                                            className={style.fullWidth}
-                                            onChange={(e) => getNewLocation(e.target.value)}
-                                            clearInputOnSelect={true}
-                                        />
-                                        {/* <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
-                      <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={locationToAdd} />
-                    </div> */}
-                                    </div>
-                                )}
-                            </div>
-                            {newServices?.locations?.length !== 0 &&
-                                newServices?.showLocation && (
-                                    <MultiSelectDisplay
-                                        values={newServices?.locations?.map(
-                                            (data) => data?.location
-                                        )}
-                                        removeItem={(index) =>
-                                            setNewServices({
-                                                ...newServices,
-                                                locations: newServices?.locations
-                                                    ?.filter((data, indexValue) => index !== indexValue)
-                                                    ?.map((data) => data),
-                                            })
-                                        }
-                                    />
-                                )}
-                        </div>
-                    </div>
 
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                         <CommonLabel value="Additional Details*" />
@@ -1531,17 +1325,17 @@ const HospiceService = ({
                                                         labelId="demo-multiple-checkbox-label"
                                                         id="demo-multiple-checkbox"
                                                         multiple
-                                                        value={selectedCodes}
+                                                        value={CPTCode?.map(data => data)}
                                                         onChange={(e) => handleCodeChange(e.target.value)}
                                                         input={<OutlinedInput label="" />}
                                                         SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                                                        renderValue={selectedCodes => selectedCodes.map(data => data?.codeName)?.join(', ')}
+                                                        renderValue={CPTCode => CPTCode.map(data => data?.description)?.join(', ')}
                                                         MenuProps={MenuProps}
                                                     >
-                                                        {codes.map((name) => (
+                                                        {CPTCode.map((name) => (
                                                             <MenuItem key={name} value={name}>
-                                                                <Checkbox checked={selectedCodes?.map(data => data?.id)?.includes(name?.id)} style={{ color: '#7165E3' }} />
-                                                                <ListItemText primary={name?.codeName} />
+                                                                <Checkbox checked={CPTCode?.map(data => data?.id)?.includes(name?.id)} style={{ color: '#7165E3' }} />
+                                                                <ListItemText primary={name?.description} />
                                                             </MenuItem>
                                                         ))}
                                                     </Select>
@@ -1550,7 +1344,7 @@ const HospiceService = ({
                                                     className={`${style.addCptCodeButton} ${style.alignCenter}`}
                                                     onClick={() => { }}
                                                 >
-                                                    ADD CPT CODE
+                                                    ADD / MODIFY CPT CODE
                                                 </div>
                                             </div>
                                         )}
@@ -1665,7 +1459,7 @@ const HospiceService = ({
                         </div>
                     </div>
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        <CommonLabel value="Allowable Add-On Working Hours*" />
+                        <CommonLabel value="Allowable Working Hours*" />
                         <div className={style.twoCol}>
                             <CommonCheckBox
                                 checked={newServices?.duringNormalWorkingHours}

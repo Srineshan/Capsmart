@@ -660,6 +660,7 @@ const AddonClinicFields = ({
       });
     setMetadata(temp);
     getFields();
+    generateCustomAddOnFields();
   };
 
   const onAdditionalServiceApproverChange = (name, value) => {
@@ -683,6 +684,7 @@ const AddonClinicFields = ({
       });
     setMetadata(temp);
     getFields();
+    generateCustomAddOnFields();
   };
 
   const additionalDetailSelectionChange = (data) => {
@@ -868,8 +870,6 @@ const AddonClinicFields = ({
     })
     setCustomAddOnFields(temp);
   }
-
-  console.log('metadata', metadata);
 
   const dataCheck = (value) => {
     if (editService) {
