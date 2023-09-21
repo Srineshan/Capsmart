@@ -44,7 +44,7 @@ const MenuProps = {
     PaperProps: {
         style: {
             maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-            width: 300,
+            // width: 300,
         },
     },
 };
@@ -645,6 +645,18 @@ const HospiceService = ({
             hourlyRate: {
                 value: newServices?.rate,
             },
+            serviceDays: {
+                friday: true,
+                isholidays: true,
+                monday: true,
+                tuesday: true,
+                wednesday: true,
+                thursday: true,
+                saturday: true,
+                sunday: true,
+                weekDays: true,
+                weekEnds: true,
+            },
             locations: newServices?.locations,
             locationSpecified: newServices?.showLocation,
             workingHours: {
@@ -749,7 +761,7 @@ const HospiceService = ({
                                         <div className={style.verticalAlignCenter}>
                                             <CommonLabel
                                                 className={`${style.marginLeft20}`}
-                                                value={`Per Session`}
+                                                value={`Per Hour`}
                                             />
                                         </div>
                                     </div>
@@ -822,7 +834,7 @@ const HospiceService = ({
                                                             className={`${style.addCptCodeButton} ${style.alignCenter}`}
                                                             onClick={() => { }}
                                                         >
-                                                            ADD CPT CODE
+                                                            ADD / MODIFY CPT CODE
                                                         </div>
                                                     </div>
                                                 )}
@@ -1277,7 +1289,7 @@ const HospiceService = ({
                                 <div className={style.verticalAlignCenter}>
                                     <CommonLabel
                                         className={`${style.marginLeft20}`}
-                                        value={`Per Session`}
+                                        value={`Per Hour`}
                                     />
                                 </div>
                             </div>

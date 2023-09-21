@@ -1385,6 +1385,9 @@ const AddServiceProvided = ({
             workFlow: dataValues?.workFlow,
           }),
           patientMRNRequired: dataValues?.patientMRNRequired || false,
+          reasonRequired: dataValues?.reasonRequired || false,
+          cptcodeRequired: dataValues?.cptcodeRequired || false,
+          encounterDocumentationRequired: dataValues?.encounterDocumentationRequired || false,
           attendingDocRequired: dataValues?.attendingDocRequired || false,
           activityApprovalWFRequired:
             dataValues?.activityApprovalWFRequired || false,
