@@ -380,7 +380,7 @@ const Navbar = () => {
                       <div className={style.options}>Payments</div>
                     </Link>
                   )}
-                  {isContractManagementAvailable && (
+                  {/* {isContractManagementAvailable && (
                     <Link
                       to={"/reports/contractManagement"}
                       className={style.noFontStyle}
@@ -395,7 +395,7 @@ const Navbar = () => {
                     >
                       <div className={style.options}>Contract Compliance</div>
                     </Link>
-                  )}
+                  )} */}
                   {/* <Link to={'/reports/contractPerformance'} className={style.noFontStyle}>
                                     <div className={style.options}>Contract Performance</div>
                                 </Link>
