@@ -137,7 +137,6 @@ const ReportTypeOverview = () => {
         //     getCompensationCostAnalysis();
         // }
         getUsersData();
-        console.log('initial one');
     }, [])
 
     useEffect(() => {
@@ -305,7 +304,6 @@ const ReportTypeOverview = () => {
 
     const getIsDownloadClicked = (value) => {
         setIsDownloadClicked(value);
-        console.log('entered')
         if (value) {
             toPDF(".Report");
         }
@@ -498,7 +496,6 @@ const ReportTypeOverview = () => {
             chartData?.paymentStats?.medianPayment !== 0 ||
             chartData?.paymentStats?.minPayment !== 0) && chartData !== undefined) {
             let temp = [];
-            console.log(chartData)
             Object?.keys(chartData?.timesheetProcessingStatus)?.map((data, index) => {
                 temp[index] = { key: data, value: Object?.values(chartData?.timesheetProcessingStatus)?.[index] }
             })
@@ -1164,7 +1161,7 @@ const ReportTypeOverview = () => {
                 </div>
                 <div>
                     <ReportPerformanceAndOptions handle={handle} getIsRefresh={getIsRefresh} handlePrint={handlePrint} isUpdated={isLoading} dataToUseInReport={dataToUseInReport} refToUse={PDFRef} getIsDownloadClicked={getIsDownloadClicked} isNoData={isNoData} />
-                    <FullScreen handle={handle}>
+                    <FullScreen handle={handle} className={handle.active ? style.scroll : ''}>
                         <div className={`Report`} ref={PDFRef}>
                             <div className={`${style.reportBackgroundCard} ${style.marginTop20} `} ref={componentRef}>
                                 <table style={{ width: '100%' }}>
