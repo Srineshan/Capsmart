@@ -1565,7 +1565,7 @@ const ReportTypeOverview = () => {
                                                                     <div className={`${style.calendarBoxBottomStyle} ${style.alignCenter} ${style.justifyCenter} `}>
                                                                         <div>
                                                                             <div className={style.calendarDateStyle}>{totalSubmittedTimesheets}</div>
-                                                                            <div className={style.calendarMonthYearStyle}>June 2023</div>
+                                                                            {/* <div className={style.calendarMonthYearStyle}>June 2023</div> */}
                                                                         </div>
                                                                     </div>
                                                                 </div>
