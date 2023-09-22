@@ -2095,13 +2095,7 @@ const OnCallCoverageFields = ({
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
               <CommonLabel
                 value="On Call Payment Amount*"
-                className={
-                  !metadata?.billableService
-                    ? dataCheck(metadata?.sessionAmount)
-                      ? style.redLable
-                      : ""
-                    : ""
-                }
+                className={dataCheck(metadata?.sessionAmount) ? style.redLable : ""}
               />
               <div className={`${style.displayInRow}`}>
                 <div className={`${style.threeFieldWidth}`}>

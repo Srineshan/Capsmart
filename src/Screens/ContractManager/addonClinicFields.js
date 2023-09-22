@@ -25,6 +25,7 @@ import CommonSwitch from "../../Components/CommonFields/CommonSwitch";
 import CommonTextField from "../../Components/CommonFields/CommonTextField";
 import CommonLabel from "../../Components/CommonFields/CommonLabel";
 import { valueCheck } from "../../utils/valueCheck";
+import { format } from "date-fns";
 
 import style from "./index.module.scss";
 import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
@@ -737,7 +738,9 @@ const AddonClinicFields = ({
               <CommonSwitch label={data?.billableService ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} checked={data?.billableService} onChange={() => UpdateBillable(data?.performingActivity, !data?.billableService)} />
             </div>
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-              <CommonLabel value='Service Session Duration' />
+              <CommonLabel value='Service Session Duration'
+                className={dataCheck(data?.sessionDuration) ? style.redLable : ""}
+              />
               <div className={`${style.threeFieldWidth}`}>
                 <CommonTextField
                   type="tel"
@@ -753,7 +756,9 @@ const AddonClinicFields = ({
             {
               data?.billableService &&
               <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <CommonLabel value='ADD-ON Payment Rate*' />
+                <CommonLabel value='ADD-ON Payment Rate*'
+                  className={dataCheck(data?.sessionAmount) ? style.redLable : ""}
+                />
                 <div className={`${style.displayInRow}`}>
                   <div className={`${style.threeFieldWidth}`}>
                     <CommonTextField
@@ -847,7 +852,13 @@ const AddonClinicFields = ({
               </div>
             </div>
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-              <CommonLabel value='Allowable Working Day Hours For Service*' />
+              <CommonLabel value='Allowable Working Day Hours For Service*'
+                className={
+                  format(data?.workingTimeTo || new Date(), "H") === "0" &&
+                    format(data?.workingTimeFrom || new Date(), "H") === "0"
+                    ? style.redLable
+                    : ""
+                } />
               <div className={style.displayInRow}>
                 <TimePicker
                   useAmPm={false}
@@ -1048,7 +1059,9 @@ const AddonClinicFields = ({
                   <div
                     className={`${style.addManagerGrid} ${style.marginTop20}`}
                   >
-                    <CommonLabel value={"Designate Request Approver*"} />
+                    <CommonLabel value={"Designate Request Approver*"}
+                      className={dataCheck(metadata?.[0]?.approver?.id) ? style.redLable : ""}
+                    />
                     <div className={style.fullWidth}>
                       <CommonSelectField
                         className={`${style.fullWidth} `}
@@ -1166,7 +1179,9 @@ const AddonClinicFields = ({
             />
           </div>
           <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-            <CommonLabel value="Service Session Duration" />
+            <CommonLabel value="Service Session Duration"
+              className={dataCheck(newServices?.sessionDuration) ? style.redLable : ""}
+            />
             <div className={`${style.threeFieldWidth}`}>
               <CommonTextField
                 type="tel"
@@ -1188,7 +1203,9 @@ const AddonClinicFields = ({
           </div>
           {newServices?.billableService && (
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-              <CommonLabel value="ADD-ON Payment Rate*" />
+              <CommonLabel value="ADD-ON Payment Rate*"
+                className={dataCheck(newServices?.rate) ? style.redLable : ""}
+              />
               <div className={`${style.displayInRow}`}>
                 <div className={`${style.threeFieldWidth}`}>
                   <CommonTextField
@@ -1218,7 +1235,9 @@ const AddonClinicFields = ({
           )}
 
           <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-            <CommonLabel value="Specify Service Facility / Location" />
+            <CommonLabel value="Specify Service Facility / Location"
+              className={newServices?.showLocation && (!newServices?.locations || newServices?.locations?.length === 0) ? style.redLable : ""}
+            />
             <div>
               <div className={`${style.displayInRow}`}>
                 <CommonSwitch
@@ -1430,7 +1449,13 @@ const AddonClinicFields = ({
             </div>
           </div>
           <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-            <CommonLabel value="Allowable Working Day Hours For Service*" />
+            <CommonLabel value="Allowable Working Day Hours For Service*"
+              className={
+                format(metadata?.workingTimeTo || new Date(), "H") === "0" &&
+                  format(metadata?.workingTimeFrom || new Date(), "H") === "0"
+                  ? style.redLable
+                  : ""
+              } />
             <div className={style.displayInRow}>
               <TimePicker
                 useAmPm={false}

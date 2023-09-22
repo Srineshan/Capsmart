@@ -448,16 +448,11 @@ const SupplementalFields = ({
             </div> */}
             {
                 metadata?.baseServiceAvailable && (
-
                     <div>
                         <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
                             <CommonLabel
                                 value="Supplemental Service Type*"
-                                className={
-                                    dataCheck(metadata?.supplementalActivityType)
-                                        ? style.redLable
-                                        : ""
-                                }
+                                className={editService && (!metadata?.supplementalActivityType || metadata?.supplementalActivityType?.length === 0) ? style.redLable : ""}
                             />
                             <div>
                                 <div>
@@ -504,14 +499,8 @@ const SupplementalFields = ({
                 <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
                     <CommonLabel
                         value="Supplement Services To Perform*"
-                        className={
-                            dataCheck(
-                                metadata?.supplementServiceName ||
-                                metadata?.supplementServiceName.length === 0
-                            )
-                                ? style.redLable
-                                : ""
-                        }
+                        className={editService && (!metadata?.supplementServiceName || metadata?.supplementServiceName?.length === 0) ? style.redLable : ""}
+
                     />
                     <div>
                         <div className={style.addGrid}>
