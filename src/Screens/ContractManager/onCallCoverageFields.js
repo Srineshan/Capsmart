@@ -12,12 +12,31 @@ import CommonCheckBox from "../../Components/CommonFields/CommonCheckBox";
 import CommonSwitch from "../../Components/CommonFields/CommonSwitch";
 import CommonTextField from "../../Components/CommonFields/CommonTextField";
 import CommonLabel from "../../Components/CommonFields/CommonLabel";
+import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import { SpecifiedCountCalculator } from "./specifiedCountCalculator";
 import { valueCheck } from "../../utils/valueCheck";
-
+import OutlinedInput from '@mui/material/OutlinedInput';
+import {
+  FormControl,
+  ListItemText,
+  MenuItem,
+  Checkbox,
+  Select,
+} from "@material-ui/core";
 import style from "./index.module.scss";
 import EditableTable from "./editableTable";
 import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
+
+const ITEM_HEIGHT = 38;
+const ITEM_PADDING_TOP = 5;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      // width: 300,
+    },
+  },
+};
 
 const OnCallCoverageFields = ({
   getMetaData,
@@ -30,6 +49,17 @@ const OnCallCoverageFields = ({
   editService,
 }) => {
   const [timesheetWorkFlow, setTimesheetWorkflow] = useState([]);
+  let additionalDetails = [
+    "Require Patient Data",
+    "Require CPT / HCPCS code",
+    "Require Details Documentation for service",
+  ];
+  const [codes, setCodes] = useState([{ id: '1', codeName: 'Code 1' },
+  { id: '2', codeName: 'Code 2' },
+  { id: '3', codeName: 'Code 3' },
+  { id: '4', codeName: 'Code 4' },
+  { id: '5', codeName: 'Code 5' },]);
+  const [selectedCodes, setSelectedCodes] = useState([]);
   const [metadata, setMetadata] = useState({
     min: 0,
     max: 99999999,
@@ -123,7 +153,13 @@ const OnCallCoverageFields = ({
     holidayMax: 0,
     holidayPayment: 0,
     holidayPaymentNa: false,
+    encounterDocumentationRequired: true,
+    cptcodeRequired: false,
+    reasonRequired: false,
   });
+
+  const [additionalDetailsValue, setAdditionalDetailsValue] = useState([]);
+  const [CPTCode, setCPTCode] = useState([]);
 
   useEffect(() => {
     if (isReset) {
@@ -226,6 +262,9 @@ const OnCallCoverageFields = ({
       holidayMax: 0,
       holidayPayment: 0,
       holidayPaymentNa: false,
+      encounterDocumentationRequired: true,
+      cptcodeRequired: false,
+      reasonRequired: false,
     });
   };
 
@@ -281,6 +320,9 @@ const OnCallCoverageFields = ({
         holidayMax: 0,
         patientMRNRequired: false,
         attendingDocRequired: false,
+        encounterDocumentationRequired: true,
+        cptcodeRequired: false,
+        reasonRequired: false,
       });
     } else {
       setMetadata({ ...metadata, customizedSchedule: value });
@@ -369,6 +411,13 @@ const OnCallCoverageFields = ({
     setSelectedValues();
   }, [serviceSelected, addOnWorkFlow, user]);
 
+  const getCPTCode = async () => {
+    const { data: cptCode } = await GET("entity-service/cptCode");
+    if (cptCode) {
+      setCPTCode(cptCode)
+    }
+  }
+
   const setSelectedValues = () => {
     let dependentActivities = [];
     serviceSelected?.dependentService?.additionalServices?.map((data) => {
@@ -382,6 +431,7 @@ const OnCallCoverageFields = ({
         holidayTo: GetDateFromHours(data?.holiday?.to?.toString() || ""),
         patientMRNRequired: data?.patientMRNRequired,
         attendingDocRequired: data?.attendingDocRequired,
+
       });
     });
 
@@ -514,7 +564,23 @@ const OnCallCoverageFields = ({
         workflowId: serviceSelected?.dependentService?.workFlow?.id,
         workflowName:
           serviceSelected?.dependentService?.workFlow?.workFlowName?.name,
+        reasonRequired: serviceSelected?.reasonRequired,
+        cptcodeRequired: serviceSelected?.cptcodeRequired,
+        encounterDocumentationRequired: serviceSelected?.encounterDocumentationRequired,
+
       });
+
+      let additionalDetailsTemp = [];
+      if (serviceSelected?.patientMRNRequired) {
+        additionalDetailsTemp.push("Require Patient Data");
+      }
+      if (serviceSelected?.cptcodeRequired) {
+        additionalDetailsTemp.push("Require CPT / HCPCS code");
+      }
+      if (serviceSelected?.reasonRequired) {
+        additionalDetailsTemp.push("Require Details Documentation for service");
+      }
+      setAdditionalDetailsValue(additionalDetailsTemp);
     }
   };
   const limit5 = 5;
@@ -526,6 +592,7 @@ const OnCallCoverageFields = ({
   useEffect(() => {
     getTimeSheetWorkFlow();
     getUserData();
+    getCPTCode();
   }, []);
 
   const handleValueChange = (name, value) => {
@@ -677,6 +744,30 @@ const OnCallCoverageFields = ({
     setMetadata({ ...metadata, workingTimeFrom: e });
   };
 
+  const handleAdditionalDetailSelection = (data) => {
+    let temp = additionalDetailsValue || [];
+    if (temp?.includes(data)) {
+      temp = temp?.filter((detail) => detail !== data)?.map((data) => data);
+    } else {
+      temp?.push(data);
+    }
+    // "Require Patient Data",
+    // "Require CPT / HCPCS code",
+    // "Require Details Documentation for service",
+    if (data === "Require Patient Data") {
+      setMetadata({ ...metadata, patientMRNRequired: !metadata?.patientMRNRequired })
+    } else if (data === "Require CPT / HCPCS code") {
+      setMetadata({ ...metadata, cptcodeRequired: !metadata?.cptcodeRequired })
+    } else {
+      setMetadata({ ...metadata, reasonRequired: !metadata?.reasonRequired })
+    }
+    setAdditionalDetailsValue(temp);
+  };
+
+  const handleCodeChange = (value) => {
+    setSelectedCodes(value);
+  }
+
   const addAdditionalEntry = () => {
     let temp = metadata?.additionalActivity;
     temp.push({
@@ -752,7 +843,8 @@ const OnCallCoverageFields = ({
 
   return (
     <div>
-      <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+      {/* Dont remove this */}
+      {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
         <CommonLabel
           value="On Call Coverage For *"
           className={
@@ -789,7 +881,7 @@ const OnCallCoverageFields = ({
             label="ED"
           />
         </div>
-      </div>
+      </div> */}
 
       <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
         <CommonLabel
@@ -811,8 +903,8 @@ const OnCallCoverageFields = ({
           setIsReset={getIsReset}
         />
       </div>
-
-      <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+      {/* Dont remove this */}
+      {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
         <CommonLabel value="Same On Call Schedule For All Days" />
         <div className={style.onCallBillableGrid}>
           <CommonSwitch
@@ -824,7 +916,7 @@ const OnCallCoverageFields = ({
             }
           />
         </div>
-      </div>
+      </div> */}
       {metadata?.customizedSchedule && (
         <div className={`${style.addonAddBox} ${style.marginTop20}`}>
           <div className={`${style.addManagerGrid}`}>
@@ -890,10 +982,6 @@ const OnCallCoverageFields = ({
               />
             </div>
             <div className={style.displayInRow}>
-              {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                <div className={style.textElement}>MIN</div>
-                                <EditableText disabled={metadata?.weekdayFrequency === 'NA' || !metadata?.serviceDays?.weekDays} value={metadata?.weekdayMin} placeholder='' onChange={(e) => e >= 0 && onCustomizeFieldChange(e, 'weekdayMin')} type='tel' maxLength='2' className={style.serviceProvidedEditableTextStyle} />
-                            </div> */}
               <CommonTextField
                 InputProps={{
                   startAdornment: (
@@ -1939,8 +2027,8 @@ const OnCallCoverageFields = ({
               />
             </div>
           </div>
-
-          <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+          {/* Dont remove this */}
+          {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
             <CommonLabel value="Billable Service*" />
             <div className={style.displayInRow}>
               <div className={`${style.threeFieldWidth}`}>
@@ -1971,7 +2059,7 @@ const OnCallCoverageFields = ({
                 // </Select>
               }
             </div>
-          </div>
+          </div> */}
 
           <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
             <CommonLabel
@@ -2099,7 +2187,8 @@ const OnCallCoverageFields = ({
                     <CommonSwitch checked={metadata?.patientMRNRequired} label={metadata?.patientMRNRequired ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} onChange={() => handleValueChange('patientMRNRequired', !metadata?.patientMRNRequired)} />
                 </div>
             </div> */}
-      <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+      {/* Dont remove this */}
+      {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
         <CommonLabel value="Attending Doc Required" />
         <div className={style.onCallBillableGrid}>
           <CommonSwitch
@@ -2114,9 +2203,9 @@ const OnCallCoverageFields = ({
             }
           />
         </div>
-      </div>
-
-      <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+      </div> */}
+      {/* Dont remove this */}
+      {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
         <CommonLabel value="Additional Schedule*" />
         <div className={style.grid3}>
           <div className={`${style.fullWidth}`}>
@@ -2175,7 +2264,7 @@ const OnCallCoverageFields = ({
             </>
           )}
         </div>
-      </div>
+      </div> */}
 
       <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
         <CommonLabel
@@ -2234,8 +2323,8 @@ const OnCallCoverageFields = ({
           </div>
         </div>
       </div>
-
-      <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+      {/* Dont remove this */}
+      {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
         <CommonLabel value="Any Additional On Call Services Specified" />
         <div className={style.onCallBillableGrid}>
           <CommonSwitch
@@ -2250,7 +2339,7 @@ const OnCallCoverageFields = ({
             }
           />
         </div>
-      </div>
+      </div> */}
       {metadata?.dependantServiceIncluded && (
         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
           <CommonLabel value="Billable Service" />
@@ -2387,6 +2476,85 @@ const OnCallCoverageFields = ({
           </>
         </>
       )}
+      <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+        <CommonLabel value="On Call clinical Consult encounter Documentation Required" />
+        <div>
+          <div className={style.onCallBillableGrid}>
+            <CommonSwitch
+              checked={metadata?.encounterDocumentationRequired}
+              className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`}
+              label={metadata?.encounterDocumentationRequired ? "YES" : "NO"}
+              onChange={(e) =>
+                handleValueChange(
+                  "encounterDocumentationRequired",
+                  !metadata?.encounterDocumentationRequired
+                )
+              }
+            />
+          </div>
+          <div>
+            {metadata?.encounterDocumentationRequired && additionalDetails?.map((data, index) => (
+              <>
+                <div
+                  className={`${style.additionalDetails} ${additionalDetailsValue?.includes(data)
+                    ? style.additionalDetailsSelected
+                    : ""
+                    } ${style.cursorPointer} ${index !== 0 ? style.marginTop10 : ""
+                    }`}
+                  onClick={() => handleAdditionalDetailSelection(data)}
+                >
+                  <div className={style.alignCenter}>
+                    <TaskAltIcon
+                      sx={{
+                        color: additionalDetailsValue?.includes(data)
+                          ? "#7165E3"
+                          : "#E4E4E4",
+                      }}
+                    />
+                  </div>
+                  <div
+                    className={`${style.additionalDetailsTextStyle} ${style.verticalAlignCenter}`}
+                  >
+                    {data}
+                  </div>
+                </div>
+                {data === "Require CPT / HCPCS code" && metadata?.cptcodeRequired && (
+                  <div className={`${style.grid3} ${style.marginTop20}`}>
+
+                    <CommonLabel value={"Applicable CPT / HCPCS Code*"} />
+                    <FormControl sx={{ m: 1, width: 300 }} size="small">
+                      <Select
+                        labelId="demo-multiple-checkbox-label"
+                        id="demo-multiple-checkbox"
+                        multiple
+                        value={CPTCode?.map(data => data)}
+                        onChange={(e) => handleCodeChange(e.target.value)}
+                        input={<OutlinedInput label="" />}
+                        SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                        renderValue={CPTCode => CPTCode.map(data => data?.description)?.join(', ')}
+                        MenuProps={MenuProps}
+                      >
+                        {CPTCode.map((name) => (
+                          <MenuItem key={name} value={name?.description}>
+                            <Checkbox checked={CPTCode?.map(data => data?.description)?.includes(name?.description)} style={{ color: '#7165E3' }} />
+                            <ListItemText primary={name?.description} />
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                    <div
+                      className={`${style.addCptCodeButton} ${style.alignCenter}`}
+                      onClick={() => { }}
+                    >
+                      ADD / MODIFY CPT CODE
+                    </div>
+                  </div>
+                )}
+              </>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

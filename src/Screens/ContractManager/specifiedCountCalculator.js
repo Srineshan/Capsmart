@@ -1,7 +1,7 @@
 export const SpecifiedCountCalculator = (contractedSchedules, timeCommitment, additionalFreq, additionalValue) => {
     let temp = contractedSchedules;
     let schedulesTotal = 0;
-
+    console.log('temp', temp);
     temp?.map(data => {
         console.log('frequency', data?.frequency);
         if (data?.frequency?.includes(timeCommitment?.frequency)) {
