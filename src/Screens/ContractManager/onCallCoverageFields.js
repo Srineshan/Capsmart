@@ -757,8 +757,8 @@ const OnCallCoverageFields = ({
           value="On Call Coverage For *"
           className={
             metadata?.onCallCoverageFor === null ||
-            (metadata?.onCallCoverageFor !== undefined &&
-              metadata?.onCallCoverageFor?.length === 0)
+              (metadata?.onCallCoverageFor !== undefined &&
+                metadata?.onCallCoverageFor?.length === 0)
               ? style.redLable
               : ""
           }
@@ -796,10 +796,10 @@ const OnCallCoverageFields = ({
           value="Allowable Service Days*"
           className={
             metadata?.serviceDays === null ||
-            (metadata?.serviceDays !== undefined &&
-              Object?.values(metadata?.serviceDays)?.filter(
-                (data) => data === true
-              )?.length === 0)
+              (metadata?.serviceDays !== undefined &&
+                Object?.values(metadata?.serviceDays)?.filter(
+                  (data) => data === true
+                )?.length === 0)
               ? style.redLable
               : ""
           }
@@ -1278,13 +1278,11 @@ const OnCallCoverageFields = ({
               <div className={style.displayInRow}>
                 <div className={style.displayInRow}>
                   <div
-                    className={`${style.dayStyle} ${style.alignCenter} ${
-                      style.cursorPointer
-                    } ${
-                      metadata?.weekendStartday === "FRIDAY"
+                    className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer
+                      } ${metadata?.weekendStartday === "FRIDAY"
                         ? style.selectedDay
                         : ""
-                    }`}
+                      }`}
                     onClick={() =>
                       onCustomizeFieldChange("FRIDAY", "weekendStartday")
                     }
@@ -1292,13 +1290,11 @@ const OnCallCoverageFields = ({
                     F
                   </div>
                   <div
-                    className={`${style.dayStyle} ${style.alignCenter} ${
-                      style.cursorPointer
-                    } ${
-                      metadata?.weekendStartday === "SATURDAY"
+                    className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer
+                      } ${metadata?.weekendStartday === "SATURDAY"
                         ? style.selectedDay
                         : ""
-                    }`}
+                      }`}
                     onClick={() =>
                       onCustomizeFieldChange("SATURDAY", "weekendStartday")
                     }
@@ -1306,13 +1302,11 @@ const OnCallCoverageFields = ({
                     S
                   </div>
                   <div
-                    className={`${style.dayStyle} ${style.alignCenter} ${
-                      style.cursorPointer
-                    } ${
-                      metadata?.weekendStartday === "SUNDAY"
+                    className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer
+                      } ${metadata?.weekendStartday === "SUNDAY"
                         ? style.selectedDay
                         : ""
-                    }`}
+                      }`}
                     onClick={() =>
                       onCustomizeFieldChange("SUNDAY", "weekendStartday")
                     }
@@ -1320,13 +1314,11 @@ const OnCallCoverageFields = ({
                     S
                   </div>
                   <div
-                    className={`${style.dayStyle} ${style.alignCenter} ${
-                      style.cursorPointer
-                    } ${
-                      metadata?.weekendStartday === "MONDAY"
+                    className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer
+                      } ${metadata?.weekendStartday === "MONDAY"
                         ? style.selectedDay
                         : ""
-                    }`}
+                      }`}
                     onClick={() =>
                       onCustomizeFieldChange("MONDAY", "weekendStartday")
                     }
@@ -1343,13 +1335,11 @@ const OnCallCoverageFields = ({
                 </div>
                 <div className={`${style.displayInRow} ${style.marginLeft20}`}>
                   <div
-                    className={`${style.dayStyle} ${style.alignCenter} ${
-                      style.cursorPointer
-                    } ${
-                      metadata?.weekendEndday === "FRIDAY"
+                    className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer
+                      } ${metadata?.weekendEndday === "FRIDAY"
                         ? style.selectedDay
                         : ""
-                    }`}
+                      }`}
                     onClick={() =>
                       onCustomizeFieldChange("FRIDAY", "weekendEndday")
                     }
@@ -1357,13 +1347,11 @@ const OnCallCoverageFields = ({
                     F
                   </div>
                   <div
-                    className={`${style.dayStyle} ${style.alignCenter} ${
-                      style.cursorPointer
-                    } ${
-                      metadata?.weekendEndday === "SATURDAY"
+                    className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer
+                      } ${metadata?.weekendEndday === "SATURDAY"
                         ? style.selectedDay
                         : ""
-                    }`}
+                      }`}
                     onClick={() =>
                       onCustomizeFieldChange("SATURDAY", "weekendEndday")
                     }
@@ -1371,13 +1359,11 @@ const OnCallCoverageFields = ({
                     S
                   </div>
                   <div
-                    className={`${style.dayStyle} ${style.alignCenter} ${
-                      style.cursorPointer
-                    } ${
-                      metadata?.weekendEndday === "SUNDAY"
+                    className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer
+                      } ${metadata?.weekendEndday === "SUNDAY"
                         ? style.selectedDay
                         : ""
-                    }`}
+                      }`}
                     onClick={() =>
                       onCustomizeFieldChange("SUNDAY", "weekendEndday")
                     }
@@ -1385,13 +1371,11 @@ const OnCallCoverageFields = ({
                     S
                   </div>
                   <div
-                    className={`${style.dayStyle} ${style.alignCenter} ${
-                      style.cursorPointer
-                    } ${
-                      metadata?.weekendEndday === "MONDAY"
+                    className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer
+                      } ${metadata?.weekendEndday === "MONDAY"
                         ? style.selectedDay
                         : ""
-                    }`}
+                      }`}
                     onClick={() =>
                       onCustomizeFieldChange("MONDAY", "weekendEndday")
                     }
@@ -1866,7 +1850,12 @@ const OnCallCoverageFields = ({
       {!metadata?.customizedSchedule && (
         <>
           <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-            <CommonLabel value="Number of On Call Duty Days*" />
+            <CommonLabel value="Number of On Call Duty Days*"
+              className={
+                ((isNaN(metadata?.min) && editService) || dataCheck(metadata?.min))
+                  ? style.redLable
+                  : ""
+              } />
             <div className={style.displayInRow}>
               {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MIN</div>
@@ -2068,7 +2057,7 @@ const OnCallCoverageFields = ({
               value="Allowable Working Day Hours For Service*"
               className={
                 format(metadata?.workingTimeTo || new Date(), "H") === "0" &&
-                format(metadata?.workingTimeFrom || new Date(), "H") === "0"
+                  format(metadata?.workingTimeFrom || new Date(), "H") === "0"
                   ? style.redLable
                   : ""
               }
@@ -2098,7 +2087,7 @@ const OnCallCoverageFields = ({
                     ? null
                     : new Date(metadata?.workingTimeTo)
                 }
-                // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
+              // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
               />
             </div>
           </div>
@@ -2206,8 +2195,7 @@ const OnCallCoverageFields = ({
               onChange={(e) => onTotalSessionChange(e.slice(0, 6))}
             />
             <div
-              className={`${style.textElement} ${
-                parseFloat(metadata?.totalSession) ===
+              className={`${style.textElement} ${parseFloat(metadata?.totalSession) ===
                 parseFloat(
                   SpecifiedCountCalculator(
                     metadata?.contractedSchedules,
@@ -2216,9 +2204,9 @@ const OnCallCoverageFields = ({
                     metadata?.additionalScheduleValue
                   )
                 )
-                  ? style.greenBase
-                  : style.redBase
-              } `}
+                ? style.greenBase
+                : style.redBase
+                } `}
             >
               {SpecifiedCountCalculator(
                 metadata?.contractedSchedules,
@@ -2240,9 +2228,8 @@ const OnCallCoverageFields = ({
           </div>
           <div className={style.verticalAlignCenter}>
             <CommonLabel
-              value={`For ${timeCommitment?.value} ${
-                timeCommitment?.frequency === "WEEK" ? "Weeks" : "Months"
-              } Per Contract Year`}
+              value={`For ${timeCommitment?.value} ${timeCommitment?.frequency === "WEEK" ? "Weeks" : "Months"
+                } Per Contract Year`}
             />
           </div>
         </div>
