@@ -23,8 +23,9 @@ import SupplementalFields from './supplementalFields';
 import AddonClinicFields from './addonClinicFields';
 import AdministrativeFields from './administrativeFields';
 import SurgerySessionFields from './surgerySessionFields';
+import OnCallService from './OnCallService';
 import { workFlowDataGenerator } from './workflowDataGenerator';
-import { CLINIC, SURGERY, ONCALL, SUPPLEMENTAL, ADDON, ADMINISTRATIVE, PROCEDUREREADING } from '../../Constants';
+import { CLINIC, SURGERY, ONCALL, SUPPLEMENTAL, ADDON, ADMINISTRATIVE, PROCEDUREREADING, ONCALLSERVICE } from '../../Constants';
 import Notes from '../../Components/Notes';
 import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
 import CommonLabel from '../../Components/CommonFields/CommonLabel';
@@ -706,7 +707,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           "activity": performingActivity
         },
         "activities": activities,
-        ...(((serviceTypeTemplate === SUPPLEMENTAL && !dataValues?.dedicatedHoursSpecified) || (serviceTypeTemplate === ADMINISTRATIVE && !dataValues?.dedicatedHoursSpecified)) &&
+        ...((((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ONCALLSERVICE) && !dataValues?.dedicatedHoursSpecified) || (serviceTypeTemplate === ADMINISTRATIVE && !dataValues?.dedicatedHoursSpecified)) &&
         {
           "hoursBorrowed": {
             "activityType": {
@@ -759,7 +760,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             "endDate": contractTermPeriod?.end,
           }]
         })),
-        ...(serviceTypeTemplate !== SUPPLEMENTAL && {
+        ...(serviceTypeTemplate !== SUPPLEMENTAL && serviceTypeTemplate !== ONCALLSERVICE && {
           "additionalSchedule": {
             "value": parseFloat(dataValues?.additionalScheduleValue),
             "frequency": dataValues?.additionalScheduleFrequency,
@@ -788,12 +789,12 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         "payableAmount": {
           "value": parseFloat(dataValues?.sessionAmount)
         },
-        ...((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ADMINISTRATIVE) && dataValues?.dedicatedHoursSpecified && {
+        ...((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ONCALLSERVICE || serviceTypeTemplate === ADMINISTRATIVE) && dataValues?.dedicatedHoursSpecified && {
           "hourlyRate": {
-            "value": serviceTypeTemplate === SUPPLEMENTAL && dataValues?.totalSession === 0 ? Number(dataValues?.sessionAmount)?.toFixed(2) : Number(dataValues?.sessionAmount / dataValues?.totalSession)?.toFixed(2)
+            "value": (serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ONCALLSERVICE) && dataValues?.totalSession === 0 ? Number(dataValues?.sessionAmount)?.toFixed(2) : Number(dataValues?.sessionAmount / dataValues?.totalSession)?.toFixed(2)
           },
         }),
-        ...((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ADMINISTRATIVE) && !dataValues?.dedicatedHoursSpecified && {
+        ...((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === ONCALLSERVICE) && !dataValues?.dedicatedHoursSpecified && {
           "hourlyRate": {
             "value": dataValues?.hourlyRate,
           },
@@ -935,11 +936,11 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         "activityApprovalWFRequired": dataValues?.activityApprovalWFRequired || false,
         "designateSpecificContractor": isDesignatedSpecificContractor,
         "locationSpecified": serviceTypeTemplate === ADDON ? dataValues?.locationSpecified : showLocation,
-        "dedicatedHoursSpecified": [SUPPLEMENTAL, ADMINISTRATIVE].includes(serviceTypeTemplate) ? dataValues?.dedicatedHoursSpecified : false,
+        "dedicatedHoursSpecified": [SUPPLEMENTAL, ADMINISTRATIVE, ONCALLSERVICE].includes(serviceTypeTemplate) ? dataValues?.dedicatedHoursSpecified : false,
         "billableService": dataValues?.billableService,
         "dependantServiceIncluded": dataValues?.dependantServiceIncluded || false,
         "customizedSchedule": dataValues?.customizedSchedule || false,
-        ...((serviceTypeTemplate !== ADDON && !(serviceTypeTemplate === ADMINISTRATIVE && !metadata?.dedicatedHoursSpecified) && !(serviceTypeTemplate === SUPPLEMENTAL && !metadata?.dedicatedHoursSpecified)) && {
+        ...((serviceTypeTemplate !== ADDON && !(serviceTypeTemplate === ADMINISTRATIVE && !metadata?.dedicatedHoursSpecified) && !(serviceTypeTemplate === SUPPLEMENTAL && !metadata?.dedicatedHoursSpecified) && !(serviceTypeTemplate === ONCALLSERVICE && !metadata?.dedicatedHoursSpecified)) && {
           "compensationReductionApplicable": reducedOffsetApplicable
         }),
       }]
@@ -984,7 +985,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           services[conflictedIndex].scheduledPatientsTargets = [];
           services[conflictedIndex].performingActivity.activity = `${selectedActivity?.map(data => data?.activity?.activity)?.join(', ')}`
         }
-        if (conflictData?.type === SUPPLEMENTAL || conflictData?.type === ADMINISTRATIVE) {
+        if (conflictData?.type === SUPPLEMENTAL || conflictData?.type === ADMINISTRATIVE || conflictData?.type === ONCALLSERVICE) {
           services[conflictedIndex].hoursBorrowed = {
             activityType: {
               activityType: services[currentServiceIndex].activityType?.activityType,
@@ -1317,7 +1318,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                       </div>
                     </div>
                   )}
-                  {['FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITH_OFFSET', 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET']?.includes(compensationPolicy) && (serviceTypeTemplate !== ADDON && !(serviceTypeTemplate === ADMINISTRATIVE && !metadata?.dedicatedHoursSpecified) && !(serviceTypeTemplate === SUPPLEMENTAL && !metadata?.dedicatedHoursSpecified)) && (
+                  {['FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITH_OFFSET', 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET']?.includes(compensationPolicy) && (serviceTypeTemplate !== ADDON && !(serviceTypeTemplate === ADMINISTRATIVE && !metadata?.dedicatedHoursSpecified) && !(serviceTypeTemplate === SUPPLEMENTAL && !metadata?.dedicatedHoursSpecified) && !(serviceTypeTemplate === ONCALLSERVICE && !metadata?.dedicatedHoursSpecified)) && (
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                       <CommonLabel value='Reduced offset applicable' />
                       <CommonSwitch checked={reducedOffsetApplicable} className={`${style.switchFontStyle} ${style.flexLeft} `} onChange={() => setReducedOffsetApplicable(!reducedOffsetApplicable)} label={reducedOffsetApplicable ? 'YES' : 'NO'} />
@@ -1391,11 +1392,13 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                         ? <OnCallCoverageFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} isReset={isReset} getIsReset={getIsReset} sites={siteList} contractId={contractId} />
                         : serviceTypeTemplate === SUPPLEMENTAL
                           ? <SupplementalFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} isReset={isReset} getIsReset={getIsReset} />
-                          : serviceTypeTemplate === ADDON
-                            ? <AddonClinicFields getMetaData={getMetaData} services={contractedServices} locationItems={locationItems} getNewLocation={getNewLocation} locationToAdd={locationToAdd} serviceSelected={selectedService} editService={editService} isReset={isReset} getIsReset={getIsReset} sites={siteList} contractId={contractId} />
-                            : serviceTypeTemplate === PROCEDUREREADING
-                              ? <ProcedureReading getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} contractTermPeriod={contractTermPeriod} isReset={isReset} getIsReset={getIsReset} />
-                              : <AdministrativeFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} isReset={isReset} getIsReset={getIsReset} sites={siteList} contractId={contractId} />}
+                          : serviceTypeTemplate === ONCALLSERVICE
+                            ? <OnCallService getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} isReset={isReset} getIsReset={getIsReset} />
+                            : serviceTypeTemplate === ADDON
+                              ? <AddonClinicFields getMetaData={getMetaData} services={contractedServices} locationItems={locationItems} getNewLocation={getNewLocation} locationToAdd={locationToAdd} serviceSelected={selectedService} editService={editService} isReset={isReset} getIsReset={getIsReset} sites={siteList} contractId={contractId} />
+                              : serviceTypeTemplate === PROCEDUREREADING
+                                ? <ProcedureReading getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} contractTermPeriod={contractTermPeriod} isReset={isReset} getIsReset={getIsReset} />
+                                : <AdministrativeFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} isReset={isReset} getIsReset={getIsReset} sites={siteList} contractId={contractId} />}
                 </div>
               </div>
             ) : (

@@ -18,7 +18,7 @@ import CommonMultiSelectField from "../../Components/CommonFields/CommonMultiSel
 import { valueCheck } from "../../utils/valueCheck";
 import { format } from "date-fns";
 
-const SupplementalFields = ({
+const OnCallService = ({
     getMetaData,
     services,
     serviceSelected,
@@ -429,10 +429,10 @@ const SupplementalFields = ({
                     )}
                 </div>
             </div>
-            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+            {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Base Service Available*' />
                 <CommonSwitch className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} label={metadata?.baseServiceAvailable ? 'YES' : 'NO'} checked={metadata?.baseServiceAvailable} onChange={(e) => handleValueChange('baseServiceAvailable', !metadata?.baseServiceAvailable)} />
-            </div>
+            </div> */}
             {/* 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Supplemental Services To Perform*' />
@@ -449,7 +449,7 @@ const SupplementalFields = ({
                     }
                 </div>
             </div> */}
-            {
+            {/* {
                 metadata?.baseServiceAvailable && (
 
                     <div>
@@ -501,7 +501,8 @@ const SupplementalFields = ({
                             </div>
                         </div>
                     </div>
-                )}
+                )
+                } */}
 
             <div>
                 <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
@@ -798,4 +799,4 @@ const SupplementalFields = ({
     );
 };
 
-export default SupplementalFields;
+export default OnCallService;
