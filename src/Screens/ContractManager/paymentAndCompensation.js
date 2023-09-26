@@ -13,6 +13,7 @@ import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
 import CommonRadio from '../../Components/CommonFields/CommonRadio';
 import CommonTextField from '../../Components/CommonFields/CommonTextField';
 import CommonLabel from '../../Components/CommonFields/CommonLabel';
+import { valueCheck } from "./../../utils/valueCheck";
 
 import style from './index.module.scss';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
@@ -205,6 +206,14 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         getPaymentFields();
     }
 
+    const dataCheck = (value) => {
+        if (paymentAndCompensation) {
+            return valueCheck(value);
+        } else {
+            return false
+        }
+    }
+
     const getPaymentFields = () => {
         let temp = [];
         for (let i = 0; i < timesheetPayments?.length; i++) {
@@ -276,7 +285,9 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                             {compensationPolicy !== 'ACTIVITY_BASED' && (
                                 <>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                        <CommonLabel value='Fixed Compensation Value Per Timesheet Submission*' />
+                                        <CommonLabel value='Fixed Compensation Value Per Timesheet Submission*'
+                                            className={dataCheck(Number(timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission)?.toLocaleString()) ? style.redLable : ""}
+                                        />
                                         <CommonTextField
                                             className={style.twoFieldWidth}
                                             // type="number"
@@ -301,7 +312,9 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                         </div>}
                                 </>)}
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                <CommonLabel value='Max. Compensation Value for Contract Period*' />
+                                <CommonLabel value='Max. Compensation Value for Contract Period*'
+                                    className={dataCheck(Number(timesheetPayments?.[i]?.maxPaymentPerContract)) ? style.redLable : ""}
+                                />
                                 <div className={style.displayInRow}>
                                     <CommonTextField
                                         className={style.twoFieldWidth}
@@ -390,6 +403,8 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />
     }
 
+
+
     return (
         <>
             {
@@ -420,7 +435,9 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                             {compensation === "RVUBASED" && (
                                 <div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { checkFieldAndPopAlert(rvuQuantity?.quantity, 'RVU Quantity') }}>
-                                        <CommonLabel value='RVU Quantity*' />
+                                        <CommonLabel value='RVU Quantity*'
+                                            className={dataCheck(rvuQuantity?.quantity) ? style.redLable : ""}
+                                        />
                                         <div className={style.displayInRow}>
                                             <CommonInputField className={style.fourFieldWidth} value={rvuQuantity?.quantity} placeholder="0"
                                                 type='number'
@@ -440,7 +457,9 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                         </div>
                                     </div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { checkFieldAndPopAlert(fteEquivalent?.value, 'FTE Equivalent') }} >
-                                        <CommonLabel value='FTE Equivalent' />
+                                        <CommonLabel value='FTE Equivalent'
+                                            className={dataCheck(fteEquivalent?.value) ? style.redLable : ""}
+                                        />
                                         <CommonInputField className={style.twoFieldWidth} value={fteEquivalent?.value} placeholder="0" type="number"
                                             min="0"
                                             onChange={(e) => setFteEquivalent({
@@ -448,7 +467,9 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                             })} />
                                     </div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { checkFieldAndPopAlert(rvuReferenceUsed?.value, 'RVU Reference Used') }}>
-                                        <CommonLabel value='RVU Reference Used' />
+                                        <CommonLabel value='RVU Reference Used'
+                                            className={dataCheck(rvuReferenceUsed?.value) ? style.redLable : ""}
+                                        />
                                         <CommonInputField className={style.fullWidth} value={rvuReferenceUsed?.value} placeholder="Enter RVU Reference Used"
                                             min="0"
                                             onChange={(e) => setRvuReferenceUsed({
@@ -456,14 +477,18 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                             })} />
                                     </div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { checkFieldAndPopAlert(rvuQuantityVariance?.value, 'RVU Quantity Variance (+/-)') }}>
-                                        <CommonLabel value='RVU Quantity Variance (+/-)' />
+                                        <CommonLabel value='RVU Quantity Variance (+/-)'
+                                            className={dataCheck(rvuQuantityVariance?.value) ? style.redLable : ""}
+                                        />
                                         <CommonInputField className={style.twoFieldWidth} value={rvuQuantityVariance?.value} placeholder="0" type='number'
                                             min="0" onChange={(e) => setRvuQuantityVariance({
                                                 ...rvuQuantityVariance, value: e.target.value.slice(0, limit3)
                                             })} />
                                     </div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                        <CommonLabel value='RVU Quantity Period' />
+                                        <CommonLabel value='RVU Quantity Period'
+                                            className={dataCheck(rvuQuantityPeriod?.days) ? style.redLable : ""}
+                                        />
                                         <CommonTextField
                                             InputProps={{
                                                 endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Days</InputAdornment>,
@@ -478,7 +503,9 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                 </div>
                             )}
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                <CommonLabel value='Dollar Hourly Rate*' />
+                                <CommonLabel value='Dollar Hourly Rate*'
+                                    className={!dollarRate?.notApplicable && dataCheck(dollarRate?.hour?.toLocaleString()) ? style.redLable : ""}
+                                />
                                 <div className={style.twoCol}>
                                     <CommonTextField
                                         // type="text"

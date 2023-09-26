@@ -7,6 +7,7 @@ import RedirectingPopUp from './redirectingPopUp';
 import CommonInputField from '../../Components/CommonFields/CommonInputField';
 import ContractValidationCheckSummary from './contractValidationCheckSummary';
 import CommonLabel from '../../Components/CommonFields/CommonLabel';
+import { valueCheck } from "./../../utils/valueCheck";
 
 import style from './index.module.scss';
 
@@ -414,6 +415,13 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />
   }
 
+  const dataCheck = (value) => {
+    if (timesheetProcessingWorkflow) {
+      return valueCheck(value);
+    } else {
+      return false
+    }
+  }
 
   return (
     <>

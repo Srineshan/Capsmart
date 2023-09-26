@@ -17,6 +17,7 @@ import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import CommonInputField from '../../Components/CommonFields/CommonInputField';
 import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
 import CommonLabel from '../../Components/CommonFields/CommonLabel';
+import { valueCheck } from "./../../utils/valueCheck";
 
 import style from './index.module.scss';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
@@ -304,7 +305,9 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
       temp[i] = (
         <div key={`${i}temp${timeSheetCount + 1}`} className={`${timeSheetCount > 1 && style.contractedBorderStyle} ${style.marginTop20}`}>
           <div className={`${style.extentionGrid}`}>
-            <CommonLabel value={`Timesheets label ${i + 1} for processing`} />
+            <CommonLabel value={`Timesheets label ${i + 1} for processing`}
+              className={dataCheck(timeSheetLabelData?.[i]?.label) ? style.redLable : ""}
+            />
             <CommonInputField className={style.fullWidth} value={timeSheetLabelData?.[i]?.label}
               onChange={(e) => { handleTimesheetValue(i, 'label', e.target.value); setIsNameEdited(true); }}
             />
@@ -629,11 +632,21 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
 
   console.log('goal', invoiceProcessingDayGoal);
 
+  const dataCheck = (value) => {
+    if (timesheetSubmissionTerms) {
+      return valueCheck(value);
+    } else {
+      return false
+    }
+  }
+
   return (
     <div className={style.cloneBlockStyle}>
       <div className={`${style.newContractFromCloneBoxStyle}`}>
         <div className={`${style.extentionGrid}`}>
-          <CommonLabel value='Number of Timesheets to Submit for Services Performed' />
+          <CommonLabel value='Number of Timesheets to Submit for Services Performed'
+            className={dataCheck(timeSheetCount) ? style.redLable : ""}
+          />
           <CommonInputField className={style.fourFieldWidth} type="number" min="0" value={timeSheetCount} onChange={(e) => e.target.value <= 5 && setTimeSheetCount(parseInt(e.target.value))} />
         </div>
         <div>
@@ -649,7 +662,9 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
         {/* <hr classname={`${style.marginTop20}`} /> */}
 
         <div className={`${style.extentionGrid} ${style.marginTop20} ${style.verticalAlignCenter}`}>
-          <CommonLabel value='Invoice Processing Day Range Goal*' />
+          <CommonLabel value='Invoice Processing Day Range Goal*'
+            className={dataCheck(invoiceProcessingDay && invoiceProcessingDayThreshold && invoiceProcessingDayGoal) ? style.redLable : ""}
+          />
           <div className={style.displayInRow}>
             <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
               <EditableText value={invoiceProcessingDay} placeholder="0" type='number' onChange={(e) => setInvoiceProcessingDay(e.slice(0, limit))} className={style.editableTextStyleDays} />
@@ -673,7 +688,9 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
             PLANNED ABSENCE REQUESTS
           </div>
           <div className={`${style.addManagerGrid}  ${style.marginTop20}`}>
-            <CommonLabel value='Only Allow Upon Request / Notification Approval' />
+            <CommonLabel value='Only Allow Upon Request / Notification Approval'
+              className={addApprover && dataCheck(absence?.reviewer) ? style.redLable : ""}
+            />
             <CommonSwitch onChange={() => {
               setAddApprover(!addApprover);
               setAbsence({ ...absence, reviewer: '', reviewerTitle: '', id: '' })
@@ -689,21 +706,27 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
         {/* <div className={`${style.welcomeBorder} ${style.marginTop20}`}></div> */}
 
         < div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <CommonLabel value='Planned Absence Notification Days limit*' />
+          <CommonLabel value='Planned Absence Notification Days limit*'
+            className={dataCheck(plannedAbsence) ? style.redLable : ""}
+          />
           <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
             <EditableText value={plannedAbsence} placeholder="0" type='number' onChange={(e) => setPlannedAbsence(e.slice(0, limit))} className={style.editableTextStyleDays} />
             <div className={style.textElementWithoutBackgroundDays}>Days</div>
           </div>
         </div>
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <CommonLabel value='Maximum Unplanned Absence Days Allowed *' />
+          <CommonLabel value='Maximum Unplanned Absence Days Allowed *'
+            className={dataCheck(maxUnplannedAbsence) ? style.redLable : ""}
+          />
           <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
             <EditableText value={maxUnplannedAbsence} placeholder="0" type='number' onChange={(e) => setMaxUnplannedAbsence(e.slice(0, limit))} className={style.editableTextStyleDays} />
             <div className={style.textElementWithoutBackgroundDays}>Days</div>
           </div>
         </div>
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <CommonLabel value='Maximum Absence Period*' />
+          <CommonLabel value='Maximum Absence Period*'
+            className={!maxPlannedAbsence?.notApplicable && dataCheck(maxPlannedAbsence?.days) ? style.redLable : ""}
+          />
           <div className={style.displayInRow}>
             <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
               <EditableText value={maxPlannedAbsence?.days} placeholder="0" type='number' onChange={(e) => setMaxPlannedAbsence({ ...maxPlannedAbsence, days: e.slice(0, limit) })} className={style.editableTextStyleDays} disabled={maxPlannedAbsence?.notApplicable} />
@@ -719,14 +742,18 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
         </div>
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <CommonLabel value='Day limit for submission of timesheet based on activity service date *' />
+          <CommonLabel value='Day limit for submission of timesheet based on activity service date *'
+            className={dataCheck(dayLimitForSubmissionBasedOnActivityServiceDate) ? style.redLable : ""}
+          />
           <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
             <EditableText value={dayLimitForSubmissionBasedOnActivityServiceDate} placeholder="0" type='number' min="0" onChange={(e) => setDayLimitForSubmissionBasedOnActivityServiceDate(e.slice(0, limit))} className={style.editableTextStyleDays} />
             <div className={style.textElementWithoutBackgroundDays}>Days</div>
           </div>
         </div>
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <CommonLabel value='Day limit for submission of timesheet based on contract end date *' />
+          <CommonLabel value='Day limit for submission of timesheet based on contract end date *'
+            className={dataCheck(dayLimitForSubmissionBasedOnContractEndDate) ? style.redLable : ""}
+          />
           <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
             <EditableText value={dayLimitForSubmissionBasedOnContractEndDate} placeholder="0" type='number' min="0" onChange={(e) => setDayLimitForSubmissionBasedOnContractEndDate(e.slice(0, limit))} className={style.editableTextStyleDays} />
             <div className={style.textElementWithoutBackgroundDays}>Days</div>

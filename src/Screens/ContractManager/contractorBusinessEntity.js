@@ -9,6 +9,7 @@ import CommonInputField from '../../Components/CommonFields/CommonInputField';
 import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
 import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
 import CommonLabel from '../../Components/CommonFields/CommonLabel';
+import { valueCheck } from "./../../utils/valueCheck";
 
 import style from './index.module.scss';
 
@@ -337,6 +338,14 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
 
   console.log(ssoId, contractUser?.ssoId?.id)
 
+  const dataCheck = (value) => {
+    if (contractorBusinessEntity) {
+      return valueCheck(value);
+    } else {
+      return false
+    }
+  }
+
   if (isLoading) {
     return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />
   }
@@ -372,7 +381,9 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
               )}
               <div className={`${style.extentionGrid} ${selectContractInfo === "INDIVIDUAL" && style.marginTop20}`}
                 onFocus={() => { checkFieldAndPopAlert(contractorNPIN?.npin, 'Contractor NPIN') }}>
-                <CommonLabel value='Vendor NPIN*' />
+                <CommonLabel value='Vendor NPIN*'
+                  className={(!contractorNPIN?.missing && !contractorNPIN?.notApplicable) && (dataCheck(contractorNPIN?.npin) ? style.redLable : "")}
+                />
                 <div className={style.twoCol}>
                   <CommonInputField className={style.fullWidth}
                     placeholder="Enter Vendor NPIN"
@@ -388,7 +399,9 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
               </div>
               <div className={`${style.extentionGrid} ${style.marginTop20}`}
                 onFocus={() => { checkFieldAndPopAlert(contractorEntityTaxId?.taxId, 'Contractor Entity Tax ID') }}>
-                <CommonLabel value='Vendor Tax ID*' />
+                <CommonLabel value='Vendor Tax ID*'
+                  className={(!contractorEntityTaxId?.missing && !contractorEntityTaxId?.notApplicable) && (dataCheck(contractorEntityTaxId?.taxId) ? style.redLable : "")}
+                />
                 <div className={style.twoCol}>
                   <CommonInputField className={style.fullWidth} disabled={contractorEntityTaxId?.missing || contractorEntityTaxId?.notApplicable} value={contractorEntityTaxId?.taxId} placeholder="Enter Vendor Tax ID"
                     onChange={(e) => setContractorEntityTaxId({ ...contractorEntityTaxId, taxId: e.target.value, missing: false, notApplicable: false })} />
@@ -399,7 +412,9 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                 </div>
               </div>
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                <CommonLabel value='Business Entity Name*' />
+                <CommonLabel value='Business Entity Name*'
+                  className={(!businessEntity?.notApplicable) && (dataCheck(businessEntity?.name) ? style.redLable : "")}
+                />
                 <div className={style.twoCol}>
                   <CommonInputField className={style.fullWidth}
                     value={businessEntity?.name}
@@ -414,7 +429,9 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                 </div>
               </div>
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                <CommonLabel value='Business Point of Contact*' />
+                <CommonLabel value='Business Point of Contact*'
+                  className={(dataCheck(businessEntityUser?.name?.firstName) ? style.redLable : "")}
+                />
                 <div className={style.twoCol}>
                   <CommonInputField className={style.fullWidth}
                     onFocus={() => { checkFieldAndPopAlert(businessEntityUser?.name?.firstName, 'Contractor Business Contact First Name') }}
@@ -433,7 +450,9 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                 </div>
               </div>
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                <CommonLabel value='Business Contact Email Address*' />
+                <CommonLabel value='Business Contact Email Address*'
+                  className={(dataCheck(businessEntityUser?.email?.officialEmail) ? style.redLable : "")}
+                />
                 <CommonInputField className={style.fullWidth} value={businessEntityUser?.email?.officialEmail} placeholder="Enter Email"
                   onFocus={() => { checkFieldAndPopAlert(businessEntityUser?.email?.officialEmail, 'Business Contact Email Address') }}
                   onChange={(e) => {
@@ -454,7 +473,9 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
               <div className={`${style.extentionGrid} ${style.marginTop20}`}
                 onFocus={() => { checkFieldAndPopAlert(businessEntityUser?.contactNumber?.number, 'Cell Phone') }}
               >
-                <CommonLabel value='Cell Phone*' />
+                <CommonLabel value='Cell Phone*'
+                  className={(!businessEntityUser?.contactNumber?.missing) && (dataCheck(businessEntityUser?.contactNumber?.number) ? style.redLable : "")}
+                />
                 <div className={style.twoCol}>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                     <div className={`${style.plusOneText} ${style.marginRight}`}>+1</div>
@@ -474,7 +495,9 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                 </div>
               </div>
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                <CommonLabel value='Mailing Address*' />
+                <CommonLabel value='Mailing Address*'
+                  className={(dataCheck(mailingAddress?.addressLine) ? style.redLable : "")}
+                />
                 <div>
                   <CommonInputField className={style.fullWidth} value={mailingAddress?.addressLine} placeholder="Enter Street"
                     onFocus={() => { checkFieldAndPopAlert(mailingAddress?.addressLine, 'Mailing Address Street') }}
@@ -508,10 +531,6 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                       </div>
                     </div>
                   }
-
-
-
-
                 </div>
               </div>
 

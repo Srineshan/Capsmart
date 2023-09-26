@@ -20,6 +20,7 @@ import CommonCheckBox from "../../Components/CommonFields/CommonCheckBox";
 import CommonSwitch from "../../Components/CommonFields/CommonSwitch";
 import CommonLabel from "../../Components/CommonFields/CommonLabel";
 import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
+import { valueCheck } from "./../../utils/valueCheck";
 
 import style from "./index.module.scss";
 
@@ -703,6 +704,14 @@ const ContractedServicesProviderIndividual = ({
 
   console.log("dept", departmentTitleValues, "site", siteTitleValues);
 
+  const dataCheck = (value) => {
+    if (isUserPresent) {
+      return valueCheck(value);
+    } else {
+      return false
+    }
+  }
+
   return (
     <div className={style.cloneBlockStyle}>
       <div className={`${style.newContractFromCloneBoxStyle}`}>
@@ -716,7 +725,9 @@ const ContractedServicesProviderIndividual = ({
               );
             }}
           >
-            <CommonLabel value="Service Provider Type*" />
+            <CommonLabel value="Service Provider Type*"
+              className={dataCheck(serviceProviderType?.id) ? style.redLable : ""}
+            />
             {/* <div className={style.grid2}> */}
             <ProviderTypeList
               value={serviceProviderType?.id}
@@ -736,7 +747,9 @@ const ContractedServicesProviderIndividual = ({
               checkFieldAndPopAlert(npin, "NPIN");
             }}
           >
-            <CommonLabel value="NPIN*" />
+            <CommonLabel value="NPIN*"
+              className={(!npinMissing && !npinNotApplicable) && (dataCheck(npin) ? style.redLable : "")}
+            />
             <div className={style.grid3}>
               <CommonInputField
                 className={style.fullWidth}
@@ -770,7 +783,9 @@ const ContractedServicesProviderIndividual = ({
             </div>
           </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <CommonLabel value="Contractor Name*" />
+            <CommonLabel value="Contractor Name*"
+              className={dataCheck(contractorFirstName) ? style.redLable : ""}
+            />
             <div className={style.grid3}>
               <CommonInputField
                 className={style.fullWidth}
@@ -819,7 +834,9 @@ const ContractedServicesProviderIndividual = ({
               checkFieldAndPopAlert(contractorNameSuffix?.id, "Suffix");
             }}
           >
-            <CommonLabel value="Suffix*" />
+            <CommonLabel value="Suffix*"
+              className={dataCheck(contractorNameSuffix?.id) ? style.redLable : ""}
+            />
             <div className={style.grid3}>
               <SuffixList
                 value={contractorNameSuffix?.id}
@@ -836,7 +853,9 @@ const ContractedServicesProviderIndividual = ({
           </div>
 
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <CommonLabel value="Allow Use of Alternate/ Personal Email Address" />
+            <CommonLabel value="Allow Use of Alternate/ Personal Email Address"
+              className={allowPersonalMail && dataCheck(contractorEmail) ? style.redLable : ""}
+            />
             <div className={style.displayInRow}>
               <CommonSwitch
                 className={`${style.flexLeft} ${style.switchFontStyle}`}
@@ -871,7 +890,9 @@ const ContractedServicesProviderIndividual = ({
                 checkFieldAndPopAlert(contractorEmail, "Email Contractor id");
               }}
             >
-              <CommonLabel value="Contract Entity Email*" />
+              <CommonLabel value="Contract Entity Email*"
+                className={dataCheck(contractorEmail) ? style.redLable : ""}
+              />
               <div className={style.displayInRow}>
                 <CommonInputField
                   placeholder="Enter entity specific email"
@@ -900,7 +921,9 @@ const ContractedServicesProviderIndividual = ({
               checkFieldAndPopAlert(contractorPhone, "Cell Phone");
             }}
           >
-            <CommonLabel value="Cell Phone*" />
+            <CommonLabel value="Cell Phone*"
+              className={!mobileNA && dataCheck(contractorPhone) ? style.redLable : ""}
+            />
             <div className={style.twoCol}>
               <div
                 className={`${style.displayInRow} ${style.verticalAlignCenter}`}
@@ -934,7 +957,9 @@ const ContractedServicesProviderIndividual = ({
             </div>
           </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <CommonLabel value="Address" />
+            <CommonLabel value="Address"
+              className={dataCheck(address?.addressLine) ? style.redLable : ""}
+            />
             <div>
               <CommonInputField
                 className={style.fullWidth}
@@ -998,7 +1023,9 @@ const ContractedServicesProviderIndividual = ({
             );
           }}
         >
-          <CommonLabel value="Site Level Responsibility*" />
+          <CommonLabel value="Site Level Responsibility*"
+            className={siteLevel && (siteTitleValues.length === 0) ? style.redLable : ""}
+          />
           <div>
             <div className={style.flexLeft}>
               <CommonSwitch
@@ -1088,7 +1115,9 @@ const ContractedServicesProviderIndividual = ({
             );
           }}
         >
-          <CommonLabel value="Department Level Responsibility*" />
+          <CommonLabel value="Department Level Responsibility*"
+            className={departmentLevel && (departmentTitleValues?.length === 0) ? style.redLable : ""}
+          />
           <div>
             <div className={style.flexLeft}>
               <CommonSwitch
@@ -1189,7 +1218,9 @@ const ContractedServicesProviderIndividual = ({
             checkFieldAndPopAlert(true, "Assign Contractor With App User Role");
           }}
         >
-          <CommonLabel value="Assign Contractor With App User Role*" />
+          <CommonLabel value="Assign Contractor With App User Role*"
+            className={isUserPresent && (rolesTags.length === 0) ? style.redLable : ""}
+          />
           <div>
             <CommonSelectField
               onChange={(e) => handleRoles(e.target.value)}

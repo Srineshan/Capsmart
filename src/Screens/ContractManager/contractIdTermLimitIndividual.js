@@ -655,7 +655,7 @@ const ContractIdTermLimitIndividual = (
 
   const dataCheck = (value) => {
     console.log('method', method);
-    if (createdContractId !== '' && method !== 'POST') {
+    if (createdContractId !== '') {
       return valueCheck(value);
     } else {
       return false
