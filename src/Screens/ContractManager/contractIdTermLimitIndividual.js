@@ -655,7 +655,7 @@ const ContractIdTermLimitIndividual = (
 
   const dataCheck = (value) => {
     console.log('method', method);
-    if (createdContractId !== '') {
+    if (createdContractId !== '' && method !== 'POST') {
       return valueCheck(value);
     } else {
       return false
@@ -673,13 +673,17 @@ const ContractIdTermLimitIndividual = (
     <div className={style.cloneBlockStyle}>
       <div className={`${style.newContractFromCloneBoxStyle}`}>
         <div className={`${style.extentionGrid}`}>
-          <CommonLabel value='Contract / Agreement Name*' />
+          <CommonLabel value='Contract / Agreement Name*'
+            className={dataCheck(contractName) ? style.redLable : ""}
+          />
           <CommonInputField placeholder="Contract Name" className={`${style.fullWidth}`} value={contractName}
             maxLength={TEXTFIELDLEN} onChange={(e) => { setContractName(e.target.value); setName(e.target.value) }}
             onFocus={() => { checkFieldAndPopAlert(contractName, 'Contract / Agreement Name') }} />
         </div>
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <CommonLabel value='Contract ID / Resolution No*' />
+          <CommonLabel value='Contract ID / Resolution No*'
+            className={dataCheck(contractId?.id) ? style.redLable : ""}
+          />
           <div className={style.displayInRow}>
             <CommonInputField placeholder="Contract ID / Resolution No" value={contractId.id} disabled={contractId.missing}
               maxLength={TEXTFIELDLEN}
@@ -843,7 +847,9 @@ const ContractIdTermLimitIndividual = (
         }
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <CommonLabel value='Contract Term Period*' />
+          <CommonLabel value='Contract Term Period*'
+            className={dataCheck(contractTermPeriodFrom && contractTermPeriodTo) ? style.redLable : ""}
+          />
           <div className={style.termPeriodGrid}>
             <div onFocus={() => { checkFieldAndPopAlert(contractTermPeriodFrom, 'Contract Term Period Start Date') }}>
               <CommonDateField
@@ -955,7 +961,9 @@ const ContractIdTermLimitIndividual = (
         </div>
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <CommonLabel value='Contract Time Commitment*' />
+          <CommonLabel value='Contract Time Commitment*'
+            className={dataCheck(contractedTimeCommitment?.value) ? style.redLable : ""}
+          />
           <div className={style.contractedTime}>
             <CommonInputField type="tel" value={(contractedTimeCommitment?.value === 0 || contractedTimeCommitment?.value === '0') ? '' : contractedTimeCommitment?.value} onChange={(e) => e.target.value >= 0 && e.target.value <= differenceInCalendarWeeks(new Date(contractTermPeriodTo), new Date(contractTermPeriodFrom)) && setContractTimeCommitment({ ...contractedTimeCommitment, value: e.target.value, frequency: 'NA' })} />
             <CommonSelectField value={contractedTimeCommitment?.frequency || 'Select...'}
@@ -968,7 +976,9 @@ const ContractIdTermLimitIndividual = (
         </div>
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <CommonLabel value='Compensation policy to Apply*' />
+          <CommonLabel value='Compensation policy to Apply*'
+            className={dataCheck(compensationPolicy) ? style.redLable : ""}
+          />
           <div>
             <div>
               <CommonSelectField value={compensationPolicy || ''}
@@ -983,7 +993,9 @@ const ContractIdTermLimitIndividual = (
         </div>
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <CommonLabel value='Contract Continuation Policy*' />
+          <CommonLabel value='Contract Continuation Policy*'
+            className={dataCheck(selectedContractContinuationPolicy) ? style.redLable : ""}
+          />
           <div>
             <div onFocus={() => { checkFieldAndPopAlert(selectedContractContinuationPolicy, 'Contract Continuation Policy') }}>
               <CommonSelectField value={selectedContractContinuationPolicy || ''}
