@@ -413,7 +413,7 @@ const OnCallService = ({
     return (
         <div>
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <CommonLabel value='Dedicated Hours For Supplemental Services*' />
+                <CommonLabel value='Dedicated Hours For On Site On Call Service*' />
                 <div className={`${style.displayInRow} `}>
                     <CommonSwitch className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} label={metadata?.dedicatedHoursSpecified ? 'YES' : 'NO'} checked={metadata?.dedicatedHoursSpecified} onChange={(e) => handleValueChange('dedicatedHoursSpecified', !metadata?.dedicatedHoursSpecified)} />
                     {!metadata?.dedicatedHoursSpecified && (
@@ -504,7 +504,7 @@ const OnCallService = ({
                 )
                 } */}
 
-            <div>
+            {/* <div>
                 <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
                     <CommonLabel
                         value="Supplement Services To Perform*"
@@ -560,7 +560,7 @@ const OnCallService = ({
                             )}
                     </div>
                 </div>
-            </div>
+            </div> */}
             <>
                 {metadata?.dedicatedHoursSpecified && (
                     <>
@@ -677,7 +677,7 @@ const OnCallService = ({
                         {metadata?.billableService && (
                             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                                 <CommonLabel
-                                    value="Supplemental Service Payment Amount*"
+                                    value="On Site On Call Service Payment Amount*"
                                     className={
                                         dataCheck(metadata?.sessionAmount) ? style.redLable : ""
                                     }
@@ -776,7 +776,7 @@ const OnCallService = ({
 
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <CommonLabel
-                        value="Applicable Supplemental Workdays*"
+                        value="Applicable On Site On Call Workdays*"
                         className={
                             metadata?.serviceDays === null ||
                                 (metadata?.serviceDays !== undefined &&

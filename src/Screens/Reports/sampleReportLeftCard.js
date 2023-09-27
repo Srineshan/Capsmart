@@ -679,7 +679,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                     </>
                 ) : (
                     <>
-                        <div className={`${style.darkLabel} ${style.marginTop20}`}>Time Range:</div>
+                        {/* <div className={`${style.darkLabel} ${style.marginTop20}`}>Time Range:</div>
                         <select
                             name="action"
                             id="action"
@@ -735,7 +735,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                             >
                                 <MenuItem value={'Half Day Clinic Session'}>Half Day Clinic Session</MenuItem>
                             </Select>
-                        </FormControl>
+                        </FormControl> */}
                     </>
                 )}
                 {/* <button className={`${style.primaryButtonStyle} ${style.marginTop20}`} onClick={()=> setShowSaveReport(true)} >Save Parameter Selection As My Report</button> */}

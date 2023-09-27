@@ -562,6 +562,24 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                     </div>
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                         <div className={style.marginLeft30}>
+                            <CommonLabel value='Activity*' />
+                        </div>
+                        <div className={style.displayInRow}>
+                            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                                <div className={style.textElement}>MIN</div>
+                                <EditableText disabled={metadata?.weekdayFrequency === 'NA' || !metadata?.serviceDays?.weekDays} value={metadata?.weekdayMin} placeholder='' onChange={(e) => e >= 0 && onCustomizeFieldChange(e, 'weekdayMin')} type='tel' maxLength='2' className={style.serviceProvidedEditableTextStyle} />
+                            </div> */}
+                            <CommonTextField
+                                className={style.two}
+                                // onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'weekdayMin')}
+                                // value={metadata?.weekdayMin === 0 ? '' : metadata?.weekdayMin}
+                                type='text'
+                            // disabled={metadata?.weekdayFrequency === 'NA' || !metadata?.serviceDays?.weekDays}
+                            />
+                        </div>
+                    </div>
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <div className={style.marginLeft30}>
                             <CommonLabel value='Number of On Call Duty Days*' />
                         </div>
                         <div className={style.displayInRow}>
