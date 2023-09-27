@@ -954,6 +954,7 @@ const AddServiceProvided = ({
     }
     if (serviceTypeTemplate === ONCALL) {
       let temp = metadata?.additionalActivity;
+      // if (activities?.length === 0) {
       activities = [];
       metadata?.serviceDaysArray?.map((serviceDays) => {
         if (serviceDays === "Weekdays" && metadata?.customizedSchedule) {
@@ -975,6 +976,7 @@ const AddServiceProvided = ({
           activities?.push({ activity: serviceDays });
         }
       });
+      // }
       performingActivity = activities
         ?.map((activity) => activity?.activity)
         ?.join("-");
@@ -1265,6 +1267,9 @@ const AddServiceProvided = ({
                   duration: {
                     hours: parseInt(dataValues?.weekdayDuration),
                   },
+                  // activity: {
+                  //   activity: dataValues?.weekdayActivity
+                  // },
                   payableAmount: {
                     value: parseFloat(dataValues?.weekdayPayment),
                   },
@@ -1296,6 +1301,9 @@ const AddServiceProvided = ({
                   duration: {
                     hours: parseInt(dataValues?.weekdayNightsDuration),
                   },
+                  // activity: {
+                  //   activity: dataValues?.weekdayNightActivity
+                  // },
                   payableAmount: {
                     value: parseFloat(dataValues?.weekdayNightsPayment),
                   },
@@ -1335,6 +1343,9 @@ const AddServiceProvided = ({
                   duration: {
                     hours: parseInt(dataValues?.weekendDuration),
                   },
+                  // activity: {
+                  //   activity: dataValues?.weekendActivity,
+                  // },
                   payableAmount: {
                     value: parseFloat(dataValues?.weekendPayment),
                   },
@@ -1367,6 +1378,9 @@ const AddServiceProvided = ({
                   duration: {
                     hours: parseInt(dataValues?.holidayDuration),
                   },
+                  // activity: {
+                  //   activity: dataValues?.holidayActivity
+                  // },
                   payableAmount: {
                     value: parseFloat(dataValues?.holidayPayment),
                   },
@@ -2068,8 +2082,7 @@ const AddServiceProvided = ({
                   {serviceTypeTemplate !== ADMINISTRATIVE &&
                     serviceTypeTemplate !== ADDON &&
                     serviceTypeTemplate !== HOSPICE &&
-                    serviceTypeTemplate !== SUPPLEMENTAL &&
-                    serviceTypeTemplate !== ONCALL && (
+                    serviceTypeTemplate !== SUPPLEMENTAL && (
                       <div>
                         <div
                           className={`${style.addManagerGrid} ${style.marginTop20} `}
