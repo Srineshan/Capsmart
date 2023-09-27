@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import axios from "axios";
 import { POST, GET } from './../dataSaver';
 import TimeSmartLogo from './../../images/timeSmartAILogo.png';
 import CommonInputField from '../../Components/CommonFields/CommonInputField';
@@ -11,6 +12,32 @@ import style from './index.module.scss';
 const GetSSOId = () => {
     const { userId } = useParams();
     const [ssoId, setSsoId] = useState('');
+    const [tenantId, setTenantId] = useState();
+    const [entityLogo, setEntityLogo] = useState('');
+
+    useEffect(() => {
+        getEntityId();
+    }, [])
+
+    useEffect(() => {
+        getEntityLogo();
+    }, [tenantId])
+
+
+    const getEntityId = async () => {
+        await axios(`http://${window.location.hostname}:8000/entity-service/entityID`, {
+            method: 'GET',
+        }).then(response => {
+            setTenantId(response?.data?.id);
+        }).catch(error => {
+            console.log('error', error);
+        })
+    }
+
+    const getEntityLogo = async () => {
+        const { data: data } = await GET(`entity-service/entity/logo?id=${tenantId}`);
+        setEntityLogo(data);
+    }
 
     const handleSubmit = async () => {
         console.log(userId, ssoId);
@@ -42,7 +69,7 @@ const GetSSOId = () => {
             <div className={`${style.justifyCenter} ${style.verticalAlignCenter}`}>
                 <div>
                     <div className={style.spaceBetween}>
-                        <img src={TimeSmartLogo} alt="" className={style.getSSOPageLogo} />
+                        <img src={entityLogo} alt="" className={style.getSSOPageLogo} />
                         <img src={TimeSmartLogo} alt="" className={style.getSSOPageLogo} />
                     </div>
                     <div className={`${style.getSSOIdHeaderBox} ${style.marginTop} ${style.verticalAlignCenter} ${style.justifyCenter}`}>
@@ -53,7 +80,7 @@ const GetSSOId = () => {
                             <CommonLabel value='Enter SSO ID*' />
                             <div className={style.displayInRow}>
                                 <CommonInputField className={style.fullWidth}
-                                    value={ssoId} onChange={(e) => setSsoId(e.target.value)} />
+                                    value={ssoId} onChange={(e) => setSsoId(e.target.value)} placeholder="Enter SSO ID" />
                             </div>
                         </div>
                         <div className={style.padding20}>
