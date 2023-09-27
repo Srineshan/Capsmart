@@ -10,6 +10,7 @@ import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import style from './index.module.scss';
 
 const GetSSOId = () => {
+    const navigate = useNavigate();
     const { userId } = useParams();
     const [ssoId, setSsoId] = useState('');
     const [tenantId, setTenantId] = useState();
@@ -23,9 +24,8 @@ const GetSSOId = () => {
         getEntityLogo();
     }, [tenantId])
 
-
     const getEntityId = async () => {
-        await axios(`http://${window.location.hostname}:8000/entity-service/entityID`, {
+        await axios(`http://ec2-35-175-13-4.compute-1.amazonaws.com:8010/entity-service/entityID`, {
             method: 'GET',
         }).then(response => {
             setTenantId(response?.data?.id);
@@ -58,11 +58,14 @@ const GetSSOId = () => {
         await POST('user-management-service/user/ssoid', JSON.stringify(user))
             .then(response => {
                 SuccessToaster('SSO ID Added Successfully');
+                window.location.href = `https://${window.location.hostname}`
             })
             .catch(error => {
                 ErrorToaster(error);
             })
     };
+
+    console.log(window.location.href)
 
     return (
         <div className={style.fullHeight}>
