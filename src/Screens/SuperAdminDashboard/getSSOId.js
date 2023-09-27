@@ -76,14 +76,14 @@ const GetSSOId = () => {
                         <img src={TimeSmartLogo} alt="" className={style.getSSOPageLogo} />
                     </div>
                     <div className={`${style.getSSOIdHeaderBox} ${style.marginTop} ${style.verticalAlignCenter} ${style.justifyCenter}`}>
-                        <div className={style.getSSOIdHeading}>Enter SSO ID</div>
+                        <div className={style.getSSOIdHeading}>Enter Okta(SSO) ID</div>
                     </div>
                     <div className={style.getSSOIdBox}>
                         <div className={`${style.addManagerGrid} ${style.padding20}`}>
-                            <CommonLabel value='Enter SSO ID*' />
+                            <CommonLabel value='Enter Okta(SSO) ID*' />
                             <div className={style.displayInRow}>
                                 <CommonInputField className={style.fullWidth}
-                                    value={ssoId} onChange={(e) => setSsoId(e.target.value)} placeholder="Enter SSO ID" />
+                                    value={ssoId} onChange={(e) => setSsoId(e.target.value)} placeholder="Enter Okta(SSO) ID" />
                             </div>
                         </div>
                         <div className={style.padding20}>
