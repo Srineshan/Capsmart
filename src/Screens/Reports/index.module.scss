@@ -891,6 +891,11 @@
     grid-gap: 20px;
 }
 
+.grid3WithoutGap {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
 .timeSheetProcessingSummaryCalendarGrid {
     display: grid;
     grid-template-columns: 1fr 2fr;
@@ -1211,13 +1216,19 @@
     border: 2px solid #F46044;
     border-radius: 7px;
     padding: 10px;
+    width: 190px;
 }
 
 .headerLogo {
     width: 130px;
     height: 55px;
     object-fit: contain;
-    text-align: center;
+}
+
+.centerAlignUsingBlock {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .entityNameHeaderStyle {
@@ -1399,17 +1410,27 @@
 
 .reportWidthToFitFullScreen {
     width: 85%;
-    height: 500px;
+    // height: 500px;
 }
 
 .addOnReportWidthToFitFullScreen {
     width: 70%;
-    height: 500px;
+    // height: 500px;
 }
 
 @page {
     size: auto;
     margin: 3mm 0mm 10mm 0mm;
+}
+
+@media print {
+    a[href]:after {
+        content: none !important;
+    }
+
+    img[src]:after {
+        content: none !important;
+    }
 }
 
 .summaryGrid {
@@ -1525,4 +1546,8 @@
     font: normal normal 600 14px/20px Montserrat;
     letter-spacing: 0px;
     color: #FFFFFF;
+}
+
+.floatRight {
+    float: right;
 }
