@@ -41,11 +41,7 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
     "LAST UPDATED",
     "ACTION"
   ];
-  const draftHeaderValues = ["", "CONTRACT TYPE", "ID",
-    // "",
-    "NAME", "ACTIVATION STATUS", "LAST UPDATED",
-    // "REF DOCS",
-    "LAST UPDATED BY", "MANAGER", "ACTION"];
+  const draftHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "ACTIVATION STATUS", "LAST UPDATED", "REF DOCS", "LAST UPDATED BY", "MANAGER", "ACTION"];
   const activationPendingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "REVIEWS", "APPROVALS", "REF DOCS", "GO LIVE DATE", "EFFECTIVE DATE", "MANAGER", "ACTION"];
   const upcomingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "EXPIRATION DATE", "EXPIRING IN", "LAST UPDATE", "MANAGER", "ACTION"];
   const expiredHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "TERMINATION DATE", "NEW CONTRACT ID", "LAST UPDATE", "MANAGER"];
@@ -290,7 +286,7 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
       { "type": "text", "value": name, "onClickFunction": onClickFunction },
       { "type": "text", "value": activationStatus, "onClickFunction": onClickFunction },
       { "type": "text", "value": lastUpdated, "onClickFunction": onClickFunction },
-      // { "type": "icon", "icon": icon, "hoverText": iconHoverText, 'isShowHoverText': true },
+      { "type": "icon", "icon": icon, "hoverText": iconHoverText, 'isShowHoverText': true },
       { "type": "text", "value": lastUpdatedBy, "onClickFunction": onClickFunction },
       { "type": "text", "value": manager, "onClickFunction": onClickFunction },
       { "type": "action", "value": action },
