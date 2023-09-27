@@ -41,6 +41,9 @@ const ActivateAccess = React.lazy(() =>
 const SetPasswordWithoutEmail = React.lazy(() =>
   import("./Screens/SuperAdminDashboard/setPasswordWithoutEmail")
 );
+const GetSSOId = React.lazy(() =>
+  import("./Screens/SuperAdminDashboard/getSSOId")
+);
 const EntitySetup = React.lazy(() =>
   import("./Screens/SuperAdminDashboard/entitySetup")
 );
@@ -472,6 +475,7 @@ const App = ({ props }) => {
               <Route path="notifyEntityUser" element={<NotifyEntityUser />} />
               {/* <Route path="/user" element={<Users />} /> */}
               <Route path="/pages" element={<EntryPage />} />
+              <Route path="/user/ssoId/:ssoId" element={<GetSSOId />} />
               <Route path="/setPassword/:randomId" element={<SetPassword />} />
               <Route path="/activateAccess/:randomId" element={<ActivateAccess />} />
               <Route path="/setPassword" element={<SetPasswordWithoutEmail />} />
