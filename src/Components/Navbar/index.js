@@ -165,14 +165,14 @@ const Navbar = () => {
   const idHelp = open ? "mouse-over-popover" : undefined;
 
   const logoutURL = () => {
-    window.location.href = `http://ec2-35-161-12-67.us-west-2.compute.amazonaws.com:8010/logout`;
+    window.location.href = `http://${window.location.hostname}:8000/logout`;
   }
 
   const logout = async () => {
     const cookies = new Cookies();
     let token = cookies.get("user");
     let entityId = cookies.get("entityId");
-    // await fetch(`http://ec2-35-161-12-67.us-west-2.compute.amazonaws.com:8010/logout`, {
+    // await fetch(`http://${window.location.hostname}:8000/logout`, {
     //   // redirect: 'manual',
     //   method: 'PUT',
     //   body: JSON.stringify({}),
@@ -184,7 +184,7 @@ const Navbar = () => {
     // })
 
     // let data = JSON.stringify({});
-    // await axios(`http://ec2-35-161-12-67.us-west-2.compute.amazonaws.com:8010/logout`, {
+    // await axios(`http://${window.location.hostname}:8000/logout`, {
     //   method: 'PUT',
     //   data,
     // }).then(response => {
@@ -200,7 +200,7 @@ const Navbar = () => {
 
 
     // window.location.href = respose.headers?.get('Location')
-    // axios.post(`http://ec2-35-161-12-67.us-west-2.compute.amazonaws.com:8010/logout`, {
+    // axios.post(`http://${window.location.hostname}:8000/logout`, {
     //   // Add parameters here
     //   // transformRequest: (data, headers) => {
     //   //   delete headers.common['X-XSRF-TOKEN'];

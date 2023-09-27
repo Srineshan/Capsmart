@@ -30,7 +30,7 @@ const SetPasswordWithoutPassword = () => {
 
 
   const getEntityId = async () => {
-    await axios(`http://ec2-35-161-12-67.us-west-2.compute.amazonaws.com:8010/entity-service/entityID`, {
+    await axios(`http://${window.location.hostname}:8000/entity-service/entityID`, {
       method: 'GET',
       // headers: { 'X-subdomain': 'smmc-trial' }
     }).then(response => {
@@ -48,7 +48,7 @@ const SetPasswordWithoutPassword = () => {
   }
 
   const getUser = async () => {
-    await axios(`http://ec2-35-161-12-67.us-west-2.compute.amazonaws.com:8010/user-management-service/user`, {
+    await axios(`http://${window.location.hostname}:8000/user-management-service/user`, {
       method: 'GET',
       headers: headers,
     }).then(response => {
@@ -81,7 +81,7 @@ const SetPasswordWithoutPassword = () => {
           "password": password,
         }
       }
-      axios(`http://ec2-35-161-12-67.us-west-2.compute.amazonaws.com:8010/user-management-service/user/setpassword`, {
+      axios(`http://${window.location.hostname}:8000/user-management-service/user/setpassword`, {
         method: 'POST',
         headers: headers,
         data: JSON.stringify(data),

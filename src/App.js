@@ -41,6 +41,9 @@ const ActivateAccess = React.lazy(() =>
 const SetPasswordWithoutEmail = React.lazy(() =>
   import("./Screens/SuperAdminDashboard/setPasswordWithoutEmail")
 );
+const GetSSOId = React.lazy(() =>
+  import("./Screens/SuperAdminDashboard/getSSOId")
+);
 const EntitySetup = React.lazy(() =>
   import("./Screens/SuperAdminDashboard/entitySetup")
 );
@@ -337,7 +340,7 @@ const App = ({ props }) => {
 
 
   const getEntityId = async () => {
-    await axios(`http://ec2-35-161-12-67.us-west-2.compute.amazonaws.com:8010/entity-service/entityID`, {
+    await axios(`http://${window.location.hostname}:8000/entity-service/entityID`, {
       method: "GET",
       // headers: { "X-subdomain": "hopkins" },
     })
@@ -360,7 +363,7 @@ const App = ({ props }) => {
       }
     };
     fetch(
-      `http://ec2-35-161-12-67.us-west-2.compute.amazonaws.com:8010/user-management-service/auth/login`,
+      `http://${window.location.hostname}:8000/user-management-service/auth/login`,
       requestOptions
     )
       .then((response) => response.json())
@@ -472,6 +475,7 @@ const App = ({ props }) => {
               <Route path="notifyEntityUser" element={<NotifyEntityUser />} />
               {/* <Route path="/user" element={<Users />} /> */}
               <Route path="/pages" element={<EntryPage />} />
+              <Route path="/user/ssoId/:userId" element={<GetSSOId />} />
               <Route path="/setPassword/:randomId" element={<SetPassword />} />
               <Route path="/activateAccess/:randomId" element={<ActivateAccess />} />
               <Route path="/setPassword" element={<SetPasswordWithoutEmail />} />

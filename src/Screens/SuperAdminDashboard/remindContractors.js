@@ -11,7 +11,7 @@ const RemindContractors = () => {
     const [userId, setUserId] = useState('');
 
     const notifyFunction = async () => {
-        await axios(`http://ec2-35-161-12-67.us-west-2.compute.amazonaws.com:8010/user-management-service/user/${userId}/remindContractors`, {
+        await axios(`http://${window.location.hostname}:8000/user-management-service/user/${userId}/remindContractors`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
