@@ -41,7 +41,7 @@ const AddContract = ({ getAddContract, getNewContract, getContractType, getSelec
             </div>
             <div className={style.flexCenter}>
                 <div className={style.contractOptions}>
-                    <div className={`${style.displayInRow}`}>
+                    <div className={`${style.positionCenter}`}>
                         <p className={style.selectLable}>Select the Contract type to add</p>
                         {/* <select
                             name="class"
@@ -68,25 +68,28 @@ const AddContract = ({ getAddContract, getNewContract, getContractType, getSelec
                             firstOptionLabel={'Select...'} firstOptionValue={'0'}
                             valueList={['New Contract', 'Renewal Contract', 'Existing Contract']}
                             labelList={['New Contract with No Prior Contract(s) with Entity', 'Contracted Services Continuation Renewal Contract', 'Existing Active Contract']}
-                            disabledList={[false, false, false]} />
+                            disabledList={[false, false, false]}
+                            widthValue={400} />
                     </div>
-                    <div className={`${style.displayInRow} ${style.marginLeft20}`}>
-                        <div className={`${style.contractCards} ${contractType === "INDIVIDUAL" && style.selectedContractCard}`} onClick={() => { setSelectedContractOnClick(true); setContractType('INDIVIDUAL') }}>
-                            <div className={style.alignCenter}>
-                                <div>
-                                    <img src={selectedContractOnClick && contractType === "INDIVIDUAL" ? HighlightedDoctor : Doctor} alt="doctor" className={`${style.contractCardImage} ${style.alignCenter} ${selectedContract !== '0' ? '' : style.reducedOpacity}`} />
-                                    <div className={`${style.contractCardData} ${selectedContract !== '0' ? style.activeContractText : ''}`}>
-                                        Individual Contractor Contract
+                    <div className={`${style.positionCenter} ${style.marginLeft20} `}>
+                        <div className={`${style.positionCenter} ${style.marginLeft20}`}>
+                            <div className={`${style.contractCards} ${contractType === "INDIVIDUAL" && style.selectedContractCard}`} onClick={() => { setSelectedContractOnClick(true); setContractType('INDIVIDUAL') }}>
+                                <div className={style.alignCenter}>
+                                    <div>
+                                        <img src={selectedContractOnClick && contractType === "INDIVIDUAL" ? HighlightedDoctor : Doctor} alt="doctor" className={`${style.contractCardImage} ${style.alignCenter} ${selectedContract !== '0' ? '' : style.reducedOpacity}`} />
+                                        <div className={`${style.contractCardData} ${selectedContract !== '0' ? style.activeContractText : ''}`}>
+                                            Individual Contractor Contract
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className={`${style.contractCards} ${contractType === "MULTIPLE" && style.selectedContractCard}`} onClick={() => { setSelectedContractOnClick(true); setContractType('MULTIPLE') }}>
-                            <div className={style.alignCenter}>
-                                <div>
-                                    <img src={contractType === "MULTIPLE" && selectedContractOnClick ? HighlightedDoctorTeam : DoctorTeam} alt="doctor" className={`${style.contractCardImage} ${style.alignCenter} ${selectedContract !== '0' ? '' : style.reducedOpacity}`} />
-                                    <div className={`${style.contractCardData} ${selectedContract !== '0' ? style.activeContractText : ''}`}>
-                                        Multiple Contractors Contract
+                            <div className={`${style.contractCards} ${contractType === "MULTIPLE" && style.selectedContractCard}`} onClick={() => { setSelectedContractOnClick(true); setContractType('MULTIPLE') }}>
+                                <div className={style.alignCenter}>
+                                    <div>
+                                        <img src={contractType === "MULTIPLE" && selectedContractOnClick ? HighlightedDoctorTeam : DoctorTeam} alt="doctor" className={`${style.contractCardImage} ${style.alignCenter} ${selectedContract !== '0' ? '' : style.reducedOpacity}`} />
+                                        <div className={`${style.contractCardData} ${selectedContract !== '0' ? style.activeContractText : ''}`}>
+                                            Multiple Contractors Contract
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -94,18 +97,19 @@ const AddContract = ({ getAddContract, getNewContract, getContractType, getSelec
                     </div>
 
                     {
-                        //   selectedContractOnClick && (
-                        //     <div className={style.descriptionBoxStyle}>
-                        //         <p className={style.descriptionStyle}>
-                        //             After selecting one of the options above and clicking Next, you will be guided through
-                        //             <span className={`${style.blueColor} ${style.marginLeft20}`}>
-                        //             the Contracts Manager wizard to help upload contracts and assign the appropriate
-                        //             metadata.
-                        //             </span>
-                        //         </p>
-                        //     </div>
-                        // )
+                        selectedContractOnClick && (
+                            <div className={style.descriptionBoxStyle}>
+                                <p className={style.descriptionStyle}>
+                                    After selecting one of the options above and clicking Next, you will be guided through
+                                    <span className={`${style.blueColor} ${style.marginLeft20}`}>
+                                        the Contracts Manager wizard to help upload contracts and assign the appropriate
+                                        metadata.
+                                    </span>
+                                </p>
+                            </div>
+                        )
                     }
+
                 </div>
             </div>
             <div className={`${style.nextButtonPosition} ${style.marginTop20}`}>

@@ -966,6 +966,10 @@ select {
     margin-bottom: 10px;
 }
 
+.flexWrap{
+    flex-wrap: wrap !important;
+}
+
 .cloneBlockStyle {
     height: calc(100vh - 80px);
     overflow-y: scroll;
@@ -1060,7 +1064,7 @@ select {
     border: 1px solid #B3B8BD;
     border-radius: 8px;
     opacity: 1;
-    width: 110%;
+    width: 660px;
     margin-top: 40px;
     padding: 20px;
     background-color: white;
