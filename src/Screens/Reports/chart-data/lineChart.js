@@ -1,43 +1,43 @@
 import React from 'react';
 import Chart from 'react-apexcharts';
 
-const ApexLineChart = ({lineData}) => {
+const ApexLineChart = ({ lineData }) => {
 
     const chartData = {
         series: [
-            {  
-              data: lineData?.map(data=>data?.value)
+            {
+                data: lineData?.map(data => data?.value)
             }
-          ],
-          options: {
-                chart: {
-                height: 150,
+        ],
+        options: {
+            chart: {
+                height: 300,
                 type: 'line',
                 toolbar: {
                     show: false
                 }
-                },
-                colors: ['#02BC77'],
-                dataLabels: {
+            },
+            colors: ['#02BC77'],
+            dataLabels: {
                 enabled: false,
-                },
-                stroke: {
+            },
+            stroke: {
                 curve: 'smooth',
                 width: 2
-                },
-                grid: {
+            },
+            grid: {
                 borderColor: '#e7e7e7',
-                },
-                markers: {
+            },
+            markers: {
                 size: 5
-                },
-                xaxis: {
-                categories: lineData?.map(data=>data?.date),
-                },
-            }
+            },
+            xaxis: {
+                categories: lineData?.map(data => data?.date),
+            },
+        }
     };
-    return(
-        <Chart {...chartData}  type="line" height={300} />
+    return (
+        <Chart {...chartData} type="line" height={300} />
     )
 }
 

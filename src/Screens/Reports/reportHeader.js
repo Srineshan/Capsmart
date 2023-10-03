@@ -24,13 +24,13 @@ const ReportHeader = () => {
         const { data: data } = await GET(`entity-service/entity/${TenantID}`);
         setLogo({ logo: data?.logo?.file?.fileURL, title: data?.entityName?.entityName });
         // setCorsedLogo(`https://cors-anywhere-solai.fly.dev/${data?.logo?.file?.fileURL}`);
-        setCorsedLogo(`${data?.logo?.file?.fileURL}`);
+        setCorsedLogo(`http://app.mytimesmart.com:4000/${data?.logo?.file?.fileURL}`);
         setAddress(`${data?.sites?.[0]?.address?.addressLine}, ${data?.sites?.[0]?.address?.city}, ${data?.sites?.[0]?.address?.state}, ${data?.sites?.[0]?.address?.zipcode}.`)
     }
 
     return (
         <div className={style.headerBackground}>
-            <div className={`${style.spaceBetween} ${style.alignCenter}`}>
+            <div className={`${style.grid3WithoutGap} ${style.alignCenter}`}>
                 <div>
                     <div className={style.confidentialBoxStyle}>
                         <div className={style.confidentialTextStyle}>CONFIDENTIAL</div>
@@ -38,16 +38,18 @@ const ReportHeader = () => {
                         <div className={style.doNotDisturbTextStyle}>Without Permission</div>
                     </div>
                 </div>
-                <div>
+                <div className={style.centerAlignUsingBlock}>
                     {logo.logo && (
-                        <img src={corsedLogo || logo?.logo} alt="" className={`${style.headerLogo}`} />
+                        <img src={corsedLogo || logo?.logo} alt="" className={`${style.headerLogo} ${style.centerAlignUsingBlock}`} />
                     )}
-                    <div className={style.entityNameBolderStyle}>{logo.title}</div>
-                    <div className={style.entityNameHeaderStyle}>{address}</div>
+                    <div className={`${style.entityNameBolderStyle}`}>{logo.title}</div>
+                    <div className={`${style.entityNameHeaderStyle}`}>{address}</div>
                 </div>
                 <div>
-                    <div className={style.reportRunByTextStyle}>Report Run By : </div>
-                    <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{userDetail?.userName} at {currentTime}</div>
+                    <div className={style.floatRight}>
+                        <div className={style.reportRunByTextStyle}>Report Run By : </div>
+                        <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{userDetail?.userName} at {currentTime}</div>
+                    </div>
                 </div>
             </div>
             <div className={`${style.headerBorderStyle} ${style.marginTop40}`}></div>
