@@ -35,7 +35,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
     const [contractContinuationPolicy, setContractContinuationPolicy] = useState('');
     const [contractStatus, setContractStatus] = useState('ACTIVE');
     const [podType, setPodType] = useState('Medical Staff Membership & Privileges');
-    const [reportingTimePeriod, setReportingTimePeriod] = useState('Current Week');
+    const [reportingTimePeriod, setReportingTimePeriod] = useState('Current Month');
     const [selectedSites, setSelectedSites] = useState([]);
     const [selectedSitesToSend, setSelectedSitesToSend] = useState([]);
     const [selectedContractsToSend, setSelectedContractsToSend] = useState([]);

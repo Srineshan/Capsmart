@@ -1,14 +1,12 @@
 import domToPdf from "dom-to-pdf";
 
-const toPDF = (selector) => {
+const toPDF = (selector, filename) => {
   const element = document.querySelector(selector);
   const options = {
-    filename: "report.pdf",
+    filename: filename,
     excludeClassNames: ['ExcludeMeFromPdf'],
-    // proxyUrl: 'http://localhost:3000/'
   };
   domToPdf(element, options, function () {
-    console.log("done");
   });
 };
 

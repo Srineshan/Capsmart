@@ -34,6 +34,10 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
     const openSave = Boolean(anchorElSave);
     const [anchorElPrint, setAnchorElPrint] = useState(null);
     const openPrint = Boolean(anchorElPrint);
+    const [anchorElDownload, setAnchorElDownload] = useState(null);
+    const openDownload = Boolean(anchorElDownload);
+    const [anchorElFullscreen, setAnchorElFullscreen] = useState(null);
+    const openFullscreen = Boolean(anchorElFullscreen);
 
     const getSaveReportDialog = (value) => {
         setShowSaveReport(value);
@@ -86,7 +90,7 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
                                 }}
                                 disableRestoreFocus
                             >
-                                <div className={style.popoverStyle}>Click to Refresh this Report</div>
+                                <div className={style.popoverStyle}>Click To Refresh This Report</div>
                             </Popover>
                         </div>
                         {/* <div className={`${style.iconPadding} ${style.cursorPointer}`}>
@@ -110,7 +114,7 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
                                 }}
                                 disableRestoreFocus
                             >
-                                <div className={style.popoverStyle}>Click to Schedule this Report</div>
+                                <div className={style.popoverStyle}>Click To Schedule This Report</div>
                             </Popover>
                         </div>
                         {/* <div className={`${style.iconPadding} ${style.cursorPointer}`} onClick={() => setShowSaveReportOutput(true)}
@@ -134,8 +138,26 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
                                 <div className={style.popoverStyle}>Click to Save this Report</div>
                             </Popover>
                         </div> */}
-                        <div className={`${style.iconPadding} ${style.cursorPointer} ${isNoData && style.disabledCursor}`} onClick={() => !isNoData ? getIsDownloadClicked(true) : {}}>
+                        <div className={`${style.iconPadding} ${style.cursorPointer} ${isNoData && style.disabledCursor}`} onClick={() => !isNoData ? getIsDownloadClicked(true) : {}}
+                            onMouseEnter={(e) => !isNoData ? setAnchorElDownload(e.currentTarget) : {}} onMouseLeave={() => !isNoData ? setAnchorElDownload(null) : {}} aria-owns={openDownload ? 'mouse-over-popover' : undefined}
+                            aria-haspopup="true">
                             <DownloadingOutlinedIcon style={{ color: "#52575D" }} />
+                            <Popover
+                                id={'mouse-over-popover'}
+                                sx={{
+                                    pointerEvents: 'none',
+                                }}
+                                open={openDownload}
+                                anchorEl={anchorElDownload}
+                                onClose={() => setAnchorElDownload(null)}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'left',
+                                }}
+                                disableRestoreFocus
+                            >
+                                <div className={style.popoverStyle}>Click To Download This Report</div>
+                            </Popover>
                         </div>
                         <div className={`${style.iconPadding} ${style.cursorPointer} ${isNoData && style.disabledCursor}`} onClick={!isNoData ? handlePrint : {}}
                             onMouseEnter={(e) => !isNoData ? setAnchorElPrint(e.currentTarget) : {}} onMouseLeave={() => !isNoData ? setAnchorElPrint(null) : {}} aria-owns={openPrint ? 'mouse-over-popover' : undefined}
@@ -155,11 +177,29 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
                                 }}
                                 disableRestoreFocus
                             >
-                                <div className={style.popoverStyle}>Click to Print this Report</div>
+                                <div className={style.popoverStyle}>Click To Print This Report</div>
                             </Popover>
                         </div>
-                        <div className={`${style.iconPadding} ${style.cursorPointer} ${isNoData && style.disabledCursor}`} >
+                        <div className={`${style.iconPadding} ${style.cursorPointer} ${isNoData && style.disabledCursor}`}
+                            onMouseEnter={(e) => !isNoData ? setAnchorElFullscreen(e.currentTarget) : {}} onMouseLeave={() => !isNoData ? setAnchorElFullscreen(null) : {}} aria-owns={openFullscreen ? 'mouse-over-popover' : undefined}
+                            aria-haspopup="true" >
                             <ZoomOutMapIcon style={{ color: "#52575D" }} onClick={!isNoData ? handle.enter : {}} />
+                            <Popover
+                                id={'mouse-over-popover'}
+                                sx={{
+                                    pointerEvents: 'none',
+                                }}
+                                open={openFullscreen}
+                                anchorEl={anchorElFullscreen}
+                                onClose={() => setAnchorElFullscreen(null)}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'left',
+                                }}
+                                disableRestoreFocus
+                            >
+                                <div className={style.popoverStyle}>Click To View This Report In Full Screen</div>
+                            </Popover>
                         </div>
                     </div>
                 </div>
