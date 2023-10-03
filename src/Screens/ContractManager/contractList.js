@@ -14,7 +14,7 @@ import TimeSmartLogo from './../../images/timeSmartAI-logo-withoutbg.png';
 import ContractTiles from './contractTiles';
 import SearchBar from './../../Components/SearchBar';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import { GET, PUT, POST } from './../dataSaver';
+import { GET, PUT, POST, TenantID } from './../dataSaver';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import CircularProgress from "@mui/material/CircularProgress";
 import { SuccessToaster, ErrorToaster } from './../../utils/toaster';
@@ -68,8 +68,16 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
   const currentUserData = currentUser();
   const [selectedContractPreImplementationData, setSelectedContractPreImplementationData] = useState();
   const [metadata, setMetadata] = useState();
-  const activateContracts = async (data) => {
-    let status = 'ACTIVE';
+  const [CSPSubDomain, setCSPSubDomain] = useState("");
+
+  useEffect(() => {
+    getContractsMetadata();
+    getEntityData();
+  }, []);
+
+  const activateContracts = async (data, userData) => {
+    setSelectedContractId(data?.id);
+    let status = userData?.filter(data => !data?.ssoId?.id?.includes(`@${CSPSubDomain}`))?.length === 0 ? 'ACTIVE' : 'ACTIVATION_READY';
     let activationData = {
       "contractActivation": {
         "activationNotes": {
@@ -94,6 +102,19 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
         getContractsMetadata();
       })
       .catch(error => { ErrorToaster('Contract Activation Failed'); })
+  };
+
+  const getUserData = async (data) => {
+    if (data?.id !== "" && data?.id !== undefined) {
+      const { data: userData } = await GET(
+        `user-management-service/user?contractID=${data?.id}`
+      );
+      if (userData) {
+        if (userData?.length !== 0) {
+          activateContracts(data, userData);
+        }
+      }
+    }
   };
 
   const contractExtension = (data) => {
@@ -143,9 +164,11 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
     setAnchorEl(null);
   };
 
-  useEffect(() => {
-    getContractsMetadata();
-  }, [])
+  const getEntityData = async () => {
+    const { data: entityData } = await GET(`entity-service/entity/${TenantID}`);
+    // console.log("entity", entityData.subdomain);
+    setCSPSubDomain(entityData.officialEmailDomain?.officialEmail);
+  };
 
   const getContractors = (id) => {
     let contractedUsers = [];
@@ -366,7 +389,7 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
 
   const draftActionsData = [
     { 'data': 'Delete Contract', 'onClick': deleteDraft, 'requiredValue': 'boolean' },
-    { 'data': 'Activate Contract', 'onClick': activateContracts, 'requiredValue': 'id' },
+    { 'data': 'Activate Contract', 'onClick': getUserData, 'requiredValue': 'id' },
     // {'data': 'Share', 'onClick': activateContracts, 'requiredValue': 'id'},
   ]
 

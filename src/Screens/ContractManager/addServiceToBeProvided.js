@@ -954,28 +954,93 @@ const AddServiceProvided = ({
     }
     if (serviceTypeTemplate === ONCALL) {
       let temp = metadata?.additionalActivity;
-      activities = [];
-      metadata?.serviceDaysArray?.map((serviceDays) => {
-        if (serviceDays === "Weekdays" && metadata?.customizedSchedule) {
-          if (
-            metadata?.weekdayMin ||
-            metadata?.weekdayMax ||
-            metadata?.weekdayPayment !== 0
-          ) {
-            activities?.push({ activity: "Weekday Days" });
-          }
-          if (
-            metadata?.weekdayNightsMin ||
-            metadata?.weekdayNightsMax ||
-            metadata?.weekdayNightsPayment !== 0
-          ) {
-            activities?.push({ activity: "Weekday Nights" });
-          }
-        } else {
+      if (activities?.length === 0 && !metadata?.customizedSchedule) {
+        metadata?.serviceDaysArray?.map((serviceDays) => {
           activities?.push({ activity: serviceDays });
-        }
-      });
-      performingActivity = activities
+        });
+      }
+      console.log('customize log', metadata);
+      if (metadata?.customizedSchedule) {
+        activities = [];
+        metadata?.serviceDaysArray?.map((serviceDays) => {
+          console.log('Activity', activities)
+          if (serviceDays === "Weekdays") {
+            if
+              (metadata?.weekdayMin ||
+              metadata?.weekdayMax ||
+              metadata?.weekdayPayment !== 0
+            ) {
+
+              if (metadata?.weekdayActivity === '') {
+                console.log('inside weekday if');
+                if (!activities?.map(data => data?.activity).includes("Weekday Days")) {
+                  activities?.push({ activity: "Weekday Days" });
+                }
+              } else {
+                console.log('inside weekday else');
+                if (!activities?.map(data => data?.activity).includes(metadata?.weekdayActivity)) {
+                  activities?.push({ activity: metadata?.weekdayActivity });
+                }
+              }
+            }
+            if (
+              metadata?.weekdayNightsMin ||
+              metadata?.weekdayNightsMax ||
+              metadata?.weekdayNightsPayment !== 0
+            ) {
+              if (metadata?.weekdayNightActivity === '') {
+                console.log('inside weeknight if');
+                if (!activities?.map(data => data?.activity).includes("Weekday Nights")) {
+                  activities?.push({ activity: "Weekday Nights" });
+                }
+              } else {
+                console.log('inside weeknight else');
+                if (!activities?.map(data => data?.activity).includes(metadata?.weekdayNightActivity)) {
+                  activities?.push({ activity: metadata?.weekdayNightActivity })
+                }
+              }
+            }
+          }
+          if (
+            metadata?.weekendMin ||
+            metadata?.weekendMax ||
+            metadata?.weekendPayment !== 0
+          ) {
+            if (metadata?.weekendActivity === '') {
+              console.log('inside weekend if');
+              if (!activities?.map(data => data?.activity)?.includes("Weekend")) {
+                activities?.push({ activity: "Weekend" });
+              }
+            } else {
+              console.log('inside weekend else');
+              if (!activities?.map(data => data?.activity).includes(metadata?.weekendActivity)) {
+                activities?.push({ activity: metadata?.weekendActivity })
+              }
+            }
+          }
+          if (
+            metadata?.holidayMin ||
+            metadata?.holidayMax ||
+            metadata?.holidayPayment !== 0
+          ) {
+            if (metadata?.holidayActivity === '') {
+              console.log('inside holiday if');
+              if (!activities?.map(data => data?.activity).includes("Holiday")) {
+
+                activities?.push({ activity: "Holiday" });
+              }
+            } else {
+              console.log('inside holiday else');
+              if (!activities?.map(data => data?.activity).includes(metadata?.holidayActivity)) {
+                activities?.push({ activity: metadata?.holidayActivity })
+              }
+            }
+          }
+
+        });
+      }
+      performingActivity = activities?.map(data => data?.activity)?.join("-");
+      console.log('Performing Actiity', performingActivity, activities)
         ?.map((activity) => activity?.activity)
         ?.join("-");
       temp?.map((activity) => {
@@ -1043,7 +1108,7 @@ const AddServiceProvided = ({
           ?.map((data) => data?.activity)
           ?.join("-");
       }
-      if (activities?.length === 0 && serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE) {
+      if (activities?.length === 0 && serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE && serviceTypeTemplate !== ONCALL) {
         let message =
           serviceTypeTemplate === SUPPLEMENTAL
             ? "Supplement Services"
@@ -1263,7 +1328,10 @@ const AddServiceProvided = ({
                     frequency: dataValues?.weekdayFrequency,
                   },
                   duration: {
-                    hours: parseInt(dataValues?.weekdayDuration),
+                    hours: parseFloat(dataValues?.weekdayDuration),
+                  },
+                  activity: {
+                    activity: dataValues?.weekdayActivity
                   },
                   payableAmount: {
                     value: parseFloat(dataValues?.weekdayPayment),
@@ -1294,7 +1362,10 @@ const AddServiceProvided = ({
                     frequency: dataValues?.weekdayNightsFrequency,
                   },
                   duration: {
-                    hours: parseInt(dataValues?.weekdayNightsDuration),
+                    hours: parseFloat(dataValues?.weekdayNightsDuration),
+                  },
+                  activity: {
+                    activity: dataValues?.weekdayNightActivity
                   },
                   payableAmount: {
                     value: parseFloat(dataValues?.weekdayNightsPayment),
@@ -1333,7 +1404,10 @@ const AddServiceProvided = ({
                     frequency: dataValues?.weekendFrequency,
                   },
                   duration: {
-                    hours: parseInt(dataValues?.weekendDuration),
+                    hours: parseFloat(dataValues?.weekendDuration),
+                  },
+                  activity: {
+                    activity: dataValues?.weekendActivity,
                   },
                   payableAmount: {
                     value: parseFloat(dataValues?.weekendPayment),
@@ -1365,7 +1439,10 @@ const AddServiceProvided = ({
                     frequency: dataValues?.holidayFrequency,
                   },
                   duration: {
-                    hours: parseInt(dataValues?.holidayDuration),
+                    hours: parseFloat(dataValues?.holidayDuration),
+                  },
+                  activity: {
+                    activity: dataValues?.holidayActivity
                   },
                   payableAmount: {
                     value: parseFloat(dataValues?.holidayPayment),
@@ -2068,8 +2145,7 @@ const AddServiceProvided = ({
                   {serviceTypeTemplate !== ADMINISTRATIVE &&
                     serviceTypeTemplate !== ADDON &&
                     serviceTypeTemplate !== HOSPICE &&
-                    serviceTypeTemplate !== SUPPLEMENTAL &&
-                    serviceTypeTemplate !== ONCALL && (
+                    serviceTypeTemplate !== SUPPLEMENTAL && (
                       <div>
                         <div
                           className={`${style.addManagerGrid} ${style.marginTop20} `}
