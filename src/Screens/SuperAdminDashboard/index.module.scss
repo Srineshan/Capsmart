@@ -2434,7 +2434,7 @@ input[type="file"] {
 }
 
 .getSSOIdBox {
-    height: 22vh;
+    height: 30vh;
     width: 40vw;
     background-color: #f1f1f1;
     border-radius: 0 0 6px 6px;
@@ -2460,10 +2460,19 @@ input[type="file"] {
 .getSSOIdHeading {
     text-align: center;
     font-family: Montserrat;
-    font-size: 35px;
+    font-size: 20px;
     font-weight: bolder;
     letter-spacing: 0px;
     color: #fff;
+}
+
+.getSSOIdDesc {
+    text-align: left;
+    font-family: Montserrat;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0px;
+    color: #52575D;
 }
 
 .addManagerGrid {

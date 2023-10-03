@@ -64,7 +64,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         weekdayDuration: 0,
         weekdayMin: 0,
         weekdayMax: 0,
-        // weekdayActivity: '',
+        weekdayActivity: '',
         weekdayPayment: 0,
         weekdayPaymentNa: false,
         weekdayFrequency: 'WEEK',
@@ -75,7 +75,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         weekdayNightsDuration: 0,
         weekdayNightsMin: 0,
         weekdayNightsMax: 0,
-        // weekdayNightActivity: '',
+        weekdayNightActivity: '',
         weekdayNightsPayment: 0,
         weekdayNightsPaymentNa: false,
         weekdayNightsFrequency: 'WEEK',
@@ -88,7 +88,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         weekendDuration: 0,
         weekendMin: 0,
         weekendMax: 0,
-        // weekendActivity: '',
+        weekendActivity: '',
         weekendPayment: 0,
         weekendPaymentNa: false,
         weekendFrequency: 'WEEK',
@@ -101,7 +101,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         holidayDuration: 0,
         holidayMin: 0,
         holidayMax: 0,
-        // holidayActivity: '',
+        holidayActivity: '',
         holidayPayment: 0,
         holidayPaymentNa: false,
     });
@@ -159,7 +159,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
             weekdayDuration: 0,
             weekdayMin: 0,
             weekdayMax: 0,
-            // weekdayActivity: '',
+            weekdayActivity: '',
             weekdayPayment: 0,
             weekdayPaymentNa: false,
             weekdayFrequency: 'WEEK',
@@ -170,7 +170,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
             weekdayNightsDuration: 0,
             weekdayNightsMin: 0,
             weekdayNightsMax: 0,
-            // weekdayNightActivity: '',
+            weekdayNightActivity: '',
             weekdayNightsPayment: 0,
             weekdayNightsPaymentNa: false,
             weekdayNightsFrequency: 'WEEK',
@@ -183,7 +183,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
             weekendDuration: 0,
             weekendMin: 0,
             weekendMax: 0,
-            // weekendActivity: '',
+            weekendActivity: '',
             weekendPayment: 0,
             weekendPaymentNa: false,
             weekendFrequency: 'WEEK',
@@ -196,7 +196,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
             holidayDuration: 0,
             holidayMin: 0,
             holidayMax: 0,
-            // holidayActivity: '',
+            holidayActivity: '',
             holidayPayment: 0,
             holidayPaymentNa: false,
         });
@@ -216,7 +216,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                 weekdayDuration: 0,
                 weekdayMin: 0,
                 weekdayMax: 0,
-                // weekdayActivity: '',
+                weekdayActivity: '',
                 weekdayPayment: 0,
                 weekdayPaymentNa: false,
                 weekdayFrequency: 'WEEK',
@@ -227,7 +227,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                 weekdayNightsDuration: 0,
                 weekdayNightsMin: 0,
                 weekdayNightsMax: 0,
-                // weekdayNightActivity: '',
+                weekdayNightActivity: '',
                 weekdayNightsPayment: 0,
                 weekdayNightsPaymentNa: false,
                 weekdayFrequency: 'WEEK',
@@ -240,7 +240,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                 weekendDuration: 0,
                 weekendMin: 0,
                 weekendMax: 0,
-                // weekendActivity: '',
+                weekendActivity: '',
                 weekendPayment: 0,
                 weekendPaymentNa: false,
                 weekendFrequency: 'WEEK',
@@ -255,7 +255,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                 holidayPaymentNa: false,
                 holidayMin: 0,
                 holidayMax: 0,
-                // holidayActivity: '',
+                holidayActivity: '',
                 patientMRNRequired: false,
                 attendingDocRequired: false,
             })
@@ -358,7 +358,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                 weekdayDuration: serviceSelected?.customschedule?.weekdayDay?.duration?.hours,
                 weekdayMin: serviceSelected?.customschedule?.weekdayDay?.target?.minimum?.value,
                 weekdayMax: serviceSelected?.customschedule?.weekdayDay?.target?.maximum?.value,
-                // weekdayActivity: serviceSelected?.customschedule?.weekdayDay?.activity?.activity,
+                weekdayActivity: serviceSelected?.customschedule?.weekdayDay?.activity?.activity,
                 weekdayPayment: serviceSelected?.customschedule?.weekdayDay?.payableAmount?.value,
                 weekdayPaymentNa: serviceSelected?.customschedule?.weekdayDay?.paymentNotApplicable,
                 weekdayFrequency: serviceSelected?.customschedule?.weekdayDay?.target?.frequency,
@@ -367,7 +367,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                 weekdayNightsDuration: serviceSelected?.customschedule?.weekdayNight?.duration?.hours,
                 weekdayNightsMin: serviceSelected?.customschedule?.weekdayNight?.target?.minimum?.value,
                 weekdayNightsMax: serviceSelected?.customschedule?.weekdayNight?.target?.maximum?.value,
-                // weekdayNightActivity: serviceSelected?.customschedule?.weekdayNight?.activity?.activity,
+                weekdayNightActivity: serviceSelected?.customschedule?.weekdayNight?.activity?.activity,
                 weekdayNightsPayment: serviceSelected?.customschedule?.weekdayNight?.payableAmount?.value,
                 weekdayNightsPaymentNa: serviceSelected?.customschedule?.weekdayNight?.paymentNotApplicable,
                 weekdayNightsFrequency: serviceSelected?.customschedule?.weekdayNight?.target?.frequency,
@@ -378,7 +378,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                 weekendDuration: serviceSelected?.customschedule?.weekend?.duration?.hours,
                 weekendMin: serviceSelected?.customschedule?.weekend?.target?.minimum?.value,
                 weekendMax: serviceSelected?.customschedule?.weekend?.target?.maximum?.value,
-                // weekendActivity: serviceSelected?.customschedule?.weekend?.activity?.activity,
+                weekendActivity: serviceSelected?.customschedule?.weekend?.activity?.activity,
                 weekendPayment: serviceSelected?.customschedule?.weekend?.payableAmount?.value,
                 weekendPaymentNa: serviceSelected?.customschedule?.weekend?.paymentNotApplicable,
                 weekendFrequency: serviceSelected?.customschedule?.weekend?.target?.frequency,
@@ -389,7 +389,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                 holidayDuration: serviceSelected?.customschedule?.holiday?.duration?.hours,
                 holidayMin: serviceSelected?.customschedule?.holiday?.target?.minimum?.value,
                 holidayMax: serviceSelected?.customschedule?.holiday?.target?.maximum?.value,
-                // holidayActivity: serviceSelected?.customschedule?.holiday?.activity?.activity,
+                holidayActivity: serviceSelected?.customschedule?.holiday?.activity?.activity,
                 holidayPayment: serviceSelected?.customschedule?.holiday?.payableAmount?.value,
                 holidayPaymentNa: serviceSelected?.customschedule?.holiday?.paymentNotApplicable,
                 patientMRNRequired: serviceSelected?.patientMRNRequired,
@@ -576,22 +576,22 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                             </div>
                         </div>
                     </div>
-                    {
-                        //         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        //         <div className={style.marginLeft30}>
-                        //             <CommonLabel value='Activity*' />
-                        //         </div>
-                        //         <div className={style.displayInRow}>
-                        //     <CommonTextField
-                        //         className={style.twoCol}
-                        //         onChange={(e) => onCustomizeFieldChange(e.target.value, 'weekdayActivity')}
-                        //         value={metadata?.weekdayActivity}
-                        //         type='text'
-                        //     // disabled={metadata?.weekdayFrequency === 'NA' || !metadata?.serviceDays?.weekDays}
-                        //     />
-                        // </div>
-                        //     </div>
-                    }
+
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <div className={style.marginLeft30}>
+                            <CommonLabel value='Activity' />
+                        </div>
+                        <div className={style.displayInRow}>
+                            <CommonTextField
+                                className={style.twoCol}
+                                onChange={(e) => onCustomizeFieldChange(e.target.value, 'weekdayActivity')}
+                                value={metadata?.weekdayActivity}
+                                type='text'
+                            // disabled={metadata?.weekdayFrequency === 'NA' || !metadata?.serviceDays?.weekDays}
+                            />
+                        </div>
+                    </div>
+
 
                     < div className={`${style.addManagerGrid} ${style.marginTop20}`
                     }>
@@ -704,26 +704,26 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                             </div>
                         </div>
                     </div>
-                    {
-                        //     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        //     <div className={style.marginLeft30}>
-                        //         <CommonLabel value='Activity*' />
-                        //     </div>
-                        //     <div className={style.displayInRow}>
-                        //         {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                        //             <div className={style.textElement}>MIN</div>
-                        //             <EditableText disabled={metadata?.weekdayFrequency === 'NA' || !metadata?.serviceDays?.weekDays} value={metadata?.weekdayMin} placeholder='' onChange={(e) => e >= 0 && onCustomizeFieldChange(e, 'weekdayMin')} type='tel' maxLength='2' className={style.serviceProvidedEditableTextStyle} />
-                        //         </div> */}
-                        //         <CommonTextField
-                        //             className={style.twoCol}
-                        //             onChange={(e) => onCustomizeFieldChange(e.target.value, 'weekdayNightActivity')}
-                        //             value={metadata?.weekdayNightActivity}
-                        //             type='text'
-                        //         // disabled={metadata?.weekdayFrequency === 'NA' || !metadata?.serviceDays?.weekDays}
-                        //         />
-                        //     </div>
-                        // </div>
-                    }
+
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <div className={style.marginLeft30}>
+                            <CommonLabel value='Activity' />
+                        </div>
+                        <div className={style.displayInRow}>
+                            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                                    <div className={style.textElement}>MIN</div>
+                                    <EditableText disabled={metadata?.weekdayFrequency === 'NA' || !metadata?.serviceDays?.weekDays} value={metadata?.weekdayMin} placeholder='' onChange={(e) => e >= 0 && onCustomizeFieldChange(e, 'weekdayMin')} type='tel' maxLength='2' className={style.serviceProvidedEditableTextStyle} />
+                                </div> */}
+                            <CommonTextField
+                                className={style.twoCol}
+                                onChange={(e) => onCustomizeFieldChange(e.target.value, 'weekdayNightActivity')}
+                                value={metadata?.weekdayNightActivity}
+                                type='text'
+                            // disabled={metadata?.weekdayFrequency === 'NA' || !metadata?.serviceDays?.weekDays}
+                            />
+                        </div>
+                    </div>
+
 
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                         <div className={style.marginLeft30}>
@@ -857,26 +857,26 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
 
                         </div>
                     </div>
-                    {
-                        //     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        //     <div className={style.marginLeft30}>
-                        //         <CommonLabel value='Activity*' />
-                        //     </div>
-                        //     <div className={style.displayInRow}>
-                        //         {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                        //             <div className={style.textElement}>MIN</div>
-                        //             <EditableText disabled={metadata?.weekdayFrequency === 'NA' || !metadata?.serviceDays?.weekDays} value={metadata?.weekdayMin} placeholder='' onChange={(e) => e >= 0 && onCustomizeFieldChange(e, 'weekdayMin')} type='tel' maxLength='2' className={style.serviceProvidedEditableTextStyle} />
-                        //         </div> */}
-                        //         <CommonTextField
-                        //             className={style.twoCol}
-                        //             onChange={(e) => onCustomizeFieldChange(e.target.value, 'weekendActivity')}
-                        //             value={metadata?.weekendActivity}
-                        //             type='text'
-                        //         // disabled={metadata?.weekdayFrequency === 'NA' || !metadata?.serviceDays?.weekDays}
-                        //         />
-                        //     </div>
-                        // </div>
-                    }
+
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <div className={style.marginLeft30}>
+                            <CommonLabel value='Activity' />
+                        </div>
+                        <div className={style.displayInRow}>
+                            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                                    <div className={style.textElement}>MIN</div>
+                                    <EditableText disabled={metadata?.weekdayFrequency === 'NA' || !metadata?.serviceDays?.weekDays} value={metadata?.weekdayMin} placeholder='' onChange={(e) => e >= 0 && onCustomizeFieldChange(e, 'weekdayMin')} type='tel' maxLength='2' className={style.serviceProvidedEditableTextStyle} />
+                                </div> */}
+                            <CommonTextField
+                                className={style.twoCol}
+                                onChange={(e) => onCustomizeFieldChange(e.target.value, 'weekendActivity')}
+                                value={metadata?.weekendActivity}
+                                type='text'
+                            // disabled={metadata?.weekdayFrequency === 'NA' || !metadata?.serviceDays?.weekDays}
+                            />
+                        </div>
+                    </div>
+
 
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                         <div className={style.marginLeft30}>
@@ -1019,26 +1019,26 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                             </div>
                         </div>
                     </div>
-                    {
-                        //     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        //     <div className={style.marginLeft30}>
-                        //         <CommonLabel value='Activity*' />
-                        //     </div>
-                        //     <div className={style.displayInRow}>
-                        //         {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                        //             <div className={style.textElement}>MIN</div>
-                        //             <EditableText disabled={metadata?.weekdayFrequency === 'NA' || !metadata?.serviceDays?.weekDays} value={metadata?.weekdayMin} placeholder='' onChange={(e) => e >= 0 && onCustomizeFieldChange(e, 'weekdayMin')} type='tel' maxLength='2' className={style.serviceProvidedEditableTextStyle} />
-                        //         </div> */}
-                        //         <CommonTextField
-                        //             className={style.twoCol}
-                        //             onChange={(e) => onCustomizeFieldChange(e.target.value, 'holidayActivity')}
-                        //             value={metadata?.holidayActivity}
-                        //             type='text'
-                        //         // disabled={metadata?.weekdayFrequency === 'NA' || !metadata?.serviceDays?.weekDays}
-                        //         />
-                        //     </div>
-                        // </div>
-                    }
+
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <div className={style.marginLeft30}>
+                            <CommonLabel value='Activity' />
+                        </div>
+                        <div className={style.displayInRow}>
+                            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                                    <div className={style.textElement}>MIN</div>
+                                    <EditableText disabled={metadata?.weekdayFrequency === 'NA' || !metadata?.serviceDays?.weekDays} value={metadata?.weekdayMin} placeholder='' onChange={(e) => e >= 0 && onCustomizeFieldChange(e, 'weekdayMin')} type='tel' maxLength='2' className={style.serviceProvidedEditableTextStyle} />
+                                </div> */}
+                            <CommonTextField
+                                className={style.twoCol}
+                                onChange={(e) => onCustomizeFieldChange(e.target.value, 'holidayActivity')}
+                                value={metadata?.holidayActivity}
+                                type='text'
+                            // disabled={metadata?.weekdayFrequency === 'NA' || !metadata?.serviceDays?.weekDays}
+                            />
+                        </div>
+                    </div>
+
 
 
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
