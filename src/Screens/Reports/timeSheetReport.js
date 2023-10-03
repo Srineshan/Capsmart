@@ -76,7 +76,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         key: 'oneTimeContract',
         key: 'complianceStatus',
         key: 'nonCompliant',
-        key: 'paidConsultingHours',
+        PAID_CONSULTING_HOURS_BILLING_PRODUCTIVITY_INDEX_BY_CONTRACTOR: 'paidConsultingHours',
         key: 'scheduledActivityByContract',
         PAYMENT_PROCESSING_SUMMARY: 'paymentsProcessingSummary',
         COST_REPORT_FOR_CONTRACTED_SERVICES_PERFORMED: 'compensationCostAnalysis',
@@ -94,7 +94,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         key: 'List of One Time Contracts that will Terminate on Expiration',
         key: 'Contract Based Proof of Documentation Compliance Status Summary',
         key: 'List Of Contracts That Are Non Compliant With Proof Of Documentation Requirement',
-        key: 'Paid Consulting Hours & Billing Productivity Index by Contractor',
+        PAID_CONSULTING_HOURS_BILLING_PRODUCTIVITY_INDEX_BY_CONTRACTOR: 'Paid Consulting Hours & Billing Productivity Index by Contractor',
         key: 'Scheduled Activity/ Services - forecasted to actual by contract',
         PAYMENT_PROCESSING_SUMMARY: 'Payments Processing Summary',
         COST_REPORT_FOR_CONTRACTED_SERVICES_PERFORMED: 'Cost Report for Contracted Services Performed',
@@ -275,7 +275,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                 <p className={style.headingStyle}>Last Run Date/ Time</p>
                                 {/* <p className={style.headingStyle}>Last Updated By</p> */}
                                 {/* <p className={style.headingStyle}>Owner</p> */}
-                                <p className={style.headingStyle}>Updated</p>
+                                <p className={style.headingStyle}>Last Updated</p>
                             </div>
                             <div className={style.scrollStyle}>
                                 {standardTemplates?.map((data, index) => (
@@ -283,9 +283,9 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                         <div className={style.tableDataReportsFontStyle}>{index + 1}</div>
                                         <Link to={`/reportTypeOverview/${routeList[data?.subCategory]}`} className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>{titleList[data?.title]}</div></Link>
                                         <div className={style.tableDataReportsFontStyle}>{descriptionList[data?.description]}</div>
-                                        <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(data?.lastRun), 'America/New_York', 'd MMM yyyy H:m')} </div>
+                                        <div className={style.tableDataReportsFontStyle}>{data?.lastRun !== null ? formatInTimeZone(new Date(data?.lastRun), 'America/New_York', 'd MMM yyyy H:m') : '-'} </div>
                                         {/* <div className={style.tableDataReportsFontStyle}>{currentUserDetails?.fullName}</div> */}
-                                        <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(data?.lastUpdate), 'America/New_York', 'd MMM yyyy')}</div>
+                                        <div className={style.tableDataReportsFontStyle}>{data?.lastUpdate !== null ? formatInTimeZone(new Date(data?.lastUpdate), 'America/New_York', 'd MMM yyyy') : '-'}</div>
                                         <Link to={`/reportTypeOverview/${routeList[data?.subCategory]}`} className={style.linkStyle}>
                                             <Run />
                                         </Link>

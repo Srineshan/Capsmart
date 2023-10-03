@@ -165,14 +165,14 @@ const Navbar = () => {
   const idHelp = open ? "mouse-over-popover" : undefined;
 
   const logoutURL = () => {
-    window.location.href = `http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/logout`;
+    window.location.href = `http://ec2-35-175-13-4.compute-1.amazonaws.com:8010/logout`;
   }
 
   const logout = async () => {
     const cookies = new Cookies();
     let token = cookies.get("user");
     let entityId = cookies.get("entityId");
-    // await fetch(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/logout`, {
+    // await fetch(`http://ec2-35-175-13-4.compute-1.amazonaws.com:8010/logout`, {
     //   // redirect: 'manual',
     //   method: 'PUT',
     //   body: JSON.stringify({}),
@@ -184,7 +184,7 @@ const Navbar = () => {
     // })
 
     // let data = JSON.stringify({});
-    // await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/logout`, {
+    // await axios(`http://ec2-35-175-13-4.compute-1.amazonaws.com:8010/logout`, {
     //   method: 'PUT',
     //   data,
     // }).then(response => {
@@ -200,7 +200,7 @@ const Navbar = () => {
 
 
     // window.location.href = respose.headers?.get('Location')
-    // axios.post(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/logout`, {
+    // axios.post(`http://ec2-35-175-13-4.compute-1.amazonaws.com:8010/logout`, {
     //   // Add parameters here
     //   // transformRequest: (data, headers) => {
     //   //   delete headers.common['X-XSRF-TOKEN'];
@@ -380,7 +380,7 @@ const Navbar = () => {
                       <div className={style.options}>Payments</div>
                     </Link>
                   )}
-                  {isContractManagementAvailable && (
+                  {/* {isContractManagementAvailable && (
                     <Link
                       to={"/reports/contractManagement"}
                       className={style.noFontStyle}
@@ -395,7 +395,7 @@ const Navbar = () => {
                     >
                       <div className={style.options}>Contract Compliance</div>
                     </Link>
-                  )}
+                  )} */}
                   {/* <Link to={'/reports/contractPerformance'} className={style.noFontStyle}>
                                     <div className={style.options}>Contract Performance</div>
                                 </Link>

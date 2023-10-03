@@ -1,0 +1,71 @@
+import React, { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { POST, GET } from './../dataSaver';
+import TimeSmartLogo from './../../images/timeSmartAILogo.png';
+import CommonInputField from '../../Components/CommonFields/CommonInputField';
+import CommonLabel from '../../Components/CommonFields/CommonLabel';
+import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+
+import style from './index.module.scss';
+
+const GetSSOId = () => {
+    const { userId } = useParams();
+    const [ssoId, setSsoId] = useState('');
+
+    const handleSubmit = async () => {
+        console.log(userId, ssoId);
+        if (ssoId === '') {
+            ErrorToaster('SSO ID is Mandatory');
+            return;
+        }
+        if (!ssoId.includes('@') || !ssoId.includes('.') || ssoId === '') {
+            ErrorToaster('Enter a valid mail-id');
+            return;
+        }
+
+        const user = {
+            "uuid": userId,
+            "ssoId": { "id": ssoId },
+        }
+
+        await POST('user-management-service/user/ssoid', JSON.stringify(user))
+            .then(response => {
+                SuccessToaster('SSO ID Added Successfully');
+            })
+            .catch(error => {
+                ErrorToaster(error);
+            })
+    };
+
+    return (
+        <div className={style.fullHeight}>
+            <div className={`${style.justifyCenter} ${style.verticalAlignCenter}`}>
+                <div>
+                    <div className={style.spaceBetween}>
+                        <img src={TimeSmartLogo} alt="" className={style.getSSOPageLogo} />
+                        <img src={TimeSmartLogo} alt="" className={style.getSSOPageLogo} />
+                    </div>
+                    <div className={`${style.getSSOIdHeaderBox} ${style.marginTop} ${style.verticalAlignCenter} ${style.justifyCenter}`}>
+                        <div className={style.getSSOIdHeading}>Enter SSO ID</div>
+                    </div>
+                    <div className={style.getSSOIdBox}>
+                        <div className={`${style.addManagerGrid} ${style.padding20}`}>
+                            <CommonLabel value='Enter SSO ID*' />
+                            <div className={style.displayInRow}>
+                                <CommonInputField className={style.fullWidth}
+                                    value={ssoId} onChange={(e) => setSsoId(e.target.value)} />
+                            </div>
+                        </div>
+                        <div className={style.padding20}>
+                            <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.floatRight}`}
+                                onClick={() => handleSubmit()}
+                            >Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export default GetSSOId;

@@ -92,7 +92,7 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
                         {/* <div className={`${style.iconPadding} ${style.cursorPointer}`}>
                             <ShareOutlinedIcon style={{color:"#52575D"}} onClick={() => setShowShareDialog(true)} />
                         </div> */}
-                        <div className={`${style.iconPadding} ${style.cursorPointer} ${style.marginLeft20} ${isNoData && style.disabledCursor}`}
+                        <div className={`${style.iconPadding} ${style.cursorPointer} ${isNoData && style.disabledCursor}`}
                             onMouseEnter={(e) => !isNoData ? setAnchorElSchedule(e.currentTarget) : {}} onMouseLeave={() => !isNoData ? setAnchorElSchedule(null) : {}} aria-owns={openSchedule ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">
                             <CalendarTodayIcon style={{ color: "#52575D" }} onClick={() => !isNoData ? setShowSaveReport(true) : {}} />

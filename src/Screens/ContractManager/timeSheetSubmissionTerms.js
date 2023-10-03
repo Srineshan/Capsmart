@@ -627,8 +627,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     setTimesheetValues(timesheetSubmissionTerms?.timesheetActivitiesPeriods);
   }, [timesheetSubmissionTerms]);
 
-  console.log(Array.isArray(paymentSource?.[0]), paymentSource?.[0], new Array(1).fill(paymentSource?.[0]))
-
+  console.log('goal', invoiceProcessingDayGoal);
 
   return (
     <div className={style.cloneBlockStyle}>
@@ -646,6 +645,26 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
             <CommonInputField placeholder="All Activities" className={style.fullWidth} readOnly />
           </div>
         }
+
+        {/* <hr classname={`${style.marginTop20}`} /> */}
+
+        <div className={`${style.extentionGrid} ${style.marginTop20} ${style.verticalAlignCenter}`}>
+          <CommonLabel value='Invoice Processing Day Range Goal*' />
+          <div className={style.displayInRow}>
+            <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
+              <EditableText value={invoiceProcessingDay} placeholder="0" type='number' onChange={(e) => setInvoiceProcessingDay(e.slice(0, limit))} className={style.editableTextStyleDays} />
+              <div className={style.textElementWithoutBackgroundDays}>Days</div>
+            </div>
+            <div className={`${style.displayInRow} ${style.editableTextOuterBorder}  ${style.marginLeft20} `}>
+              <div className={style.textElementWithNurse}>Threshold</div>
+              <EditableText value={invoiceProcessingDayThreshold} placeholder="0" type='number' onChange={(e) => setInvoiceProcessingDayThreshold(e.slice(0, limit))} className={style.editableTextThresholdStyle} />
+            </div>
+            <div className={`${style.displayInRow} ${style.editableTextOuterBorder}`}>
+              <div className={style.textElementWithNurse}>Goal</div>
+              <EditableText value={invoiceProcessingDayGoal} placeholder="0" type='number' onChange={(e) => setInvoiceProcessingDayGoal(e.slice(0, limit))} className={style.editableTextThresholdStyle} />
+            </div>
+          </div>
+        </div>
 
         <hr classname={style.marginTop20} />
 
@@ -695,23 +714,6 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
             </div>
             <div className={style.marginLeft20}>
               <CommonCheckBox value="NA" checked={maxPlannedAbsence?.notApplicable} onChange={(e) => setMaxPlannedAbsence({ ...maxPlannedAbsence, notApplicable: e.target.checked, includingHoliday: false, days: 0 })} label="NA" />
-            </div>
-          </div>
-        </div>
-        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <CommonLabel value='Invoice Processing Day Range Goal*' />
-          <div className={style.displayInRow}>
-            <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
-              <EditableText value={invoiceProcessingDay} placeholder="0" type='number' onChange={(e) => setInvoiceProcessingDay(e.slice(0, limit))} className={style.editableTextStyleDays} />
-              <div className={style.textElementWithoutBackgroundDays}>Days</div>
-            </div>
-            <div className={`${style.displayInRow} ${style.editableTextOuterBorder}  ${style.marginLeft20} `}>
-              <div className={style.textElementWithNurse}>Threshold</div>
-              <EditableText value={invoiceProcessingDayThreshold} placeholder="0" type='number' onChange={(e) => setInvoiceProcessingDayThreshold(e.slice(0, limit))} className={style.editableTextThresholdStyle} />
-            </div>
-            <div className={`${style.displayInRow} ${style.editableTextOuterBorder}`}>
-              <div className={style.textElementWithNurse}>Goal</div>
-              <EditableText value={invoiceProcessingDayGoal} placeholder="0" type='number' onChange={(e) => setInvoiceProcessingDayGoal(e.slice(0, limit))} className={style.editableTextThresholdStyle} />
             </div>
           </div>
         </div>

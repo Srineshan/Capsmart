@@ -24,7 +24,6 @@ export const validateContractIDTermLimit = (contract) => {
     }
   })
   const emptyFields = fieldData?.filter(data => data?.value === null || data?.value === '' || data?.value === undefined || data?.value === 0)?.map(data => data?.field);
-  console.log('tab 1', emptyFields);
   return emptyFields;
 }
 

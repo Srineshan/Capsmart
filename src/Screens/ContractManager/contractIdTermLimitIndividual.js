@@ -20,6 +20,8 @@ import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 import { checkSiteAndDepartment } from './checkDependentData';
 import ConflictPopUp from './conflictPopUp';
 import style from './index.module.scss';
+import { validateContractIDTermLimit } from './contractValidation';
+import { valueCheck } from "./../../utils/valueCheck";
 
 const TEXTFIELDLEN = 100;
 const DESCLEN = 250;
@@ -84,6 +86,7 @@ const ContractIdTermLimitIndividual = (
   const [isSiteDeptUpdated, setIsSiteDeptUpdated] = useState(false);
   const [contractUsers, setContractUsers] = useState([]);
   const [isShowUploadDialog, setIsShowUploadDialog] = useState(false);
+  const [validationData, setValidationData] = useState([]);
 
 
   useEffect(() => {
@@ -169,6 +172,9 @@ const ContractIdTermLimitIndividual = (
   const getContractDetail = async () => {
     const { data: contractData } = await GET(`contract-managment-service/contracts/${createdContractId}/contractDetail`);
     if (contractData) {
+      let validateTab = validateContractIDTermLimit(contractData);
+      setValidationData(validateTab);
+      console.log('validation Data', validationData);
       let contractDetail = contractData?.contractDetail;
       setContractData(contractData?.contractDetail);
       setName(contractData?.contractName?.contractName || '');
@@ -226,6 +232,8 @@ const ContractIdTermLimitIndividual = (
       contractDetail?.contractFiles?.map(data => {
         fileData.push({ id: data?.id, type: data?.documentType, name: data?.documentName, desc: data?.documentDescription, fileName: data?.fileName, file: null, filePath: data?.fileURL })
       })
+      setSiteSpecific(contractDetail?.siteSpecificContract);
+      setDepartmentSpecific(contractDetail?.departmentSpecificContract);
       setFullyExecutedContractData(fileData);
       setFileFields(fileData);
       setSelectedSites(contractDetail?.site?.sites || []);
@@ -260,6 +268,8 @@ const ContractIdTermLimitIndividual = (
     }
   }
 
+  console.log('sites', sites, selectedSites, selectedDepartmentSites);
+
   const getSiteData = () => {
     let siteData = [];
     if (!siteSpecific && !departmentSpecific) {
@@ -267,7 +277,7 @@ const ContractIdTermLimitIndividual = (
     } else if (siteSpecific && !departmentSpecific) {
       siteData = selectedSites;
     } else {
-      siteData = selectedDepartmentSites;
+      siteData = selectedDepartmentSites?.length !== 0 ? selectedDepartmentSites : selectedSites;
     }
     return siteData;
   }
@@ -301,171 +311,169 @@ const ContractIdTermLimitIndividual = (
 
   const addContract = async (buttonType) => {
     let sites = getSiteData();
-    let conflictedData = checkSiteAndDepartment(contracts, sites, contractIdFromActive);
+    // let conflictedData = checkSiteAndDepartment(contracts, sites, contractIdFromActive);
     // if (conflictedData?.length !== 0) {
     //   setConflict({ isPresent: true, conflict: conflictedData });
     // }
-    console.log('conflict Data', conflictedData);
-    if (conflictedData?.length === 0) {
-      setContinueLoading(true);
-      if (contractName === '') {
-        ErrorToaster('Enter Contract Name to proceed');
-        setContinueLoading(false);
-        return;
-      }
-      if (compensationPolicy === '') {
-        ErrorToaster('Select a Compensation Policy to proceed');
-        setContinueLoading(false);
-        return;
-      }
-      if (departmentSpecific && sites?.some(data => data?.departmentList?.departments?.length === 0)) {
-        ErrorToaster('Select Departments for all the selected Sites');
-        setContinueLoading(false);
-        return;
-      }
-      if (selectContractManager === null || selectContractManager === undefined) {
-        ErrorToaster('Select Contract Manager');
-        setContinueLoading(false);
-        return;
-      }
-
-      let contractFiles = [];
-      fullyExecutedContract && fullyExecutedContractData?.filter(data => data?.file !== null)?.map(data => {
-        contractFiles?.push({
-          fileName: data.fileName,
-          documentType: data.type,
-          documentDescription: data.desc,
-          documentName: data.name,
-        })
-      })
-
-
-      let data = {
-        ...(createdContractId !== '' && method !== 'POST' && { 'id': createdContractId }),
-        "contractName": {
-          "contractName": contractName
-        },
-        "contractType": contractType,
-        "contractStatus": "DRAFT",
-        "contractDetail": {
-          "contractId": {
-            "id": contractId?.id,
-          },
-          "priorContract": {
-            "id": contractPriorId?.id,
-            "notApplicable": contractPriorId?.na,
-          },
-          "contractManager": {
-            "userID": selectContractManager?.id,
-            "name": {
-              "firstName": selectContractManager?.name?.firstName,
-              "lastName": selectContractManager?.name?.lastName
-            },
-            "email": {
-              "officialEmail": selectContractManager?.email?.officialEmail
-            }
-          },
-          "contractFiles": contractFiles,
-          "site": {
-            "sites": sites
-          },
-          "contractTerm": {
-            "startDate": contractTermPeriodFrom === null ? null : format(contractTermPeriodFrom, 'yyyy-MM-dd').toString(),
-            "endDate": contractTermPeriodTo === null ? null : format(contractTermPeriodTo, 'yyyy-MM-dd').toString(),
-            "effectiveDate": contractEffectiveDate === null ? null : format(contractEffectiveDate, 'yyyy-MM-dd').toString(),
-          },
-          "compensationPolicy": compensationPolicy,
-          ...(selectedContractContinuationPolicy !== '' && {
-            "continuationPolicy": {
-              "contractPolicyType": selectedContractContinuationPolicy,
-              "autoRenewalPeriod": {
-                ...(parseInt(autoRenewal.renewalTerm) && {
-                  "autoRenewalTerm": {
-                    "term": selectedContractContinuationPolicy === 'AUTORENEWAL' ? parseInt(autoRenewal.renewalTerm) : 0,
-                  }
-                }),
-                ...(parseInt(autoRenewal.allowableRenewalTerm) && {
-                  "allowableAutoRenewalTerm": {
-                    "term": selectedContractContinuationPolicy === 'AUTORENEWAL' ? parseInt(autoRenewal.allowableRenewalTerm) : 0,
-                  }
-                }),
-                ...(autoRenewal.calendar !== '' &&
-                {
-                  "autoRenewalCalender": selectedContractContinuationPolicy === 'AUTORENEWAL' ? autoRenewal.calendar : 'WEEKS'
-                })
-              },
-              "reminderList": {
-                "renewalReminderList": renewalReminder
-              }
-            }
-          }),
-          "timeCommitment": {
-            "value": parseInt(contractedTimeCommitment?.value),
-            "frequency": contractedTimeCommitment?.frequency,
-          },
-          "contractIdMissing": contractId?.missing,
-          "fullyExecutedContract": fullyExecutedContract,
-          "siteSpecificContract": siteSpecific,
-          "departmentSpecificContract": departmentSpecific,
-        },
-        "newContract": selectedContractType === 'New Contract' ? true : false
-      }
-
-      const formData = new FormData();
-      let file = fullyExecutedContractData?.map(data => data.file);
-      formData.append('contractDetail', new Blob([JSON.stringify(data)], {
-        type: "application/json"
-      }));
-      file?.filter(data => data !== null)?.map(data => {
-        formData.append('contractFiles', data);
-      })
-      if (method === 'POST' && contractIdFromActive === '') {
-        await POST('contract-managment-service/contracts/contractDetail', formData)
-          .then(response => {
-            getContractId(response?.data);
-            getContractDetailFirstTime(response?.data);
-            SuccessToaster('Contract Draft Saved Successfully');
-          }).catch(error => {
-            ErrorToaster('Unexpected Error Creating Contract');
-          })
-      } else {
-        await PUT(`contract-managment-service/contracts/${contractIdFromActive}/contractDetail`, formData)
-          .then(response => {
-            getContractDetail();
-            SuccessToaster('Contract Updated Successfully');
-          }).catch(error => {
-            ErrorToaster('Unexpected Error Updating Contract');
-          })
-      }
+    // if (conflictedData?.length === 0) {
+    // setContinueLoading(true);
+    if (contractName === '') {
+      ErrorToaster('Enter Contract Name to proceed');
       setContinueLoading(false);
-      if (buttonType === 'Continue') {
-        getViewPage2(true);
-        getViewPage1(false);
-        getCurrentPage('Contracted Services Provider(s)')
-      } else {
-        getShowAlert(true);
-      }
-      if (isSiteDeptUpdated) {
-        let modifiedContractUser = contractUsers;
-        modifiedContractUser?.map(data => {
-          data?.contracts?.map(contract => {
-            if (contract?.id === contractIdFromActive) {
-              contract.sites = { sites: sites };
-            }
-          })
-          data.sites = { sites: sites };
-        })
-        console.log('modifiedContractUser', modifiedContractUser);
-        await PUT('user-management-service/user/bulk', JSON.stringify(modifiedContractUser))
-          .then(response => {
-            SuccessToaster('User Updated Successfully');
-          })
-          .catch(error => {
-            ErrorToaster('Unexpected Error');
-          });
-      }
-      getTabDataStatus();
+      return;
     }
+    if (compensationPolicy === '') {
+      ErrorToaster('Select a Compensation Policy to proceed');
+      setContinueLoading(false);
+      return;
+    }
+    if (departmentSpecific && sites?.some(data => data?.departmentList?.departments?.length === 0)) {
+      ErrorToaster('Select Departments for all the selected Sites');
+      setContinueLoading(false);
+      return;
+    }
+    if (selectContractManager === null || selectContractManager === undefined) {
+      ErrorToaster('Select Contract Manager');
+      setContinueLoading(false);
+      return;
+    }
+
+    let contractFiles = [];
+    fullyExecutedContract && fullyExecutedContractData?.filter(data => data?.file !== null)?.map(data => {
+      contractFiles?.push({
+        fileName: data.fileName,
+        documentType: data.type,
+        documentDescription: data.desc,
+        documentName: data.name,
+      })
+    })
+
+    let data = {
+      ...(createdContractId !== '' && method !== 'POST' && { 'id': createdContractId }),
+      "contractName": {
+        "contractName": contractName
+      },
+      "contractType": contractType,
+      "contractStatus": "DRAFT",
+      "contractDetail": {
+        "contractId": {
+          "id": contractId?.id,
+        },
+        "priorContract": {
+          "id": contractPriorId?.id,
+          "notApplicable": contractPriorId?.na,
+        },
+        "contractManager": {
+          "userID": selectContractManager?.id,
+          "name": {
+            "firstName": selectContractManager?.name?.firstName,
+            "lastName": selectContractManager?.name?.lastName
+          },
+          "email": {
+            "officialEmail": selectContractManager?.email?.officialEmail
+          }
+        },
+        "contractFiles": contractFiles,
+        "site": {
+          "sites": sites
+        },
+        "contractTerm": {
+          "startDate": contractTermPeriodFrom === null ? null : format(contractTermPeriodFrom, 'yyyy-MM-dd').toString(),
+          "endDate": contractTermPeriodTo === null ? null : format(contractTermPeriodTo, 'yyyy-MM-dd').toString(),
+          "effectiveDate": contractEffectiveDate === null ? null : format(contractEffectiveDate, 'yyyy-MM-dd').toString(),
+        },
+        "compensationPolicy": compensationPolicy,
+        ...(selectedContractContinuationPolicy !== '' && {
+          "continuationPolicy": {
+            "contractPolicyType": selectedContractContinuationPolicy,
+            "autoRenewalPeriod": {
+              ...(parseInt(autoRenewal.renewalTerm) && {
+                "autoRenewalTerm": {
+                  "term": selectedContractContinuationPolicy === 'AUTORENEWAL' ? parseInt(autoRenewal.renewalTerm) : 0,
+                }
+              }),
+              ...(parseInt(autoRenewal.allowableRenewalTerm) && {
+                "allowableAutoRenewalTerm": {
+                  "term": selectedContractContinuationPolicy === 'AUTORENEWAL' ? parseInt(autoRenewal.allowableRenewalTerm) : 0,
+                }
+              }),
+              ...(autoRenewal.calendar !== '' &&
+              {
+                "autoRenewalCalender": selectedContractContinuationPolicy === 'AUTORENEWAL' ? autoRenewal.calendar : 'WEEKS'
+              })
+            },
+            "reminderList": {
+              "renewalReminderList": renewalReminder
+            }
+          }
+        }),
+        "timeCommitment": {
+          "value": parseInt(contractedTimeCommitment?.value),
+          "frequency": contractedTimeCommitment?.frequency,
+        },
+        "contractIdMissing": contractId?.missing,
+        "fullyExecutedContract": fullyExecutedContract,
+        "siteSpecificContract": siteSpecific,
+        "departmentSpecificContract": departmentSpecific,
+      },
+      "newContract": selectedContractType === 'New Contract' ? true : false
+    }
+
+    const formData = new FormData();
+    let file = fullyExecutedContractData?.map(data => data.file);
+    formData.append('contractDetail', new Blob([JSON.stringify(data)], {
+      type: "application/json"
+    }));
+    file?.filter(data => data !== null)?.map(data => {
+      formData.append('contractFiles', data);
+    })
+    if (method === 'POST' && contractIdFromActive === '') {
+      await POST('contract-managment-service/contracts/contractDetail', formData)
+        .then(response => {
+          getContractId(response?.data);
+          getContractDetailFirstTime(response?.data);
+          SuccessToaster('Contract Draft Saved Successfully');
+        }).catch(error => {
+          ErrorToaster('Unexpected Error Creating Contract');
+        })
+    } else {
+      await PUT(`contract-managment-service/contracts/${contractIdFromActive}/contractDetail`, formData)
+        .then(response => {
+          getContractDetail();
+          SuccessToaster('Contract Updated Successfully');
+        }).catch(error => {
+          ErrorToaster('Unexpected Error Updating Contract');
+        })
+    }
+    setContinueLoading(false);
+    if (buttonType === 'Continue') {
+      getViewPage2(true);
+      getViewPage1(false);
+      getCurrentPage('Contracted Services Provider(s)')
+    } else {
+      getShowAlert(true);
+    }
+    if (isSiteDeptUpdated) {
+      let modifiedContractUser = contractUsers;
+      modifiedContractUser?.map(data => {
+        data?.contracts?.map(contract => {
+          if (contract?.id === contractIdFromActive) {
+            contract.sites = { sites: sites };
+          }
+        })
+        data.sites = { sites: sites };
+      })
+      console.log('modifiedContractUser', modifiedContractUser);
+      await PUT('user-management-service/user/bulk', JSON.stringify(modifiedContractUser))
+        .then(response => {
+          SuccessToaster('User Updated Successfully');
+        })
+        .catch(error => {
+          ErrorToaster('Unexpected Error');
+        });
+    }
+    getTabDataStatus();
+    // }
   }
 
   const onSelect = (selectedItem) => {
@@ -648,18 +656,28 @@ const ContractIdTermLimitIndividual = (
     );
   }
 
+  const dataCheck = (value) => {
+    console.log('method', method);
+    if (createdContractId !== '') {
+      return valueCheck(value);
+    } else {
+      return false
+    }
+  }
+
+
   const updateConflict = (value) => {
     setConflict({ ...conflict, isPresent: value, data: [] });
   }
 
-  console.log('selected Sites', selectedSites);
+  console.log('Conflict', conflict);
 
   return (
     <div className={style.cloneBlockStyle}>
       <div className={`${style.newContractFromCloneBoxStyle}`}>
         <div className={`${style.extentionGrid}`}>
           <CommonLabel value='Contract / Agreement Name*' />
-          <CommonInputField placeholder="Contract Name" className={style.fullWidth} value={contractName}
+          <CommonInputField placeholder="Contract Name" className={`${style.fullWidth}`} value={contractName}
             maxLength={TEXTFIELDLEN} onChange={(e) => { setContractName(e.target.value); setName(e.target.value) }}
             onFocus={() => { checkFieldAndPopAlert(contractName, 'Contract / Agreement Name') }} />
         </div>
@@ -669,7 +687,7 @@ const ContractIdTermLimitIndividual = (
             <CommonInputField placeholder="Contract ID / Resolution No" value={contractId.id} disabled={contractId.missing}
               maxLength={TEXTFIELDLEN}
               onFocus={() => { checkFieldAndPopAlert(contractId?.id, 'Contract ID') }} className={`${style.entityFieldWidth}`} onChange={(e) => setContractId({ ...contractId, id: e.target.value, missing: false })} />
-            <CommonCheckBox label="Missing" checked={contractId.missing} onChange={(e) => setContractId({ ...contractId, missing: e.target.checked, id: '' })} className={` ${style.marginLeft20}`} />
+            <CommonCheckBox label="Missing" checked={contractId.missing} onChange={(e) => { setContractId({ ...contractId, missing: e.target.checked, id: '' }) }} className={` ${style.marginLeft20}`} />
           </div>
         </div>
         {selectedContractType !== "New Contract" && (
@@ -1020,8 +1038,8 @@ const ContractIdTermLimitIndividual = (
       </div>
       {isEditable &&
         (<div className={`${style.floatRight} ${style.marginTop20}`}>
-          <button className={`${style.newContractOutlinedButton} ${style.cursorPointer} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => checkAndUpdateDate('Save In Progress') : {}}>SAVE IN-PROGRESS</button>
-          <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => { checkAndUpdateDate('Continue') } : {}}>CONTINUE</button>
+          <button className={`${style.newContractOutlinedButton} ${style.cursorPointer} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => checkAndUpdateDate('Save In Progress') : null}>SAVE IN-PROGRESS</button>
+          <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => checkAndUpdateDate('Continue') : null}>CONTINUE</button>
         </div>)
       }
 
@@ -1037,7 +1055,7 @@ const ContractIdTermLimitIndividual = (
         <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
           <div className={style.spaceBetween}>
             <p className={style.extensionStyle}>ADD FILE DETAILS</p>
-            <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => updateConflict(false)} />
+            <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => setIsShowUploadDialog(false)} />
           </div>
           <div className={style.extensionBorder}></div>
           {/* {fullyExecutedContract && ( */}

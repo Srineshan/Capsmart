@@ -16,12 +16,14 @@ import SearchBar from './../../Components/SearchBar';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { GET, PUT, POST } from './../dataSaver';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import CircularProgress from "@mui/material/CircularProgress";
 import { SuccessToaster, ErrorToaster } from './../../utils/toaster';
 import { currentUser } from './../../utils/auth';
 import { format } from 'date-fns';
 import UserCard from './userCard';
 import Table from '../../Components/TableDesign';
 import LeftStatsCard from '../../Components/LeftStatsCard';
+import LoadingScreen from '../../Components/LoadingScreen';
 
 import { validateTimesheetSubmission } from './contractValidation';
 
@@ -30,7 +32,7 @@ import SideBar from '../../Components/Sidebar';
 import PreImplementationDataDialog from './preImplementationDataDialog';
 import ReviewAndApprovalStatusSummary from './reviewAndApprovalStatusSummary';
 
-const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelectedContract, getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page, getActiveContractView }) => {
+const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts, getSelectedContract, getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page, getActiveContractView }) => {
   const [selectedContractId, setSelectedContractId] = useState();
   const activeHeaderValues = ["", "", "CONTRACT TYPE", "ID",
     "",
@@ -418,7 +420,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
                 {selectedContract === 'activecontracts' ? (
                   <>
                     <button className={isMyContract ? style.myActiveContractsButton : style.otherContractsButton} onClick={() => setIsMyContract(true)}>My Active Contracts ( {metadata?.activeContract?.activeContractCount} )</button>
-                    <button className={`${!isMyContract ? style.myActiveContractsButton : style.otherContractsButton} ${style.marginLeft20}`} onClick={() => setIsMyContract(false)}>Other Contracts ( 150 )</button>
+                    <button className={`${!isMyContract ? style.myActiveContractsButton : style.otherContractsButton} ${style.marginLeft20}`} onClick={() => setIsMyContract(false)}>Other Contracts ( 0 )</button>
                   </>
                 ) : selectedContract === 'draft' ? (
                   <>
@@ -470,30 +472,33 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
                 </div>
               </div>
             </div>
-
-            <Table
-              tableHeaderValues={tableHeaderValues}
-              tableDataValues={tableDataValues}
-              tableData={contracts}
-              getNewContract={getNewContract}
-              getContractType={getContractType}
-              getSelectedContractType={getSelectedContractType}
-              getContractIdFromActive={getContractIdFromActive}
-              gridStyle={gridStyle}
-              actions={actions}
-              getSelectedPage={getSelectedPage}
-              totalCount={totalCount}
-              page={page}
-              scrollStyle={style.contractScrollStyle}
-              tableSortValues={tableSortValues}
-              heading={'There are no contracts for you to manage'}
-              subHeading={'To add a new contract click on'}
-              onClickText={'Click To View A Short Tutorial On How To Add A Contract'}
-              buttonComponent={<div className={`${style.addStyle} ${style.alignCenter} ${style.marginLeft20}`}>
-                <AddCircleOutlineIcon sx={{ fontSize: 20, color: 'white' }} />
-              </div>}
-              onClickFunction={() => { }}
-            />
+            {isLoading ?
+              <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
+                <CircularProgress sx={{ color: "#7165E3" }} />
+              </div> :
+              <Table
+                tableHeaderValues={tableHeaderValues}
+                tableDataValues={tableDataValues}
+                tableData={contracts}
+                getNewContract={getNewContract}
+                getContractType={getContractType}
+                getSelectedContractType={getSelectedContractType}
+                getContractIdFromActive={getContractIdFromActive}
+                gridStyle={gridStyle}
+                actions={actions}
+                getSelectedPage={getSelectedPage}
+                totalCount={totalCount}
+                page={page}
+                scrollStyle={style.contractScrollStyle}
+                tableSortValues={tableSortValues}
+                heading={'There are no contracts for you to manage'}
+                subHeading={'To add a new contract click on'}
+                onClickText={'Click To View A Short Tutorial On How To Add A Contract'}
+                buttonComponent={<div className={`${style.addStyle} ${style.alignCenter} ${style.marginLeft20}`}>
+                  <AddCircleOutlineIcon sx={{ fontSize: 20, color: 'white' }} />
+                </div>}
+                onClickFunction={() => { }}
+              />}
             {
               //   <div className={`${style.noContractsBox} ${style.alignCenter}`}>
               //   <div>

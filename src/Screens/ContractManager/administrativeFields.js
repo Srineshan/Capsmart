@@ -385,8 +385,8 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                 value={metadata?.totalSessionFrequency || 'NA'}
                                 onChange={(e) => handleValueChange('totalSessionFrequency', e.target.value)}
                                 firstOptionLabel={'Select Frequency'} firstOptionValue={'NA'}
-                                valueList={['WEEK', 'MONTH']}
-                                labelList={['Per Week', 'Per Month']}
+                                valueList={['WEEK', 'MONTH', 'YEAR']}
+                                labelList={['Per Week', 'Per Month', 'Per Year']}
                                 disabledList={[false, false]} />
                         </div>
                     </div>

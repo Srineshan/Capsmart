@@ -115,6 +115,10 @@ body::-webkit-scrollbar {
     height: 100%;
 }
 
+.redLabel {
+    color: red;
+}
+
 .rightAlign {
     text-align: right;
 }
@@ -1595,6 +1599,12 @@ input[type="file"] {
     height: 100%;
 }
 
+.pageAlignCenter {
+    // display: flex;
+    text-align: center;
+    height: 100%;
+}
+
 .purpleTitle {
     font: normal 15px/13px Montserrat;
     color: #7165E3;
@@ -1673,6 +1683,21 @@ input[type="file"] {
     color: #FFFFFF;
     text-transform: uppercase;
     padding: 6px 20px;
+}
+
+.addCptCodeButton {
+    background: #7165E3 0% 0% no-repeat padding-box;
+    box-shadow: 0px 0px 6px #00000029;
+    border-radius: 6px;
+    font: normal normal bolder 14px/18px Montserrat;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    padding: 6px 15px;
+    height: 38px;
+    opacity: 0.5;
+    cursor: not-allowed;
+    text-align: center;
 }
 
 .addAddonGrid {
@@ -2012,6 +2037,10 @@ input[type=number] {
     border: 0.6000000238418579px solid #F54646;
 }
 
+.redLable {
+    color: #F54646 !important;
+}
+
 .validationTopicText {
     text-align: left;
     font: normal normal normal 15px/20px Montserrat;
@@ -2230,4 +2259,6 @@ input[type=number] {
     letter-spacing: 1.44px;
     color: #707070;
     opacity: 0.71;
+    word-break: break-word;
+    width: auto;
 }

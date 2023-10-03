@@ -22,19 +22,21 @@ export const GetEntityDetails = () => {
 }
 
 export const currentUser = () => {
-  let cookie = new Cookie();
-  let accessToken = cookie.get('user');
-  let decoded = jwt(accessToken);
-  let user = {};
-  if (accessToken) {
-    user.id = decoded?.id;
-    user.firstName = decoded?.userName?.split(' ')[0];
-    user.lastName = decoded?.userName?.split(' ')[1];
-    user.fullName = decoded?.userName;
-    user.email = decoded?.sub;
-    user.roles = decoded?.roles?.split(',');
+  if (!window.location.href?.includes('user/ssoId')) {
+    let cookie = new Cookie();
+    let accessToken = cookie.get('user');
+    let decoded = jwt(accessToken);
+    let user = {};
+    if (accessToken) {
+      user.id = decoded?.id;
+      user.firstName = decoded?.userName?.split(' ')[0];
+      user.lastName = decoded?.userName?.split(' ')[1];
+      user.fullName = decoded?.userName;
+      user.email = decoded?.sub;
+      user.roles = decoded?.roles?.split(',');
+    }
+    return user;
   }
-  return user;
 }
 
 
