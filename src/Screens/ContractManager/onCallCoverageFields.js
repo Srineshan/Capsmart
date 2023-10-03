@@ -104,6 +104,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         holidayActivity: '',
         holidayPayment: 0,
         holidayPaymentNa: false,
+        professionalServiceRequired: false,
     });
 
     useEffect(() => {
@@ -199,6 +200,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
             holidayActivity: '',
             holidayPayment: 0,
             holidayPaymentNa: false,
+            professionalServiceRequired: false,
         });
     }
 
@@ -398,6 +400,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                 approver: approver,
                 workflowId: serviceSelected?.dependentService?.workFlow?.id,
                 workflowName: serviceSelected?.dependentService?.workFlow?.workFlowName?.name,
+                professionalServiceRequired: serviceSelected?.professionalServiceRequired,
             });
         }
     }
@@ -515,8 +518,6 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         }
     }
 
-    console.log('metadata', metadata);
-
     return (
         <div>
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -526,6 +527,12 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                     <CommonCheckBox checked={metadata?.onCallCoverageFor?.includes('Ambulatory')} className={`${style.marginLeft10} ${style.fourFieldWidth}`} onChange={(e) => handleOnCallCoverageFor('Ambulatory', e)} label="Ambulatory" />
                     <CommonCheckBox checked={metadata?.onCallCoverageFor?.includes('L & D')} className={`${style.marginLeft10} ${style.fourFieldWidth}`} onChange={(e) => handleOnCallCoverageFor('L & D', e)} label="L & D" />
                     <CommonCheckBox checked={metadata?.onCallCoverageFor?.includes('ED')} className={`${style.marginLeft10} ${style.fourFieldWidth}`} onChange={(e) => handleOnCallCoverageFor('ED', e)} label="ED" />
+                </div>
+            </div>
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                <CommonLabel value='Professional Consult Required' />
+                <div className={style.onCallBillableGrid}>
+                    <CommonSwitch checked={metadata?.professionalServiceRequired} label={metadata?.professionalServiceRequired ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} onChange={(e) => setMetadata({ ...metadata, professionalServiceRequired: !metadata?.professionalServiceRequired })} />
                 </div>
             </div>
 
