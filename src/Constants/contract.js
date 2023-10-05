@@ -5,4 +5,5 @@ export const SUPPLEMENTAL = 'Supplemental Service';
 export const ADDON = 'Add-On Service';
 export const ADMINISTRATIVE = 'Administrative / Miscellaneous Service';
 export const PROCEDUREREADING = 'Procedure Reading / Implant Block';
+export const ONCALLSERVICE = 'On-Site On-Call Service';
 export const HOSPICE = 'Hospice Clinical Consult Services';

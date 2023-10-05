@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dialog, Classes } from "@blueprintjs/core";
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
-import TimeSmartLogo from '../../images/timeSmartAI-logo.jpeg';
+import TimeSmartLogo from '../../images/timeSmartAILogo.png';
 import WhiteTimeSmartLogo from '../../images/whiteLogo.png';
 import RedWarning from '../../images/redWarning.png';
 import FeedbackStepper1 from '../../images/feedbackStepper1.png';

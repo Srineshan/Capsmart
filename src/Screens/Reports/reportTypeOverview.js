@@ -22,6 +22,8 @@ import ApexGroupedBarChart from './chart-data/groupedBarChart';
 import ApexStackedBarChart from './chart-data/stackedBarChart';
 import ApexLineChart from './chart-data/lineChart';
 import ApexBarChart from './chart-data/barChart';
+import Cookie from 'universal-cookie';
+import jwt from 'jwt-decode';
 
 import style from './index.module.scss';
 import ApexBoxChart from './chart-data/boxChart';
@@ -77,6 +79,9 @@ const ReportTypeOverview = () => {
     const [apexStackedBarChartDisplay, setApexStackedBarChartDisplay] = useState(
         <ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} />
     )
+    let cookie = new Cookie();
+    let userDetails = cookie.get('user');
+    const userDetail = jwt(userDetails);
     let months = { '1': 'Jan', '2': 'Feb', '3': 'March', '4': 'April', '5': 'May', '6': 'June', '7': 'July', '8': 'Aug', '9': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec' };
     const podTypes = ['Medical Staff Membership & Privileges',
         'Primary Speciality Board Certification',
@@ -253,15 +258,6 @@ const ReportTypeOverview = () => {
         return componentRef.current;
     }, [componentRef.current]);
 
-    const handlePrint = useReactToPrint({
-        content: reactToPrintContent,
-        documentTitle: "Report",
-        // onBeforeGetContent: handleOnBeforeGetContent,
-        // onBeforePrint: handleBeforePrint,
-        // onAfterPrint: handleAfterPrint,
-        removeAfterPrint: true
-    });
-
     const availableTimesheetStatus = {
         REJECTED_BY_APPROVER: 'Rejected By Approver',
         PAYMENT: 'Payment',
@@ -298,6 +294,15 @@ const ReportTypeOverview = () => {
         activitiesOrServices: 'Activities/ Services Log Status Summary'
     }
 
+    const handlePrint = useReactToPrint({
+        content: reactToPrintContent,
+        documentTitle: `${reportTitleList[reportType]}_${userDetail?.userName}_${format(new Date(), 'MM_dd_yy')}`,
+        // onBeforeGetContent: handleOnBeforeGetContent,
+        // onBeforePrint: handleBeforePrint,
+        // onAfterPrint: handleAfterPrint,
+        removeAfterPrint: true
+    });
+
     const getIsExpanded = (value) => {
         setIsExpanded(value);
     }
@@ -305,7 +310,7 @@ const ReportTypeOverview = () => {
     const getIsDownloadClicked = (value) => {
         setIsDownloadClicked(value);
         if (value) {
-            toPDF(".Report");
+            toPDF(".Report", `${reportTitleList[reportType]}_${userDetail?.userName}_${format(new Date(), 'MM_dd_yy')}`);
         }
     }
 

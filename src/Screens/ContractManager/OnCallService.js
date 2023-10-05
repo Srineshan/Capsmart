@@ -18,7 +18,7 @@ import CommonMultiSelectField from "../../Components/CommonFields/CommonMultiSel
 import { valueCheck } from "../../utils/valueCheck";
 import { format } from "date-fns";
 
-const SupplementalFields = ({
+const OnCallService = ({
     getMetaData,
     services,
     serviceSelected,
@@ -413,7 +413,7 @@ const SupplementalFields = ({
     return (
         <div>
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <CommonLabel value='Dedicated Hours For Supplemental Services*' />
+                <CommonLabel value='Dedicated Hours For On-Site On-Call Service*' />
                 <div className={`${style.displayInRow} `}>
                     <CommonSwitch className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} label={metadata?.dedicatedHoursSpecified ? 'YES' : 'NO'} checked={metadata?.dedicatedHoursSpecified} onChange={(e) => handleValueChange('dedicatedHoursSpecified', !metadata?.dedicatedHoursSpecified)} />
                     {!metadata?.dedicatedHoursSpecified && (
@@ -429,10 +429,10 @@ const SupplementalFields = ({
                     )}
                 </div>
             </div>
-            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+            {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Base Service Available*' />
                 <CommonSwitch className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} label={metadata?.baseServiceAvailable ? 'YES' : 'NO'} checked={metadata?.baseServiceAvailable} onChange={(e) => handleValueChange('baseServiceAvailable', !metadata?.baseServiceAvailable)} />
-            </div>
+            </div> */}
             {/* 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Supplemental Services To Perform*' />
@@ -449,13 +449,18 @@ const SupplementalFields = ({
                     }
                 </div>
             </div> */}
-            {
+            {/* {
                 metadata?.baseServiceAvailable && (
+
                     <div>
                         <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
                             <CommonLabel
                                 value="Supplemental Service Type*"
-                                className={editService && (!metadata?.supplementalActivityType || metadata?.supplementalActivityType?.length === 0) ? style.redLable : ""}
+                                className={
+                                    dataCheck(metadata?.supplementalActivityType)
+                                        ? style.redLable
+                                        : ""
+                                }
                             />
                             <div>
                                 <div>
@@ -496,14 +501,21 @@ const SupplementalFields = ({
                             </div>
                         </div>
                     </div>
-                )}
+                )
+                } */}
 
-            <div>
+            {/* <div>
                 <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
                     <CommonLabel
                         value="Supplement Services To Perform*"
-                        className={editService && (!metadata?.supplementServiceName || metadata?.supplementServiceName?.length === 0) ? style.redLable : ""}
-
+                        className={
+                            dataCheck(
+                                metadata?.supplementServiceName ||
+                                metadata?.supplementServiceName.length === 0
+                            )
+                                ? style.redLable
+                                : ""
+                        }
                     />
                     <div>
                         <div className={style.addGrid}>
@@ -548,7 +560,7 @@ const SupplementalFields = ({
                             )}
                     </div>
                 </div>
-            </div>
+            </div> */}
             <>
                 {metadata?.dedicatedHoursSpecified && (
                     <>
@@ -665,7 +677,7 @@ const SupplementalFields = ({
                         {metadata?.billableService && (
                             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                                 <CommonLabel
-                                    value="Supplemental Service Payment Amount*"
+                                    value="On-Site On-Call Service Payment Amount*"
                                     className={
                                         dataCheck(metadata?.sessionAmount) ? style.redLable : ""
                                     }
@@ -764,7 +776,7 @@ const SupplementalFields = ({
 
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <CommonLabel
-                        value="Applicable Supplemental Workdays*"
+                        value="Applicable On-Site On-Call Workdays*"
                         className={
                             metadata?.serviceDays === null ||
                                 (metadata?.serviceDays !== undefined &&
@@ -787,4 +799,4 @@ const SupplementalFields = ({
     );
 };
 
-export default SupplementalFields;
+export default OnCallService;

@@ -33,9 +33,12 @@ const ApexGroupedBarChart = ({ series, categories }) => {
         categories: categories,
         labels: {
           show: true,
+          trim: true,
+          rotate: 0,
+          hideOverlappingLabels: false,
           style: {
             colors: [],
-            fontSize: '10px',
+            fontSize: '12px',
             fontFamily: 'Helvetica, Arial, sans-serif',
             fontWeight: 400,
             cssClass: 'apexcharts-xaxis-label',
@@ -59,7 +62,7 @@ const ApexGroupedBarChart = ({ series, categories }) => {
 
   };
   return (
-    <Chart {...chartData} type="bar" height={400} />
+    <Chart {...chartData} type="bar" height={300} />
   )
 }
 

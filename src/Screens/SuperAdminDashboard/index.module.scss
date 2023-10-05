@@ -170,6 +170,11 @@ body {
     letter-spacing: 0px;
 }
 
+.padding20 {
+    padding: 20px;
+}
+
+
 .padding150 {
     padding: 150px;
 }
@@ -2426,4 +2431,62 @@ input[type="file"] {
 .purpleSmallNumberSelected {
     color: #fff;
     background-color: #d7d4f7;
+}
+
+.getSSOIdBox {
+    height: 30vh;
+    width: 40vw;
+    background-color: #f1f1f1;
+    border-radius: 0 0 6px 6px;
+}
+
+.fullHeight {
+    height: 100vh;
+}
+
+.getSSOPageLogo {
+    width: 19vw;
+    height: auto;
+    object-fit: contain;
+}
+
+.getSSOIdHeaderBox {
+    height: 80px;
+    width: 100%;
+    background-color: #7165E3;
+    border-radius: 6px 6px 0 0;
+}
+
+.getSSOIdHeading {
+    text-align: center;
+    font-family: Montserrat;
+    font-size: 20px;
+    font-weight: bolder;
+    letter-spacing: 0px;
+    color: #fff;
+}
+
+.getSSOIdDesc {
+    text-align: left;
+    font-family: Montserrat;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0px;
+    color: #52575D;
+}
+
+.addManagerGrid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    grid-gap: 20px;
+}
+
+.newContractButtonStyle {
+    background-color: #7165E3;
+    color: white;
+    border: 1px solid #7165E3;
+    height: 40px;
+    width: 180px;
+    border-radius: 10px;
+    margin-bottom: -20px;
 }

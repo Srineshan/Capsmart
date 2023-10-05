@@ -232,6 +232,8 @@ const ContractIdTermLimitIndividual = (
       contractDetail?.contractFiles?.map(data => {
         fileData.push({ id: data?.id, type: data?.documentType, name: data?.documentName, desc: data?.documentDescription, fileName: data?.fileName, file: null, filePath: data?.fileURL })
       })
+      setSiteSpecific(contractDetail?.siteSpecificContract);
+      setDepartmentSpecific(contractDetail?.departmentSpecificContract);
       setFullyExecutedContractData(fileData);
       setFileFields(fileData);
       setSelectedSites(contractDetail?.site?.sites || []);
@@ -266,6 +268,8 @@ const ContractIdTermLimitIndividual = (
     }
   }
 
+  console.log('sites', sites, selectedSites, selectedDepartmentSites);
+
   const getSiteData = () => {
     let siteData = [];
     if (!siteSpecific && !departmentSpecific) {
@@ -273,7 +277,7 @@ const ContractIdTermLimitIndividual = (
     } else if (siteSpecific && !departmentSpecific) {
       siteData = selectedSites;
     } else {
-      siteData = selectedDepartmentSites;
+      siteData = selectedDepartmentSites?.length !== 0 ? selectedDepartmentSites : selectedSites;
     }
     return siteData;
   }
@@ -343,7 +347,6 @@ const ContractIdTermLimitIndividual = (
         documentName: data.name,
       })
     })
-
 
     let data = {
       ...(createdContractId !== '' && method !== 'POST' && { 'id': createdContractId }),

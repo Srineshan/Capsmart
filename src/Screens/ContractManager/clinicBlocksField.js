@@ -460,6 +460,15 @@ const ClinicBlocksFields = ({
         value: value || 0,
       };
       console.log("data", temp);
+    } else if (name === "frequency" && value === "NA") {
+      temp[0]["minimum"] = {
+        value: 0,
+      };
+      temp[0]["maximum"] = {
+        value: 0,
+      };
+      temp[0]["frequency"] = value;
+
     } else if (name === "noTargetApplicable" && value) {
       temp[0][name] = value;
       temp[0]["withNurse"] = {
@@ -580,6 +589,7 @@ const ClinicBlocksFields = ({
                       </InputAdornment>
                     ),
                   }}
+                  disabled={metadata?.contractedSchedules?.[0]?.frequency === 'NA'}
                   className={style.threeFieldWidth}
                   onChange={(e) =>
                     onSameTargetChange(
@@ -612,6 +622,7 @@ const ClinicBlocksFields = ({
                       </InputAdornment>
                     ),
                   }}
+                  disabled={metadata?.contractedSchedules?.[0]?.frequency === 'NA'}
                   className={style.threeFieldWidth}
                   onChange={(e) =>
                     onSameTargetChange(
@@ -641,8 +652,8 @@ const ClinicBlocksFields = ({
                   }
                   firstOptionLabel={"Select Frequency"}
                   firstOptionValue={""}
-                  valueList={["WEEK", "MONTH", "YEAR"]}
-                  labelList={["Per Week", "Per Month", "Per Year"]}
+                  valueList={["WEEK", "MONTH", "YEAR", "NA"]}
+                  labelList={["Per Week", "Per Month", "Per Year", "As Needed"]}
                   disabledList={[false, false, false]}
                 />
               </div>

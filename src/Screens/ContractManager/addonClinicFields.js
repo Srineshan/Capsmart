@@ -133,6 +133,18 @@ const AddonClinicFields = ({
             parseInt(serviceSelected?.duration?.hours)
           ).toFixed(2),
         },
+        serviceDays: {
+          friday: true,
+          isholidays: true,
+          monday: true,
+          tuesday: true,
+          wednesday: true,
+          thursday: true,
+          saturday: true,
+          sunday: true,
+          weekDays: true,
+          weekEnds: true,
+        },
         totalSession: serviceSelected?.totalSessions?.value,
         totalSessionFrequency: serviceSelected?.totalSessions?.frequency,
         workingTimeFrom: serviceSelected?.workingPeriod?.from,
@@ -562,6 +574,18 @@ const AddonClinicFields = ({
       hourlyRate: {
         value: (newServices?.rate / newServices?.sessionDuration).toFixed(2),
       },
+      serviceDays: {
+        friday: true,
+        isholidays: true,
+        monday: true,
+        tuesday: true,
+        wednesday: true,
+        thursday: true,
+        saturday: true,
+        sunday: true,
+        weekDays: true,
+        weekEnds: true,
+      },
       locations: newServices?.locations,
       locationSpecified: newServices?.showLocation,
       workingHours: {
@@ -674,6 +698,7 @@ const AddonClinicFields = ({
       });
     setMetadata(temp);
     getFields();
+    generateCustomAddOnFields();
   };
 
   const onAdditionalServicePaymentApproverChange = (name, value) => {
@@ -724,6 +749,7 @@ const AddonClinicFields = ({
     // setMetadata({ ...metadata, 'activityResponse': { 'dataMap': { 'additionalDetails': temp } } });
     setMetadata(tempData);
     getFields();
+    generateCustomAddOnFields();
   };
 
   const generateCustomAddOnFields = () => {
