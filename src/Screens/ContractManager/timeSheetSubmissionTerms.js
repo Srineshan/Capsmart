@@ -20,6 +20,8 @@ import CommonLabel from '../../Components/CommonFields/CommonLabel';
 
 import style from './index.module.scss';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
+import CommonTextField from '../../Components/CommonFields/CommonTextField';
+import { InputAdornment } from '@mui/material';
 
 const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, isMultiSiteEntity, getShowAlert, isEditable, getTabDataStatus }) => {
   const [timeSheetCount, setTimeSheetCount] = useState(0);
@@ -64,6 +66,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
   const [workFlowId, setWorkFlowId] = useState('');
   const [paymentAndCompensation, setPaymentAndCompensation] = useState();
   const [isNameEdited, setIsNameEdited] = useState(false);
+  const contractStatus = sessionStorage.getItem('Selected Contract Status');
 
   const menuRef = useRef(null);
   useOptionsHide(menuRef);
@@ -371,7 +374,9 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
                       contractedActivityTags?.filter((data, index) => data?.index === i)?.map((data, index) => (
                         <div className={`${style.deptCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
                           <div className={`${style.siteDeptTextStyle} ${style.marginLeft10}`}>{data?.type}-{data?.activity}</div>
-                          <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => handleContractedActivityTagsRemove(index, data?.index)} />
+                          {contractStatus !== "ACTIVE" && (
+                            <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => handleContractedActivityTagsRemove(index, data?.index)} />
+                          )}
                         </div>
                       ))
                     }
@@ -651,17 +656,27 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
         <div className={`${style.extentionGrid} ${style.marginTop20} ${style.verticalAlignCenter}`}>
           <CommonLabel value='Invoice Processing Day Range Goal*' />
           <div className={style.displayInRow}>
-            <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
+            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
               <EditableText value={invoiceProcessingDay} placeholder="0" type='number' onChange={(e) => setInvoiceProcessingDay(e.slice(0, limit))} className={style.editableTextStyleDays} />
               <div className={style.textElementWithoutBackgroundDays}>Days</div>
+            </div> */}
+            <div className={style.renewalWidth}>
+              <CommonTextField
+                InputProps={{
+                  endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Days</InputAdornment>,
+                }}
+                onChange={(e) => setInvoiceProcessingDay(e.target.value.slice(0, limit))}
+                value={invoiceProcessingDay}
+                type="number"
+              />
             </div>
             <div className={`${style.displayInRow} ${style.editableTextOuterBorder}  ${style.marginLeft20} `}>
               <div className={style.textElementWithNurse}>Threshold</div>
-              <EditableText value={invoiceProcessingDayThreshold} placeholder="0" type='number' onChange={(e) => setInvoiceProcessingDayThreshold(e.slice(0, limit))} className={style.editableTextThresholdStyle} />
+              <EditableText value={invoiceProcessingDayThreshold} placeholder="0" type='number' onChange={(e) => setInvoiceProcessingDayThreshold(e.slice(0, limit))} className={style.editableTextThresholdStyle} disabled={contractStatus === "ACTIVE" ? true : false} />
             </div>
             <div className={`${style.displayInRow} ${style.editableTextOuterBorder}`}>
               <div className={style.textElementWithNurse}>Goal</div>
-              <EditableText value={invoiceProcessingDayGoal} placeholder="0" type='number' onChange={(e) => setInvoiceProcessingDayGoal(e.slice(0, limit))} className={style.editableTextThresholdStyle} />
+              <EditableText value={invoiceProcessingDayGoal} placeholder="0" type='number' onChange={(e) => setInvoiceProcessingDayGoal(e.slice(0, limit))} className={style.editableTextThresholdStyle} disabled={contractStatus === "ACTIVE" ? true : false} />
             </div>
           </div>
         </div>
@@ -690,24 +705,54 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
 
         < div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <CommonLabel value='Planned Absence Notification Days limit*' />
-          <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
+          {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
             <EditableText value={plannedAbsence} placeholder="0" type='number' onChange={(e) => setPlannedAbsence(e.slice(0, limit))} className={style.editableTextStyleDays} />
             <div className={style.textElementWithoutBackgroundDays}>Days</div>
+          </div> */}
+          <div className={style.renewalWidth}>
+            <CommonTextField
+              InputProps={{
+                endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Days</InputAdornment>,
+              }}
+              onChange={(e) => setPlannedAbsence(e.target.value.slice(0, limit))}
+              value={plannedAbsence}
+              type="number"
+            />
           </div>
         </div>
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <CommonLabel value='Maximum Unplanned Absence Days Allowed *' />
-          <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
+          {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
             <EditableText value={maxUnplannedAbsence} placeholder="0" type='number' onChange={(e) => setMaxUnplannedAbsence(e.slice(0, limit))} className={style.editableTextStyleDays} />
             <div className={style.textElementWithoutBackgroundDays}>Days</div>
+          </div> */}
+          <div className={style.renewalWidth}>
+            <CommonTextField
+              InputProps={{
+                endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Days</InputAdornment>,
+              }}
+              onChange={(e) => setMaxUnplannedAbsence(e.target.value.slice(0, limit))}
+              value={maxUnplannedAbsence}
+              type="number"
+            />
           </div>
         </div>
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <CommonLabel value='Maximum Absence Period*' />
           <div className={style.displayInRow}>
-            <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
+            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
               <EditableText value={maxPlannedAbsence?.days} placeholder="0" type='number' onChange={(e) => setMaxPlannedAbsence({ ...maxPlannedAbsence, days: e.slice(0, limit) })} className={style.editableTextStyleDays} disabled={maxPlannedAbsence?.notApplicable} />
               <div className={style.textElementWithoutBackgroundDays}>Days</div>
+            </div> */}
+            <div className={style.renewalWidth}>
+              <CommonTextField
+                InputProps={{
+                  endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Days</InputAdornment>,
+                }}
+                onChange={(e) => setMaxPlannedAbsence({ ...maxPlannedAbsence, days: e.target.value.slice(0, limit) })}
+                value={maxPlannedAbsence?.days}
+                type="number"
+              />
             </div>
             <div className={style.marginLeft20}>
               <CommonCheckBox value="NA" disabled={maxPlannedAbsence?.notApplicable} checked={maxPlannedAbsence?.includingHoliday} onChange={(e) => setMaxPlannedAbsence({ ...maxPlannedAbsence, includingHoliday: e.target.checked })} label="Including Holidays" />
@@ -720,16 +765,36 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <CommonLabel value='Day limit for submission of timesheet based on activity service date *' />
-          <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
+          {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
             <EditableText value={dayLimitForSubmissionBasedOnActivityServiceDate} placeholder="0" type='number' min="0" onChange={(e) => setDayLimitForSubmissionBasedOnActivityServiceDate(e.slice(0, limit))} className={style.editableTextStyleDays} />
             <div className={style.textElementWithoutBackgroundDays}>Days</div>
+          </div> */}
+          <div className={style.renewalWidth}>
+            <CommonTextField
+              InputProps={{
+                endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Days</InputAdornment>,
+              }}
+              onChange={(e) => setDayLimitForSubmissionBasedOnActivityServiceDate(e.target.value.slice(0, limit))}
+              value={dayLimitForSubmissionBasedOnActivityServiceDate}
+              type="number"
+            />
           </div>
         </div>
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <CommonLabel value='Day limit for submission of timesheet based on contract end date *' />
-          <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
+          {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
             <EditableText value={dayLimitForSubmissionBasedOnContractEndDate} placeholder="0" type='number' min="0" onChange={(e) => setDayLimitForSubmissionBasedOnContractEndDate(e.slice(0, limit))} className={style.editableTextStyleDays} />
             <div className={style.textElementWithoutBackgroundDays}>Days</div>
+          </div> */}
+          <div className={style.renewalWidth}>
+            <CommonTextField
+              InputProps={{
+                endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Days</InputAdornment>,
+              }}
+              onChange={(e) => setDayLimitForSubmissionBasedOnContractEndDate(e.target.value.slice(0, limit))}
+              value={dayLimitForSubmissionBasedOnContractEndDate}
+              type="number"
+            />
           </div>
         </div>
       </div>

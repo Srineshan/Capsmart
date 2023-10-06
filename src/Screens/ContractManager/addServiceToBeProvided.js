@@ -124,6 +124,7 @@ const AddServiceProvided = ({
   const [activityItems, setActivityItems] = useState([]);
   const [reducedOffsetApplicable, setReducedOffsetApplicable] = useState(false);
   const [compensationPolicy, setCompensationPolicy] = useState("");
+  const contractStatus = sessionStorage.getItem('Selected Contract Status');
 
   useEffect(() => {
     getContractedServices();
@@ -2164,6 +2165,7 @@ const AddServiceProvided = ({
                                 onSelect={onActivitySelect}
                                 className={style.fullWidth}
                                 onChange={(e) => setNewActivity(e.target.value)}
+                                inputProps={{ disabled: contractStatus === "ACTIVE" ? true : false }}
                               />
                               <div
                                 className={`${style.addStyle} ${style.alignCenter
@@ -2184,7 +2186,7 @@ const AddServiceProvided = ({
                               >
                                 <AddIcon
                                   sx={{ fontSize: 25, color: "white" }}
-                                  onClick={activityToAdd}
+                                  onClick={contractStatus === "ACTIVE" ? {} : activityToAdd}
                                 />
                               </div>
                             </div>
@@ -2239,8 +2241,9 @@ const AddServiceProvided = ({
                                   onSelect={onLocationSelect}
                                   className={style.fullWidth}
                                   onChange={(e) =>
-                                    setNewLocation(e.target.value)
+                                    contractStatus === "ACTIVE" ? {} : setNewLocation(e.target.value)
                                   }
+                                  inputProps={{ disabled: contractStatus === "ACTIVE" ? true : false }}
                                 />
                               </div>
                             )}

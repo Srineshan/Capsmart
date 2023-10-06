@@ -29,6 +29,7 @@ import style from './index.module.scss';
 import RequestProcessingWorkflow from './requestProcessingWorkflow';
 
 const NewContractFromClone = ({ contracts, getNewContract, contractType, selectedContract, selectedContractType, contractIdFromActive, getContractIdFromActive, method, isEditable }) => {
+    const contractStatus = sessionStorage.getItem('Selected Contract Status');
     const [selectContractInfo, setSelectContractInfo] = useState(contractType);
     const [deleteExecutedContractDialog, setDeleteExecutedContractDialog] = useState(false);
     const [newServiceProviderDialog, setNewServiceProviderDialog] = useState(false);
@@ -250,7 +251,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
     return (
         <div className={`${style.welcomePadding} ${style.addContractBody}`}>
             <div className={style.spaceBetween}>
-                <p className={style.welcomeStyle}>{selectedContractType === "New Contract" ? 'New Contract With No Prior Contract(s) With Entity' : selectedContractType === 'Existing Contract' ? 'Existing Active Contract' : 'Contracted Services Continuation Renewal Contract'}</p>
+                <p className={style.welcomeStyle}>{selectedContractType === "New Contract" ? 'New Contract With No Prior Contract(s) With Entity' : selectedContractType === 'Existing Contract' ? 'Existing Active Contract' : 'Contracted Services Continuation Renewal Contract'} <strong className={style.darkText}>{contractStatus === "ACTIVE" ? '( ACTIVE CONTRACT )' : ''}</strong></p>
                 <div className={style.displayInRow}>
                     <img src={WritingFile} alt="Writing File" className={`${style.smallIcons} ${style.reduceTop10}`} />
                     <InputGroup
@@ -262,7 +263,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
             </div>
             <div className={style.welcomeBorder}></div>
 
-            <div className={style.newContractFromCloneGrid}>
+            <div className={contractStatus === "ACTIVE" ? style.newContractFromCloneGridActiveView : style.newContractFromCloneGrid}>
                 <div className={style.cloneBlockStyle}>
                     <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${contractId !== '' ? style.completedEntityCardStyle : ''} ${currentPage === "Contract ID & Term Limit" && style.selectedContractEntityStyle}`}
                         onClick={() => {
@@ -475,56 +476,58 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                                 getTabDataStatus={getTabDataStatus} />
 
                         ) : ''}
-                <div className={style.cloneBlockStyle}>
-                    {contractName !== '' && (<div><p className={`${style.smallHeadingStyle}`}>{contractName}</p>
-                        <div className={style.welcomeBorder}></div></div>)}
-                    <p className={`${style.smallHeadingStyle}`}>{currentPage}</p>
-                    <div className={style.welcomeBorder}></div>
-                    <div>
-                        {
-                            selectedField?.fieldName === '' ?
-                                <p className={`${style.blackText} ${style.leftAlign}`}>{helpTextData?.[currentPage]?.description || ''}</p>
-                                :
-                                <div>
-                                    <p className={`${style.blackText} ${style.leftAlign}`}><strong>{selectedField?.fieldName}</strong></p>
-                                    <p className={`${style.blackText} ${style.leftAlign}`}>{helpTextData?.[selectedField?.fieldName]?.description || ''}</p>
-                                </div>
+                {contractStatus !== "ACTIVE" && (
+                    <div className={style.cloneBlockStyle}>
+                        {contractName !== '' && (<div><p className={`${style.smallHeadingStyle}`}>{contractName}</p>
+                            <div className={style.welcomeBorder}></div></div>)}
+                        <p className={`${style.smallHeadingStyle}`}>{currentPage}</p>
+                        <div className={style.welcomeBorder}></div>
+                        <div>
+                            {
+                                selectedField?.fieldName === '' ?
+                                    <p className={`${style.blackText} ${style.leftAlign}`}>{helpTextData?.[currentPage]?.description || ''}</p>
+                                    :
+                                    <div>
+                                        <p className={`${style.blackText} ${style.leftAlign}`}><strong>{selectedField?.fieldName}</strong></p>
+                                        <p className={`${style.blackText} ${style.leftAlign}`}>{helpTextData?.[selectedField?.fieldName]?.description || ''}</p>
+                                    </div>
 
-                        }
-                    </div>
+                            }
+                        </div>
 
-                    {!selectedField?.empty && helpTextData?.[selectedField?.fieldName]?.skipDataAlerts &&
-                        <>
-                            {(
-                                <div className={style.validationAlert}>
-                                    <div className={style.displayInRow}>
-                                        <div>
-                                            <p className={`${style.blackText} ${style.leftAlign}`}>{helpTextData?.[selectedField?.fieldName]?.skipDataAlerts}</p>
+                        {!selectedField?.empty && helpTextData?.[selectedField?.fieldName]?.skipDataAlerts &&
+                            <>
+                                {(
+                                    <div className={style.validationAlert}>
+                                        <div className={style.displayInRow}>
+                                            <div>
+                                                <p className={`${style.blackText} ${style.leftAlign}`}>{helpTextData?.[selectedField?.fieldName]?.skipDataAlerts}</p>
+                                            </div>
                                         </div>
                                     </div>
+                                )}
+                            </>
+                        }
+
+                        {fileItems?.length !== 0 ?
+                            <>
+                                <p className={`${style.smallHeadingStyle} ${style.marginTop20}`}>Reference Contract Documents</p>
+                                <div className={style.welcomeBorder}></div>
+                                {fileItems}
+                            </>
+                            :
+                            <>
+                                <p className={`${style.smallHeadingStyle} ${style.marginTop20}`}>Reference Contract Documents</p>
+                                <div className={style.welcomeBorder}></div>
+                                <div>
+                                    <p className={`${style.blackText}`}>Contract Documents Not Uploaded</p>
+                                    {currentPage !== 'Contract ID & Term Limit' && <p className={`${style.cursorPointer} ${style.blueColor}`} onClick={() => setCurrentPage('Contract ID & Term Limit')}>Click to Upload your documents</p>}
                                 </div>
-                            )}
-                        </>
-                    }
+                            </>
+                        }
 
-                    {fileItems?.length !== 0 ?
-                        <>
-                            <p className={`${style.smallHeadingStyle} ${style.marginTop20}`}>Reference Contract Documents</p>
-                            <div className={style.welcomeBorder}></div>
-                            {fileItems}
-                        </>
-                        :
-                        <>
-                            <p className={`${style.smallHeadingStyle} ${style.marginTop20}`}>Reference Contract Documents</p>
-                            <div className={style.welcomeBorder}></div>
-                            <div>
-                                <p className={`${style.blackText}`}>Contract Documents Not Uploaded</p>
-                                {currentPage !== 'Contract ID & Term Limit' && <p className={`${style.cursorPointer} ${style.blueColor}`} onClick={() => setCurrentPage('Contract ID & Term Limit')}>Click to Upload your documents</p>}
-                            </div>
-                        </>
-                    }
-
-                </div>
+                    </div>
+                )}
             </div>
             {deleteExecutedContractDialog && (
                 <Dialog isOpen={getDeleteExecutedContractDialog} onClose={() => getDeleteExecutedContractDialog(false)} className={`${style.cloneDialog} ${style.dialogPaddingBottom}`}>

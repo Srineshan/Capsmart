@@ -20,6 +20,7 @@ const ServiceDays = ({ setMetaData, selectedService, isReset, setIsReset }) => {
   });
   const [weekdayLabel, setWeekdayLabel] = useState('Weekdays');
   const [weekendLabel, setWeekendLabel] = useState('Weekends');
+  const contractStatus = sessionStorage.getItem('Selected Contract Status');
 
   useEffect(() => {
     if (isReset) {
@@ -153,15 +154,15 @@ const ServiceDays = ({ setMetaData, selectedService, isReset, setIsReset }) => {
       </div>
       <div className={`${style.serviceDaysGrid} ${style.marginTop10}`}>
         <div className={style.displayInRow}>
-          <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${serviceDays?.monday ? `${style.selectedDay}` : ''}`} onClick={() => setServiceDays({ ...serviceDays, monday: !serviceDays?.monday, weekdaysSpecific: true })}>M</div>
-          <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${serviceDays?.tuesday ? `${style.selectedDay}` : ''}`} onClick={() => setServiceDays({ ...serviceDays, tuesday: !serviceDays?.tuesday, weekdaysSpecific: true })}>T</div>
-          <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${serviceDays?.wednesday ? `${style.selectedDay}` : ''}`} onClick={() => setServiceDays({ ...serviceDays, wednesday: !serviceDays?.wednesday, weekdaysSpecific: true })}>W</div>
-          <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${serviceDays?.thursday ? `${style.selectedDay}` : ''}`} onClick={() => setServiceDays({ ...serviceDays, thursday: !serviceDays?.thursday, weekdaysSpecific: true })}>T</div>
-          <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${serviceDays?.friday ? `${style.selectedDay}` : ''}`} onClick={() => setServiceDays({ ...serviceDays, friday: !serviceDays?.friday, weekdaysSpecific: true })}>F</div>
+          <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${serviceDays?.monday ? `${style.selectedDay}` : ''}`} onClick={contractStatus === "ACTIVE" ? () => { } : () => setServiceDays({ ...serviceDays, monday: !serviceDays?.monday, weekdaysSpecific: true })}>M</div>
+          <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${serviceDays?.tuesday ? `${style.selectedDay}` : ''}`} onClick={contractStatus === "ACTIVE" ? () => { } : () => setServiceDays({ ...serviceDays, tuesday: !serviceDays?.tuesday, weekdaysSpecific: true })}>T</div>
+          <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${serviceDays?.wednesday ? `${style.selectedDay}` : ''}`} onClick={contractStatus === "ACTIVE" ? () => { } : () => setServiceDays({ ...serviceDays, wednesday: !serviceDays?.wednesday, weekdaysSpecific: true })}>W</div>
+          <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${serviceDays?.thursday ? `${style.selectedDay}` : ''}`} onClick={contractStatus === "ACTIVE" ? () => { } : () => setServiceDays({ ...serviceDays, thursday: !serviceDays?.thursday, weekdaysSpecific: true })}>T</div>
+          <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${serviceDays?.friday ? `${style.selectedDay}` : ''}`} onClick={contractStatus === "ACTIVE" ? () => { } : () => setServiceDays({ ...serviceDays, friday: !serviceDays?.friday, weekdaysSpecific: true })}>F</div>
         </div>
         <div className={style.displayInRow}>
-          <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${serviceDays?.saturday ? `${style.selectedDay}` : ''}`} onClick={() => setServiceDays({ ...serviceDays, saturday: !serviceDays?.saturday, weekendsSpecific: true })}>S</div>
-          <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${serviceDays?.sunday ? `${style.selectedDay}` : ''}`} onClick={() => setServiceDays({ ...serviceDays, sunday: !serviceDays?.sunday, weekendsSpecific: true })}>S</div>
+          <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${serviceDays?.saturday ? `${style.selectedDay}` : ''}`} onClick={contractStatus === "ACTIVE" ? () => { } : () => setServiceDays({ ...serviceDays, saturday: !serviceDays?.saturday, weekendsSpecific: true })}>S</div>
+          <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${serviceDays?.sunday ? `${style.selectedDay}` : ''}`} onClick={contractStatus === "ACTIVE" ? () => { } : () => setServiceDays({ ...serviceDays, sunday: !serviceDays?.sunday, weekendsSpecific: true })}>S</div>
         </div>
       </div>
       <div className={`${style.daysWarningText} ${style.marginTop10}`}>

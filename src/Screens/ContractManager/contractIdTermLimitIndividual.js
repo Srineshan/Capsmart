@@ -10,6 +10,7 @@ import AddNewContractManager from './addNewContractManager';
 import { format, sub, add, getMonth, differenceInCalendarMonths, differenceInCalendarWeeks, parseISO } from 'date-fns';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import Tooltip from '@mui/material/Tooltip';
+import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 import CommonInputField from '../../Components/CommonFields/CommonInputField';
 import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
 import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
@@ -87,6 +88,8 @@ const ContractIdTermLimitIndividual = (
   const [contractUsers, setContractUsers] = useState([]);
   const [isShowUploadDialog, setIsShowUploadDialog] = useState(false);
   const [validationData, setValidationData] = useState([]);
+  const [fileItems, setFileItems] = useState([]);
+  const contractStatus = sessionStorage.getItem('Selected Contract Status');
 
 
   useEffect(() => {
@@ -97,6 +100,7 @@ const ContractIdTermLimitIndividual = (
     getUserData();
     getSites();
     getContractUser();
+    getFileData();
   }, [])
 
   useEffect(() => {
@@ -128,6 +132,7 @@ const ContractIdTermLimitIndividual = (
 
   useEffect(() => {
     setFileFields(fullyExecutedContractData);
+    getFileData();
   }, [fullyExecutedContractData])
 
   useEffect(() => {
@@ -583,7 +588,7 @@ const ContractIdTermLimitIndividual = (
             />
           </div>
           <div className={style.verticalAlignCenter}>
-            {renewalReminder?.length !== 1 && (
+            {renewalReminder?.length !== 1 && contractStatus !== "ACTIVE" && (
               <Icon icon="cross" color="#a0a5ab" onClick={() => removeReminder(i)} />
             )}
           </div>
@@ -591,6 +596,29 @@ const ContractIdTermLimitIndividual = (
       )
     }
     setReminderFields(temp);
+  }
+
+  const getFileData = () => {
+    let temp = [];
+    console.log('entered', fullyExecutedContractData)
+    for (let i = 0; i < fullyExecutedContractData?.length || 0; i++) {
+      temp[i] = (
+        <div className={`${style.documentCard} ${style.marginTop10}`} key={i}>
+          <div className={`${style.documentGrid}`}>
+            <a href={fullyExecutedContractData?.[i]?.filePath} target="_blank">
+              <Tooltip title={'Preview'} arrow>
+                <ArticleOutlinedIcon sx={{ color: '#b0a9ef', fontSize: 35 }} />
+              </Tooltip>
+            </a>
+            <div className={style.marginTop}>
+              <p className={`${style.documentTextActive} ${style.leftAlign} ${style.removeUnderline}`} ><strong>{fullyExecutedContractData?.[i]?.type}</strong></p>
+              <p className={`${style.documentTextActive} ${style.leftAlign}`}><strong>{fullyExecutedContractData?.[i]?.fileName}</strong></p>
+            </div>
+          </div>
+        </div>
+      )
+    }
+    setFileItems(temp);
   }
 
   const addNewDocumentField = () => {
@@ -697,9 +725,10 @@ const ContractIdTermLimitIndividual = (
               <DatalistInput items={priorContractItems || []}
                 onSelect={onSelectContractId} className={style.selectFieldWidth}
                 maxLength={TEXTFIELDLEN}
+                inputProps={{ disabled: contractStatus === "ACTIVE" ? true : false }}
                 onChange={(e) => setContractPriorId({ ...contractPriorId, id: e.target.value })} placeholder="Search by CID / Name" value={contractPriorId?.id}
               />
-              <CommonCheckBox label="NA" checked={contractPriorId.na} onChange={(e) => setContractPriorId({ ...contractPriorId, id: '', na: e.target.checked })} className={` ${style.marginLeft20}`} />
+              <CommonCheckBox label="NA" checked={contractPriorId.na} onChange={(e) => setContractPriorId({ ...contractPriorId, id: '', na: e.target.checked })} className={` ${style.marginLeft20}`} disabled={isEditable ? false : true} />
 
             </div>
           </div>
@@ -712,6 +741,7 @@ const ContractIdTermLimitIndividual = (
                 onChange={(e) => setUserName(e.target.value)}
                 className={style.selectAssignedContractFieldWidth}
                 maxLength={TEXTFIELDLEN}
+                inputProps={{ disabled: contractStatus === "ACTIVE" ? true : false }}
                 value={`${contractData?.contractManager?.name?.firstName || ''} ${contractData?.contractManager?.name?.lastName || ''}`}
                 onFocus={() => { checkFieldAndPopAlert(selectContractManager, 'Assigned Contract Manager') }} />
               {(!items?.map(data => data?.name?.firstName)?.includes(userName) && userName !== '') && (
@@ -752,22 +782,27 @@ const ContractIdTermLimitIndividual = (
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <CommonLabel value='Contract Documents On File*' />
-          <div onFocus={() => { checkFieldAndPopAlert(fullyExecutedContractData?.length, 'Fully Executed Contract on File') }}>
-            <div className={`${style.spaceBetween}`}>
-              <CommonSwitch checked={fullyExecutedContract} className={`${style.switchFontStyle} ${style.flexLeft}`}
-                label={fullyExecutedContract ? 'YES' : "NO"}
-                onChange={() => changeContractFile(!fullyExecutedContract)}
-              />
-              <div>
-                <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} `}>
-                  <label for="file-upload" className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} `}>
-                    Upload File
-                  </label>
-                </button>
-                <input id="file-upload" type="file" accept="image/*, .pdf" onChange={(e) => { handleFileUpload(e); setIsShowUploadDialog(true) }} />
-              </div>
+          {contractStatus === "ACTIVE" ? (
+            <div>
+              {fileItems}
             </div>
-            {/* {fullyExecutedContract && (
+          ) : (
+            <div onFocus={() => { checkFieldAndPopAlert(fullyExecutedContractData?.length, 'Fully Executed Contract on File') }}>
+              <div className={`${style.spaceBetween}`}>
+                <CommonSwitch checked={fullyExecutedContract} className={`${style.switchFontStyle} ${style.flexLeft}`}
+                  label={fullyExecutedContract ? 'YES' : "NO"}
+                  onChange={() => changeContractFile(!fullyExecutedContract)}
+                />
+                <div>
+                  <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} `}>
+                    <label for="file-upload" className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${contractStatus === "ACTIVE" ? style.disabledUploadButton : ''}`}>
+                      Upload File
+                    </label>
+                  </button>
+                  <input id="file-upload" type="file" accept="image/*, .pdf" onChange={(e) => { handleFileUpload(e); setIsShowUploadDialog(true) }} disabled={contractStatus === "ACTIVE" ? true : false} />
+                </div>
+              </div>
+              {/* {fullyExecutedContract && (
               <div>
                 <div>
                   <CommonSelectField value={fileFieldData?.type || 'Select...'} onChange={(e) => handleFileChange(e, 'type')}
@@ -797,7 +832,8 @@ const ContractIdTermLimitIndividual = (
                   <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} `} disabled={false} onClick={() => { addNewDocumentField() }}>UPLOAD</button>
               )}
             </div> */}
-          </div>
+            </div>
+          )}
         </div>
         {isMultiSiteEntity &&
           <div className={`${style.extentionGrid} ${style.marginTop20}`}
@@ -808,7 +844,8 @@ const ContractIdTermLimitIndividual = (
                 <CommonSwitch checked={siteSpecific} className={`${style.textAlignLeft} ${style.switchFontStyle}`} label={siteSpecific ? 'YES' : "NO"} onChange={() => { setSiteSpecific(!siteSpecific); siteFieldCheck(!siteSpecific); setIsSiteDeptUpdated(true); }} />
                 {siteSpecific && (
                   <div className={style.displayInRow}>
-                    <DatalistInput value={value} setValue={setValue} items={siteItems || []} placeholder="Select Sites" onSelect={onSelectSite} className={`${style.selectFieldSwitchWidth} ${style.marginLeft20}`} />
+                    <DatalistInput value={value} setValue={setValue} items={siteItems || []} placeholder="Select Sites" onSelect={onSelectSite} className={`${style.selectFieldSwitchWidth} ${style.marginLeft20}`}
+                      inputProps={{ disabled: contractStatus === "ACTIVE" ? true : false }} />
                     {
                       // <div className={`${style.addSymbolStyle} ${style.marginLeft20}`} onClick={()=>{setSelectedSites([...selectedSites,])}}><span className={style.plusSymbolPosition}>+</span></div>
                     }
@@ -980,7 +1017,7 @@ const ContractIdTermLimitIndividual = (
                 valueList={['ACTIVITY_BASED', 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITH_OFFSET', 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET', 'SHIFT_OR_PER_DAY_BASED',]}
                 labelList={['Activity Based', 'Fixed Amount for Timesheet Period WITH Offset Applied', 'Fixed Amount for Timesheet Period WITHOUT Offset Applied', 'Shift OR Per diem Based']}
                 disabledList={[false, false]}
-                widthValue={370} />
+                widthValue={contractStatus === "ACTIVE" ? '100%' : 370} />
             </div>
           </div>
         </div>
@@ -1000,7 +1037,7 @@ const ContractIdTermLimitIndividual = (
               <div className={`${style.renewalBoxStyle}`}>
                 <div className={`${style.renewalBoxGrid}`} onFocus={() => { checkFieldAndPopAlert(autoRenewal.renewalTerm, 'Auto Renewal - Auto Renewal Term') }}>
                   <div className={style.marginTop}>Auto Renewal Term*</div>
-                  <EditableText className={`${style.inputRenewalStyle}`} placeholder="" value={autoRenewal.renewalTerm} onChange={(e) => (e <= 52 && setAutoRenewal({ ...autoRenewal, renewalTerm: e, calendar: '' }))} type="tel" />
+                  <EditableText className={`${style.inputRenewalStyle}`} placeholder="" value={autoRenewal.renewalTerm} onChange={(e) => (e <= 52 && setAutoRenewal({ ...autoRenewal, renewalTerm: e, calendar: '' }))} type="tel" disabled={contractStatus === "ACTIVE" ? true : false} />
                   <CommonSelectField value={autoRenewal.calendar}
                     onChange={(e) => setAutoRenewal({ ...autoRenewal, calendar: e.target.value })}
                     className={`${style.marginLeft20} ${style.weekSelectStyle}`} firstOptionLabel={'Select Frequency'} firstOptionValue={''}
@@ -1010,7 +1047,7 @@ const ContractIdTermLimitIndividual = (
                 </div>
                 <div className={`${style.renewalBoxGrid}`} onFocus={() => { checkFieldAndPopAlert(autoRenewal.allowableRenewalTerm, 'Auto Renewal - Allowable Auto Renewal Terms') }}>
                   <div className={style.marginTop10}>Allowable Auto Renewal Terms*</div>
-                  <EditableText className={`${style.inputRenewalStyle} ${style.marginTop10}`} placeholder="" value={autoRenewal.allowableRenewalTerm} onChange={(e) => (e <= 12 && setAutoRenewal({ ...autoRenewal, allowableRenewalTerm: e }))} type="tel" />
+                  <EditableText className={`${style.inputRenewalStyle} ${style.marginTop10}`} placeholder="" value={autoRenewal.allowableRenewalTerm} onChange={(e) => (e <= 12 && setAutoRenewal({ ...autoRenewal, allowableRenewalTerm: e }))} type="tel" disabled={contractStatus === "ACTIVE" ? true : false} />
                 </div>
               </div>
             )}
