@@ -23,6 +23,7 @@ import SupplementalFields from "./supplementalFields";
 import AddonClinicFields from "./addonClinicFields";
 import HospiceService from "./hospiceService";
 import AdministrativeFields from "./administrativeFields";
+import HITService from "./hitService";
 import SurgerySessionFields from "./surgerySessionFields";
 import { workFlowDataGenerator } from "./workflowDataGenerator";
 import {
@@ -35,6 +36,7 @@ import {
   PROCEDUREREADING,
   HOSPICE,
   ONCALLSERVICE,
+  HIT,
 } from "../../Constants";
 import Notes from "../../Components/Notes";
 import CommonSwitch from "../../Components/CommonFields/CommonSwitch";
@@ -2144,6 +2146,7 @@ const AddServiceProvided = ({
                       </div>
                     )}
                   {serviceTypeTemplate !== ADMINISTRATIVE &&
+                    serviceTypeTemplate !== HIT &&
                     serviceTypeTemplate !== ADDON &&
                     serviceTypeTemplate !== HOSPICE &&
                     serviceTypeTemplate !== SUPPLEMENTAL && (
@@ -2334,18 +2337,32 @@ const AddServiceProvided = ({
                         getIsReset={getIsReset}
                         editService={editService}
                       />
-                    ) : (
-                      <AdministrativeFields
-                        getMetaData={getMetaData}
-                        services={contractedServices}
-                        serviceSelected={selectedService}
-                        editService={editService}
-                        isReset={isReset}
-                        getIsReset={getIsReset}
-                        sites={siteList}
-                        contractId={contractId}
-                      />
-                    )}
+                    ) :
+                      // serviceTypeTemplate === HIT ? (
+                      //   <HITService
+                      //     getMetaData={getMetaData}
+                      //     services={contractedServices}
+                      //     serviceSelected={selectedService}
+                      //     editService={editService}
+                      //     isReset={isReset}
+                      //     getIsReset={getIsReset}
+                      //     sites={siteList}
+                      //     contractId={contractId}
+                      //   />
+                      // )
+                      //   :
+                      (
+                        <AdministrativeFields
+                          getMetaData={getMetaData}
+                          services={contractedServices}
+                          serviceSelected={selectedService}
+                          editService={editService}
+                          isReset={isReset}
+                          getIsReset={getIsReset}
+                          sites={siteList}
+                          contractId={contractId}
+                        />
+                      )}
                 </div>
               </div>
             ) : (
