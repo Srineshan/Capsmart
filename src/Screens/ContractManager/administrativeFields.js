@@ -35,6 +35,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         asNeeded: false,
     });
     const [editAdminActivitySelected, setEditAdminActivitySelected] = useState(false);
+    const contractStatus = sessionStorage.getItem('Selected Contract Status');
 
     let specificDedicatedHoursList = [];
     services?.filter(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => {
@@ -582,6 +583,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                         onChange={(e) => {
                             updateWorkingPeriod(e);
                         }}
+                        disabled={contractStatus === "ACTIVE" ? true : false}
                         value={metadata?.workingTimeFrom === null ? null : new Date(metadata?.workingTimeFrom)}
                     />
                     <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
@@ -590,6 +592,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                         onChange={(e) => {
                             handleValueChange('workingTimeTo', e);
                         }}
+                        disabled={contractStatus === "ACTIVE" ? true : false}
                         value={metadata?.workingTimeTo === null ? null : new Date(metadata?.workingTimeTo)}
                     // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.totalSession * 60 * 60 * 1000))}
                     />

@@ -19,6 +19,7 @@ import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
 const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, isReset, getIsReset, sites, contractId }) => {
     const [timesheetWorkFlow, setTimesheetWorkflow] = useState([]);
+    const contractStatus = sessionStorage.getItem('Selected Contract Status');
     const [metadata, setMetadata] = useState({
         min: 0,
         max: 99999999,
@@ -550,7 +551,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 onChange={(e) => {
                                     onCustomizeFieldChange(e, 'weekdayFrom');
                                 }}
-                                disabled={!metadata?.serviceDays?.weekDays}
+                                disabled={contractStatus === "ACTIVE" ? true : !metadata?.serviceDays?.weekDays}
                                 value={metadata?.weekdayFrom === null ? null : new Date(metadata?.weekdayFrom)}
                             />
                             <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
@@ -559,7 +560,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 onChange={(e) => {
                                     onCustomizeFieldChange(e, 'weekdayTo');
                                 }}
-                                disabled={!metadata?.serviceDays?.weekDays}
+                                disabled={contractStatus === "ACTIVE" ? true : !metadata?.serviceDays?.weekDays}
                                 value={metadata?.weekdayTo === null ? null : new Date(metadata?.weekdayTo)}
                             />
                             <div className={` ${style.marginLeft20} ${style.durationWidth}`}>
@@ -678,7 +679,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 onChange={(e) => {
                                     onCustomizeFieldChange(e, 'weekdayNightsFrom');
                                 }}
-                                disabled={!metadata?.serviceDays?.weekDays}
+                                disabled={contractStatus === "ACTIVE" ? true : !metadata?.serviceDays?.weekDays}
                                 value={metadata?.weekdayNightsFrom === null ? null : new Date(metadata?.weekdayNightsFrom)}
                             />
                             <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
@@ -687,7 +688,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 onChange={(e) => {
                                     onCustomizeFieldChange(e, 'weekdayNightsTo');
                                 }}
-                                disabled={!metadata?.serviceDays?.weekDays}
+                                disabled={contractStatus === "ACTIVE" ? true : !metadata?.serviceDays?.weekDays}
                                 value={metadata?.weekdayNightsTo === null ? null : new Date(metadata?.weekdayNightsTo)}
                             />
                             <div className={` ${style.marginLeft20} ${style.durationWidth}`}>
@@ -806,19 +807,19 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                         <div>
                             <div className={style.displayInRow}>
                                 <div className={style.displayInRow}>
-                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.weekendStartday === 'FRIDAY' ? style.selectedDay : ''}`} onClick={() => onCustomizeFieldChange('FRIDAY', 'weekendStartday')}>F</div>
-                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.weekendStartday === 'SATURDAY' ? style.selectedDay : ''}`} onClick={() => onCustomizeFieldChange('SATURDAY', 'weekendStartday')}>S</div>
-                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.weekendStartday === 'SUNDAY' ? style.selectedDay : ''}`} onClick={() => onCustomizeFieldChange('SUNDAY', 'weekendStartday')}>S</div>
-                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.weekendStartday === 'MONDAY' ? style.selectedDay : ''}`} onClick={() => onCustomizeFieldChange('MONDAY', 'weekendStartday')}>M</div>
+                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.weekendStartday === 'FRIDAY' ? style.selectedDay : ''}`} onClick={contractStatus === "ACTIVE" ? () => { } : () => onCustomizeFieldChange('FRIDAY', 'weekendStartday')}>F</div>
+                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.weekendStartday === 'SATURDAY' ? style.selectedDay : ''}`} onClick={contractStatus === "ACTIVE" ? () => { } : () => onCustomizeFieldChange('SATURDAY', 'weekendStartday')}>S</div>
+                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.weekendStartday === 'SUNDAY' ? style.selectedDay : ''}`} onClick={contractStatus === "ACTIVE" ? () => { } : () => onCustomizeFieldChange('SUNDAY', 'weekendStartday')}>S</div>
+                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.weekendStartday === 'MONDAY' ? style.selectedDay : ''}`} onClick={contractStatus === "ACTIVE" ? () => { } : () => onCustomizeFieldChange('MONDAY', 'weekendStartday')}>M</div>
                                 </div>
                                 <div className={style.alignCenter}>
                                     <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop10} ${style.marginRight}`}>To</p>
                                 </div>
                                 <div className={`${style.displayInRow} ${style.marginLeft20}`}>
-                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.weekendEndday === 'FRIDAY' ? style.selectedDay : ''}`} onClick={() => onCustomizeFieldChange('FRIDAY', 'weekendEndday')}>F</div>
-                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.weekendEndday === 'SATURDAY' ? style.selectedDay : ''}`} onClick={() => onCustomizeFieldChange('SATURDAY', 'weekendEndday')}>S</div>
-                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.weekendEndday === 'SUNDAY' ? style.selectedDay : ''}`} onClick={() => onCustomizeFieldChange('SUNDAY', 'weekendEndday')}>S</div>
-                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.weekendEndday === 'MONDAY' ? style.selectedDay : ''}`} onClick={() => onCustomizeFieldChange('MONDAY', 'weekendEndday')}>M</div>
+                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.weekendEndday === 'FRIDAY' ? style.selectedDay : ''}`} onClick={contractStatus === "ACTIVE" ? () => { } : () => onCustomizeFieldChange('FRIDAY', 'weekendEndday')}>F</div>
+                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.weekendEndday === 'SATURDAY' ? style.selectedDay : ''}`} onClick={contractStatus === "ACTIVE" ? () => { } : () => onCustomizeFieldChange('SATURDAY', 'weekendEndday')}>S</div>
+                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.weekendEndday === 'SUNDAY' ? style.selectedDay : ''}`} onClick={contractStatus === "ACTIVE" ? () => { } : () => onCustomizeFieldChange('SUNDAY', 'weekendEndday')}>S</div>
+                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.weekendEndday === 'MONDAY' ? style.selectedDay : ''}`} onClick={contractStatus === "ACTIVE" ? () => { } : () => onCustomizeFieldChange('MONDAY', 'weekendEndday')}>M</div>
                                 </div>
 
                             </div>
@@ -829,7 +830,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                     onChange={(e) => {
                                         onCustomizeFieldChange(e, 'weekendFrom');
                                     }}
-                                    disabled={!metadata?.serviceDays?.weekEnds}
+                                    disabled={contractStatus === "ACTIVE" ? true : !metadata?.serviceDays?.weekEnds}
                                     value={metadata?.weekendFrom === null ? null : new Date(metadata?.weekendFrom)}
                                 />
                                 <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
@@ -838,7 +839,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                     onChange={(e) => {
                                         onCustomizeFieldChange(e, 'weekendTo');
                                     }}
-                                    disabled={!metadata?.serviceDays?.weekEnds}
+                                    disabled={contractStatus === "ACTIVE" ? true : !metadata?.serviceDays?.weekEnds}
                                     value={metadata?.weekendTo === null ? null : new Date(metadata?.weekendTo)}
                                 />
                                 <div className={` ${style.marginLeft20} ${style.durationWidth}`}>
@@ -993,7 +994,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                         onCustomizeFieldChange(e, 'holidayFrom');
                                     }}
                                     value={metadata?.holidayFrom === null ? null : new Date(metadata?.holidayFrom)}
-                                    disabled={!metadata?.serviceDays?.isholidays}
+                                    disabled={contractStatus === "ACTIVE" ? true : !metadata?.serviceDays?.isholidays}
                                 />
                                 <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
                                 <TimePicker
@@ -1002,7 +1003,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                         onCustomizeFieldChange(e, 'holidayTo');
                                     }}
                                     value={metadata?.holidayTo === null ? null : new Date(metadata?.holidayTo)}
-                                    disabled={!metadata?.serviceDays?.isholidays}
+                                    disabled={contractStatus === "ACTIVE" ? true : !metadata?.serviceDays?.isholidays}
                                 />
                                 <div className={`${style.marginLeft20} ${style.durationWidth}`}>
                                     <CommonTextField
@@ -1239,6 +1240,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                     onChange={(e) => {
                                         updateWorkingPeriod(e);
                                     }}
+                                    disabled={contractStatus === "ACTIVE" ? true : false}
                                     value={metadata?.workingTimeFrom === null ? null : new Date(metadata?.workingTimeFrom)}
                                 />
                                 <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
@@ -1246,6 +1248,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                     useAmPm={false}
                                     onChange={(e) => handleValueChange('workingTimeTo', e)}
                                     value={metadata?.workingTimeTo === null ? null : new Date(metadata?.workingTimeTo)}
+                                    disabled={contractStatus === "ACTIVE" ? true : false}
                                 // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
                                 />
                             </div>
@@ -1299,7 +1302,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                     <div className={`${style.spaceBetween} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
                         <EditableText placeholder='' value={metadata?.totalSession} type='tel' maxLength="5"
                             className={style.editableSessionTextStyle}
-                            onChange={(e) => onTotalSessionChange(e)} />
+                            onChange={(e) => onTotalSessionChange(e)} disabled={contractStatus === "ACTIVE" ? true : false} />
                         <div className={`${style.textElement} ${parseFloat(metadata?.totalSession) === parseFloat(specified) ? style.greenBase : style.redBase}`}>{specified} Minimum Specified</div>
                     </div>
                     <div className={style.verticalAlignCenter}>

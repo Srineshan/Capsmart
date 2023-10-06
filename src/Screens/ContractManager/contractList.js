@@ -181,14 +181,16 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
   }
 
   const onClickFunction = (data) => {
-    if (selectedContract === 'activecontracts') {
-      getActiveContractView(true);
-    } else {
-      getNewContract(true);
-      getContractType(data?.contractType);
-      getSelectedContractType('New Contract');
-    }
+    // if (selectedContract === 'activecontracts') {
+    //   getActiveContractView(true);
+    // } else {
+    getNewContract(true);
+    getContractType(data?.contractType);
+    getSelectedContractType('New Contract');
+    // }
     getContractIdFromActive(data?.id);
+    console.log(data, 'contract data')
+    sessionStorage.setItem('Selected Contract Status', data?.contractStatus)
   }
 
   let dot = [];

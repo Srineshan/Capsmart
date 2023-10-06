@@ -95,6 +95,7 @@ const ContractedServicesProviderIndividual = ({
   const [ssoId, setSsoId] = useState(null);
   const [tempSite, setTempSite] = useState([]);
   const [CSPSubDomain, setCSPSubDomain] = useState("");
+  const contractStatus = sessionStorage.getItem('Selected Contract Status');
 
   useEffect(() => {
     getRoles();
@@ -592,7 +593,7 @@ const ContractedServicesProviderIndividual = ({
       return (
         <Tag
           key={index}
-          onRemove={onRemove}
+          onRemove={contractStatus === "ACTIVE" ? () => { } : onRemove}
           large={true}
           className={style.tagStyle}
         >
@@ -1070,7 +1071,7 @@ const ContractedServicesProviderIndividual = ({
                 <TagInput
                   values={siteTitleValues}
                   className={`${style.marginTop20}`}
-                  onRemove={handleSiteRemove}
+                  onRemove={contractStatus === "ACTIVE" ? () => { } : handleSiteRemove}
                   separator={/[\s,]/}
                   addOnBlur={true}
                   addOnPaste={true}
@@ -1172,7 +1173,7 @@ const ContractedServicesProviderIndividual = ({
                   <TagInput
                     values={departmentTitleValues}
                     className={`${style.marginTop20}`}
-                    onRemove={handleDeptRemove}
+                    onRemove={contractStatus === "ACTIVE" ? () => { } : handleDeptRemove}
                     separator={/[\s,]/}
                     addOnBlur={true}
                     addOnPaste={true}

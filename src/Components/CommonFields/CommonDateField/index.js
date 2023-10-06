@@ -8,7 +8,7 @@ import { format, parse, parseISO } from "date-fns";
 import { jsDateFormatter } from './../../../utils/jsDateFormatter'
 
 const CommonDateField = ({ onChange, value, InputProps, onOpen, onClose, open, renderInput, minDate, maxDate }) => {
-
+    const contractStatus = sessionStorage.getItem('Selected Contract Status');
     const dateFnsFormat = "MM/dd/yyyy";
     const formatDate = useCallback((date) => format(date, dateFnsFormat), []);
     const parseDate = useCallback((date) => parse(date, dateFnsFormat), []);
@@ -32,6 +32,7 @@ const CommonDateField = ({ onChange, value, InputProps, onOpen, onClose, open, r
                 maxDate={maxDate}
                 renderInput={renderInput}
                 reduceAnimations={true}
+                readOnly={contractStatus === "ACTIVE" ? true : false}
             />
         </LocalizationProvider>
     )
