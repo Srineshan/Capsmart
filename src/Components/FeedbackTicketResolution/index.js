@@ -422,7 +422,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                                         <p className={style.extentionLableStyle}>Work impact</p>
                                         <FormControl sx={{ maxWidth: 180 }} className={style.reduceMarginTop} size="small">
                                             <Select
-                                                readOnly={ticketDetails?.generationMode === 'SYSTEM'}
+                                                // readOnly={ticketDetails?.generationMode === 'SYSTEM'}
                                                 labelId="demo-select-small"
                                                 id="demo-select-small"
                                                 value={impact}
@@ -679,7 +679,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                                 )}
                             </div>
                             <div className={`${style.alignRight} ${style.marginTop20}`}>
-                                <button className={style.doneButton} onClick={() => handleSave()} disabled={ticketDetails?.generationMode === 'SYSTEM'}>Done</button>
+                                <button className={style.doneButton} onClick={() => handleSave()}>Done</button>
                             </div>
                         </div>
                     </div>
