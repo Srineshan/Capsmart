@@ -317,6 +317,8 @@ const ContractIdTermLimitIndividual = (
     // }
     // if (conflictedData?.length === 0) {
     // setContinueLoading(true);
+
+
     if (contractName === '') {
       ErrorToaster('Enter Contract Name to proceed');
       setContinueLoading(false);
@@ -446,6 +448,7 @@ const ContractIdTermLimitIndividual = (
         })
     }
     setContinueLoading(false);
+
     if (buttonType === 'Continue') {
       getViewPage2(true);
       getViewPage1(false);
@@ -453,6 +456,7 @@ const ContractIdTermLimitIndividual = (
     } else {
       getShowAlert(true);
     }
+
     if (isSiteDeptUpdated) {
       let modifiedContractUser = contractUsers;
       modifiedContractUser?.map(data => {

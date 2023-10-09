@@ -27,6 +27,7 @@ import { validateTabs, validateContractIDTermLimit, validateContractProvider, va
 
 import style from './index.module.scss';
 import RequestProcessingWorkflow from './requestProcessingWorkflow';
+import SaveInProgressDialog from './saveInProgressDialog';
 
 const NewContractFromClone = ({ contracts, getNewContract, contractType, selectedContract, selectedContractType, contractIdFromActive, getContractIdFromActive, method, isEditable }) => {
     const [selectContractInfo, setSelectContractInfo] = useState(contractType);
@@ -55,6 +56,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
     const [selectedField, setSelectedField] = useState({ fieldName: '', empty: false });
     const [selectedFileURL, setSelectedFileURL] = useState('');
     const [showAlert, setShowAlert] = useState(false);
+    const [mandatoryFields, setMandatoryFields] = useState(null);
     const [isTabsValid, setIsTabsValid] = useState([]);
     const [contractSelected, setContractSelected] = useState(contracts?.filter(contract => contract?.id === contractId)?.map(data => data)[0]);
     const [providerDetails, setProviderDetails] = useState();
@@ -159,6 +161,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
     }
 
     const getShowAlert = (value, type = 'cross') => {
+        console.log(value)
         setShowAlert(value);
         if (!value && type === 'ok') {
             getNewContract(false);
@@ -547,9 +550,17 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
             {newServiceProviderDialog && (
                 <NewServiceProvider getNewServiceProviderDialog={getNewServiceProviderDialog} contractId={contractId} contractType={contractType} contractName={contractName} />
             )}
-            {showAlert && (
+            {/* {showAlert && (
                 <Alert getShowAlertDialog={getShowAlert} header={'SAVE-IN PROGRESS'} content={'Your contract will be saved in draft, you can edit it later...'} redirectTo={'contracts'} />
+            )} */}
+
+            {showAlert && (
+                <SaveInProgressDialog getSaveInProgressDialog={getShowAlert} header={'SAVE-IN PROGRESS'} content={'Your contract will be saved in draft, you can edit it later...'} redirectTo={'contracts'} />
             )}
+
+            {/* {showAlert && mandatoryFields && (
+                <SaveInProgressDialog getSaveInProgressDialog={getShowAlert} header={'SAVE-IN PROGRESS'} content={'Your contract will be saved in draft, you can edit it later...'} redirectTo={'contracts'} />
+            )} */}
         </div>
     )
 }
