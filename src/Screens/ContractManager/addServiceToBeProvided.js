@@ -1254,6 +1254,7 @@ const AddServiceProvided = ({
           payableAmount: {
             value: parseFloat(dataValues?.sessionAmount),
           },
+          professionalServiceRequired: dataValues?.professionalServiceRequired || false,
           ...((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ONCALLSERVICE ||
             serviceTypeTemplate === ADMINISTRATIVE) &&
             dataValues?.dedicatedHoursSpecified && {

@@ -2278,3 +2278,30 @@ input[type=number] {
     word-break: break-word;
     width: auto;
 }
+
+.moveToDraftBox {
+    height: 20vh;
+    width: 40vw;
+    background-color: #f1f1f1;
+    border-radius: 0 0 6px 6px;
+}
+
+.fullHeight {
+    height: 100vh;
+}
+
+.moveToDraftHeaderBox {
+    height: 80px;
+    width: 100%;
+    background-color: #7165E3;
+    border-radius: 6px 6px 0 0;
+}
+
+.moveToDraftHeading {
+    text-align: center;
+    font-family: Montserrat;
+    font-size: 25px;
+    font-weight: bolder;
+    letter-spacing: 0px;
+    color: #fff;
+}
