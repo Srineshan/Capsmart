@@ -468,7 +468,6 @@ const ClinicBlocksFields = ({
         value: 0,
       };
       temp[0]["frequency"] = value;
-
     } else if (name === "noTargetApplicable" && value) {
       temp[0][name] = value;
       temp[0]["withNurse"] = {
@@ -589,7 +588,9 @@ const ClinicBlocksFields = ({
                       </InputAdornment>
                     ),
                   }}
-                  disabled={metadata?.contractedSchedules?.[0]?.frequency === 'NA'}
+                  disabled={
+                    metadata?.contractedSchedules?.[0]?.frequency === "NA"
+                  }
                   className={style.threeFieldWidth}
                   onChange={(e) =>
                     onSameTargetChange(
@@ -622,7 +623,9 @@ const ClinicBlocksFields = ({
                       </InputAdornment>
                     ),
                   }}
-                  disabled={metadata?.contractedSchedules?.[0]?.frequency === 'NA'}
+                  disabled={
+                    metadata?.contractedSchedules?.[0]?.frequency === "NA"
+                  }
                   className={style.threeFieldWidth}
                   onChange={(e) =>
                     onSameTargetChange(
@@ -633,7 +636,7 @@ const ClinicBlocksFields = ({
                   }
                   value={
                     metadata?.contractedSchedules?.[0]?.maximum?.value === 0 ||
-                      metadata?.contractedSchedules?.[0]?.maximum?.value ===
+                    metadata?.contractedSchedules?.[0]?.maximum?.value ===
                       99999999
                       ? ""
                       : metadata?.contractedSchedules?.[0]?.maximum?.value
@@ -664,8 +667,8 @@ const ClinicBlocksFields = ({
                 className={
                   !metadata?.patientsSeenTargets?.[0]?.noTargetApplicable
                     ? dataCheck(
-                      metadata?.patientsSeenTargets?.[0]?.withNurse?.value
-                    ) ||
+                        metadata?.patientsSeenTargets?.[0]?.withNurse?.value
+                      ) ||
                       dataCheck(
                         metadata?.patientsSeenTargets?.[0]?.withoutNurse?.value
                       )
@@ -745,7 +748,7 @@ const ClinicBlocksFields = ({
                   }
                   value={
                     metadata?.patientsSeenTargets?.[0]?.withoutNurse?.value ===
-                      0
+                    0
                       ? ""
                       : metadata?.patientsSeenTargets?.[0]?.withoutNurse?.value
                   }
@@ -777,9 +780,9 @@ const ClinicBlocksFields = ({
                 className={
                   !metadata?.scheduledPatientsTargets?.[0]?.noTargetApplicable
                     ? dataCheck(
-                      metadata?.scheduledPatientsTargets?.[0]?.withNurse
-                        ?.value
-                    ) ||
+                        metadata?.scheduledPatientsTargets?.[0]?.withNurse
+                          ?.value
+                      ) ||
                       dataCheck(
                         metadata?.scheduledPatientsTargets?.[0]?.withoutNurse
                           ?.value
@@ -824,7 +827,7 @@ const ClinicBlocksFields = ({
                       ?.value === 0
                       ? ""
                       : metadata?.scheduledPatientsTargets?.[0]?.withNurse
-                        ?.value
+                          ?.value
                   }
                   type="number"
                   disabled={
@@ -865,7 +868,7 @@ const ClinicBlocksFields = ({
                       ?.value === 0
                       ? ""
                       : metadata?.scheduledPatientsTargets?.[0]?.withoutNurse
-                        ?.value
+                          ?.value
                   }
                   type="number"
                   disabled={
@@ -1044,12 +1047,14 @@ const ClinicBlocksFields = ({
       )}
 
       <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-        <CommonLabel value="Additional Schedule*"
+        <CommonLabel
+          value="Additional Schedule*"
           className={
-            metadata?.additionalScheduleRequired && editService && (dataCheck(metadata?.additionalScheduleValue)
-              ? style.redLable
-              : "")
-          } />
+            metadata?.additionalScheduleRequired &&
+            editService &&
+            (dataCheck(metadata?.additionalScheduleValue) ? style.redLable : "")
+          }
+        />
         <div className={`${style.grid3}`}>
           <div className={`${style.fullWidth}`}>
             <CommonSwitch
@@ -1189,7 +1194,12 @@ const ClinicBlocksFields = ({
                 }}
                 onChange={(e) =>
                   e.target.value >= 0 &&
-                  handleValueChange("sessionAmount", e.target.value)
+                  handleValueChange(
+                    "sessionAmount",
+                    (e.target.value = Math.max(0, Number(e.target.value))
+                      .toString()
+                      .slice(0, 9))
+                  )
                 }
                 value={metadata?.sessionAmount}
               />
@@ -1222,7 +1232,8 @@ const ClinicBlocksFields = ({
               className={style.editableSessionTextStyle}
             />
             <div
-              className={`${style.textElement} ${parseFloat(metadata?.totalSession) ===
+              className={`${style.textElement} ${
+                parseFloat(metadata?.totalSession) ===
                 parseFloat(
                   SpecifiedCountCalculator(
                     metadata?.contractedSchedules,
@@ -1231,9 +1242,9 @@ const ClinicBlocksFields = ({
                     metadata?.additionalScheduleValue
                   )
                 )
-                ? style.greenBase
-                : style.redBase
-                } `}
+                  ? style.greenBase
+                  : style.redBase
+              } `}
             >
               {SpecifiedCountCalculator(
                 metadata?.contractedSchedules,
@@ -1246,8 +1257,9 @@ const ClinicBlocksFields = ({
           </div>
           <div className={style.verticalAlignCenter}>
             <CommonLabel
-              value={`For ${timeCommitment?.value} ${timeCommitment?.frequency === "WEEK" ? "Weeks" : "Months"
-                } Per Contract Year`}
+              value={`For ${timeCommitment?.value} ${
+                timeCommitment?.frequency === "WEEK" ? "Weeks" : "Months"
+              } Per Contract Year`}
             />
           </div>
         </div>
@@ -1258,10 +1270,10 @@ const ClinicBlocksFields = ({
           value="Service Days*"
           className={
             metadata?.serviceDays === null ||
-              (metadata?.serviceDays !== undefined &&
-                Object?.values(metadata?.serviceDays)?.filter(
-                  (data) => data === true
-                )?.length === 0)
+            (metadata?.serviceDays !== undefined &&
+              Object?.values(metadata?.serviceDays)?.filter(
+                (data) => data === true
+              )?.length === 0)
               ? style.redLable
               : ""
           }
@@ -1279,7 +1291,7 @@ const ClinicBlocksFields = ({
           value="Allowable Working Day Hours For Service*"
           className={
             format(metadata?.workingTimeTo || new Date(), "H") === "0" &&
-              format(metadata?.workingTimeFrom || new Date(), "H") === "0"
+            format(metadata?.workingTimeFrom || new Date(), "H") === "0"
               ? style.redLable
               : ""
           }
@@ -1309,7 +1321,7 @@ const ClinicBlocksFields = ({
                 ? null
                 : new Date(metadata?.workingTimeTo) || null
             }
-          // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
+            // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
           />
         </div>
       </div>
