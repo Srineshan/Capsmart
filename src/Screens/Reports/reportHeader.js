@@ -33,17 +33,21 @@ const ReportHeader = () => {
             <div className={`${style.grid3WithoutGap} ${style.alignCenter}`}>
                 <div>
                     <div className={style.confidentialBoxStyle}>
-                        <div className={style.confidentialTextStyle}>CONFIDENTIAL</div>
-                        <div className={style.doNotDisturbTextStyle}>Do Not Distribute</div>
-                        <div className={style.doNotDisturbTextStyle}>Without Permission</div>
+                        <div className={`${style.confidentialTextStyle} ${style.textAlignCenter}`}>CONFIDENTIAL</div>
+                        <div className={`${style.doNotDisturbTextStyle} ${style.textAlignCenter}`}>Do Not Distribute</div>
+                        <div className={`${style.doNotDisturbTextStyle} ${style.textAlignCenter}`}>Without Permission</div>
                     </div>
                 </div>
-                <div className={style.centerAlignUsingBlock}>
-                    {logo.logo && (
-                        <img src={corsedLogo || logo?.logo} alt="" className={`${style.headerLogo} ${style.centerAlignUsingBlock}`} />
-                    )}
-                    <div className={`${style.entityNameBolderStyle}`}>{logo.title}</div>
-                    <div className={`${style.entityNameHeaderStyle}`}>{address}</div>
+                <div>
+                    <div className={`${style.centerAlignUsingBlock} ${style.textAlignCenter}`}>
+                        <div className={`${style.centerAlignUsingBlock}`}>
+                            {logo.logo && (
+                                <img src={corsedLogo || logo?.logo} alt="" className={`${style.headerLogo} ${style.textAlignCenter}`} />
+                            )}
+                        </div>
+                        <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter}`}>{logo.title}</div>
+                        <div className={`${style.entityNameHeaderStyle} ${style.textAlignCenter}`}>{address}</div>
+                    </div>
                 </div>
                 <div>
                     <div className={style.floatRight}>
