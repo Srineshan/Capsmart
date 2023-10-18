@@ -17,6 +17,7 @@ import CommonLabel from "../../Components/CommonFields/CommonLabel";
 import { valueCheck } from "./../../utils/valueCheck";
 
 import style from "./index.module.scss";
+import MissedMandatoryFieldAlert from "./missedMandatoryFieldAlert";
 
 const TEXTFIELDLEN50 = 50;
 const TEXTFIELDLEN100 = 100;
@@ -82,6 +83,8 @@ const ContractorBusinessEntity = ({
   const [allowAggregator, setAllowAggregator] = useState(false);
   const [selectedRoles, setSelectedRoles] = useState([]);
   const [continueLoading, setContinueLoading] = useState(false);
+  const [unassignedKeys, setUnassignedKeys] = useState([]);
+  const [showSaveInProgress, setShowSaveInProgress] = useState(false);
 
   useEffect(() => {
     getUserData();
@@ -161,7 +164,38 @@ const ContractorBusinessEntity = ({
 
   console.log(selectedRoles);
 
-  const handleContinue = async (buttonType) => {
+  const mandatoryFieldCheck = (buttonType) => {
+    if (buttonType === "SaveInProgress") {
+      saveInProgresscheck();
+    } else {
+      handleContinue("Continue");
+    }
+  };
+
+  const saveInProgresscheck = () => {
+    var keys = [];
+
+    if (mailingAddress?.addressLine === "") {
+      keys.push("Mailing Address");
+    }
+
+    setUnassignedKeys(keys);
+    if (keys?.length !== 0) {
+      setShowSaveInProgress(true);
+    } else {
+      handleContinue("SaveInProgress");
+    }
+  };
+
+  const saveInProgressFunction = () => {
+    handleContinue("SaveInProgress");
+  };
+
+  const getSaveInProgressAlert = (value) => {
+    setShowSaveInProgress(value);
+  };
+
+  const handleContinue = async (buttonText) => {
     if (
       (!businessEntity?.notApplicable &&
         EmptyStringCheck(
@@ -293,12 +327,14 @@ const ContractorBusinessEntity = ({
       }
       setContinueLoading(false);
 
-      if (buttonType === "Continue") {
+      if (buttonText === "Continue") {
         getViewPage5(true);
         getCurrentPage("Contracted Services Specification");
       } else {
         getShowAlert(true);
       }
+      setUnassignedKeys([]);
+
       getTabDataStatus();
     }
   };
@@ -982,7 +1018,7 @@ const ContractorBusinessEntity = ({
                   className={`${style.newContractOutlinedButton}  ${
                     style.cursorPointer
                   } ${continueLoading ? style.disabled : ""}`}
-                  onClick={() => handleContinue("Save In Progress")}
+                  onClick={() => mandatoryFieldCheck("SaveInProgress")}
                 >
                   SAVE IN-PROGRESS
                 </button>
@@ -993,7 +1029,7 @@ const ContractorBusinessEntity = ({
                     continueLoading ? style.disabled : ""
                   }`}
                   onClick={() => {
-                    handleContinue("Continue");
+                    mandatoryFieldCheck("Continue");
                   }}
                 >
                   CONTINUE
@@ -1011,6 +1047,13 @@ const ContractorBusinessEntity = ({
           buttonText={"ADD CONTRACTOR"}
         />
       )}
+
+      <MissedMandatoryFieldAlert
+        alert={showSaveInProgress}
+        getSaveInProgressAlert={getSaveInProgressAlert}
+        fieldData={unassignedKeys?.join(", ")}
+        saveInProgressFunction={saveInProgressFunction}
+      />
     </>
   );
 };

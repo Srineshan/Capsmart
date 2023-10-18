@@ -41,6 +41,7 @@ import style from "./index.module.scss";
 import { validateContractIDTermLimit } from "./contractValidation";
 import { valueCheck } from "./../../utils/valueCheck";
 import SaveInProgressAlert from "../SuperAdminDashboard/saveInProgressAlert";
+import MissedMandatoryFieldAlert from "./missedMandatoryFieldAlert";
 
 const TEXTFIELDLEN = 100;
 const DESCLEN = 250;
@@ -483,28 +484,6 @@ const ContractIdTermLimitIndividual = ({
       }
     }
 
-    let sites = getSiteData();
-
-    if (contractName === "") {
-      ErrorToaster("Contract Name is Mandatory");
-      return;
-    }
-    if (compensationPolicy === "") {
-      ErrorToaster("Compensation Policy is Mandatory");
-      return;
-    }
-    if (
-      departmentSpecific &&
-      sites?.some((data) => data?.departmentList?.departments?.length === 0)
-    ) {
-      ErrorToaster("Departments for all the selected Sites is Mandatory");
-      return;
-    }
-    if (selectContractManager === null || selectContractManager === undefined) {
-      ErrorToaster("Contract Manager is Mandatory");
-      return;
-    }
-
     if (buttonType === "SaveInProgress") {
       saveInProgresscheck();
     } else {
@@ -514,20 +493,20 @@ const ContractIdTermLimitIndividual = ({
 
   const saveInProgresscheck = () => {
     var keys = [];
-    if (contractName === "") {
-      keys.push("Contract Name");
-    }
-    if (compensationPolicy === "") {
-      keys.push("Compensation Policy");
-    }
+
     if (contractId?.id === "") {
       keys.push("Contract ID / Resolution No");
     }
-    if (selectContractManager === null || selectContractManager === undefined) {
-      keys.push("Contract Manager");
+    if (contractData?.contractManager?.name?.firstName === "") {
+      keys.push("Assigned Contract Manager");
+    }
+    if (contractTermPeriodFrom === "") {
+      keys.push("Contract Term Period");
+    }
+    if (contractedTimeCommitment?.value === "") {
+      keys.push("Contract Time Commitment");
     }
 
-    console.log(keys?.length, keys, "keys");
     setUnassignedKeys(keys);
     if (keys?.length !== 0) {
       setShowSaveInProgress(true);
@@ -535,8 +514,6 @@ const ContractIdTermLimitIndividual = ({
       addContract("SaveInProgress");
     }
   };
-
-  console.log("unassignedKeys", unassignedKeys);
 
   const saveInProgressFunction = () => {
     addContract("SaveInProgress");
@@ -547,7 +524,7 @@ const ContractIdTermLimitIndividual = ({
   };
 
   const addContract = async (buttonText) => {
-    // let sites = getSiteData();
+    let sites = getSiteData();
     // let conflictedData = checkSiteAndDepartment(contracts, sites, contractIdFromActive);
     // if (conflictedData?.length !== 0) {
     //   setConflict({ isPresent: true, conflict: conflictedData });
@@ -555,29 +532,29 @@ const ContractIdTermLimitIndividual = ({
     // if (conflictedData?.length === 0) {
     // setContinueLoading(true);
 
-    // if (contractName === "") {
-    //   ErrorToaster("Enter Contract Name to proceed");
-    //   setContinueLoading(false);
-    //   return;
-    // }
-    // if (compensationPolicy === "") {
-    //   ErrorToaster("Select a Compensation Policy to proceed");
-    //   setContinueLoading(false);
-    //   return;
-    // }
-    // if (
-    //   departmentSpecific &&
-    //   sites?.some((data) => data?.departmentList?.departments?.length === 0)
-    // ) {
-    //   ErrorToaster("Select Departments for all the selected Sites");
-    //   setContinueLoading(false);
-    //   return;
-    // }
-    // if (selectContractManager === null || selectContractManager === undefined) {
-    //   ErrorToaster("Select Contract Manager");
-    //   setContinueLoading(false);
-    //   return;
-    // }
+    if (contractName === "") {
+      ErrorToaster("Enter Contract Name to proceed");
+      setContinueLoading(false);
+      return;
+    }
+    if (compensationPolicy === "") {
+      ErrorToaster("Select a Compensation Policy to proceed");
+      setContinueLoading(false);
+      return;
+    }
+    if (
+      departmentSpecific &&
+      sites?.some((data) => data?.departmentList?.departments?.length === 0)
+    ) {
+      ErrorToaster("Select Departments for all the selected Sites");
+      setContinueLoading(false);
+      return;
+    }
+    if (selectContractManager === null || selectContractManager === undefined) {
+      ErrorToaster("Select Contract Manager");
+      setContinueLoading(false);
+      return;
+    }
 
     let contractFiles = [];
     fullyExecutedContract &&
@@ -1882,7 +1859,7 @@ const ContractIdTermLimitIndividual = ({
         </div>
       </Dialog>
 
-      <SaveInProgressAlert
+      <MissedMandatoryFieldAlert
         alert={showSaveInProgress}
         getSaveInProgressAlert={getSaveInProgressAlert}
         fieldData={unassignedKeys?.join(", ")}
