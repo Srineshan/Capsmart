@@ -34,6 +34,7 @@ import {
   ADMINISTRATIVE,
   PROCEDUREREADING,
   HOSPICE,
+  ONCALLSERVICE,
 } from "../../Constants";
 import Notes from "../../Components/Notes";
 import CommonSwitch from "../../Components/CommonFields/CommonSwitch";
@@ -41,7 +42,7 @@ import CommonLabel from "../../Components/CommonFields/CommonLabel";
 import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
 import ServiceConflict from "./serviceConflict";
 import { checkActivityChange } from "./checkDependentData";
-
+import OnCallService from './OnCallService';
 import style from "./index.module.scss";
 import { weekdays } from "moment";
 
@@ -953,28 +954,93 @@ const AddServiceProvided = ({
     }
     if (serviceTypeTemplate === ONCALL) {
       let temp = metadata?.additionalActivity;
-      activities = [];
-      metadata?.serviceDaysArray?.map((serviceDays) => {
-        if (serviceDays === "Weekdays" && metadata?.customizedSchedule) {
-          if (
-            metadata?.weekdayMin ||
-            metadata?.weekdayMax ||
-            metadata?.weekdayPayment !== 0
-          ) {
-            activities?.push({ activity: "Weekday Days" });
-          }
-          if (
-            metadata?.weekdayNightsMin ||
-            metadata?.weekdayNightsMax ||
-            metadata?.weekdayNightsPayment !== 0
-          ) {
-            activities?.push({ activity: "Weekday Nights" });
-          }
-        } else {
+      if (activities?.length === 0 && !metadata?.customizedSchedule) {
+        metadata?.serviceDaysArray?.map((serviceDays) => {
           activities?.push({ activity: serviceDays });
-        }
-      });
-      performingActivity = activities
+        });
+      }
+      console.log('customize log', metadata);
+      if (metadata?.customizedSchedule) {
+        activities = [];
+        metadata?.serviceDaysArray?.map((serviceDays) => {
+          console.log('Activity', activities)
+          if (serviceDays === "Weekdays") {
+            if
+              (metadata?.weekdayMin ||
+              metadata?.weekdayMax ||
+              metadata?.weekdayPayment !== 0
+            ) {
+
+              if (metadata?.weekdayActivity === '') {
+                console.log('inside weekday if');
+                if (!activities?.map(data => data?.activity).includes("Weekday Days")) {
+                  activities?.push({ activity: "Weekday Days" });
+                }
+              } else {
+                console.log('inside weekday else');
+                if (!activities?.map(data => data?.activity).includes(metadata?.weekdayActivity)) {
+                  activities?.push({ activity: metadata?.weekdayActivity });
+                }
+              }
+            }
+            if (
+              metadata?.weekdayNightsMin ||
+              metadata?.weekdayNightsMax ||
+              metadata?.weekdayNightsPayment !== 0
+            ) {
+              if (metadata?.weekdayNightActivity === '') {
+                console.log('inside weeknight if');
+                if (!activities?.map(data => data?.activity).includes("Weekday Nights")) {
+                  activities?.push({ activity: "Weekday Nights" });
+                }
+              } else {
+                console.log('inside weeknight else');
+                if (!activities?.map(data => data?.activity).includes(metadata?.weekdayNightActivity)) {
+                  activities?.push({ activity: metadata?.weekdayNightActivity })
+                }
+              }
+            }
+          }
+          if (
+            metadata?.weekendMin ||
+            metadata?.weekendMax ||
+            metadata?.weekendPayment !== 0
+          ) {
+            if (metadata?.weekendActivity === '') {
+              console.log('inside weekend if');
+              if (!activities?.map(data => data?.activity)?.includes("Weekend")) {
+                activities?.push({ activity: "Weekend" });
+              }
+            } else {
+              console.log('inside weekend else');
+              if (!activities?.map(data => data?.activity).includes(metadata?.weekendActivity)) {
+                activities?.push({ activity: metadata?.weekendActivity })
+              }
+            }
+          }
+          if (
+            metadata?.holidayMin ||
+            metadata?.holidayMax ||
+            metadata?.holidayPayment !== 0
+          ) {
+            if (metadata?.holidayActivity === '') {
+              console.log('inside holiday if');
+              if (!activities?.map(data => data?.activity).includes("Holiday")) {
+
+                activities?.push({ activity: "Holiday" });
+              }
+            } else {
+              console.log('inside holiday else');
+              if (!activities?.map(data => data?.activity).includes(metadata?.holidayActivity)) {
+                activities?.push({ activity: metadata?.holidayActivity })
+              }
+            }
+          }
+
+        });
+      }
+      performingActivity = activities?.map(data => data?.activity)?.join("-");
+      console.log('Performing Actiity', performingActivity, activities)
         ?.map((activity) => activity?.activity)
         ?.join("-");
       temp?.map((activity) => {
@@ -1042,7 +1108,7 @@ const AddServiceProvided = ({
           ?.map((data) => data?.activity)
           ?.join("-");
       }
-      if (activities?.length === 0 && serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE) {
+      if (activities?.length === 0 && serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE && serviceTypeTemplate !== ONCALL) {
         let message =
           serviceTypeTemplate === SUPPLEMENTAL
             ? "Supplement Services"
@@ -1082,7 +1148,7 @@ const AddServiceProvided = ({
             activity: performingActivity,
           },
           activities: activities,
-          ...(((serviceTypeTemplate === SUPPLEMENTAL &&
+          ...((((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ONCALLSERVICE) &&
             !dataValues?.dedicatedHoursSpecified) ||
             (serviceTypeTemplate === ADMINISTRATIVE &&
               !dataValues?.dedicatedHoursSpecified)) && {
@@ -1156,7 +1222,7 @@ const AddServiceProvided = ({
               },
             ],
           }),
-          ...(serviceTypeTemplate !== SUPPLEMENTAL && {
+          ...(serviceTypeTemplate !== SUPPLEMENTAL && serviceTypeTemplate !== ONCALLSERVICE && {
             additionalSchedule: {
               value: parseFloat(dataValues?.additionalScheduleValue),
               frequency: dataValues?.additionalScheduleFrequency,
@@ -1187,12 +1253,13 @@ const AddServiceProvided = ({
           payableAmount: {
             value: parseFloat(dataValues?.sessionAmount),
           },
-          ...((serviceTypeTemplate === SUPPLEMENTAL ||
+          professionalServiceRequired: dataValues?.professionalServiceRequired || false,
+          ...((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ONCALLSERVICE ||
             serviceTypeTemplate === ADMINISTRATIVE) &&
             dataValues?.dedicatedHoursSpecified && {
             hourlyRate: {
               value:
-                serviceTypeTemplate === SUPPLEMENTAL &&
+                (serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ONCALLSERVICE) &&
                   dataValues?.totalSession === 0
                   ? Number(dataValues?.sessionAmount)?.toFixed(2)
                   : Number(
@@ -1201,7 +1268,7 @@ const AddServiceProvided = ({
             },
           }),
           ...((serviceTypeTemplate === SUPPLEMENTAL ||
-            serviceTypeTemplate === ADMINISTRATIVE) &&
+            serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === ONCALLSERVICE) &&
             !dataValues?.dedicatedHoursSpecified && {
             hourlyRate: {
               value: dataValues?.hourlyRate,
@@ -1262,13 +1329,18 @@ const AddServiceProvided = ({
                     frequency: dataValues?.weekdayFrequency,
                   },
                   duration: {
-                    hours: parseInt(dataValues?.weekdayDuration),
+                    hours: parseFloat(dataValues?.weekdayDuration),
+                  },
+                  activity: {
+                    activity: dataValues?.weekdayActivity
                   },
                   payableAmount: {
                     value: parseFloat(dataValues?.weekdayPayment),
                   },
                   hourlyRate: {
-                    value: (
+                    value: isNaN(
+                      dataValues?.weekdayPayment / dataValues?.weekdayDuration
+                    ) ? 0 : (
                       dataValues?.weekdayPayment / dataValues?.weekdayDuration
                     )?.toFixed(2),
                   },
@@ -1291,13 +1363,19 @@ const AddServiceProvided = ({
                     frequency: dataValues?.weekdayNightsFrequency,
                   },
                   duration: {
-                    hours: parseInt(dataValues?.weekdayNightsDuration),
+                    hours: parseFloat(dataValues?.weekdayNightsDuration),
+                  },
+                  activity: {
+                    activity: dataValues?.weekdayNightActivity
                   },
                   payableAmount: {
                     value: parseFloat(dataValues?.weekdayNightsPayment),
                   },
                   hourlyRate: {
-                    value: (
+                    value: isNaN(
+                      dataValues?.weekdayNightsPayment /
+                      dataValues?.weekdayNightsDuration
+                    ) ? 0 : (
                       dataValues?.weekdayNightsPayment /
                       dataValues?.weekdayNightsDuration
                     )?.toFixed(2),
@@ -1327,13 +1405,18 @@ const AddServiceProvided = ({
                     frequency: dataValues?.weekendFrequency,
                   },
                   duration: {
-                    hours: parseInt(dataValues?.weekendDuration),
+                    hours: parseFloat(dataValues?.weekendDuration),
+                  },
+                  activity: {
+                    activity: dataValues?.weekendActivity,
                   },
                   payableAmount: {
                     value: parseFloat(dataValues?.weekendPayment),
                   },
                   hourlyRate: {
-                    value: (
+                    value: isNaN(
+                      dataValues?.weekendPayment / dataValues?.weekendDuration
+                    ) ? 0 : (
                       dataValues?.weekendPayment / dataValues?.weekendDuration
                     )?.toFixed(2),
                   },
@@ -1357,13 +1440,18 @@ const AddServiceProvided = ({
                     frequency: dataValues?.holidayFrequency,
                   },
                   duration: {
-                    hours: parseInt(dataValues?.holidayDuration),
+                    hours: parseFloat(dataValues?.holidayDuration),
+                  },
+                  activity: {
+                    activity: dataValues?.holidayActivity
                   },
                   payableAmount: {
                     value: parseFloat(dataValues?.holidayPayment),
                   },
                   hourlyRate: {
-                    value: (
+                    value: isNaN(
+                      dataValues?.holidayPayment / dataValues?.holidayDuration
+                    ) ? 0 : (
                       dataValues?.holidayPayment / dataValues?.holidayDuration
                     )?.toFixed(2),
                   },
@@ -1396,7 +1484,7 @@ const AddServiceProvided = ({
             (serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE)
               ? dataValues?.locationSpecified
               : showLocation,
-          dedicatedHoursSpecified: [SUPPLEMENTAL, ADMINISTRATIVE].includes(
+          dedicatedHoursSpecified: [SUPPLEMENTAL, ADMINISTRATIVE, ONCALLSERVICE].includes(
             serviceTypeTemplate
           )
             ? dataValues?.dedicatedHoursSpecified
@@ -1413,7 +1501,8 @@ const AddServiceProvided = ({
             !(
               serviceTypeTemplate === SUPPLEMENTAL &&
               !metadata?.dedicatedHoursSpecified
-            ) && {
+            ) &&
+            !(serviceTypeTemplate === ONCALLSERVICE && !metadata?.dedicatedHoursSpecified) && {
             compensationReductionApplicable: reducedOffsetApplicable,
           }),
         },
@@ -1486,7 +1575,8 @@ const AddServiceProvided = ({
         }
         if (
           conflictData?.type === SUPPLEMENTAL ||
-          conflictData?.type === ADMINISTRATIVE
+          conflictData?.type === ADMINISTRATIVE ||
+          conflictData?.type === ONCALLSERVICE
         ) {
           services[conflictedIndex].hoursBorrowed = {
             activityType: {
@@ -2036,7 +2126,9 @@ const AddServiceProvided = ({
                     !(
                       serviceTypeTemplate === SUPPLEMENTAL &&
                       !metadata?.dedicatedHoursSpecified
-                    ) && (
+                    ) &&
+                    !(serviceTypeTemplate === ONCALLSERVICE && !metadata?.dedicatedHoursSpecified) &&
+                    (
                       <div
                         className={`${style.addManagerGrid} ${style.marginTop20}`}
                       >
@@ -2054,8 +2146,7 @@ const AddServiceProvided = ({
                   {serviceTypeTemplate !== ADMINISTRATIVE &&
                     serviceTypeTemplate !== ADDON &&
                     serviceTypeTemplate !== HOSPICE &&
-                    serviceTypeTemplate !== SUPPLEMENTAL &&
-                    serviceTypeTemplate !== ONCALL && (
+                    serviceTypeTemplate !== SUPPLEMENTAL && (
                       <div>
                         <div
                           className={`${style.addManagerGrid} ${style.marginTop20} `}
@@ -2203,56 +2294,58 @@ const AddServiceProvided = ({
                       isReset={isReset}
                       getIsReset={getIsReset}
                     />
-                  ) : serviceTypeTemplate === ADDON ? (
-                    <AddonClinicFields
-                      getMetaData={getMetaData}
-                      services={contractedServices}
-                      locationItems={locationItems}
-                      getNewLocation={getNewLocation}
-                      locationToAdd={locationToAdd}
-                      serviceSelected={selectedService}
-                      editService={editService}
-                      isReset={isReset}
-                      getIsReset={getIsReset}
-                      sites={siteList}
-                      contractId={contractId}
-                    />
-                  ) : serviceTypeTemplate === HOSPICE ? (
-                    <HospiceService
-                      getMetaData={getMetaData}
-                      services={contractedServices}
-                      locationItems={locationItems}
-                      getNewLocation={getNewLocation}
-                      locationToAdd={locationToAdd}
-                      serviceSelected={selectedService}
-                      editService={editService}
-                      isReset={isReset}
-                      getIsReset={getIsReset}
-                      sites={siteList}
-                      contractId={contractId}
-                    />
-                  ) : serviceTypeTemplate === PROCEDUREREADING ? (
-                    <ProcedureReading
-                      getMetaData={getMetaData}
-                      serviceSelected={selectedService}
-                      timeCommitment={timeCommitment}
-                      contractTermPeriod={contractTermPeriod}
-                      isReset={isReset}
-                      getIsReset={getIsReset}
-                      editService={editService}
-                    />
-                  ) : (
-                    <AdministrativeFields
-                      getMetaData={getMetaData}
-                      services={contractedServices}
-                      serviceSelected={selectedService}
-                      editService={editService}
-                      isReset={isReset}
-                      getIsReset={getIsReset}
-                      sites={siteList}
-                      contractId={contractId}
-                    />
-                  )}
+                  ) : serviceTypeTemplate === ONCALLSERVICE
+                    ? <OnCallService getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} isReset={isReset} getIsReset={getIsReset} />
+                    : serviceTypeTemplate === ADDON ? (
+                      <AddonClinicFields
+                        getMetaData={getMetaData}
+                        services={contractedServices}
+                        locationItems={locationItems}
+                        getNewLocation={getNewLocation}
+                        locationToAdd={locationToAdd}
+                        serviceSelected={selectedService}
+                        editService={editService}
+                        isReset={isReset}
+                        getIsReset={getIsReset}
+                        sites={siteList}
+                        contractId={contractId}
+                      />
+                    ) : serviceTypeTemplate === HOSPICE ? (
+                      <HospiceService
+                        getMetaData={getMetaData}
+                        services={contractedServices}
+                        locationItems={locationItems}
+                        getNewLocation={getNewLocation}
+                        locationToAdd={locationToAdd}
+                        serviceSelected={selectedService}
+                        editService={editService}
+                        isReset={isReset}
+                        getIsReset={getIsReset}
+                        sites={siteList}
+                        contractId={contractId}
+                      />
+                    ) : serviceTypeTemplate === PROCEDUREREADING ? (
+                      <ProcedureReading
+                        getMetaData={getMetaData}
+                        serviceSelected={selectedService}
+                        timeCommitment={timeCommitment}
+                        contractTermPeriod={contractTermPeriod}
+                        isReset={isReset}
+                        getIsReset={getIsReset}
+                        editService={editService}
+                      />
+                    ) : (
+                      <AdministrativeFields
+                        getMetaData={getMetaData}
+                        services={contractedServices}
+                        serviceSelected={selectedService}
+                        editService={editService}
+                        isReset={isReset}
+                        getIsReset={getIsReset}
+                        sites={siteList}
+                        contractId={contractId}
+                      />
+                    )}
                 </div>
               </div>
             ) : (

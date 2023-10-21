@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import timeSmartAI from './../../images/timeSmartAI-logo.jpeg';
+import timeSmartAI from './../../images/timeSmartAILogo.png';
 import logo from './../../images/metropolitan-hospital-logo.png';
 import NotificationsIcon from './../../images/notificationsIcon.png';
 import PrintIcon from './../../images/printIcon.png';
