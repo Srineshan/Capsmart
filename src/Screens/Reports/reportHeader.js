@@ -24,7 +24,8 @@ const ReportHeader = () => {
         const { data: data } = await GET(`entity-service/entity/${TenantID}`);
         setLogo({ logo: data?.logo?.file?.fileURL, title: data?.entityName?.entityName });
         // setCorsedLogo(`https://cors-anywhere-solai.fly.dev/${data?.logo?.file?.fileURL}`);
-        setCorsedLogo(`http://app.mytimesmart.com:4000/${data?.logo?.file?.fileURL}`);
+        // setCorsedLogo(`http://app.mytimesmart.com:4000/${data?.logo?.file?.fileURL}`);
+        setCorsedLogo(`${data?.logo?.file?.fileURL}`);
         setAddress(`${data?.sites?.[0]?.address?.addressLine}, ${data?.sites?.[0]?.address?.city}, ${data?.sites?.[0]?.address?.state}, ${data?.sites?.[0]?.address?.zipcode}.`)
     }
 
@@ -33,17 +34,21 @@ const ReportHeader = () => {
             <div className={`${style.grid3WithoutGap} ${style.alignCenter}`}>
                 <div>
                     <div className={style.confidentialBoxStyle}>
-                        <div className={style.confidentialTextStyle}>CONFIDENTIAL</div>
-                        <div className={style.doNotDisturbTextStyle}>Do Not Distribute</div>
-                        <div className={style.doNotDisturbTextStyle}>Without Permission</div>
+                        <div className={`${style.confidentialTextStyle} ${style.textAlignCenter}`}>CONFIDENTIAL</div>
+                        <div className={`${style.doNotDisturbTextStyle} ${style.textAlignCenter}`}>Do Not Distribute</div>
+                        <div className={`${style.doNotDisturbTextStyle} ${style.textAlignCenter}`}>Without Permission</div>
                     </div>
                 </div>
-                <div className={style.centerAlignUsingBlock}>
-                    {logo.logo && (
-                        <img src={corsedLogo || logo?.logo} alt="" className={`${style.headerLogo} ${style.centerAlignUsingBlock}`} />
-                    )}
-                    <div className={`${style.entityNameBolderStyle}`}>{logo.title}</div>
-                    <div className={`${style.entityNameHeaderStyle}`}>{address}</div>
+                <div>
+                    <div className={`${style.centerAlignUsingBlock} ${style.textAlignCenter}`}>
+                        <div className={`${style.centerAlignUsingBlock}`}>
+                            {logo.logo && (
+                                <img src={corsedLogo || logo?.logo} alt="" className={`${style.headerLogo} ${style.textAlignCenter}`} />
+                            )}
+                        </div>
+                        <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter}`}>{logo.title}</div>
+                        <div className={`${style.entityNameHeaderStyle} ${style.textAlignCenter}`}>{address}</div>
+                    </div>
                 </div>
                 <div>
                     <div className={style.floatRight}>
