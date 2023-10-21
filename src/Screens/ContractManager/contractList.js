@@ -307,7 +307,7 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
       reviews.push('1/1');
       approvals.push('3/3');
       goLiveDate.push('07/19/2019');
-      activationStatus.push('Not Activated');
+      activationStatus.push(data?.contractStatus === 'ACTIVATION_READY' ? 'Activation pending' : 'Not Activated');
       icon.push(<TextSnippetOutlinedIcon style={{ color: '#F94848' }} />);
       iconHoverText.push('No Document Uploaded');
       effectiveDate.push(format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy'));

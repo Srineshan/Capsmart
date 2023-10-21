@@ -51,6 +51,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         totalSession: '0',
         totalSessionFrequency: 'NA',
         sessionAmount: '0',
+        hourlyRate: '0',
         sessionDuration: '0',
         serviceDays: {
             tuesday: false,
@@ -111,6 +112,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
             totalSession: '0',
             totalSessionFrequency: 'NA',
             sessionAmount: '0',
+            hourlyRate: '0',
             sessionDuration: '0',
             serviceDays: {
                 tuesday: false,
@@ -151,6 +153,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                 workingTimeTo: GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
                 serviceDays: serviceSelected?.serviceDays,
                 sessionAmount: serviceSelected?.payableAmount?.value,
+                hourlyRate: (serviceSelected?.payableAmount?.value / serviceSelected?.duration?.hours) || 0,
                 sessionDuration: serviceSelected?.duration?.hours || '0',
                 workflowId: serviceSelected?.workFlow?.id,
                 workflowName: serviceSelected?.workFlow?.workFlowName?.name,
@@ -178,7 +181,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
     }
 
     const getAdminActivityList = async () => {
-        const { data: adminActivityList } = await GET(`contract-managment-service/contracts/adminActivity`);
+        const { data: adminActivityList } = await GET(`contract-managment-service/contracts/clinicalInformativeActivity`);
         setActivity(adminActivityList);
     }
 
@@ -192,6 +195,9 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         }
         else {
             setMetadata({ ...metadata, [name]: value });
+        }
+        if (name === 'sessionAmount') {
+            setMetadata({ ...metadata, sessionAmount: value, hourlyRate: (value / metadata?.sessionDuration) || '0' })
         }
     }
 
@@ -215,7 +221,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
             "billable": adminActivity?.billable,
             "asNeeded": adminActivity?.asNeeded,
         }
-        await POST(`contract-managment-service/contracts/adminActivity`, data)
+        await POST(`contract-managment-service/contracts/clinicalInformativeActivity`, data)
             .then(response => {
                 SuccessToaster('Activity Added to List');
                 getAdminActivityList();
@@ -401,7 +407,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                     }}
                                     onChange={(e) => e.target.value >= 0 && handleValueChange('sessionAmount', (e.target.value).slice(0, 6))}
-                                    value={metadata?.sessionAmount}
+                                    value={metadata?.hourlyRate}
                                 />
                             </div>
                             {/* <div className={style.verticalAlignCenter}>
@@ -411,7 +417,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                     </div>
 
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        <CommonLabel value='NTE Contract Yearly Amount*' />
+                        <CommonLabel value='Mileage Rate*' />
                         <div className={`${style.displayInRow}`}>
                             <div className={`${style.threeFieldWidth}`}>
                                 <CommonTextField
@@ -435,7 +441,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                 <CommonLabel value='Allowable Clinical Informative / HIT Duties & Function To Perform' />
                 <div>
 
-                    <div className={`${style.displayInRow} ${style.marginBottom10}`}>
+                    {/* <div className={`${style.displayInRow} ${style.marginBottom10}`}>
                         <CommonCheckBox className={`${style.marginLeft10}`} label="Epic 8 Training" />
                         <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>
                         <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>
@@ -445,9 +451,9 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                         <CommonCheckBox className={`${style.marginLeft10}`} label="Epic 8 Implementation" />
                         <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>
                         <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>
-                    </div>
+                    </div> */}
 
-                    {/* {
+                    {
                         activity?.map((data, index) => (
                             <div className={`${style.displayInRow} ${style.marginBottom10}`}>
                                 {metadata?.selectedActivities?.map(activities => activities?.id)?.includes(data?.id) ? (
@@ -493,7 +499,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                             </div>
 
                         ))
-                    } */}
+                    }
                 </div>
             </div>
 

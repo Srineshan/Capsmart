@@ -800,7 +800,7 @@ const AddServiceProvided = ({
       } else {
         handleSave(buttonType);
       }
-    } else if (serviceTypeTemplate === ADMINISTRATIVE) {
+    } else if (serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === HIT) {
       let data = metadata;
       if (data?.approver !== undefined) {
         let workFlowData;
@@ -938,7 +938,8 @@ const AddServiceProvided = ({
       serviceTypeTemplate !== SUPPLEMENTAL &&
       serviceTypeTemplate !== ADDON &&
       serviceTypeTemplate !== HOSPICE &&
-      serviceTypeTemplate !== ADMINISTRATIVE
+      serviceTypeTemplate !== ADMINISTRATIVE &&
+      serviceTypeTemplate !== HIT
     ) {
       performingActivity = selectedActivity
         ?.map((data) => data?.activity?.activity)
@@ -947,7 +948,7 @@ const AddServiceProvided = ({
         activities?.push({ activity: data?.activity?.activity });
       });
     }
-    if (serviceTypeTemplate === ADMINISTRATIVE) {
+    if (serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === HIT) {
       performingActivity = metadata?.selectedActivities
         ?.map((data) => data?.activity)
         ?.join("-");
@@ -1117,14 +1118,14 @@ const AddServiceProvided = ({
             ? "Supplement Services"
             : serviceTypeTemplate === ADMINISTRATIVE
               ? "Allowable Administrative Duties"
-              : "Activity To Be Performed";
+              : serviceTypeTemplate === HIT
+                ? "Allowable Clinical Informative / HIT Duties"
+                : "Activity To Be Performed";
         ErrorToaster(
           `Atleast One ${message} needs to be added to create a service`
         );
         return;
       }
-
-      console.log("Activities On call", activities);
 
       data = [
         {
@@ -1154,7 +1155,8 @@ const AddServiceProvided = ({
           ...((((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ONCALLSERVICE) &&
             !dataValues?.dedicatedHoursSpecified) ||
             (serviceTypeTemplate === ADMINISTRATIVE &&
-              !dataValues?.dedicatedHoursSpecified)) && {
+              !dataValues?.dedicatedHoursSpecified) || (serviceTypeTemplate === HIT &&
+                !dataValues?.dedicatedHoursSpecified)) && {
             hoursBorrowed: {
               activityType: {
                 activityType: dataValues?.dedicatedHoursActivityType || "",
@@ -1238,7 +1240,7 @@ const AddServiceProvided = ({
               ...(serviceTypeTemplate === ONCALL && {
                 onCallCoverageFor: dataValues?.onCallCoverageFor,
               }),
-              ...(serviceTypeTemplate === ADMINISTRATIVE && {
+              ...((serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === HIT) && {
                 adminActivities: dataValues?.selectedActivities,
               }),
               ...((serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE) && {
@@ -1258,7 +1260,7 @@ const AddServiceProvided = ({
           },
           professionalServiceRequired: dataValues?.professionalServiceRequired || false,
           ...((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ONCALLSERVICE ||
-            serviceTypeTemplate === ADMINISTRATIVE) &&
+            serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === HIT) &&
             dataValues?.dedicatedHoursSpecified && {
             hourlyRate: {
               value:
@@ -1271,7 +1273,7 @@ const AddServiceProvided = ({
             },
           }),
           ...((serviceTypeTemplate === SUPPLEMENTAL ||
-            serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === ONCALLSERVICE) &&
+            serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === ONCALLSERVICE || serviceTypeTemplate === HIT) &&
             !dataValues?.dedicatedHoursSpecified && {
             hourlyRate: {
               value: dataValues?.hourlyRate,
@@ -1472,7 +1474,7 @@ const AddServiceProvided = ({
               .toString(),
           },
           ...((serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE ||
-            serviceTypeTemplate === ADMINISTRATIVE) && {
+            serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === HIT) && {
             workFlow: dataValues?.workFlow,
           }),
           patientMRNRequired: dataValues?.patientMRNRequired || false,
@@ -1487,7 +1489,7 @@ const AddServiceProvided = ({
             (serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE)
               ? dataValues?.locationSpecified
               : showLocation,
-          dedicatedHoursSpecified: [SUPPLEMENTAL, ADMINISTRATIVE, ONCALLSERVICE].includes(
+          dedicatedHoursSpecified: [SUPPLEMENTAL, ADMINISTRATIVE, HIT, ONCALLSERVICE].includes(
             serviceTypeTemplate
           )
             ? dataValues?.dedicatedHoursSpecified
@@ -1499,6 +1501,10 @@ const AddServiceProvided = ({
           ...((serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE) &&
             !(
               serviceTypeTemplate === ADMINISTRATIVE &&
+              !metadata?.dedicatedHoursSpecified
+            ) &&
+            !(
+              serviceTypeTemplate === HIT &&
               !metadata?.dedicatedHoursSpecified
             ) &&
             !(
@@ -1579,6 +1585,7 @@ const AddServiceProvided = ({
         if (
           conflictData?.type === SUPPLEMENTAL ||
           conflictData?.type === ADMINISTRATIVE ||
+          conflictData?.type === HIT ||
           conflictData?.type === ONCALLSERVICE
         ) {
           services[conflictedIndex].hoursBorrowed = {
@@ -2124,6 +2131,10 @@ const AddServiceProvided = ({
                     (serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE) &&
                     !(
                       serviceTypeTemplate === ADMINISTRATIVE &&
+                      !metadata?.dedicatedHoursSpecified
+                    ) &&
+                    !(
+                      serviceTypeTemplate === HIT &&
                       !metadata?.dedicatedHoursSpecified
                     ) &&
                     !(
