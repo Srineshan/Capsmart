@@ -2352,21 +2352,8 @@ const AddServiceProvided = ({
                         editService={editService}
                       />
                     ) :
-                      // serviceTypeTemplate === HIT ? (
-                      //   <HITService
-                      //     getMetaData={getMetaData}
-                      //     services={contractedServices}
-                      //     serviceSelected={selectedService}
-                      //     editService={editService}
-                      //     isReset={isReset}
-                      //     getIsReset={getIsReset}
-                      //     sites={siteList}
-                      //     contractId={contractId}
-                      //   />
-                      // )
-                      //   :
-                      (
-                        <AdministrativeFields
+                      serviceTypeTemplate === HIT ? (
+                        <HITService
                           getMetaData={getMetaData}
                           services={contractedServices}
                           serviceSelected={selectedService}
@@ -2376,7 +2363,20 @@ const AddServiceProvided = ({
                           sites={siteList}
                           contractId={contractId}
                         />
-                      )}
+                      )
+                        :
+                        (
+                          <AdministrativeFields
+                            getMetaData={getMetaData}
+                            services={contractedServices}
+                            serviceSelected={selectedService}
+                            editService={editService}
+                            isReset={isReset}
+                            getIsReset={getIsReset}
+                            sites={siteList}
+                            contractId={contractId}
+                          />
+                        )}
                 </div>
               </div>
             ) : (
