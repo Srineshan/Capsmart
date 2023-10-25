@@ -5,10 +5,15 @@ import FormControl from '@mui/material/FormControl';
 import InputAdornment from '@mui/material/InputAdornment';
 import AddIcon from '@mui/icons-material/Add';
 import Select from '@mui/material/Select';
+import { TextArea, Icon, Dialog, Classes, Intent } from '@blueprintjs/core';
+import Tooltip from '@mui/material/Tooltip';
+import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
+import TextField from '@mui/material/TextField';
 import { GET, TenantID, POST } from './../dataSaver';
 import { TimePicker } from "@blueprintjs/datetime";
 import { GetDateFromHours } from './../../utils/formatting';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+import { sub, add } from 'date-fns';
 import { CLINIC, SURGERY, ONCALL, PROCEDUREREADING } from '../../Constants';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
 import CommonInputField from '../../Components/CommonFields/CommonInputField';
@@ -16,9 +21,13 @@ import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
 import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
 import CommonTextField from '../../Components/CommonFields/CommonTextField';
 import CommonLabel from '../../Components/CommonFields/CommonLabel';
+import CommonDateField from '../../Components/CommonFields/CommonDateField';
 
 import style from './index.module.scss';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
+
+const TEXTFIELDLEN = 100;
+const DESCLEN = 250;
 
 const HITService = ({ getMetaData, services, serviceSelected, editService, isReset, getIsReset, sites, contractId }) => {
     const [activity, setActivity] = useState([]);
@@ -35,6 +44,17 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         asNeeded: false,
     });
     const [editAdminActivitySelected, setEditAdminActivitySelected] = useState(false);
+    const [serviceAgreementOnFile, setServiceAgreementOnFile] = useState(false);
+    const [fileFields, setFileFields] = useState([]);
+    const [fileFieldData, setFileFieldData] = useState({ id: '', type: '', name: '', desc: '', fileName: '', file: null, filePath: '' });
+    const [fullyExecutedContractData, setFullyExecutedContractData] = useState([]);
+    const [isShowUploadDialog, setIsShowUploadDialog] = useState(false);
+    const [fileItems, setFileItems] = useState([]);
+    const [calendarStart, setCalendarStart] = useState(false);
+    const [calendarEnd, setCalendarEnd] = useState(false);
+    const [contractTermPeriodFrom, setContractTermPeriodFrom] = useState(null);
+    const [contractTermPeriodTo, setContractTermPeriodTo] = useState(null);
+    const contractStatus = sessionStorage.getItem('Selected Contract Status');
 
     let specificDedicatedHoursList = [];
     services?.filter(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => {
@@ -96,13 +116,74 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
 
     useEffect(() => {
         getMetaData(metadata);
+        // let fileData = [];
+        //   contractDetail?.contractFiles?.map(data => {
+        //     fileData.push({ id: data?.id, type: data?.documentType, name: data?.documentName, desc: data?.documentDescription, fileName: data?.fileName, file: null, filePath: data?.fileURL })
+        //   })
+        //   setFileFields(fileData);
     }, [metadata])
+
+    useEffect(() => {
+        getFileData();
+    }, [fullyExecutedContractData])
 
     useEffect(() => {
         getTimeSheetWorkFlow();
         getUserData();
         getAdminActivityList();
+        getFileData();
     }, [])
+
+    const changeContractFile = (value) => {
+        if (serviceAgreementOnFile?.length === 0 || value) {
+            setServiceAgreementOnFile(value);
+        }
+    }
+
+    const handleFileUpload = (e) => {
+        if (fullyExecutedContractData?.filter(data => data?.fileName === e.target.files?.[0]?.name)?.length !== 0) {
+            ErrorToaster('File already exist from previous upload in this contract');
+            return;
+        } else {
+            setFileFieldData({ ...fileFieldData, file: e.target.files[0], fileName: e.target.files?.[0]?.name });
+        }
+    }
+
+    const addNewDocumentField = () => {
+        let temp = fullyExecutedContractData;
+        temp.push(fileFieldData);
+        setFileFields(temp);
+        setFullyExecutedContractData(temp);
+        setFileFieldData({ id: '', type: '', name: '', desc: '', fileName: '', file: null, filePath: '' });
+        getFileData();
+    }
+
+    const handleFileChange = (e, name) => {
+        setFileFieldData({ ...fileFieldData, [name]: e.target.value });
+    }
+
+    const getFileData = () => {
+        let temp = [];
+        console.log('entered', fullyExecutedContractData)
+        for (let i = 0; i < fullyExecutedContractData?.length || 0; i++) {
+            temp[i] = (
+                <div className={`${style.documentCard} ${style.marginTop10}`} key={i}>
+                    <div className={`${style.documentGrid}`}>
+                        <a href={fullyExecutedContractData?.[i]?.filePath} target="_blank">
+                            <Tooltip title={'Preview'} arrow>
+                                <ArticleOutlinedIcon sx={{ color: '#b0a9ef', fontSize: 35 }} />
+                            </Tooltip>
+                        </a>
+                        <div className={style.marginTop}>
+                            <p className={`${style.documentTextActive} ${style.leftAlign} ${style.removeUnderline}`} ><strong>{fullyExecutedContractData?.[i]?.type}</strong></p>
+                            <p className={`${style.documentTextActive} ${style.leftAlign}`}><strong>{fullyExecutedContractData?.[i]?.fileName}</strong></p>
+                        </div>
+                    </div>
+                </div>
+            )
+        }
+        setFileItems(temp);
+    }
 
     const resetMetadata = () => {
         setMetadata({
@@ -613,6 +694,95 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                <CommonLabel value='Service Agreement On File*' />
+                <div>
+                    <div>
+                        <div className={`${style.spaceBetween}`}>
+                            <CommonSwitch checked={serviceAgreementOnFile} className={`${style.switchFontStyle} ${style.flexLeft}`}
+                                label={serviceAgreementOnFile ? 'YES' : "NO"}
+                                onChange={() => changeContractFile(!serviceAgreementOnFile)}
+                            />
+                            {serviceAgreementOnFile && (
+                                <div>
+                                    <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} `}>
+                                        <label for="file-upload" className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${contractStatus === "ACTIVE" ? style.disabledUploadButton : ''}`}>
+                                            Upload File
+                                        </label>
+                                    </button>
+                                    <input id="file-upload" type="file" accept="image/*, .pdf" onChange={(e) => { handleFileUpload(e); setIsShowUploadDialog(true) }} disabled={contractStatus === "ACTIVE" ? true : false} />
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                    <div>
+                        {fileItems}
+                    </div>
+                </div>
+            </div>
+
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                <CommonLabel value='Effective Date*' />
+                <div className={style.termPeriodGrid}>
+                    <div>
+                        <CommonDateField
+                            open={calendarStart}
+                            onOpen={() => setCalendarStart(true)}
+                            onClose={() => setCalendarStart(false)}
+                            minDate={sub(new Date(), { years: 3 })}
+                            maxDate={add(new Date(), { months: 6 })}
+                            value={contractTermPeriodFrom}
+                            onChange={(newValue) => {
+                                setContractTermPeriodFrom(newValue);
+                            }}
+                            InputProps={{
+                                style: {
+                                    fontSize: 14,
+                                    height: 30,
+                                },
+                                // onFocus: e => {
+                                //   setCalendarStart(true);
+                                // },
+                                // onBlur: e => {
+                                //   setCalendarStart(false);
+                                // }
+                            }}
+                            renderInput={(params) => <TextField {...params}
+                                // onClick={() => setCalendarStart(true)}
+                                inputProps={{
+                                    ...params.inputProps,
+                                    placeholder: "Start Date"
+                                }} />}
+                        />
+                    </div>
+                    <p className={`${style.toStyle} ${style.alignCenter}`}>To</p>
+                    <div>
+                        <CommonDateField
+                            open={calendarEnd}
+                            onOpen={() => setCalendarEnd(true)}
+                            onClose={() => setCalendarEnd(false)}
+                            value={contractTermPeriodTo}
+                            onChange={(newValue) => {
+                                setContractTermPeriodTo(newValue);
+                            }}
+                            InputProps={{
+                                style: {
+                                    fontSize: 14,
+                                    height: 30,
+                                },
+                            }}
+                            minDate={contractTermPeriodFrom}
+                            maxDate={add(new Date(), { years: 5 })}
+                            renderInput={(params) => <TextField  {...params}
+                                inputProps={{
+                                    ...params.inputProps,
+                                    placeholder: "End Date"
+                                }} />}
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Allowable Working Day Hours For Service*' />
                 <div className={style.displayInRow}>
                     <TimePicker
@@ -652,7 +822,46 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                         disabledList={title?.map(data => false)} />
                 </div>
             }
-
+            <Dialog isOpen={isShowUploadDialog} onClose={() => setIsShowUploadDialog(false)} className={`${style.cloneDialog} ${style.dialogPaddingBottom}`} canOutsideClickClose={false}>
+                <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
+                    <div className={style.spaceBetween}>
+                        <p className={style.extensionStyle}>ADD FILE DETAILS</p>
+                        <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => setIsShowUploadDialog(false)} />
+                    </div>
+                    <div className={style.extensionBorder}></div>
+                    {/* {fullyExecutedContract && ( */}
+                    <div>
+                        <p className={`${style.fileNameTextStyle} ${style.marginTop10}`}>{fileFieldData?.fileName}</p>
+                        <div>
+                            <CommonSelectField value={fileFieldData?.type || 'Select...'} onChange={(e) => handleFileChange(e, 'type')}
+                                className={`${style.fullWidth}`} firstOptionLabel={'Select...'} firstOptionValue={'Select...'}
+                                valueList={['Agreement Draft', 'Executed Agreement', 'Contract Amendment', 'Exhibit', 'Appendix Addendum', 'Schedule', 'Attachment']}
+                                labelList={['Agreement Draft', 'Executed Agreement', 'Contract Amendment', 'Exhibit', 'Appendix Addendum', 'Schedule', 'Attachment']}
+                                disabledList={[false, false]} />
+                        </div>
+                        <CommonInputField className={`${style.fullWidth} ${style.marginTop10}`} placeholder="Document Name"
+                            value={fileFieldData?.name}
+                            maxLength={TEXTFIELDLEN}
+                            onChange={(e) => handleFileChange(e, 'name')} />
+                        <TextArea rows={4} placeholder="Document Description" value={fileFieldData?.desc}
+                            maxLength={DESCLEN} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileChange(e, 'desc')} />
+                        {/* <div>
+              <CommonInputField value={fileFieldData?.fileName !== '' ? fileFieldData?.fileName : ''} leftElement={leftElement()} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileUpload(e)} />
+            </div> */}
+                    </div>
+                    {/* )} */}
+                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
+                        <div></div>
+                        {(
+                            (fileFieldData?.type === '' || fileFieldData?.name === '' || fileFieldData?.file === null) ?
+                                <Tooltip title={'Enter All Values To Enable Upload'} arrow>
+                                    <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${style.disabledUploadButton}`} >UPLOAD</button>
+                                </Tooltip> :
+                                <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} `} disabled={false} onClick={() => { addNewDocumentField(); setIsShowUploadDialog(false) }}>UPLOAD</button>
+                        )}
+                    </div>
+                </div>
+            </Dialog>
         </div>
     )
 }
