@@ -12,11 +12,13 @@ const switchTheme = createTheme({
 });
 
 const CommonSwitch = ({ checked, onChange, label, className, disabled }) => {
+    const contractStatus = sessionStorage.getItem('Selected Contract Status');
+
     return (
         <ThemeProvider theme={switchTheme}>
             <FormControlLabel
                 control={
-                    <Switch className={className} onChange={onChange} checked={checked} disabled={disabled || false} />
+                    <Switch className={className} onChange={onChange} checked={checked} disabled={contractStatus === "ACTIVE" ? true : disabled || false} />
                 }
                 color='primary'
                 className={className}

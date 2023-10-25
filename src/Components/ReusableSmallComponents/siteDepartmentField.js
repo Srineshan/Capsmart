@@ -11,12 +11,12 @@ import { ErrorToaster } from './../../utils/toaster';
 import style from './index.module.scss';
 
 const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
+  const contractStatus = sessionStorage.getItem('Selected Contract Status');
+
   const [departmentsSelected, setDepartmentsSelected] = useState([]);
   const [selectedSite, setSelectedSite] = useState(undefined);
   const [siteData, setSiteData] = useState([]);
   const [departmentList, setDepartmentList] = useState();
-
-  console.log('sites', sites, selectedSites)
 
   useEffect(() => {
     if (sites?.length === 1) {
@@ -93,9 +93,6 @@ const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
     getSelectedSites(temp);
   }
 
-  console.log('deparmentList', departmentList);
-
-
   const onRemoveDept = (siteIndex, deptIndex, deptId) => {
     setDepartmentsSelected(departmentsSelected?.filter(dept => dept !== deptId)?.map(data => data));
     let temp = siteData?.filter((site, index) => index !== siteIndex)?.map(data => data);
@@ -116,8 +113,6 @@ const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
     getSelectedSites(temp);
   }
 
-  console.log(siteData, 'selected site')
-
   return (
     <div>
       <div className={style.siteDeptGrid}>
@@ -129,6 +124,7 @@ const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
             input={<OutlinedInput label="Select Site" />}
             onChange={(e) => onSiteSelected(e?.target?.value)}
             SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+            disabled={contractStatus === "ACTIVE" ? true : false}
           >
             {sites?.map(data => (
               <MenuItem value={data?.id}>{data?.siteName?.siteName}</MenuItem>
@@ -156,6 +152,7 @@ const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
             displayEmpty
             input={<OutlinedInput label="Select Service Area / Dept" />}
             SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+            disabled={contractStatus === "ACTIVE" ? true : false}
           >
             {
               departmentList?.map(dept => (
@@ -185,7 +182,7 @@ const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
                 <div className={`${style.deptCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
                   <div className={`${style.siteDeptTextStyle} ${style.marginLeft10}`}>{dept?.departmentName?.name}-{site?.siteName?.siteName}</div>
                   {
-                    (siteData?.length > 1 || site?.departmentList?.departments?.length > 1) &&
+                    ((siteData?.length > 1 || site?.departmentList?.departments?.length > 1) && contractStatus !== "ACTIVE") &&
                     <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => { onRemoveDept(siteIndex, deptIndex, dept?.id) }} />
 
                   }

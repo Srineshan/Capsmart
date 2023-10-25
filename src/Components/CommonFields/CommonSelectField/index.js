@@ -6,6 +6,8 @@ import { FormControl } from '@mui/material';
 import style from './index.module.scss';
 
 const CommonSelectField = ({ value, onChange, className, firstOptionLabel, firstOptionValue, valueList, labelList, disabledList, disabledSelect, defaultValue, widthValue }) => {
+    const contractStatus = sessionStorage.getItem('Selected Contract Status');
+
     return (
         <FormControl size="small" className={!widthValue && style.fullWidth} sx={widthValue && { width: widthValue }}>
             <Select
@@ -17,7 +19,7 @@ const CommonSelectField = ({ value, onChange, className, firstOptionLabel, first
                 onChange={onChange}
                 SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                 className={className}
-                disabled={disabledSelect || false}
+                disabled={contractStatus === "ACTIVE" ? true : disabledSelect || false}
             >
                 {firstOptionLabel !== '' && (
                     <MenuItem value={firstOptionValue}>{firstOptionLabel}</MenuItem>

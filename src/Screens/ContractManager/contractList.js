@@ -30,6 +30,7 @@ import { validateTimesheetSubmission } from './contractValidation';
 import style from './index.module.scss';
 import SideBar from '../../Components/Sidebar';
 import PreImplementationDataDialog from './preImplementationDataDialog';
+import ReviewAndApprovalStatusSummary from './reviewAndApprovalStatusSummary';
 
 const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts, getSelectedContract, getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page, getActiveContractView }) => {
   const [selectedContractId, setSelectedContractId] = useState();
@@ -61,6 +62,7 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
   const [isDraft, setIsDraft] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
   const [showPreImplementationDialog, setShowPreImplementationDialog] = useState(false);
+  const [showReviewAndApprovalStatusSummaryDialog, setShowReviewAndApprovalStatusSummaryDialog] = useState(false);
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
   const currentUserData = currentUser();
@@ -145,6 +147,14 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
     setShowPreImplementationDialog(value);
   }
 
+  const getReviewAndApprovalStatusSummaryDialog = (data) => {
+    setShowReviewAndApprovalStatusSummaryDialog(true);
+  }
+
+  const getReviewAndApprovalStatusSummaryDialogBoolean = (value) => {
+    setShowReviewAndApprovalStatusSummaryDialog(value);
+  }
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -171,14 +181,16 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
   }
 
   const onClickFunction = (data) => {
-    if (selectedContract === 'activecontracts') {
-      getActiveContractView(true);
-    } else {
-      getNewContract(true);
-      getContractType(data?.contractType);
-      getSelectedContractType('New Contract');
-    }
+    // if (selectedContract === 'activecontracts') {
+    //   getActiveContractView(true);
+    // } else {
+    getNewContract(true);
+    getContractType(data?.contractType);
+    getSelectedContractType('New Contract');
+    // }
     getContractIdFromActive(data?.id);
+    console.log(data, 'contract data')
+    sessionStorage.setItem('Selected Contract Status', data?.contractStatus)
   }
 
   let dot = [];
@@ -295,7 +307,7 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
       reviews.push('1/1');
       approvals.push('3/3');
       goLiveDate.push('07/19/2019');
-      activationStatus.push('Not Activated');
+      activationStatus.push(data?.contractStatus === 'ACTIVATION_READY' ? 'Activation pending' : 'Not Activated');
       icon.push(<TextSnippetOutlinedIcon style={{ color: '#F94848' }} />);
       iconHoverText.push('No Document Uploaded');
       effectiveDate.push(format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy'));
@@ -383,6 +395,12 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
     // {'data': 'Share', 'onClick': activateContracts, 'requiredValue': 'id'},
   ]
 
+  const activationPendingActionsData = [
+    { 'data': 'Status Summary', 'onClick': getReviewAndApprovalStatusSummaryDialog, 'requiredValue': 'boolean' },
+    { 'data': 'Activate', 'onClick': activateContracts, 'requiredValue': 'id' },
+    { 'data': 'Send Reminder', 'onClick': {}, 'requiredValue': 'boolean' },
+  ]
+
   const upcomingActionsData = [
     // {'data': 'Renew Existing Contract', 'onClick': deleteDraft, 'requiredValue': 'boolean'},
     { 'data': 'Extend Contract', 'onClick': activateContracts, 'requiredValue': 'id' },
@@ -406,7 +424,7 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
   let tableHeaderValues = selectedContract === 'activecontracts' ? activeHeaderValues : selectedContract === 'draft' ? (isDraft ? draftHeaderValues : activationPendingHeaderValues) : selectedContract === 'upcomingrenewals' ? upcomingHeaderValues : expiredHeaderValues;
   let tableSortValues = selectedContract === 'activecontracts' ? activeColSortValues : selectedContract === 'draft' ? (isDraft ? draftColSortValues : activationPendingColSortValues) : selectedContract === 'upcomingrenewals' ? upcomingColSortValues : expiredColSortValues;
   let tableDataValues = selectedContract === 'activecontracts' ? getActiveContractsValues() : selectedContract === "draft" ? getDraftContractsValues() : getUpcomingContractsValues();
-  let actions = selectedContract === 'activecontracts' ? activeActionsData : draftActionsData;
+  let actions = selectedContract === 'activecontracts' ? activeActionsData : selectedContract === 'draft' ? (isDraft ? draftActionsData : activationPendingActionsData) : draftActionsData;
   // let gridStyle = selectedContract === 'activecontracts' ? style.activeContractGridWithoutAction : selectedContract === "draft" ? (isDraft ? style.draftContractGrid : style.activationPendingContractGrid) : selectedContract === "upcomingrenewals" ? style.upcomingContractGrid : style.expiredContractGrid;
   let gridStyle = selectedContract === 'activecontracts' ? style.activeContractGrid : selectedContract === "draft" ? (isDraft ? style.draftContractGrid : style.activationPendingContractGrid) : selectedContract === "upcomingrenewals" ? style.upcomingContractGrid : style.expiredContractGrid;
 
@@ -432,10 +450,7 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
                 ) : selectedContract === 'draft' ? (
                   <>
                     <button className={isDraft ? style.myActiveContractsButton : style.otherContractsButton} onClick={() => setIsDraft(true)}>Draft Contracts ( {metadata?.draft?.draftCount} )</button>
-
-                    {
-                      // <button className={`${!isDraft ? style.myActiveContractsButton : style.otherContractsButton} ${style.marginLeft20}`} onClick={() => setIsDraft(false)}>Activation Pending ( 2 )</button>
-                    }
+                    <button className={`${!isDraft ? style.myActiveContractsButton : style.otherContractsButton} ${style.marginLeft20}`} onClick={() => setIsDraft(false)}>Activation Pending ( 2 )</button>
                   </>
                 ) : selectedContract === 'upcomingrenewals' ? (
                   <>
@@ -534,7 +549,10 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
         </div>
         <p className={style.poweredBy}>© {new Date().getFullYear()} TimeSmartAI.Inc</p>
       </div>
-      <PreImplementationDataDialog showPreImplementationDialog={showPreImplementationDialog} getPreImplementationDialogBoolean={getPreImplementationDialogBoolean} contractId={selectedContractId} selectedContractPreImplementationData={selectedContractPreImplementationData} />    </div>
+      <PreImplementationDataDialog showPreImplementationDialog={showPreImplementationDialog} getPreImplementationDialogBoolean={getPreImplementationDialogBoolean} contractId={selectedContractId} selectedContractPreImplementationData={selectedContractPreImplementationData} />
+      <ReviewAndApprovalStatusSummary showReviewAndApprovalStatusSummaryDialog={showReviewAndApprovalStatusSummaryDialog} getReviewAndApprovalStatusSummaryDialogBoolean={getReviewAndApprovalStatusSummaryDialogBoolean} contractId={selectedContractId} />
+
+    </div>
   )
 }
 

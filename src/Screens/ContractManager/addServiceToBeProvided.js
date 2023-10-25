@@ -23,6 +23,7 @@ import SupplementalFields from "./supplementalFields";
 import AddonClinicFields from "./addonClinicFields";
 import HospiceService from "./hospiceService";
 import AdministrativeFields from "./administrativeFields";
+import HITService from "./hitService";
 import SurgerySessionFields from "./surgerySessionFields";
 import { workFlowDataGenerator } from "./workflowDataGenerator";
 import {
@@ -35,6 +36,7 @@ import {
   PROCEDUREREADING,
   HOSPICE,
   ONCALLSERVICE,
+  HIT,
 } from "../../Constants";
 import Notes from "../../Components/Notes";
 import CommonSwitch from "../../Components/CommonFields/CommonSwitch";
@@ -122,6 +124,7 @@ const AddServiceProvided = ({
   const [activityItems, setActivityItems] = useState([]);
   const [reducedOffsetApplicable, setReducedOffsetApplicable] = useState(false);
   const [compensationPolicy, setCompensationPolicy] = useState("");
+  const contractStatus = sessionStorage.getItem('Selected Contract Status');
 
   useEffect(() => {
     getContractedServices();
@@ -797,7 +800,7 @@ const AddServiceProvided = ({
       } else {
         handleSave(buttonType);
       }
-    } else if (serviceTypeTemplate === ADMINISTRATIVE) {
+    } else if (serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === HIT) {
       let data = metadata;
       if (data?.approver !== undefined) {
         let workFlowData;
@@ -935,7 +938,8 @@ const AddServiceProvided = ({
       serviceTypeTemplate !== SUPPLEMENTAL &&
       serviceTypeTemplate !== ADDON &&
       serviceTypeTemplate !== HOSPICE &&
-      serviceTypeTemplate !== ADMINISTRATIVE
+      serviceTypeTemplate !== ADMINISTRATIVE &&
+      serviceTypeTemplate !== HIT
     ) {
       performingActivity = selectedActivity
         ?.map((data) => data?.activity?.activity)
@@ -944,7 +948,7 @@ const AddServiceProvided = ({
         activities?.push({ activity: data?.activity?.activity });
       });
     }
-    if (serviceTypeTemplate === ADMINISTRATIVE) {
+    if (serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === HIT) {
       performingActivity = metadata?.selectedActivities
         ?.map((data) => data?.activity)
         ?.join("-");
@@ -1114,14 +1118,14 @@ const AddServiceProvided = ({
             ? "Supplement Services"
             : serviceTypeTemplate === ADMINISTRATIVE
               ? "Allowable Administrative Duties"
-              : "Activity To Be Performed";
+              : serviceTypeTemplate === HIT
+                ? "Allowable Clinical Informative / HIT Duties"
+                : "Activity To Be Performed";
         ErrorToaster(
           `Atleast One ${message} needs to be added to create a service`
         );
         return;
       }
-
-      console.log("Activities On call", activities);
 
       data = [
         {
@@ -1151,7 +1155,8 @@ const AddServiceProvided = ({
           ...((((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ONCALLSERVICE) &&
             !dataValues?.dedicatedHoursSpecified) ||
             (serviceTypeTemplate === ADMINISTRATIVE &&
-              !dataValues?.dedicatedHoursSpecified)) && {
+              !dataValues?.dedicatedHoursSpecified) || (serviceTypeTemplate === HIT &&
+                !dataValues?.dedicatedHoursSpecified)) && {
             hoursBorrowed: {
               activityType: {
                 activityType: dataValues?.dedicatedHoursActivityType || "",
@@ -1235,7 +1240,7 @@ const AddServiceProvided = ({
               ...(serviceTypeTemplate === ONCALL && {
                 onCallCoverageFor: dataValues?.onCallCoverageFor,
               }),
-              ...(serviceTypeTemplate === ADMINISTRATIVE && {
+              ...((serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === HIT) && {
                 adminActivities: dataValues?.selectedActivities,
               }),
               ...((serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE) && {
@@ -1255,7 +1260,7 @@ const AddServiceProvided = ({
           },
           professionalServiceRequired: dataValues?.professionalServiceRequired || false,
           ...((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ONCALLSERVICE ||
-            serviceTypeTemplate === ADMINISTRATIVE) &&
+            serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === HIT) &&
             dataValues?.dedicatedHoursSpecified && {
             hourlyRate: {
               value:
@@ -1268,7 +1273,7 @@ const AddServiceProvided = ({
             },
           }),
           ...((serviceTypeTemplate === SUPPLEMENTAL ||
-            serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === ONCALLSERVICE) &&
+            serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === ONCALLSERVICE || serviceTypeTemplate === HIT) &&
             !dataValues?.dedicatedHoursSpecified && {
             hourlyRate: {
               value: dataValues?.hourlyRate,
@@ -1469,7 +1474,7 @@ const AddServiceProvided = ({
               .toString(),
           },
           ...((serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE ||
-            serviceTypeTemplate === ADMINISTRATIVE) && {
+            serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === HIT) && {
             workFlow: dataValues?.workFlow,
           }),
           patientMRNRequired: dataValues?.patientMRNRequired || false,
@@ -1484,7 +1489,7 @@ const AddServiceProvided = ({
             (serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE)
               ? dataValues?.locationSpecified
               : showLocation,
-          dedicatedHoursSpecified: [SUPPLEMENTAL, ADMINISTRATIVE, ONCALLSERVICE].includes(
+          dedicatedHoursSpecified: [SUPPLEMENTAL, ADMINISTRATIVE, HIT, ONCALLSERVICE].includes(
             serviceTypeTemplate
           )
             ? dataValues?.dedicatedHoursSpecified
@@ -1496,6 +1501,10 @@ const AddServiceProvided = ({
           ...((serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE) &&
             !(
               serviceTypeTemplate === ADMINISTRATIVE &&
+              !metadata?.dedicatedHoursSpecified
+            ) &&
+            !(
+              serviceTypeTemplate === HIT &&
               !metadata?.dedicatedHoursSpecified
             ) &&
             !(
@@ -1576,6 +1585,7 @@ const AddServiceProvided = ({
         if (
           conflictData?.type === SUPPLEMENTAL ||
           conflictData?.type === ADMINISTRATIVE ||
+          conflictData?.type === HIT ||
           conflictData?.type === ONCALLSERVICE
         ) {
           services[conflictedIndex].hoursBorrowed = {
@@ -2124,6 +2134,10 @@ const AddServiceProvided = ({
                       !metadata?.dedicatedHoursSpecified
                     ) &&
                     !(
+                      serviceTypeTemplate === HIT &&
+                      !metadata?.dedicatedHoursSpecified
+                    ) &&
+                    !(
                       serviceTypeTemplate === SUPPLEMENTAL &&
                       !metadata?.dedicatedHoursSpecified
                     ) &&
@@ -2144,6 +2158,7 @@ const AddServiceProvided = ({
                       </div>
                     )}
                   {serviceTypeTemplate !== ADMINISTRATIVE &&
+                    serviceTypeTemplate !== HIT &&
                     serviceTypeTemplate !== ADDON &&
                     serviceTypeTemplate !== HOSPICE &&
                     serviceTypeTemplate !== SUPPLEMENTAL && (
@@ -2161,6 +2176,7 @@ const AddServiceProvided = ({
                                 onSelect={onActivitySelect}
                                 className={style.fullWidth}
                                 onChange={(e) => setNewActivity(e.target.value)}
+                                inputProps={{ disabled: contractStatus === "ACTIVE" ? true : false }}
                               />
                               <div
                                 className={`${style.addStyle} ${style.alignCenter
@@ -2181,7 +2197,7 @@ const AddServiceProvided = ({
                               >
                                 <AddIcon
                                   sx={{ fontSize: 25, color: "white" }}
-                                  onClick={activityToAdd}
+                                  onClick={contractStatus === "ACTIVE" ? {} : activityToAdd}
                                 />
                               </div>
                             </div>
@@ -2236,8 +2252,9 @@ const AddServiceProvided = ({
                                   onSelect={onLocationSelect}
                                   className={style.fullWidth}
                                   onChange={(e) =>
-                                    setNewLocation(e.target.value)
+                                    contractStatus === "ACTIVE" ? {} : setNewLocation(e.target.value)
                                   }
+                                  inputProps={{ disabled: contractStatus === "ACTIVE" ? true : false }}
                                 />
                               </div>
                             )}
@@ -2334,18 +2351,32 @@ const AddServiceProvided = ({
                         getIsReset={getIsReset}
                         editService={editService}
                       />
-                    ) : (
-                      <AdministrativeFields
-                        getMetaData={getMetaData}
-                        services={contractedServices}
-                        serviceSelected={selectedService}
-                        editService={editService}
-                        isReset={isReset}
-                        getIsReset={getIsReset}
-                        sites={siteList}
-                        contractId={contractId}
-                      />
-                    )}
+                    ) :
+                      // serviceTypeTemplate === HIT ? (
+                      //   <HITService
+                      //     getMetaData={getMetaData}
+                      //     services={contractedServices}
+                      //     serviceSelected={selectedService}
+                      //     editService={editService}
+                      //     isReset={isReset}
+                      //     getIsReset={getIsReset}
+                      //     sites={siteList}
+                      //     contractId={contractId}
+                      //   />
+                      // )
+                      //   :
+                      (
+                        <AdministrativeFields
+                          getMetaData={getMetaData}
+                          services={contractedServices}
+                          serviceSelected={selectedService}
+                          editService={editService}
+                          isReset={isReset}
+                          getIsReset={getIsReset}
+                          sites={siteList}
+                          contractId={contractId}
+                        />
+                      )}
                 </div>
               </div>
             ) : (

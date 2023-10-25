@@ -1418,20 +1418,20 @@
     // height: 500px;
 }
 
-@page {
-    size: auto;
-    margin: 3mm 0mm 10mm 0mm;
-}
+// @page {
+//     size: auto;
+//     margin: 3mm 0mm 10mm 0mm;
+// }
 
-@media print {
-    a[href]:after {
-        content: none !important;
-    }
+// @media print {
+//     a[href]:after {
+//         content: none !important;
+//     }
 
-    img[src]:after {
-        content: none !important;
-    }
-}
+//     img[src]:after {
+//         content: none !important;
+//     }
+// }
 
 .summaryGrid {
     display: grid;

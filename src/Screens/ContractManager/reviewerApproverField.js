@@ -6,6 +6,8 @@ import style from './index.module.scss';
 
 const ReviewerApproverField = ({ data, label, onValueChange, selectLabel, value, approverReviewer }) => {
   const [selectedValue, setSelectedValue] = useState(value);
+  const contractStatus = sessionStorage.getItem('Selected Contract Status');
+
   let title = [];
   data?.map(data => data?.sites?.sites?.map(site => {
     if (data?.name?.firstName && site?.siteName?.siteName && site?.siteResponsibility?.title) {
@@ -58,7 +60,7 @@ const ReviewerApproverField = ({ data, label, onValueChange, selectLabel, value,
           valueList={label?.includes('Aggregator') ? data?.map(data => data?.id) : title?.filter(titleData => titleData[approverReviewer] === true)?.map(titleData => titleData?.id)}
           labelList={label?.includes('Aggregator') ? data?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`) : title?.filter(titleData => titleData[approverReviewer] === true)?.map(titleData => `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`)}
           disabledList={data?.map(data => false)}
-          widthValue={370} />
+          widthValue={contractStatus === "ACTIVE" ? '100%' : 370} />
       </div>
     </div>
   )

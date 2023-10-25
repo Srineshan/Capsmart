@@ -5,6 +5,8 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControl from '@mui/material/FormControl';
 
 const CommonRadio = ({ onChange, className, value, radioValue, label }) => {
+    const contractStatus = sessionStorage.getItem('Selected Contract Status');
+
     return (
         <FormControl>
             <RadioGroup
@@ -15,7 +17,7 @@ const CommonRadio = ({ onChange, className, value, radioValue, label }) => {
             >
                 {radioValue?.map((data, index) => (
                     <FormControlLabel value={data}
-                        control={<Radio sx={{ color: '#B3B8BD', '&.Mui-checked': { color: '#7165E3' } }} size='small' />}
+                        control={<Radio sx={{ color: '#B3B8BD', '&.Mui-checked': { color: '#7165E3' } }} size='small' disabled={contractStatus === "ACTIVE" ? true : false} />}
                         label={label[index]} componentsProps={{ typography: { variant: 'subtitle2' } }} />
                 ))}
             </RadioGroup>
