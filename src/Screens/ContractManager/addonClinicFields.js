@@ -102,6 +102,8 @@ const AddonClinicFields = ({
     setSelectedValues();
   }, [addOnWorkFlow, serviceSelected, users]);
 
+  const contractStatus = sessionStorage.getItem('Selected Contract Status');
+
   const resetMetadata = () => {
     setMetadata([]);
   };
@@ -379,6 +381,7 @@ const AddonClinicFields = ({
   };
 
   let serviceList = [];
+  let activityDetails = [];
   let temp = services;
   temp?.filter(data => [CLINIC, SURGERY, PROCEDUREREADING, ONCALL, SUPPLEMENTAL]?.includes(data?.activityTypeTemplate?.activityTypeTemplate))?.map(data => {
     let activityName = data?.activityType?.activityType;
@@ -387,8 +390,11 @@ const AddonClinicFields = ({
     let alreadyExist = services?.filter(data => data?.activityTypeTemplate?.activityTypeTemplate === ADDON && data?.performingActivity?.activity === (`${activities?.map(data => data)?.join('-')}`))?.map(data => data);
     if (alreadyExist?.length === 0 && !data?.baseServiceAvailable) {
       serviceList.push(result);
+      activityDetails.push({ 'type': activityName, 'customSchedule': data?.customizedSchedule });
     }
   });
+
+  console.log('custom schedule', activityDetails);
 
   const selectLocation = (location, name) => {
     let locationTemp =
@@ -899,6 +905,10 @@ const AddonClinicFields = ({
     setCustomAddOnFields(temp);
   }
 
+  const onCustomizeFieldChange = (value, name) => {
+
+  }
+
   const dataCheck = (value) => {
     if (editService) {
       return valueCheck(value);
@@ -1013,41 +1023,336 @@ const AddonClinicFields = ({
                       />
                     </div>
                   </div>
-                )}
-              {/* <div className={`${ style.addManagerGrid } ${ style.marginTop20 }`}>
-                <div className={style.extentionLableStyle}>Specify Service Facility / Location</div>
-                <div>
-                  <div className={`${ style.displayInRow } `}>
-                    <ThemeProvider theme={switchTheme}>
-                      <FormControlLabel
-                        control={
-                          <Switch className={`${ style.textAlignLeft }`} onChange={() => switchShowLocation(service)} checked={metadata?.filter(item => item?.performingActivity === service)?.map(item => item)[0]?.locationSpecified} />
+                )
+              }
+              {
+                !activityDetails?.[i]?.customSchedule ?
+                  <div>
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                      <CommonLabel value="Different Payment Rate" />
+                      <CommonSwitch
+                        disabled={
+                          selectedServices
+                            ?.filter((data) => data === service)
+                            ?.map((data) => data)?.length !== 0
+                            ? false
+                            : true
                         }
-                        color='primary'
-                        className={`${ style.switchFontStyle } ${ style.flexLeft } `}
-                        label={metadata?.filter(data => data?.performingActivity === service)?.map(item => item)[0]?.locationSpecified ? 'YES' : 'NO'}
+                        label={
+                          metadata
+                            ?.filter((item) => item?.performingActivity === service)
+                            ?.map((item) => item)[0]?.activityApprovalWFRequired
+                            ? "YES"
+                            : "NO"
+                        }
+                        className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`}
+                        onChange={() => handleRequestApprovalChange(service)}
+                        checked={
+                          metadata
+                            ?.filter((item) => item?.performingActivity === service)
+                            ?.map((item) => item)[0]?.activityApprovalWFRequired
+                        }
                       />
-                    </ThemeProvider>
-                    <div className={`${ style.addGrid } ${ style.fullWidth }`}>
-                      <DatalistInput items={locationItems} onSelect={(location) => selectLocation(location, service)} className={style.fullWidth} onChange={(e) => getNewLocation(e.target.value)} />
-                      <div className={`${ style.addStyle } ${ style.alignCenter } ${ style.cursorPointer }`}>
-                        <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={locationToAdd} />
+                    </div>
+
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                      <CommonLabel value='ADD-ON Payment Rate*' />
+                      <div className={`${style.displayInRow}`}>
+                        <div>
+                          <CommonTextField
+                            InputProps={{
+                              startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
+                            }}
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  {getSelectedLocation(service)?.length !== 0 &&
-                    <MultiSelectDisplay values={getSelectedLocation(service)} removeItem={removeLocation} />
-                  }
-                </div>
-              </div> */}
+                  </div> :
+                  <div className={`${style.addonAddBox} ${style.marginTop20}`}>
+                    <div className={`${style.addManagerGrid}`}>
+                      <CommonLabel value='Weekday Days' />
+                      <div className={style.displayInRow}>
+                        <TimePicker
+                          useAmPm={false}
+                          onChange={(e) => {
+                            onCustomizeFieldChange(e, 'weekdayFrom');
+                          }}
+                          disabled={contractStatus === "ACTIVE" ? true : !metadata?.serviceDays?.weekDays}
+                          value={metadata?.weekdayFrom === null ? null : new Date(metadata?.weekdayFrom)}
+                        />
+                        <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
+                        <TimePicker
+                          useAmPm={false}
+                          onChange={(e) => {
+                            onCustomizeFieldChange(e, 'weekdayTo');
+                          }}
+                          disabled={contractStatus === "ACTIVE" ? true : !metadata?.serviceDays?.weekDays}
+                          value={metadata?.weekdayTo === null ? null : new Date(metadata?.weekdayTo)}
+                        />
+                        <div className={` ${style.marginLeft20} ${style.durationWidth}`}>
+                          <CommonTextField
+                            type="tel"
+                            maxLength="3"
+                            InputProps={{
+                              endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
+                            }}
+                            disabled={!metadata?.serviceDays?.weekDays}
+                            value={metadata?.weekdayDuration}
+                            onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(e.target.value, 'weekdayDuration')}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                      <div className={style.marginLeft30}>
+                        <CommonLabel value='Payment Amount*' />
+                      </div>
+                      <div className={style.displayInRow}>
+                        <div className={`${style.threeFieldWidth}`}>
+                          <CommonTextField
+                            type="number"
+                            min="0"
+                            disabled={metadata?.weekdayPaymentNa}
+                            value={metadata?.weekdayPayment}
+                            InputProps={{
+                              startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
+                            }}
+                            onChange={(e) => setMetadata({
+                              ...metadata, weekdayPayment: parseFloat(e.target.value), weekdayPaymentNa: false
+                            })}
+                          />
+                        </div>
+                        {/* <div className={style.verticalAlignCenter}> */}
+                        <CommonLabel className={`${style.marginLeft20} ${style.threeFieldWidth}`} value={`Per Weekday Days`} />
+                        {/* </div> */}
+                        <CommonCheckBox value="NA" className={`${style.marginLeft20} ${style.fullWidth}`} label="NA" checked={metadata?.weekdayPaymentNa} onChange={(e) => setMetadata({ ...metadata, weekdayPayment: 0, weekdayPaymentNa: e.target.checked })} />
+                      </div>
+                    </div>
+                    <div className={`${style.addManagerGrid}`}>
+                      <CommonLabel value='Weekday Nights' />
+                      <div className={style.displayInRow}>
+                        <TimePicker
+                          useAmPm={false}
+                          onChange={(e) => {
+                            onCustomizeFieldChange(e, 'weekdayNightsFrom');
+                          }}
+                          disabled={contractStatus === "ACTIVE" ? true : !metadata?.serviceDays?.weekDays}
+                          value={metadata?.weekdayNightsFrom === null ? null : new Date(metadata?.weekdayNightsFrom)}
+                        />
+                        <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
+                        <TimePicker
+                          useAmPm={false}
+                          onChange={(e) => {
+                            onCustomizeFieldChange(e, 'weekdayNightsTo');
+                          }}
+                          disabled={contractStatus === "ACTIVE" ? true : !metadata?.serviceDays?.weekDays}
+                          value={metadata?.weekdayNightsTo === null ? null : new Date(metadata?.weekdayNightsTo)}
+                        />
+                        <div className={` ${style.marginLeft20} ${style.durationWidth}`}>
+                          <CommonTextField
+                            type="tel"
+                            maxLength="3"
+                            InputProps={{
+                              endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
+                            }}
+                            disabled={!metadata?.serviceDays?.weekDays}
+                            value={metadata?.weekdayNightsDuration}
+                            onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(e.target.value, 'weekdayNightsDuration')}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                      <div className={style.marginLeft30}>
+                        <CommonLabel value='Payment Amount*' />
+                      </div>
+                      <div className={style.displayInRow}>
+                        <div className={style.threeFieldWidth}>
+                          <CommonTextField
+                            type="number"
+                            min="0"
+                            disabled={metadata?.weekdayNightsPaymentNa}
+                            value={metadata?.weekdayNightsPayment}
+                            InputProps={{
+                              startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
+                            }}
+                            onChange={(e) => setMetadata({
+                              ...metadata, weekdayNightsPayment: parseFloat(e.target.value), weekdayNightsPaymentNa: false
+                            })}
+                          />
+                        </div>
+                        {/* <div className={style.verticalAlignCenter}> */}
+                        <CommonLabel className={`${style.marginLeft20} ${style.threeFieldWidth}`} value={`Per Weekday Nights`} />
+                        {/* </div> */}
+                        <CommonCheckBox className={`${style.marginLeft20} ${style.fullWidth}`} value="NA" label="NA" checked={metadata?.weekdayNightsPaymentNa} onChange={(e) => setMetadata({ ...metadata, weekdayNightsPayment: 0, weekdayNightsPaymentNa: e.target.checked })} />
+                      </div>
+                    </div>
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                      <CommonLabel value='Weekend' />
+                      <div>
+                        <div className={style.displayInRow}>
+                          <div className={style.displayInRow}>
+                            <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.weekendStartday === 'FRIDAY' ? style.selectedDay : ''}`} onClick={contractStatus === "ACTIVE" ? () => { } : () => onCustomizeFieldChange('FRIDAY', 'weekendStartday')}>F</div>
+                            <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.weekendStartday === 'SATURDAY' ? style.selectedDay : ''}`} onClick={contractStatus === "ACTIVE" ? () => { } : () => onCustomizeFieldChange('SATURDAY', 'weekendStartday')}>S</div>
+                            <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.weekendStartday === 'SUNDAY' ? style.selectedDay : ''}`} onClick={contractStatus === "ACTIVE" ? () => { } : () => onCustomizeFieldChange('SUNDAY', 'weekendStartday')}>S</div>
+                            <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.weekendStartday === 'MONDAY' ? style.selectedDay : ''}`} onClick={contractStatus === "ACTIVE" ? () => { } : () => onCustomizeFieldChange('MONDAY', 'weekendStartday')}>M</div>
+                          </div>
+                          <div className={style.alignCenter}>
+                            <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop10} ${style.marginRight}`}>To</p>
+                          </div>
+                          <div className={`${style.displayInRow} ${style.marginLeft20}`}>
+                            <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.weekendEndday === 'FRIDAY' ? style.selectedDay : ''}`} onClick={contractStatus === "ACTIVE" ? () => { } : () => onCustomizeFieldChange('FRIDAY', 'weekendEndday')}>F</div>
+                            <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.weekendEndday === 'SATURDAY' ? style.selectedDay : ''}`} onClick={contractStatus === "ACTIVE" ? () => { } : () => onCustomizeFieldChange('SATURDAY', 'weekendEndday')}>S</div>
+                            <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.weekendEndday === 'SUNDAY' ? style.selectedDay : ''}`} onClick={contractStatus === "ACTIVE" ? () => { } : () => onCustomizeFieldChange('SUNDAY', 'weekendEndday')}>S</div>
+                            <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.weekendEndday === 'MONDAY' ? style.selectedDay : ''}`} onClick={contractStatus === "ACTIVE" ? () => { } : () => onCustomizeFieldChange('MONDAY', 'weekendEndday')}>M</div>
+                          </div>
+
+                        </div>
+
+                        <div className={`${style.displayInRow} ${style.marginTop20}`}>
+                          <TimePicker
+                            useAmPm={false}
+                            onChange={(e) => {
+                              onCustomizeFieldChange(e, 'weekendFrom');
+                            }}
+                            disabled={contractStatus === "ACTIVE" ? true : !metadata?.serviceDays?.weekEnds}
+                            value={metadata?.weekendFrom === null ? null : new Date(metadata?.weekendFrom)}
+                          />
+                          <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
+                          <TimePicker
+                            useAmPm={false}
+                            onChange={(e) => {
+                              onCustomizeFieldChange(e, 'weekendTo');
+                            }}
+                            disabled={contractStatus === "ACTIVE" ? true : !metadata?.serviceDays?.weekEnds}
+                            value={metadata?.weekendTo === null ? null : new Date(metadata?.weekendTo)}
+                          />
+                          <div className={` ${style.marginLeft20} ${style.durationWidth}`}>
+                            <CommonTextField
+                              type="tel"
+                              maxLength="3"
+                              InputProps={{
+                                endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
+                              }}
+                              disabled={!metadata?.serviceDays?.weekEnds}
+                              value={metadata?.weekendDuration}
+                              onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(e.target.value, 'weekendDuration')}
+                            />
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+
+
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                      <div className={style.marginLeft30}>
+                        <CommonLabel value='Payment Amount*' />
+                      </div>
+                      <div className={style.displayInRow}>
+                        <div className={style.threeFieldWidth}>
+                          <CommonTextField
+                            type="number"
+                            min="0"
+                            disabled={metadata?.weekendPaymentNa}
+                            value={metadata?.weekendPayment}
+                            InputProps={{
+                              startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
+                            }}
+                            onChange={(e) => setMetadata({
+                              ...metadata, weekendPayment: parseFloat(e.target.value), weekendPaymentNa: false
+                            })}
+                          />
+                        </div>
+                        {/* <div className={style.verticalAlignCenter}> */}
+                        <CommonLabel className={`${style.marginLeft20} ${style.threeFieldWidth}`} value={`Per Weekend`} />
+                        {/* </div> */}
+                        <CommonCheckBox className={`${style.marginLeft20} ${style.fullWidth}`} value="NA" label="NA" checked={metadata?.weekendPaymentNa} onChange={(e) => setMetadata({ ...metadata, weekendPayment: 0, weekendPaymentNa: e.target.checked })} />
+                      </div>
+                    </div>
+
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                      <CommonLabel value='Holiday' />
+                      <div>
+                        <CommonSelectField className={`${style.threeFieldWidth}`}
+                          value={metadata?.holidayTerm || ''}
+                          disabled={!metadata?.serviceDays?.isholidays}
+                          onChange={(e) => onCustomizeFieldChange(e.target.value, 'holidayTerm')}
+                          firstOptionLabel={'Select Holiday'} firstOptionValue={''}
+                          valueList={['PRIOR_DAY', 'ON_DAY', 'NEXT_DAY']}
+                          labelList={['Prior to Holiday', 'On Holiday', 'Next to Holiday']}
+                          disabledList={[false, false]} />
+                        <div className={`${style.displayInRow} ${style.marginTop20}`}>
+                          <TimePicker
+                            useAmPm={false}
+                            onChange={(e) => {
+                              onCustomizeFieldChange(e, 'holidayFrom');
+                            }}
+                            value={metadata?.holidayFrom === null ? null : new Date(metadata?.holidayFrom)}
+                            disabled={contractStatus === "ACTIVE" ? true : !metadata?.serviceDays?.isholidays}
+                          />
+                          <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
+                          <TimePicker
+                            useAmPm={false}
+                            onChange={(e) => {
+                              onCustomizeFieldChange(e, 'holidayTo');
+                            }}
+                            value={metadata?.holidayTo === null ? null : new Date(metadata?.holidayTo)}
+                            disabled={contractStatus === "ACTIVE" ? true : !metadata?.serviceDays?.isholidays}
+                          />
+                          <div className={`${style.marginLeft20} ${style.durationWidth}`}>
+                            <CommonTextField
+                              type="tel"
+                              maxLength="3"
+                              InputProps={{
+                                endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
+                              }}
+                              disabled={!metadata?.serviceDays?.isholidays}
+                              value={metadata?.holidayDuration}
+                              onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(e.target.value, 'holidayDuration')}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                      <div className={style.marginLeft30}>
+                        <CommonLabel value='Payment Amount*' />
+                      </div>
+                      <div className={style.displayInRow}>
+                        <div className={style.threeFieldWidth}>
+                          <CommonTextField
+                            type="number"
+                            min="0"
+                            disabled={metadata?.holidayPaymentNa}
+                            value={metadata?.holidayPayment}
+                            InputProps={{
+                              startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
+                            }}
+                            onChange={(e) => setMetadata({
+                              ...metadata, holidayPayment: parseFloat(e.target.value), holidayPaymentNa: false
+                            })}
+                          />
+                        </div>
+                        <CommonLabel className={`${style.marginLeft20} ${style.threeFieldWidth}`} value={`Per Holiday`} />
+                        <CommonCheckBox value="NA" label="NA" checked={metadata?.holidayPaymentNa} onChange={(e) => setMetadata({ ...metadata, holidayPayment: 0, holidayPaymentNa: e.target.checked })} className={`${style.marginLeft20} ${style.fullWidth}`} />
+                      </div>
+                    </div>
+                  </div >
+              }
             </div>
           </div>
-        ))}
+        ))
+      }
 
       {customAddOnFields}
 
 
-      {editService &&
+      {
+        editService &&
         metadata
           ?.filter(
             (data) => data?.activityResponse?.dataMap?.selectedActivityId
@@ -1116,6 +1421,29 @@ const AddonClinicFields = ({
                     </div>
                   </div>
                 )}
+                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                  <CommonLabel value="Different Payment Rate" />
+                  <CommonSwitch
+                    label={data?.activityApprovalWFRequired ? "YES" : "NO"}
+                    className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`}
+                    checked={data?.activityApprovalWFRequired}
+                    onChange={() =>
+                      handleRequestApprovalChange(data?.performingActivity)
+                    }
+                  />
+                </div>
+                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                  <CommonLabel value='ADD-ON Payment Rate*' />
+                  <div className={`${style.displayInRow}`}>
+                    <div>
+                      <CommonTextField
+                        InputProps={{
+                          startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
                 {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Specify Service Facility / Location</div>
                 <div>
@@ -1145,373 +1473,378 @@ const AddonClinicFields = ({
               </div> */}
               </div>
             </div>
-          ))}
+          ))
+      }
 
-      {!editService && (
-        <div className={`${style.marginTop20} ${style.addAddonGrid}`}>
-          <CommonInputField
-            className={style.fullWidth}
-            placeholder="Enter Add-On Service"
-            value={newServices?.name}
-            onChange={(e) =>
-              setNewServices({ ...newServices, name: e.target.value })
-            }
-          />
-          <div
-            className={`${style.addAddonServiceButton} ${style.alignCenter}`}
-            onClick={handleNewServiceName}
-          >
-            ADD ADD-ON SERVICES
-          </div>
-        </div>
-      )}
-
-      {showNewService && (
-        <div className={`${style.addonAddBox} ${style.marginTop20}`}>
-          <div className={`${style.addManagerGrid}`}>
-            <CommonLabel value="Add-On Service Name*" />
+      {
+        !editService && (
+          <div className={`${style.marginTop20} ${style.addAddonGrid}`}>
             <CommonInputField
-              value={newServices?.name}
               className={style.fullWidth}
-              onChange={(e) => {
-                handleNewServiceChange("name", e.target.value);
-              }}
-            />
-          </div>
-
-          <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-            <CommonLabel value="Billable Service*" />
-            <CommonSwitch
-              label={newServices?.billableService ? "YES" : "NO"}
-              className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`}
-              checked={newServices?.billableService}
-              onChange={() =>
-                handleNewServiceChange(
-                  "billableService",
-                  !newServices?.billableService
-                )
+              placeholder="Enter Add-On Service"
+              value={newServices?.name}
+              onChange={(e) =>
+                setNewServices({ ...newServices, name: e.target.value })
               }
             />
+            <div
+              className={`${style.addAddonServiceButton} ${style.alignCenter}`}
+              onClick={handleNewServiceName}
+            >
+              ADD ADD-ON SERVICES
+            </div>
           </div>
-          <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-            <CommonLabel value="Service Session Duration" />
-            <div className={`${style.threeFieldWidth}`}>
-              <CommonTextField
-                type="tel"
-                maxLength="3"
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end" sx={{ fontSize: 10 }}>
-                      Hours
-                    </InputAdornment>
-                  ),
+        )
+      }
+
+      {
+        showNewService && (
+          <div className={`${style.addonAddBox} ${style.marginTop20}`}>
+            <div className={`${style.addManagerGrid}`}>
+              <CommonLabel value="Add-On Service Name*" />
+              <CommonInputField
+                value={newServices?.name}
+                className={style.fullWidth}
+                onChange={(e) => {
+                  handleNewServiceChange("name", e.target.value);
                 }}
-                onChange={(e) =>
-                  e.target.value >= 0 &&
-                  handleNewServiceChange("sessionDuration", e.target.value)
-                }
-                value={newServices?.sessionDuration}
               />
             </div>
-          </div>
-          {newServices?.billableService && (
+
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-              <CommonLabel value="ADD-ON Payment Rate*" />
-              <div className={`${style.displayInRow}`}>
-                <div className={`${style.threeFieldWidth}`}>
-                  <CommonTextField
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start" sx={{ fontSize: 10 }}>
-                          $
-                        </InputAdornment>
-                      ),
-                    }}
-                    value={newServices?.rate}
-                    onChange={(e) => {
-                      handleNewServiceChange("rate", e.target.value);
-                    }}
-                  />
-                </div>
-                <div className={style.verticalAlignCenter}>
-                  <CommonLabel
-                    className={`${style.marginLeft20}`}
-                    value={`${(
-                      newServices?.rate / newServices?.sessionDuration
-                    ).toFixed(2)} Per Hour`}
-                  />
-                </div>
+              <CommonLabel value="Billable Service*" />
+              <CommonSwitch
+                label={newServices?.billableService ? "YES" : "NO"}
+                className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`}
+                checked={newServices?.billableService}
+                onChange={() =>
+                  handleNewServiceChange(
+                    "billableService",
+                    !newServices?.billableService
+                  )
+                }
+              />
+            </div>
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+              <CommonLabel value="Service Session Duration" />
+              <div className={`${style.threeFieldWidth}`}>
+                <CommonTextField
+                  type="tel"
+                  maxLength="3"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end" sx={{ fontSize: 10 }}>
+                        Hours
+                      </InputAdornment>
+                    ),
+                  }}
+                  onChange={(e) =>
+                    e.target.value >= 0 &&
+                    handleNewServiceChange("sessionDuration", e.target.value)
+                  }
+                  value={newServices?.sessionDuration}
+                />
               </div>
             </div>
-          )}
-
-          <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-            <CommonLabel value="Specify Service Facility / Location" />
-            <div>
-              <div className={`${style.displayInRow}`}>
-                <CommonSwitch
-                  className={`${style.textAlignLeft}`}
-                  checked={newServices?.showLocation}
-                  onChange={(e) =>
-                    handleNewServiceChange(
-                      "showLocation",
-                      !newServices?.showLocation
-                    )
-                  }
-                  label={newServices?.showLocation ? "YES" : "NO"}
-                />
-                {newServices?.showLocation && (
-                  <div className={` ${style.fullWidth}`}>
-                    <DatalistInput
-                      items={locationItems || []}
-                      setValue={setValue}
-                      onSelect={handleNewServiceLocation}
-                      className={style.fullWidth}
-                      onChange={(e) => getNewLocation(e.target.value)}
-                      clearInputOnSelect={true}
+            {newServices?.billableService && (
+              <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                <CommonLabel value="ADD-ON Payment Rate*" />
+                <div className={`${style.displayInRow}`}>
+                  <div className={`${style.threeFieldWidth}`}>
+                    <CommonTextField
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start" sx={{ fontSize: 10 }}>
+                            $
+                          </InputAdornment>
+                        ),
+                      }}
+                      value={newServices?.rate}
+                      onChange={(e) => {
+                        handleNewServiceChange("rate", e.target.value);
+                      }}
                     />
-                    {/* <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                  </div>
+                  <div className={style.verticalAlignCenter}>
+                    <CommonLabel
+                      className={`${style.marginLeft20}`}
+                      value={`${(
+                        newServices?.rate / newServices?.sessionDuration
+                      ).toFixed(2)} Per Hour`}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+              <CommonLabel value="Specify Service Facility / Location" />
+              <div>
+                <div className={`${style.displayInRow}`}>
+                  <CommonSwitch
+                    className={`${style.textAlignLeft}`}
+                    checked={newServices?.showLocation}
+                    onChange={(e) =>
+                      handleNewServiceChange(
+                        "showLocation",
+                        !newServices?.showLocation
+                      )
+                    }
+                    label={newServices?.showLocation ? "YES" : "NO"}
+                  />
+                  {newServices?.showLocation && (
+                    <div className={` ${style.fullWidth}`}>
+                      <DatalistInput
+                        items={locationItems || []}
+                        setValue={setValue}
+                        onSelect={handleNewServiceLocation}
+                        className={style.fullWidth}
+                        onChange={(e) => getNewLocation(e.target.value)}
+                        clearInputOnSelect={true}
+                      />
+                      {/* <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
                       <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={locationToAdd} />
                     </div> */}
-                  </div>
-                )}
+                    </div>
+                  )}
+                </div>
+                {newServices?.locations?.length !== 0 &&
+                  newServices?.showLocation && (
+                    <MultiSelectDisplay
+                      values={newServices?.locations?.map(
+                        (data) => data?.location
+                      )}
+                      removeItem={(index) =>
+                        setNewServices({
+                          ...newServices,
+                          locations: newServices?.locations
+                            ?.filter((data, indexValue) => index !== indexValue)
+                            ?.map((data) => data),
+                        })
+                      }
+                    />
+                  )}
               </div>
-              {newServices?.locations?.length !== 0 &&
-                newServices?.showLocation && (
-                  <MultiSelectDisplay
-                    values={newServices?.locations?.map(
-                      (data) => data?.location
-                    )}
-                    removeItem={(index) =>
-                      setNewServices({
-                        ...newServices,
-                        locations: newServices?.locations
-                          ?.filter((data, indexValue) => index !== indexValue)
-                          ?.map((data) => data),
-                      })
-                    }
-                  />
-                )}
             </div>
-          </div>
 
-          <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-            <CommonLabel value="Additional Details*" />
-            <div>
-              {additionalDetails?.map((data, index) => (
-                <>
-                  <div
-                    className={`${style.additionalDetails} ${newServices?.additionalDetails?.includes(data)
-                      ? style.additionalDetailsSelected
-                      : ""
-                      } ${style.cursorPointer} ${index !== 0 ? style.marginTop10 : ""
-                      }`}
-                    onClick={() => handleAdditionalDetailSelection(data)}
-                  >
-                    <div className={style.alignCenter}>
-                      <TaskAltIcon
-                        sx={{
-                          color: newServices?.additionalDetails?.includes(data)
-                            ? "#7165E3"
-                            : "#E4E4E4",
-                        }}
-                      />
-                    </div>
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+              <CommonLabel value="Additional Details*" />
+              <div>
+                {additionalDetails?.map((data, index) => (
+                  <>
                     <div
-                      className={`${style.additionalDetailsTextStyle} ${style.verticalAlignCenter}`}
+                      className={`${style.additionalDetails} ${newServices?.additionalDetails?.includes(data)
+                        ? style.additionalDetailsSelected
+                        : ""
+                        } ${style.cursorPointer} ${index !== 0 ? style.marginTop10 : ""
+                        }`}
+                      onClick={() => handleAdditionalDetailSelection(data)}
                     >
-                      {data}
+                      <div className={style.alignCenter}>
+                        <TaskAltIcon
+                          sx={{
+                            color: newServices?.additionalDetails?.includes(data)
+                              ? "#7165E3"
+                              : "#E4E4E4",
+                          }}
+                        />
+                      </div>
+                      <div
+                        className={`${style.additionalDetailsTextStyle} ${style.verticalAlignCenter}`}
+                      >
+                        {data}
+                      </div>
                     </div>
-                  </div>
-                  {newServices?.additionalDetails?.includes(
-                    "Prior Pre-Authorization Required"
-                  ) &&
-                    data === "Prior Pre-Authorization Required" && (
-                      // <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { setNewServices({ ...newServices, approver: users?.filter(data => data?.userId === value)?.map(data => data)[0] }) }} />
-                      <div
-                        className={`${style.addManagerGrid} ${style.marginTop20}`}
-                      >
-                        <CommonLabel value={"Designate Request Approver*"} />
-                        <div className={style.fullWidth} key={index}>
-                          <CommonSelectField
-                            className={`${style.fullWidth} `}
-                            defaultValue={newServices?.approver}
-                            value={
-                              newServices?.approver
-                                ? newServices?.approver?.id
-                                : "0"
-                            }
-                            onChange={(e) => {
-                              setNewServices({
-                                ...newServices,
-                                approver: users
-                                  ?.filter(
-                                    (data) => data?.id === e.target.value
-                                  )
-                                  ?.map((data) => data)[0],
-                                approverTitle: title
-                                  ?.filter(
-                                    (titleData) => titleData?.approver === true
-                                  )
-                                  ?.map((data) => data)[0],
-                              });
-                            }}
-                            firstOptionLabel={"Select Approver"}
-                            firstOptionValue={"0"}
-                            valueList={title
-                              ?.filter(
-                                (titleData) => titleData?.approver === true
-                              )
-                              ?.map((data) => data?.id)}
-                            labelList={title
-                              ?.filter(
-                                (titleData) => titleData?.approver === true
-                              )
-                              ?.map(
-                                (titleData) =>
-                                  `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`
-                              )}
-                            disabledList={title?.map((data) => false)}
-                            widthValue={370}
-                          />
+                    {newServices?.additionalDetails?.includes(
+                      "Prior Pre-Authorization Required"
+                    ) &&
+                      data === "Prior Pre-Authorization Required" && (
+                        // <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { setNewServices({ ...newServices, approver: users?.filter(data => data?.userId === value)?.map(data => data)[0] }) }} />
+                        <div
+                          className={`${style.addManagerGrid} ${style.marginTop20}`}
+                        >
+                          <CommonLabel value={"Designate Request Approver*"} />
+                          <div className={style.fullWidth} key={index}>
+                            <CommonSelectField
+                              className={`${style.fullWidth} `}
+                              defaultValue={newServices?.approver}
+                              value={
+                                newServices?.approver
+                                  ? newServices?.approver?.id
+                                  : "0"
+                              }
+                              onChange={(e) => {
+                                setNewServices({
+                                  ...newServices,
+                                  approver: users
+                                    ?.filter(
+                                      (data) => data?.id === e.target.value
+                                    )
+                                    ?.map((data) => data)[0],
+                                  approverTitle: title
+                                    ?.filter(
+                                      (titleData) => titleData?.approver === true
+                                    )
+                                    ?.map((data) => data)[0],
+                                });
+                              }}
+                              firstOptionLabel={"Select Approver"}
+                              firstOptionValue={"0"}
+                              valueList={title
+                                ?.filter(
+                                  (titleData) => titleData?.approver === true
+                                )
+                                ?.map((data) => data?.id)}
+                              labelList={title
+                                ?.filter(
+                                  (titleData) => titleData?.approver === true
+                                )
+                                ?.map(
+                                  (titleData) =>
+                                    `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`
+                                )}
+                              disabledList={title?.map((data) => false)}
+                              widthValue={370}
+                            />
+                          </div>
                         </div>
-                      </div>
-                    )}
-                  {newServices?.additionalDetails?.includes(
-                    "Administrative Approval For Payment Required"
-                  ) &&
-                    data === "Administrative Approval For Payment Required" && (
-                      // <ReviewerApproverField data={users} label="Designate Payment Approver*" selectLabel="Select Payment Approver" onValueChange={(value) => { setNewServices({ ...newServices, paymentApprover: users.filter(data => data?.userId === value)?.map(data => data)[0] }) }} />
-                      <div
-                        className={`${style.addManagerGrid} ${style.marginTop20}`}
-                      >
-                        <CommonLabel value={"Designate Payment Approver*"} />
-                        <div className={style.fullWidth} key={index}>
-                          <CommonSelectField
-                            className={`${style.fullWidth} `}
-                            defaultValue={newServices?.paymentApprover}
-                            value={
-                              newServices?.paymentApprover
-                                ? newServices?.paymentApprover?.id
-                                : "0"
-                            }
-                            onChange={(e) => {
-                              setNewServices({
-                                ...newServices,
-                                paymentApprover: users
-                                  .filter((data) => data?.id === e.target.value)
-                                  ?.map((data) => data)[0],
-                                approverTitle: title
-                                  ?.filter(
-                                    (titleData) => titleData?.approver === true
-                                  )
-                                  ?.map((data) => data)[0],
-                              });
-                            }}
-                            firstOptionLabel={"Select Payment Approver"}
-                            firstOptionValue={"0"}
-                            valueList={title
-                              ?.filter(
-                                (titleData) => titleData?.approver === true
-                              )
-                              ?.map((data) => data?.id)}
-                            labelList={title
-                              ?.filter(
-                                (titleData) => titleData?.approver === true
-                              )
-                              ?.map(
-                                (titleData) =>
-                                  `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`
-                              )}
-                            disabledList={title?.map((data) => false)}
-                            widthValue={370}
-                          />
+                      )}
+                    {newServices?.additionalDetails?.includes(
+                      "Administrative Approval For Payment Required"
+                    ) &&
+                      data === "Administrative Approval For Payment Required" && (
+                        // <ReviewerApproverField data={users} label="Designate Payment Approver*" selectLabel="Select Payment Approver" onValueChange={(value) => { setNewServices({ ...newServices, paymentApprover: users.filter(data => data?.userId === value)?.map(data => data)[0] }) }} />
+                        <div
+                          className={`${style.addManagerGrid} ${style.marginTop20}`}
+                        >
+                          <CommonLabel value={"Designate Payment Approver*"} />
+                          <div className={style.fullWidth} key={index}>
+                            <CommonSelectField
+                              className={`${style.fullWidth} `}
+                              defaultValue={newServices?.paymentApprover}
+                              value={
+                                newServices?.paymentApprover
+                                  ? newServices?.paymentApprover?.id
+                                  : "0"
+                              }
+                              onChange={(e) => {
+                                setNewServices({
+                                  ...newServices,
+                                  paymentApprover: users
+                                    .filter((data) => data?.id === e.target.value)
+                                    ?.map((data) => data)[0],
+                                  approverTitle: title
+                                    ?.filter(
+                                      (titleData) => titleData?.approver === true
+                                    )
+                                    ?.map((data) => data)[0],
+                                });
+                              }}
+                              firstOptionLabel={"Select Payment Approver"}
+                              firstOptionValue={"0"}
+                              valueList={title
+                                ?.filter(
+                                  (titleData) => titleData?.approver === true
+                                )
+                                ?.map((data) => data?.id)}
+                              labelList={title
+                                ?.filter(
+                                  (titleData) => titleData?.approver === true
+                                )
+                                ?.map(
+                                  (titleData) =>
+                                    `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`
+                                )}
+                              disabledList={title?.map((data) => false)}
+                              widthValue={370}
+                            />
+                          </div>
                         </div>
-                      </div>
-                    )}
-                </>
-              ))}
+                      )}
+                  </>
+                ))}
+              </div>
             </div>
-          </div>
-          <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-            <CommonLabel value="Allowable Add-On Working Hours*" />
-            <div className={style.twoCol}>
-              <CommonCheckBox
-                checked={newServices?.duringNormalWorkingHours}
-                className={`${style.marginLeft10}`}
-                onChange={(e) => {
-                  handleNewServiceChange(
-                    "duringNormalWorkingHours",
-                    e.target.checked
-                  );
-                }}
-                label="During Normal Working Hours"
-              />
-              <CommonCheckBox
-                checked={newServices?.afterWorkingHours}
-                className={`${style.marginLeft10}`}
-                onChange={(e) =>
-                  handleNewServiceChange("afterWorkingHours", e.target.checked)
-                }
-                label="After Working Hours"
-              />
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+              <CommonLabel value="Allowable Add-On Working Hours*" />
+              <div className={style.twoCol}>
+                <CommonCheckBox
+                  checked={newServices?.duringNormalWorkingHours}
+                  className={`${style.marginLeft10}`}
+                  onChange={(e) => {
+                    handleNewServiceChange(
+                      "duringNormalWorkingHours",
+                      e.target.checked
+                    );
+                  }}
+                  label="During Normal Working Hours"
+                />
+                <CommonCheckBox
+                  checked={newServices?.afterWorkingHours}
+                  className={`${style.marginLeft10}`}
+                  onChange={(e) =>
+                    handleNewServiceChange("afterWorkingHours", e.target.checked)
+                  }
+                  label="After Working Hours"
+                />
+              </div>
             </div>
-          </div>
-          <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-            <CommonLabel value="Allowable Working Day Hours For Service*" />
-            <div className={style.displayInRow}>
-              <TimePicker
-                useAmPm={false}
-                onChange={(e) => {
-                  handleNewServiceChange("workingTimeFrom", e);
-                }}
-                value={
-                  newServices?.workingTimeTo === null
-                    ? null
-                    : new Date(newServices?.workingTimeFrom)
-                }
-              />
-              <p
-                className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}
-              >
-                To
-              </p>
-              <TimePicker
-                useAmPm={false}
-                onChange={(e) => handleNewServiceChange("workingTimeTo", e)}
-                value={
-                  newServices?.workingTimeTo === null
-                    ? null
-                    : new Date(newServices?.workingTimeTo)
-                }
-              // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
-              />
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+              <CommonLabel value="Allowable Working Day Hours For Service*" />
+              <div className={style.displayInRow}>
+                <TimePicker
+                  useAmPm={false}
+                  onChange={(e) => {
+                    handleNewServiceChange("workingTimeFrom", e);
+                  }}
+                  value={
+                    newServices?.workingTimeTo === null
+                      ? null
+                      : new Date(newServices?.workingTimeFrom)
+                  }
+                />
+                <p
+                  className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}
+                >
+                  To
+                </p>
+                <TimePicker
+                  useAmPm={false}
+                  onChange={(e) => handleNewServiceChange("workingTimeTo", e)}
+                  value={
+                    newServices?.workingTimeTo === null
+                      ? null
+                      : new Date(newServices?.workingTimeTo)
+                  }
+                // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
+                />
+              </div>
             </div>
-          </div>
 
-          <div>
-            <div className={`${style.twoCol} ${style.marginTop20}`}>
-              <button
-                className={`${style.outlinedButton} ${style.fullWidth}`}
-                onClick={() => {
-                  resetNewServices();
-                  setShowNewService(false);
-                }}
-              >
-                CANCEL
-              </button>
-              <button
-                className={`${style.buttonStyle} ${style.fullWidth}`}
-                onClick={addToMetaData}
-              >
-                SAVE
-              </button>
+            <div>
+              <div className={`${style.twoCol} ${style.marginTop20}`}>
+                <button
+                  className={`${style.outlinedButton} ${style.fullWidth}`}
+                  onClick={() => {
+                    resetNewServices();
+                    setShowNewService(false);
+                  }}
+                >
+                  CANCEL
+                </button>
+                <button
+                  className={`${style.buttonStyle} ${style.fullWidth}`}
+                  onClick={addToMetaData}
+                >
+                  SAVE
+                </button>
+              </div>
+              <br />
             </div>
-            <br />
           </div>
-        </div>
-      )}
-    </div>
+        )
+      }
+    </div >
   );
 };
 
