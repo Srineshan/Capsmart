@@ -132,7 +132,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         months = (date2.getFullYear() - date1.getFullYear()) * 12;
         months -= date1.getMonth();
         months += date2.getMonth();
-        return months <= 0 ? 0 : months;
+        return months <= 0 ? 0 : months + 1;
     }
 
 

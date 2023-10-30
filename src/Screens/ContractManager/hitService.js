@@ -29,7 +29,7 @@ import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 const TEXTFIELDLEN = 100;
 const DESCLEN = 250;
 
-const HITService = ({ getMetaData, services, serviceSelected, editService, isReset, getIsReset, sites, contractId }) => {
+const HITService = ({ getMetaData, services, serviceSelected, editService, isReset, getIsReset, sites, contractId, contractTermPeriod }) => {
     const [activity, setActivity] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [showAdminActivity, setShowAdminActivity] = useState(false);
@@ -41,7 +41,8 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         podRequired: false,
         schedule: 'WEEK',
         billable: false,
-        asNeeded: false,
+        mileageRateApplicable: false,
+        locationRequired: false,
     });
     const [editAdminActivitySelected, setEditAdminActivitySelected] = useState(false);
     const [serviceAgreementOnFile, setServiceAgreementOnFile] = useState(false);
@@ -90,7 +91,11 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         workingTimeFrom: null,
         workingTimeTo: null,
         activityApprovalWFRequired: false,
+        contractTermPeriodFrom: null,
+        contractTermPeriodTo: null
     })
+
+    console.log('Contract Term Period', contractTermPeriod)
 
     const [addOnWorkFlow, setAddOnWorkFlow] = useState([]);
 
@@ -149,18 +154,42 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         }
     }
 
-    const addNewDocumentField = () => {
+    const addNewDocumentField = async () => {
         let temp = fullyExecutedContractData;
         temp.push(fileFieldData);
         setFileFields(temp);
         setFullyExecutedContractData(temp);
         setFileFieldData({ id: '', type: '', name: '', desc: '', fileName: '', file: null, filePath: '' });
         getFileData();
+
+        let data = {
+            "contractFiles": fullyExecutedContractData?.map(data => data?.type),
+            "contractId": contractId,
+        }
+
+        const formData = new FormData();
+        let file = fullyExecutedContractData?.map(data => data.file);
+        formData.append('contractFiles', new Blob([JSON.stringify(data)], {
+            type: "application/json"
+        }));
+        file?.filter(data => data !== null)?.map(data => {
+            console.log('contractFiels', data);
+            formData.append('contractFiles', data);
+        })
+        await POST(`contract-managment-service/contracts/contractedServiceFile`, formData)
+            .then(response => {
+                SuccessToaster('File Uploaded Successfully');
+            })
+            .catch(error => {
+                ErrorToaster('File Upload Failed');
+            })
     }
 
     const handleFileChange = (e, name) => {
         setFileFieldData({ ...fileFieldData, [name]: e.target.value });
     }
+
+    console.log('File Field Data', fileFieldData);
 
     const getFileData = () => {
         let temp = [];
@@ -240,10 +269,12 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                 workflowName: serviceSelected?.workFlow?.workFlowName?.name,
                 activityApprovalWFRequired: serviceSelected?.activityApprovalWFRequired,
                 approver: approver,
+                // contractTermPeriodFrom: serviceSelected?.contractedSchedules?.
             });
         }
     }
 
+    console.log('Metadata', contractTermPeriodFrom, contractTermPeriodTo);
 
 
     const handleClick = (event) => {
@@ -285,11 +316,11 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
     const activityToAdd = async () => {
         setIsLoading(true);
         if (adminActivity?.activity === '') {
-            ErrorToaster('Administrative Service Name is Mandatory');
+            ErrorToaster('Clinical Informatics / HIT Service Name is Mandatory');
             return;
         }
         if (activity?.map(data => data?.activity).includes(adminActivity?.activity)) {
-            ErrorToaster('Administrative Service Name Already Exists');
+            ErrorToaster('Clinical Informatics / HIT Service Name Already Exists');
             return;
         }
         let data = {
@@ -300,7 +331,8 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
             "podRequired": adminActivity?.podRequired,
             "schedule": adminActivity?.schedule,
             "billable": adminActivity?.billable,
-            "asNeeded": adminActivity?.asNeeded,
+            "mileageRateApplicable": adminActivity?.mileageRateApplicable,
+            "locationRequired": adminActivity?.locationRequired,
         }
         await POST(`contract-managment-service/contracts/clinicalInformativeActivity`, data)
             .then(response => {
@@ -359,10 +391,12 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         }
     }
 
+    console.log('metadata', metadata);
+
     const editActivitySelected = () => {
         let editableData = metadata?.selectedActivities?.filter(data => data?.id === adminActivity?.id)?.map(data => data)[0];
         let temp = metadata?.selectedActivities?.filter(data => data?.id !== adminActivity?.id)?.map(data => data);
-        temp.push({ activity: adminActivity?.activity, billable: adminActivity?.billable, podRequired: adminActivity?.podRequired, id: adminActivity?.id, tenant: editableData?.tenant, schedule: adminActivity?.schedule });
+        temp.push({ activity: adminActivity?.activity, billable: adminActivity?.billable, mileageRateApplicable: adminActivity?.mileageRateApplicable, locationRequired: adminActivity?.locationRequired, podRequired: adminActivity?.podRequired, id: adminActivity?.id, tenant: editableData?.tenant, schedule: adminActivity?.schedule });
         setMetadata({ ...metadata, selectedActivities: temp });
         setShowAdminActivity(false);
         setEditAdminActivitySelected(false);
@@ -410,13 +444,12 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         setMetadata({ ...metadata, workingTimeFrom: e });
     }
 
-    console.log('Metadata', metadata);
 
 
     return (
         <div>
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <CommonLabel value='Dedicated Hours For Clinical Informative / HIT Services*' />
+                <CommonLabel value='Dedicated Hours For Clinical Informatics / HIT Services*' />
                 <div className={style.displayInRow}>
                     {/* <div className={`${style.threeFieldWidth}`} > */}
                     <CommonSwitch
@@ -456,7 +489,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                 metadata?.dedicatedHoursSpecified &&
                 <>
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        <CommonLabel value='Separate Clinical Informative / HIT Hours Specified*' />
+                        <CommonLabel value='Separate Clinical Informatics / HIT Hours Specified*' />
                         <div className={style.displayInRow}>
                             <div className={`${style.twoFieldWidth}`}>
                                 <CommonTextField
@@ -475,11 +508,15 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                                 valueList={['WEEK', 'MONTH', 'YEAR']}
                                 labelList={['Per Week', 'Per Month', 'Per Year']}
                                 disabledList={[false, false]} />
+                            <CommonCheckBox
+                                label="As Needed"
+                                className={`${style.marginLeft20} ${style.fullWidth} ${style.verticalAlignCenter}`}
+                            />
                         </div>
                     </div>
 
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        <CommonLabel value='Hourly Rate Billable*' />
+                        <CommonLabel value='Total Agreed to Compensation*' />
                         <div className={`${style.displayInRow}`}>
                             <div className={`${style.threeFieldWidth}`}>
                                 <CommonTextField
@@ -496,30 +533,11 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                             </div> */}
                         </div>
                     </div>
-
-                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        <CommonLabel value='Mileage Rate*' />
-                        <div className={`${style.displayInRow}`}>
-                            <div className={`${style.threeFieldWidth}`}>
-                                <CommonTextField
-                                    type="number"
-                                    InputProps={{
-                                        startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
-                                    }}
-                                    onChange={(e) => e.target.value >= 0 && handleValueChange('sessionAmount', (e.target.value).slice(0, 6))}
-                                    value={metadata?.sessionAmount}
-                                />
-                            </div>
-                            {/* <div className={style.verticalAlignCenter}>
-                                <CommonLabel className={` ${style.marginLeft20}`} value={metadata?.totalSession !== 0 && metadata?.totalSession !== '' && metadata?.totalSession !== NaN ? `${(metadata?.sessionAmount / metadata?.totalSession).toFixed(2)} per Hour` : ''} />
-                            </div> */}
-                        </div>
-                    </div>
                 </>
             }
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <CommonLabel value='Allowable Clinical Informative / HIT Duties & Function To Perform' />
+                <CommonLabel value='Allowable Clinical Informatics / HIT Duties & Function To Perform' />
                 <div>
 
                     {/* <div className={`${style.displayInRow} ${style.marginBottom10}`}>
@@ -540,14 +558,18 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                                 {metadata?.selectedActivities?.map(activities => activities?.id)?.includes(data?.id) ? (
                                     <>
                                         <CommonCheckBox checked={metadata?.selectedActivities?.map(activities => activities?.id)?.includes(data?.id)} className={`${style.marginLeft10}`} onChange={(e) => onSelectActivity(data?.id, e.target.checked)} label={metadata?.selectedActivities?.filter(activity => activity?.id === data?.id)?.map(activity => activity?.activity)?.[0]} />
-                                        <div className={`${style.chipStyle} ${style.redChip}`}>{metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities?.schedule)[0]}</div>
+                                        {/* <div className={`${style.chipStyle} ${style.redChip}`}>{metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities?.schedule)[0]}</div> */}
+                                        {metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities?.locationRequired)[0] && <div className={`${style.chipStyle} ${style.yellowChip}`}>Location</div>}
+                                        {metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities?.mileageRateApplicable)[0] && <div className={`${style.chipStyle} ${style.orangeChip}`}>Mileage</div>}
                                         {metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities?.billable)[0] && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
                                         {metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities?.podRequired)[0] && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
                                     </>
                                 ) : (<>
                                     <CommonCheckBox checked={metadata?.selectedActivities?.map(activities => activities?.id)?.includes(data?.id)} className={`${style.marginLeft10}`} onChange={(e) => onSelectActivity(data?.id, e.target.checked)} label={data?.activity} />
 
-                                    <div className={`${style.chipStyle} ${style.redChip}`}>{data?.schedule}</div>
+                                    {/* <div className={`${style.chipStyle} ${style.redChip}`}>{data?.schedule}</div> */}
+                                    {data?.locationRequired && <div className={`${style.chipStyle} ${style.yellowChip}`}>Location</div>}
+                                    {data?.mileageRateApplicable && <div className={`${style.chipStyle} ${style.orangeChip}`}>Mileage</div>}
                                     {data?.billable && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
                                     {data?.podRequired && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
                                 </>)}
@@ -574,7 +596,8 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                                         podRequired: adminActivity?.podRequired,
                                         schedule: adminActivity?.schedule,
                                         billable: adminActivity?.billable,
-                                        asNeeded: adminActivity?.asNeeded,
+                                        mileageRateApplicable: adminActivity?.mileageRateApplicable,
+                                        locationRequired: adminActivity?.locationRequired,
                                     });
                                 }} />}
                             </div>
@@ -588,8 +611,8 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                 (showAdminActivity || editAdminActivitySelected) &&
                 <div className={`${style.addonAddBox} ${style.marginTop20}`}>
                     <div className={`${style.addManagerGrid}`}>
-                        <CommonLabel value='Additional Clinical Informative / HIT Services Name' />
-                        <CommonInputField placeholder='Clinical Informative / HIT Service Name' className={style.fullWidth} value={adminActivity?.activity} onChange={(e) => handleAdminActivity('activity', e.target.value)} />
+                        <CommonLabel value='Additional Clinical Informatics / HIT Services Name' />
+                        <CommonInputField placeholder='Clinical Informatics / HIT Service Name' className={style.fullWidth} value={adminActivity?.activity} onChange={(e) => handleAdminActivity('activity', e.target.value)} />
                     </div>
 
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -600,12 +623,26 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                     </div>
 
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <CommonLabel value='Is Mileage Required' />
+                        <div className={`${style.threeFieldWidth} `}>
+                            <CommonSwitch label={adminActivity?.mileageRateApplicable ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} checked={adminActivity?.mileageRateApplicable} onChange={(e) => handleAdminActivity('mileageRateApplicable', !adminActivity?.mileageRateApplicable)} />
+                        </div>
+                    </div>
+
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <CommonLabel value='Location Required' />
+                        <div className={`${style.threeFieldWidth} `}>
+                            <CommonSwitch label={adminActivity?.locationRequired ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} checked={adminActivity?.locationRequired} onChange={(e) => handleAdminActivity('locationRequired', !adminActivity?.locationRequired)} />
+                        </div>
+                    </div>
+
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                         <CommonLabel value='Proof Of Completion / Documentation Required' />
                         <div className={style.displayInRow}>
                             <div className={`${style.threeFieldWidth} `}>
                                 <CommonSwitch label={adminActivity?.podRequired ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} checked={adminActivity?.podRequired} onChange={(e) => handleAdminActivity('podRequired', !adminActivity?.podRequired)} />
                             </div>
-                            <div className={style.threeFieldWidth}>
+                            {/* <div className={style.threeFieldWidth}>
                                 <CommonLabel value='Frequency*' />
                                 <CommonSelectField className={`${style.fullWidth}`}
                                     value={adminActivity?.schedule || ''}
@@ -617,7 +654,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                             </div>
                             <div className={`${style.marginTop20} ${style.marginLeft20}`}>
                                 <CommonCheckBox checked={adminActivity?.asNeeded} label='As Needed' onChange={(e) => setAdminActivity({ ...adminActivity, asNeeded: e.target.checked, schedule: 'NA' })} />
-                            </div>
+                            </div> */}
 
                         </div>
                     </div>
@@ -635,7 +672,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
             <div>
                 {!showAdminActivity &&
                     <div className={`${style.addGrid} ${style.fullWidth} ${style.marginTop20}`}>
-                        <CommonInputField className={style.fullWidth} placeholder='New Additional Clinical Informative / HIT Services Name' onChange={(e) => handleAdminActivity('activity', e.target.value)} />
+                        <CommonInputField className={style.fullWidth} placeholder='New Additional Clinical Informatics / HIT Services Name' onChange={(e) => handleAdminActivity('activity', e.target.value)} />
                         <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`} >
                             <AddIcon sx={{ fontSize: 25, color: 'white' }} aria-describedby={id} onClick={(e) => setShowAdminActivity(true)} />
                         </div>
@@ -688,10 +725,10 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
             </div>
 
 
-            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+            {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Service Days*' />
                 <ServiceDays setMetaData={getServiceDaysMetadata} selectedService={serviceSelected} isReset={isReset} setIsReset={getIsReset} />
-            </div>
+            </div> */}
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Service Agreement On File*' />
@@ -728,11 +765,11 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                             open={calendarStart}
                             onOpen={() => setCalendarStart(true)}
                             onClose={() => setCalendarStart(false)}
-                            minDate={sub(new Date(), { years: 3 })}
-                            maxDate={add(new Date(), { months: 6 })}
-                            value={contractTermPeriodFrom}
+                            minDate={new Date(contractTermPeriod?.start)}
+                            maxDate={new Date(contractTermPeriod?.end)}
+                            value={metadata?.contractTermPeriodFrom}
                             onChange={(newValue) => {
-                                setContractTermPeriodFrom(newValue);
+                                setMetadata({ ...metadata, 'contractTermPeriodFrom': newValue });
                             }}
                             InputProps={{
                                 style: {
@@ -760,9 +797,9 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                             open={calendarEnd}
                             onOpen={() => setCalendarEnd(true)}
                             onClose={() => setCalendarEnd(false)}
-                            value={contractTermPeriodTo}
+                            value={metadata?.contractTermPeriodTo}
                             onChange={(newValue) => {
-                                setContractTermPeriodTo(newValue);
+                                setMetadata({ ...metadata, 'contractTermPeriodTo': newValue });
                             }}
                             InputProps={{
                                 style: {
@@ -771,7 +808,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                                 },
                             }}
                             minDate={contractTermPeriodFrom}
-                            maxDate={add(new Date(), { years: 5 })}
+                            maxDate={new Date(contractTermPeriod?.end)}
                             renderInput={(params) => <TextField  {...params}
                                 inputProps={{
                                     ...params.inputProps,
@@ -782,46 +819,6 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                 </div>
             </div>
 
-            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <CommonLabel value='Allowable Working Day Hours For Service*' />
-                <div className={style.displayInRow}>
-                    <TimePicker
-                        useAmPm={false}
-                        onChange={(e) => {
-                            updateWorkingPeriod(e);
-                        }}
-                        value={metadata?.workingTimeFrom === null ? null : new Date(metadata?.workingTimeFrom)}
-                    />
-                    <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
-                    <TimePicker
-                        useAmPm={false}
-                        onChange={(e) => {
-                            handleValueChange('workingTimeTo', e);
-                        }}
-                        value={metadata?.workingTimeTo === null ? null : new Date(metadata?.workingTimeTo)}
-                    // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.totalSession * 60 * 60 * 1000))}
-                    />
-
-                </div>
-            </div>
-            <div className={`${style.addManagerGrid}  ${style.marginTop20}`}>
-                <CommonLabel value='Only Allow Upon Request / Notification Approval' />
-                <CommonSwitch onChange={() => setMetadata({ ...metadata, activityApprovalWFRequired: !metadata?.activityApprovalWFRequired, approver: undefined })} checked={metadata?.activityApprovalWFRequired} />
-            </div>
-            {metadata?.activityApprovalWFRequired &&
-                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                    <CommonLabel value='Designate Request Approver*' />
-                    <CommonSelectField className={`${style.fullWidth} `}
-                        defaultValue={metadata?.approver}
-                        value={metadata?.approver ? metadata?.approver?.id : '0'}
-                        onChange={(e) => { setMetadata({ ...metadata, approver: user.filter(data => data?.id === e.target.value)?.map(data => data)[0], approverTitle: title?.filter(titleData => titleData?.approver === true)?.map(data => data)[0] }) }}
-                        firstOptionLabel={'Select Payment Approver'}
-                        firstOptionValue={'0'}
-                        valueList={title?.filter(titleData => titleData?.approver === true)?.map(data => data?.id)}
-                        labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`)}
-                        disabledList={title?.map(data => false)} />
-                </div>
-            }
             <Dialog isOpen={isShowUploadDialog} onClose={() => setIsShowUploadDialog(false)} className={`${style.cloneDialog} ${style.dialogPaddingBottom}`} canOutsideClickClose={false}>
                 <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
                     <div className={style.spaceBetween}>

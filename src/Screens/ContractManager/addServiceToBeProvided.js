@@ -5,6 +5,7 @@ import cloneDeep from "lodash.clonedeep";
 import AddIcon from "@mui/icons-material/Add";
 import DatalistInput, { useComboboxControls } from "react-datalist-input";
 import { PUT, GET, TenantID, POST } from "./../dataSaver";
+import { format } from 'date-fns';
 import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
 import Calculator from "./../../Components/Calculator";
 import NotesNotOpen from "./../../images/notesNotOpen.png";
@@ -958,11 +959,11 @@ const AddServiceProvided = ({
     }
     if (serviceTypeTemplate === ONCALL) {
       let temp = metadata?.additionalActivity;
-      if (activities?.length === 0 && !metadata?.customizedSchedule) {
-        metadata?.serviceDaysArray?.map((serviceDays) => {
-          activities?.push({ activity: serviceDays });
-        });
-      }
+      // if (activities?.length === 0 && !metadata?.customizedSchedule) {
+      //   metadata?.serviceDaysArray?.map((serviceDays) => {
+      //     activities?.push({ activity: serviceDays });
+      //   });
+      // }
       console.log('customize log', metadata);
       if (metadata?.customizedSchedule) {
         activities = [];
@@ -974,52 +975,32 @@ const AddServiceProvided = ({
               metadata?.weekdayMax ||
               metadata?.weekdayPayment !== 0
             ) {
-
-              if (metadata?.weekdayActivity === '') {
-                console.log('inside weekday if');
-                if (!activities?.map(data => data?.activity).includes("Weekday Days")) {
-                  activities?.push({ activity: "Weekday Days" });
-                }
-              } else {
-                console.log('inside weekday else');
-                if (!activities?.map(data => data?.activity).includes(metadata?.weekdayActivity)) {
-                  activities?.push({ activity: metadata?.weekdayActivity });
-                }
+              console.log('inside weekday else');
+              if (!activities?.map(data => data?.activity).includes(metadata?.weekdayActivity)) {
+                activities?.push({ activity: metadata?.weekdayActivity });
               }
+
             }
             if (
               metadata?.weekdayNightsMin ||
               metadata?.weekdayNightsMax ||
               metadata?.weekdayNightsPayment !== 0
             ) {
-              if (metadata?.weekdayNightActivity === '') {
-                console.log('inside weeknight if');
-                if (!activities?.map(data => data?.activity).includes("Weekday Nights")) {
-                  activities?.push({ activity: "Weekday Nights" });
-                }
-              } else {
-                console.log('inside weeknight else');
-                if (!activities?.map(data => data?.activity).includes(metadata?.weekdayNightActivity)) {
-                  activities?.push({ activity: metadata?.weekdayNightActivity })
-                }
+              console.log('inside weeknight else');
+              if (!activities?.map(data => data?.activity).includes(metadata?.weekdayNightActivity)) {
+                activities?.push({ activity: metadata?.weekdayNightActivity })
               }
             }
+
           }
           if (
             metadata?.weekendMin ||
             metadata?.weekendMax ||
             metadata?.weekendPayment !== 0
           ) {
-            if (metadata?.weekendActivity === '') {
-              console.log('inside weekend if');
-              if (!activities?.map(data => data?.activity)?.includes("Weekend")) {
-                activities?.push({ activity: "Weekend" });
-              }
-            } else {
-              console.log('inside weekend else');
-              if (!activities?.map(data => data?.activity).includes(metadata?.weekendActivity)) {
-                activities?.push({ activity: metadata?.weekendActivity })
-              }
+            console.log('inside weekend else');
+            if (!activities?.map(data => data?.activity).includes(metadata?.weekendActivity)) {
+              activities?.push({ activity: metadata?.weekendActivity })
             }
           }
           if (
@@ -1027,17 +1008,9 @@ const AddServiceProvided = ({
             metadata?.holidayMax ||
             metadata?.holidayPayment !== 0
           ) {
-            if (metadata?.holidayActivity === '') {
-              console.log('inside holiday if');
-              if (!activities?.map(data => data?.activity).includes("Holiday")) {
-
-                activities?.push({ activity: "Holiday" });
-              }
-            } else {
-              console.log('inside holiday else');
-              if (!activities?.map(data => data?.activity).includes(metadata?.holidayActivity)) {
-                activities?.push({ activity: metadata?.holidayActivity })
-              }
+            console.log('inside holiday else');
+            if (!activities?.map(data => data?.activity).includes(metadata?.holidayActivity)) {
+              activities?.push({ activity: metadata?.holidayActivity })
             }
           }
 
@@ -1112,7 +1085,7 @@ const AddServiceProvided = ({
           ?.map((data) => data?.activity)
           ?.join("-");
       }
-      if (activities?.length === 0 && serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE && serviceTypeTemplate !== ONCALL) {
+      if (activities?.length === 0 && serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE) {
         let message =
           serviceTypeTemplate === SUPPLEMENTAL
             ? "Supplement Services"
@@ -1196,8 +1169,14 @@ const AddServiceProvided = ({
                   value: parseFloat(dataValues?.max || "0"),
                 },
                 frequency: dataValues?.frequency,
-                startDate: contractTermPeriod?.start,
-                endDate: contractTermPeriod?.end,
+                ...(serviceTypeTemplate === HIT && {
+                  startDate: dataValues?.contractTermPeriodFrom === null ? null : format(dataValues?.contractTermPeriodFrom, 'yyyy-MM-dd').toString(),
+                  endDate: dataValues?.contractTermPeriodTo === null ? null : format(dataValues?.contractTermPeriodTo, 'yyyy-MM-dd').toString(),
+                }),
+                ...(serviceTypeTemplate !== HIT && {
+                  startDate: contractTermPeriod?.start,
+                  endDate: contractTermPeriod?.end,
+                })
               },
             ],
             patientsSeenTargets: [
@@ -1209,8 +1188,14 @@ const AddServiceProvided = ({
                   value: parseInt(dataValues?.withoutNurse || "0"),
                 },
                 noTargetApplicable: dataValues?.noTargetApplicable,
-                startDate: contractTermPeriod?.start,
-                endDate: contractTermPeriod?.end,
+                ...(serviceTypeTemplate === HIT && {
+                  startDate: dataValues?.contractTermPeriodFrom === null ? null : format(dataValues?.contractTermPeriodFrom, 'yyyy-MM-dd').toString(),
+                  endDate: dataValues?.contractTermPeriodTo === null ? null : format(dataValues?.contractTermPeriodTo, 'yyyy-MM-dd').toString(),
+                }),
+                ...(serviceTypeTemplate !== HIT && {
+                  startDate: contractTermPeriod?.start,
+                  endDate: contractTermPeriod?.end,
+                })
               },
             ],
             scheduledPatientsTargets: [
@@ -1222,8 +1207,14 @@ const AddServiceProvided = ({
                   value: parseInt(dataValues?.targetWithoutNurse || "0"),
                 },
                 noTargetApplicable: dataValues?.targetNoTargetApplicable,
-                startDate: contractTermPeriod?.start,
-                endDate: contractTermPeriod?.end,
+                ...(serviceTypeTemplate === HIT && {
+                  startDate: dataValues?.contractTermPeriodFrom === null ? null : format(dataValues?.contractTermPeriodFrom, 'yyyy-MM-dd').toString(),
+                  endDate: dataValues?.contractTermPeriodTo === null ? null : format(dataValues?.contractTermPeriodTo, 'yyyy-MM-dd').toString(),
+                }),
+                ...(serviceTypeTemplate !== HIT && {
+                  startDate: contractTermPeriod?.start,
+                  endDate: contractTermPeriod?.end,
+                })
               },
             ],
           }),
@@ -1350,6 +1341,7 @@ const AddServiceProvided = ({
                     )?.toFixed(2),
                   },
                   paymentNotApplicable: dataValues?.weekdayPaymentNa,
+                  serviceWeekDays: dataValues?.serviceWeekDaysDay,
                 },
                 weekdayNight: {
                   from: dataValues?.weekdayNightsFrom
@@ -1386,6 +1378,7 @@ const AddServiceProvided = ({
                     )?.toFixed(2),
                   },
                   paymentNotApplicable: dataValues?.weekdayNightsPaymentNa,
+                  serviceWeekDays: dataValues?.serviceWeekDaysNight,
                 },
                 weekend: {
                   from: dataValues?.weekendFrom
@@ -2161,7 +2154,8 @@ const AddServiceProvided = ({
                     serviceTypeTemplate !== HIT &&
                     serviceTypeTemplate !== ADDON &&
                     serviceTypeTemplate !== HOSPICE &&
-                    serviceTypeTemplate !== SUPPLEMENTAL && (
+                    serviceTypeTemplate !== SUPPLEMENTAL &&
+                    !selectedService?.customizedSchedule && (
                       <div>
                         <div
                           className={`${style.addManagerGrid} ${style.marginTop20} `}
@@ -2214,7 +2208,7 @@ const AddServiceProvided = ({
                       </div>
                     )}
 
-                  {serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE && (
+                  {serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE && serviceTypeTemplate !== HIT && (
                     <div>
                       <div
                         className={`${style.addManagerGrid} ${style.marginTop20} `}
@@ -2362,6 +2356,7 @@ const AddServiceProvided = ({
                           getIsReset={getIsReset}
                           sites={siteList}
                           contractId={contractId}
+                          contractTermPeriod={contractTermPeriod}
                         />
                       )
                         :
