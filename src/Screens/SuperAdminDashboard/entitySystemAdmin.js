@@ -176,7 +176,7 @@ const EntitySystemAdmin = ({ getActiveStep }) => {
         "activated": true,
         "siteLevelResponsible": true,
         "departmentLevelResponsible": true,
-        "blocked": true,
+        "blocked": false,
         "npin": {
           "missing": true,
           "notApplicable": true,
