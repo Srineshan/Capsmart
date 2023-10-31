@@ -9,6 +9,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import { format } from 'date-fns';
 import { useReactToPrint } from 'react-to-print';
+import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
 import DoctorAnime from './../../images/doctorAnime.png';
 import Select from '@mui/material/Select';
 import UserLogo from './../../images/userLogo.jpg';
@@ -23,21 +24,21 @@ import { formatInTimeZone } from 'date-fns-tz';
 
 const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, isEdit }) => {
 
-    console.log('ticket id', ticketId)
     const loggedInUser = currentUser();
-    const [ticketStatus, setTicketStatus] = useState('NEW');
+    const [ticketStatus, setTicketStatus] = useState(!isEdit ? 'New' : '');
     const [screenCapture, setScreenCapture] = useState('');
-    const [screenCaptured, setScreenCaptured] = useState(true);
+    const [screenCaptured, setScreenCaptured] = useState(false);
     const [type, setType] = useState('APPLICATION');
     const [impact, setImpact] = useState('HIGH');
     const [subject, setSubject] = useState('');
     const [description, setDescription] = useState('');
     const [assignTo, setAssignTo] = useState({});
-    const [assignToId, setAssignToId] = useState();
+    const [assignToId, setAssignToId] = useState('');
     const [users, setUsers] = useState([]);
     const [entityAndSiteLevelUsers, setEntityAndSiteLevelUsers] = useState([]);
     const [currentUserData, setCurrentUserData] = useState([]);
     const [ticketDetails, setTicketDetails] = useState();
+    const [workflowActions, setWorkflowActions] = useState();
     const [ticketName, setTicketName] = useState('');
     const [fileName, setFileName] = useState(`${currentUserData?.[0]?.id}${new Date().getTime().toString()}.png`);
     const [dateAndTime, setDateAndTime] = useState(formatInTimeZone(new Date(), 'America/New_York', 'MM-dd-yyyy HH:mm zzz'));
@@ -45,6 +46,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     const [showFeedbackTicketResolutionLog, setShowFeedbackTicketResolutionLog] = useState(false);
     const [blobFormat, setBlobFormat] = useState();
     const [comment, setComment] = useState('');
+    const [notes, setNotes] = useState('');
     const [allComments, setAllComments] = useState();
     const [allMessages, setAllMessages] = useState();
     const [userIdList, setUserIdList] = useState([]);
@@ -52,6 +54,34 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     let fromUpload = sessionStorage.getItem('fromUpload');
     let customerName = sessionStorage.getItem('title');
     const [screenCaptureFromUpload, setScreenCaptureFromUpload] = useState('');
+    const statusAvailableValues = {
+        NEW: 'New',
+        INPROGRESS: 'In-Progress',
+        ESCALATED: 'Escalated',
+        FIXINPROGRESS: 'Fix In-Progress',
+        FIXINDEVELOPMENT: 'Fix In-Developement',
+        ONHOLD: 'On-Hold',
+        FUTURERELEASE: 'Future Release',
+        FEATUREENHANCEMENT: 'Feature Enhancement',
+        FIXINQA: 'Fix In QA',
+        APPUPDATED: 'App Updated',
+        FIXCONFIRMATION: 'Fix Confirmation',
+        RESOLVED: 'resolved',
+        CLOSED: 'Closed'
+    };
+    const workflowActionAvailableValues = {
+        ASSIGNE: 'Assigne',
+        ESCALATE: 'Escalate',
+        ONHOLD: 'On-Hold',
+        ANALYSISINPROGRESS: 'Analysis In-Progress',
+        DEVINPROGRESS: 'Dev In-Progress',
+        INFUTURERELEASE: 'In Future Release',
+        NEWFEATURE: 'New Feature',
+        TESTINGINPROGRESS: 'Testing In-Progress',
+        QAAPPROVED: 'QA Approved',
+        DEPLOYMENTCONFIRMED: 'Deployment Confirmed',
+        DONE: 'Done'
+    };
     const componentRef = useRef();
     const handlePrint = useReactToPrint({
         content: () => componentRef.current,
@@ -59,6 +89,9 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
 
     useEffect(() => {
         setScreenCapture(screenCaptureImg);
+        if (screenCaptureImg !== '' && screenCaptureImg !== null) {
+            setScreenCaptured(true);
+        }
     }, [screenCaptureImg]);
 
     useEffect(() => {
@@ -106,11 +139,12 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
             setType(ticketDetails?.type);
             setImpact(ticketDetails?.impact);
             setScreenCaptured(ticketDetails?.screenCaptured)
-            setAssignToId(ticketDetails?.assignedTo?.id);
-            handleAssignTo(ticketDetails?.assignedTo?.id);
-            setTicketStatus(ticketDetails?.status);
+            setAssignToId(ticketDetails?.assignedTo?.id !== null ? ticketDetails?.assignedTo?.id : "");
+            handleAssignTo(ticketDetails?.assignedTo?.id !== null ? ticketDetails?.assignedTo?.id : "");
+            // setTicketStatus(ticketDetails?.status);
             setFileName(ticketDetails?.ticketFile?.fileName);
             setScreenCapture(ticketDetails?.ticketFile?.fileURL);
+            getWorkflowActions();
         }
     }, [ticketDetails])
 
@@ -128,6 +162,11 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     const getTicketById = async () => {
         const { data: ticket } = await GET(`feedback-management-service/ticket/${ticketId}`);
         setTicketDetails(ticket)
+    };
+
+    const getWorkflowActions = async () => {
+        const { data: workflowActions } = await GET(`feedback-management-service/ticket/${ticketDetails?.status}/workFlowActions`);
+        setWorkflowActions(workflowActions)
     };
 
     const getComments = async () => {
@@ -164,7 +203,36 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
         setAssignTo(entityAndSiteLevelUsers?.filter(data => data?.id === id)?.map(data => data))
     }
 
+    const handleWorkflowUpdate = async () => {
+        if (notes !== '') {
+            let data = { 'notes': notes };
+            await PUT(`feedback-management-service/ticket/${ticketId}/${ticketStatus}`, data)
+                .then(response => {
+                    SuccessToaster('Workflow Updated Successfully');
+                })
+                .catch(error => {
+                    ErrorToaster('Unexpected Error Occured');
+                })
+        } else {
+            ErrorToaster("Action Notes is Mandatory")
+        }
+    }
+
+    const handleMandatoryFields = () => {
+        if (subject === '') {
+            ErrorToaster('Subject is Mandatory')
+            return
+        }
+        if (subject === '') {
+            ErrorToaster('Subject is Mandatory')
+            return
+        }
+    }
+
     const handleSave = async () => {
+        if (isEdit && ticketStatus !== '') {
+            handleWorkflowUpdate();
+        }
         let browser = browserName === 'Chrome' ? 'CHROME' :
             browserName === 'Firefox' ? 'FIREFOX' :
                 browserName === 'Safari' ? 'SAFARI' :
@@ -192,12 +260,13 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                 { 'id': ticketId }),
             "subject": subject,
             "description": description,
-            "createdBy": {
+            "createdBy": !isEdit ? {
                 "id": currentUserData?.[0]?.id,
                 "name": currentUserData?.[0]?.name,
                 "email": currentUserData?.[0]?.email,
                 "communication": currentUserData?.[0]?.communication
-            },
+            } : ticketDetails?.createdBy,
+            "contractorName": isEdit ? ticketDetails?.contractorName : `${currentUserData?.[0]?.name?.firstName} ${currentUserData?.[0]?.name?.lastName}`,
             "assignedTo": {
                 "id": assignTo?.[0]?.id,
                 "name": assignTo?.[0]?.name,
@@ -206,7 +275,10 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
             },
             "type": type,
             "impact": impact,
-            "status": ticketStatus,
+            ...(!isEdit &&
+                { "status": 'NEW' }),
+            ...(isEdit &&
+                { "messageCount": ticketDetails?.messageCount }),
             "bugTrackingId": "string",
             "site": {
                 "id": "string",
@@ -246,7 +318,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
         formData.append('ticketDetail', new Blob([JSON.stringify(data)], {
             type: "application/json"
         }));
-        if (screenCaptured && !isEdit) {
+        if (screenCaptured && !isEdit && screenCapture !== null && screenCapture !== '') {
             const file = new File([blobFormat], fileName);
             formData.append('ticketFile', file);
         }
@@ -304,8 +376,8 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     }
 
     const handleClose = () => {
-        // getShowFeedbackTicketResolution(false);
-        history.back();
+        getShowFeedbackTicketResolution(false);
+        // history.back();
         sessionStorage.removeItem('screenCapture');
         sessionStorage.removeItem('selectedOption');
         sessionStorage.removeItem('fromUpload');
@@ -355,15 +427,13 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                         {/* <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.printStyle}`} onClick={() => handleClose()} /> */}
                     </div>
                     <div className={style.extensionBorder}></div>
-                    <div className={style.feedbackGrid}>
+                    <div className={isEdit ? style.feedbackGrid : ''}>
                         <div>
                             <div className={`${style.feedbackContentGrid} ${style.marginTop20}`}>
-                                {isEdit && (
-                                    <div>
-                                        <p className={style.extentionLableStyle}>Ticket ID</p>
-                                        <p className={style.feedbackFontStyle}>{ticketName}</p>
-                                    </div>
-                                )}
+                                <div>
+                                    <p className={style.extentionLableStyle}>Ticket ID</p>
+                                    <p className={style.feedbackFontStyle}>{isEdit ? ticketName : '-'}</p>
+                                </div>
                                 <div className={style.marginLeft}>
                                     <p className={style.extentionLableStyle}>Date & Time</p>
                                     <p className={style.feedbackFontStyle}>{dateAndTime}</p>
@@ -377,7 +447,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                                     <p className={style.feedbackFontStyle}>{customerName}</p>
                                 </div>
                                 <div>
-                                    <p className={style.extentionLableStyle}>Feedback SUBJECT</p>
+                                    <p className={style.extentionLableStyle}>Feedback SUBJECT*</p>
                                     <InputGroup value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Subject" readOnly={ticketDetails?.generationMode === 'SYSTEM'} />
                                 </div>
                                 <div className={style.marginLeft}>
@@ -439,7 +509,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                                         <p className={style.extentionLableStyle}>SCREEN CAPTURE</p>
                                         <FormControlLabel
                                             control={
-                                                <Switch checked={screenCaptured} size="small" onChange={(e) => { ticketDetails?.generationMode !== 'SYSTEM' && setScreenCaptured(e.target.checked) }} />
+                                                <Switch checked={screenCaptured} size="small" onChange={(e) => { ticketDetails?.generationMode !== 'SYSTEM' && setScreenCaptured(e.target.checked) }} disabled={(screenCaptureImg !== '' && screenCaptureImg !== null) ? false : true} />
                                             }
                                             className={`${style.switchFontStyle}`}
                                             label={screenCaptured ? 'YES' : 'NO'}
@@ -454,7 +524,12 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                             <div className={style.dashedBorder}>
                                 <div className={`${style.imageDisplayStyle} ${style.alignCenter}`}>
                                     {!screenCaptured ? (
-                                        <div className={style.imageNameStyle}>IMAGE.PNG</div>
+                                        <>
+                                            <label htmlFor="file-upload-help" className={`${style.uploadButton} ${style.alignCenter}`}>
+                                                UPLOAD
+                                            </label>
+                                            <input id="file-upload-help" type="file" onChange={(e) => handleFileUpload(e)} />
+                                        </>
                                     ) : (screenCapture !== null) ? (
                                         <img src={!fromUpload ? screenCapture : screenCaptureFromUpload} alt='Screen shot' className={style.screenCaptureImgStyle} />
                                     ) : (
@@ -510,7 +585,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                                             <div className={`${style.extentionGrid}`}>
                                                 <div className={`${style.extentionLableStyle} ${style.marginTop10}`}>Assign To</div>
                                                 <div className={style.displayInRow}>
-                                                    <select
+                                                    {/* <select
                                                         name="class"
                                                         id="Class"
                                                         value={assignToId}
@@ -524,28 +599,46 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                                                                 {`${data?.name?.firstName} ${data?.name?.lastName}`}
                                                             </option>
                                                         ))}
-                                                    </select>
+                                                    </select> */}
+                                                    <CommonSelectField
+                                                        value={assignToId}
+                                                        onChange={(e) => { setAssignToId(e.target.value); handleAssignTo(e.target.value) }}
+                                                        className={`${style.fieldWidth2InARow}`}
+                                                        firstOptionLabel={
+                                                            "Select Assignee"
+                                                        }
+                                                        firstOptionValue={""}
+                                                        valueList={entityAndSiteLevelUsers?.map((data) => data?.id)}
+                                                        labelList={entityAndSiteLevelUsers?.map((data) => `${data?.name?.firstName} ${data?.name?.lastName}`)}
+                                                        disabledList={entityAndSiteLevelUsers?.map((data) => false)}
+                                                    />
                                                 </div>
                                             </div>
-                                            {/* {ticketStatus !== 'In-Progress' && (
                                             <>
-                                                <div className={`${style.extentionGrid} ${style.marginTop10}`}>
-                                                    <div></div>
-                                                    <div>sanjaya@timesmart.ai  <span className={`${style.marginLeft20} ${style.marginRight}`}> | </span> 987 8767646</div>
-                                                </div>
+                                                {(assignToId !== '' && assignToId !== null) && (
+                                                    <div className={`${style.extentionGrid} ${style.marginTop10}`}>
+                                                        <div></div>
+                                                        <div>{entityAndSiteLevelUsers?.filter(data => data?.id === assignToId)[0]?.email?.officialEmail}  <span className={`${style.marginLeft20} ${style.marginRight}`}> | </span> {entityAndSiteLevelUsers?.filter(data => data?.id === assignToId)[0]?.communication?.mobileNumber !== '' ? entityAndSiteLevelUsers?.filter(data => data?.id === assignToId)[0]?.communication?.mobileNumber : '-'}</div>
+                                                    </div>
+                                                )}
                                                 <div className={`${style.extentionGrid} ${style.marginTop10}`}>
                                                     <div className={`${style.extentionLableStyle}`}>Contractor</div>
                                                     <div>
-                                                        <div>Philipp Stevens</div>
-                                                        <div>pstev_msp@metropoli.ai  <span className={`${style.marginLeft20} ${style.marginRight}`}> | </span>  987 8767646</div>
+                                                        <div>{`${currentUserData?.[0]?.name?.firstName} ${currentUserData?.[0]?.name?.lastName}`}</div>
+                                                        <div>{currentUserData?.[0]?.email?.officialEmail}  <span className={`${style.marginLeft20} ${style.marginRight}`}> | </span>  {currentUserData?.[0]?.communication?.mobileNumber !== '' ? currentUserData?.[0]?.communication?.mobileNumber : '-'}</div>
+                                                    </div>
+                                                </div>
+                                                <div className={`${style.extentionGrid} ${style.marginTop10}`}>
+                                                    <div className={`${style.extentionLableStyle}`}>Status</div>
+                                                    <div>
+                                                        <div>{statusAvailableValues[ticketDetails?.status]}</div>
                                                     </div>
                                                 </div>
                                             </>
-                                        )} */}
                                             <div className={`${style.extentionGrid} ${style.marginTop10}`}>
-                                                <div className={`${style.extentionLableStyle} ${style.marginTop10}`}>Status</div>
+                                                <div className={`${style.extentionLableStyle} ${style.marginTop10}`}>Action</div>
                                                 <div className={style.displayInRow}>
-                                                    <select
+                                                    {/* <select
                                                         name="class"
                                                         id="Class"
                                                         value={ticketStatus}
@@ -576,8 +669,24 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                                                                 Closed
                                                             </option>
                                                         )}
-                                                    </select>
+                                                    </select> */}
+                                                    <CommonSelectField
+                                                        value={ticketStatus}
+                                                        onChange={(e) => setTicketStatus(e.target.value)}
+                                                        className={`${style.fieldWidth2InARow}`}
+                                                        firstOptionLabel={
+                                                            "Select Status"
+                                                        }
+                                                        firstOptionValue={""}
+                                                        valueList={workflowActions}
+                                                        labelList={workflowActions?.map((data) => workflowActionAvailableValues[data])}
+                                                        disabledList={workflowActions?.map((data) => false)}
+                                                    />
                                                 </div>
+                                            </div>
+                                            <div className={`${style.extentionGrid} ${style.marginTop10}`}>
+                                                <div className={`${style.extentionLableStyle} ${style.marginTop10}`}>Action Notes</div>
+                                                <TextArea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Action Notes" rows={3} className={`${style.fullWidth} ${style.transparentBackground} ${style.transparentNotesBorder}`} />
                                             </div>
                                             {/* {ticketStatus === 'INPROGRESS' && (
                                             <>
@@ -686,7 +795,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                 </div>
             </Dialog>
             {showFeedbackTicketResolutionLog && (
-                <FeedbackTicketResolutionLog getShowFeedbackTicketResolutionLog={getShowFeedbackTicketResolutionLog} />
+                <FeedbackTicketResolutionLog getShowFeedbackTicketResolutionLog={getShowFeedbackTicketResolutionLog} ticketId={ticketDetails?.id} />
             )}
         </>
     )
