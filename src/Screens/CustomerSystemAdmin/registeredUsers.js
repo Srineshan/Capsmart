@@ -47,12 +47,12 @@ const RegisteredUsers = ({ getSelectedOption }) => {
 
     const getUser = async () => {
         if (selectedOption === 'ENTITY REGISTERED USERS') {
-            const { data: user } = await GET(`user-management-service/user?userType=REGISTERED_USER&activated=true`);
+            const { data: user } = await GET(`user-management-service/user?userType=REGISTERED_USER`);
             setRegisteredUsers(user?.filter(data => data?.blocked === false)?.map(data => data));
             setBlockedUsers(user?.filter(data => data?.blocked === true)?.map(data => data));
         }
         if (selectedOption === 'CONTRACTED SERVICE PROVIDER USERS') {
-            const { data: user } = await GET(`user-management-service/user?userType=CONTRACTED_SERVICE_PROVIDER_USER&activated=true`);
+            const { data: user } = await GET(`user-management-service/user?userType=CONTRACTED_SERVICE_PROVIDER_USER`);
             setContractedServiceProviderUsers(user?.filter(data => data?.blocked === false)?.map(data => data));
             setBlockedUsers(user?.filter(data => data?.blocked === true)?.map(data => data));
         }

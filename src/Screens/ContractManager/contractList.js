@@ -167,7 +167,7 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
   const getEntityData = async () => {
     const { data: entityData } = await GET(`entity-service/entity/${TenantID}`);
     // console.log("entity", entityData.subdomain);
-    setCSPSubDomain(entityData.officialEmailDomain?.officialEmail);
+    setCSPSubDomain(entityData?.officialEmailDomain?.officialEmail);
   };
 
   const getContractors = (id) => {
@@ -307,7 +307,7 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
       reviews.push('1/1');
       approvals.push('3/3');
       goLiveDate.push('07/19/2019');
-      activationStatus.push('Not Activated');
+      activationStatus.push(data?.contractStatus === 'ACTIVATION_READY' ? 'Activation pending' : 'Not Activated');
       icon.push(<TextSnippetOutlinedIcon style={{ color: '#F94848' }} />);
       iconHoverText.push('No Document Uploaded');
       effectiveDate.push(format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy'));
@@ -450,7 +450,7 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
                 ) : selectedContract === 'draft' ? (
                   <>
                     <button className={isDraft ? style.myActiveContractsButton : style.otherContractsButton} onClick={() => setIsDraft(true)}>Draft Contracts ( {metadata?.draft?.draftCount} )</button>
-                    <button className={`${!isDraft ? style.myActiveContractsButton : style.otherContractsButton} ${style.marginLeft20}`} onClick={() => setIsDraft(false)}>Activation Pending ( 2 )</button>
+                    {/* <button className={`${!isDraft ? style.myActiveContractsButton : style.otherContractsButton} ${style.marginLeft20}`} onClick={() => setIsDraft(false)}>Activation Pending ( 2 )</button> */}
                   </>
                 ) : selectedContract === 'upcomingrenewals' ? (
                   <>
