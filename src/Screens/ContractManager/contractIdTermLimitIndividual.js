@@ -506,6 +506,12 @@ const ContractIdTermLimitIndividual = ({
     if (contractedTimeCommitment?.value === "") {
       keys.push("Contract Time Commitment");
     }
+    if (valueCheck(selectedContractContinuationPolicy)) {
+      keys.push("Contract Continuation Policy");
+    }
+    if (valueCheck(compensationPolicy)) {
+      keys.push("Compensation Policy To Apply");
+    }
 
     setUnassignedKeys(keys);
     if (keys?.length !== 0) {
@@ -1196,7 +1202,8 @@ const ContractIdTermLimitIndividual = ({
                 <input
                   id="file-upload"
                   type="file"
-                  accept="image/*, .pdf"
+                  // accept="image/*, .pdf"
+                  accept="*/*"
                   onChange={(e) => {
                     handleFileUpload(e);
                     setIsShowUploadDialog(true);
@@ -1813,14 +1820,14 @@ const ContractIdTermLimitIndividual = ({
             </div>
             <CommonInputField
               className={`${style.fullWidth} ${style.marginTop10}`}
-              placeholder="Document Name"
+              placeholder="Document Name*"
               value={fileFieldData?.name}
               maxLength={TEXTFIELDLEN}
               onChange={(e) => handleFileChange(e, "name")}
             />
             <TextArea
               rows={4}
-              placeholder="Document Description"
+              placeholder="Document Description*"
               value={fileFieldData?.desc}
               maxLength={DESCLEN}
               className={`${style.fullWidth} ${style.marginTop10}`}
