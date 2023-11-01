@@ -624,8 +624,8 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                                                 <div className={`${style.extentionGrid} ${style.marginTop10}`}>
                                                     <div className={`${style.extentionLableStyle}`}>Contractor</div>
                                                     <div>
-                                                        <div>{`${currentUserData?.[0]?.name?.firstName} ${currentUserData?.[0]?.name?.lastName}`}</div>
-                                                        <div>{currentUserData?.[0]?.email?.officialEmail}  <span className={`${style.marginLeft20} ${style.marginRight}`}> | </span>  {currentUserData?.[0]?.communication?.mobileNumber !== '' ? currentUserData?.[0]?.communication?.mobileNumber : '-'}</div>
+                                                        <div>{`${ticketDetails?.createdBy?.name?.firstName} ${ticketDetails?.createdBy?.name?.lastName}`}</div>
+                                                        <div>{ticketDetails?.createdBy?.email?.officialEmail}  <span className={`${style.marginLeft20} ${style.marginRight}`}> | </span>  {ticketDetails?.createdBy?.communication?.mobileNumber !== '' ? ticketDetails?.createdBy?.communication?.mobileNumber : '-'}</div>
                                                     </div>
                                                 </div>
                                                 <div className={`${style.extentionGrid} ${style.marginTop10}`}>
