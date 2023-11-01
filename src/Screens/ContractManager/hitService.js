@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -9,7 +10,7 @@ import { TextArea, Icon, Dialog, Classes, Intent } from '@blueprintjs/core';
 import Tooltip from '@mui/material/Tooltip';
 import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 import TextField from '@mui/material/TextField';
-import { GET, TenantID, POST } from './../dataSaver';
+import { GET, TenantID, POST, DELETE } from './../dataSaver';
 import { TimePicker } from "@blueprintjs/datetime";
 import { GetDateFromHours } from './../../utils/formatting';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
@@ -92,7 +93,8 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         workingTimeTo: null,
         activityApprovalWFRequired: false,
         contractTermPeriodFrom: null,
-        contractTermPeriodTo: null
+        contractTermPeriodTo: null,
+        contractedServiceFiles: [],
     })
 
     console.log('Contract Term Period', contractTermPeriod)
@@ -117,6 +119,21 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         if (timesheetWorkFlow) {
             setAddOnWorkFlow(timesheetWorkFlow);
         }
+    }
+
+    const deleteFile = async (index, fileId) => {
+        let temp = fullyExecutedContractData?.filter((data, indexValue) => indexValue !== index)?.map(data => data);
+        setFullyExecutedContractData(temp);
+        console.log('temp', temp, fileId)
+        await DELETE(`contract-managment-service/contracts/contractFile/${fileId}`)
+            .then(response => {
+                SuccessToaster('File Deleted Successfully');
+                setMetadata({ ...metadata, contractedServiceFiles: temp });
+                // setFullyExecutedContractData(temp);
+            })
+            .catch(error => {
+                ErrorToaster('File Upload Failed');
+            })
     }
 
     useEffect(() => {
@@ -162,11 +179,6 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         setFileFieldData({ documentType: '', fileName: '', documentDescription: '', fileName: '', file: null, filePath: '' });
         getFileData();
 
-        // let data = {
-        //     "contractFiles": fullyExecutedContractData?.map(data => data),
-
-        // }
-
         const formData = new FormData();
         let file = fullyExecutedContractData?.map(data => data.file);
         formData.append('contractFiles', new Blob([JSON.stringify(fullyExecutedContractData?.map(data => data))], {
@@ -182,6 +194,9 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         await POST(`contract-managment-service/contracts/contractedServiceFile`, formData)
             .then(response => {
                 SuccessToaster('File Uploaded Successfully');
+                setMetadata({ ...metadata, contractedServiceFiles: response?.data || [] })
+                setFullyExecutedContractData(response?.data);
+                // console.log('response', response?.data);
             })
             .catch(error => {
                 ErrorToaster('File Upload Failed');
@@ -201,7 +216,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
             temp[i] = (
                 <div className={`${style.documentCard} ${style.marginTop10}`} key={i}>
                     <div className={`${style.documentGrid}`}>
-                        <a href={fullyExecutedContractData?.[i]?.filePath} target="_blank">
+                        <a href={fullyExecutedContractData?.[i]?.fileURL} target="_blank">
                             <Tooltip title={'Preview'} arrow>
                                 <ArticleOutlinedIcon sx={{ color: '#b0a9ef', fontSize: 35 }} />
                             </Tooltip>
@@ -209,6 +224,9 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                         <div className={style.marginTop}>
                             <p className={`${style.documentTextActive} ${style.leftAlign} ${style.removeUnderline}`} ><strong>{fullyExecutedContractData?.[i]?.type}</strong></p>
                             <p className={`${style.documentTextActive} ${style.leftAlign}`}><strong>{fullyExecutedContractData?.[i]?.fileName}</strong></p>
+                        </div>
+                        <div onClick={() => deleteFile(i, fullyExecutedContractData?.[i]?.id)} className={style.floatRight}>
+                            <DeleteOutlineIcon sx={{ color: '#F94848' }} />
                         </div>
                     </div>
                 </div>
@@ -244,6 +262,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
             workingTimeFrom: null,
             workingTimeTo: null,
             activityApprovalWFRequired: false,
+            contractedServiceFiles: [],
         })
     }
 
@@ -272,8 +291,10 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                 workflowName: serviceSelected?.workFlow?.workFlowName?.name,
                 activityApprovalWFRequired: serviceSelected?.activityApprovalWFRequired,
                 approver: approver,
+                contractedServiceFiles: serviceSelected?.contractedServiceFiles || [],
                 // contractTermPeriodFrom: serviceSelected?.contractedSchedules?.
             });
+            setFullyExecutedContractData(serviceSelected?.contractedServiceFiles || [])
         }
     }
 
@@ -307,6 +328,9 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
             } else {
                 setMetadata({ ...metadata, sessionDuration: '0', dedicatedHoursActivityType: '', sessionAmount: '', totalSession: '0', totalSessionFrequency: 'NA', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
             }
+        }
+        if (name === 'totalSessionFrequency' && value === "NA") {
+            setMetadata({ ...metadata, [name]: value, totalSession: 0 })
         }
         else {
             setMetadata({ ...metadata, [name]: value });
@@ -502,19 +526,16 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                                     }}
                                     onChange={(e) => e.target.value >= 0 && handleValueChange('totalSession', e.target.value.slice(0, 4))}
                                     value={metadata?.totalSession}
+                                    disabled={metadata?.totalSessionFrequency === 'NA'}
                                 />
                             </div>
                             <CommonSelectField className={` ${style.marginLeft20}`}
                                 value={metadata?.totalSessionFrequency || 'NA'}
                                 onChange={(e) => handleValueChange('totalSessionFrequency', e.target.value)}
                                 firstOptionLabel={'Select Frequency'} firstOptionValue={'NA'}
-                                valueList={['WEEK', 'MONTH', 'YEAR']}
-                                labelList={['Per Week', 'Per Month', 'Per Year']}
+                                valueList={['WEEK', 'MONTH', 'YEAR', 'NA']}
+                                labelList={['Per Week', 'Per Month', 'Per Year', 'As Needed']}
                                 disabledList={[false, false]} />
-                            <CommonCheckBox
-                                label="As Needed"
-                                className={`${style.marginLeft20} ${style.fullWidth} ${style.verticalAlignCenter}`}
-                            />
                         </div>
                     </div>
 
@@ -523,7 +544,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                         <div className={`${style.displayInRow}`}>
                             <div className={`${style.threeFieldWidth}`}>
                                 <CommonTextField
-                                    type="number"
+                                    type="Number"
                                     InputProps={{
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                     }}
@@ -576,19 +597,6 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                                     {data?.billable && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
                                     {data?.podRequired && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
                                 </>)}
-
-                                {
-                                    // metadata?.selectedActivities?.map(data => data?.id).includes(data?.id) ? <>
-                                    //     <div className={`${style.chipStyle} ${style.redChip}`}>{metadata?.selectedActivities?.filter(activity => activity?.id === data?.id)?.map(activity => activity?.schedule)?.[0] || ''}</div>
-                                    //     {metadata?.selectedActivities?.filter(activity => activity?.id === data?.id)?.map(activity => activity?.billable)?.[0] && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
-                                    //     {metadata?.selectedActivities?.filter(activity => activity?.id === data?.id)?.map(activity => activity?.podRequired)?.[0] && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
-                                    // </> :
-                                    //     <>
-                                    //         <div className={`${style.chipStyle} ${style.redChip}`}>{data?.schedule}</div>
-                                    //         {data?.billable && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
-                                    //         {data?.podRequired && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
-                                    //     </>
-                                }
 
                                 {metadata?.selectedActivities?.map(selectedActivity => selectedActivity?.activity)?.includes(data?.activity) && <EditOutlinedIcon style={{ color: '#7165E3' }} onClick={() => {
                                     setEditAdminActivitySelected(true);

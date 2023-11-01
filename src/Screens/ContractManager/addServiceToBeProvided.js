@@ -1139,7 +1139,8 @@ const AddServiceProvided = ({
               },
             },
           }),
-          "baseServiceAvailable": serviceTypeTemplate === SUPPLEMENTAL ? dataValues?.baseServiceAvailable : false,
+          contractedServiceFiles: dataValues?.contractedServiceFiles || [],
+          baseServiceAvailable: serviceTypeTemplate === SUPPLEMENTAL ? dataValues?.baseServiceAvailable : false,
           baseServices:
             serviceTypeTemplate === SUPPLEMENTAL
               ? dataValues?.baseServices
