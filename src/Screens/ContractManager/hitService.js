@@ -47,7 +47,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
     const [editAdminActivitySelected, setEditAdminActivitySelected] = useState(false);
     const [serviceAgreementOnFile, setServiceAgreementOnFile] = useState(false);
     const [fileFields, setFileFields] = useState([]);
-    const [fileFieldData, setFileFieldData] = useState({ id: '', type: '', name: '', desc: '', fileName: '', file: null, filePath: '' });
+    const [fileFieldData, setFileFieldData] = useState({ documentType: '', fileName: '', documentDescription: '', file: null, filePath: '' });
     const [fullyExecutedContractData, setFullyExecutedContractData] = useState([]);
     const [isShowUploadDialog, setIsShowUploadDialog] = useState(false);
     const [fileItems, setFileItems] = useState([]);
@@ -159,22 +159,25 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         temp.push(fileFieldData);
         setFileFields(temp);
         setFullyExecutedContractData(temp);
-        setFileFieldData({ id: '', type: '', name: '', desc: '', fileName: '', file: null, filePath: '' });
+        setFileFieldData({ documentType: '', fileName: '', documentDescription: '', fileName: '', file: null, filePath: '' });
         getFileData();
 
-        let data = {
-            "contractFiles": fullyExecutedContractData?.map(data => data?.type),
-            "contractId": contractId,
-        }
+        // let data = {
+        //     "contractFiles": fullyExecutedContractData?.map(data => data),
+
+        // }
 
         const formData = new FormData();
         let file = fullyExecutedContractData?.map(data => data.file);
-        formData.append('contractFiles', new Blob([JSON.stringify(data)], {
+        formData.append('contractFiles', new Blob([JSON.stringify(fullyExecutedContractData?.map(data => data))], {
+            type: "application/json"
+        }));
+        formData.append("contractId", new Blob([JSON.stringify(contractId)], {
             type: "application/json"
         }));
         file?.filter(data => data !== null)?.map(data => {
             console.log('contractFiels', data);
-            formData.append('contractFiles', data);
+            formData.append('contractDocs', data);
         })
         await POST(`contract-managment-service/contracts/contractedServiceFile`, formData)
             .then(response => {
@@ -830,18 +833,18 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                     <div>
                         <p className={`${style.fileNameTextStyle} ${style.marginTop10}`}>{fileFieldData?.fileName}</p>
                         <div>
-                            <CommonSelectField value={fileFieldData?.type || 'Select...'} onChange={(e) => handleFileChange(e, 'type')}
+                            <CommonSelectField value={fileFieldData?.documentType || 'Select...'} onChange={(e) => handleFileChange(e, 'documentType')}
                                 className={`${style.fullWidth}`} firstOptionLabel={'Select...'} firstOptionValue={'Select...'}
                                 valueList={['Agreement Draft', 'Executed Agreement', 'Contract Amendment', 'Exhibit', 'Appendix Addendum', 'Schedule', 'Attachment']}
                                 labelList={['Agreement Draft', 'Executed Agreement', 'Contract Amendment', 'Exhibit', 'Appendix Addendum', 'Schedule', 'Attachment']}
                                 disabledList={[false, false]} />
                         </div>
                         <CommonInputField className={`${style.fullWidth} ${style.marginTop10}`} placeholder="Document Name"
-                            value={fileFieldData?.name}
+                            value={fileFieldData?.fileName}
                             maxLength={TEXTFIELDLEN}
                             onChange={(e) => handleFileChange(e, 'name')} />
-                        <TextArea rows={4} placeholder="Document Description" value={fileFieldData?.desc}
-                            maxLength={DESCLEN} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileChange(e, 'desc')} />
+                        <TextArea rows={4} placeholder="Document Description" value={fileFieldData?.documentDescription}
+                            maxLength={DESCLEN} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileChange(e, 'documentDescription')} />
                         {/* <div>
               <CommonInputField value={fileFieldData?.fileName !== '' ? fileFieldData?.fileName : ''} leftElement={leftElement()} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileUpload(e)} />
             </div> */}
@@ -850,7 +853,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                     <div className={`${style.spaceBetween} ${style.marginTop}`}>
                         <div></div>
                         {(
-                            (fileFieldData?.type === '' || fileFieldData?.name === '' || fileFieldData?.file === null) ?
+                            (fileFieldData?.documentType === '' || fileFieldData?.fileName === '' || fileFieldData?.file === null) ?
                                 <Tooltip title={'Enter All Values To Enable Upload'} arrow>
                                     <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${style.disabledUploadButton}`} >UPLOAD</button>
                                 </Tooltip> :
