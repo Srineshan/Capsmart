@@ -1751,6 +1751,10 @@ const AddServiceProvided = ({
 
   const onActivitySelect = (selectedItem) => {
     console.log("selectedItem", selectedItem);
+    if (selectedItem === undefined) {
+      ErrorToaster("Select Department To Add Activities");
+      return;
+    }
     setItem(selectedItem);
     if (
       !selectedActivity?.map((data) => data?.id)?.includes(selectedItem?.id)
