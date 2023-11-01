@@ -132,7 +132,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         months = (date2.getFullYear() - date1.getFullYear()) * 12;
         months -= date1.getMonth();
         months += date2.getMonth();
-        return months <= 0 ? 0 : months;
+        return months <= 0 ? 0 : months + 1;
     }
 
 
@@ -316,7 +316,10 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                     // value={Number(timesheetPayments?.[i]?.maxPaymentPerContract)?.toLocaleString()}
 
                                     />
-                                    <CommonLabel className={`${style.marginLeft20} ${style.threeFieldWidth}`} value={`$ ${(timesheetPayments?.[i]?.maxPaymentPerContract / ((monthDiff(new Date(contractPeriod?.start), new Date(contractPeriod?.end))) / 12) || 0)?.toLocaleString()} Per Contract Year`} />
+                                    <CommonLabel className={`${style.marginLeft20} ${style.threeFieldWidth}`} value={`$ ${(timesheetPayments?.[i]?.maxPaymentPerContract / ((monthDiff(new Date(contractPeriod?.start), new Date(contractPeriod?.end))) / 12) || 0)?.toLocaleString(undefined, {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2
+                                    })} Per Contract Year`} />
                                 </div>
                             </div>
                             {compensationPolicy !== 'ACTIVITY_BASED' && compensationPolicy !== 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET' && (
@@ -524,3 +527,4 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
 }
 
 export default PaymentAndCompensation;
+

@@ -19,7 +19,7 @@ const CommonSelectField = ({ value, onChange, className, firstOptionLabel, first
                 onChange={onChange}
                 SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                 className={className}
-                disabled={contractStatus === "ACTIVE" ? true : disabledSelect || false}
+                disabled={(contractStatus === "ACTIVE" && !window.location.pathname.includes('moveToDraft')) ? true : disabledSelect || false}
             >
                 {firstOptionLabel !== '' && (
                     <MenuItem value={firstOptionValue}>{firstOptionLabel}</MenuItem>

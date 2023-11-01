@@ -191,6 +191,9 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                 setMetadata({ ...metadata, sessionDuration: '0', dedicatedHoursActivityType: '', sessionAmount: '', totalSession: '0', totalSessionFrequency: 'NA', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
             }
         }
+        if (name === 'totalSessionFrequency' && value === 'NA') {
+            setMetadata({ ...metadata, totalSessionFrequency: value, totalSession: 0 })
+        }
         else {
             setMetadata({ ...metadata, [name]: value });
         }
@@ -380,14 +383,15 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                     }}
                                     onChange={(e) => e.target.value >= 0 && handleValueChange('totalSession', e.target.value.slice(0, 4))}
                                     value={metadata?.totalSession}
+                                    disabled={metadata?.totalSessionFrequency === "NA"}
                                 />
                             </div>
                             <CommonSelectField className={` ${style.marginLeft20}`}
-                                value={metadata?.totalSessionFrequency || 'NA'}
+                                value={metadata?.totalSessionFrequency || ''}
                                 onChange={(e) => handleValueChange('totalSessionFrequency', e.target.value)}
-                                firstOptionLabel={'Select Frequency'} firstOptionValue={'NA'}
-                                valueList={['WEEK', 'MONTH', 'YEAR']}
-                                labelList={['Per Week', 'Per Month', 'Per Year']}
+                                firstOptionLabel={'Select Frequency'} firstOptionValue={''}
+                                valueList={['WEEK', 'MONTH', 'YEAR', 'NA']}
+                                labelList={['Per Week', 'Per Month', 'Per Year', 'As Needed']}
                                 disabledList={[false, false]} />
                         </div>
                     </div>
