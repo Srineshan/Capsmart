@@ -125,7 +125,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         let temp = fullyExecutedContractData?.filter((data, indexValue) => indexValue !== index)?.map(data => data);
         setFullyExecutedContractData(temp);
         console.log('temp', temp, fileId)
-        await DELETE(`contract-managment-service/contracts/contractFile/${fileId}`)
+        await DELETE(`contract-managment-service/contracts/contractedServiceFile/${fileId}`)
             .then(response => {
                 SuccessToaster('File Deleted Successfully');
                 setMetadata({ ...metadata, contractedServiceFiles: temp });
