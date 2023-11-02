@@ -117,15 +117,15 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
             temp[i] = (
                 <div className={`${style.documentCard} ${style.marginTop10}`} key={i}>
                     <div className={`${style.documentGrid}`}>
-                        <a href={fileFields?.[i]?.filePath} target="_blank">
+                        <a href={fileFields?.[i]?.fileURL} target="_blank">
                             <Tooltip title={'Preview'} arrow>
-                                <ArticleOutlinedIcon sx={{ color: '#b0a9ef', fontSize: 35 }} onClick={() => { setSelectedFileURL(fileFields?.[i]?.filePath) }} />
+                                <ArticleOutlinedIcon sx={{ color: '#b0a9ef', fontSize: 35 }} onClick={() => { setSelectedFileURL(fileFields?.[i]?.fileURL) }} />
                             </Tooltip>
                         </a>
                         <div className={style.marginTop}>
-                            <a href={fileFields?.[i]?.filePath} target="_blank">
+                            <a href={fileFields?.[i]?.fileURL} target="_blank">
                                 <Tooltip title={'Preview'} arrow>
-                                    <p className={`${style.documentText} ${style.leftAlign} ${style.removeUnderline}`} onClick={() => { setSelectedFileURL(fileFields?.[i]?.filePath) }}><strong>{fileFields?.[i]?.type}</strong></p>
+                                    <p className={`${style.documentText} ${style.leftAlign} ${style.removeUnderline}`} onClick={() => { setSelectedFileURL(fileFields?.[i]?.fileURL) }}><strong>{fileFields?.[i]?.documentType}</strong></p>
                                 </Tooltip>
                             </a>
 

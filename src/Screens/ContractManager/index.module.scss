@@ -428,6 +428,11 @@ body::-webkit-scrollbar {
     cursor: not-allowed;
 }
 
+.continueDisabled {
+    cursor: not-allowed !important;
+    opacity: 0.3;
+}
+
 .addBoxDescription {
     color: #52575D;
     background-color: rgba(143, 153, 168, 0.5);
