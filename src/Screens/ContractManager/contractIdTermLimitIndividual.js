@@ -198,12 +198,12 @@ const ContractIdTermLimitIndividual = (
       setAutoRenewal({ renewalTerm: continuation?.autoRenewalTerm?.term.toString(), allowableRenewalTerm: continuation?.allowableAutoRenewalTerm?.term.toString(), calendar: continuation?.autoRenewalCalender })
       setRenewalreminder(contractDetail?.continuationPolicy?.reminderList?.renewalReminderList || [{ days: 0 }]);
       setCompensationPolicy(contractDetail?.compensationPolicy);
-      let fileData = [];
-      contractDetail?.contractFiles?.map(data => {
-        fileData.push({ id: data?.id, documentType: data?.documentType, documentName: data?.documentName, documentDescription: data?.documentDescription, fileName: data?.fileName, file: null, filePath: data?.fileURL })
-      })
-      setFullyExecutedContractData(fileData);
-      setFileFields(fileData);
+      // let fileData = [];
+      // contractDetail?.contractFiles?.map(data => {
+      //   fileData.push({ id: data?.id, documentType: data?.documentType, documentName: data?.documentName, documentDescription: data?.documentDescription, fileName: data?.fileName, file: null, filePath: data?.fileURL })
+      // })
+      setFullyExecutedContractData(contractDetail?.contractFiles);
+      setFileFields(contractDetail?.contractFiles);
       setSelectedSites(contractDetail?.site?.sites || []);
       onSelectDepartment(contractDetail?.site?.sites || []);
       if (contractDetail?.site?.sites?.length === 0) {
@@ -233,14 +233,14 @@ const ContractIdTermLimitIndividual = (
       let continuation = contractDetail?.continuationPolicy?.autoRenewalPeriod;
       setAutoRenewal({ renewalTerm: continuation?.autoRenewalTerm?.term.toString(), allowableRenewalTerm: continuation?.allowableAutoRenewalTerm?.term.toString(), calendar: continuation?.autoRenewalCalender })
       setRenewalreminder(contractDetail?.continuationPolicy?.reminderList?.renewalReminderList || [{ days: 0 }]);
-      let fileData = [];
-      contractDetail?.contractFiles?.map(data => {
-        fileData.push({ id: data?.id, documentType: data?.documentType, documentName: data?.documentName, documentDescription: data?.documentDescription, fileName: data?.fileName, file: null, filePath: data?.fileURL })
-      })
+      // let fileData = [];
+      // contractDetail?.contractFiles?.map(data => {
+      //   fileData.push({ id: data?.id, documentType: data?.documentType, documentName: data?.documentName, documentDescription: data?.documentDescription, fileName: data?.fileName, file: null, filePath: data?.fileURL })
+      // })
       setSiteSpecific(contractDetail?.siteSpecificContract);
       setDepartmentSpecific(contractDetail?.departmentSpecificContract);
-      setFullyExecutedContractData(fileData);
-      setFileFields(fileData);
+      setFullyExecutedContractData(contractDetail?.contractFiles);
+      setFileFields(contractDetail?.contractFiles);
       setSelectedSites(contractDetail?.site?.sites || []);
       onSelectDepartment(contractDetail?.site?.sites || []);
       if (contractDetail?.site?.sites?.length === 0) {
@@ -266,9 +266,11 @@ const ContractIdTermLimitIndividual = (
 
   const handleFileUpload = (e) => {
     if (fileData?.filter(data => data?.fileName === e.target.files?.[0]?.name)?.length !== 0) {
+      setIsShowUploadDialog(false);
       ErrorToaster('File already exist from previous upload in this contract');
       return;
     } else {
+      setIsShowUploadDialog(true);
       setFileFieldData({ ...fileFieldData, file: e.target.files[0], fileName: e.target.files?.[0]?.name });
     }
   }
@@ -606,7 +608,7 @@ const ContractIdTermLimitIndividual = (
       temp[i] = (
         <div className={`${style.documentCard} ${style.marginTop10}`} key={i}>
           <div className={`${style.documentGrid}`}>
-            <a href={fullyExecutedContractData?.[i]?.filePath} target="_blank">
+            <a href={fullyExecutedContractData?.[i]?.fileURL} target="_blank">
               <Tooltip title={'Preview'} arrow>
                 <ArticleOutlinedIcon sx={{ color: '#b0a9ef', fontSize: 35 }} />
               </Tooltip>
@@ -623,9 +625,10 @@ const ContractIdTermLimitIndividual = (
   }
 
   const addNewDocumentField = async () => {
+    setContinueLoading(true);
+    changeContractFile(true);
     let temp = fullyExecutedContractData;
     temp.push(fileFieldData);
-    setFileFields(temp);
     let contractFiles = [];
     temp?.filter(data => data?.file !== null)?.map(data => {
       contractFiles?.push(data)
@@ -636,19 +639,22 @@ const ContractIdTermLimitIndividual = (
     formData.append('contractFiles', new Blob([JSON.stringify(contractFiles)], {
       type: "application/json"
     }));
-    file?.filter(data => data !== null)?.map(data => {
-      console.log('contractFiels', data);
-      formData.append('documents', data);
-    })
+    // file?.filter(data => data !== null)?.map(data => {
+    //   console.log('contractFiels', data);
+    formData.append('documents', fileFieldData?.file);
+    // })
     await POST(`contract-managment-service/contracts/contractFile`, formData)
       .then(response => {
         SuccessToaster('File Uploaded Successfully');
         setFullyExecutedContractData(response?.data);
+        setContinueLoading(false);
+        // setFileFields(response?.data);
         console.log(response?.data)
         setFileFieldData({ id: '', documentType: '', documentName: '', documentDescription: '', fileName: '', file: null, filePath: '' });
       })
       .catch(error => {
         ErrorToaster('File Upload Failed');
+        setContinueLoading(false);
       })
   }
 
@@ -820,11 +826,11 @@ const ContractIdTermLimitIndividual = (
                 />
                 <div>
                   <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} `}>
-                    <label for="file-upload" className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${contractStatus === "ACTIVE" ? style.disabledUploadButton : ''}`}>
+                    <label for="file-upload" className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${contractStatus === "ACTIVE" ? style.disabledUploadButton : ''}  ${continueLoading ? style.disabledUploadButton : ''}`}>
                       Upload File
                     </label>
                   </button>
-                  <input id="file-upload" type="file" accept="image/*, .pdf" onChange={(e) => { handleFileUpload(e); setIsShowUploadDialog(true) }} disabled={contractStatus === "ACTIVE" ? true : false} />
+                  <input id="file-upload" type="file" accept="image/*, .pdf" onChange={(e) => { handleFileUpload(e); }} disabled={contractStatus === "ACTIVE" ? true : false} />
                 </div>
               </div>
               {/* {fullyExecutedContract && (

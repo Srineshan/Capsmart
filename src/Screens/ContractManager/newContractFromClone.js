@@ -131,7 +131,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
 
                             <div className={style.spaceBetween}>
                                 <p className={`${style.documentText} ${style.leftAlign}`}><strong>{fileFields?.[i]?.fileName}</strong></p>
-                                <div onClick={() => { getDeleteExecutedContractDialog(true); setFileDeletionIndex(i); }} className={style.floatRight}>
+                                <div onClick={() => { getDeleteExecutedContractDialog(true); setFileDeletionIndex(i); }} className={`${style.floatRight} ${style.cursorPointer}`}>
                                     <DeleteOutlineIcon sx={{ color: '#F94848' }} />
                                 </div>
                             </div>
