@@ -231,7 +231,12 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
 
     const handleSave = async () => {
         if (isEdit && ticketStatus !== '') {
-            handleWorkflowUpdate();
+            if (notes !== '') {
+                handleWorkflowUpdate();
+            } else {
+                ErrorToaster("Action Notes is Mandatory");
+                return;
+            }
         }
         let browser = browserName === 'Chrome' ? 'CHROME' :
             browserName === 'Firefox' ? 'FIREFOX' :
@@ -275,8 +280,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
             },
             "type": type,
             "impact": impact,
-            ...(!isEdit &&
-                { "status": 'NEW' }),
+            "status": !isEdit ? 'NEW' : ticketDetails?.status,
             ...(isEdit &&
                 { "messageCount": ticketDetails?.messageCount }),
             "bugTrackingId": "string",
