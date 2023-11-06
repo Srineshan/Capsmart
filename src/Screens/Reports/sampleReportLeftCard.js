@@ -439,48 +439,52 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 </Select>
                             </FormControl>
                         )}
-                        {(reportType === "activitiesOrServices" || reportType === "addOnActivities" || reportType === "timesheetProcessingSummary" || reportType === "listingOfTimesheetsNotPaid" || reportType === "submittedTimesheetsPaymentStatus") && (
+                        {(reportType === "activitiesOrServices" || reportType === "addOnActivities" || reportType === "timesheetProcessingSummary" || reportType === "listingOfTimesheetsNotPaid" || reportType === "submittedTimesheetsPaymentStatus" || reportType === "paymentsProcessingSummary") && (
                             <>
-                                <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                    <InputLabel id="demo-multiple-name-label2">Site</InputLabel>
-                                    <Select
-                                        labelId="demo-multiple-name-label2"
-                                        id="demo-multiple-name2"
-                                        multiple
-                                        value={selectedSites}
-                                        onChange={handleChangeSites}
-                                        MenuProps={MenuProps}
-                                    >
-                                        {sites?.map((data) => (
-                                            <MenuItem
-                                                key={data?.id}
-                                                value={data?.id}
-                                            >
-                                                {data?.siteName?.siteName}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                                <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                    <InputLabel id="demo-multiple-name-label2">Departments</InputLabel>
-                                    <Select
-                                        labelId="demo-multiple-name-label2"
-                                        id="demo-multiple-name2"
-                                        multiple
-                                        value={selectedDepartments}
-                                        onChange={handleChangeDepartments}
-                                        MenuProps={MenuProps}
-                                    >
-                                        {departments?.map((data) => (
-                                            <MenuItem
-                                                key={data?.id}
-                                                value={data?.id}
-                                            >
-                                                {data?.departmentName?.name}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
+                                {reportType !== "paymentsProcessingSummary" && (
+                                    <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                        <InputLabel id="demo-multiple-name-label2">Site</InputLabel>
+                                        <Select
+                                            labelId="demo-multiple-name-label2"
+                                            id="demo-multiple-name2"
+                                            multiple
+                                            value={selectedSites}
+                                            onChange={handleChangeSites}
+                                            MenuProps={MenuProps}
+                                        >
+                                            {sites?.map((data) => (
+                                                <MenuItem
+                                                    key={data?.id}
+                                                    value={data?.id}
+                                                >
+                                                    {data?.siteName?.siteName}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                )}
+                                {reportType !== "paymentsProcessingSummary" && (
+                                    <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                        <InputLabel id="demo-multiple-name-label2">Departments</InputLabel>
+                                        <Select
+                                            labelId="demo-multiple-name-label2"
+                                            id="demo-multiple-name2"
+                                            multiple
+                                            value={selectedDepartments}
+                                            onChange={handleChangeDepartments}
+                                            MenuProps={MenuProps}
+                                        >
+                                            {departments?.map((data) => (
+                                                <MenuItem
+                                                    key={data?.id}
+                                                    value={data?.id}
+                                                >
+                                                    {data?.departmentName?.name}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                )}
                                 <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                     <InputLabel id="demo-multiple-name-label5">Contract</InputLabel>
                                     <Select
