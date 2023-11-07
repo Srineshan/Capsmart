@@ -53,11 +53,17 @@ const HelpHome = () => {
         (selectedOption === "RELEASE NOTES") ? releaseTableHeaderValues : selectedOption === "Messages" ? messageTableHeaderValues : selectedOption === 'Exception Error Tickets' ? exceptionTicketsTableHeaderValues : '';
     const [allMessages, setAllMessages] = useState();
     let customerName = sessionStorage.getItem('title');
+    const [searchKey, setSearchKey] = useState('');
+    const [page, setPage] = useState(1);
+    const [totalCount, setTotalCount] = useState(0);
+    const [searchKeyTickets, setSearchKeyTickets] = useState('');
+    const [pageTickets, setPageTickets] = useState(1);
+    const [totalCountTickets, setTotalCountTickets] = useState(0);
     const currentUserData = currentUser();
 
     useEffect(() => {
         getTicket();
-    }, [showFeedbackTicketResolution, from, to]);
+    }, [showFeedbackTicketResolution, from, to, selectedOption, page, searchKey, pageTickets, searchKeyTickets]);
 
     useEffect(() => {
         getCommentMessages();
@@ -79,16 +85,38 @@ const HelpHome = () => {
         setShowFeedbackTicketResolution(value);
     }
 
+    const getSelectedPage = (value) => {
+        if (selectedOption === 'TICKETS') {
+            setPageTickets(value);
+        }
+        if (selectedOption === 'Exception Error Tickets') {
+            setPage(value);
+        }
+
+    }
+
+    const getSearchKey = (value) => {
+        if (selectedOption === 'TICKETS') {
+            setSearchKeyTickets(value);
+        }
+        if (selectedOption === 'Exception Error Tickets') {
+            setSearchKey(value);
+        }
+    }
+
     const getTicket = async () => {
         if (currentUserData?.roles?.includes('Entity Sys Admin')) {
-            const { data: ticket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}`);
-            const { data: exceptionTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&generationMode=SYSTEM`);
-            setMyTicket(ticket?.map(data => data));
-            setExceptionTicket(exceptionTicket);
+            const { data: ticket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&limit=${10}&offset=${pageTickets - 1}&searchText=${searchKeyTickets}`);
+            setMyTicket(ticket?.tickets);
+            setTotalCountTickets(ticket?.numberOfElements);
+            const { data: exceptionTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&generationMode=SYSTEM&limit=${10}&offset=${page - 1}&searchText=${searchKey}`);
+            setExceptionTicket(exceptionTicket?.tickets);
+            setTotalCount(exceptionTicket?.numberOfElements);
         } else {
-            const { data: ticket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&userId=${currentUserData?.id}`);
+            const { data: ticket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&userId=${currentUserData?.id}&limit=${10}&offset=${pageTickets - 1}&searchText=${searchKeyTickets}`);
             // const { data: exceptionTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&generationMode=SYSTEM&userId=${currentUserData?.id}`);
-            setMyTicket(ticket?.map(data => data));
+            setMyTicket(ticket?.tickets);
+            setTotalCountTickets(ticket?.numberOfElements);
             // setExceptionTicket(exceptionTicket);
         }
     };
@@ -275,7 +303,7 @@ const HelpHome = () => {
                 <div>
                     <LevelTwoHeader heading={'HELP MANAGEMENT'} updatedTime={`UPDATED ON ${formatInTimeZone(new Date(), 'America/New_York', 'MMM d, yy h:mm zzz')}`} hideClose={true} />
                     <div className={`${style.grid4} ${style.marginTop20}`}>
-                        <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="TICKETS" bigNumber={myTicket?.length} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="TICKETS" topText='' bottomText='LAST 30 DAYS' />
+                        <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="TICKETS" bigNumber={totalCountTickets} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="TICKETS" topText='' bottomText='LAST 30 DAYS' />
                         <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="TUTORIALS & VIDEOS" bigNumber={0} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="TUTORIALS & VIDEOS" topText='' bottomText='LAST 30 DAYS' />
                         <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="FAQS" bigNumber={0} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="FAQS" topText='' bottomText='LAST 7 DAYS' />
                         <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="RELEASE NOTES" bigNumber={0} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="RELEASE NOTES" topText='' bottomText='LAST 30 DAYS' />
@@ -285,14 +313,14 @@ const HelpHome = () => {
                             <div className={style.spaceBetween}>
                                 <p className={`${style.activeContractsWidth}`}>{formatInTimeZone(new Date(), 'America/New_York', 'MMM d, yy h:mm zzz')}</p>
                                 <div className={`${style.displayInRow} ${style.marginTop20}`}>
-                                    <SearchBar />
+                                    <SearchBar getSearchKey={getSearchKey} />
                                     <button className={style.contractButton} onClick={() => { setIsEdit(false); setShowFeedbackTicketResolution(true); handleFromUpload() }}>ADD TICKET</button>
                                 </div>
                             </div>
                             <div className={style.buttonGroupUsers}>
-                                <button className={selectedOption === "TICKETS" && style.activeButton} onClick={() => setSelectedOption('TICKETS')}>Tickets ( {myTicket?.length} )</button>
+                                <button className={selectedOption === "TICKETS" && style.activeButton} onClick={() => setSelectedOption('TICKETS')}>Tickets ( {totalCountTickets} )</button>
                                 {currentUserData?.roles?.includes('Entity Sys Admin') && (
-                                    <button className={selectedOption === "Exception Error Tickets" && style.activeButton} onClick={() => setSelectedOption('Exception Error Tickets')}>Exception Error ( {exceptionTicket?.length} )</button>
+                                    <button className={selectedOption === "Exception Error Tickets" && style.activeButton} onClick={() => setSelectedOption('Exception Error Tickets')}>Exception Error ( {totalCount} )</button>
                                 )}
                                 <button className={selectedOption === "Messages" && style.activeButton} onClick={() => setSelectedOption('Messages')}>Messages ( {allMessages?.length} )</button>
                             </div>
@@ -309,6 +337,10 @@ const HelpHome = () => {
                                         : selectedOption === "Messages" ? style.messageTableDataGrid : ''}
                                 scrollStyle={style.helpScrollStyle}
                                 actions={selectedOption === 'Messages' ? messagesActionsData : []}
+                                getSelectedPage={getSelectedPage}
+                                totalCount={selectedOption === 'TICKETS' ? totalCountTickets : totalCount}
+                                page={selectedOption === 'TICKETS' ? pageTickets : page}
+                                hidePagination={false}
                             />
                             {/* )} */}
                             {showFeedbackTicketResolution && (
