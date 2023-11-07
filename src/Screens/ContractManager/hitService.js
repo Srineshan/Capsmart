@@ -215,7 +215,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         for (let i = 0; i < fullyExecutedContractData?.length || 0; i++) {
             temp[i] = (
                 <div className={`${style.documentCard} ${style.marginTop10}`} key={i}>
-                    <div className={`${style.documentGrid}`}>
+                    <div className={`${style.documentHITGrid}`}>
                         <a href={fullyExecutedContractData?.[i]?.fileURL} target="_blank">
                             <Tooltip title={'Preview'} arrow>
                                 <ArticleOutlinedIcon sx={{ color: '#b0a9ef', fontSize: 35 }} />
@@ -540,21 +540,21 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                     </div>
 
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        <CommonLabel value='Total Agreed to Compensation*' />
+                        <CommonLabel value={metadata?.totalSessionFrequency === 'NA' ? 'Hourly Rate*' : 'Total Agreed to Compensation*'} />
                         <div className={`${style.displayInRow}`}>
                             <div className={`${style.threeFieldWidth}`}>
                                 <CommonTextField
-                                    type="Number"
+                                    type="number"
                                     InputProps={{
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                     }}
                                     onChange={(e) => e.target.value >= 0 && handleValueChange('sessionAmount', (e.target.value).slice(0, 6))}
-                                    value={metadata?.hourlyRate}
+                                    value={metadata?.sessionAmount}
                                 />
                             </div>
-                            {/* <div className={style.verticalAlignCenter}>
+                            {metadata?.totalSessionFrequency !== 'NA' && <div className={style.verticalAlignCenter}>
                                 <CommonLabel className={` ${style.marginLeft20}`} value={metadata?.totalSession !== 0 && metadata?.totalSession !== '' && metadata?.totalSession !== NaN ? `${(metadata?.sessionAmount / metadata?.totalSession).toFixed(2)} per Hour` : ''} />
-                            </div> */}
+                            </div>}
                         </div>
                     </div>
                 </>
@@ -671,9 +671,9 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                     </div>
 
                     <div>
-                        <div className={`${style.twoCol} ${style.marginTop20}`}>
-                            <button className={`${style.outlinedButton} ${style.fullWidth}`} onClick={(e) => { setShowAdminActivity(false); setEditAdminActivitySelected(false); }}>CANCEL</button>
-                            <button className={`${style.buttonStyle} ${style.fullWidth} ${isLoading ? style.disabled : ''}`} onClick={(e) => { submit() }}>SAVE</button>
+                        <div className={` ${style.marginTop20}`}>
+                            <button className={`${style.outlinedButton} `} onClick={(e) => { setShowAdminActivity(false); setEditAdminActivitySelected(false); }}>CANCEL</button>
+                            <button className={`${style.buttonStyle}  ${isLoading ? style.disabled : ''}`} onClick={(e) => { submit() }}>SAVE</button>
                         </div>
                         <br />
                     </div>

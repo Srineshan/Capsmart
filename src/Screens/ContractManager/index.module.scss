@@ -1289,6 +1289,11 @@ select {
     grid-template-columns: 15% 1fr;
 }
 
+.documentHITGrid {
+    display: grid;
+    grid-template-columns: 15% 1fr 5%;
+}
+
 .documentTextGrid {
     display: grid;
     grid-template-columns: 85% 10%;

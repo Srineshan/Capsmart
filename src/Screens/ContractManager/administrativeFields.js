@@ -405,9 +405,9 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                     value={metadata?.sessionAmount}
                                 />
                             </div>
-                            <div className={style.verticalAlignCenter}>
+                            {metadata?.totalSessionFrequency !== "NA" && <div className={style.verticalAlignCenter}>
                                 <CommonLabel className={` ${style.marginLeft20}`} value={metadata?.totalSession !== 0 && metadata?.totalSession !== '' && metadata?.totalSession !== '0' && metadata?.totalSession !== NaN ? `${(metadata?.sessionAmount / metadata?.totalSession).toFixed(2)} per Hour` : ''} />
-                            </div>
+                            </div>}
                         </div>
                     </div>
                 </>
