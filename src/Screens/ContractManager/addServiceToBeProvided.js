@@ -976,7 +976,7 @@ const AddServiceProvided = ({
               metadata?.weekdayPayment !== 0
             ) {
               console.log('inside weekday else');
-              if (!activities?.map(data => data?.activity).includes(metadata?.weekdayActivity)) {
+              if (!activities?.map(data => data?.activity).includes(metadata?.weekdayActivity) && metadata?.weekdayActivity !== '' && metadata?.weekdayActivity !== null) {
                 activities?.push({ activity: metadata?.weekdayActivity });
               }
 
@@ -987,7 +987,7 @@ const AddServiceProvided = ({
               metadata?.weekdayNightsPayment !== 0
             ) {
               console.log('inside weeknight else');
-              if (!activities?.map(data => data?.activity).includes(metadata?.weekdayNightActivity)) {
+              if (!activities?.map(data => data?.activity).includes(metadata?.weekdayNightActivity) && metadata?.weekdayNightActivity !== '' && metadata?.weekdayNightActivity !== null) {
                 activities?.push({ activity: metadata?.weekdayNightActivity })
               }
             }
@@ -999,7 +999,7 @@ const AddServiceProvided = ({
             metadata?.weekendPayment !== 0
           ) {
             console.log('inside weekend else');
-            if (!activities?.map(data => data?.activity).includes(metadata?.weekendActivity)) {
+            if (!activities?.map(data => data?.activity).includes(metadata?.weekendActivity) && metadata?.weekendActivity !== '' && metadata?.weekendActivity !== null) {
               activities?.push({ activity: metadata?.weekendActivity })
             }
           }
@@ -1009,7 +1009,7 @@ const AddServiceProvided = ({
             metadata?.holidayPayment !== 0
           ) {
             console.log('inside holiday else');
-            if (!activities?.map(data => data?.activity).includes(metadata?.holidayActivity)) {
+            if (!activities?.map(data => data?.activity).includes(metadata?.holidayActivity) && metadata?.holidayActivity !== '' && metadata?.holidayActivity !== null) {
               activities?.push({ activity: metadata?.holidayActivity })
             }
           }
@@ -1752,6 +1752,10 @@ const AddServiceProvided = ({
 
   const onActivitySelect = (selectedItem) => {
     console.log("selectedItem", selectedItem);
+    if (selectedItem === undefined) {
+      ErrorToaster("Select Department To Add Activities");
+      return;
+    }
     setItem(selectedItem);
     if (
       !selectedActivity?.map((data) => data?.id)?.includes(selectedItem?.id)

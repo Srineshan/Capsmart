@@ -78,7 +78,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         weekdayTo: null,
         weekdayDuration: 0,
         weekdayMin: 0,
-        weekdayMax: 0,
+        weekdayMax: 99999999,
         weekdayActivity: '',
         weekdayPayment: 0,
         weekdayPaymentNa: false,
@@ -89,7 +89,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         weekdayNightsTo: null,
         weekdayNightsDuration: 0,
         weekdayNightsMin: 0,
-        weekdayNightsMax: 0,
+        weekdayNightsMax: 99999999,
         weekdayNightActivity: '',
         weekdayNightsPayment: 0,
         weekdayNightsPaymentNa: false,
@@ -102,7 +102,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         weekendEndday: '',
         weekendDuration: 0,
         weekendMin: 0,
-        weekendMax: 0,
+        weekendMax: 99999999,
         weekendActivity: '',
         weekendPayment: 0,
         weekendPaymentNa: false,
@@ -115,7 +115,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         holidayTerm: 'PRIOR_DAY',
         holidayDuration: 0,
         holidayMin: 0,
-        holidayMax: 0,
+        holidayMax: 99999999,
         holidayActivity: '',
         holidayPayment: 0,
         holidayPaymentNa: false,
@@ -188,7 +188,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
             weekdayTo: null,
             weekdayDuration: 0,
             weekdayMin: 0,
-            weekdayMax: 0,
+            weekdayMax: 99999999,
             weekdayActivity: '',
             weekdayPayment: 0,
             weekdayPaymentNa: false,
@@ -199,7 +199,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
             weekdayNightsTo: null,
             weekdayNightsDuration: 0,
             weekdayNightsMin: 0,
-            weekdayNightsMax: 0,
+            weekdayNightsMax: 99999999,
             weekdayNightActivity: '',
             weekdayNightsPayment: 0,
             weekdayNightsPaymentNa: false,
@@ -212,7 +212,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
             weekendEndday: '',
             weekendDuration: 0,
             weekendMin: 0,
-            weekendMax: 0,
+            weekendMax: 99999999,
             weekendActivity: '',
             weekendPayment: 0,
             weekendPaymentNa: false,
@@ -225,7 +225,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
             holidayTerm: 'PRIOR_DAY',
             holidayDuration: 0,
             holidayMin: 0,
-            holidayMax: 0,
+            holidayMax: 99999999,
             holidayActivity: '',
             holidayPayment: 0,
             holidayPaymentNa: false,
@@ -246,7 +246,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                 weekdayTo: null,
                 weekdayDuration: 0,
                 weekdayMin: 0,
-                weekdayMax: 0,
+                weekdayMax: 99999999,
                 weekdayActivity: '',
                 weekdayPayment: 0,
                 weekdayPaymentNa: false,
@@ -257,7 +257,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                 weekdayNightsTo: null,
                 weekdayNightsDuration: 0,
                 weekdayNightsMin: 0,
-                weekdayNightsMax: 0,
+                weekdayNightsMax: 99999999,
                 weekdayNightActivity: '',
                 weekdayNightsPayment: 0,
                 weekdayNightsPaymentNa: false,
@@ -270,7 +270,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                 weekendEndday: '',
                 weekendDuration: 0,
                 weekendMin: 0,
-                weekendMax: 0,
+                weekendMax: 99999999,
                 weekendActivity: '',
                 weekendPayment: 0,
                 weekendPaymentNa: false,
@@ -285,7 +285,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                 holidayPayment: 0,
                 holidayPaymentNa: false,
                 holidayMin: 0,
-                holidayMax: 0,
+                holidayMax: 99999999,
                 serviceWeekDaysDay: {
                     monday: false,
                     tuesday: false,
@@ -546,16 +546,16 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
     const onCustomizeFieldChange = (value, name) => {
         if (['holidayFrequency', 'weekdayFrequency', 'weekdayNightsFrequency', 'weekendFrequency'].includes(name) && value === 'NA') {
             if (name === 'weekdayFrequency') {
-                setMetadata({ ...metadata, [name]: value, weekdayMin: 0, weekdayMax: 0 });
+                setMetadata({ ...metadata, [name]: value, weekdayMin: 0, weekdayMax: 99999999 });
             }
             if (name === 'weekdayNightsFrequency') {
-                setMetadata({ ...metadata, [name]: value, weekdayNightsMin: 0, weekdayNightsMax: 0 });
+                setMetadata({ ...metadata, [name]: value, weekdayNightsMin: 0, weekdayNightsMax: 99999999 });
             }
             if (name === 'weekendFrequency') {
-                setMetadata({ ...metadata, [name]: value, weekendMin: 0, weekendMax: 0 })
+                setMetadata({ ...metadata, [name]: value, weekendMin: 0, weekendMax: 99999999 })
             }
             if (name === 'holidayFrequency') {
-                setMetadata({ ...metadata, [name]: value, holidayMin: 0, holidayMax: 0 });
+                setMetadata({ ...metadata, [name]: value, holidayMin: 0, holidayMax: 99999999 });
             }
         }
         else {
@@ -694,7 +694,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 }}
                                 className={style.threeFieldWidth}
                                 onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'weekdayMax')}
-                                value={metadata?.weekdayMax === 0 ? '' : metadata?.weekdayMax}
+                                value={(metadata?.weekdayMax === 0 || metadata?.weekdayMax === 99999999) ? '' : metadata?.weekdayMax}
                                 type='number'
                                 disabled={metadata?.weekdayFrequency === 'NA'}
                             />
@@ -839,7 +839,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 }}
                                 className={style.threeFieldWidth}
                                 onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'weekdayNightsMax')}
-                                value={metadata?.weekdayNightsMax === 0 ? '' : metadata?.weekdayNightsMax}
+                                value={(metadata?.weekdayNightsMax === 0 || metadata?.weekdayNightsMax === 99999999) ? '' : metadata?.weekdayNightsMax}
                                 type='number'
                                 disabled={metadata?.weekdayNightsFrequency === 'NA'}
                             />
@@ -982,7 +982,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 }}
                                 className={style.threeFieldWidth}
                                 onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'weekendMax')}
-                                value={metadata?.weekendMax === 0 ? '' : metadata?.weekendMax}
+                                value={(metadata?.weekendMax === 0 || metadata?.weekendMax === 99999999) ? '' : metadata?.weekendMax}
                                 type='number'
                                 disabled={metadata?.weekendFrequency === 'NA'}
                             />
@@ -1142,7 +1142,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 }}
                                 className={style.threeFieldWidth}
                                 onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'holidayMax')}
-                                value={metadata?.holidayMax === 0 ? '' : metadata?.holidayMax}
+                                value={(metadata?.holidayMax === 0 || metadata?.holidayMax === 99999999) ? '' : metadata?.holidayMax}
                                 type='number'
                                 disabled={metadata?.holidayFrequency === 'NA'}
                             />
