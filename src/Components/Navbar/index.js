@@ -165,14 +165,14 @@ const Navbar = () => {
   const idHelp = open ? "mouse-over-popover" : undefined;
 
   const logoutURL = () => {
-    window.location.href = `https://${window.location.hostname}/logout`;
-  }
+    window.location.href = `http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/logout`;
+  };
 
   const logout = async () => {
     const cookies = new Cookies();
     let token = cookies.get("user");
     let entityId = cookies.get("entityId");
-    // await fetch(`https://${window.location.hostname}/logout`, {
+    // await fetch(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/logout`, {
     //   // redirect: 'manual',
     //   method: 'PUT',
     //   body: JSON.stringify({}),
@@ -184,7 +184,7 @@ const Navbar = () => {
     // })
 
     // let data = JSON.stringify({});
-    // await axios(`https://${window.location.hostname}/logout`, {
+    // await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/logout`, {
     //   method: 'PUT',
     //   data,
     // }).then(response => {
@@ -196,11 +196,8 @@ const Navbar = () => {
     //   }
     // })
 
-
-
-
     // window.location.href = respose.headers?.get('Location')
-    // axios.post(`https://${window.location.hostname}/logout`, {
+    // axios.post(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/logout`, {
     //   // Add parameters here
     //   // transformRequest: (data, headers) => {
     //   //   delete headers.common['X-XSRF-TOKEN'];
@@ -219,16 +216,17 @@ const Navbar = () => {
     //     console.log(error);
     //   })
     await PUT(`logout`, null)
-      .then(response => {
-        const logouturi = response.headers['location'] || '';
-        cookies.remove("user", { path: '/' });
-        cookies.remove("entityId", { path: '/' });
+      .then((response) => {
+        const logouturi = response.headers["location"] || "";
+        cookies.remove("user", { path: "/" });
+        cookies.remove("entityId", { path: "/" });
         if (logouturi) {
           window.location.href = logouturi;
         }
-      }).catch(error => {
-        ErrorToaster('Unexpected Error');
       })
+      .catch((error) => {
+        ErrorToaster("Unexpected Error");
+      });
   };
 
   useEffect(() => {
@@ -271,22 +269,22 @@ const Navbar = () => {
   let homeLink = currentUserRoles?.includes("Contract Manager")
     ? "/contracts"
     : isFlutterRoles?.length !== 0
-      ? `/home/#/dashboardRoute`
-      : currentUserRoles?.includes("Super Sys Admin")
-        ? "/partnerPortal"
-        : currentUserRoles?.includes("Entity Sys Admin")
-          ? "/entitySitePortal"
-          : "/entitySitePortal";
+    ? `/home/#/dashboardRoute`
+    : currentUserRoles?.includes("Super Sys Admin")
+    ? "/partnerPortal"
+    : currentUserRoles?.includes("Entity Sys Admin")
+    ? "/entitySitePortal"
+    : "/entitySitePortal";
   const homeRoute = () => {
     let homeLink = currentUserRoles?.includes("Contract Manager")
       ? "/contracts"
       : isFlutterRoles?.length !== 0
-        ? `/`
-        : currentUserRoles?.includes("Super Sys Admin")
-          ? "/partnerPortal"
-          : currentUserRoles?.includes("Entity Sys Admin")
-            ? "/entitySitePortal"
-            : "/entitySitePortal";
+      ? `/`
+      : currentUserRoles?.includes("Super Sys Admin")
+      ? "/partnerPortal"
+      : currentUserRoles?.includes("Entity Sys Admin")
+      ? "/entitySitePortal"
+      : "/entitySitePortal";
     console.log(homeLink);
     if (homeLink === "/") {
       window.location.href = "/home/#/dashboardRoute";
@@ -304,9 +302,10 @@ const Navbar = () => {
           }
           <img src={logo} alt="Hospital Logo" className={style.sanmateoLogo} />
           <div
-            className={`${style.menuStyle} ${window.location.pathname.includes(homeLink) &&
+            className={`${style.menuStyle} ${
+              window.location.pathname.includes(homeLink) &&
               style.activeMenuColor
-              }`}
+            }`}
             onClick={homeRoute}
           >
             <p>HOME - {currentUserRoles?.[0]?.toUpperCase()}</p>
@@ -323,9 +322,11 @@ const Navbar = () => {
           }
           <div>
             <div
-              className={`${style.menuStyle} ${(window.location.pathname.includes("/reports") || window.location.pathname.includes("/reportTypeOverview")) &&
+              className={`${style.menuStyle} ${
+                (window.location.pathname.includes("/reports") ||
+                  window.location.pathname.includes("/reportTypeOverview")) &&
                 style.activeMenuColor
-                }`}
+              }`}
               ref={popoverAnchor}
               onMouseEnter={(e) => handleClick(e)}
               onMouseLeave={() => handleClose()}
@@ -365,7 +366,10 @@ const Navbar = () => {
                     </Link>
                   )}
                   {isTimesheetsAvailable && (
-                    <Link to={'/reports/timesheets'} className={style.noFontStyle}>
+                    <Link
+                      to={"/reports/timesheets"}
+                      className={style.noFontStyle}
+                    >
                       <div className={style.options}>Timesheets</div>
                     </Link>
                   )}
@@ -376,7 +380,10 @@ const Navbar = () => {
                                     <div className={style.options}>Task Management</div>
                                 </Link> */}
                   {isPaymentsAvailable && (
-                    <Link to={"/reports/payments"} className={style.noFontStyle}>
+                    <Link
+                      to={"/reports/payments"}
+                      className={style.noFontStyle}
+                    >
                       <div className={style.options}>Payments</div>
                     </Link>
                   )}
@@ -409,11 +416,12 @@ const Navbar = () => {
           {isEntityLevelAdmin && (
             <div>
               <div
-                className={`${style.menuStyle} ${(window.location.pathname === "/user" ||
-                  window.location.pathname === "/welcome" ||
-                  window.location.pathname === "/partnerPortal") &&
+                className={`${style.menuStyle} ${
+                  (window.location.pathname === "/user" ||
+                    window.location.pathname === "/welcome" ||
+                    window.location.pathname === "/partnerPortal") &&
                   style.activeMenuColor
-                  }`}
+                }`}
                 ref={popoverAnchorTools}
                 onMouseEnter={(e) => handleClickTools(e)}
                 onMouseLeave={() => handleCloseTools()}
@@ -448,7 +456,11 @@ const Navbar = () => {
                       </Link>
                     )}
                     <Link
-                      to={isSuperAdminAccess ? "/partnerPortal" : `/entitySetup/${TenantID}/appSubscription`}
+                      to={
+                        isSuperAdminAccess
+                          ? "/partnerPortal"
+                          : `/entitySetup/${TenantID}/appSubscription`
+                      }
                       className={style.noFontStyle}
                     >
                       <div className={style.options}>ENTITY MANAGEMENT</div>
@@ -460,8 +472,9 @@ const Navbar = () => {
           )}
           <div>
             <div
-              className={`${style.menuStyle} ${window.location.pathname === "/help" && style.activeMenuColor
-                }`}
+              className={`${style.menuStyle} ${
+                window.location.pathname === "/help" && style.activeMenuColor
+              }`}
               ref={popoverAnchorHelp}
               onMouseEnter={(e) => handleClickHelp(e)}
               onMouseLeave={() => handleCloseHelp()}
@@ -490,7 +503,10 @@ const Navbar = () => {
                   <Link to={"/help"} className={style.noFontStyle}>
                     <div className={style.options}>OPEN FEEDBACK TICKET</div>
                   </Link>
-                  <div className={`${style.options} ${style.cursorPointer}`} onClick={handleScreenshot}>
+                  <div
+                    className={`${style.options} ${style.cursorPointer}`}
+                    onClick={handleScreenshot}
+                  >
                     SUPPORT PORTAL
                   </div>
                 </div>
@@ -510,7 +526,10 @@ const Navbar = () => {
           <img src={NotificationsIcon} alt="print" className={style.icons} />
           <img src={RedBackground} alt="print" className={style.notificationIcon} />
           <img src={NotificationCount} alt="print" className={style.notificationCount} /> */}
-          <div className={`${style.logoutStyle} ${style.cursorPointer}`} onClick={logout}>
+          <div
+            className={`${style.logoutStyle} ${style.cursorPointer}`}
+            onClick={logout}
+          >
             <p>Logout</p>
           </div>
           <img
