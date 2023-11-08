@@ -1166,7 +1166,7 @@ const AddServiceProvided = ({
                   value: parseFloat(dataValues?.min || "0"),
                 },
                 maximum: {
-                  value: parseFloat(dataValues?.max || "0"),
+                  value: parseFloat(dataValues?.max || 99999999),
                 },
                 frequency: dataValues?.frequency,
                 ...(serviceTypeTemplate === HIT && {
