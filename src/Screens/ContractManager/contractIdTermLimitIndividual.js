@@ -324,7 +324,7 @@ const ContractIdTermLimitIndividual = (
     //   setConflict({ isPresent: true, conflict: conflictedData });
     // }
     // if (conflictedData?.length === 0) {
-    // setContinueLoading(true);
+    setContinueLoading(true);
     if (contractName === '') {
       ErrorToaster('Enter Contract Name to proceed');
       setContinueLoading(false);

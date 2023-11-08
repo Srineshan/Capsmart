@@ -1257,17 +1257,19 @@ const AddServiceProvided = ({
               value:
                 (serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ONCALLSERVICE) &&
                   dataValues?.totalSession === 0
-                  ? Number(dataValues?.sessionAmount)?.toFixed(2)
+                  ? Number(dataValues?.sessionAmount)?.toFixed(2) !== 'NaN' ? Number(dataValues?.sessionAmount)?.toFixed(2) : 0
                   : Number(
                     dataValues?.sessionAmount / dataValues?.totalSession
-                  )?.toFixed(2),
+                  )?.toFixed(2) !== "NaN" ? Number(
+                    dataValues?.sessionAmount / dataValues?.totalSession
+                  )?.toFixed(2) : 0,
             },
           }),
           ...((serviceTypeTemplate === SUPPLEMENTAL ||
             serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === ONCALLSERVICE || serviceTypeTemplate === HIT) &&
             !dataValues?.dedicatedHoursSpecified && {
             hourlyRate: {
-              value: dataValues?.hourlyRate,
+              value: dataValues?.hourlyRate !== "NaN" ? dataValues?.hourlyRate : 0,
             },
           }),
           ...((serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE) && {
