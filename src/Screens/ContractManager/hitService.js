@@ -16,13 +16,11 @@ import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
 import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
 import CommonTextField from '../../Components/CommonFields/CommonTextField';
 import CommonLabel from '../../Components/CommonFields/CommonLabel';
-import { valueCheck } from "../../utils/valueCheck";
-import { format } from "date-fns";
 
 import style from './index.module.scss';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
-const AdministrativeFields = ({ getMetaData, services, serviceSelected, editService, isReset, getIsReset, sites, contractId }) => {
+const HITService = ({ getMetaData, services, serviceSelected, editService, isReset, getIsReset, sites, contractId }) => {
     const [activity, setActivity] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [showAdminActivity, setShowAdminActivity] = useState(false);
@@ -37,7 +35,6 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         asNeeded: false,
     });
     const [editAdminActivitySelected, setEditAdminActivitySelected] = useState(false);
-    const contractStatus = sessionStorage.getItem('Selected Contract Status');
 
     let specificDedicatedHoursList = [];
     services?.filter(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => {
@@ -54,6 +51,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         totalSession: '0',
         totalSessionFrequency: 'NA',
         sessionAmount: '0',
+        hourlyRate: '0',
         sessionDuration: '0',
         serviceDays: {
             tuesday: false,
@@ -114,6 +112,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             totalSession: '0',
             totalSessionFrequency: 'NA',
             sessionAmount: '0',
+            hourlyRate: '0',
             sessionDuration: '0',
             serviceDays: {
                 tuesday: false,
@@ -154,6 +153,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                 workingTimeTo: GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
                 serviceDays: serviceSelected?.serviceDays,
                 sessionAmount: serviceSelected?.payableAmount?.value,
+                hourlyRate: (serviceSelected?.payableAmount?.value / serviceSelected?.duration?.hours) || 0,
                 sessionDuration: serviceSelected?.duration?.hours || '0',
                 workflowId: serviceSelected?.workFlow?.id,
                 workflowName: serviceSelected?.workFlow?.workFlowName?.name,
@@ -181,7 +181,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     }
 
     const getAdminActivityList = async () => {
-        const { data: adminActivityList } = await GET(`contract-managment-service/contracts/adminActivity`);
+        const { data: adminActivityList } = await GET(`contract-managment-service/contracts/clinicalInformativeActivity`);
         setActivity(adminActivityList);
     }
 
@@ -193,11 +193,11 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                 setMetadata({ ...metadata, sessionDuration: '0', dedicatedHoursActivityType: '', sessionAmount: '', totalSession: '0', totalSessionFrequency: 'NA', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
             }
         }
-        if (name === 'totalSessionFrequency' && value === 'NA') {
-            setMetadata({ ...metadata, totalSessionFrequency: value, totalSession: 0 })
-        }
         else {
             setMetadata({ ...metadata, [name]: value });
+        }
+        if (name === 'sessionAmount') {
+            setMetadata({ ...metadata, sessionAmount: value, hourlyRate: (value / metadata?.sessionDuration) || '0' })
         }
     }
 
@@ -221,7 +221,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             "billable": adminActivity?.billable,
             "asNeeded": adminActivity?.asNeeded,
         }
-        await POST(`contract-managment-service/contracts/adminActivity`, data)
+        await POST(`contract-managment-service/contracts/clinicalInformativeActivity`, data)
             .then(response => {
                 SuccessToaster('Activity Added to List');
                 getAdminActivityList();
@@ -331,22 +331,11 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
 
     console.log('Metadata', metadata);
 
-    const dataCheck = (value) => {
-        if (editService) {
-            return valueCheck(value);
-        } else {
-            return false;
-        }
-    };
-
-    console.log(metadata?.selectedActivities)
 
     return (
         <div>
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <CommonLabel value='Dedicated Hours For Administrative Services*'
-                    className={!metadata?.dedicatedHoursSpecified && (dataCheck(metadata?.dedicatedHoursPerformingActivity) ? style.redLable : "")}
-                />
+                <CommonLabel value='Dedicated Hours For Clinical Informative / HIT Services*' />
                 <div className={style.displayInRow}>
                     {/* <div className={`${style.threeFieldWidth}`} > */}
                     <CommonSwitch
@@ -386,9 +375,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                 metadata?.dedicatedHoursSpecified &&
                 <>
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        <CommonLabel value='Separate Administrative Hours Specified*'
-                            className={dataCheck(metadata?.totalSession) ? style.redLable : ""}
-                        />
+                        <CommonLabel value='Separate Clinical Informative / HIT Hours Specified*' />
                         <div className={style.displayInRow}>
                             <div className={`${style.twoFieldWidth}`}>
                                 <CommonTextField
@@ -398,23 +385,39 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                     }}
                                     onChange={(e) => e.target.value >= 0 && handleValueChange('totalSession', e.target.value.slice(0, 4))}
                                     value={metadata?.totalSession}
-                                    disabled={metadata?.totalSessionFrequency === "NA"}
                                 />
                             </div>
                             <CommonSelectField className={` ${style.marginLeft20}`}
-                                value={metadata?.totalSessionFrequency || ''}
+                                value={metadata?.totalSessionFrequency || 'NA'}
                                 onChange={(e) => handleValueChange('totalSessionFrequency', e.target.value)}
-                                firstOptionLabel={'Select Frequency'} firstOptionValue={''}
-                                valueList={['WEEK', 'MONTH', 'YEAR', 'NA']}
-                                labelList={['Per Week', 'Per Month', 'Per Year', 'As Needed']}
+                                firstOptionLabel={'Select Frequency'} firstOptionValue={'NA'}
+                                valueList={['WEEK', 'MONTH', 'YEAR']}
+                                labelList={['Per Week', 'Per Month', 'Per Year']}
                                 disabledList={[false, false]} />
                         </div>
                     </div>
 
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        <CommonLabel value='Administrative Services Payment Amount*'
-                            className={dataCheck(metadata?.sessionAmount) ? style.redLable : ""}
-                        />
+                        <CommonLabel value='Hourly Rate Billable*' />
+                        <div className={`${style.displayInRow}`}>
+                            <div className={`${style.threeFieldWidth}`}>
+                                <CommonTextField
+                                    type="number"
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
+                                    }}
+                                    onChange={(e) => e.target.value >= 0 && handleValueChange('sessionAmount', (e.target.value).slice(0, 6))}
+                                    value={metadata?.hourlyRate}
+                                />
+                            </div>
+                            {/* <div className={style.verticalAlignCenter}>
+                                <CommonLabel className={` ${style.marginLeft20}`} value={metadata?.totalSession !== 0 && metadata?.totalSession !== '' && metadata?.totalSession !== NaN ? `${(metadata?.sessionAmount / metadata?.totalSession).toFixed(2)} per Hour` : ''} />
+                            </div> */}
+                        </div>
+                    </div>
+
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <CommonLabel value='Mileage Rate*' />
                         <div className={`${style.displayInRow}`}>
                             <div className={`${style.threeFieldWidth}`}>
                                 <CommonTextField
@@ -426,19 +429,30 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                     value={metadata?.sessionAmount}
                                 />
                             </div>
-                            <div className={style.verticalAlignCenter}>
-                                <CommonLabel className={` ${style.marginLeft20}`} value={metadata?.totalSession !== 0 && metadata?.totalSession !== '' && metadata?.totalSession !== '0' && metadata?.totalSession !== NaN ? `${(metadata?.sessionAmount / metadata?.totalSession).toFixed(2)} per Hour` : ''} />
-                            </div>
+                            {/* <div className={style.verticalAlignCenter}>
+                                <CommonLabel className={` ${style.marginLeft20}`} value={metadata?.totalSession !== 0 && metadata?.totalSession !== '' && metadata?.totalSession !== NaN ? `${(metadata?.sessionAmount / metadata?.totalSession).toFixed(2)} per Hour` : ''} />
+                            </div> */}
                         </div>
                     </div>
                 </>
             }
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <CommonLabel value='Allowable Administrative Duties & Function To Perform'
-                    className={editService && (!metadata?.selectedActivities || metadata?.selectedActivities.length === 0) || dataCheck(metadata?.selectedActivities) ? style.redLable : ""}
-                />
+                <CommonLabel value='Allowable Clinical Informative / HIT Duties & Function To Perform' />
                 <div>
+
+                    {/* <div className={`${style.displayInRow} ${style.marginBottom10}`}>
+                        <CommonCheckBox className={`${style.marginLeft10}`} label="Epic 8 Training" />
+                        <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>
+                        <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>
+                    </div>
+
+                    <div className={`${style.displayInRow} ${style.marginBottom10}`}>
+                        <CommonCheckBox className={`${style.marginLeft10}`} label="Epic 8 Implementation" />
+                        <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>
+                        <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>
+                    </div> */}
+
                     {
                         activity?.map((data, index) => (
                             <div className={`${style.displayInRow} ${style.marginBottom10}`}>
@@ -493,8 +507,8 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                 (showAdminActivity || editAdminActivitySelected) &&
                 <div className={`${style.addonAddBox} ${style.marginTop20}`}>
                     <div className={`${style.addManagerGrid}`}>
-                        <CommonLabel value='Additional Administrative Services Name' />
-                        <CommonInputField placeholder='Administrative Service Name' className={style.fullWidth} value={adminActivity?.activity} onChange={(e) => handleAdminActivity('activity', e.target.value)} />
+                        <CommonLabel value='Additional Clinical Informative / HIT Services Name' />
+                        <CommonInputField placeholder='Clinical Informative / HIT Service Name' className={style.fullWidth} value={adminActivity?.activity} onChange={(e) => handleAdminActivity('activity', e.target.value)} />
                     </div>
 
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -540,7 +554,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             <div>
                 {!showAdminActivity &&
                     <div className={`${style.addGrid} ${style.fullWidth} ${style.marginTop20}`}>
-                        <CommonInputField className={style.fullWidth} placeholder='New Additional Administrative Services Name' onChange={(e) => handleAdminActivity('activity', e.target.value)} />
+                        <CommonInputField className={style.fullWidth} placeholder='New Additional Clinical Informative / HIT Services Name' onChange={(e) => handleAdminActivity('activity', e.target.value)} />
                         <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`} >
                             <AddIcon sx={{ fontSize: 25, color: 'white' }} aria-describedby={id} onClick={(e) => setShowAdminActivity(true)} />
                         </div>
@@ -594,34 +608,18 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
 
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <CommonLabel value='Service Days*'
-                    className={
-                        metadata?.serviceDays === null ||
-                            (metadata?.serviceDays !== undefined &&
-                                Object?.values(metadata?.serviceDays)?.filter(
-                                    (data) => data === true
-                                )?.length === 0)
-                            ? style.redLable
-                            : ""
-                    } />
+                <CommonLabel value='Service Days*' />
                 <ServiceDays setMetaData={getServiceDaysMetadata} selectedService={serviceSelected} isReset={isReset} setIsReset={getIsReset} />
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <CommonLabel value='Allowable Working Day Hours For Service*'
-                    className={
-                        format(metadata?.workingTimeTo || new Date(), "H") === "0" &&
-                            format(metadata?.workingTimeFrom || new Date(), "H") === "0"
-                            ? style.redLable
-                            : ""
-                    } />
+                <CommonLabel value='Allowable Working Day Hours For Service*' />
                 <div className={style.displayInRow}>
                     <TimePicker
                         useAmPm={false}
                         onChange={(e) => {
                             updateWorkingPeriod(e);
                         }}
-                        disabled={contractStatus === "ACTIVE" ? true : false}
                         value={metadata?.workingTimeFrom === null ? null : new Date(metadata?.workingTimeFrom)}
                     />
                     <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
@@ -630,7 +628,6 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                         onChange={(e) => {
                             handleValueChange('workingTimeTo', e);
                         }}
-                        disabled={contractStatus === "ACTIVE" ? true : false}
                         value={metadata?.workingTimeTo === null ? null : new Date(metadata?.workingTimeTo)}
                     // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.totalSession * 60 * 60 * 1000))}
                     />
@@ -643,9 +640,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             </div>
             {metadata?.activityApprovalWFRequired &&
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                    <CommonLabel value='Designate Request Approver*'
-                        className={dataCheck(metadata?.approver) ? style.redLable : ""}
-                    />
+                    <CommonLabel value='Designate Request Approver*' />
                     <CommonSelectField className={`${style.fullWidth} `}
                         defaultValue={metadata?.approver}
                         value={metadata?.approver ? metadata?.approver?.id : '0'}
@@ -662,4 +657,4 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     )
 }
 
-export default AdministrativeFields;
+export default HITService;

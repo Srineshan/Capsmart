@@ -29,6 +29,7 @@ const SupplementalFields = ({
     const [availableActivities, setAvailableActivities] = useState([]);
     const { setValue, value } = useComboboxControls({ initialValue: "" });
     const [newServiceName, setNewServiceName] = useState("");
+    const contractStatus = sessionStorage.getItem('Selected Contract Status');
 
     console.log("selected Service", serviceSelected);
 
@@ -529,6 +530,7 @@ const SupplementalFields = ({
                                         element.selectionEnd = caret;
                                     });
                                 }}
+                                inputProps={{ disabled: contractStatus === "ACTIVE" ? true : false }}
                             />
                             <div
                                 className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer} `}
@@ -743,6 +745,7 @@ const SupplementalFields = ({
                                     ? null
                                     : new Date(metadata?.workingTimeFrom)
                             }
+                            disabled={contractStatus === "ACTIVE" ? true : false}
                         />
                         <p
                             className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}
@@ -757,6 +760,7 @@ const SupplementalFields = ({
                                     ? null
                                     : new Date(metadata?.workingTimeTo)
                             }
+                            disabled={contractStatus === "ACTIVE" ? true : false}
                         // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.totalSession * 60 * 60 * 1000))}
                         />
                     </div>

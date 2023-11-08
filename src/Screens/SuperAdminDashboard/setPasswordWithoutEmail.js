@@ -30,7 +30,7 @@ const SetPasswordWithoutPassword = () => {
 
 
   const getEntityId = async () => {
-    await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/entity-service/entityID`, {
+    await axios(`https://${window.location.hostname}/entity-service/entityID`, {
       method: 'GET',
       // headers: { 'X-subdomain': 'smmc-trial' }
     }).then(response => {
@@ -48,7 +48,7 @@ const SetPasswordWithoutPassword = () => {
   }
 
   const getUser = async () => {
-    await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/user-management-service/user`, {
+    await axios(`https://${window.location.hostname}/user-management-service/user`, {
       method: 'GET',
       headers: headers,
     }).then(response => {
@@ -81,7 +81,7 @@ const SetPasswordWithoutPassword = () => {
           "password": password,
         }
       }
-      axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/user-management-service/user/setpassword`, {
+      axios(`https://${window.location.hostname}/user-management-service/user/setpassword`, {
         method: 'POST',
         headers: headers,
         data: JSON.stringify(data),
@@ -131,8 +131,12 @@ const SetPasswordWithoutPassword = () => {
   return (
     <div className={style.setPasswordBackground}>
       <div className={style.setPasswordCard}>
-        <div className={style.loginToStyle}>create login credential</div>
-        <div className={`${style.regHeading} ${style.blackText} ${style.marginTop30}`}>Email(Registered Mail Id)</div>
+        <div className={style.loginToStyle}>
+          create login credential
+        </div>
+        <div className={`${style.regHeading} ${style.blackText} ${style.marginTop30}`}>
+          Email(Registered Mail Id)
+        </div>
         <InputGroup type="email" large={true} placeholder="user@email.com" className={style.marginTop10} onChange={(e) => setEmail(e.target.value)} />
         <div className={`${style.regHeading} ${style.blackText} ${style.marginTop30}`}>Set Your Password</div>
         <InputGroup type={viewPassword ? "text" : "password"} large={true} placeholder="Password" className={style.marginTop10} rightElement={EyeOpenElement(1)} onChange={(e) => setPassword(e.target.value)} />
@@ -143,9 +147,9 @@ const SetPasswordWithoutPassword = () => {
           // <InputGroup type="text" large={true} placeholder="+1344231717" className={style.marginTop10} onChange={(e)=>setPhone(e.target.value)}/>
         }
         <button className={`${style.loginButton} ${style.marginTop30}`}
-          onClick={() => { handlePasswordCheck() }}
-        >CREATE PASSWORD</button>
-
+          onClick={() => { handlePasswordCheck() }}>
+          CREATE PASSWORD
+        </button>
       </div>
     </div>
   )

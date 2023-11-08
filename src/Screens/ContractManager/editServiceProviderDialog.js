@@ -220,7 +220,7 @@ const EditServiceProvider = ({
   const getEntityData = async () => {
     const { data: entityData } = await GET(`entity-service/entity/${TenantID}`);
     // console.log("entity", entityData.subdomain);
-    setCSPSubDomain(entityData.officialEmailDomain?.officialEmail);
+    setCSPSubDomain(entityData?.officialEmailDomain?.officialEmail);
   };
 
   const handleRoles = (value) => {

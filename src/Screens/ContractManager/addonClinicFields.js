@@ -118,6 +118,8 @@ const AddonClinicFields = ({
     }
   };
 
+  console.log('metadata', metadata);
+
   const setSelectedValues = async () => {
     if (editService) {
       let temp = [];
@@ -1068,7 +1070,7 @@ const AddonClinicFields = ({
               <CommonCheckBox
                 checked={true}
                 label={`${data?.addOnActivityType
-                  } (${data?.performingActivity?.replaceAll("-", ", ")})`}
+                  } (${data?.activities?.map(data => data?.activity)?.join(', ')})`}
               />
               <div className={`${style.addonBoxStyle}`}>
                 <div className={`${style.addManagerGrid}`}>

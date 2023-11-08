@@ -5,6 +5,7 @@ import cloneDeep from "lodash.clonedeep";
 import AddIcon from "@mui/icons-material/Add";
 import DatalistInput, { useComboboxControls } from "react-datalist-input";
 import { PUT, GET, TenantID, POST } from "./../dataSaver";
+import { format } from 'date-fns';
 import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
 import Calculator from "./../../Components/Calculator";
 import NotesNotOpen from "./../../images/notesNotOpen.png";
@@ -23,6 +24,7 @@ import SupplementalFields from "./supplementalFields";
 import AddonClinicFields from "./addonClinicFields";
 import HospiceService from "./hospiceService";
 import AdministrativeFields from "./administrativeFields";
+import HITService from "./hitService";
 import SurgerySessionFields from "./surgerySessionFields";
 import { workFlowDataGenerator } from "./workflowDataGenerator";
 import {
@@ -35,6 +37,7 @@ import {
   PROCEDUREREADING,
   HOSPICE,
   ONCALLSERVICE,
+  HIT,
 } from "../../Constants";
 import Notes from "../../Components/Notes";
 import CommonSwitch from "../../Components/CommonFields/CommonSwitch";
@@ -123,6 +126,7 @@ const AddServiceProvided = ({
   const [activityItems, setActivityItems] = useState([]);
   const [reducedOffsetApplicable, setReducedOffsetApplicable] = useState(false);
   const [compensationPolicy, setCompensationPolicy] = useState("");
+  const contractStatus = sessionStorage.getItem('Selected Contract Status');
 
   useEffect(() => {
     getContractedServices();
@@ -798,7 +802,7 @@ const AddServiceProvided = ({
       } else {
         handleSave(buttonType);
       }
-    } else if (serviceTypeTemplate === ADMINISTRATIVE) {
+    } else if (serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === HIT) {
       let data = metadata;
       if (data?.approver !== undefined) {
         let workFlowData;
@@ -936,7 +940,8 @@ const AddServiceProvided = ({
       serviceTypeTemplate !== SUPPLEMENTAL &&
       serviceTypeTemplate !== ADDON &&
       serviceTypeTemplate !== HOSPICE &&
-      serviceTypeTemplate !== ADMINISTRATIVE
+      serviceTypeTemplate !== ADMINISTRATIVE &&
+      serviceTypeTemplate !== HIT
     ) {
       performingActivity = selectedActivity
         ?.map((data) => data?.activity?.activity)
@@ -945,7 +950,7 @@ const AddServiceProvided = ({
         activities?.push({ activity: data?.activity?.activity });
       });
     }
-    if (serviceTypeTemplate === ADMINISTRATIVE) {
+    if (serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === HIT) {
       performingActivity = metadata?.selectedActivities
         ?.map((data) => data?.activity)
         ?.join("-");
@@ -955,11 +960,11 @@ const AddServiceProvided = ({
     }
     if (serviceTypeTemplate === ONCALL) {
       let temp = metadata?.additionalActivity;
-      if (activities?.length === 0 && !metadata?.customizedSchedule) {
-        metadata?.serviceDaysArray?.map((serviceDays) => {
-          activities?.push({ activity: serviceDays });
-        });
-      }
+      // if (activities?.length === 0 && !metadata?.customizedSchedule) {
+      //   metadata?.serviceDaysArray?.map((serviceDays) => {
+      //     activities?.push({ activity: serviceDays });
+      //   });
+      // }
       console.log('customize log', metadata);
       if (metadata?.customizedSchedule) {
         activities = [];
@@ -971,52 +976,32 @@ const AddServiceProvided = ({
               metadata?.weekdayMax ||
               metadata?.weekdayPayment !== 0
             ) {
-
-              if (metadata?.weekdayActivity === '') {
-                console.log('inside weekday if');
-                if (!activities?.map(data => data?.activity).includes("Weekday Days")) {
-                  activities?.push({ activity: "Weekday Days" });
-                }
-              } else {
-                console.log('inside weekday else');
-                if (!activities?.map(data => data?.activity).includes(metadata?.weekdayActivity)) {
-                  activities?.push({ activity: metadata?.weekdayActivity });
-                }
+              console.log('inside weekday else');
+              if (!activities?.map(data => data?.activity).includes(metadata?.weekdayActivity) && metadata?.weekdayActivity !== '' && metadata?.weekdayActivity !== null) {
+                activities?.push({ activity: metadata?.weekdayActivity });
               }
+
             }
             if (
               metadata?.weekdayNightsMin ||
               metadata?.weekdayNightsMax ||
               metadata?.weekdayNightsPayment !== 0
             ) {
-              if (metadata?.weekdayNightActivity === '') {
-                console.log('inside weeknight if');
-                if (!activities?.map(data => data?.activity).includes("Weekday Nights")) {
-                  activities?.push({ activity: "Weekday Nights" });
-                }
-              } else {
-                console.log('inside weeknight else');
-                if (!activities?.map(data => data?.activity).includes(metadata?.weekdayNightActivity)) {
-                  activities?.push({ activity: metadata?.weekdayNightActivity })
-                }
+              console.log('inside weeknight else');
+              if (!activities?.map(data => data?.activity).includes(metadata?.weekdayNightActivity) && metadata?.weekdayNightActivity !== '' && metadata?.weekdayNightActivity !== null) {
+                activities?.push({ activity: metadata?.weekdayNightActivity })
               }
             }
+
           }
           if (
             metadata?.weekendMin ||
             metadata?.weekendMax ||
             metadata?.weekendPayment !== 0
           ) {
-            if (metadata?.weekendActivity === '') {
-              console.log('inside weekend if');
-              if (!activities?.map(data => data?.activity)?.includes("Weekend")) {
-                activities?.push({ activity: "Weekend" });
-              }
-            } else {
-              console.log('inside weekend else');
-              if (!activities?.map(data => data?.activity).includes(metadata?.weekendActivity)) {
-                activities?.push({ activity: metadata?.weekendActivity })
-              }
+            console.log('inside weekend else');
+            if (!activities?.map(data => data?.activity).includes(metadata?.weekendActivity) && metadata?.weekendActivity !== '' && metadata?.weekendActivity !== null) {
+              activities?.push({ activity: metadata?.weekendActivity })
             }
           }
           if (
@@ -1024,17 +1009,9 @@ const AddServiceProvided = ({
             metadata?.holidayMax ||
             metadata?.holidayPayment !== 0
           ) {
-            if (metadata?.holidayActivity === '') {
-              console.log('inside holiday if');
-              if (!activities?.map(data => data?.activity).includes("Holiday")) {
-
-                activities?.push({ activity: "Holiday" });
-              }
-            } else {
-              console.log('inside holiday else');
-              if (!activities?.map(data => data?.activity).includes(metadata?.holidayActivity)) {
-                activities?.push({ activity: metadata?.holidayActivity })
-              }
+            console.log('inside holiday else');
+            if (!activities?.map(data => data?.activity).includes(metadata?.holidayActivity) && metadata?.holidayActivity !== '' && metadata?.holidayActivity !== null) {
+              activities?.push({ activity: metadata?.holidayActivity })
             }
           }
 
@@ -1109,20 +1086,20 @@ const AddServiceProvided = ({
           ?.map((data) => data?.activity)
           ?.join("-");
       }
-      if (activities?.length === 0 && serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE && serviceTypeTemplate !== ONCALL) {
+      if (activities?.length === 0 && serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE) {
         let message =
           serviceTypeTemplate === SUPPLEMENTAL
             ? "Supplement Services"
             : serviceTypeTemplate === ADMINISTRATIVE
               ? "Allowable Administrative Duties"
-              : "Activity To Be Performed";
+              : serviceTypeTemplate === HIT
+                ? "Allowable Clinical Informative / HIT Duties"
+                : "Activity To Be Performed";
         ErrorToaster(
           `Atleast One ${message} needs to be added to create a service`
         );
         return;
       }
-
-      console.log("Activities On call", activities);
 
       data = [
         {
@@ -1152,7 +1129,8 @@ const AddServiceProvided = ({
           ...((((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ONCALLSERVICE) &&
             !dataValues?.dedicatedHoursSpecified) ||
             (serviceTypeTemplate === ADMINISTRATIVE &&
-              !dataValues?.dedicatedHoursSpecified)) && {
+              !dataValues?.dedicatedHoursSpecified) || (serviceTypeTemplate === HIT &&
+                !dataValues?.dedicatedHoursSpecified)) && {
             hoursBorrowed: {
               activityType: {
                 activityType: dataValues?.dedicatedHoursActivityType || "",
@@ -1192,8 +1170,14 @@ const AddServiceProvided = ({
                   value: parseFloat(dataValues?.max || "0"),
                 },
                 frequency: dataValues?.frequency,
-                startDate: contractTermPeriod?.start,
-                endDate: contractTermPeriod?.end,
+                ...(serviceTypeTemplate === HIT && {
+                  startDate: dataValues?.contractTermPeriodFrom === null ? null : format(dataValues?.contractTermPeriodFrom, 'yyyy-MM-dd').toString(),
+                  endDate: dataValues?.contractTermPeriodTo === null ? null : format(dataValues?.contractTermPeriodTo, 'yyyy-MM-dd').toString(),
+                }),
+                ...(serviceTypeTemplate !== HIT && {
+                  startDate: contractTermPeriod?.start,
+                  endDate: contractTermPeriod?.end,
+                })
               },
             ],
             patientsSeenTargets: [
@@ -1205,8 +1189,14 @@ const AddServiceProvided = ({
                   value: parseInt(dataValues?.withoutNurse || "0"),
                 },
                 noTargetApplicable: dataValues?.noTargetApplicable,
-                startDate: contractTermPeriod?.start,
-                endDate: contractTermPeriod?.end,
+                ...(serviceTypeTemplate === HIT && {
+                  startDate: dataValues?.contractTermPeriodFrom === null ? null : format(dataValues?.contractTermPeriodFrom, 'yyyy-MM-dd').toString(),
+                  endDate: dataValues?.contractTermPeriodTo === null ? null : format(dataValues?.contractTermPeriodTo, 'yyyy-MM-dd').toString(),
+                }),
+                ...(serviceTypeTemplate !== HIT && {
+                  startDate: contractTermPeriod?.start,
+                  endDate: contractTermPeriod?.end,
+                })
               },
             ],
             scheduledPatientsTargets: [
@@ -1218,8 +1208,14 @@ const AddServiceProvided = ({
                   value: parseInt(dataValues?.targetWithoutNurse || "0"),
                 },
                 noTargetApplicable: dataValues?.targetNoTargetApplicable,
-                startDate: contractTermPeriod?.start,
-                endDate: contractTermPeriod?.end,
+                ...(serviceTypeTemplate === HIT && {
+                  startDate: dataValues?.contractTermPeriodFrom === null ? null : format(dataValues?.contractTermPeriodFrom, 'yyyy-MM-dd').toString(),
+                  endDate: dataValues?.contractTermPeriodTo === null ? null : format(dataValues?.contractTermPeriodTo, 'yyyy-MM-dd').toString(),
+                }),
+                ...(serviceTypeTemplate !== HIT && {
+                  startDate: contractTermPeriod?.start,
+                  endDate: contractTermPeriod?.end,
+                })
               },
             ],
           }),
@@ -1236,7 +1232,7 @@ const AddServiceProvided = ({
               ...(serviceTypeTemplate === ONCALL && {
                 onCallCoverageFor: dataValues?.onCallCoverageFor,
               }),
-              ...(serviceTypeTemplate === ADMINISTRATIVE && {
+              ...((serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === HIT) && {
                 adminActivities: dataValues?.selectedActivities,
               }),
               ...((serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE) && {
@@ -1256,23 +1252,25 @@ const AddServiceProvided = ({
           },
           professionalServiceRequired: dataValues?.professionalServiceRequired || false,
           ...((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ONCALLSERVICE ||
-            serviceTypeTemplate === ADMINISTRATIVE) &&
+            serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === HIT) &&
             dataValues?.dedicatedHoursSpecified && {
             hourlyRate: {
               value:
                 (serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ONCALLSERVICE) &&
                   dataValues?.totalSession === 0
-                  ? Number(dataValues?.sessionAmount)?.toFixed(2)
+                  ? Number(dataValues?.sessionAmount)?.toFixed(2) !== 'NaN' ? Number(dataValues?.sessionAmount)?.toFixed(2) : 0
                   : Number(
                     dataValues?.sessionAmount / dataValues?.totalSession
-                  )?.toFixed(2),
+                  )?.toFixed(2) !== "NaN" ? Number(
+                    dataValues?.sessionAmount / dataValues?.totalSession
+                  )?.toFixed(2) : 0,
             },
           }),
           ...((serviceTypeTemplate === SUPPLEMENTAL ||
-            serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === ONCALLSERVICE) &&
+            serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === ONCALLSERVICE || serviceTypeTemplate === HIT) &&
             !dataValues?.dedicatedHoursSpecified && {
             hourlyRate: {
-              value: dataValues?.hourlyRate,
+              value: dataValues?.hourlyRate !== "NaN" ? dataValues?.hourlyRate : 0,
             },
           }),
           ...((serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE) && {
@@ -1346,6 +1344,7 @@ const AddServiceProvided = ({
                     )?.toFixed(2),
                   },
                   paymentNotApplicable: dataValues?.weekdayPaymentNa,
+                  serviceWeekDays: dataValues?.serviceWeekDaysDay,
                 },
                 weekdayNight: {
                   from: dataValues?.weekdayNightsFrom
@@ -1382,6 +1381,7 @@ const AddServiceProvided = ({
                     )?.toFixed(2),
                   },
                   paymentNotApplicable: dataValues?.weekdayNightsPaymentNa,
+                  serviceWeekDays: dataValues?.serviceWeekDaysNight,
                 },
                 weekend: {
                   from: dataValues?.weekendFrom
@@ -1470,7 +1470,7 @@ const AddServiceProvided = ({
               .toString(),
           },
           ...((serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE ||
-            serviceTypeTemplate === ADMINISTRATIVE) && {
+            serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === HIT) && {
             workFlow: dataValues?.workFlow,
           }),
           patientMRNRequired: dataValues?.patientMRNRequired || false,
@@ -1485,7 +1485,7 @@ const AddServiceProvided = ({
             (serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE)
               ? dataValues?.locationSpecified
               : showLocation,
-          dedicatedHoursSpecified: [SUPPLEMENTAL, ADMINISTRATIVE, ONCALLSERVICE].includes(
+          dedicatedHoursSpecified: [SUPPLEMENTAL, ADMINISTRATIVE, HIT, ONCALLSERVICE].includes(
             serviceTypeTemplate
           )
             ? dataValues?.dedicatedHoursSpecified
@@ -1497,6 +1497,10 @@ const AddServiceProvided = ({
           ...((serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE) &&
             !(
               serviceTypeTemplate === ADMINISTRATIVE &&
+              !metadata?.dedicatedHoursSpecified
+            ) &&
+            !(
+              serviceTypeTemplate === HIT &&
               !metadata?.dedicatedHoursSpecified
             ) &&
             !(
@@ -1577,6 +1581,7 @@ const AddServiceProvided = ({
         if (
           conflictData?.type === SUPPLEMENTAL ||
           conflictData?.type === ADMINISTRATIVE ||
+          conflictData?.type === HIT ||
           conflictData?.type === ONCALLSERVICE
         ) {
           services[conflictedIndex].hoursBorrowed = {
@@ -1749,6 +1754,10 @@ const AddServiceProvided = ({
 
   const onActivitySelect = (selectedItem) => {
     console.log("selectedItem", selectedItem);
+    if (selectedItem === undefined) {
+      ErrorToaster("Select Department To Add Activities");
+      return;
+    }
     setItem(selectedItem);
     if (
       !selectedActivity?.map((data) => data?.id)?.includes(selectedItem?.id)
@@ -2137,6 +2146,10 @@ const AddServiceProvided = ({
                       !metadata?.dedicatedHoursSpecified
                     ) &&
                     !(
+                      serviceTypeTemplate === HIT &&
+                      !metadata?.dedicatedHoursSpecified
+                    ) &&
+                    !(
                       serviceTypeTemplate === SUPPLEMENTAL &&
                       !metadata?.dedicatedHoursSpecified
                     ) &&
@@ -2157,9 +2170,11 @@ const AddServiceProvided = ({
                       </div>
                     )}
                   {serviceTypeTemplate !== ADMINISTRATIVE &&
+                    serviceTypeTemplate !== HIT &&
                     serviceTypeTemplate !== ADDON &&
                     serviceTypeTemplate !== HOSPICE &&
-                    serviceTypeTemplate !== SUPPLEMENTAL && (
+                    serviceTypeTemplate !== SUPPLEMENTAL &&
+                    !selectedService?.customizedSchedule && (
                       <div>
                         <div
                           className={`${style.addManagerGrid} ${style.marginTop20} `}
@@ -2176,6 +2191,7 @@ const AddServiceProvided = ({
                                 onSelect={onActivitySelect}
                                 className={style.fullWidth}
                                 onChange={(e) => setNewActivity(e.target.value)}
+                                inputProps={{ disabled: contractStatus === "ACTIVE" ? true : false }}
                               />
                               <div
                                 className={`${style.addStyle} ${style.alignCenter
@@ -2196,7 +2212,7 @@ const AddServiceProvided = ({
                               >
                                 <AddIcon
                                   sx={{ fontSize: 25, color: "white" }}
-                                  onClick={activityToAdd}
+                                  onClick={contractStatus === "ACTIVE" ? {} : activityToAdd}
                                 />
                               </div>
                             </div>
@@ -2213,7 +2229,7 @@ const AddServiceProvided = ({
                       </div>
                     )}
 
-                  {serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE && (
+                  {serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE && serviceTypeTemplate !== HIT && (
                     <div>
                       <div
                         className={`${style.addManagerGrid} ${style.marginTop20} `}
@@ -2253,8 +2269,9 @@ const AddServiceProvided = ({
                                   onSelect={onLocationSelect}
                                   className={style.fullWidth}
                                   onChange={(e) =>
-                                    setNewLocation(e.target.value)
+                                    contractStatus === "ACTIVE" ? {} : setNewLocation(e.target.value)
                                   }
+                                  inputProps={{ disabled: contractStatus === "ACTIVE" ? true : false }}
                                 />
                               </div>
                             )}
@@ -2351,18 +2368,33 @@ const AddServiceProvided = ({
                         getIsReset={getIsReset}
                         editService={editService}
                       />
-                    ) : (
-                      <AdministrativeFields
-                        getMetaData={getMetaData}
-                        services={contractedServices}
-                        serviceSelected={selectedService}
-                        editService={editService}
-                        isReset={isReset}
-                        getIsReset={getIsReset}
-                        sites={siteList}
-                        contractId={contractId}
-                      />
-                    )}
+                    ) :
+                      serviceTypeTemplate === HIT ? (
+                        <HITService
+                          getMetaData={getMetaData}
+                          services={contractedServices}
+                          serviceSelected={selectedService}
+                          editService={editService}
+                          isReset={isReset}
+                          getIsReset={getIsReset}
+                          sites={siteList}
+                          contractId={contractId}
+                          contractTermPeriod={contractTermPeriod}
+                        />
+                      )
+                        :
+                        (
+                          <AdministrativeFields
+                            getMetaData={getMetaData}
+                            services={contractedServices}
+                            serviceSelected={selectedService}
+                            editService={editService}
+                            isReset={isReset}
+                            getIsReset={getIsReset}
+                            sites={siteList}
+                            contractId={contractId}
+                          />
+                        )}
                 </div>
               </div>
             ) : (

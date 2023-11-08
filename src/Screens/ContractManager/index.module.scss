@@ -119,6 +119,10 @@ body::-webkit-scrollbar {
   color: red;
 }
 
+.darkText {
+  color: #52575d !important;
+}
+
 .rightAlign {
   text-align: right;
 }
@@ -932,6 +936,12 @@ select {
   grid-gap: 20px;
 }
 
+.newContractFromCloneGridActiveView {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  grid-gap: 20px;
+}
+
 .reduceTop10 {
   margin-top: -10px;
 }
@@ -946,6 +956,7 @@ select {
 }
 
 .durationWidth {
+  min-width: 150px;
   max-width: 150px;
 }
 
@@ -1289,6 +1300,12 @@ select {
   color: #707070;
   word-wrap: break-word;
   width: 150px;
+}
+
+.documentTextActive {
+  color: #707070;
+  word-wrap: break-word;
+  width: 100%;
 }
 
 .proofBorder {
@@ -2082,8 +2099,8 @@ input[type="number"] {
 
 .serviceSpecificationGrid {
   display: grid;
-  grid-template-columns: 8% 22% 22% 22% 10% 7%;
-  grid-gap: 10px;
+  grid-template-columns: 10% 22% 22% 22% 10% 8%;
+  grid-gap: 1%;
   padding-left: 10px;
 }
 
@@ -2095,22 +2112,22 @@ input[type="number"] {
 
 .serviceSpecificationGridActive {
   display: grid;
-  grid-template-columns: 8% 22% 22% 22% 10% 7%;
-  grid-gap: 10px;
+  grid-template-columns: 10% 22% 22% 22% 10% 8%;
+  grid-gap: 1%;
   padding-left: 10px;
 }
 
 .serviceSpecificationGridIndividual {
   display: grid;
-  grid-template-columns: 8% 30% 25% 20% 8%;
-  grid-gap: 10px;
+  grid-template-columns: 10% 30% 25% 20% 10%;
+  grid-gap: 1%;
   padding-left: 10px;
 }
 
 .serviceSpecificationGridIndividualActive {
   display: grid;
-  grid-template-columns: 8% 30% 25% 20% 8%;
-  grid-gap: 10px;
+  grid-template-columns: 10% 30% 25% 20% 10%;
+  grid-gap: 1%;
   padding-left: 10px;
 }
 

@@ -4,6 +4,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import style from './index.module.scss';
 const SelectField = ({ dataList, valueList, displayList, value, selectLabel, onChangeFunc, className }) => {
+  const contractStatus = sessionStorage.getItem('Selected Contract Status');
 
   return (
     // <select
@@ -32,6 +33,7 @@ const SelectField = ({ dataList, valueList, displayList, value, selectLabel, onC
         onChange={(e) => onChangeFunc(e.target.value)}
         className={className?.join(' ')}
         SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+        disabled={contractStatus === "ACTIVE" ? true : false}
       >
         <MenuItem value="">{selectLabel}</MenuItem>
         {displayList?.map((data, index) => (

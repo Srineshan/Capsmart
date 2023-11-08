@@ -27,6 +27,7 @@ const ClinicBlocksFields = ({
   editService,
 }) => {
   const [selectedScheduleRow, setSelectedScheduleRow] = useState();
+  const contractStatus = sessionStorage.getItem("Selected Contract Status");
   const [
     addScheduleAndTargetForDifferentPeriods,
     setAddScheduleAndTargetForDifferentPeriods,
@@ -1230,6 +1231,7 @@ const ClinicBlocksFields = ({
               type="tel"
               onChange={(e) => onTotalSessionChange(e.slice(0, 6))}
               className={style.editableSessionTextStyle}
+              disabled={contractStatus === "ACTIVE" ? true : false}
             />
             <div
               className={`${style.textElement} ${
@@ -1307,6 +1309,7 @@ const ClinicBlocksFields = ({
                 ? null
                 : new Date(metadata?.workingTimeFrom)
             }
+            disabled={contractStatus === "ACTIVE" ? true : false}
           />
           <p
             className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}
@@ -1321,6 +1324,7 @@ const ClinicBlocksFields = ({
                 ? null
                 : new Date(metadata?.workingTimeTo) || null
             }
+            disabled={contractStatus === "ACTIVE" ? true : false}
             // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
           />
         </div>

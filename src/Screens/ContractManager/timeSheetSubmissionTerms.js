@@ -21,6 +21,8 @@ import { valueCheck } from "./../../utils/valueCheck";
 
 import style from "./index.module.scss";
 import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
+import CommonTextField from "../../Components/CommonFields/CommonTextField";
+import { InputAdornment } from "@mui/material";
 import MissedMandatoryFieldAlert from "./missedMandatoryFieldAlert";
 
 const TimeSheetSubmissionTerms = ({
@@ -103,6 +105,7 @@ const TimeSheetSubmissionTerms = ({
   const [isNameEdited, setIsNameEdited] = useState(false);
   const [unassignedKeys, setUnassignedKeys] = useState([]);
   const [showSaveInProgress, setShowSaveInProgress] = useState(false);
+  const contractStatus = sessionStorage.getItem("Selected Contract Status");
 
   const menuRef = useRef(null);
   useOptionsHide(menuRef);
@@ -559,16 +562,18 @@ const TimeSheetSubmissionTerms = ({
                           >
                             {data?.type}-{data?.activity}
                           </div>
-                          <CloseIcon
-                            fontSize="20px"
-                            className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`}
-                            onClick={() =>
-                              handleContractedActivityTagsRemove(
-                                index,
-                                data?.index
-                              )
-                            }
-                          />
+                          {contractStatus !== "ACTIVE" && (
+                            <CloseIcon
+                              fontSize="20px"
+                              className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`}
+                              onClick={() =>
+                                handleContractedActivityTagsRemove(
+                                  index,
+                                  data?.index
+                                )
+                              }
+                            />
+                          )}
                         </div>
                       ))}
                   </div>
@@ -1025,17 +1030,25 @@ const TimeSheetSubmissionTerms = ({
             }
           />
           <div className={style.displayInRow}>
-            <div
-              className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}
-            >
-              <EditableText
-                value={invoiceProcessingDay}
-                placeholder="0"
-                type="number"
-                onChange={(e) => setInvoiceProcessingDay(e.slice(0, limit))}
-                className={style.editableTextStyleDays}
-              />
+            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
+              <EditableText value={invoiceProcessingDay} placeholder="0" type='number' onChange={(e) => setInvoiceProcessingDay(e.slice(0, limit))} className={style.editableTextStyleDays} />
               <div className={style.textElementWithoutBackgroundDays}>Days</div>
+            </div> */}
+            <div className={style.renewalWidth}>
+              <CommonTextField
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end" sx={{ fontSize: 10 }}>
+                      Days
+                    </InputAdornment>
+                  ),
+                }}
+                onChange={(e) =>
+                  setInvoiceProcessingDay(e.target.value.slice(0, limit))
+                }
+                value={invoiceProcessingDay}
+                type="number"
+              />
             </div>
             <div
               className={`${style.displayInRow} ${style.editableTextOuterBorder}  ${style.marginLeft20} `}
@@ -1049,6 +1062,7 @@ const TimeSheetSubmissionTerms = ({
                   setInvoiceProcessingDayThreshold(e.slice(0, limit))
                 }
                 className={style.editableTextThresholdStyle}
+                disabled={contractStatus === "ACTIVE" ? true : false}
               />
             </div>
             <div
@@ -1061,6 +1075,7 @@ const TimeSheetSubmissionTerms = ({
                 type="number"
                 onChange={(e) => setInvoiceProcessingDayGoal(e.slice(0, limit))}
                 className={style.editableTextThresholdStyle}
+                disabled={contractStatus === "ACTIVE" ? true : false}
               />
             </div>
           </div>
@@ -1113,39 +1128,49 @@ const TimeSheetSubmissionTerms = ({
         {/* <div className={`${style.welcomeBorder} ${style.marginTop20}`}></div> */}
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <CommonLabel
-            value="Planned Absence Notification Days limit*"
-            className={dataCheck(plannedAbsence) ? style.redLable : ""}
-          />
-          <div
-            className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}
-          >
-            <EditableText
-              value={plannedAbsence}
-              placeholder="0"
-              type="number"
-              onChange={(e) => setPlannedAbsence(e.slice(0, limit))}
-              className={style.editableTextStyleDays}
-            />
+          <CommonLabel value="Planned Absence Notification Days limit*" />
+          {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
+            <EditableText value={plannedAbsence} placeholder="0" type='number' onChange={(e) => setPlannedAbsence(e.slice(0, limit))} className={style.editableTextStyleDays} />
             <div className={style.textElementWithoutBackgroundDays}>Days</div>
+          </div> */}
+          <div className={style.renewalWidth}>
+            <CommonTextField
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end" sx={{ fontSize: 10 }}>
+                    Days
+                  </InputAdornment>
+                ),
+              }}
+              onChange={(e) =>
+                setPlannedAbsence(e.target.value.slice(0, limit))
+              }
+              value={plannedAbsence}
+              type="number"
+            />
           </div>
         </div>
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <CommonLabel
-            value="Maximum Unplanned Absence Days Allowed *"
-            className={dataCheck(maxUnplannedAbsence) ? style.redLable : ""}
-          />
-          <div
-            className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}
-          >
-            <EditableText
-              value={maxUnplannedAbsence}
-              placeholder="0"
-              type="number"
-              onChange={(e) => setMaxUnplannedAbsence(e.slice(0, limit))}
-              className={style.editableTextStyleDays}
-            />
+          <CommonLabel value="Maximum Unplanned Absence Days Allowed *" />
+          {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
+            <EditableText value={maxUnplannedAbsence} placeholder="0" type='number' onChange={(e) => setMaxUnplannedAbsence(e.slice(0, limit))} className={style.editableTextStyleDays} />
             <div className={style.textElementWithoutBackgroundDays}>Days</div>
+          </div> */}
+          <div className={style.renewalWidth}>
+            <CommonTextField
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end" sx={{ fontSize: 10 }}>
+                    Days
+                  </InputAdornment>
+                ),
+              }}
+              onChange={(e) =>
+                setMaxUnplannedAbsence(e.target.value.slice(0, limit))
+              }
+              value={maxUnplannedAbsence}
+              type="number"
+            />
           </div>
         </div>
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -1159,23 +1184,28 @@ const TimeSheetSubmissionTerms = ({
             }
           />
           <div className={style.displayInRow}>
-            <div
-              className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}
-            >
-              <EditableText
-                value={maxPlannedAbsence?.days}
-                placeholder="0"
-                type="number"
+            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
+              <EditableText value={maxPlannedAbsence?.days} placeholder="0" type='number' onChange={(e) => setMaxPlannedAbsence({ ...maxPlannedAbsence, days: e.slice(0, limit) })} className={style.editableTextStyleDays} disabled={maxPlannedAbsence?.notApplicable} />
+              <div className={style.textElementWithoutBackgroundDays}>Days</div>
+            </div> */}
+            <div className={style.renewalWidth}>
+              <CommonTextField
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end" sx={{ fontSize: 10 }}>
+                      Days
+                    </InputAdornment>
+                  ),
+                }}
                 onChange={(e) =>
                   setMaxPlannedAbsence({
                     ...maxPlannedAbsence,
-                    days: e.slice(0, limit),
+                    days: e.target.value.slice(0, limit),
                   })
                 }
-                className={style.editableTextStyleDays}
-                disabled={maxPlannedAbsence?.notApplicable}
+                value={maxPlannedAbsence?.days}
+                type="number"
               />
-              <div className={style.textElementWithoutBackgroundDays}>Days</div>
             </div>
             <div className={style.marginLeft20}>
               <CommonCheckBox
@@ -1210,57 +1240,53 @@ const TimeSheetSubmissionTerms = ({
         </div>
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <CommonLabel
-            value="Day limit for submission of timesheet based on activity service date *"
-            className={
-              dataCheck(dayLimitForSubmissionBasedOnActivityServiceDate)
-                ? style.redLable
-                : ""
-            }
-          />
-          <div
-            className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}
-          >
-            <EditableText
-              value={dayLimitForSubmissionBasedOnActivityServiceDate}
-              placeholder="0"
-              type="number"
-              min="0"
+          <CommonLabel value="Day limit for submission of timesheet based on activity service date *" />
+          {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
+            <EditableText value={dayLimitForSubmissionBasedOnActivityServiceDate} placeholder="0" type='number' min="0" onChange={(e) => setDayLimitForSubmissionBasedOnActivityServiceDate(e.slice(0, limit))} className={style.editableTextStyleDays} />
+            <div className={style.textElementWithoutBackgroundDays}>Days</div>
+          </div> */}
+          <div className={style.renewalWidth}>
+            <CommonTextField
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end" sx={{ fontSize: 10 }}>
+                    Days
+                  </InputAdornment>
+                ),
+              }}
               onChange={(e) =>
                 setDayLimitForSubmissionBasedOnActivityServiceDate(
-                  e.slice(0, limit)
+                  e.target.value.slice(0, limit)
                 )
               }
-              className={style.editableTextStyleDays}
+              value={dayLimitForSubmissionBasedOnActivityServiceDate}
+              type="number"
             />
-            <div className={style.textElementWithoutBackgroundDays}>Days</div>
           </div>
         </div>
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <CommonLabel
-            value="Day limit for submission of timesheet based on contract end date *"
-            className={
-              dataCheck(dayLimitForSubmissionBasedOnContractEndDate)
-                ? style.redLable
-                : ""
-            }
-          />
-          <div
-            className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}
-          >
-            <EditableText
-              value={dayLimitForSubmissionBasedOnContractEndDate}
-              placeholder="0"
-              type="number"
-              min="0"
+          <CommonLabel value="Day limit for submission of timesheet based on contract end date *" />
+          {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
+            <EditableText value={dayLimitForSubmissionBasedOnContractEndDate} placeholder="0" type='number' min="0" onChange={(e) => setDayLimitForSubmissionBasedOnContractEndDate(e.slice(0, limit))} className={style.editableTextStyleDays} />
+            <div className={style.textElementWithoutBackgroundDays}>Days</div>
+          </div> */}
+          <div className={style.renewalWidth}>
+            <CommonTextField
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end" sx={{ fontSize: 10 }}>
+                    Days
+                  </InputAdornment>
+                ),
+              }}
               onChange={(e) =>
                 setDayLimitForSubmissionBasedOnContractEndDate(
-                  e.slice(0, limit)
+                  e.target.value.slice(0, limit)
                 )
               }
-              className={style.editableTextStyleDays}
+              value={dayLimitForSubmissionBasedOnContractEndDate}
+              type="number"
             />
-            <div className={style.textElementWithoutBackgroundDays}>Days</div>
           </div>
         </div>
       </div>

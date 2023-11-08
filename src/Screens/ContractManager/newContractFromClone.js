@@ -49,6 +49,7 @@ const NewContractFromClone = ({
   method,
   isEditable,
 }) => {
+  const contractStatus = sessionStorage.getItem("Selected Contract Status");
   const [selectContractInfo, setSelectContractInfo] = useState(contractType);
   const [deleteExecutedContractDialog, setDeleteExecutedContractDialog] =
     useState(false);
@@ -80,7 +81,6 @@ const NewContractFromClone = ({
   });
   const [selectedFileURL, setSelectedFileURL] = useState("");
   const [showAlert, setShowAlert] = useState(false);
-  const [mandatoryFields, setMandatoryFields] = useState(null);
   const [isTabsValid, setIsTabsValid] = useState([]);
   const [contractSelected, setContractSelected] = useState(
     contracts
@@ -219,7 +219,6 @@ const NewContractFromClone = ({
   };
 
   const getShowAlert = (value, type = "cross") => {
-    console.log(value);
     setShowAlert(value);
     if (!value && type === "ok") {
       getNewContract(false);
@@ -326,7 +325,10 @@ const NewContractFromClone = ({
             ? "New Contract With No Prior Contract(s) With Entity"
             : selectedContractType === "Existing Contract"
             ? "Existing Active Contract"
-            : "Contracted Services Continuation Renewal Contract"}
+            : "Contracted Services Continuation Renewal Contract"}{" "}
+          <strong className={style.darkText}>
+            {contractStatus === "ACTIVE" ? "( ACTIVE CONTRACT )" : ""}
+          </strong>
         </p>
         <div className={style.displayInRow}>
           <img
@@ -354,7 +356,13 @@ const NewContractFromClone = ({
       </div>
       <div className={style.welcomeBorder}></div>
 
-      <div className={style.newContractFromCloneGrid}>
+      <div
+        className={
+          contractStatus === "ACTIVE"
+            ? style.newContractFromCloneGridActiveView
+            : style.newContractFromCloneGrid
+        }
+      >
         <div className={style.cloneBlockStyle}>
           <div
             className={`${style.contractEntityCardStyle} ${
@@ -679,82 +687,91 @@ const NewContractFromClone = ({
         ) : (
           ""
         )}
-        <div className={style.cloneBlockStyle}>
-          {contractName !== "" && (
-            <div>
-              <p className={`${style.smallHeadingStyle}`}>{contractName}</p>
-              <div className={style.welcomeBorder}></div>
-            </div>
-          )}
-          <p className={`${style.smallHeadingStyle}`}>{currentPage}</p>
-          <div className={style.welcomeBorder}></div>
-          <div>
-            {selectedField?.fieldName === "" ? (
-              <p className={`${style.blackText} ${style.leftAlign}`}>
-                {helpTextData?.[currentPage]?.description || ""}
-              </p>
-            ) : (
+        {contractStatus !== "ACTIVE" && (
+          <div className={style.cloneBlockStyle}>
+            {contractName !== "" && (
               <div>
-                <p className={`${style.blackText} ${style.leftAlign}`}>
-                  <strong>{selectedField?.fieldName}</strong>
-                </p>
-                <p className={`${style.blackText} ${style.leftAlign}`}>
-                  {helpTextData?.[selectedField?.fieldName]?.description || ""}
-                </p>
+                <p className={`${style.smallHeadingStyle}`}>{contractName}</p>
+                <div className={style.welcomeBorder}></div>
               </div>
             )}
-          </div>
+            <p className={`${style.smallHeadingStyle}`}>{currentPage}</p>
+            <div className={style.welcomeBorder}></div>
+            <div>
+              {selectedField?.fieldName === "" ? (
+                <p className={`${style.blackText} ${style.leftAlign}`}>
+                  {helpTextData?.[currentPage]?.description || ""}
+                </p>
+              ) : (
+                <div>
+                  <p className={`${style.blackText} ${style.leftAlign}`}>
+                    <strong>{selectedField?.fieldName}</strong>
+                  </p>
+                  <p className={`${style.blackText} ${style.leftAlign}`}>
+                    {helpTextData?.[selectedField?.fieldName]?.description ||
+                      ""}
+                  </p>
+                </div>
+              )}
+            </div>
 
-          {!selectedField?.empty &&
-            helpTextData?.[selectedField?.fieldName]?.skipDataAlerts && (
-              <>
-                {
-                  <div className={style.validationAlert}>
-                    <div className={style.displayInRow}>
-                      <div>
-                        <p className={`${style.blackText} ${style.leftAlign}`}>
-                          {
-                            helpTextData?.[selectedField?.fieldName]
-                              ?.skipDataAlerts
-                          }
-                        </p>
+            {!selectedField?.empty &&
+              helpTextData?.[selectedField?.fieldName]?.skipDataAlerts && (
+                <>
+                  {
+                    <div className={style.validationAlert}>
+                      <div className={style.displayInRow}>
+                        <div>
+                          <p
+                            className={`${style.blackText} ${style.leftAlign}`}
+                          >
+                            {
+                              helpTextData?.[selectedField?.fieldName]
+                                ?.skipDataAlerts
+                            }
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                }
+                  }
+                </>
+              )}
+
+            {fileItems?.length !== 0 ? (
+              <>
+                <p
+                  className={`${style.smallHeadingStyle} ${style.marginTop20}`}
+                >
+                  Reference Contract Documents
+                </p>
+                <div className={style.welcomeBorder}></div>
+                {fileItems}
+              </>
+            ) : (
+              <>
+                <p
+                  className={`${style.smallHeadingStyle} ${style.marginTop20}`}
+                >
+                  Reference Contract Documents
+                </p>
+                <div className={style.welcomeBorder}></div>
+                <div>
+                  <p className={`${style.blackText}`}>
+                    Contract Documents Not Uploaded
+                  </p>
+                  {currentPage !== "Contract ID & Term Limit" && (
+                    <p
+                      className={`${style.cursorPointer} ${style.blueColor}`}
+                      onClick={() => setCurrentPage("Contract ID & Term Limit")}
+                    >
+                      Click to Upload your documents
+                    </p>
+                  )}
+                </div>
               </>
             )}
-
-          {fileItems?.length !== 0 ? (
-            <>
-              <p className={`${style.smallHeadingStyle} ${style.marginTop20}`}>
-                Reference Contract Documents
-              </p>
-              <div className={style.welcomeBorder}></div>
-              {fileItems}
-            </>
-          ) : (
-            <>
-              <p className={`${style.smallHeadingStyle} ${style.marginTop20}`}>
-                Reference Contract Documents
-              </p>
-              <div className={style.welcomeBorder}></div>
-              <div>
-                <p className={`${style.blackText}`}>
-                  Contract Documents Not Uploaded
-                </p>
-                {currentPage !== "Contract ID & Term Limit" && (
-                  <p
-                    className={`${style.cursorPointer} ${style.blueColor}`}
-                    onClick={() => setCurrentPage("Contract ID & Term Limit")}
-                  >
-                    Click to Upload your documents
-                  </p>
-                )}
-              </div>
-            </>
-          )}
-        </div>
+          </div>
+        )}
       </div>
       {deleteExecutedContractDialog && (
         <Dialog
@@ -806,9 +823,16 @@ const NewContractFromClone = ({
           contractName={contractName}
         />
       )}
-      {/* {showAlert && (
-                <Alert getShowAlertDialog={getShowAlert} header={'SAVE-IN PROGRESS'} content={'Your contract will be saved in draft, you can edit it later...'} redirectTo={'contracts'} />
-            )} */}
+      {showAlert && (
+        <Alert
+          getShowAlertDialog={getShowAlert}
+          header={"SAVE-IN PROGRESS"}
+          content={
+            "Your contract will be saved in draft, you can edit it later..."
+          }
+          redirectTo={"contracts"}
+        />
+      )}
 
       {showAlert && (
         <SaveInProgressDialog
@@ -822,4 +846,5 @@ const NewContractFromClone = ({
     </div>
   );
 };
+
 export default NewContractFromClone;

@@ -12,8 +12,6 @@ import CommonSwitch from "../../Components/CommonFields/CommonSwitch";
 import CommonTextField from "../../Components/CommonFields/CommonTextField";
 import CommonLabel from "../../Components/CommonFields/CommonLabel";
 import { SpecifiedCountCalculator } from "./specifiedCountCalculator";
-import { valueCheck } from "../../utils/valueCheck";
-import { format } from "date-fns";
 
 import style from "./index.module.scss";
 import EditableTable from "./editableTable";
@@ -27,9 +25,9 @@ const OnCallCoverageFields = ({
   getIsReset,
   sites,
   contractId,
-  editService,
 }) => {
   const [timesheetWorkFlow, setTimesheetWorkflow] = useState([]);
+  const contractStatus = sessionStorage.getItem("Selected Contract Status");
   const [metadata, setMetadata] = useState({
     min: 0,
     max: 99999999,
@@ -57,6 +55,20 @@ const OnCallCoverageFields = ({
       weekEnds: false,
       monday: false,
       isholidays: false,
+    },
+    serviceWeekDaysDay: {
+      monday: false,
+      tuesday: false,
+      wednesday: false,
+      thursday: false,
+      friday: false,
+    },
+    serviceWeekDaysNight: {
+      monday: false,
+      tuesday: false,
+      wednesday: false,
+      thursday: false,
+      friday: false,
     },
     serviceDaysArray: [],
     weekdaysCount: "0",
@@ -86,7 +98,7 @@ const OnCallCoverageFields = ({
     weekdayTo: null,
     weekdayDuration: 0,
     weekdayMin: 0,
-    weekdayMax: 0,
+    weekdayMax: 99999999,
     weekdayActivity: "",
     weekdayPayment: 0,
     weekdayPaymentNa: false,
@@ -97,7 +109,7 @@ const OnCallCoverageFields = ({
     weekdayNightsTo: null,
     weekdayNightsDuration: 0,
     weekdayNightsMin: 0,
-    weekdayNightsMax: 0,
+    weekdayNightsMax: 99999999,
     weekdayNightActivity: "",
     weekdayNightsPayment: 0,
     weekdayNightsPaymentNa: false,
@@ -110,7 +122,7 @@ const OnCallCoverageFields = ({
     weekendEndday: "",
     weekendDuration: 0,
     weekendMin: 0,
-    weekendMax: 0,
+    weekendMax: 99999999,
     weekendActivity: "",
     weekendPayment: 0,
     weekendPaymentNa: false,
@@ -123,7 +135,7 @@ const OnCallCoverageFields = ({
     holidayTerm: "PRIOR_DAY",
     holidayDuration: 0,
     holidayMin: 0,
-    holidayMax: 0,
+    holidayMax: 99999999,
     holidayActivity: "",
     holidayPayment: 0,
     holidayPaymentNa: false,
@@ -166,6 +178,20 @@ const OnCallCoverageFields = ({
         monday: false,
         isholidays: false,
       },
+      serviceWeekDaysDay: {
+        monday: false,
+        tuesday: false,
+        wednesday: false,
+        thursday: false,
+        friday: false,
+      },
+      serviceWeekDaysNight: {
+        monday: false,
+        tuesday: false,
+        wednesday: false,
+        thursday: false,
+        friday: false,
+      },
       serviceDaysArray: [],
       weekdaysCount: "0",
       weekendsCount: "0",
@@ -194,7 +220,7 @@ const OnCallCoverageFields = ({
       weekdayTo: null,
       weekdayDuration: 0,
       weekdayMin: 0,
-      weekdayMax: 0,
+      weekdayMax: 99999999,
       weekdayActivity: "",
       weekdayPayment: 0,
       weekdayPaymentNa: false,
@@ -205,7 +231,7 @@ const OnCallCoverageFields = ({
       weekdayNightsTo: null,
       weekdayNightsDuration: 0,
       weekdayNightsMin: 0,
-      weekdayNightsMax: 0,
+      weekdayNightsMax: 99999999,
       weekdayNightActivity: "",
       weekdayNightsPayment: 0,
       weekdayNightsPaymentNa: false,
@@ -218,7 +244,7 @@ const OnCallCoverageFields = ({
       weekendEndday: "",
       weekendDuration: 0,
       weekendMin: 0,
-      weekendMax: 0,
+      weekendMax: 99999999,
       weekendActivity: "",
       weekendPayment: 0,
       weekendPaymentNa: false,
@@ -231,7 +257,7 @@ const OnCallCoverageFields = ({
       holidayTerm: "PRIOR_DAY",
       holidayDuration: 0,
       holidayMin: 0,
-      holidayMax: 0,
+      holidayMax: 99999999,
       holidayActivity: "",
       holidayPayment: 0,
       holidayPaymentNa: false,
@@ -252,7 +278,7 @@ const OnCallCoverageFields = ({
         weekdayTo: null,
         weekdayDuration: 0,
         weekdayMin: 0,
-        weekdayMax: 0,
+        weekdayMax: 99999999,
         weekdayActivity: "",
         weekdayPayment: 0,
         weekdayPaymentNa: false,
@@ -263,7 +289,7 @@ const OnCallCoverageFields = ({
         weekdayNightsTo: null,
         weekdayNightsDuration: 0,
         weekdayNightsMin: 0,
-        weekdayNightsMax: 0,
+        weekdayNightsMax: 99999999,
         weekdayNightActivity: "",
         weekdayNightsPayment: 0,
         weekdayNightsPaymentNa: false,
@@ -276,7 +302,7 @@ const OnCallCoverageFields = ({
         weekendEndday: "",
         weekendDuration: 0,
         weekendMin: 0,
-        weekendMax: 0,
+        weekendMax: 99999999,
         weekendActivity: "",
         weekendPayment: 0,
         weekendPaymentNa: false,
@@ -291,7 +317,21 @@ const OnCallCoverageFields = ({
         holidayPayment: 0,
         holidayPaymentNa: false,
         holidayMin: 0,
-        holidayMax: 0,
+        holidayMax: 99999999,
+        serviceWeekDaysDay: {
+          monday: false,
+          tuesday: false,
+          wednesday: false,
+          thursday: false,
+          friday: false,
+        },
+        serviceWeekDaysNight: {
+          monday: false,
+          tuesday: false,
+          wednesday: false,
+          thursday: false,
+          friday: false,
+        },
         holidayActivity: "",
         patientMRNRequired: false,
         attendingDocRequired: false,
@@ -437,6 +477,10 @@ const OnCallCoverageFields = ({
           serviceSelected?.workingPeriod?.to?.toString() || ""
         ),
         serviceDays: serviceSelected?.serviceDays,
+        serviceWeekDaysDay:
+          serviceSelected?.customschedule?.weekdayDay?.serviceWeekDays,
+        serviceWeekDaysNight:
+          serviceSelected?.customschedule?.weekdayNight?.serviceWeekDays,
         additionalActivity: dependentActivities,
         additionalActivityBillable:
           serviceSelected?.dependentService?.billableService,
@@ -732,7 +776,7 @@ const OnCallCoverageFields = ({
           ...metadata,
           [name]: value,
           weekdayMin: 0,
-          weekdayMax: 0,
+          weekdayMax: 99999999,
         });
       }
       if (name === "weekdayNightsFrequency") {
@@ -740,7 +784,7 @@ const OnCallCoverageFields = ({
           ...metadata,
           [name]: value,
           weekdayNightsMin: 0,
-          weekdayNightsMax: 0,
+          weekdayNightsMax: 99999999,
         });
       }
       if (name === "weekendFrequency") {
@@ -748,7 +792,7 @@ const OnCallCoverageFields = ({
           ...metadata,
           [name]: value,
           weekendMin: 0,
-          weekendMax: 0,
+          weekendMax: 99999999,
         });
       }
       if (name === "holidayFrequency") {
@@ -756,7 +800,7 @@ const OnCallCoverageFields = ({
           ...metadata,
           [name]: value,
           holidayMin: 0,
-          holidayMax: 0,
+          holidayMax: 99999999,
         });
       }
     } else {
@@ -764,27 +808,10 @@ const OnCallCoverageFields = ({
     }
   };
 
-  const dataCheck = (value) => {
-    if (editService) {
-      return valueCheck(value);
-    } else {
-      return false;
-    }
-  };
-
   return (
     <div>
       <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-        <CommonLabel
-          value="On Call Coverage For *"
-          className={
-            metadata?.onCallCoverageFor === null ||
-            (metadata?.onCallCoverageFor !== undefined &&
-              metadata?.onCallCoverageFor?.length === 0)
-              ? style.redLable
-              : ""
-          }
-        />
+        <CommonLabel value="On Call Coverage For *" />
         <div className={style.spaceBetween}>
           <CommonCheckBox
             checked={metadata?.onCallCoverageFor?.includes("InPatient")}
@@ -831,18 +858,7 @@ const OnCallCoverageFields = ({
       </div>
 
       <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-        <CommonLabel
-          value="Allowable Service Days*"
-          className={
-            metadata?.serviceDays === null ||
-            (metadata?.serviceDays !== undefined &&
-              Object?.values(metadata?.serviceDays)?.filter(
-                (data) => data === true
-              )?.length === 0)
-              ? style.redLable
-              : ""
-          }
-        />
+        <CommonLabel value="Allowable Service Days*" />
         <ServiceDays
           setMetaData={getServiceDaysMetadata}
           selectedService={serviceSelected}
@@ -868,54 +884,183 @@ const OnCallCoverageFields = ({
         <div className={`${style.addonAddBox} ${style.marginTop20}`}>
           <div className={`${style.addManagerGrid}`}>
             <CommonLabel value="Weekday Days" />
-            <div className={style.displayInRow}>
-              <TimePicker
-                useAmPm={false}
-                onChange={(e) => {
-                  onCustomizeFieldChange(e, "weekdayFrom");
-                }}
-                disabled={!metadata?.serviceDays?.weekDays}
-                value={
-                  metadata?.weekdayFrom === null
-                    ? null
-                    : new Date(metadata?.weekdayFrom)
-                }
-              />
-              <p
-                className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}
-              >
-                To
-              </p>
-              <TimePicker
-                useAmPm={false}
-                onChange={(e) => {
-                  onCustomizeFieldChange(e, "weekdayTo");
-                }}
-                disabled={!metadata?.serviceDays?.weekDays}
-                value={
-                  metadata?.weekdayTo === null
-                    ? null
-                    : new Date(metadata?.weekdayTo)
-                }
-              />
-              <div className={` ${style.marginLeft20} ${style.durationWidth}`}>
-                <CommonTextField
-                  type="tel"
-                  maxLength="3"
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end" sx={{ fontSize: 10 }}>
-                        Hours
-                      </InputAdornment>
-                    ),
-                  }}
-                  disabled={!metadata?.serviceDays?.weekDays}
-                  value={metadata?.weekdayDuration}
-                  onChange={(e) =>
-                    e.target.value >= 0 &&
-                    onCustomizeFieldChange(e.target.value, "weekdayDuration")
-                  }
-                />
+            <div>
+              <div className={style.displayInRow}>
+                <div className={style.displayInRow}>
+                  <div
+                    className={`${style.dayStyle} ${style.alignCenter} ${
+                      style.cursorPointer
+                    } ${
+                      metadata?.serviceWeekDaysDay?.monday
+                        ? style.selectedDay
+                        : ""
+                    }`}
+                    onClick={
+                      contractStatus === "ACTIVE"
+                        ? () => {}
+                        : () =>
+                            setMetadata((prevState) => ({
+                              ...metadata,
+                              serviceWeekDaysDay: {
+                                ...prevState.serviceWeekDaysDay,
+                                monday: !metadata?.serviceWeekDaysDay?.monday,
+                              },
+                            }))
+                    }
+                  >
+                    M
+                  </div>
+                  <div
+                    className={`${style.dayStyle} ${style.alignCenter} ${
+                      style.cursorPointer
+                    } ${
+                      metadata?.serviceWeekDaysDay?.tuesday
+                        ? style.selectedDay
+                        : ""
+                    }`}
+                    onClick={
+                      contractStatus === "ACTIVE"
+                        ? () => {}
+                        : () =>
+                            setMetadata((prevState) => ({
+                              ...metadata,
+                              serviceWeekDaysDay: {
+                                ...prevState.serviceWeekDaysDay,
+                                tuesday: !metadata?.serviceWeekDaysDay?.tuesday,
+                              },
+                            }))
+                    }
+                  >
+                    T
+                  </div>
+                  <div
+                    className={`${style.dayStyle} ${style.alignCenter} ${
+                      style.cursorPointer
+                    } ${
+                      metadata?.serviceWeekDaysDay?.wednesday
+                        ? style.selectedDay
+                        : ""
+                    }`}
+                    onClick={
+                      contractStatus === "ACTIVE"
+                        ? () => {}
+                        : () =>
+                            setMetadata((prevState) => ({
+                              ...metadata,
+                              serviceWeekDaysDay: {
+                                ...prevState.serviceWeekDaysDay,
+                                wednesday:
+                                  !metadata?.serviceWeekDaysDay?.wednesday,
+                              },
+                            }))
+                    }
+                  >
+                    W
+                  </div>
+                  <div
+                    className={`${style.dayStyle} ${style.alignCenter} ${
+                      style.cursorPointer
+                    } ${
+                      metadata?.serviceWeekDaysDay?.thursday
+                        ? style.selectedDay
+                        : ""
+                    }`}
+                    onClick={
+                      contractStatus === "ACTIVE"
+                        ? () => {}
+                        : () =>
+                            setMetadata((prevState) => ({
+                              ...metadata,
+                              serviceWeekDaysDay: {
+                                ...prevState.serviceWeekDaysDay,
+                                thursday:
+                                  !metadata?.serviceWeekDaysDay?.thursday,
+                              },
+                            }))
+                    }
+                  >
+                    T
+                  </div>
+                  <div
+                    className={`${style.dayStyle} ${style.alignCenter} ${
+                      style.cursorPointer
+                    } ${
+                      metadata?.serviceWeekDaysDay?.friday
+                        ? style.selectedDay
+                        : ""
+                    }`}
+                    onClick={
+                      contractStatus === "ACTIVE"
+                        ? () => {}
+                        : () =>
+                            setMetadata((prevState) => ({
+                              ...metadata,
+                              serviceWeekDaysDay: {
+                                ...prevState.serviceWeekDaysDay,
+                                friday: !metadata?.serviceWeekDaysDay?.friday,
+                              },
+                            }))
+                    }
+                  >
+                    F
+                  </div>
+                </div>
+              </div>
+              <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                <div className={style.displayInRow}>
+                  <TimePicker
+                    useAmPm={false}
+                    onChange={(e) => {
+                      onCustomizeFieldChange(e, "weekdayFrom");
+                    }}
+                    disabled={contractStatus === "ACTIVE" ? true : false}
+                    value={
+                      metadata?.weekdayFrom === null
+                        ? null
+                        : new Date(metadata?.weekdayFrom)
+                    }
+                  />
+                  <p
+                    className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}
+                  >
+                    To
+                  </p>
+                  <TimePicker
+                    useAmPm={false}
+                    onChange={(e) => {
+                      onCustomizeFieldChange(e, "weekdayTo");
+                    }}
+                    disabled={contractStatus === "ACTIVE" ? true : false}
+                    value={
+                      metadata?.weekdayTo === null
+                        ? null
+                        : new Date(metadata?.weekdayTo)
+                    }
+                  />
+                  <div
+                    className={` ${style.marginLeft20} ${style.durationWidth}`}
+                  >
+                    <CommonTextField
+                      type="tel"
+                      maxLength="3"
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end" sx={{ fontSize: 10 }}>
+                            Hours
+                          </InputAdornment>
+                        ),
+                      }}
+                      value={metadata?.weekdayDuration}
+                      onChange={(e) =>
+                        e.target.value >= 0 &&
+                        onCustomizeFieldChange(
+                          e.target.value,
+                          "weekdayDuration"
+                        )
+                      }
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -932,19 +1077,13 @@ const OnCallCoverageFields = ({
                 }
                 value={metadata?.weekdayActivity}
                 type="text"
-                // disabled={metadata?.weekdayFrequency === 'NA' || !metadata?.serviceDays?.weekDays}
               />
             </div>
           </div>
 
           <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
             <div className={style.marginLeft30}>
-              <CommonLabel
-                value="Number of On Call Duty Days*"
-                className={
-                  dataCheck(metadata?.weekdayMin) ? style.redLable : ""
-                }
-              />
+              <CommonLabel value="Number of On Call Duty Days*" />
             </div>
             <div className={style.displayInRow}>
               {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
@@ -978,10 +1117,7 @@ const OnCallCoverageFields = ({
                 }
                 value={metadata?.weekdayMin === 0 ? "" : metadata?.weekdayMin}
                 type="number"
-                disabled={
-                  metadata?.weekdayFrequency === "NA" ||
-                  !metadata?.serviceDays?.weekDays
-                }
+                disabled={metadata?.weekdayFrequency === "NA"}
               />
               {/* <CommonTextField
                                 InputProps={{
@@ -1020,12 +1156,14 @@ const OnCallCoverageFields = ({
                     "weekdayMax"
                   )
                 }
-                value={metadata?.weekdayMax === 0 ? "" : metadata?.weekdayMax}
-                type="number"
-                disabled={
-                  metadata?.weekdayFrequency === "NA" ||
-                  !metadata?.serviceDays?.weekDays
+                value={
+                  metadata?.weekdayMax === 0 ||
+                  metadata?.weekdayMax === 99999999
+                    ? ""
+                    : metadata?.weekdayMax
                 }
+                type="number"
+                disabled={metadata?.weekdayFrequency === "NA"}
               />
               <CommonSelectField
                 className={`${style.fullWidth} ${style.marginLeft20}`}
@@ -1033,7 +1171,6 @@ const OnCallCoverageFields = ({
                 onChange={(e) =>
                   onCustomizeFieldChange(e.target.value, "weekdayFrequency")
                 }
-                disabledSelect={!metadata?.serviceDays?.weekDays}
                 firstOptionLabel={"Select Frequency"}
                 firstOptionValue={""}
                 valueList={[
@@ -1056,12 +1193,7 @@ const OnCallCoverageFields = ({
           </div>
           <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
             <div className={style.marginLeft30}>
-              <CommonLabel
-                value="Payment Amount*"
-                className={
-                  dataCheck(metadata?.weekdayPayment) ? style.redLable : ""
-                }
-              />
+              <CommonLabel value="Payment Amount*" />
             </div>
             <div className={style.displayInRow}>
               <div className={`${style.threeFieldWidth}`}>
@@ -1107,59 +1239,187 @@ const OnCallCoverageFields = ({
               />
             </div>
           </div>
-          <div className={`${style.addManagerGrid}`}>
+          <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
             <CommonLabel value="Weekday Nights" />
-            <div className={style.displayInRow}>
-              <TimePicker
-                useAmPm={false}
-                onChange={(e) => {
-                  onCustomizeFieldChange(e, "weekdayNightsFrom");
-                }}
-                disabled={!metadata?.serviceDays?.weekDays}
-                value={
-                  metadata?.weekdayNightsFrom === null
-                    ? null
-                    : new Date(metadata?.weekdayNightsFrom)
-                }
-              />
-              <p
-                className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}
-              >
-                To
-              </p>
-              <TimePicker
-                useAmPm={false}
-                onChange={(e) => {
-                  onCustomizeFieldChange(e, "weekdayNightsTo");
-                }}
-                disabled={!metadata?.serviceDays?.weekDays}
-                value={
-                  metadata?.weekdayNightsTo === null
-                    ? null
-                    : new Date(metadata?.weekdayNightsTo)
-                }
-              />
-              <div className={` ${style.marginLeft20} ${style.durationWidth}`}>
-                <CommonTextField
-                  type="tel"
-                  maxLength="3"
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end" sx={{ fontSize: 10 }}>
-                        Hours
-                      </InputAdornment>
-                    ),
-                  }}
-                  disabled={!metadata?.serviceDays?.weekDays}
-                  value={metadata?.weekdayNightsDuration}
-                  onChange={(e) =>
-                    e.target.value >= 0 &&
-                    onCustomizeFieldChange(
-                      e.target.value,
-                      "weekdayNightsDuration"
-                    )
-                  }
-                />
+            <div>
+              <div className={style.displayInRow}>
+                <div className={style.displayInRow}>
+                  <div
+                    className={`${style.dayStyle} ${style.alignCenter} ${
+                      style.cursorPointer
+                    } ${
+                      metadata?.serviceWeekDaysNight?.monday
+                        ? style.selectedDay
+                        : ""
+                    }`}
+                    onClick={
+                      contractStatus === "ACTIVE"
+                        ? () => {}
+                        : () =>
+                            setMetadata((prevState) => ({
+                              ...metadata,
+                              serviceWeekDaysNight: {
+                                ...prevState.serviceWeekDaysNight,
+                                monday: !metadata?.serviceWeekDaysNight?.monday,
+                              },
+                            }))
+                    }
+                  >
+                    M
+                  </div>
+                  <div
+                    className={`${style.dayStyle} ${style.alignCenter} ${
+                      style.cursorPointer
+                    } ${
+                      metadata?.serviceWeekDaysNight?.tuesday
+                        ? style.selectedDay
+                        : ""
+                    }`}
+                    onClick={
+                      contractStatus === "ACTIVE"
+                        ? () => {}
+                        : () =>
+                            setMetadata((prevState) => ({
+                              ...metadata,
+                              serviceWeekDaysNight: {
+                                ...prevState.serviceWeekDaysNight,
+                                tuesday:
+                                  !metadata?.serviceWeekDaysNight?.tuesday,
+                              },
+                            }))
+                    }
+                  >
+                    T
+                  </div>
+                  <div
+                    className={`${style.dayStyle} ${style.alignCenter} ${
+                      style.cursorPointer
+                    } ${
+                      metadata?.serviceWeekDaysNight?.wednesday
+                        ? style.selectedDay
+                        : ""
+                    }`}
+                    onClick={
+                      contractStatus === "ACTIVE"
+                        ? () => {}
+                        : () =>
+                            setMetadata((prevState) => ({
+                              ...metadata,
+                              serviceWeekDaysNight: {
+                                ...prevState.serviceWeekDaysNight,
+                                wednesday:
+                                  !metadata?.serviceWeekDaysNight?.wednesday,
+                              },
+                            }))
+                    }
+                  >
+                    W
+                  </div>
+                  <div
+                    className={`${style.dayStyle} ${style.alignCenter} ${
+                      style.cursorPointer
+                    } ${
+                      metadata?.serviceWeekDaysNight?.thursday
+                        ? style.selectedDay
+                        : ""
+                    }`}
+                    onClick={
+                      contractStatus === "ACTIVE"
+                        ? () => {}
+                        : () =>
+                            setMetadata((prevState) => ({
+                              ...metadata,
+                              serviceWeekDaysNight: {
+                                ...prevState.serviceWeekDaysNight,
+                                thursday:
+                                  !metadata?.serviceWeekDaysNight?.thursday,
+                              },
+                            }))
+                    }
+                  >
+                    T
+                  </div>
+                  <div
+                    className={`${style.dayStyle} ${style.alignCenter} ${
+                      style.cursorPointer
+                    } ${
+                      metadata?.serviceWeekDaysNight?.friday
+                        ? style.selectedDay
+                        : ""
+                    }`}
+                    onClick={
+                      contractStatus === "ACTIVE"
+                        ? () => {}
+                        : () =>
+                            setMetadata((prevState) => ({
+                              ...metadata,
+                              serviceWeekDaysNight: {
+                                ...prevState.serviceWeekDaysNight,
+                                friday: !metadata?.serviceWeekDaysNight?.friday,
+                              },
+                            }))
+                    }
+                  >
+                    F
+                  </div>
+                </div>
+              </div>
+
+              <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                <div className={style.displayInRow}>
+                  <TimePicker
+                    useAmPm={false}
+                    onChange={(e) => {
+                      onCustomizeFieldChange(e, "weekdayNightsFrom");
+                    }}
+                    disabled={contractStatus === "ACTIVE" ? true : false}
+                    value={
+                      metadata?.weekdayNightsFrom === null
+                        ? null
+                        : new Date(metadata?.weekdayNightsFrom)
+                    }
+                  />
+                  <p
+                    className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}
+                  >
+                    To
+                  </p>
+                  <TimePicker
+                    useAmPm={false}
+                    onChange={(e) => {
+                      onCustomizeFieldChange(e, "weekdayNightsTo");
+                    }}
+                    disabled={contractStatus === "ACTIVE" ? true : false}
+                    value={
+                      metadata?.weekdayNightsTo === null
+                        ? null
+                        : new Date(metadata?.weekdayNightsTo)
+                    }
+                  />
+                  <div
+                    className={` ${style.marginLeft20} ${style.durationWidth}`}
+                  >
+                    <CommonTextField
+                      type="tel"
+                      maxLength="3"
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end" sx={{ fontSize: 10 }}>
+                            Hours
+                          </InputAdornment>
+                        ),
+                      }}
+                      value={metadata?.weekdayNightsDuration}
+                      onChange={(e) =>
+                        e.target.value >= 0 &&
+                        onCustomizeFieldChange(
+                          e.target.value,
+                          "weekdayNightsDuration"
+                        )
+                      }
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -1225,10 +1485,7 @@ const OnCallCoverageFields = ({
                     : metadata?.weekdayNightsMin
                 }
                 type="number"
-                disabled={
-                  metadata?.weekdayNightsFrequency === "NA" ||
-                  !metadata?.serviceDays?.weekDays
-                }
+                disabled={metadata?.weekdayNightsFrequency === "NA"}
               />
               {/* <CommonTextField
                                 InputProps={{
@@ -1268,15 +1525,13 @@ const OnCallCoverageFields = ({
                   )
                 }
                 value={
-                  metadata?.weekdayNightsMax === 0
+                  metadata?.weekdayNightsMax === 0 ||
+                  metadata?.weekdayNightsMax === 99999999
                     ? ""
                     : metadata?.weekdayNightsMax
                 }
                 type="number"
-                disabled={
-                  metadata?.weekdayNightsFrequency === "NA" ||
-                  !metadata?.serviceDays?.weekDays
-                }
+                disabled={metadata?.weekdayNightsFrequency === "NA"}
               />
               <CommonSelectField
                 className={`${style.fullWidth} ${style.marginLeft20}`}
@@ -1287,7 +1542,6 @@ const OnCallCoverageFields = ({
                     "weekdayNightsFrequency"
                   )
                 }
-                disabledSelect={!metadata?.serviceDays?.weekDays}
                 firstOptionLabel={"Select Frequency"}
                 firstOptionValue={""}
                 valueList={[
@@ -1369,8 +1623,11 @@ const OnCallCoverageFields = ({
                         ? style.selectedDay
                         : ""
                     }`}
-                    onClick={() =>
-                      onCustomizeFieldChange("FRIDAY", "weekendStartday")
+                    onClick={
+                      contractStatus === "ACTIVE"
+                        ? () => {}
+                        : () =>
+                            onCustomizeFieldChange("FRIDAY", "weekendStartday")
                     }
                   >
                     F
@@ -1383,8 +1640,14 @@ const OnCallCoverageFields = ({
                         ? style.selectedDay
                         : ""
                     }`}
-                    onClick={() =>
-                      onCustomizeFieldChange("SATURDAY", "weekendStartday")
+                    onClick={
+                      contractStatus === "ACTIVE"
+                        ? () => {}
+                        : () =>
+                            onCustomizeFieldChange(
+                              "SATURDAY",
+                              "weekendStartday"
+                            )
                     }
                   >
                     S
@@ -1397,8 +1660,11 @@ const OnCallCoverageFields = ({
                         ? style.selectedDay
                         : ""
                     }`}
-                    onClick={() =>
-                      onCustomizeFieldChange("SUNDAY", "weekendStartday")
+                    onClick={
+                      contractStatus === "ACTIVE"
+                        ? () => {}
+                        : () =>
+                            onCustomizeFieldChange("SUNDAY", "weekendStartday")
                     }
                   >
                     S
@@ -1411,8 +1677,11 @@ const OnCallCoverageFields = ({
                         ? style.selectedDay
                         : ""
                     }`}
-                    onClick={() =>
-                      onCustomizeFieldChange("MONDAY", "weekendStartday")
+                    onClick={
+                      contractStatus === "ACTIVE"
+                        ? () => {}
+                        : () =>
+                            onCustomizeFieldChange("MONDAY", "weekendStartday")
                     }
                   >
                     M
@@ -1434,8 +1703,11 @@ const OnCallCoverageFields = ({
                         ? style.selectedDay
                         : ""
                     }`}
-                    onClick={() =>
-                      onCustomizeFieldChange("FRIDAY", "weekendEndday")
+                    onClick={
+                      contractStatus === "ACTIVE"
+                        ? () => {}
+                        : () =>
+                            onCustomizeFieldChange("FRIDAY", "weekendEndday")
                     }
                   >
                     F
@@ -1448,8 +1720,11 @@ const OnCallCoverageFields = ({
                         ? style.selectedDay
                         : ""
                     }`}
-                    onClick={() =>
-                      onCustomizeFieldChange("SATURDAY", "weekendEndday")
+                    onClick={
+                      contractStatus === "ACTIVE"
+                        ? () => {}
+                        : () =>
+                            onCustomizeFieldChange("SATURDAY", "weekendEndday")
                     }
                   >
                     S
@@ -1462,8 +1737,11 @@ const OnCallCoverageFields = ({
                         ? style.selectedDay
                         : ""
                     }`}
-                    onClick={() =>
-                      onCustomizeFieldChange("SUNDAY", "weekendEndday")
+                    onClick={
+                      contractStatus === "ACTIVE"
+                        ? () => {}
+                        : () =>
+                            onCustomizeFieldChange("SUNDAY", "weekendEndday")
                     }
                   >
                     S
@@ -1476,8 +1754,11 @@ const OnCallCoverageFields = ({
                         ? style.selectedDay
                         : ""
                     }`}
-                    onClick={() =>
-                      onCustomizeFieldChange("MONDAY", "weekendEndday")
+                    onClick={
+                      contractStatus === "ACTIVE"
+                        ? () => {}
+                        : () =>
+                            onCustomizeFieldChange("MONDAY", "weekendEndday")
                     }
                   >
                     M
@@ -1491,7 +1772,7 @@ const OnCallCoverageFields = ({
                   onChange={(e) => {
                     onCustomizeFieldChange(e, "weekendFrom");
                   }}
-                  disabled={!metadata?.serviceDays?.weekEnds}
+                  disabled={contractStatus === "ACTIVE" ? true : false}
                   value={
                     metadata?.weekendFrom === null
                       ? null
@@ -1508,7 +1789,7 @@ const OnCallCoverageFields = ({
                   onChange={(e) => {
                     onCustomizeFieldChange(e, "weekendTo");
                   }}
-                  disabled={!metadata?.serviceDays?.weekEnds}
+                  disabled={contractStatus === "ACTIVE" ? true : false}
                   value={
                     metadata?.weekendTo === null
                       ? null
@@ -1528,7 +1809,6 @@ const OnCallCoverageFields = ({
                         </InputAdornment>
                       ),
                     }}
-                    disabled={!metadata?.serviceDays?.weekEnds}
                     value={metadata?.weekendDuration}
                     onChange={(e) =>
                       e.target.value >= 0 &&
@@ -1597,10 +1877,7 @@ const OnCallCoverageFields = ({
                 }
                 value={metadata?.weekendMin === 0 ? "" : metadata?.weekendMin}
                 type="number"
-                disabled={
-                  metadata?.weekendFrequency === "NA" ||
-                  !metadata?.serviceDays?.weekEnds
-                }
+                disabled={metadata?.weekendFrequency === "NA"}
               />
               {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MAX</div>
@@ -1631,12 +1908,14 @@ const OnCallCoverageFields = ({
                     "weekendMax"
                   )
                 }
-                value={metadata?.weekendMax === 0 ? "" : metadata?.weekendMax}
-                type="number"
-                disabled={
-                  metadata?.weekendFrequency === "NA" ||
-                  !metadata?.serviceDays?.weekEnds
+                value={
+                  metadata?.weekendMax === 0 ||
+                  metadata?.weekendMax === 99999999
+                    ? ""
+                    : metadata?.weekendMax
                 }
+                type="number"
+                disabled={metadata?.weekendFrequency === "NA"}
               />
               <CommonSelectField
                 className={`${style.fullWidth} ${style.marginLeft20}`}
@@ -1644,7 +1923,6 @@ const OnCallCoverageFields = ({
                 onChange={(e) =>
                   onCustomizeFieldChange(e.target.value, "weekendFrequency")
                 }
-                disabled={!metadata?.serviceDays?.weekEnds}
                 firstOptionLabel={"Select Frequency"}
                 firstOptionValue={""}
                 valueList={[
@@ -1748,7 +2026,6 @@ const OnCallCoverageFields = ({
               <CommonSelectField
                 className={`${style.threeFieldWidth}`}
                 value={metadata?.holidayTerm || ""}
-                disabled={!metadata?.serviceDays?.isholidays}
                 onChange={(e) =>
                   onCustomizeFieldChange(e.target.value, "holidayTerm")
                 }
@@ -1773,7 +2050,7 @@ const OnCallCoverageFields = ({
                       ? null
                       : new Date(metadata?.holidayFrom)
                   }
-                  disabled={!metadata?.serviceDays?.isholidays}
+                  disabled={contractStatus === "ACTIVE" ? true : false}
                 />
                 <p
                   className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}
@@ -1790,7 +2067,7 @@ const OnCallCoverageFields = ({
                       ? null
                       : new Date(metadata?.holidayTo)
                   }
-                  disabled={!metadata?.serviceDays?.isholidays}
+                  disabled={contractStatus === "ACTIVE" ? true : false}
                 />
                 <div className={`${style.marginLeft20} ${style.durationWidth}`}>
                   <CommonTextField
@@ -1803,7 +2080,6 @@ const OnCallCoverageFields = ({
                         </InputAdornment>
                       ),
                     }}
-                    disabled={!metadata?.serviceDays?.isholidays}
                     value={metadata?.holidayDuration}
                     onChange={(e) =>
                       e.target.value >= 0 &&
@@ -1872,10 +2148,7 @@ const OnCallCoverageFields = ({
                 }
                 value={metadata?.holidayMin === 0 ? "" : metadata?.holidayMin}
                 type="number"
-                disabled={
-                  metadata?.holidayFrequency === "NA" ||
-                  !metadata?.serviceDays?.isholidays
-                }
+                disabled={metadata?.holidayFrequency === "NA"}
               />
               {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MAX</div>
@@ -1906,12 +2179,14 @@ const OnCallCoverageFields = ({
                     "holidayMax"
                   )
                 }
-                value={metadata?.holidayMax === 0 ? "" : metadata?.holidayMax}
-                type="number"
-                disabled={
-                  metadata?.holidayFrequency === "NA" ||
-                  !metadata?.serviceDays?.isholidays
+                value={
+                  metadata?.holidayMax === 0 ||
+                  metadata?.holidayMax === 99999999
+                    ? ""
+                    : metadata?.holidayMax
                 }
+                type="number"
+                disabled={metadata?.holidayFrequency === "NA"}
               />
               <CommonSelectField
                 className={`${style.fullWidth} ${style.marginLeft20}`}
@@ -1919,7 +2194,6 @@ const OnCallCoverageFields = ({
                 onChange={(e) =>
                   onCustomizeFieldChange(e.target.value, "holidayFrequency")
                 }
-                disabled={!metadata?.serviceDays?.isholidays}
                 firstOptionLabel={"Select Frequency"}
                 firstOptionValue={""}
                 valueList={["NA", "WEEK", "MONTH", "CONTRACT_YEAR"]}
@@ -2114,12 +2388,7 @@ const OnCallCoverageFields = ({
           </div>
 
           <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-            <CommonLabel
-              value="On Call Duty Duration"
-              className={
-                dataCheck(metadata?.sessionDuration) ? style.redLable : ""
-              }
-            />
+            <CommonLabel value="On Call Duty Duration" />
             <div className={`${style.threeFieldWidth}`}>
               <CommonTextField
                 type="tel"
@@ -2145,16 +2414,7 @@ const OnCallCoverageFields = ({
           </div>
           {metadata?.billableService && (
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-              <CommonLabel
-                value="On Call Payment Amount*"
-                className={
-                  !metadata?.billableService
-                    ? dataCheck(metadata?.sessionAmount)
-                      ? style.redLable
-                      : ""
-                    : ""
-                }
-              />
+              <CommonLabel value="On Call Payment Amount*" />
               <div className={`${style.displayInRow}`}>
                 <div className={`${style.threeFieldWidth}`}>
                   <CommonTextField
@@ -2193,21 +2453,14 @@ const OnCallCoverageFields = ({
             </div>
           )}
           <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-            <CommonLabel
-              value="Allowable Working Day Hours For Service*"
-              className={
-                format(metadata?.workingTimeTo || new Date(), "H") === "0" &&
-                format(metadata?.workingTimeFrom || new Date(), "H") === "0"
-                  ? style.redLable
-                  : ""
-              }
-            />
+            <CommonLabel value="Allowable Working Day Hours For Service*" />
             <div className={style.displayInRow}>
               <TimePicker
                 useAmPm={false}
                 onChange={(e) => {
                   updateWorkingPeriod(e);
                 }}
+                disabled={contractStatus === "ACTIVE" ? true : false}
                 value={
                   metadata?.workingTimeFrom === null
                     ? null
@@ -2227,6 +2480,7 @@ const OnCallCoverageFields = ({
                     ? null
                     : new Date(metadata?.workingTimeTo)
                 }
+                disabled={contractStatus === "ACTIVE" ? true : false}
                 // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
               />
             </div>
@@ -2318,10 +2572,7 @@ const OnCallCoverageFields = ({
       </div>
 
       <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-        <CommonLabel
-          value="Total Contracted Service Sessions*"
-          className={dataCheck(metadata?.totalSession) ? style.redLable : ""}
-        />
+        <CommonLabel value="Total Contracted Service Sessions*" />
         <div className={style.twoCol}>
           <div
             className={`${style.spaceBetween} ${style.editableTextOuterBorder} ${style.fullWidth}`}
@@ -2333,6 +2584,7 @@ const OnCallCoverageFields = ({
               maxLength="5"
               className={style.editableSessionTextStyle}
               onChange={(e) => onTotalSessionChange(e)}
+              disabled={contractStatus === "ACTIVE" ? true : false}
             />
             <div
               className={`${style.textElement} ${

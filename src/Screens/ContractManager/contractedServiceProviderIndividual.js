@@ -99,6 +99,7 @@ const ContractedServicesProviderIndividual = ({
   const [CSPSubDomain, setCSPSubDomain] = useState("");
   const [unassignedKeys, setUnassignedKeys] = useState([]);
   const [showSaveInProgress, setShowSaveInProgress] = useState(false);
+  const contractStatus = sessionStorage.getItem("Selected Contract Status");
 
   useEffect(() => {
     getRoles();
@@ -247,7 +248,7 @@ const ContractedServicesProviderIndividual = ({
   const getEntityData = async () => {
     const { data: entityData } = await GET(`entity-service/entity/${TenantID}`);
     // console.log("entity", entityData.subdomain);
-    setCSPSubDomain(entityData.officialEmailDomain?.officialEmail);
+    setCSPSubDomain(entityData?.officialEmailDomain?.officialEmail);
   };
 
   const getSites = async () => {
@@ -636,7 +637,7 @@ const ContractedServicesProviderIndividual = ({
       return (
         <Tag
           key={index}
-          onRemove={onRemove}
+          onRemove={contractStatus === "ACTIVE" ? () => {} : onRemove}
           large={true}
           className={style.tagStyle}
         >
@@ -1165,7 +1166,9 @@ const ContractedServicesProviderIndividual = ({
                 <TagInput
                   values={siteTitleValues}
                   className={`${style.marginTop20}`}
-                  onRemove={handleSiteRemove}
+                  onRemove={
+                    contractStatus === "ACTIVE" ? () => {} : handleSiteRemove
+                  }
                   separator={/[\s,]/}
                   addOnBlur={true}
                   addOnPaste={true}
@@ -1274,7 +1277,9 @@ const ContractedServicesProviderIndividual = ({
                   <TagInput
                     values={departmentTitleValues}
                     className={`${style.marginTop20}`}
-                    onRemove={handleDeptRemove}
+                    onRemove={
+                      contractStatus === "ACTIVE" ? () => {} : handleDeptRemove
+                    }
                     separator={/[\s,]/}
                     addOnBlur={true}
                     addOnPaste={true}

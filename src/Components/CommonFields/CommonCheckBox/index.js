@@ -5,9 +5,10 @@ import FormGroup from '@mui/material/FormGroup';
 import Checkbox from '@mui/material/Checkbox';
 
 const CommonCheckBox = ({ onChange, label, className, onFocus, value, disabled, checked, key }) => {
+    const contractStatus = sessionStorage.getItem('Selected Contract Status');
     return (
         <FormGroup className={className}>
-            <FormControlLabel control={<Checkbox value={value} checked={checked ? true : false} onChange={onChange} disabled={disabled} key={key}
+            <FormControlLabel control={<Checkbox value={value} checked={checked ? true : false} onChange={onChange} disabled={contractStatus === "ACTIVE" ? true : disabled} key={key}
                 sx={{
                     '&.Mui-checked': {
                         color: '#7165e3'
