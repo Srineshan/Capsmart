@@ -1307,7 +1307,7 @@ const TimeSheetSubmissionTerms = ({
       <MissedMandatoryFieldAlert
         alert={showSaveInProgress}
         getSaveInProgressAlert={getSaveInProgressAlert}
-        fieldData={unassignedKeys?.join(", ")}
+        fieldData={unassignedKeys}
         saveInProgressFunction={saveInProgressFunction}
       />
     </div>

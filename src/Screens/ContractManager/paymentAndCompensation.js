@@ -896,7 +896,7 @@ const PaymentAndCompensation = ({
       <MissedMandatoryFieldAlert
         alert={showSaveInProgress}
         getSaveInProgressAlert={getSaveInProgressAlert}
-        fieldData={unassignedKeys?.join(", ")}
+        fieldData={unassignedKeys}
         saveInProgressFunction={saveInProgressFunction}
       />
     </>

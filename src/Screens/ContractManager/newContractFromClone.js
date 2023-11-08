@@ -814,10 +814,9 @@ const NewContractFromClone = ({
         <SaveInProgressDialog
           getSaveInProgressDialog={getShowAlert}
           header={"SAVE-IN PROGRESS"}
-          content={
-            "Your contract will be saved in draft, you can edit it later..."
-          }
           redirectTo={"contracts"}
+          contractType={contractType}
+          contractId={contractId}
         />
       )}
     </div>

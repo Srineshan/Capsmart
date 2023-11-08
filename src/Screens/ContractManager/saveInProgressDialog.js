@@ -1,5 +1,5 @@
-import React from "react";
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Dialog,
   Classes,
@@ -9,15 +9,37 @@ import {
   RadioGroup,
   Radio,
 } from "@blueprintjs/core";
+import { GET } from "../dataSaver";
 import style from "./index.module.scss";
 
-const SaveInProgressDialog = ({ getSaveInProgressDialog, header, content, redirectTo }) => {
-
+const SaveInProgressDialog = ({
+  getSaveInProgressDialog,
+  header,
+  redirectTo,
+  contractType,
+  contractId,
+}) => {
   const navigate = useNavigate();
   const submit = () => {
-    getSaveInProgressDialog(false, 'ok');
+    getSaveInProgressDialog(false, "ok");
     navigate(`/${redirectTo}`);
-  }
+  };
+
+  const [contractData, setContractData] = useState([]);
+
+  useEffect(() => {
+    if (contractId !== "" || contractId === undefined) {
+      getContractDetail();
+    }
+  }, [contractId]);
+
+  const getContractDetail = async () => {
+    const { data: contractData } = await GET(
+      `contract-managment-service/contracts/${contractId}/contractDetail`
+    );
+
+    setContractData(contractData);
+  };
 
   return (
     <Dialog
@@ -41,20 +63,37 @@ const SaveInProgressDialog = ({ getSaveInProgressDialog, header, content, redire
         <div className={style.extensionBorder}></div>
         <div className={`${style.popUpHeaderBlock} ${style.marginTop}`}>
           <div>
+            <p className={style.extentionLableStyle}>{contractType}</p>
             <p className={style.extentionLableStyle}>
-              New Contract with No Prior Contract(s) with Entity
+              PAMF CONTRACT (
+              {`${
+                contractData?.contractDetail?.contractId?.id
+                  ? contractData?.contractDetail?.contractId?.id
+                  : " - "
+              }`}
+              )
             </p>
-            <p className={style.extentionLableStyle}>PAMF CONTRACT (0043245)</p>
             <p className={style.extentionLableStyle}>
-              MULTIPLE CONTRACTORS (23)
+              {contractData?.contractName?.contractName}
             </p>
           </div>
           <div>
             <p className={style.extentionLableStyle}>
-              Ranjith T (Contract Manager)
+              {`${
+                contractData?.contractDetail?.contractManager?.name
+                  ?.firstName || ""
+              } ${
+                contractData?.contractDetail?.contractManager?.name?.lastName ||
+                ""
+              }  `}
+              (Contract Manager)
             </p>
             <p className={style.extentionLableStyle}>
-              SITE NAME ONLY IF MULTISITE
+              ({" "}
+              {contractData?.contractType === "MULTIPLE"
+                ? contractData?.contractDetail?.site?.sites.length
+                : " - "}
+              {"  "}){`${" "}`} SITE NAME ONLY IF MULTISITE
             </p>
             <p className={style.extentionLableStyle}>
               LAST UPDATED ON 09-23-2022
@@ -81,7 +120,10 @@ const SaveInProgressDialog = ({ getSaveInProgressDialog, header, content, redire
             >
               CANCEL
             </button>
-            <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={submit}>
+            <button
+              className={`${style.buttonStyle} ${style.marginLeft20}`}
+              onClick={submit}
+            >
               SAVE
             </button>
           </div>

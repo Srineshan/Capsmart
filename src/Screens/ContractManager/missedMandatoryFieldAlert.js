@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 import React, { useState } from "react";
 import {
   Dialog,
@@ -10,6 +11,7 @@ import {
 } from "@blueprintjs/core";
 import style from "./index.module.scss";
 import RedWarning from "./../../images/redWarning.png";
+import { index } from "d3";
 
 const MissedMandatoryFieldAlert = ({
   alert,
@@ -47,14 +49,16 @@ const MissedMandatoryFieldAlert = ({
         </div>
         <div className={style.extensionBorder}></div>
         <div className={`${style.marginTop30} ${style.marginLeft30}`}>
-          <p className={`${style.deleteDescriptionStyle} ${style.marginTop20}`}>
-            {fieldData}
-            <div className={`${style.marginTop20}`}>
-              <span className={`${style.blueColor} ${style.marginTop30} `}>
-                Following Above data are missing
-              </span>
-            </div>
-          </p>
+          {fieldData?.map((data, index) => {
+            return (
+              <p
+                className={`${style.deleteDescriptionStyle} ${style.marginTop10}`}
+                key={index}
+              >
+                {data}
+              </p>
+            );
+          })}
         </div>
 
         <div className={`${style.positionCenter} ${style.marginTop20}`}>

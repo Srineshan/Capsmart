@@ -1042,7 +1042,7 @@ select {
 
 .descriptionStyle {
   text-align: left;
-  font: normal normal normal 15px/30px Montserrat;
+  font: normal normal normal 15px/28px Montserrat;
   letter-spacing: 0px;
   opacity: 1;
   color: #52575d;
@@ -1058,12 +1058,12 @@ select {
 }
 
 .descriptionBoxStyle {
-  border: 1px solid #b3b8bd;
+  // border: 1px solid #b3b8bd;
   border-radius: 8px;
   opacity: 1;
   width: 660px;
-  margin-top: 40px;
-  padding: 20px;
+  margin-top: 10px;
+  padding: 30px 20px;
   background-color: white;
 }
 
