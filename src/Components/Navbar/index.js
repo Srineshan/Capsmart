@@ -166,7 +166,7 @@ const Navbar = () => {
 
   const logoutURL = () => {
     window.location.href = `http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/logout`;
-  };
+  }
 
   const logout = async () => {
     const cookies = new Cookies();
@@ -269,22 +269,22 @@ const Navbar = () => {
   let homeLink = currentUserRoles?.includes("Contract Manager")
     ? "/contracts"
     : isFlutterRoles?.length !== 0
-    ? `/home/#/dashboardRoute`
-    : currentUserRoles?.includes("Super Sys Admin")
-    ? "/partnerPortal"
-    : currentUserRoles?.includes("Entity Sys Admin")
-    ? "/entitySitePortal"
-    : "/entitySitePortal";
+      ? `/home/#/dashboardRoute`
+      : currentUserRoles?.includes("Super Sys Admin")
+        ? "/partnerPortal"
+        : currentUserRoles?.includes("Entity Sys Admin")
+          ? "/entitySitePortal"
+          : "/entitySitePortal";
   const homeRoute = () => {
     let homeLink = currentUserRoles?.includes("Contract Manager")
       ? "/contracts"
       : isFlutterRoles?.length !== 0
-      ? `/`
-      : currentUserRoles?.includes("Super Sys Admin")
-      ? "/partnerPortal"
-      : currentUserRoles?.includes("Entity Sys Admin")
-      ? "/entitySitePortal"
-      : "/entitySitePortal";
+        ? `/`
+        : currentUserRoles?.includes("Super Sys Admin")
+          ? "/partnerPortal"
+          : currentUserRoles?.includes("Entity Sys Admin")
+            ? "/entitySitePortal"
+            : "/entitySitePortal";
     console.log(homeLink);
     if (homeLink === "/") {
       window.location.href = "/home/#/dashboardRoute";
@@ -302,10 +302,9 @@ const Navbar = () => {
           }
           <img src={logo} alt="Hospital Logo" className={style.sanmateoLogo} />
           <div
-            className={`${style.menuStyle} ${
-              window.location.pathname.includes(homeLink) &&
+            className={`${style.menuStyle} ${window.location.pathname.includes(homeLink) &&
               style.activeMenuColor
-            }`}
+              }`}
             onClick={homeRoute}
           >
             <p>HOME - {currentUserRoles?.[0]?.toUpperCase()}</p>
@@ -322,11 +321,10 @@ const Navbar = () => {
           }
           <div>
             <div
-              className={`${style.menuStyle} ${
-                (window.location.pathname.includes("/reports") ||
+              className={`${style.menuStyle} ${(window.location.pathname.includes("/reports") ||
                   window.location.pathname.includes("/reportTypeOverview")) &&
                 style.activeMenuColor
-              }`}
+                }`}
               ref={popoverAnchor}
               onMouseEnter={(e) => handleClick(e)}
               onMouseLeave={() => handleClose()}
@@ -416,12 +414,11 @@ const Navbar = () => {
           {isEntityLevelAdmin && (
             <div>
               <div
-                className={`${style.menuStyle} ${
-                  (window.location.pathname === "/user" ||
+                className={`${style.menuStyle} ${(window.location.pathname === "/user" ||
                     window.location.pathname === "/welcome" ||
                     window.location.pathname === "/partnerPortal") &&
                   style.activeMenuColor
-                }`}
+                  }`}
                 ref={popoverAnchorTools}
                 onMouseEnter={(e) => handleClickTools(e)}
                 onMouseLeave={() => handleCloseTools()}
@@ -472,9 +469,8 @@ const Navbar = () => {
           )}
           <div>
             <div
-              className={`${style.menuStyle} ${
-                window.location.pathname === "/help" && style.activeMenuColor
-              }`}
+              className={`${style.menuStyle} ${window.location.pathname === "/help" && style.activeMenuColor
+                }`}
               ref={popoverAnchorHelp}
               onMouseEnter={(e) => handleClickHelp(e)}
               onMouseLeave={() => handleCloseHelp()}

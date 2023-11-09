@@ -7,28 +7,23 @@ import { TenantID, GET } from "./../dataSaver";
 import style from "./index.module.scss";
 
 const Notify = () => {
-  const [userId, setUserId] = useState("");
+  const [userId, setUserId] = useState('');
 
   const notifyFunction = async () => {
-    await axios(
-      `http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/user-management-service/user/${userId}/notify`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "X-tenantID": TenantID,
-          "X-Authorization": `Bearer ${Auth()}`,
-          userId: userId,
-        },
-      }
-    )
-      .then((response) => {
-        console.log("Notified Successfully");
-      })
-      .catch((error) => {
-        console.log("error", error);
-      });
-  };
+    await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/user-management-service/user/${userId}/notify`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-tenantID': TenantID,
+        'X-Authorization': `Bearer ${Auth()}`,
+        'userId': userId
+      },
+    }).then(response => {
+      console.log('Notified Successfully')
+    }).catch(error => {
+      console.log('error', error);
+    })
+  }
 
   return (
     <div>

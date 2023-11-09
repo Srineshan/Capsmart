@@ -247,7 +247,7 @@ const ProcedureReading = ({
         value: parseFloat(value?.min),
       },
       maximum: {
-        value: parseFloat(value?.max),
+        value: parseFloat(value?.max) === 0 ? 99999999 : parseFloat(value?.max),
       },
       frequency: value?.frequency,
       startDate: format(new Date(value?.startDate), "yyyy-MM-dd").toString(),
@@ -417,7 +417,7 @@ const ProcedureReading = ({
               value: 0,
             },
             maximum: {
-              value: 0,
+              value: 99999999,
             },
             frequency: "WEEK",
             startDate: contractTermPeriod?.start,
@@ -473,7 +473,7 @@ const ProcedureReading = ({
       name === "withoutNurse"
     ) {
       temp[0][name] = {
-        value: value || 0,
+        value: name === "maximum" ? value || 99999999 : value || 0,
       };
       console.log("data", temp);
     } else if (name === "noTargetApplicable" && value) {

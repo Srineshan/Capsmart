@@ -144,45 +144,35 @@ const SiteUsers = ({ getActiveStep }) => {
   };
 
   const getContracts = async () => {
-    await axios(
-      `http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/contract-managment-service/contracts`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "X-tenantID": id,
-          "X-Authorization": `Bearer ${Auth()}`,
-        },
-      }
-    )
-      .then((response) => {
-        setContracts(response?.data?.contractList);
-      })
-      .catch((error) => {
-        console.log("error", error);
-      });
-  };
+    await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/contract-managment-service/contracts`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-tenantID': id,
+        'X-Authorization': `Bearer ${Auth()}`
+      },
+    }).then(response => {
+      setContracts(response?.data?.contractList);
+    }).catch(error => {
+      console.log('error', error)
+    })
+  }
 
   const getUserData = async () => {
-    await axios(
-      `http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/user-management-service/user`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "X-tenantID": id,
-          "X-Authorization": `Bearer ${Auth()}`,
-        },
-      }
-    )
-      .then((response) => {
-        setUser(response?.data);
-        setShowUserTable(response?.data?.length === 0 ? true : false);
-      })
-      .catch((error) => {
-        console.log("error", error);
-      });
-  };
+    await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/user-management-service/user`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-tenantID': id,
+        'X-Authorization': `Bearer ${Auth()}`
+      },
+    }).then(response => {
+      setUser(response?.data);
+      setShowUserTable(response?.data?.length === 0 ? true : false);
+    }).catch(error => {
+      console.log('error', error)
+    })
+  }
 
   console.log("user", user);
 
@@ -350,15 +340,15 @@ const SiteUsers = ({ getActiveStep }) => {
       userType: "REGISTERED_USER",
       contracts: isAppUserContractor
         ? [
-            {
-              id: contractId,
-              contractName: {
-                contractName: contracts
-                  ?.filter((data) => data?.id === contractId)
-                  ?.map((data) => data?.contractName?.contractName)[0],
-              },
+          {
+            id: contractId,
+            contractName: {
+              contractName: contracts
+                ?.filter((data) => data?.id === contractId)
+                ?.map((data) => data?.contractName?.contractName)[0],
             },
-          ]
+          },
+        ]
         : [],
       email: {
         officialEmail: userData.email,
@@ -446,11 +436,10 @@ const SiteUsers = ({ getActiveStep }) => {
               </div>
             </div>
             <p
-              className={`${
-                isSuperAdminAccess
+              className={`${isSuperAdminAccess
                   ? style.entityTextColor
                   : style.entityTextColor4grid
-              } ${style.activeEntityTextColor}`}
+                } ${style.activeEntityTextColor}`}
             >
               ENTITY SETUP
             </p>
@@ -468,11 +457,10 @@ const SiteUsers = ({ getActiveStep }) => {
               </div>
             </div>
             <p
-              className={`${
-                isSuperAdminAccess
+              className={`${isSuperAdminAccess
                   ? style.entityTextColor
                   : style.entityTextColor4grid
-              } ${style.activeEntityTextColor}`}
+                } ${style.activeEntityTextColor}`}
             >
               SITES FOR APP USE
             </p>
@@ -491,11 +479,10 @@ const SiteUsers = ({ getActiveStep }) => {
                 </div>
               </div>
               <p
-                className={`${
-                  isSuperAdminAccess
+                className={`${isSuperAdminAccess
                     ? style.entityTextColor
                     : style.entityTextColor4grid
-                } ${style.activeEntityTextColor}`}
+                  } ${style.activeEntityTextColor}`}
               >
                 ENTITY SYSTEM ADMIN
               </p>
@@ -514,11 +501,10 @@ const SiteUsers = ({ getActiveStep }) => {
               </div>
             </div>
             <p
-              className={`${
-                isSuperAdminAccess
+              className={`${isSuperAdminAccess
                   ? style.entityTextColor
                   : style.entityTextColor4grid
-              } ${style.activeEntityTextColor}`}
+                } ${style.activeEntityTextColor}`}
             >
               APP USERS
             </p>

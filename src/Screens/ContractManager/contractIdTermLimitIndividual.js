@@ -79,17 +79,8 @@ const ContractIdTermLimitIndividual = ({
   const [contractData, setContractData] = useState();
   const [addNewManagerDialog, setAddNewManagerDialog] = useState(false);
   const [fullyExecutedContract, setFullyExecutedContract] = useState(false);
-  const [fullyExecutedContractData, setFullyExecutedContractData] =
-    useState(fileData);
-  const [fileFieldData, setFileFieldData] = useState({
-    id: "",
-    type: "",
-    name: "",
-    desc: "",
-    fileName: "",
-    file: null,
-    filePath: "",
-  });
+  const [fullyExecutedContractData, setFullyExecutedContractData] = useState(fileData);
+  const [fileFieldData, setFileFieldData] = useState({ id: '', documentType: '', documentName: '', documentDescription: '', fileName: '', file: null, filePath: '' });
   const [files, setFiles] = useState([]);
   const [departmentSpecific, setDepartmentSpecific] = useState(false);
   const [contractTermPeriodFrom, setContractTermPeriodFrom] = useState(null);
@@ -274,8 +265,8 @@ const ContractIdTermLimitIndividual = ({
       setContractEffectiveDate(
         contractDetail?.contractTerm?.effectiveDate !== null
           ? new Date(
-              contractDetail?.contractTerm?.effectiveDate?.replace("-", "/")
-            )
+            contractDetail?.contractTerm?.effectiveDate?.replace("-", "/")
+          )
           : null
       );
       setSelectedContractContinuationPolicy(
@@ -293,20 +284,12 @@ const ContractIdTermLimitIndividual = ({
           ?.renewalReminderList || [{ days: 0 }]
       );
       setCompensationPolicy(contractDetail?.compensationPolicy);
-      let fileData = [];
-      contractDetail?.contractFiles?.map((data) => {
-        fileData.push({
-          id: data?.id,
-          type: data?.documentType,
-          name: data?.documentName,
-          desc: data?.documentDescription,
-          fileName: data?.fileName,
-          file: null,
-          filePath: data?.fileURL,
-        });
-      });
-      setFullyExecutedContractData(fileData);
-      setFileFields(fileData);
+      // let fileData = [];
+      // contractDetail?.contractFiles?.map(data => {
+      //   fileData.push({ id: data?.id, documentType: data?.documentType, documentName: data?.documentName, documentDescription: data?.documentDescription, fileName: data?.fileName, file: null, filePath: data?.fileURL })
+      // })
+      setFullyExecutedContractData(contractDetail?.contractFiles);
+      setFileFields(contractDetail?.contractFiles);
       setSelectedSites(contractDetail?.site?.sites || []);
       onSelectDepartment(contractDetail?.site?.sites || []);
       if (contractDetail?.site?.sites?.length === 0) {
@@ -349,8 +332,8 @@ const ContractIdTermLimitIndividual = ({
       setContractEffectiveDate(
         contractDetail?.contractTerm?.effectiveDate !== null
           ? new Date(
-              contractDetail?.contractTerm?.effectiveDate?.replace("-", "/")
-            )
+            contractDetail?.contractTerm?.effectiveDate?.replace("-", "/")
+          )
           : null
       );
       setCompensationPolicy(contractDetail?.compensationPolicy);
@@ -358,32 +341,16 @@ const ContractIdTermLimitIndividual = ({
         contractDetail?.continuationPolicy?.contractPolicyType
       );
       let continuation = contractDetail?.continuationPolicy?.autoRenewalPeriod;
-      setAutoRenewal({
-        renewalTerm: continuation?.autoRenewalTerm?.term.toString(),
-        allowableRenewalTerm:
-          continuation?.allowableAutoRenewalTerm?.term.toString(),
-        calendar: continuation?.autoRenewalCalender,
-      });
-      setRenewalreminder(
-        contractDetail?.continuationPolicy?.reminderList
-          ?.renewalReminderList || [{ days: 0 }]
-      );
-      let fileData = [];
-      contractDetail?.contractFiles?.map((data) => {
-        fileData.push({
-          id: data?.id,
-          type: data?.documentType,
-          name: data?.documentName,
-          desc: data?.documentDescription,
-          fileName: data?.fileName,
-          file: null,
-          filePath: data?.fileURL,
-        });
-      });
+      setAutoRenewal({ renewalTerm: continuation?.autoRenewalTerm?.term.toString(), allowableRenewalTerm: continuation?.allowableAutoRenewalTerm?.term.toString(), calendar: continuation?.autoRenewalCalender })
+      setRenewalreminder(contractDetail?.continuationPolicy?.reminderList?.renewalReminderList || [{ days: 0 }]);
+      // let fileData = [];
+      // contractDetail?.contractFiles?.map(data => {
+      //   fileData.push({ id: data?.id, documentType: data?.documentType, documentName: data?.documentName, documentDescription: data?.documentDescription, fileName: data?.fileName, file: null, filePath: data?.fileURL })
+      // })
       setSiteSpecific(contractDetail?.siteSpecificContract);
       setDepartmentSpecific(contractDetail?.departmentSpecificContract);
-      setFullyExecutedContractData(fileData);
-      setFileFields(fileData);
+      setFullyExecutedContractData(contractDetail?.contractFiles);
+      setFileFields(contractDetail?.contractFiles);
       setSelectedSites(contractDetail?.site?.sites || []);
       onSelectDepartment(contractDetail?.site?.sites || []);
       if (contractDetail?.site?.sites?.length === 0) {
@@ -410,18 +377,13 @@ const ContractIdTermLimitIndividual = ({
   };
 
   const handleFileUpload = (e) => {
-    if (
-      fileData?.filter((data) => data?.fileName === e.target.files?.[0]?.name)
-        ?.length !== 0
-    ) {
-      ErrorToaster("File already exist from previous upload in this contract");
+    if (fileData?.filter(data => data?.fileName === e.target.files?.[0]?.name)?.length !== 0) {
+      setIsShowUploadDialog(false);
+      ErrorToaster('File already exist from previous upload in this contract');
       return;
     } else {
-      setFileFieldData({
-        ...fileFieldData,
-        file: e.target.files[0],
-        fileName: e.target.files?.[0]?.name,
-      });
+      setIsShowUploadDialog(true);
+      setFileFieldData({ ...fileFieldData, file: e.target.files[0], fileName: e.target.files?.[0]?.name });
     }
   };
 
@@ -443,6 +405,7 @@ const ContractIdTermLimitIndividual = ({
   };
 
   const checkAndUpdateDate = async (buttonType) => {
+    setContinueLoading(true);
     if (isDateUpdated) {
       let temp = contractedServices;
       if (contractedServices?.length !== 0 && contractedServices) {
@@ -566,18 +529,15 @@ const ContractIdTermLimitIndividual = ({
       return;
     }
 
-    let contractFiles = [];
-    fullyExecutedContract &&
-      fullyExecutedContractData
-        ?.filter((data) => data?.file !== null)
-        ?.map((data) => {
-          contractFiles?.push({
-            fileName: data.fileName,
-            documentType: data.type,
-            documentDescription: data.desc,
-            documentName: data.name,
-          });
-        });
+    // let contractFiles = [];
+    // fullyExecutedContract && fullyExecutedContractData?.filter(data => data?.file !== null)?.map(data => {
+    //   contractFiles?.push({
+    //     fileName: data.fileName,
+    //     documentType: data.documentType,
+    //     documentDescription: data.documentDescription,
+    //     documentName: data.documentName,
+    //   })
+    // })
 
     let data = {
       ...(createdContractId !== "" &&
@@ -605,9 +565,9 @@ const ContractIdTermLimitIndividual = ({
             officialEmail: selectContractManager?.email?.officialEmail,
           },
         },
-        contractFiles: contractFiles,
-        site: {
-          sites: sites,
+        "contractFiles": fullyExecutedContractData,
+        "site": {
+          "sites": sites
         },
         contractTerm: {
           startDate:
@@ -668,25 +628,17 @@ const ContractIdTermLimitIndividual = ({
       newContract: selectedContractType === "New Contract" ? true : false,
     };
 
-    const formData = new FormData();
-    let file = fullyExecutedContractData?.map((data) => data.file);
-    formData.append(
-      "contractDetail",
-      new Blob([JSON.stringify(data)], {
-        type: "application/json",
-      })
-    );
-    file
-      ?.filter((data) => data !== null)
-      ?.map((data) => {
-        formData.append("contractFiles", data);
-      });
-    if (method === "POST" && contractIdFromActive === "") {
-      await POST(
-        "contract-managment-service/contracts/contractDetail",
-        formData
-      )
-        .then((response) => {
+    // const formData = new FormData();
+    // let file = fullyExecutedContractData?.map(data => data.file);
+    // formData.append('contractDetail', new Blob([JSON.stringify(data)], {
+    //   type: "application/json"
+    // }));
+    // file?.filter(data => data !== null)?.map(data => {
+    //   formData.append('contractFiles', data);
+    // })
+    if (method === 'POST' && contractIdFromActive === '') {
+      await POST('contract-managment-service/contracts/contractDetail', data)
+        .then(response => {
           getContractId(response?.data);
           getContractDetailFirstTime(response?.data);
           SuccessToaster("Contract Draft Saved Successfully");
@@ -695,11 +647,8 @@ const ContractIdTermLimitIndividual = ({
           ErrorToaster("Unexpected Error Creating Contract");
         });
     } else {
-      await PUT(
-        `contract-managment-service/contracts/${contractIdFromActive}/contractDetail`,
-        formData
-      )
-        .then((response) => {
+      await PUT(`contract-managment-service/contracts/${contractIdFromActive}/contractDetail`, data)
+        .then(response => {
           getContractDetail();
           SuccessToaster("Contract Updated Successfully");
         })
@@ -875,8 +824,8 @@ const ContractIdTermLimitIndividual = ({
               value={
                 renewalReminder?.[i]?.days ? renewalReminder?.[i]?.days : 0
               }
-              // maxLength={2}
-              // type="number"
+            // maxLength={2}
+            // type="number"
             />
           </div>
           <div className={style.verticalAlignCenter}>
@@ -901,20 +850,14 @@ const ContractIdTermLimitIndividual = ({
       temp[i] = (
         <div className={`${style.documentCard} ${style.marginTop10}`} key={i}>
           <div className={`${style.documentGrid}`}>
-            <a href={fullyExecutedContractData?.[i]?.filePath} target="_blank">
-              <Tooltip title={"Preview"} arrow>
-                <ArticleOutlinedIcon sx={{ color: "#b0a9ef", fontSize: 35 }} />
+            <a href={fullyExecutedContractData?.[i]?.fileURL} target="_blank">
+              <Tooltip title={'Preview'} arrow>
+                <ArticleOutlinedIcon sx={{ color: '#b0a9ef', fontSize: 35 }} />
               </Tooltip>
             </a>
             <div className={style.marginTop}>
-              <p
-                className={`${style.documentTextActive} ${style.leftAlign} ${style.removeUnderline}`}
-              >
-                <strong>{fullyExecutedContractData?.[i]?.type}</strong>
-              </p>
-              <p className={`${style.documentTextActive} ${style.leftAlign}`}>
-                <strong>{fullyExecutedContractData?.[i]?.fileName}</strong>
-              </p>
+              <p className={`${style.documentTextActive} ${style.leftAlign} ${style.removeUnderline}`} ><strong>{fullyExecutedContractData?.[i]?.documentType}</strong></p>
+              <p className={`${style.documentTextActive} ${style.leftAlign}`}><strong>{fullyExecutedContractData?.[i]?.fileName}</strong></p>
             </div>
           </div>
         </div>
@@ -923,21 +866,41 @@ const ContractIdTermLimitIndividual = ({
     setFileItems(temp);
   };
 
-  const addNewDocumentField = () => {
+  const addNewDocumentField = async () => {
+    setContinueLoading(true);
+    changeContractFile(true);
     let temp = fullyExecutedContractData;
     temp.push(fileFieldData);
-    setFileFields(temp);
-    setFullyExecutedContractData(temp);
-    setFileFieldData({
-      id: "",
-      type: "",
-      name: "",
-      desc: "",
-      fileName: "",
-      file: null,
-      filePath: "",
-    });
-  };
+    let contractFiles = [];
+    temp?.filter(data => data?.file !== null)?.map(data => {
+      contractFiles?.push(data)
+    })
+    const formData = new FormData();
+    let file = temp?.map(data => data.file);
+    console.log(contractFiles)
+    formData.append('contractFiles', new Blob([JSON.stringify(contractFiles)], {
+      type: "application/json"
+    }));
+    // file?.filter(data => data !== null)?.map(data => {
+    //   console.log('contractFiels', data);
+    formData.append('documents', fileFieldData?.file);
+    // })
+    await POST(`contract-managment-service/contracts/contractFile`, formData)
+      .then(response => {
+        SuccessToaster('File Uploaded Successfully');
+        setFullyExecutedContractData(response?.data);
+        setContinueLoading(false);
+        // setFileFields(response?.data);
+        console.log(response?.data)
+        setFileFieldData({ id: '', documentType: '', documentName: '', documentDescription: '', fileName: '', file: null, filePath: '' });
+      })
+      .catch(error => {
+        ErrorToaster('File Upload Failed');
+        setContinueLoading(false);
+      })
+  }
+
+  console.log(fullyExecutedContractData)
 
   const onSelectDepartment = (data) => {
     setSelectedDepartmentSites(data);
@@ -961,11 +924,7 @@ const ContractIdTermLimitIndividual = ({
   };
 
   const disableFileAddButton = () => {
-    if (
-      fileFieldData?.type !== "" &&
-      fileFieldData?.name !== "" &&
-      fileFieldData?.file !== null
-    ) {
+    if (fileFieldData?.documentType !== '' && fileFieldData?.documentName !== '' && fileFieldData?.file !== null) {
       return false;
     } else {
       return true;
@@ -987,8 +946,8 @@ const ContractIdTermLimitIndividual = ({
     checkFieldAndPopAlert(
       value
         ? sites
-            ?.filter((data) => data?.departmentList?.departments?.length !== 0)
-            ?.map((data) => data)?.length
+          ?.filter((data) => data?.departmentList?.departments?.length !== 0)
+          ?.map((data) => data)?.length
         : true,
       "Department Specific Contract"
     );
@@ -1142,9 +1101,8 @@ const ContractIdTermLimitIndividual = ({
                 inputProps={{
                   disabled: contractStatus === "ACTIVE" ? true : false,
                 }}
-                value={`${
-                  contractData?.contractManager?.name?.firstName || ""
-                } ${contractData?.contractManager?.name?.lastName || ""}`}
+                value={`${contractData?.contractManager?.name?.firstName || ""
+                  } ${contractData?.contractManager?.name?.lastName || ""}`}
                 onFocus={() => {
                   checkFieldAndPopAlert(
                     selectContractManager,
@@ -1166,15 +1124,13 @@ const ContractIdTermLimitIndividual = ({
                 )}
             </div>
             <button
-              className={`${style.addMoreButton} ${style.marginLeft20} ${
-                style.selectedColor
-              } ${style.cursorPointer} ${
-                (items
+              className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor
+                } ${style.cursorPointer} ${(items
                   ?.map((data) => data?.name?.firstName)
                   ?.includes(userName) ||
                   userName === "") &&
                 style.disabledUploadButton
-              }`}
+                }`}
               disabled={
                 items
                   ?.map((data) => data?.name?.firstName)
@@ -1232,32 +1188,12 @@ const ContractIdTermLimitIndividual = ({
                   onChange={() => changeContractFile(!fullyExecutedContract)}
                 />
                 <div>
-                  <button
-                    className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} `}
-                  >
-                    <label
-                      for="file-upload"
-                      className={`${style.addMoreButton} ${
-                        style.marginLeft20
-                      } ${style.selectedColor} ${style.cursorPointer} ${
-                        contractStatus === "ACTIVE"
-                          ? style.disabledUploadButton
-                          : ""
-                      }`}
-                    >
+                  <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} `}>
+                    <label for="file-upload" className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${contractStatus === "ACTIVE" ? style.disabledUploadButton : ''}  ${continueLoading ? style.disabledUploadButton : ''}`}>
                       Upload File
                     </label>
                   </button>
-                  <input
-                    id="file-upload"
-                    type="file"
-                    accept="*/*"
-                    onChange={(e) => {
-                      handleFileUpload(e);
-                      setIsShowUploadDialog(true);
-                    }}
-                    disabled={contractStatus === "ACTIVE" ? true : false}
-                  />
+                  <input id="file-upload" type="file" accept="image/*, .pdf" onChange={(e) => { handleFileUpload(e); }} disabled={contractStatus === "ACTIVE" ? true : false} />
                 </div>
               </div>
               {/* {fullyExecutedContract && (
@@ -1545,17 +1481,17 @@ const ContractIdTermLimitIndividual = ({
               type="tel"
               value={
                 contractedTimeCommitment?.value === 0 ||
-                contractedTimeCommitment?.value === "0"
+                  contractedTimeCommitment?.value === "0"
                   ? ""
                   : contractedTimeCommitment?.value
               }
               onChange={(e) =>
                 e.target.value >= 0 &&
                 e.target.value <=
-                  differenceInCalendarWeeks(
-                    new Date(contractTermPeriodTo),
-                    new Date(contractTermPeriodFrom)
-                  ) &&
+                differenceInCalendarWeeks(
+                  new Date(contractTermPeriodTo),
+                  new Date(contractTermPeriodFrom)
+                ) &&
                 setContractTimeCommitment({
                   ...contractedTimeCommitment,
                   value: e.target.value,
@@ -1581,18 +1517,18 @@ const ContractIdTermLimitIndividual = ({
               ]}
               disabledList={
                 parseInt(contractedTimeCommitment?.value) <=
-                differenceInCalendarMonths(
-                  new Date(contractTermPeriodTo),
-                  new Date(contractTermPeriodFrom)
-                )
+                  differenceInCalendarMonths(
+                    new Date(contractTermPeriodTo),
+                    new Date(contractTermPeriodFrom)
+                  )
                   ? [false, false]
                   : parseInt(contractedTimeCommitment?.value) <=
                     differenceInCalendarWeeks(
                       new Date(contractTermPeriodTo),
                       new Date(contractTermPeriodFrom)
                     )
-                  ? [false, true]
-                  : [true, true]
+                    ? [false, true]
+                    : [true, true]
               }
             />
           </div>
@@ -1746,66 +1682,46 @@ const ContractIdTermLimitIndividual = ({
             {(selectedContractContinuationPolicy ===
               "WRITTENCONTRACTEXTENSIONFORFIXEDTERM" ||
               selectedContractContinuationPolicy ===
-                "NEWCONTRACTONEXPIRATION" ||
+              "NEWCONTRACTONEXPIRATION" ||
               selectedContractContinuationPolicy ===
-                "ONETIMECONTRACTTERMINATEONEXPIRATION") && (
-              <div
-                className={`${style.renewalRemainderBoxStyle}`}
-                onFocus={() => {
-                  checkFieldAndPopAlert(
-                    renewalReminder?.[0]?.days || 0,
-                    selectedContractContinuationPolicy ===
-                      "WRITTENCONTRACTEXTENSIONFORFIXEDTERM"
-                      ? "Written Contract Extension - Set Renewal Reminder"
-                      : selectedContractContinuationPolicy ===
-                        "NEWCONTRACTONEXPIRATION"
-                      ? "New Contract on Expiration - Set Renewal Reminder"
-                      : "One Time Contract - Set Renewal Reminder"
-                  );
-                }}
-              >
-                {reminderFields}
-                <div className={`${style.renewalBoxGrid}`}>
-                  {renewalReminder?.length <= 2 && (
-                    <button
-                      className={`${style.addMoreButton} ${style.selectedColor} ${style.cursorPointer}`}
-                      onClick={addReminder}
-                    >
-                      ADD MORE
-                    </button>
-                  )}
+              "ONETIMECONTRACTTERMINATEONEXPIRATION") && (
+                <div
+                  className={`${style.renewalRemainderBoxStyle}`}
+                  onFocus={() => {
+                    checkFieldAndPopAlert(
+                      renewalReminder?.[0]?.days || 0,
+                      selectedContractContinuationPolicy ===
+                        "WRITTENCONTRACTEXTENSIONFORFIXEDTERM"
+                        ? "Written Contract Extension - Set Renewal Reminder"
+                        : selectedContractContinuationPolicy ===
+                          "NEWCONTRACTONEXPIRATION"
+                          ? "New Contract on Expiration - Set Renewal Reminder"
+                          : "One Time Contract - Set Renewal Reminder"
+                    );
+                  }}
+                >
+                  {reminderFields}
+                  <div className={`${style.renewalBoxGrid}`}>
+                    {renewalReminder?.length <= 2 && (
+                      <button
+                        className={`${style.addMoreButton} ${style.selectedColor} ${style.cursorPointer}`}
+                        onClick={addReminder}
+                      >
+                        ADD MORE
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </div>
         </div>
       </div>
-      {isEditable && (
-        <div className={`${style.floatRight} ${style.marginTop20}`}>
-          <button
-            className={`${style.newContractOutlinedButton} ${
-              style.cursorPointer
-            } ${continueLoading ? style.disabled : ""}`}
-            onClick={
-              !continueLoading
-                ? () => checkAndUpdateDate("SaveInProgress")
-                : null
-            }
-          >
-            SAVE IN-PROGRESS
-          </button>
-          <button
-            className={`${style.newContractButtonStyle}  ${
-              style.cursorPointer
-            } ${style.marginLeft20} ${continueLoading ? style.disabled : ""}`}
-            onClick={
-              !continueLoading ? () => checkAndUpdateDate("Continue") : null
-            }
-          >
-            CONTINUE
-          </button>
-        </div>
-      )}
+      {isEditable &&
+        (<div className={`${style.floatRight} ${style.marginTop20}`}>
+          <button className={`${style.newContractOutlinedButton} ${style.cursorPointer} ${continueLoading ? style.continueDisabled : ''}`} onClick={!continueLoading ? () => checkAndUpdateDate('Save In Progress') : () => { }}>SAVE IN-PROGRESS</button>
+          <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.continueDisabled : ''}`} onClick={!continueLoading ? () => checkAndUpdateDate('Continue') : () => { }}>CONTINUE</button>
+        </div>)
+      }
 
       {addNewManagerDialog && (
         <AddNewContractManager
@@ -1846,48 +1762,18 @@ const ContractIdTermLimitIndividual = ({
               {fileFieldData?.fileName}
             </p>
             <div>
-              <CommonSelectField
-                value={fileFieldData?.type || "Select..."}
-                onChange={(e) => handleFileChange(e, "type")}
-                className={`${style.fullWidth}`}
-                firstOptionLabel={"Select..."}
-                firstOptionValue={"Select..."}
-                valueList={[
-                  "Agreement Draft",
-                  "Executed Agreement",
-                  "Contract Amendment",
-                  "Exhibit",
-                  "Appendix Addendum",
-                  "Schedule",
-                  "Attachment",
-                ]}
-                labelList={[
-                  "Agreement Draft",
-                  "Executed Agreement",
-                  "Contract Amendment",
-                  "Exhibit",
-                  "Appendix Addendum",
-                  "Schedule",
-                  "Attachment",
-                ]}
-                disabledList={[false, false]}
-              />
+              <CommonSelectField value={fileFieldData?.documentType || 'Select...'} onChange={(e) => handleFileChange(e, 'documentType')}
+                className={`${style.fullWidth}`} firstOptionLabel={'Select...'} firstOptionValue={'Select...'}
+                valueList={['Agreement Draft', 'Executed Agreement', 'Contract Amendment', 'Exhibit', 'Appendix Addendum', 'Schedule', 'Attachment']}
+                labelList={['Agreement Draft', 'Executed Agreement', 'Contract Amendment', 'Exhibit', 'Appendix Addendum', 'Schedule', 'Attachment']}
+                disabledList={[false, false]} />
             </div>
-            <CommonInputField
-              className={`${style.fullWidth} ${style.marginTop10}`}
-              placeholder="Document Name*"
-              value={fileFieldData?.name}
+            <CommonInputField className={`${style.fullWidth} ${style.marginTop10}`} placeholder="Document Name"
+              value={fileFieldData?.documentName}
               maxLength={TEXTFIELDLEN}
-              onChange={(e) => handleFileChange(e, "name")}
-            />
-            <TextArea
-              rows={4}
-              placeholder="Document Description*"
-              value={fileFieldData?.desc}
-              maxLength={DESCLEN}
-              className={`${style.fullWidth} ${style.marginTop10}`}
-              onChange={(e) => handleFileChange(e, "desc")}
-            />
+              onChange={(e) => handleFileChange(e, 'documentName')} />
+            <TextArea rows={4} placeholder="Document Description" value={fileFieldData?.documentDescription}
+              maxLength={DESCLEN} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileChange(e, 'documentDescription')} />
             {/* <div>
               <CommonInputField value={fileFieldData?.fileName !== '' ? fileFieldData?.fileName : ''} leftElement={leftElement()} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileUpload(e)} />
             </div> */}
@@ -1895,27 +1781,12 @@ const ContractIdTermLimitIndividual = ({
           {/* )} */}
           <div className={`${style.spaceBetween} ${style.marginTop}`}>
             <div></div>
-            {fileFieldData?.type === "" ||
-            fileFieldData?.name === "" ||
-            fileFieldData?.file === null ? (
-              <Tooltip title={"Enter All Values To Enable Upload"} arrow>
-                <button
-                  className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${style.disabledUploadButton}`}
-                >
-                  UPLOAD
-                </button>
-              </Tooltip>
-            ) : (
-              <button
-                className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} `}
-                disabled={false}
-                onClick={() => {
-                  addNewDocumentField();
-                  setIsShowUploadDialog(false);
-                }}
-              >
-                UPLOAD
-              </button>
+            {(
+              (fileFieldData?.documentType === '' || fileFieldData?.documentName === '' || fileFieldData?.file === null) ?
+                <Tooltip title={'Enter All Values To Enable Upload'} arrow>
+                  <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${style.disabledUploadButton}`} >UPLOAD</button>
+                </Tooltip> :
+                <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} `} disabled={false} onClick={() => { addNewDocumentField(); setIsShowUploadDialog(false) }}>UPLOAD</button>
             )}
           </div>
         </div>

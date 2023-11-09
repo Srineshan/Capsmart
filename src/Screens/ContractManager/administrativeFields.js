@@ -517,7 +517,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                     onChange={(e) => handleAdminActivity('schedule', e.target.value)}
                                     firstOptionLabel={'Select Frequency'} firstOptionValue={''}
                                     valueList={['NA', 'WEEK', 'MONTH', 'YEAR']}
-                                    labelList={['NA', 'Per Week', 'Per Month', 'Per Contract Year']}
+                                    labelList={['NA', 'Per Week', 'Per Month', 'Per Year']}
                                     disabledList={[false, false, false, false, false]} />
                             </div>
                             <div className={`${style.marginTop20} ${style.marginLeft20}`}>

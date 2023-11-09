@@ -55,14 +55,14 @@ const SetPassword = () => {
       length === 1
         ? style.activePasswordProgressLength1
         : length === 2
-        ? style.activePasswordProgressLength2
-        : length === 3
-        ? style.activePasswordProgressLength3
-        : length === 4
-        ? style.activePasswordProgressLength4
-        : length === 5
-        ? style.activePasswordProgressLength4
-        : ""
+          ? style.activePasswordProgressLength2
+          : length === 3
+            ? style.activePasswordProgressLength3
+            : length === 4
+              ? style.activePasswordProgressLength4
+              : length === 5
+                ? style.activePasswordProgressLength4
+                : ""
     );
   }, [
     password,
@@ -78,14 +78,14 @@ const SetPassword = () => {
       passwordStrengthLength === 0
         ? ""
         : passwordStrengthLength === 1
-        ? "Weak"
-        : passwordStrengthLength === 2
-        ? "Okay"
-        : passwordStrengthLength === 3
-        ? "Good"
-        : passwordStrengthLength >= 4
-        ? "Strong"
-        : ""
+          ? "Weak"
+          : passwordStrengthLength === 2
+            ? "Okay"
+            : passwordStrengthLength === 3
+              ? "Good"
+              : passwordStrengthLength >= 4
+                ? "Strong"
+                : ""
     );
   }, [passwordStrengthLength]);
 
@@ -137,22 +137,17 @@ const SetPassword = () => {
   }, [tenantId]);
 
   const getEntityId = async () => {
-    await axios(
-      `http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/entity-service/entityID`,
-      {
-        method: "GET",
-        // headers: { "X-subdomain": "smmc-trial" },
-      }
-    )
-      .then((response) => {
-        var cookie = new Cookie();
-        cookie.set("entityId", response?.data?.id);
-        settenantId(response?.data?.id);
-      })
-      .catch((error) => {
-        console.log("error", error);
-      });
-  };
+    await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/entity-service/entityID`, {
+      method: 'GET',
+      // headers: { "X-subdomain": "smmc-trial" },
+    }).then(response => {
+      var cookie = new Cookie();
+      cookie.set('entityId', response?.data?.id);
+      settenantId(response?.data?.id);
+    }).catch(error => {
+      console.log('error', error);
+    })
+  }
 
   const getEntityLogo = async () => {
     const { data: data } = await GET(
@@ -172,19 +167,14 @@ const SetPassword = () => {
   };
 
   const getUser = async () => {
-    await axios(
-      `http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/user-management-service/user`,
-      {
-        method: "GET",
-        headers: headers,
-      }
-    )
-      .then((response) => {
-        setUsers(response?.data);
-      })
-      .catch((error) => {
-        console.log("error", error);
-      });
+    await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/user-management-service/user`, {
+      method: 'GET',
+      headers: headers,
+    }).then(response => {
+      setUsers(response?.data);
+    }).catch(error => {
+      console.log('error', error);
+    })
   };
 
   const handlePasswordCheck = () => {
@@ -290,24 +280,20 @@ const SetPassword = () => {
         />
         <div className={`${style.passwordStrengthGrid} ${style.marginTop10}`}>
           <div
-            className={`${style.passwordProgress} ${
-              passwordStrengthLength >= 1 && strengthColor
-            }`}
+            className={`${style.passwordProgress} ${passwordStrengthLength >= 1 && strengthColor
+              }`}
           ></div>
           <div
-            className={`${style.passwordProgress} ${
-              passwordStrengthLength >= 2 && strengthColor
-            }`}
+            className={`${style.passwordProgress} ${passwordStrengthLength >= 2 && strengthColor
+              }`}
           ></div>
           <div
-            className={`${style.passwordProgress} ${
-              passwordStrengthLength >= 3 && strengthColor
-            }`}
+            className={`${style.passwordProgress} ${passwordStrengthLength >= 3 && strengthColor
+              }`}
           ></div>
           <div
-            className={`${style.passwordProgress} ${
-              passwordStrengthLength >= 4 && strengthColor
-            }`}
+            className={`${style.passwordProgress} ${passwordStrengthLength >= 4 && strengthColor
+              }`}
           ></div>
         </div>
         <div className={style.floatRight}>
@@ -433,15 +419,13 @@ const SetPassword = () => {
           type={viewPassword ? "text" : "password"}
           large={true}
           placeholder="Password"
-          className={`${style.marginTop10} ${
-            confirmPassword?.length > 0 &&
+          className={`${style.marginTop10} ${confirmPassword?.length > 0 &&
             confirmPassword !== password &&
             style.redBorderField
-          } ${
-            confirmPassword?.length > 0 &&
+            } ${confirmPassword?.length > 0 &&
             confirmPassword === password &&
             style.greenBorderField
-          }`}
+            }`}
           rightElement={EyeOpenElement(1)}
           onChange={(e) => setConfirmPassword(e.target.value)}
         />

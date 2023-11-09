@@ -28,22 +28,17 @@ const SetPasswordWithoutPassword = () => {
   }, [tenantId]);
 
   const getEntityId = async () => {
-    await axios(
-      `http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/entity-service/entityID`,
-      {
-        method: "GET",
-        // headers: { 'X-subdomain': 'smmc-trial' }
-      }
-    )
-      .then((response) => {
-        var cookie = new Cookie();
-        cookie.set("entityId", response?.data?.id);
-        setTenantId(response?.data?.id);
-      })
-      .catch((error) => {
-        console.log("error", error);
-      });
-  };
+    await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/entity-service/entityID`, {
+      method: 'GET',
+      // headers: { 'X-subdomain': 'smmc-trial' }
+    }).then(response => {
+      var cookie = new Cookie();
+      cookie.set('entityId', response?.data?.id);
+      setTenantId(response?.data?.id);
+    }).catch(error => {
+      console.log('error', error);
+    })
+  }
 
   const headers = {
     "Content-Type": "application/json",
@@ -51,19 +46,14 @@ const SetPasswordWithoutPassword = () => {
   };
 
   const getUser = async () => {
-    await axios(
-      `http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/user-management-service/user`,
-      {
-        method: "GET",
-        headers: headers,
-      }
-    )
-      .then((response) => {
-        setUsers(response?.data);
-      })
-      .catch((error) => {
-        console.log("error", error);
-      });
+    await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/user-management-service/user`, {
+      method: 'GET',
+      headers: headers,
+    }).then(response => {
+      setUsers(response?.data);
+    }).catch(error => {
+      console.log('error', error);
+    })
   };
 
   const handlePasswordCheck = () => {

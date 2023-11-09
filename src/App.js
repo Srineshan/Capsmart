@@ -242,53 +242,53 @@ const App = ({ props }) => {
       browserName === "Chrome"
         ? "CHROME"
         : browserName === "Firefox"
-        ? "FIREFOX"
-        : browserName === "Safari"
-        ? "SAFARI"
-        : browserName === "Opera"
-        ? "OPERA"
-        : browserName === "Edge"
-        ? "EDGE"
-        : browserName === "Internet Explorer"
-        ? "INTERNETEXPLORER"
-        : browserName === "Chromium"
-        ? "CHROMIUM"
-        : browserName === "Yandex"
-        ? "YANDEX"
-        : browserName === "IE"
-        ? "IE"
-        : browserName === "Mobile Safari"
-        ? "MOBILESAFARI"
-        : browserName === "Edge Chromium"
-        ? "EDGECHROMIUM"
-        : browserName === "MIUI Browser"
-        ? "MIUIBROWSER"
-        : browserName === "Samsung Browser"
-        ? "SAMSUNGBROWSER"
-        : "";
+          ? "FIREFOX"
+          : browserName === "Safari"
+            ? "SAFARI"
+            : browserName === "Opera"
+              ? "OPERA"
+              : browserName === "Edge"
+                ? "EDGE"
+                : browserName === "Internet Explorer"
+                  ? "INTERNETEXPLORER"
+                  : browserName === "Chromium"
+                    ? "CHROMIUM"
+                    : browserName === "Yandex"
+                      ? "YANDEX"
+                      : browserName === "IE"
+                        ? "IE"
+                        : browserName === "Mobile Safari"
+                          ? "MOBILESAFARI"
+                          : browserName === "Edge Chromium"
+                            ? "EDGECHROMIUM"
+                            : browserName === "MIUI Browser"
+                              ? "MIUIBROWSER"
+                              : browserName === "Samsung Browser"
+                                ? "SAMSUNGBROWSER"
+                                : "";
 
     let os =
       osName === "Windows"
         ? "WINDOWS"
         : osName === "Linux"
-        ? "LINUX"
-        : osName === "Mac OS"
-        ? "MAC"
-        : osName === "iOS"
-        ? "IOS"
-        : osName === "Android"
-        ? "ANDROID"
-        : osName === "Windows Phone"
-        ? "WINDOWSPHONE"
-        : "";
+          ? "LINUX"
+          : osName === "Mac OS"
+            ? "MAC"
+            : osName === "iOS"
+              ? "IOS"
+              : osName === "Android"
+                ? "ANDROID"
+                : osName === "Windows Phone"
+                  ? "WINDOWSPHONE"
+                  : "";
 
     let deviceType = isDesktop
       ? "DESKTOP"
       : isMobile
-      ? "MOBILE"
-      : isTablet
-      ? "TABLET"
-      : "";
+        ? "MOBILE"
+        : isTablet
+          ? "TABLET"
+          : "";
     let interceptorsInfo = sessionStorage.getItem("interceptorsInfo");
 
     let data = {
@@ -396,13 +396,10 @@ const App = ({ props }) => {
   };
 
   const getEntityId = async () => {
-    await axios(
-      `http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/entity-service/entityID`,
-      {
-        method: "GET",
-        // headers: { "X-subdomain": "hopkins" },
-      }
-    )
+    await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/entity-service/entityID`, {
+      method: "GET",
+      // headers: { "X-subdomain": "hopkins" },
+    })
       .then((response) => {
         cookie.set("entityId", response?.data?.id);
         setEntityId(response?.data?.id);
