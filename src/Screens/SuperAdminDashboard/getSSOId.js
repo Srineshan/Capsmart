@@ -39,13 +39,6 @@ const GetSSOId = () => {
     setEntityLogo(data?.file?.fileURL);
   }
 
-  const getEntityLogo = async () => {
-    const { data: data } = await GET(
-      `entity-service/entity/logo?id=${tenantId}`
-    );
-    setEntityLogo(data?.file?.fileURL);
-  };
-
   const handleSubmit = async () => {
     console.log(userId, ssoId);
     if (ssoId === "") {
