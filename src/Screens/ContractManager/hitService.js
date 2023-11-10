@@ -95,6 +95,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         contractTermPeriodFrom: null,
         contractTermPeriodTo: null,
         contractedServiceFiles: [],
+        serviceAgreementOnFile: false,
     })
 
     console.log('Contract Term Period', contractTermPeriod)
@@ -263,11 +264,11 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
             workingTimeTo: null,
             activityApprovalWFRequired: false,
             contractedServiceFiles: [],
+            serviceAgreementOnFile: false,
         })
     }
 
     const setSelectedValues = () => {
-
         let workflowData = addOnWorkFlow?.filter(data => data?.id === serviceSelected?.workFlow?.id)?.map(data => data?.workFlowMap?.workflow)[0] || {};
         let workFlowValues = Object?.values(workflowData);
         let approver = user?.filter(data => data?.id === workFlowValues?.[0]?.workFlowUser?.id)?.map(data => data)[0];
@@ -292,6 +293,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                 activityApprovalWFRequired: serviceSelected?.activityApprovalWFRequired,
                 approver: approver,
                 contractedServiceFiles: serviceSelected?.contractedServiceFiles || [],
+                serviceAgreementOnFile: serviceSelected?.serviceAgreementOnFile,
                 // contractTermPeriodFrom: serviceSelected?.contractedSchedules?.
             });
             setFullyExecutedContractData(serviceSelected?.contractedServiceFiles || [])
@@ -746,11 +748,11 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                 <div>
                     <div>
                         <div className={`${style.spaceBetween}`}>
-                            <CommonSwitch checked={serviceAgreementOnFile} className={`${style.switchFontStyle} ${style.flexLeft}`}
-                                label={serviceAgreementOnFile ? 'YES' : "NO"}
-                                onChange={() => changeContractFile(!serviceAgreementOnFile)}
+                            <CommonSwitch checked={metadata?.serviceAgreementOnFile} className={`${style.switchFontStyle} ${style.flexLeft}`}
+                                label={metadata?.serviceAgreementOnFile ? 'YES' : "NO"}
+                                onChange={() => setMetadata({ ...metadata, serviceAgreementOnFile: !metadata?.serviceAgreementOnFile })}
                             />
-                            {serviceAgreementOnFile && (
+                            {metadata?.serviceAgreementOnFile && (
                                 <div>
                                     <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} `}>
                                         <label for="file-upload" className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${contractStatus === "ACTIVE" ? style.disabledUploadButton : ''}`}>

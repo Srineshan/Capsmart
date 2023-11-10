@@ -1478,6 +1478,7 @@ const AddServiceProvided = ({
           cptcodeRequired: dataValues?.cptcodeRequired || false,
           encounterDocumentationRequired: dataValues?.encounterDocumentationRequired || false,
           attendingDocRequired: dataValues?.attendingDocRequired || false,
+          serviceAgreementOnFile: dataValues?.serviceAgreementOnFile || false,
           activityApprovalWFRequired:
             dataValues?.activityApprovalWFRequired || false,
           designateSpecificContractor: isDesignatedSpecificContractor,
