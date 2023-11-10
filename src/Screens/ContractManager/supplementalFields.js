@@ -633,7 +633,7 @@ const SupplementalFields = ({
                                     firstOptionLabel={"Select Frequency"}
                                     firstOptionValue={""}
                                     valueList={["WEEK", "MONTH", "YEAR"]}
-                                    labelList={["Per Week", "Per Month", "Per Contract Year"]}
+                                    labelList={["Per Week", "Per Month", "Per Year"]}
                                     disabledList={[false, false, false]}
                                     disabledSelect={metadata?.sessionsAsNeeded}
                                 />
