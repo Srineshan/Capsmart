@@ -328,8 +328,11 @@ const ReportTypeOverview = () => {
         setReportLog(activitiesOrServicesValues?.activities);
         if (activitiesOrServicesValues) {
             let temp = [];
-            activitiesOrServicesValues?.activityServiceReports?.map((pie, index) => {
-                temp[index] = { key: pie.activityStatus, value: pie.count }
+            // activitiesOrServicesValues?.activityServiceReports?.map((pie, index) => {
+            //     temp[index] = { key: pie.activityStatus, value: pie.count }
+            // })
+            Object?.keys(activitiesOrServicesValues?.activityServiceReports)?.map((data, index) => {
+                temp[index] = { key: data, value: Object?.values(activitiesOrServicesValues?.activityServiceReports)?.[index] }
             })
             setPieData(temp);
             let lineTemp = [];
@@ -403,10 +406,15 @@ const ReportTypeOverview = () => {
         setAddOnRejectedReportLog(addOnServicesValues?.rejectedActivities);
         if (addOnServicesValues) {
             let temp = [];
-            addOnServicesValues?.addOnActivityServiceReports?.map((pie, index) => {
-                temp[index] = { key: pie.addOnActivityRequestStatus, value: pie.count }
-            })
-            setPieData(temp);
+            // addOnServicesValues?.addOnActivityServiceReports?.map((pie, index) => {
+            //     temp[index] = { key: pie.addOnActivityRequestStatus, value: pie.count }
+            // })
+            if (addOnServicesValues?.addOnActivityServiceReports !== null) {
+                Object?.keys(addOnServicesValues?.addOnActivityServiceReports)?.map((data, index) => {
+                    temp[index] = { key: data, value: Object?.values(addOnServicesValues?.addOnActivityServiceReports)?.[index] }
+                })
+                setPieData(temp);
+            }
             if (addOnServicesValues?.addOnActivityStatusByCategorys?.length !== 0) {
                 setSeries([{
                     'data': addOnServicesValues?.addOnActivityStatusByCategorys?.map(data => data?.approved),
@@ -488,7 +496,7 @@ const ReportTypeOverview = () => {
     const getPayments = async () => {
         let chartData;
         if (!isMyReport) {
-            const { data: chartDataValues } = await GET(`timesheet-management-service/report/paymentProcessingSummary?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts || []}&users=${dataToUseInReport?.selectedContractedServiceProvider || []}`);
+            const { data: chartDataValues } = await GET(`timesheet-management-service/report/paymentProcessingSummary?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts || []}&users=${dataToUseInReport?.selectedContractedServiceProvider || []}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
             chartData = chartDataValues;
         } else {
             const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/paymentProcessingSummary?id=${myReportId}`);
@@ -1084,6 +1092,8 @@ const ReportTypeOverview = () => {
         return headerValues;
     }
 
+    console.log(pieData, pieData[1]?.value, dataToUseInReport)
+
     const showActivitiesOrServicesReport = () => {
         return (
             <>
@@ -1104,7 +1114,7 @@ const ReportTypeOverview = () => {
                 <div className={style.marginTop40}>
                     <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20} `}>Trend For Activities / Services Completed</div>
                     <div className={style.reportWidthToFitFullScreen}>
-                        <ApexLineChart lineData={lineData} />
+                        <ApexLineChart lineData={lineData} lineCategory={'Completed Activity'} />
                     </div>
                 </div>
                 <div className={`${style.headerBorderStyle} ${style.marginTop40} `}></div>
@@ -1216,7 +1226,7 @@ const ReportTypeOverview = () => {
                                                         </div>
                                                     )}
                                                 </div>
-                                            ) : (reportType === "activitiesOrServices" || reportType === "addOnActivities" || reportType === "timesheetProcessingSummary" || reportType === "listingOfTimesheetsNotPaid" || reportType === "submittedTimesheetsPaymentStatus") ? (
+                                            ) : (reportType === "activitiesOrServices" || reportType === "addOnActivities" || reportType === "timesheetProcessingSummary" || reportType === "listingOfTimesheetsNotPaid" || reportType === "submittedTimesheetsPaymentStatus" || reportType === "paymentsProcessingSummary") ? (
                                                 <div className={`${style.grid2} ${style.marginTop20} `}>
                                                     <div>
                                                         <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Sites </div>
@@ -1232,50 +1242,52 @@ const ReportTypeOverview = () => {
                                                     </div>
                                                     <div>
                                                         <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Contracted Service Provider </div>
-                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{`${dataToUseInReport?.selectedContractedServiceProviderToSend?.name?.firstName} ${dataToUseInReport?.selectedContractedServiceProviderToSend?.name?.lastName}`}</div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedContractedServiceProviderToSend?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`).join(', ') || 'All Contracted Service Providers'}</div>
                                                     </div>
                                                 </div>
-                                            ) : (reportType === "paymentsProcessingSummary") ? (
-                                                <div className={`${style.grid2} ${style.marginTop20} `}>
-                                                    <div>
-                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Departments</div>
-                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
-                                                    </div>
-                                                </div>
-                                            ) : (reportType === "compensationCostAnalysis") ? (
-                                                <div className={`${style.marginTop20} `}>
-                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Contract </div>
-                                                    <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedContractsToSend?.map(data => data?.contractName?.contractName).join(', ') || 'All Contracts'}</div>
-                                                </div>
-                                            ) : (reportType === "nonCompliant") ? (
-                                                <div className={`${style.grid2} ${style.marginTop20} `}>
-                                                    <div>
-                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Sites </div>
-                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedSitesToSend?.map(data => data?.siteName?.siteName).join(', ') || 'All Sites'}</div>
-                                                    </div>
-                                                    <div>
-                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Departments</div>
-                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
-                                                    </div>
-                                                    <div>
-                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Contracts </div>
+                                            )
+                                                //  : (reportType === "paymentsProcessingSummary") ? (
+                                                //     <div className={`${style.grid2} ${style.marginTop20} `}>
+                                                //         <div>
+                                                //             <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Departments</div>
+                                                //             <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
+                                                //         </div>
+                                                //     </div>
+                                                // )
+                                                : (reportType === "compensationCostAnalysis") ? (
+                                                    <div className={`${style.marginTop20} `}>
+                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Contract </div>
                                                         <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedContractsToSend?.map(data => data?.contractName?.contractName).join(', ') || 'All Contracts'}</div>
                                                     </div>
-                                                    <div>
-                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Contract Status</div>
-                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.contractStatus === 'ACTIVE' ? 'Active'
-                                                            : dataToUseInReport?.contractStatus === 'DRAFT' ? 'Draft'
-                                                                : dataToUseInReport?.contractStatus === 'EXPIRED' ? 'Expired'
-                                                                    : dataToUseInReport?.contractStatus === 'TERMINATED' ? 'Terminated' : ''}</div>
+                                                ) : (reportType === "nonCompliant") ? (
+                                                    <div className={`${style.grid2} ${style.marginTop20} `}>
+                                                        <div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Sites </div>
+                                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedSitesToSend?.map(data => data?.siteName?.siteName).join(', ') || 'All Sites'}</div>
+                                                        </div>
+                                                        <div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Departments</div>
+                                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
+                                                        </div>
+                                                        <div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Contracts </div>
+                                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedContractsToSend?.map(data => data?.contractName?.contractName).join(', ') || 'All Contracts'}</div>
+                                                        </div>
+                                                        <div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Contract Status</div>
+                                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.contractStatus === 'ACTIVE' ? 'Active'
+                                                                : dataToUseInReport?.contractStatus === 'DRAFT' ? 'Draft'
+                                                                    : dataToUseInReport?.contractStatus === 'EXPIRED' ? 'Expired'
+                                                                        : dataToUseInReport?.contractStatus === 'TERMINATED' ? 'Terminated' : ''}</div>
+                                                        </div>
+                                                        <div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Proof Of Documentation </div>
+                                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.podType || 'Select One'}</div>
+                                                        </div>
                                                     </div>
-                                                    <div>
-                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Proof Of Documentation </div>
-                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.podType || 'Select One'}</div>
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <div className={`${style.grid2} ${style.marginTop20} `}>
-                                                    {/* <div>
+                                                ) : (
+                                                    <div className={`${style.grid2} ${style.marginTop20} `}>
+                                                        {/* <div>
                                                         <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Service Site </div>
                                                         <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Site 1, Site 2, Site 3</div>
                                                     </div>
@@ -1299,8 +1311,8 @@ const ReportTypeOverview = () => {
                                                         <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Completion Status</div>
                                                         <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Medical/ Surgical Care Services</div>
                                                     </div> */}
-                                                </div>
-                                            )}
+                                                    </div>
+                                                )}
                                             <div className={`${style.headerBorderStyle} ${style.marginTop40} `}></div>
                                             {reportType === "activitiesOrServices" ? (
                                                 <>
@@ -1586,7 +1598,9 @@ const ReportTypeOverview = () => {
                                                             <div className={style.grid2}>
                                                                 <div>
                                                                     <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>Payment Status</div>
-                                                                    <ApexPieChart pieData={pieData} />
+                                                                    {(pieData[0]?.value !== 0 || pieData[1]?.value !== 0) && (
+                                                                        <ApexPieChart pieData={pieData} />
+                                                                    )}
                                                                 </div>
                                                                 <div>
                                                                     <div className={style.spaceBetween}>
