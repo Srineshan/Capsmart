@@ -966,55 +966,55 @@ const AddServiceProvided = ({
       // }
       console.log('customize log', metadata);
       if (metadata?.customizedSchedule) {
-        activities = [];
-        metadata?.serviceDaysArray?.map((serviceDays) => {
-          console.log('Activity', activities)
-          if (serviceDays === "Weekdays") {
-            if
-              (metadata?.weekdayMin ||
-              metadata?.weekdayMax ||
-              metadata?.weekdayPayment !== 0
-            ) {
-              console.log('inside weekday else');
-              if (!activities?.map(data => data?.activity).includes(metadata?.weekdayActivity) && metadata?.weekdayActivity !== '' && metadata?.weekdayActivity !== null) {
-                activities?.push({ activity: metadata?.weekdayActivity });
-              }
-
-            }
-            if (
-              metadata?.weekdayNightsMin ||
-              metadata?.weekdayNightsMax ||
-              metadata?.weekdayNightsPayment !== 0
-            ) {
-              console.log('inside weeknight else');
-              if (!activities?.map(data => data?.activity).includes(metadata?.weekdayNightActivity) && metadata?.weekdayNightActivity !== '' && metadata?.weekdayNightActivity !== null) {
-                activities?.push({ activity: metadata?.weekdayNightActivity })
-              }
-            }
-
-          }
-          if (
-            metadata?.weekendMin ||
-            metadata?.weekendMax ||
-            metadata?.weekendPayment !== 0
-          ) {
-            console.log('inside weekend else');
-            if (!activities?.map(data => data?.activity).includes(metadata?.weekendActivity) && metadata?.weekendActivity !== '' && metadata?.weekendActivity !== null) {
-              activities?.push({ activity: metadata?.weekendActivity })
-            }
-          }
-          if (
-            metadata?.holidayMin ||
-            metadata?.holidayMax ||
-            metadata?.holidayPayment !== 0
-          ) {
-            console.log('inside holiday else');
-            if (!activities?.map(data => data?.activity).includes(metadata?.holidayActivity) && metadata?.holidayActivity !== '' && metadata?.holidayActivity !== null) {
-              activities?.push({ activity: metadata?.holidayActivity })
-            }
+        console.log('inside Custom SChedule', metadata);
+        // activities = [];
+        // metadata?.serviceDaysArray?.map((serviceDays) => {
+        console.log('Activity', activities)
+        if
+          (metadata?.weekdayMin ||
+          metadata?.weekdayMax ||
+          metadata?.weekdayPayment !== 0
+        ) {
+          console.log('inside weekday else');
+          if (!activities?.map(data => data?.activity).includes(metadata?.weekdayActivity) && metadata?.weekdayActivity !== '' && metadata?.weekdayActivity !== null) {
+            activities?.push({ activity: metadata?.weekdayActivity });
           }
 
-        });
+        }
+        if (
+          metadata?.weekdayNightsMin ||
+          metadata?.weekdayNightsMax ||
+          metadata?.weekdayNightsPayment !== 0
+        ) {
+          console.log('inside weeknight else');
+          if (!activities?.map(data => data?.activity).includes(metadata?.weekdayNightActivity)) {
+            activities?.push({ activity: metadata?.weekdayNightActivity })
+          }
+        }
+
+        if (
+          metadata?.weekendMin ||
+          metadata?.weekendMax ||
+          metadata?.weekendPayment !== 0
+        ) {
+          console.log('inside weekend else');
+          if (!activities?.map(data => data?.activity).includes(metadata?.weekendActivity) && metadata?.weekendActivity !== '' && metadata?.weekendActivity !== null) {
+            activities?.push({ activity: metadata?.weekendActivity })
+          }
+        }
+        if (
+          metadata?.holidayMin ||
+          metadata?.holidayMax ||
+          metadata?.holidayPayment !== 0
+        ) {
+          console.log('inside holiday else');
+          if (!activities?.map(data => data?.activity).includes(metadata?.holidayActivity) && metadata?.holidayActivity !== '' && metadata?.holidayActivity !== null) {
+            activities?.push({ activity: metadata?.holidayActivity })
+          }
+        }
+        // }
+
+        //   );
       }
       performingActivity = activities?.map(data => data?.activity)?.join("-");
       console.log('Performing Actiity', performingActivity, activities)
@@ -1042,6 +1042,7 @@ const AddServiceProvided = ({
         });
       });
     }
+    console.log('activities', activities);
 
     if (serviceTypeTemplate === SUPPLEMENTAL) {
       performingActivity =
