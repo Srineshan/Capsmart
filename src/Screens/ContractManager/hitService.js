@@ -673,11 +673,11 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                     </div>
 
                     <div>
-                        <div className={` ${style.marginTop20}`}>
+                        <div className={` ${style.floatRight}`}>
                             <button className={`${style.outlinedButton} `} onClick={(e) => { setShowAdminActivity(false); setEditAdminActivitySelected(false); }}>CANCEL</button>
-                            <button className={`${style.buttonStyle}  ${isLoading ? style.disabled : ''}`} onClick={(e) => { submit() }}>SAVE</button>
+                            <button className={`${style.buttonStyle}  ${style.marginLeft20} ${isLoading ? style.disabled : ''}`} onClick={(e) => { submit() }}>SAVE</button>
                         </div>
-                        <br />
+                        <br /><br />
                     </div>
                 </div>
             }

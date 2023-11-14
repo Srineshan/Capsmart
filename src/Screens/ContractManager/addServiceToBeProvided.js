@@ -1085,7 +1085,7 @@ const AddServiceProvided = ({
           ?.map((data) => data?.activity)
           ?.join("-");
       }
-      if (activities?.length === 0 && serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE) {
+      if (activities?.length === 0 && serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE && (serviceTypeTemplate === ONCALL && !dataValues?.customizedSchedule)) {
         let message =
           serviceTypeTemplate === SUPPLEMENTAL
             ? "Supplement Services"
@@ -1250,6 +1250,7 @@ const AddServiceProvided = ({
           payableAmount: {
             value: parseFloat(dataValues?.sessionAmount),
           },
+          patientConsultRequired: dataValues?.patientConsultRequired || false,
           professionalServiceRequired: dataValues?.professionalServiceRequired || false,
           ...((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ONCALLSERVICE ||
             serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === HIT) &&
