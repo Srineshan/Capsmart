@@ -425,12 +425,12 @@ const ReportTypeOverview = () => {
                     'name': 'In Progress'
                 },
                 {
-                    'data': addOnServicesValues?.addOnActivityStatusByCategorys?.map(data => data?.onhold),
-                    'name': 'On Hold'
-                },
-                {
                     'data': addOnServicesValues?.addOnActivityStatusByCategorys?.map(data => data?.rejected),
                     'name': 'Rejected'
+                },
+                {
+                    'data': addOnServicesValues?.addOnActivityStatusByCategorys?.map(data => data?.onhold),
+                    'name': 'On Hold'
                 }])
                 setCategories(addOnServicesValues?.addOnActivityStatusByCategorys?.map(data => data?.activity));
             } else {
