@@ -10,6 +10,12 @@ const ApexPieChart = ({ pieData }) => {
       return 'To Do';
     else if (data === "NOTDONE")
       return 'Not Done';
+    else if (data === "done")
+      return 'Done';
+    else if (data === "todo")
+      return 'To Do';
+    else if (data === "notdone")
+      return 'Not Done';
     if (data === "paidOnTime")
       return 'Paid On Time';
     else if (data === "paidDelayed")
@@ -20,23 +26,37 @@ const ApexPieChart = ({ pieData }) => {
       return 'Approved';
     else if (data === "INPROGRESS")
       return 'In-Progress';
+    else if (data === "inprogress")
+      return 'In-Progress';
     else if (data === "paidNotDone")
       return 'Payment Not Made';
     else if (data === "paidPastDue")
       return 'Payment Past Due';
     else if (data === "ONHOLD")
       return 'On Hold';
+    else if (data === "onhold")
+      return 'On Hold';
     else if (data === "SUBMITTED")
       return 'Submitted';
     else if (data === "REJECTED")
       return 'Rejected';
+    else if (data === "rejected")
+      return 'Rejected';
     else if (data === "NA")
+      return 'NA';
+    else if (data === "na")
       return 'NA';
     else if (data === "SUBMITTED")
       return 'Submitted';
     else if (data === "APPROVED")
       return 'Approved';
     else if (data === "REVIEWED")
+      return 'Reviewed';
+    else if (data === "submitted")
+      return 'Submitted';
+    else if (data === "approved")
+      return 'Approved';
+    else if (data === "reviewed")
       return 'Reviewed';
     else if (data === "paid")
       return 'Paid';
@@ -72,7 +92,7 @@ const ApexPieChart = ({ pieData }) => {
         curve: 'smooth',
         width: 0
       },
-      colors: ["#1DD174", "#FFD950", "#F46044", '#7165E3', '#AE3CEA'],
+      colors: ["#1DD174", "#FFD950", "#F46044", '#7165E3', '#AE3CEA', '#4AB8FC', '#0B1542'],
       dataLabels: {
         enabled: false,
       },
