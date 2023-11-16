@@ -191,6 +191,9 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                 setMetadata({ ...metadata, sessionDuration: '0', dedicatedHoursActivityType: '', sessionAmount: '', totalSession: '0', totalSessionFrequency: 'NA', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
             }
         }
+        if (name === 'totalSessionFrequency' && value === 'NA') {
+            setMetadata({ ...metadata, totalSessionFrequency: value, totalSession: 0 })
+        }
         else {
             setMetadata({ ...metadata, [name]: value });
         }
@@ -380,14 +383,15 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                     }}
                                     onChange={(e) => e.target.value >= 0 && handleValueChange('totalSession', e.target.value.slice(0, 4))}
                                     value={metadata?.totalSession}
+                                    disabled={metadata?.totalSessionFrequency === "NA"}
                                 />
                             </div>
                             <CommonSelectField className={` ${style.marginLeft20}`}
-                                value={metadata?.totalSessionFrequency || 'NA'}
+                                value={metadata?.totalSessionFrequency || ''}
                                 onChange={(e) => handleValueChange('totalSessionFrequency', e.target.value)}
-                                firstOptionLabel={'Select Frequency'} firstOptionValue={'NA'}
-                                valueList={['WEEK', 'MONTH', 'YEAR']}
-                                labelList={['Per Week', 'Per Month', 'Per Year']}
+                                firstOptionLabel={'Select Frequency'} firstOptionValue={''}
+                                valueList={['WEEK', 'MONTH', 'YEAR', 'NA']}
+                                labelList={['Per Week', 'Per Month', 'Per Year', 'As Needed']}
                                 disabledList={[false, false]} />
                         </div>
                     </div>
@@ -405,9 +409,9 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                     value={metadata?.sessionAmount}
                                 />
                             </div>
-                            <div className={style.verticalAlignCenter}>
-                                <CommonLabel className={` ${style.marginLeft20}`} value={metadata?.totalSession !== 0 && metadata?.totalSession !== '' && metadata?.totalSession !== NaN ? `${(metadata?.sessionAmount / metadata?.totalSession).toFixed(2)} per Hour` : ''} />
-                            </div>
+                            {metadata?.totalSessionFrequency !== "NA" && <div className={style.verticalAlignCenter}>
+                                <CommonLabel className={` ${style.marginLeft20}`} value={metadata?.totalSession !== 0 && metadata?.totalSession !== '' && metadata?.totalSession !== '0' && metadata?.totalSession !== NaN ? `${(metadata?.sessionAmount / metadata?.totalSession).toFixed(2)} per Hour` : ''} />
+                            </div>}
                         </div>
                     </div>
                 </>
@@ -494,7 +498,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                     onChange={(e) => handleAdminActivity('schedule', e.target.value)}
                                     firstOptionLabel={'Select Frequency'} firstOptionValue={''}
                                     valueList={['NA', 'WEEK', 'MONTH', 'YEAR']}
-                                    labelList={['NA', 'Per Week', 'Per Month', 'Per Contract Year']}
+                                    labelList={['NA', 'Per Week', 'Per Month', 'Per Year']}
                                     disabledList={[false, false, false, false, false]} />
                             </div>
                             <div className={`${style.marginTop20} ${style.marginLeft20}`}>

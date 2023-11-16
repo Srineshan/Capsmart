@@ -167,7 +167,7 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
   const getEntityData = async () => {
     const { data: entityData } = await GET(`entity-service/entity/${TenantID}`);
     // console.log("entity", entityData.subdomain);
-    setCSPSubDomain(entityData.officialEmailDomain?.officialEmail);
+    setCSPSubDomain(entityData?.officialEmailDomain?.officialEmail);
   };
 
   const getContractors = (id) => {
@@ -450,7 +450,7 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
                 ) : selectedContract === 'draft' ? (
                   <>
                     <button className={isDraft ? style.myActiveContractsButton : style.otherContractsButton} onClick={() => setIsDraft(true)}>Draft Contracts ( {metadata?.draft?.draftCount} )</button>
-                    <button className={`${!isDraft ? style.myActiveContractsButton : style.otherContractsButton} ${style.marginLeft20}`} onClick={() => setIsDraft(false)}>Activation Pending ( 2 )</button>
+                    {/* <button className={`${!isDraft ? style.myActiveContractsButton : style.otherContractsButton} ${style.marginLeft20}`} onClick={() => setIsDraft(false)}>Activation Pending ( 2 )</button> */}
                   </>
                 ) : selectedContract === 'upcomingrenewals' ? (
                   <>

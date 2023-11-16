@@ -18,7 +18,7 @@ const MoveToDraft = () => {
     }, []);
 
     const getContracts = async () => {
-        const { data: contracts } = await GET(`contract-managment-service/contracts?tab=activecontracts`);
+        const { data: contracts } = await GET(`contract-managment-service/contracts?limit=200&tab=activecontracts`);
         setContracts(contracts?.contractList);
     };
 

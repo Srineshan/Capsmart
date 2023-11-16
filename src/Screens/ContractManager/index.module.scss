@@ -428,6 +428,11 @@ body::-webkit-scrollbar {
     cursor: not-allowed;
 }
 
+.continueDisabled {
+    cursor: not-allowed !important;
+    opacity: 0.3;
+}
+
 .addBoxDescription {
     color: #52575D;
     background-color: rgba(143, 153, 168, 0.5);
@@ -959,6 +964,7 @@ select {
 }
 
 .durationWidth {
+    min-width: 150px;
     max-width: 150px;
 }
 
@@ -1286,6 +1292,11 @@ select {
 .documentGrid {
     display: grid;
     grid-template-columns: 15% 1fr;
+}
+
+.documentHITGrid {
+    display: grid;
+    grid-template-columns: 15% 1fr 5%;
 }
 
 .documentTextGrid {
@@ -1763,6 +1774,16 @@ input[type="file"] {
 .greenChip {
     background: #a3f5c8 0% 0% no-repeat padding-box;
     color: #14B15A;
+}
+
+.orangeChip {
+    background: orange 0% 0% no-repeat padding-box;
+    color: orangered;
+}
+
+.yellowChip {
+    background: lemonchiffon 0% 0% no-repeat padding-box;
+    color: orange;
 }
 
 .blueChip {
