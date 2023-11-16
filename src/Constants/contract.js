@@ -7,4 +7,4 @@ export const ADMINISTRATIVE = 'Administrative / Miscellaneous Service';
 export const PROCEDUREREADING = 'Procedure Reading / Implant Block';
 export const ONCALLSERVICE = 'On-Site On-Call Service';
 export const HOSPICE = 'Hospice Clinical Consult Services';
-export const HIT = 'Clinical Informative / HIT Service';
+export const HIT = 'Clinical Informatics / HIT Service';

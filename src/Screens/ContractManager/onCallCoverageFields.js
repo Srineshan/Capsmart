@@ -581,10 +581,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                 </div>
             </div>
 
-            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <CommonLabel value='Allowable Service Days*' />
-                <ServiceDays setMetaData={getServiceDaysMetadata} selectedService={serviceSelected} isReset={isReset} setIsReset={getIsReset} />
-            </div>
+
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Same On Call Schedule For All Days' />
@@ -1200,6 +1197,10 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
             {
                 !metadata?.customizedSchedule && (
                     <>
+                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                            <CommonLabel value='Allowable Service Days*' />
+                            <ServiceDays setMetaData={getServiceDaysMetadata} selectedService={serviceSelected} isReset={isReset} setIsReset={getIsReset} />
+                        </div>
                         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                             <CommonLabel value='Number of On Call Duty Days*' />
                             <div className={style.displayInRow}>

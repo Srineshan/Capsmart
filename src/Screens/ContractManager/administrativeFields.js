@@ -409,9 +409,9 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                     value={metadata?.sessionAmount}
                                 />
                             </div>
-                            <div className={style.verticalAlignCenter}>
+                            {metadata?.totalSessionFrequency !== "NA" && <div className={style.verticalAlignCenter}>
                                 <CommonLabel className={` ${style.marginLeft20}`} value={metadata?.totalSession !== 0 && metadata?.totalSession !== '' && metadata?.totalSession !== '0' && metadata?.totalSession !== NaN ? `${(metadata?.sessionAmount / metadata?.totalSession).toFixed(2)} per Hour` : ''} />
-                            </div>
+                            </div>}
                         </div>
                     </div>
                 </>
@@ -498,7 +498,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                     onChange={(e) => handleAdminActivity('schedule', e.target.value)}
                                     firstOptionLabel={'Select Frequency'} firstOptionValue={''}
                                     valueList={['NA', 'WEEK', 'MONTH', 'YEAR']}
-                                    labelList={['NA', 'Per Week', 'Per Month', 'Per Contract Year']}
+                                    labelList={['NA', 'Per Week', 'Per Month', 'Per Year']}
                                     disabledList={[false, false, false, false, false]} />
                             </div>
                             <div className={`${style.marginTop20} ${style.marginLeft20}`}>

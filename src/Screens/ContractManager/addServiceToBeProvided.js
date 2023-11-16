@@ -1139,7 +1139,8 @@ const AddServiceProvided = ({
               },
             },
           }),
-          "baseServiceAvailable": serviceTypeTemplate === SUPPLEMENTAL ? dataValues?.baseServiceAvailable : false,
+          contractedServiceFiles: dataValues?.contractedServiceFiles || [],
+          baseServiceAvailable: serviceTypeTemplate === SUPPLEMENTAL ? dataValues?.baseServiceAvailable : false,
           baseServices:
             serviceTypeTemplate === SUPPLEMENTAL
               ? dataValues?.baseServices
@@ -1166,7 +1167,7 @@ const AddServiceProvided = ({
                   value: parseFloat(dataValues?.min || "0"),
                 },
                 maximum: {
-                  value: parseFloat(dataValues?.max || "0"),
+                  value: parseFloat(dataValues?.max || 99999999),
                 },
                 frequency: dataValues?.frequency,
                 ...(serviceTypeTemplate === HIT && {
@@ -1477,6 +1478,7 @@ const AddServiceProvided = ({
           cptcodeRequired: dataValues?.cptcodeRequired || false,
           encounterDocumentationRequired: dataValues?.encounterDocumentationRequired || false,
           attendingDocRequired: dataValues?.attendingDocRequired || false,
+          serviceAgreementOnFile: dataValues?.serviceAgreementOnFile || false,
           activityApprovalWFRequired:
             dataValues?.activityApprovalWFRequired || false,
           designateSpecificContractor: isDesignatedSpecificContractor,
