@@ -60,6 +60,7 @@ const HelpHome = () => {
     const [pageTickets, setPageTickets] = useState(1);
     const [totalCountTickets, setTotalCountTickets] = useState(0);
     const currentUserData = currentUser();
+    let screenCaptureImg = sessionStorage.getItem('screenCapture');
 
     useEffect(() => {
         getTicket();
@@ -72,6 +73,10 @@ const HelpHome = () => {
     useEffect(() => {
         getUser();
     }, []);
+
+    useEffect(() => {
+        setShowFeedbackTicketResolution(screenCaptureImg ? true : false);
+    }, [screenCaptureImg]);
 
     useEffect(() => {
         setCurrentUserDetails(users?.filter(data => data?.id === currentUserData?.id)?.map(data => data));

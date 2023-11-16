@@ -256,8 +256,8 @@ const Navbar = () => {
       var base64image = canvas.toDataURL("image/png");
       setScreenCapture(base64image);
       sessionStorage.setItem("screenCapture", base64image);
-      sessionStorage.setItem("selectedOption", "OPEN FEEDBACK TICKETS");
-      window.location.href = "/app/entitySitePortal";
+      // sessionStorage.setItem("selectedOption", "OPEN FEEDBACK TICKETS");
+      window.location.href = "/app/help";
     });
   };
   // console.log('currentUserRoles', currentUserRoles);
@@ -487,12 +487,12 @@ const Navbar = () => {
                 }}
               >
                 <div className={style.optionsCardStyle}>
-                  <Link to={"/help"} className={style.noFontStyle}>
-                    <div className={style.options}>OPEN FEEDBACK TICKET</div>
-                  </Link>
                   <div className={`${style.options} ${style.cursorPointer}`} onClick={handleScreenshot}>
-                    SUPPORT PORTAL
+                    OPEN FEEDBACK TICKET
                   </div>
+                  <Link to={"/help"} className={style.noFontStyle}>
+                    <div className={style.options}>SUPPORT PORTAL</div>
+                  </Link>
                 </div>
               </Popover>
             </div>
