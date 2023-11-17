@@ -105,7 +105,7 @@ export const validateContractProvider = async (contract) => {
       )
       ?.map((data) => data);
   }
-  if (!providers?.length > 0) {
+    if (!providers?.length > 0) {
     emptyFields[0] = [
       "Service Provider",
       "NPIN",
@@ -121,7 +121,7 @@ export const validateContractProvider = async (contract) => {
     ];
   }
   providers?.map((user, index) => {
-    let fieldData = [
+        let fieldData = [
       { field: "Service Provider", value: user?.serviceProviderType?.id },
       { field: "NPIN", value: user?.npin?.npin },
       { field: "Contract Provider First Name", value: user?.name?.firstName },
@@ -129,6 +129,7 @@ export const validateContractProvider = async (contract) => {
       { field: "Suffix", value: user?.name?.suffix?.id },
       { field: "Contract Provider Email", value: user?.email?.officialEmail },
       { field: "Mobile Number", value: user?.communication?.mobileNumber },
+      { field: "Address", value: user?.address?.addressLine },
     ];
     let temp = [];
     temp.push(user?.name?.firstName);
@@ -387,7 +388,7 @@ export const validateServices = (contract) => {
 };
 
 export const validatePaymentsAndCompensation = (contract) => {
-  let payments = contract?.paymentAndCompensation;
+    let payments = contract?.paymentAndCompensation;
   let isEmptyField = [];
   let fieldData = [];
   if (payments?.compensationBasis === null) {
@@ -455,8 +456,10 @@ export const validatePaymentsAndCompensation = (contract) => {
     if (
       contract?.contractDetail?.continuationPolicy?.contractPolicyType !==
         "FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET" &&
-      contract?.contractDetail?.continuationPolicy?.contractPolicyType !==
-        "ACTIVITY_BASED"
+        contract?.contractDetail?.continuationPolicy?.contractPolicyType !==
+          "ACTIVITY_BASED"  &&
+          contract?.contractDetail?.continuationPolicy?.contractPolicyType !==
+            "AUTORENEWAL"
     ) {
       fieldData.push(
         ...[
@@ -470,7 +473,8 @@ export const validatePaymentsAndCompensation = (contract) => {
           },
         ]
       );
-    } else if (
+    } 
+    else if (
       contract?.contractDetail?.continuationPolicy?.contractPolicyType ===
       "FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET"
     ) {
@@ -486,7 +490,7 @@ export const validatePaymentsAndCompensation = (contract) => {
     }
   });
 
-  let temp = fieldData
+    let temp = fieldData
     ?.filter(
       (data) =>
         data?.value === null ||

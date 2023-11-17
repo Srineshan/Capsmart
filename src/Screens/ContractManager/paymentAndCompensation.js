@@ -13,6 +13,7 @@ import CommonSwitch from "../../Components/CommonFields/CommonSwitch";
 import CommonRadio from "../../Components/CommonFields/CommonRadio";
 import CommonTextField from "../../Components/CommonFields/CommonTextField";
 import CommonLabel from "../../Components/CommonFields/CommonLabel";
+import { valueCheck } from "./../../utils/valueCheck";
 
 import style from "./index.module.scss";
 import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
@@ -253,6 +254,14 @@ const PaymentAndCompensation = ({
     getPaymentFields();
   };
 
+  const dataCheck = (value) => {
+    if (paymentAndCompensation) {
+      return valueCheck(value);
+    } else {
+      return false;
+    }
+  };
+  
   const getPaymentFields = () => {
     let temp = [];
     for (let i = 0; i < timesheetPayments?.length; i++) {
@@ -387,7 +396,9 @@ const PaymentAndCompensation = ({
                 </>
               )}
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                <CommonLabel value="Max. Compensation Value for Contract Period*" />
+                <CommonLabel value="Max. Compensation Value for Contract Period*" 
+                  className={dataCheck(timesheetPayments?.[i]?.maxPaymentPerContract) ? style.redLable : ""}
+                />
                 <div className={style.displayInRow}>
                   <CommonTextField
                     className={style.twoFieldWidth}
@@ -519,6 +530,7 @@ const PaymentAndCompensation = ({
     );
   }
 
+
   return (
     <>
       {timeSheetTabs?.length !== 0 ? (
@@ -564,7 +576,9 @@ const PaymentAndCompensation = ({
                     );
                   }}
                 >
-                  <CommonLabel value="RVU Quantity*" />
+                  <CommonLabel value="RVU Quantity*" 
+                    className={dataCheck(rvuQuantity?.quantity) ? style.redLable : ""}
+                  />
                   <div className={style.displayInRow}>
                     <CommonInputField
                       className={style.fourFieldWidth}
@@ -602,7 +616,9 @@ const PaymentAndCompensation = ({
                     );
                   }}
                 >
-                  <CommonLabel value="FTE Equivalent" />
+                  <CommonLabel value="FTE Equivalent" 
+                    className={dataCheck(fteEquivalent?.value) ? style.redLable : ""}
+                  />
                   <CommonInputField
                     className={style.twoFieldWidth}
                     value={fteEquivalent?.value}
@@ -626,7 +642,9 @@ const PaymentAndCompensation = ({
                     );
                   }}
                 >
-                  <CommonLabel value="RVU Reference Used" />
+                  <CommonLabel value="RVU Reference Used" 
+                    className={dataCheck(rvuReferenceUsed?.value) ? style.redLable : ""}
+                  />
                   <CommonInputField
                     className={style.fullWidth}
                     value={rvuReferenceUsed?.value}
@@ -649,7 +667,9 @@ const PaymentAndCompensation = ({
                     );
                   }}
                 >
-                  <CommonLabel value="RVU Quantity Variance (+/-)" />
+                  <CommonLabel value="RVU Quantity Variance (+/-)" 
+                    className={dataCheck(rvuQuantityVariance?.value) ? style.redLable : ""}
+                  />
                   <CommonInputField
                     className={style.twoFieldWidth}
                     value={rvuQuantityVariance?.value}
@@ -665,7 +685,9 @@ const PaymentAndCompensation = ({
                   />
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                  <CommonLabel value="RVU Quantity Period" />
+                  <CommonLabel value="RVU Quantity Period" 
+                    className={dataCheck(rvuQuantityPeriod?.days) ? style.redLable : ""}
+                  />
                   <CommonTextField
                     InputProps={{
                       endAdornment: (
@@ -687,7 +709,9 @@ const PaymentAndCompensation = ({
               </div>
             )}
             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-              <CommonLabel value="Dollar Hourly Rate*" />
+              <CommonLabel value="Dollar Hourly Rate*"             
+                className={dataCheck(dollarRate?.hour) ? style.redLable : ""}
+              />
               <div className={style.twoCol}>
                 <CommonTextField
                   // type="text"

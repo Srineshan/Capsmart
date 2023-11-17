@@ -463,6 +463,9 @@ const ContractedServicesProviderIndividual = ({
   const saveInProgresscheck = () => {
     var keys = [];
 
+    if (serviceProviderType?.id === "") {
+      keys.push("Service Provider Type");
+    }
     if (address?.addressLine === "") {
       keys.push("Address");
     }
@@ -471,6 +474,9 @@ const ContractedServicesProviderIndividual = ({
     }
     if (departmentLevel && departmentTitleValues?.length === 0) {
       keys.push("Department Level Responsibility");
+    }
+    if (isUserPresent && rolesTags.length === 0) {
+      keys.push("Assign Contractor With App User Role");
     }
 
     setUnassignedKeys(keys);
