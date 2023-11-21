@@ -23,9 +23,9 @@ const ReportHeader = () => {
     const getLogo = async () => {
         const { data: data } = await GET(`entity-service/entity/${TenantID}`);
         setLogo({ logo: data?.logo?.file?.fileURL, title: data?.entityName?.entityName });
-        // setCorsedLogo(`https://cors-anywhere-solai.fly.dev/${data?.logo?.file?.fileURL}`);
+        setCorsedLogo(`https://app.timesmartai.com/cors/${data?.logo?.file?.fileURL}`);
         // setCorsedLogo(`https://app.mytimesmart.com/cors/${data?.logo?.file?.fileURL}`);
-        setCorsedLogo(`${data?.logo?.file?.fileURL}`);
+        // setCorsedLogo(`${data?.logo?.file?.fileURL}`);
         setAddress(`${data?.sites?.[0]?.address?.addressLine}, ${data?.sites?.[0]?.address?.city}, ${data?.sites?.[0]?.address?.state}, ${data?.sites?.[0]?.address?.zipcode}.`)
     }
 
