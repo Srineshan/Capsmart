@@ -62,6 +62,22 @@ const HelpHome = () => {
     const currentUserData = currentUser();
     let screenCaptureImg = sessionStorage.getItem('screenCapture');
 
+    const statusAvailableValues = {
+        NEW: 'New',
+        INPROGRESS: 'In-Progress',
+        ESCALATED: 'Escalated',
+        FIXINPROGRESS: 'Fix In-Progress',
+        FIXINDEVELOPMENT: 'Fix In-Developement',
+        ONHOLD: 'On-Hold',
+        FUTURERELEASE: 'Future Release',
+        FEATUREENHANCEMENT: 'Feature Enhancement',
+        FIXINQA: 'Fix In QA',
+        APPUPDATED: 'App Updated',
+        FIXCONFIRMATION: 'Fix Confirmation',
+        RESOLVED: 'resolved',
+        CLOSED: 'Closed'
+    };
+
     useEffect(() => {
         getTicket();
     }, [showFeedbackTicketResolution, from, to, selectedOption, page, searchKey, pageTickets, searchKeyTickets]);
@@ -183,8 +199,10 @@ const HelpHome = () => {
         messageAction = [];
 
         allMessages?.map(data => {
-            messageDot.push('green');
-            messageDotTooltipValues.push('In-Progress');
+            let status = myTicket?.filter(ticketData => ticketData?.id === data?.ticketId?.id)?.map(data => data)[0]?.status;
+
+            messageDot.push(status === 'RESOLVED' ? 'green' : status === 'INPROGRESS' ? 'yellow' : status === 'NEW' ? 'purple' : status === 'CLOSED' ? 'grey' : 'yellow');
+            messageDotTooltipValues.push(statusAvailableValues[status]);
             messageType.push('Comment');
             relatedTo.push('Ticket');
             messageOrComment.push(data?.comment);
@@ -231,8 +249,8 @@ const HelpHome = () => {
         lastUpdated = [];
 
         myTicket?.map(data => {
-            dot.push(data?.status === 'RESOLVED' ? 'green' : data?.status === 'INPROGRESS' ? 'yellow' : data?.status === 'NEW' ? 'purple' : data?.status === 'CLOSED' ? 'grey' : '');
-            dotTooltipValues.push(data?.status === 'RESOLVED' ? 'Resolved' : data?.status === 'INPROGRESS' ? 'In-Progress' : data?.status === 'NEW' ? 'New' : data?.status === 'CLOSED' ? 'Closed' : '');
+            dot.push(data?.status === 'RESOLVED' ? 'green' : data?.status === 'INPROGRESS' ? 'yellow' : data?.status === 'NEW' ? 'purple' : data?.status === 'CLOSED' ? 'grey' : 'yellow');
+            dotTooltipValues.push(statusAvailableValues[data?.status]);
             tktId.push(data?.ticketId);
             type.push(data?.type);
             subject.push(data?.subject);
@@ -269,8 +287,8 @@ const HelpHome = () => {
         lastUpdated = [];
 
         exceptionTicket?.map(data => {
-            dot.push(data?.status === 'RESOLVED' ? 'green' : data?.status === 'INPROGRESS' ? 'yellow' : data?.status === 'NEW' ? 'grey' : '');
-            dotTooltipValues.push(data?.status === 'RESOLVED' ? 'Resolved' : data?.status === 'INPROGRESS' ? 'In-Progress' : data?.status === 'NEW' ? 'New' : '');
+            dot.push(data?.status === 'RESOLVED' ? 'green' : data?.status === 'INPROGRESS' ? 'yellow' : data?.status === 'NEW' ? 'purple' : data?.status === 'CLOSED' ? 'grey' : 'yellow');
+            dotTooltipValues.push(statusAvailableValues[data?.status]);
             tktId.push(data?.ticketId);
             exceptionCode.push('-');
             description.push(data?.description);
