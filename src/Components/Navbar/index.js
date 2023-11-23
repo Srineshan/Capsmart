@@ -458,7 +458,7 @@ const Navbar = () => {
               </div>
             </div>
           )}
-          <div>
+          {/* <div>
             <div
               className={`${style.menuStyle} ${window.location.pathname === "/help" && style.activeMenuColor
                 }`}
@@ -496,7 +496,7 @@ const Navbar = () => {
                 </div>
               </Popover>
             </div>
-          </div>
+          </div> */}
         </div>
         <div className={style.displayInRow}>
           {/* {!window.location.pathname.includes('reportTypeOverview') && (
