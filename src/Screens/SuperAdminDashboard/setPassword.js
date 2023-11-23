@@ -137,7 +137,7 @@ const SetPassword = () => {
   }, [tenantId]);
 
   const getEntityId = async () => {
-    await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/entity-service/entityID`, {
+    await axios(`https://${window.location.hostname}/entity-service/entityID`, {
       method: 'GET',
       // headers: { "X-subdomain": "smmc-trial" },
     }).then(response => {
@@ -167,7 +167,7 @@ const SetPassword = () => {
   };
 
   const getUser = async () => {
-    await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/user-management-service/user`, {
+    await axios(`https://${window.location.hostname}/user-management-service/user`, {
       method: 'GET',
       headers: headers,
     }).then(response => {
@@ -192,21 +192,18 @@ const SetPassword = () => {
       return;
     } else {
       let data = {
-        uuid: randomId,
-        password: {
-          password: password,
-        },
-      };
-      axios(
-        `http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/user-management-service/user/updatepassword`,
-        {
-          method: "POST",
-          headers: headers,
-          data: JSON.stringify(data),
+        "uuid": randomId,
+        "password": {
+          "password": password,
         }
-      )
-        .then((response) => {
-          navigate("/thankyou");
+      }
+      axios(`https://${window.location.hostname}/user-management-service/user/updatepassword`, {
+        method: 'POST',
+        headers: headers,
+        data: JSON.stringify(data),
+      })
+        .then(response => {
+          navigate('/thankyou');
         })
         .catch((error) => {
           ErrorToaster(error?.response?.data);

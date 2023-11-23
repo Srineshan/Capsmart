@@ -9,26 +9,21 @@ import style from "./index.module.scss";
 const RemindContractors = () => {
   const [userId, setUserId] = useState("");
 
-  const notifyFunction = async () => {
-    await axios(
-      `http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/user-management-service/user/${userId}/remindContractors`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "X-tenantID": TenantID,
-          "X-Authorization": `Bearer ${Auth()}`,
-          userId: userId,
-        },
-      }
-    )
-      .then((response) => {
-        console.log("Notified Successfully");
-      })
-      .catch((error) => {
-        console.log("error", error);
-      });
-  };
+    const notifyFunction = async () => {
+        await axios(`https://${window.location.hostname}/user-management-service/user/${userId}/remindContractors`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-tenantID': TenantID,
+                'X-Authorization': `Bearer ${Auth()}`,
+                'userId': userId
+            },
+        }).then(response => {
+            console.log('Notified Successfully')
+        }).catch(error => {
+            console.log('error', error);
+        })
+    }
 
   return (
     <div>

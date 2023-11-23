@@ -95,18 +95,18 @@ const ActivateAccess = () => {
     getEntity();
   }, [tenantId])
 
-  const getEntityId = async () => {
-    await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/entity-service/entityID`, {
-      method: 'GET',
-      // headers: { "X-subdomain": "smmc-trial" },
-    }).then(response => {
-      var cookie = new Cookie();
-      cookie.set('entityId', response?.data?.id);
-      settenantId(response?.data?.id);
-    }).catch(error => {
-      console.log('error', error);
-    })
-  }
+    const getEntityId = async () => {
+        await axios(`https://${window.location.hostname}/entity-service/entityID`, {
+            method: 'GET',
+            // headers: { "X-subdomain": "smmc-trial" },
+        }).then(response => {
+            var cookie = new Cookie();
+            cookie.set('entityId', response?.data?.id);
+            settenantId(response?.data?.id);
+        }).catch(error => {
+            console.log('error', error);
+        })
+    }
 
   const getEntityLogo = async () => {
     const { data: data } = await GET(`entity-service/entity/logo?id=${tenantId}`);
@@ -123,50 +123,50 @@ const ActivateAccess = () => {
     'X-tenantId': tenantId,
   }
 
-  const getUser = async () => {
-    await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/user-management-service/user`, {
-      method: 'GET',
-      headers: headers,
-    }).then(response => {
-      setUsers(response?.data);
-    }).catch(error => {
-      console.log('error', error);
-    })
-  };
+    const getUser = async () => {
+        await axios(`https://${window.location.hostname}/user-management-service/user`, {
+            method: 'GET',
+            headers: headers,
+        }).then(response => {
+            setUsers(response?.data);
+        }).catch(error => {
+            console.log('error', error);
+        })
+    };
 
-  const handleUsernameCheck = () => {
-    if (password === '' || confirmPassword === '') {
-      ErrorToaster('All Fields are Mandatory');
-      return;
-    }
-    else if (password !== confirmPassword) {
-      ErrorToaster('Both Password and Confirm Password should be same');
-      return;
-    } else if (!isMin8CharacterAvailable) {
-      ErrorToaster('Minimum 8 characters required');
-      return;
-    } else if (passwordStrengthLength < 4) {
-      ErrorToaster('Should Satisfy Minimum 4 Conditions');
-      return;
-    }
-    // else {
-    //     let data = {
-    //         "uuid": randomId,
-    //         "password": {
-    //             "password": password,
-    //         }
-    //     }
-    //     axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/user-management-service/user/updatepassword`, {
-    //         method: 'POST',
-    //         headers: headers,
-    //         data: JSON.stringify(data),
-    //     })
-    //         .then(response => {
-    //             navigate('/thankyou');
-    //         })
-    //         .catch(error => {
-    //             console.log('Error', error);
-    //             ErrorToaster(error?.response?.data);
+    const handleUsernameCheck = () => {
+        if (password === '' || confirmPassword === '') {
+            ErrorToaster('All Fields are Mandatory');
+            return;
+        }
+        else if (password !== confirmPassword) {
+            ErrorToaster('Both Password and Confirm Password should be same');
+            return;
+        } else if (!isMin8CharacterAvailable) {
+            ErrorToaster('Minimum 8 characters required');
+            return;
+        } else if (passwordStrengthLength < 4) {
+            ErrorToaster('Should Satisfy Minimum 4 Conditions');
+            return;
+        }
+        // else {
+        //     let data = {
+        //         "uuid": randomId,
+        //         "password": {
+        //             "password": password,
+        //         }
+        //     }
+        //     axios(`https://${window.location.hostname}/user-management-service/user/updatepassword`, {
+        //         method: 'POST',
+        //         headers: headers,
+        //         data: JSON.stringify(data),
+        //     })
+        //         .then(response => {
+        //             navigate('/thankyou');
+        //         })
+        //         .catch(error => {
+        //             console.log('Error', error);
+        //             ErrorToaster(error?.response?.data);
 
     //         })
     // }
