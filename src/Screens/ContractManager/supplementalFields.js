@@ -495,7 +495,7 @@ const SupplementalFields = ({
                                 {metadata?.supplementalActivityType?.length !== 0 &&
                                     metadata?.supplementalActivityType && (
                                         <MultiSelectDisplay
-                                            values={metadata?.supplementalActivityType}
+                                            values={Array.from(new Set(metadata?.supplementalActivityType))}
                                             removeItem={removeSupplementActivityType}
                                         />
                                     )}

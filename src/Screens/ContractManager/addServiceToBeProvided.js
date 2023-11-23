@@ -889,6 +889,16 @@ const AddServiceProvided = ({
       ErrorToaster("Atleast one location has to be selected if yes");
       return;
     }
+    if (serviceTypeTemplate !== CLINIC && serviceTypeTemplate !== PROCEDUREREADING && metadata?.max < metadata?.min) {
+      ErrorToaster("Maximum Value cannot be less than the minimum value");
+      return;
+    } else {
+      if (metadata?.contractedSchedules?.filter(data => data?.minimum?.value > data?.maximum?.value)?.map(data => data)?.length || 0) {
+        ErrorToaster("Maximum Value cannot be less than the minimum value");
+        return;
+      }
+    }
+
     if (
       (serviceTypeTemplate === CLINIC ||
         serviceTypeTemplate === PROCEDUREREADING) &&
@@ -1042,8 +1052,6 @@ const AddServiceProvided = ({
         });
       });
     }
-    console.log('activities', activities);
-
     if (serviceTypeTemplate === SUPPLEMENTAL) {
       performingActivity =
         metadata?.supplementServiceName?.map((data) => data)?.join("-") || "";
@@ -1085,6 +1093,10 @@ const AddServiceProvided = ({
         performingActivity = dataValues?.activities
           ?.map((data) => data?.activity)
           ?.join("-");
+      }
+      if (serviceTypeTemplate === HIT && dataValues?.serviceAgreementOnFile && dataValues?.contractedServiceFiles?.length === 0) {
+        ErrorToaster(`Upload atleast one Service Agreement File to continue`)
+        return;
       }
       if (activities?.length === 0 && serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE && (serviceTypeTemplate === ONCALL && !dataValues?.customizedSchedule)) {
         let message =

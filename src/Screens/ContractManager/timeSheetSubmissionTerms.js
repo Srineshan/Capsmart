@@ -399,7 +399,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
               onChange={(e) => handleTimesheetValue(i, 'value', e.target.value)}
               firstOptionLabel={''} firstOptionValue={''}
               valueList={['ENDOFMONTH', 'ENDOFEVERYWEEK', 'EVERY2WEEKS', 'EVERY4WEEKS', 'ONDAYOFSERVICE']}
-              labelList={['End of the month', 'End of Every Week', 'Every 2 Weeks', 'Every 4 Weeks', 'On Day of Service']}
+              labelList={['End of the Month', 'End of Every Week', 'Every 2 Weeks', 'Every 4 Weeks', 'On Day of Service']}
               disabledList={[false, false, false, false, false]} />
           </div>
         </div>

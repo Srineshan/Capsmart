@@ -265,7 +265,7 @@ const ContractIdTermLimitIndividual = (
   }
 
   const handleFileUpload = (e) => {
-    if (fileData?.filter(data => data?.fileName === e.target.files?.[0]?.name)?.length !== 0) {
+    if (fileData?.filter(data => data?.fileName === e.target.files?.[0]?.name || e.target.files?.[0]?.name === '')?.length !== 0) {
       setIsShowUploadDialog(false);
       ErrorToaster('File already exist from previous upload in this contract');
       return;
