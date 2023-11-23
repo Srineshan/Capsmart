@@ -1085,8 +1085,86 @@ const OnCallCoverageFields = ({
             <div className={style.marginLeft30}>
               <CommonLabel value="Number of On Call Duty Days*" />
             </div>
-            <div className={style.displayInRow}>
-              {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+
+
+
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                <CommonLabel value='Same On Call Schedule For All Days' />
+                <div className={style.onCallBillableGrid}>
+                    <CommonSwitch checked={!metadata?.customizedSchedule} label={!metadata?.customizedSchedule ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} onChange={(e) => onCustomizeFieldOptionChange(!metadata?.customizedSchedule)} />
+                </div>
+            </div>
+            {metadata?.customizedSchedule && (
+                <div className={`${style.addonAddBox} ${style.marginTop20}`}>
+                    <div className={`${style.addManagerGrid}`}>
+                        <CommonLabel value='Weekday Days' />
+                        <div>
+                            <div className={style.displayInRow}>
+                                <div className={style.displayInRow}>
+                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.serviceWeekDaysDay?.monday ? style.selectedDay : ''}`} onClick={contractStatus === "ACTIVE" ? () => { } : () => setMetadata(prevState => ({ ...metadata, serviceWeekDaysDay: { ...prevState.serviceWeekDaysDay, monday: !metadata?.serviceWeekDaysDay?.monday } }))}>M</div>
+                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.serviceWeekDaysDay?.tuesday ? style.selectedDay : ''}`} onClick={contractStatus === "ACTIVE" ? () => { } : () => setMetadata(prevState => ({ ...metadata, serviceWeekDaysDay: { ...prevState.serviceWeekDaysDay, tuesday: !metadata?.serviceWeekDaysDay?.tuesday } }))}>T</div>
+                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.serviceWeekDaysDay?.wednesday ? style.selectedDay : ''}`} onClick={contractStatus === "ACTIVE" ? () => { } : () => setMetadata(prevState => ({ ...metadata, serviceWeekDaysDay: { ...prevState.serviceWeekDaysDay, wednesday: !metadata?.serviceWeekDaysDay?.wednesday } }))}>W</div>
+                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.serviceWeekDaysDay?.thursday ? style.selectedDay : ''}`} onClick={contractStatus === "ACTIVE" ? () => { } : () => setMetadata(prevState => ({ ...metadata, serviceWeekDaysDay: { ...prevState.serviceWeekDaysDay, thursday: !metadata?.serviceWeekDaysDay?.thursday } }))}>T</div>
+                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.serviceWeekDaysDay?.friday ? style.selectedDay : ''}`} onClick={contractStatus === "ACTIVE" ? () => { } : () => setMetadata(prevState => ({ ...metadata, serviceWeekDaysDay: { ...prevState.serviceWeekDaysDay, friday: !metadata?.serviceWeekDaysDay?.friday } }))}>F</div>
+                                </div>
+                            </div>
+                            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                                <div className={style.displayInRow}>
+                                    <TimePicker
+                                        useAmPm={false}
+                                        onChange={(e) => {
+                                            onCustomizeFieldChange(e, 'weekdayFrom');
+                                        }}
+                                        disabled={contractStatus === "ACTIVE" ? true : false}
+                                        value={metadata?.weekdayFrom === null ? null : new Date(metadata?.weekdayFrom)}
+                                    />
+                                    <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
+                                    <TimePicker
+                                        useAmPm={false}
+                                        onChange={(e) => {
+                                            onCustomizeFieldChange(e, 'weekdayTo');
+                                        }}
+                                        disabled={contractStatus === "ACTIVE" ? true : false}
+                                        value={metadata?.weekdayTo === null ? null : new Date(metadata?.weekdayTo)}
+                                    />
+                                    <div className={` ${style.marginLeft20} ${style.durationWidth}`}>
+                                        <CommonTextField
+                                            type="tel"
+                                            maxLength="3"
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
+                                            }}
+                                            value={metadata?.weekdayDuration}
+                                            onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(e.target.value, 'weekdayDuration')}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <div className={style.marginLeft30}>
+                            <CommonLabel value='Activity' />
+                        </div>
+                        <div className={style.displayInRow}>
+                            <CommonTextField
+                                className={style.twoCol}
+                                onChange={(e) => onCustomizeFieldChange(e.target.value, 'weekdayActivity')}
+                                value={metadata?.weekdayActivity}
+                                type='text'
+                            />
+                        </div>
+                    </div>
+
+
+                    < div className={`${style.addManagerGrid} ${style.marginTop20}`
+                    }>
+                        <div className={style.marginLeft30}>
+                            <CommonLabel value='Number of On Call Duty Days*' />
+                        </div>
+                        <div className={style.displayInRow}>
+                            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MIN</div>
                                 <EditableText disabled={metadata?.weekdayFrequency === 'NA' || !metadata?.serviceDays?.weekDays} value={metadata?.weekdayMin} placeholder='' onChange={(e) => e >= 0 && onCustomizeFieldChange(e, 'weekdayMin')} type='tel' maxLength='2' className={style.serviceProvidedEditableTextStyle} />
                             </div> */}
@@ -2264,14 +2342,20 @@ const OnCallCoverageFields = ({
                             <CommonSwitch className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} label={metadata?.attendingDocRequired ? 'YES' : 'NO'} checked={metadata?.attendingDocRequired} onChange={() => setMetadata({ ...metadata, 'attendingDocRequired': !metadata?.attendingDocRequired })} />
                         </div>
                     </div> */}
-        </div>
-      )}
-      {!metadata?.customizedSchedule && (
-        <>
-          <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-            <CommonLabel value="Number of On Call Duty Days*" />
-            <div className={style.displayInRow}>
-              {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                </div >
+            )
+            }
+            {
+                !metadata?.customizedSchedule && (
+                    <>
+                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                            <CommonLabel value='Allowable Service Days*' />
+                            <ServiceDays setMetaData={getServiceDaysMetadata} selectedService={serviceSelected} isReset={isReset} setIsReset={getIsReset} />
+                        </div>
+                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                            <CommonLabel value='Number of On Call Duty Days*' />
+                            <div className={style.displayInRow}>
+                                {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MIN</div>
                                 <EditableText value={metadata?.min} placeholder='' onChange={(e) => e >= 0 && handleValueChange('min', e)} type='tel' maxLength='2' className={style.serviceProvidedEditableTextStyle} />
                             </div> */}
@@ -2757,6 +2841,9 @@ const OnCallCoverageFields = ({
             )}
           </>
         </>
+      )}
+          </div>
+        </div>
       )}
     </div>
   );

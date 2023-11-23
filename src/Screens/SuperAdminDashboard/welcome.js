@@ -40,13 +40,13 @@ const Welcome = ({ getIsContinue }) => {
             type: "application/json"
         }));
         // if (id !== 'new') {
-            await PUT('entity-service/entity', formData)
-                .then(response => {
-                    SuccessToaster('Entity Updated Successfully');
-                    navigate(`/entitySetup/${TenantID}/appSubscription`);
-                }).catch(error => {
-                    ErrorToaster('Unexpected Error Updating Entity');
-                });
+        await PUT('entity-service/entity', formData)
+            .then(response => {
+                SuccessToaster('Entity Updated Successfully');
+                navigate(`/entitySetup/${TenantID}/appSubscription`);
+            }).catch(error => {
+                ErrorToaster('Unexpected Error Updating Entity');
+            });
         // }
     }
 

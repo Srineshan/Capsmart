@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Dialog, Classes } from "@blueprintjs/core";
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
+import { useReactToPrint } from 'react-to-print';
+import { GET } from './../../Screens/dataSaver';
 import TimeSmartLogo from '../../images/timeSmartAILogo.png';
 import WhiteTimeSmartLogo from '../../images/whiteLogo.png';
 import RedWarning from '../../images/redWarning.png';
@@ -18,11 +20,26 @@ import { format } from 'date-fns';
 
 import style from './index.module.scss';
 
-const FeedbackTicketResolutionLog = (getShowFeedbackTicketResolutionLog) => {
+const FeedbackTicketResolutionLog = ({ getShowFeedbackTicketResolutionLog, ticketId }) => {
+    const [ticketLog, setTicketLog] = useState([]);
+    const componentRef = useRef();
+    const handlePrint = useReactToPrint({
+        content: () => componentRef.current,
+    });
+
+    useEffect(() => {
+        getTicketLog();
+    }, [])
+
+    const getTicketLog = async () => {
+        const { data: log } = await GET(`feedback-management-service/ticket/${ticketId}/ticketLogs`);
+        setTicketLog(log);
+    }
+
+    console.log(ticketLog)
     return (
-        <Dialog isOpen={getShowFeedbackTicketResolutionLog} onClose={() => getShowFeedbackTicketResolutionLog(false)} className={`${style.addManagerDialogBackground} ${style.feedbackLogDialog}`}
-            canOutsideClickClose={true}>
-            <div className={`${Classes.DIALOG_BODY} `}>
+        <Dialog isOpen={getShowFeedbackTicketResolutionLog} onClose={() => getShowFeedbackTicketResolutionLog(false)} className={`${style.addManagerDialogBackground} ${style.feedbackLogDialog}`}>
+            <div className={`${Classes.DIALOG_BODY} `} ref={componentRef}>
                 <div className={style.feedbackLogHeaderGrid}>
                     <div>
                         <img src={TimeSmartLogo} alt="logo" className={style.logoStyle} />
@@ -37,7 +54,7 @@ const FeedbackTicketResolutionLog = (getShowFeedbackTicketResolutionLog) => {
                     </div>
                     <div>
                         <img src={TimeSmartLogo} alt="logo" className={style.logoStyle} />
-                        <PrintOutlinedIcon className={style.headerPrintIcon} />
+                        <PrintOutlinedIcon className={`${style.headerPrintIcon} ${style.cursorPointer}`} onClick={handlePrint} />
                     </div>
                 </div>
                 <div className={`${style.logMainGrid} ${style.logMainBoxStyle} ${style.marginTop10}`}>

@@ -279,3 +279,8 @@
 .cursorPointer {
     cursor: pointer;
 }
+
+.helpScrollStyle {
+    height: calc(100vh - 495px);
+    overflow: scroll;
+}

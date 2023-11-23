@@ -1140,7 +1140,8 @@ const AddServiceProvided = ({
               },
             },
           }),
-          "baseServiceAvailable": serviceTypeTemplate === SUPPLEMENTAL ? dataValues?.baseServiceAvailable : false,
+          contractedServiceFiles: dataValues?.contractedServiceFiles || [],
+          baseServiceAvailable: serviceTypeTemplate === SUPPLEMENTAL ? dataValues?.baseServiceAvailable : false,
           baseServices:
             serviceTypeTemplate === SUPPLEMENTAL
               ? dataValues?.baseServices
@@ -1478,6 +1479,7 @@ const AddServiceProvided = ({
           cptcodeRequired: dataValues?.cptcodeRequired || false,
           encounterDocumentationRequired: dataValues?.encounterDocumentationRequired || false,
           attendingDocRequired: dataValues?.attendingDocRequired || false,
+          serviceAgreementOnFile: dataValues?.serviceAgreementOnFile || false,
           activityApprovalWFRequired:
             dataValues?.activityApprovalWFRequired || false,
           designateSpecificContractor: isDesignatedSpecificContractor,

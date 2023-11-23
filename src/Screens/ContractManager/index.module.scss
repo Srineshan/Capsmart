@@ -1295,6 +1295,11 @@ select {
   grid-template-columns: 15% 1fr;
 }
 
+.documentHITGrid {
+    display: grid;
+    grid-template-columns: 15% 1fr 5%;
+}
+
 .documentTextGrid {
   display: grid;
   grid-template-columns: 85% 10%;
@@ -1770,6 +1775,16 @@ input[type="file"] {
 .greenChip {
   background: #a3f5c8 0% 0% no-repeat padding-box;
   color: #14b15a;
+}
+
+.orangeChip {
+    background: orange 0% 0% no-repeat padding-box;
+    color: orangered;
+}
+
+.yellowChip {
+    background: lemonchiffon 0% 0% no-repeat padding-box;
+    color: orange;
 }
 
 .blueChip {
