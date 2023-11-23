@@ -1104,29 +1104,7 @@ const AddonClinicFields = ({
                     </div>
                   </div>
                 )}
-                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                  <CommonLabel value="Different Payment Rate" />
-                  <CommonSwitch
-                    label={data?.activityApprovalWFRequired ? "YES" : "NO"}
-                    className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`}
-                    checked={data?.activityApprovalWFRequired}
-                    onChange={() =>
-                      handleRequestApprovalChange(data?.performingActivity)
-                    }
-                  />
-                </div>
-                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                  <CommonLabel value='ADD-ON Payment Rate*' />
-                  <div className={`${style.displayInRow}`}>
-                    <div>
-                      <CommonTextField
-                        InputProps={{
-                          startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
+
                 {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Specify Service Facility / Location</div>
                 <div>
