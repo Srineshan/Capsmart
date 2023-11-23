@@ -47,11 +47,11 @@ const FeedbackTicket = ({ getSelectedOption }) => {
     const tableHeaderValues = (selectedOption === 'OPEN TICKETS' || selectedOption === "RESOLVED TICKETS" || selectedOption === "NEW TICKETS")
         ? ticketsTableHeaderValues : selectedOption === "EXCEPTION ERRORS" ? exceptionTableHeaderValues
             : messagesTableHeaderValues;
-    let screenCaptureImg = sessionStorage.getItem('screenCapture');
+    // let screenCaptureImg = sessionStorage.getItem('screenCapture');
 
-    useEffect(() => {
-        setShowFeedbackTicketResolution(screenCaptureImg ? true : false);
-    }, [screenCaptureImg]);
+    // useEffect(() => {
+    //     setShowFeedbackTicketResolution(screenCaptureImg ? true : false);
+    // }, [screenCaptureImg]);
 
     useEffect(() => {
         getTicket();
