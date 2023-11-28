@@ -17,7 +17,7 @@ import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import CommonInputField from '../../Components/CommonFields/CommonInputField';
 import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
 import CommonLabel from '../../Components/CommonFields/CommonLabel';
-
+import { HIT } from "../../Constants";
 import style from './index.module.scss';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 import CommonTextField from '../../Components/CommonFields/CommonTextField';
@@ -67,6 +67,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
   const [paymentAndCompensation, setPaymentAndCompensation] = useState();
   const [isNameEdited, setIsNameEdited] = useState(false);
   const contractStatus = sessionStorage.getItem('Selected Contract Status');
+  const [HITService, setHITService] = useState([]);
 
   const menuRef = useRef(null);
   useOptionsHide(menuRef);
@@ -76,7 +77,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     setContractedServices(contractedServices?.contractedServices);
     setActivityTypes(Array.from(new Set(contractedServices?.contractedServices?.map(data => data?.activityType?.activityType))));
   }
-
+  console.log('HITService', HITService);
   const getContractSites = async () => {
     const { data: contractData } = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
     setSites(contractData?.contractDetail?.site?.sites);
@@ -102,6 +103,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     getTimesheetFields();
     setContractedActivityTags([]);
     setTimeSheetLabelData([]);
+    getTimesheetData();
     setPaymentSource(new Array(timeSheetCount || 0));
   }, [timeSheetCount])
 
@@ -109,6 +111,10 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     formatActivities();
     getTimesheetFields();
   }, [contractedActivityTags?.length, timeSheetLabelData, contractedServices, showSelectBox, sites, timesheetSubmissionTerms])
+
+  useEffect(() => {
+    getTimesheetData();
+  }, [contractedServices])
 
   useEffect(() => {
     getAbsenceRequestWorkFlow();
@@ -124,6 +130,17 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     if (timesheetWorkFlow) {
       setTimeSheetWorkFlow(timesheetWorkFlow);
     }
+  }
+
+  const getTimesheetData = () => {
+    setHITService(contractedServices?.filter(data => data?.activityTypeTemplate?.activityTypeTemplate === HIT)?.map(data => data) || [])
+    let startingPoint = timeSheetCount - HITService?.length;
+    let temp = [];
+    contractedServices?.filter(data => data?.activityTypeTemplate?.activityTypeTemplate === HIT)?.map((data, index) => {
+      temp?.push({ index: startingPoint + index, type: data?.activityType?.activityType, activity: data?.performingActivity?.activity });
+      console.log('temp', temp)
+    })
+    setContractedActivityTags(temp);
   }
 
   const getAbsenceRequestWorkFlow = async () => {
@@ -374,7 +391,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
                       contractedActivityTags?.filter((data, index) => data?.index === i)?.map((data, index) => (
                         <div className={`${style.deptCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
                           <div className={`${style.siteDeptTextStyle} ${style.marginLeft10}`}>{data?.type}-{data?.activity}</div>
-                          {contractStatus !== "ACTIVE" && (
+                          {contractStatus !== "ACTIVE" && !HITService?.map(hit => hit?.activityType?.activityType)?.includes(data?.type) && (
                             <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => handleContractedActivityTagsRemove(index, data?.index)} />
                           )}
                         </div>
@@ -500,9 +517,6 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
   const refresh = () => {
     getTimeSheetWorkFlow();
   }
-
-  console.log('timesheet', absence);
-
 
   const updateTimeSheetWorkflow = async (data, workFlowName, type) => {
     let id = absence?.id;
@@ -639,7 +653,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
       <div className={`${style.newContractFromCloneBoxStyle}`}>
         <div className={`${style.extentionGrid}`}>
           <CommonLabel value='Number of Timesheets to Submit for Services Performed' />
-          <CommonInputField className={style.fourFieldWidth} type="number" min="0" value={timeSheetCount} onChange={(e) => e.target.value <= 5 && setTimeSheetCount(parseInt(e.target.value))} />
+          <CommonInputField className={style.fourFieldWidth} type="number" min="1" value={timeSheetCount} onChange={(e) => e.target.value <= 5 && e.target.value >= (HITService?.length + 1) && setTimeSheetCount(parseInt(e.target.value))} />
         </div>
         <div>
           {timesheetFields}
