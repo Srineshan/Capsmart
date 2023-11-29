@@ -645,7 +645,7 @@ const AddonClinicFields = ({
         };
       });
     setMetadata(temp);
-    getFields();
+    generateCustomAddOnFields();
   };
 
   const updateSessionDuration = (serviceName, value) => {
@@ -659,7 +659,7 @@ const AddonClinicFields = ({
         };
       });
     setMetadata(temp);
-    getFields();
+    generateCustomAddOnFields();
   };
 
   const UpdateBillable = (serviceName, value) => {
@@ -675,6 +675,7 @@ const AddonClinicFields = ({
       });
     setMetadata(temp);
     getFields();
+    generateCustomAddOnFields();
   };
 
   const handleWorkingHoursChange = (serviceName, value, name) => {
@@ -773,8 +774,8 @@ const AddonClinicFields = ({
                   InputProps={{
                     endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                   }}
-                  onChange={(e) => e.target.value >= 0 && updateSessionDuration(data?.performingActivity, e.target.value)}
-                  value={data?.sessionDuration}
+                  onChange={(e) => e.target.value > 0 && updateSessionDuration(data?.performingActivity, e.target.value)}
+                  defaultValue={data?.sessionDuration}
                 />
               </div>
             </div>

@@ -626,7 +626,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                 <div className={`${style.addonAddBox} ${style.marginTop20}`}>
                     <div className={`${style.addManagerGrid}`}>
                         <CommonLabel value='Additional Clinical Informatics / HIT Services Name' />
-                        <CommonInputField placeholder='Clinical Informatics / HIT Service Name' className={style.fullWidth} value={adminActivity?.activity} onChange={(e) => handleAdminActivity('activity', e.target.value)} />
+                        <CommonInputField placeholder='Clinical Informatics / HIT Service Name' readOnly={editAdminActivitySelected} className={style.fullWidth} value={adminActivity?.activity} onChange={(e) => handleAdminActivity('activity', e.target.value)} />
                     </div>
 
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>

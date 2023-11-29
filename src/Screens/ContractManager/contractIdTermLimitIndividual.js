@@ -265,13 +265,16 @@ const ContractIdTermLimitIndividual = (
   }
 
   const handleFileUpload = (e) => {
+    console.log('file data', e.target.files);
     if (fileData?.filter(data => data?.fileName === e.target.files?.[0]?.name || e.target.files?.[0]?.name === '')?.length !== 0) {
       setIsShowUploadDialog(false);
       ErrorToaster('File already exist from previous upload in this contract');
       return;
     } else {
-      setIsShowUploadDialog(true);
-      setFileFieldData({ ...fileFieldData, file: e.target.files[0], fileName: e.target.files?.[0]?.name });
+      if (e.target.files?.[0]?.name) {
+        setIsShowUploadDialog(true);
+        setFileFieldData({ ...fileFieldData, file: e.target.files[0], fileName: e.target.files?.[0]?.name });
+      }
     }
   }
 
@@ -825,12 +828,12 @@ const ContractIdTermLimitIndividual = (
                   onChange={() => changeContractFile(!fullyExecutedContract)}
                 />
                 <div>
-                  <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} `}>
-                    <label for="file-upload" className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${contractStatus === "ACTIVE" ? style.disabledUploadButton : ''}  ${continueLoading ? style.disabledUploadButton : ''}`}>
+                  <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${(!fullyExecutedContract) && style.disabledUploadButton}`} disabled={!fullyExecutedContract}>
+                    <label for="file-upload" className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer}  ${contractStatus === "ACTIVE" || !fullyExecutedContract ? style.disabledUploadButton : ''}  ${continueLoading ? style.disabledUploadButton : ''}`}>
                       Upload File
                     </label>
                   </button>
-                  <input id="file-upload" type="file" accept="image/*, .pdf" onChange={(e) => { handleFileUpload(e); }} disabled={contractStatus === "ACTIVE" ? true : false} />
+                  <input id="file-upload" type="file" accept="image/*, .pdf" onChange={(e) => { handleFileUpload(e); }} disabled={(contractStatus === "ACTIVE" || !fullyExecutedContract) ? true : false} />
                 </div>
               </div>
               {/* {fullyExecutedContract && (
@@ -1119,7 +1122,7 @@ const ContractIdTermLimitIndividual = (
         <ConflictPopUp conflict={conflict} updateConflict={updateConflict} />
       )}
 
-      <Dialog isOpen={isShowUploadDialog} onClose={() => setIsShowUploadDialog(false)} className={`${style.cloneDialog} ${style.dialogPaddingBottom}`} canOutsideClickClose={false}>
+      <Dialog isOpen={isShowUploadDialog} onClose={() => { setIsShowUploadDialog(false); setFileFieldData({ id: '', documentType: '', documentName: '', documentDescription: '', fileName: '', file: null, filePath: '' }); }} className={`${style.cloneDialog} ${style.dialogPaddingBottom}`} canOutsideClickClose={false}>
         <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
           <div className={style.spaceBetween}>
             <p className={style.extensionStyle}>ADD FILE DETAILS</p>
