@@ -30,7 +30,7 @@ const ProcedureReading = ({
 }) => {
   const [schedulesField, setSchedulesField] = useState([]);
   const [differentTargets, setDifferentTargets] = useState(false);
-  const contractStatus = sessionStorage.getItem('Selected Contract Status');
+  const contractStatus = sessionStorage.getItem("Selected Contract Status");
   console.log("contrac time", contractTermPeriod);
   // const [contractTermPeriod, setContractDuration] = useState({ start: contractTermPeriod?.start, end: contractTermPeriod?.end })
   const [selectedScheduleRow, setSelectedScheduleRow] = useState();
@@ -703,7 +703,7 @@ const ProcedureReading = ({
                   }
                   value={
                     metadata?.contractedSchedules?.[0]?.maximum?.value === 0 ||
-                      metadata?.contractedSchedules?.[0]?.maximum?.value ===
+                    metadata?.contractedSchedules?.[0]?.maximum?.value ===
                       99999999
                       ? ""
                       : metadata?.contractedSchedules?.[0]?.maximum?.value
@@ -734,8 +734,8 @@ const ProcedureReading = ({
                 className={
                   !metadata?.patientsSeenTargets?.[0]?.noTargetApplicable
                     ? dataCheck(
-                      metadata?.patientsSeenTargets?.[0]?.withNurse?.value
-                    ) ||
+                        metadata?.patientsSeenTargets?.[0]?.withNurse?.value
+                      ) ||
                       dataCheck(
                         metadata?.patientsSeenTargets?.[0]?.withoutNurse?.value
                       )
@@ -815,7 +815,7 @@ const ProcedureReading = ({
                   }
                   value={
                     metadata?.patientsSeenTargets?.[0]?.withoutNurse?.value ===
-                      0
+                    0
                       ? ""
                       : metadata?.patientsSeenTargets?.[0]?.withoutNurse?.value
                   }
@@ -847,9 +847,9 @@ const ProcedureReading = ({
                 className={
                   !metadata?.scheduledPatientsTargets?.[0]?.noTargetApplicable
                     ? dataCheck(
-                      metadata?.scheduledPatientsTargets?.[0]?.withNurse
-                        ?.value
-                    ) ||
+                        metadata?.scheduledPatientsTargets?.[0]?.withNurse
+                          ?.value
+                      ) ||
                       dataCheck(
                         metadata?.scheduledPatientsTargets?.[0]?.withoutNurse
                           ?.value
@@ -894,7 +894,7 @@ const ProcedureReading = ({
                       ?.value === 0
                       ? ""
                       : metadata?.scheduledPatientsTargets?.[0]?.withNurse
-                        ?.value
+                          ?.value
                   }
                   type="number"
                   disabled={
@@ -935,7 +935,7 @@ const ProcedureReading = ({
                       ?.value === 0
                       ? ""
                       : metadata?.scheduledPatientsTargets?.[0]?.withoutNurse
-                        ?.value
+                          ?.value
                   }
                   type="number"
                   disabled={
@@ -1115,7 +1115,14 @@ const ProcedureReading = ({
       )}
 
       <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-        <CommonLabel value="Additional Schedule*" />
+        <CommonLabel
+          value="Additional Schedule*"
+          className={
+            metadata?.additionalScheduleRequired &&
+            editService &&
+            (dataCheck(metadata?.additionalScheduleValue) ? style.redLable : "")
+          }
+        />
         <div className={`${style.grid3}`}>
           <div className={`${style.fullWidth}`}>
             <CommonSwitch
@@ -1288,7 +1295,8 @@ const ProcedureReading = ({
               disabled={contractStatus === "ACTIVE" ? true : false}
             />
             <div
-              className={`${style.textElement} ${parseFloat(metadata?.totalSession) ===
+              className={`${style.textElement} ${
+                parseFloat(metadata?.totalSession) ===
                 parseFloat(
                   SpecifiedCountCalculator(
                     metadata?.contractedSchedules,
@@ -1297,9 +1305,9 @@ const ProcedureReading = ({
                     metadata?.additionalScheduleValue
                   )
                 )
-                ? style.greenBase
-                : style.redBase
-                } `}
+                  ? style.greenBase
+                  : style.redBase
+              } `}
             >
               {SpecifiedCountCalculator(
                 metadata?.contractedSchedules,
@@ -1312,8 +1320,9 @@ const ProcedureReading = ({
           </div>
           <div className={style.verticalAlignCenter}>
             <CommonLabel
-              value={`For ${timeCommitment?.value} ${timeCommitment?.frequency === "WEEK" ? "Weeks" : "Months"
-                } Per Contract Year`}
+              value={`For ${timeCommitment?.value} ${
+                timeCommitment?.frequency === "WEEK" ? "Weeks" : "Months"
+              } Per Contract Year`}
             />
           </div>
         </div>
@@ -1324,10 +1333,10 @@ const ProcedureReading = ({
           value="Service Days*"
           className={
             metadata?.serviceDays === null ||
-              (metadata?.serviceDays !== undefined &&
-                Object?.values(metadata?.serviceDays)?.filter(
-                  (data) => data === true
-                )?.length === 0)
+            (metadata?.serviceDays !== undefined &&
+              Object?.values(metadata?.serviceDays)?.filter(
+                (data) => data === true
+              )?.length === 0)
               ? style.redLable
               : ""
           }
@@ -1345,7 +1354,7 @@ const ProcedureReading = ({
           value="Allowable Working Day Hours For Service*"
           className={
             format(metadata?.workingTimeTo || new Date(), "H") === "0" &&
-              format(metadata?.workingTimeFrom || new Date(), "H") === "0"
+            format(metadata?.workingTimeFrom || new Date(), "H") === "0"
               ? style.redLable
               : ""
           }
@@ -1377,7 +1386,7 @@ const ProcedureReading = ({
                 : new Date(metadata?.workingTimeTo) || null
             }
             disabled={contractStatus === "ACTIVE" ? true : false}
-          // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
+            // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
           />
         </div>
       </div>

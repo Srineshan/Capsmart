@@ -59,7 +59,7 @@ const SurgerySessionFields = ({
     weekendsCount: "0",
   });
   const [specified, setSpecified] = useState(0);
-  const contractStatus = sessionStorage.getItem('Selected Contract Status');
+  const contractStatus = sessionStorage.getItem("Selected Contract Status");
 
   useEffect(() => {
     let contractedSchedules = [
@@ -207,7 +207,11 @@ const SurgerySessionFields = ({
       <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
         <CommonLabel
           value="Regular Service Schedule*"
-          className={dataCheck(metadata?.min) ? style.redLable : ""}
+          className={
+            (isNaN(metadata?.min) && editService) || dataCheck(metadata?.min)
+              ? style.redLable
+              : ""
+          }
         />
         <div className={style.displayInRow}>
           {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
@@ -325,7 +329,14 @@ const SurgerySessionFields = ({
       </div>
 
       <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-        <CommonLabel value="Additional Schedule*" />
+        <CommonLabel
+          value="Additional Schedule*"
+          className={
+            metadata?.additionalScheduleRequired &&
+            editService &&
+            (dataCheck(metadata?.additionalScheduleValue) ? style.redLable : "")
+          }
+        />
         <div className={style.grid3}>
           <div className={`${style.fullWidth}`}>
             <CommonSwitch
@@ -505,18 +516,20 @@ const SurgerySessionFields = ({
               disabled={contractStatus === "ACTIVE" ? true : false}
             />
             <div
-              className={`${style.textElement} ${parseFloat(metadata?.totalSession) === parseFloat(specified)
-                ? style.greenBase
-                : style.redBase
-                }`}
+              className={`${style.textElement} ${
+                parseFloat(metadata?.totalSession) === parseFloat(specified)
+                  ? style.greenBase
+                  : style.redBase
+              }`}
             >
               {specified} Minimum Specified
             </div>
           </div>
           <div className={style.verticalAlignCenter}>
             <CommonLabel
-              value={`For ${timeCommitment?.value} ${timeCommitment?.frequency === "WEEK" ? "Weeks" : "Months"
-                } Per Contract Year`}
+              value={`For ${timeCommitment?.value} ${
+                timeCommitment?.frequency === "WEEK" ? "Weeks" : "Months"
+              } Per Contract Year`}
             />
           </div>
         </div>
@@ -527,10 +540,10 @@ const SurgerySessionFields = ({
           value="Service Days*"
           className={
             metadata?.serviceDays === null ||
-              (metadata?.serviceDays !== undefined &&
-                Object?.values(metadata?.serviceDays)?.filter(
-                  (data) => data === true
-                )?.length === 0)
+            (metadata?.serviceDays !== undefined &&
+              Object?.values(metadata?.serviceDays)?.filter(
+                (data) => data === true
+              )?.length === 0)
               ? style.redLable
               : ""
           }
@@ -548,7 +561,7 @@ const SurgerySessionFields = ({
           value="Allowable Working Day Hours For Service*"
           className={
             format(metadata?.workingTimeTo || new Date(), "H") === "0" &&
-              format(metadata?.workingTimeFrom || new Date(), "H") === "0"
+            format(metadata?.workingTimeFrom || new Date(), "H") === "0"
               ? style.redLable
               : ""
           }
@@ -580,7 +593,7 @@ const SurgerySessionFields = ({
                 : new Date(metadata?.workingTimeTo)
             }
             disabled={contractStatus === "ACTIVE" ? true : false}
-          // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
+            // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
           />
         </div>
       </div>
