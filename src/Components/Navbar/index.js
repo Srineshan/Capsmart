@@ -67,6 +67,7 @@ const Navbar = () => {
   const [isSystemAdministrationAvailable, setIsSystemAdministrationAvailable] =
     useState(false);
   const [isSupportAvailable, setIsSupportAvailable] = useState(false);
+  let selectedWorkingMode = sessionStorage.getItem('SelectedWorkingMode');
 
   useEffect(() => {
     if (currentUserRoles?.includes("Activity Logger")) {
@@ -295,6 +296,8 @@ const Navbar = () => {
     }
   };
 
+  console.log(selectedWorkingMode)
+
   return (
     <div className={style.navbarStyle}>
       <div className={style.spaceBetween}>
@@ -309,7 +312,7 @@ const Navbar = () => {
               }`}
             onClick={homeRoute}
           >
-            <p>HOME - {currentUserRoles?.[0]?.toUpperCase()}</p>
+            <p>HOME - {(selectedWorkingMode !== null && selectedWorkingMode !== '' && selectedWorkingMode !== undefined) ? selectedWorkingMode : currentUserRoles?.[0]?.toUpperCase()}</p>
           </div>
 
           {
