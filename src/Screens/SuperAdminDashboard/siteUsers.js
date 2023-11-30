@@ -144,7 +144,7 @@ const SiteUsers = ({ getActiveStep }) => {
   };
 
   const getContracts = async () => {
-    await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/contract-managment-service/contracts`, {
+    await axios(`https://${window.location.hostname}/contract-managment-service/contracts`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -159,7 +159,7 @@ const SiteUsers = ({ getActiveStep }) => {
   }
 
   const getUserData = async () => {
-    await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/user-management-service/user`, {
+    await axios(`https://${window.location.hostname}/user-management-service/user`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -437,8 +437,8 @@ const SiteUsers = ({ getActiveStep }) => {
             </div>
             <p
               className={`${isSuperAdminAccess
-                  ? style.entityTextColor
-                  : style.entityTextColor4grid
+                ? style.entityTextColor
+                : style.entityTextColor4grid
                 } ${style.activeEntityTextColor}`}
             >
               ENTITY SETUP
@@ -458,8 +458,8 @@ const SiteUsers = ({ getActiveStep }) => {
             </div>
             <p
               className={`${isSuperAdminAccess
-                  ? style.entityTextColor
-                  : style.entityTextColor4grid
+                ? style.entityTextColor
+                : style.entityTextColor4grid
                 } ${style.activeEntityTextColor}`}
             >
               SITES FOR APP USE
@@ -480,8 +480,8 @@ const SiteUsers = ({ getActiveStep }) => {
               </div>
               <p
                 className={`${isSuperAdminAccess
-                    ? style.entityTextColor
-                    : style.entityTextColor4grid
+                  ? style.entityTextColor
+                  : style.entityTextColor4grid
                   } ${style.activeEntityTextColor}`}
               >
                 ENTITY SYSTEM ADMIN
@@ -502,8 +502,8 @@ const SiteUsers = ({ getActiveStep }) => {
             </div>
             <p
               className={`${isSuperAdminAccess
-                  ? style.entityTextColor
-                  : style.entityTextColor4grid
+                ? style.entityTextColor
+                : style.entityTextColor4grid
                 } ${style.activeEntityTextColor}`}
             >
               APP USERS

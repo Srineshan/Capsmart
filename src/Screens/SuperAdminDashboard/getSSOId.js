@@ -24,15 +24,15 @@ const GetSSOId = () => {
     getEntityLogo();
   }, [tenantId]);
 
-    const getEntityId = async () => {
-        await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/entity-service/entityID`, {
-            method: 'GET',
-        }).then(response => {
-            setTenantId(response?.data?.id);
-        }).catch(error => {
-            console.log('error', error);
-        })
-    }
+  const getEntityId = async () => {
+    await axios(`https://${window.location.hostname}/entity-service/entityID`, {
+      method: 'GET',
+    }).then(response => {
+      setTenantId(response?.data?.id);
+    }).catch(error => {
+      console.log('error', error);
+    })
+  }
 
   const getEntityLogo = async () => {
     const { data: data } = await GET(`entity-service/entity/logo?id=${tenantId}`);

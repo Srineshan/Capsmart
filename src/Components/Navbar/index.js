@@ -165,14 +165,14 @@ const Navbar = () => {
   const idHelp = open ? "mouse-over-popover" : undefined;
 
   const logoutURL = () => {
-    window.location.href = `http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/logout`;
+    window.location.href = `https://${window.location.hostname}/logout`;
   }
 
   const logout = async () => {
     const cookies = new Cookies();
     let token = cookies.get("user");
     let entityId = cookies.get("entityId");
-    // await fetch(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/logout`, {
+    // await fetch(`https://${window.location.hostname}/logout`, {
     //   // redirect: 'manual',
     //   method: 'PUT',
     //   body: JSON.stringify({}),
@@ -184,7 +184,7 @@ const Navbar = () => {
     // })
 
     // let data = JSON.stringify({});
-    // await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/logout`, {
+    // await axios(`https://${window.location.hostname}/logout`, {
     //   method: 'PUT',
     //   data,
     // }).then(response => {
@@ -197,7 +197,7 @@ const Navbar = () => {
     // })
 
     // window.location.href = respose.headers?.get('Location')
-    // axios.post(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/logout`, {
+    // axios.post(`https://${window.location.hostname}/logout`, {
     //   // Add parameters here
     //   // transformRequest: (data, headers) => {
     //   //   delete headers.common['X-XSRF-TOKEN'];
@@ -322,7 +322,7 @@ const Navbar = () => {
           <div>
             <div
               className={`${style.menuStyle} ${(window.location.pathname.includes("/reports") ||
-                  window.location.pathname.includes("/reportTypeOverview")) &&
+                window.location.pathname.includes("/reportTypeOverview")) &&
                 style.activeMenuColor
                 }`}
               ref={popoverAnchor}
@@ -415,8 +415,8 @@ const Navbar = () => {
             <div>
               <div
                 className={`${style.menuStyle} ${(window.location.pathname === "/user" ||
-                    window.location.pathname === "/welcome" ||
-                    window.location.pathname === "/partnerPortal") &&
+                  window.location.pathname === "/welcome" ||
+                  window.location.pathname === "/partnerPortal") &&
                   style.activeMenuColor
                   }`}
                 ref={popoverAnchorTools}
