@@ -355,7 +355,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
                   <div></div>
                   <img src={ArrowDown} className={`${style.marginRight} ${style.arrowDownStyle}`} />
                 </div>
-                {(showSelectBox && i === selectBoxIndex) && (
+                {(showSelectBox && i === selectBoxIndex && i < (timeSheetCount - HITService?.length)) && (
                   <div className={style.selectOptionsBox} ref={menuRef}>
                     {/* <div className={`${style.selectOptionsMenuStyle}`}>
                       <CommonCheckBox disabled={contractedServices?.length === contractedActivityTags?.length} checked={contractedServices?.length === contractedActivityTags?.length} onChange={() => handleContractedActivityTagsAdd('all', 'all', i)} label="All Activities" />
@@ -610,8 +610,6 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
         payment.timesheetLabel = timesheetValues?.[index].timesheetLabel;
       })
 
-      console.log('payments data', data);
-
       const response = await PUT(`contract-managment-service/contracts/${contractId}/paymentAndCompensation`, JSON.stringify(data));
       if (response) {
         console.log('Timesheet name updated')
@@ -653,7 +651,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
       <div className={`${style.newContractFromCloneBoxStyle}`}>
         <div className={`${style.extentionGrid}`}>
           <CommonLabel value='Number of Timesheets to Submit for Services Performed' />
-          <CommonInputField className={style.fourFieldWidth} type="number" min="1" value={timeSheetCount} onChange={(e) => e.target.value <= 5 && e.target.value >= (HITService?.length + 1) && setTimeSheetCount(parseInt(e.target.value))} />
+          <CommonInputField className={style.fourFieldWidth} type="number" min="1" value={timeSheetCount} onChange={(e) => e.target.value <= contractedServices?.length && e.target.value >= (HITService?.length + 1) && setTimeSheetCount(parseInt(e.target.value))} />
         </div>
         <div>
           {timesheetFields}

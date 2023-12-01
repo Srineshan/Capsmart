@@ -997,7 +997,7 @@ const AddServiceProvided = ({
           metadata?.weekdayNightsPayment !== 0
         ) {
           console.log('inside weeknight else');
-          if (!activities?.map(data => data?.activity).includes(metadata?.weekdayNightActivity)) {
+          if (!activities?.map(data => data?.activity).includes(metadata?.weekdayNightActivity) && metadata?.weekdayNightActivity !== '' && metadata?.weekdayNightActivity !== null) {
             activities?.push({ activity: metadata?.weekdayNightActivity })
           }
         }
