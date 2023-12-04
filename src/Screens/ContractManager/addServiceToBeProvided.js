@@ -175,6 +175,9 @@ const AddServiceProvided = ({
     }
   }, [selectedService, serviceTypeList]);
 
+
+  console.log('selected Service', selectedService);
+
   useEffect(() => {
     if (siteData?.length !== 0) {
       let temp = [];
