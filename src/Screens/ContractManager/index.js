@@ -37,10 +37,12 @@ const Contracts = () => {
     useEffect(() => {
         getContracts();
         getUserData();
+        setIsEditable(sessionStorage.getItem('isEditable') === 'true' ? true : false);
     }, [])
 
     useEffect(() => {
         getContracts();
+        setIsEditable(sessionStorage.getItem('isEditable') === 'true' ? true : false);
     }, [selectedContract, searchKey, page, newContractFromClone])
 
     useEffect(() => {
@@ -62,6 +64,7 @@ const Contracts = () => {
 
     const getAddContract = (value, isNext = false) => {
         setAddContract(value);
+        sessionStorage.removeItem('Selected Contract Status');
         console.log('next', isNext, typeof isNext);
         if (!isNext) {
             console.log('inside', isNext);
