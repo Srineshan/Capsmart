@@ -429,8 +429,8 @@ body::-webkit-scrollbar {
 }
 
 .continueDisabled {
-    cursor: not-allowed !important;
-    opacity: 0.3;
+  cursor: not-allowed !important;
+  opacity: 0.3;
 }
 
 .addBoxDescription {
@@ -889,6 +889,7 @@ select {
 }
 
 @media screen and (max-width: 1350px) {
+
   .newContractButtonStyle,
   .newContractOutlinedButton {
     width: 140px;
@@ -1296,8 +1297,8 @@ select {
 }
 
 .documentHITGrid {
-    display: grid;
-    grid-template-columns: 15% 1fr 5%;
+  display: grid;
+  grid-template-columns: 15% 1fr 5%;
 }
 
 .documentTextGrid {
@@ -1778,13 +1779,13 @@ input[type="file"] {
 }
 
 .orangeChip {
-    background: orange 0% 0% no-repeat padding-box;
-    color: orangered;
+  background: orange 0% 0% no-repeat padding-box;
+  color: orangered;
 }
 
 .yellowChip {
-    background: lemonchiffon 0% 0% no-repeat padding-box;
-    color: orange;
+  background: lemonchiffon 0% 0% no-repeat padding-box;
+  color: orange;
 }
 
 .blueChip {

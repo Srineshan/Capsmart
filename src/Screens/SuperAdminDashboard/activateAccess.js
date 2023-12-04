@@ -60,6 +60,13 @@ const ActivateAccess = () => {
     handlePasswordStrengthCheck();
   }, [password]);
 
+  useEffect(() => {
+    getUser();
+    getEntityLogo();
+    getEntity();
+  }, [tenantId])
+
+
   const handlePasswordStrengthCheck = () => {
     if (/^(?=.*[@$!%#?&^()*~`])/.test(password)) {
       setIsSpecialCharacterAvailable(true);
@@ -89,14 +96,8 @@ const ActivateAccess = () => {
     setPasswordStrengthLength([isCapitalCharacterAvailable, isSmallCharacterAvailable, isMin8CharacterAvailable, isNumberAvailable, isSpecialCharacterAvailable]?.filter(data => data === true)?.length)
   }
 
-  useEffect(() => {
-    getUser();
-    getEntityLogo();
-    getEntity();
-  }, [tenantId])
-
   const getEntityId = async () => {
-    await axios(`http://ec2-18-232-204-138.compute-1.amazonaws.com:8010/entity-service/entityID`, {
+    await axios(`https://${window.location.hostname}/entity-service/entityID`, {
       method: 'GET',
       // headers: { "X-subdomain": "smmc-trial" },
     }).then(response => {
@@ -124,7 +125,7 @@ const ActivateAccess = () => {
   }
 
   const getUser = async () => {
-    await axios(`http://ec2-18-232-204-138.compute-1.amazonaws.com:8010/user-management-service/user`, {
+    await axios(`https://${window.location.hostname}/user-management-service/user`, {
       method: 'GET',
       headers: headers,
     }).then(response => {
@@ -156,7 +157,7 @@ const ActivateAccess = () => {
     //             "password": password,
     //         }
     //     }
-    //     axios(`http://ec2-18-232-204-138.compute-1.amazonaws.com:8010/user-management-service/user/updatepassword`, {
+    //     axios(`https://${window.location.hostname}/user-management-service/user/updatepassword`, {
     //         method: 'POST',
     //         headers: headers,
     //         data: JSON.stringify(data),
@@ -167,9 +168,6 @@ const ActivateAccess = () => {
     //         .catch(error => {
     //             console.log('Error', error);
     //             ErrorToaster(error?.response?.data);
-
-    //         })
-    // }
   }
 
   const EyeOpenElement = (index) => {
