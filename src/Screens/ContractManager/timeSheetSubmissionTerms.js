@@ -18,7 +18,7 @@ import CommonInputField from "../../Components/CommonFields/CommonInputField";
 import CommonCheckBox from "../../Components/CommonFields/CommonCheckBox";
 import CommonLabel from "../../Components/CommonFields/CommonLabel";
 import { valueCheck } from "./../../utils/valueCheck";
-
+import { HIT } from "../../Constants";
 import style from "./index.module.scss";
 import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
 import CommonTextField from "../../Components/CommonFields/CommonTextField";
@@ -106,6 +106,7 @@ const TimeSheetSubmissionTerms = ({
   const [unassignedKeys, setUnassignedKeys] = useState([]);
   const [showSaveInProgress, setShowSaveInProgress] = useState(false);
   const contractStatus = sessionStorage.getItem("Selected Contract Status");
+  const [HITService, setHITService] = useState([]);
 
   const menuRef = useRef(null);
   useOptionsHide(menuRef);
@@ -153,6 +154,7 @@ const TimeSheetSubmissionTerms = ({
     getTimesheetFields();
     setContractedActivityTags([]);
     setTimeSheetLabelData([]);
+    getTimesheetData();
     setPaymentSource(new Array(timeSheetCount || 0));
   }, [timeSheetCount]);
 
@@ -167,6 +169,10 @@ const TimeSheetSubmissionTerms = ({
     sites,
     timesheetSubmissionTerms,
   ]);
+
+  useEffect(() => {
+    getTimesheetData();
+  }, [contractedServices])
 
   useEffect(() => {
     getAbsenceRequestWorkFlow();
@@ -186,7 +192,18 @@ const TimeSheetSubmissionTerms = ({
     if (timesheetWorkFlow) {
       setTimeSheetWorkFlow(timesheetWorkFlow);
     }
-  };
+  }
+
+  const getTimesheetData = () => {
+    setHITService(contractedServices?.filter(data => data?.activityTypeTemplate?.activityTypeTemplate === HIT)?.map(data => data) || [])
+    let startingPoint = timeSheetCount - HITService?.length;
+    let temp = [];
+    contractedServices?.filter(data => data?.activityTypeTemplate?.activityTypeTemplate === HIT)?.map((data, index) => {
+      temp?.push({ index: startingPoint + index, type: data?.activityType?.activityType, activity: data?.performingActivity?.activity });
+      console.log('temp', temp)
+    })
+    setContractedActivityTags(temp);
+  }
 
   const getAbsenceRequestWorkFlow = async () => {
     try {
@@ -411,9 +428,8 @@ const TimeSheetSubmissionTerms = ({
       temp[i] = (
         <div
           key={`${i}temp${timeSheetCount + 1}`}
-          className={`${timeSheetCount > 1 && style.contractedBorderStyle} ${
-            style.marginTop20
-          }`}
+          className={`${timeSheetCount > 1 && style.contractedBorderStyle} ${style.marginTop20
+            }`}
         >
           <div className={`${style.extentionGrid}`}>
             <CommonLabel
@@ -465,7 +481,7 @@ const TimeSheetSubmissionTerms = ({
                     alt=""
                   />
                 </div>
-                {showSelectBox && i === selectBoxIndex && (
+                {(showSelectBox && i === selectBoxIndex && i < (timeSheetCount - HITService?.length)) && (
                   <div className={style.selectOptionsBox} ref={menuRef}>
                     {/* <div className={`${style.selectOptionsMenuStyle}`}>
                       <CommonCheckBox disabled={contractedServices?.length === contractedActivityTags?.length} checked={contractedServices?.length === contractedActivityTags?.length} onChange={() => handleContractedActivityTagsAdd('all', 'all', i)} label="All Activities" />
@@ -549,36 +565,36 @@ const TimeSheetSubmissionTerms = ({
                 {contractedActivityTags
                   ?.filter((data, index) => data?.index === i)
                   ?.map((data) => data)?.length !== 0 && (
-                  <div
-                    className={`${style.siteDeptFieldCard} ${style.marginTop10}`}
-                  >
-                    {contractedActivityTags
-                      ?.filter((data, index) => data?.index === i)
-                      ?.map((data, index) => (
-                        <div
-                          className={`${style.deptCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}
-                        >
+                    <div
+                      className={`${style.siteDeptFieldCard} ${style.marginTop10}`}
+                    >
+                      {contractedActivityTags
+                        ?.filter((data, index) => data?.index === i)
+                        ?.map((data, index) => (
                           <div
-                            className={`${style.siteDeptTextStyle} ${style.marginLeft10}`}
+                            className={`${style.deptCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}
                           >
-                            {data?.type}-{data?.activity}
+                            <div
+                              className={`${style.siteDeptTextStyle} ${style.marginLeft10}`}
+                            >
+                              {data?.type}-{data?.activity}
+                            </div>
+                            {contractStatus !== "ACTIVE" && (
+                              <CloseIcon
+                                fontSize="20px"
+                                className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`}
+                                onClick={() =>
+                                  handleContractedActivityTagsRemove(
+                                    index,
+                                    data?.index
+                                  )
+                                }
+                              />
+                            )}
                           </div>
-                          {contractStatus !== "ACTIVE" && (
-                            <CloseIcon
-                              fontSize="20px"
-                              className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`}
-                              onClick={() =>
-                                handleContractedActivityTagsRemove(
-                                  index,
-                                  data?.index
-                                )
-                              }
-                            />
-                          )}
-                        </div>
-                      ))}
-                  </div>
-                )}
+                        ))}
+                    </div>
+                  )}
               </div>
             </div>
           )}
@@ -587,10 +603,10 @@ const TimeSheetSubmissionTerms = ({
               className={`${style.extentionGrid} ${style.marginTop20}`}
               key={`sites${i}`}
             >
-              <CommonLabel value="Payment Source*"  
-              className={
-                dataCheck(paymentSource?.[i]) ? style.redLable : ""
-              } />
+              <CommonLabel value="Payment Source*"
+                className={
+                  dataCheck(paymentSource?.[i]) ? style.redLable : ""
+                } />
               <SiteDepartmentField
                 sites={sites}
                 getSelectedSites={(value) => onSelectSite(value, i)}
@@ -598,8 +614,8 @@ const TimeSheetSubmissionTerms = ({
                   Array.isArray(paymentSource?.[i])
                     ? paymentSource?.[i]
                     : paymentSource?.[i]
-                    ? new Array(1).fill(paymentSource?.[i])
-                    : []
+                      ? new Array(1).fill(paymentSource?.[i])
+                      : []
                 }
                 isMultiSiteEntity={isMultiSiteEntity}
               />
@@ -607,8 +623,8 @@ const TimeSheetSubmissionTerms = ({
           </div>
 
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <CommonLabel value="Service log Period for timesheet submission*"  
-            className={
+            <CommonLabel value="Service log Period for timesheet submission*"
+              className={
                 dataCheck(timeSheetLabelData?.[i]?.value) ? style.redLable : ""
               } />
             <CommonSelectField
@@ -735,9 +751,7 @@ const TimeSheetSubmissionTerms = ({
 
   const refresh = () => {
     getTimeSheetWorkFlow();
-  };
-
-  console.log("timesheet", absence);
+  }
 
   const updateTimeSheetWorkflow = async (data, workFlowName, type) => {
     let id = absence?.id;
@@ -897,9 +911,7 @@ const TimeSheetSubmissionTerms = ({
       let data = paymentAndCompensation;
       data.timesheetPayments?.map((payment, index) => {
         payment.timesheetLabel = timesheetValues?.[index].timesheetLabel;
-      });
-
-      console.log("payments data", data);
+      })
 
       const response = await PUT(
         `contract-managment-service/contracts/${contractId}/paymentAndCompensation`,
@@ -975,19 +987,8 @@ const TimeSheetSubmissionTerms = ({
     <div className={style.cloneBlockStyle}>
       <div className={`${style.newContractFromCloneBoxStyle}`}>
         <div className={`${style.extentionGrid}`}>
-          <CommonLabel
-            value="Number of Timesheets to Submit for Services Performed"
-            className={(isNaN(timeSheetCount) && timesheetSubmissionTerms) || dataCheck(timeSheetCount) ? style.redLable : ""}
-          />
-          <CommonInputField
-            className={style.fourFieldWidth}
-            type="number"
-            min="0"
-            value={timeSheetCount}
-            onChange={(e) =>
-              e.target.value <= 5 && setTimeSheetCount(parseInt(e.target.value))
-            }
-          />
+          <CommonLabel value='Number of Timesheets to Submit for Services Performed' />
+          <CommonInputField className={style.fourFieldWidth} type="number" min="1" value={timeSheetCount} onChange={(e) => e.target.value <= contractedServices?.length && e.target.value >= (HITService?.length + 1) && setTimeSheetCount(parseInt(e.target.value))} />
         </div>
         <div>{timesheetFields}</div>
         {timeSheetCount <= 1 && (
@@ -1011,8 +1012,8 @@ const TimeSheetSubmissionTerms = ({
             className={
               dataCheck(
                 invoiceProcessingDay &&
-                  invoiceProcessingDayThreshold &&
-                  invoiceProcessingDayGoal
+                invoiceProcessingDayThreshold &&
+                invoiceProcessingDayGoal
               )
                 ? style.redLable
                 : ""
@@ -1117,12 +1118,12 @@ const TimeSheetSubmissionTerms = ({
         {/* <div className={`${style.welcomeBorder} ${style.marginTop20}`}></div> */}
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <CommonLabel value="Planned Absence Notification Days limit*" 
-          className={
+          <CommonLabel value="Planned Absence Notification Days limit*"
+            className={
               dataCheck(plannedAbsence)
                 ? style.redLable
                 : ""
-            }/>
+            } />
           {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
             <EditableText value={plannedAbsence} placeholder="0" type='number' onChange={(e) => setPlannedAbsence(e.slice(0, limit))} className={style.editableTextStyleDays} />
             <div className={style.textElementWithoutBackgroundDays}>Days</div>
@@ -1145,8 +1146,8 @@ const TimeSheetSubmissionTerms = ({
           </div>
         </div>
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <CommonLabel value="Maximum Unplanned Absence Days Allowed *" 
-          className={
+          <CommonLabel value="Maximum Unplanned Absence Days Allowed *"
+            className={
               dataCheck(maxUnplannedAbsence)
                 ? style.redLable
                 : ""
@@ -1177,7 +1178,7 @@ const TimeSheetSubmissionTerms = ({
             value="Maximum Absence Period*"
             className={
               !maxPlannedAbsence?.notApplicable &&
-              dataCheck(maxPlannedAbsence?.days)
+                dataCheck(maxPlannedAbsence?.days)
                 ? style.redLable
                 : ""
             }
@@ -1239,12 +1240,12 @@ const TimeSheetSubmissionTerms = ({
         </div>
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <CommonLabel value="Day limit for submission of timesheet based on activity service date *" 
-           className={
-            dataCheck(dayLimitForSubmissionBasedOnActivityServiceDate)
-              ? style.redLable
-              : ""
-          }
+          <CommonLabel value="Day limit for submission of timesheet based on activity service date *"
+            className={
+              dataCheck(dayLimitForSubmissionBasedOnActivityServiceDate)
+                ? style.redLable
+                : ""
+            }
           />
           {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
             <EditableText value={dayLimitForSubmissionBasedOnActivityServiceDate} placeholder="0" type='number' min="0" onChange={(e) => setDayLimitForSubmissionBasedOnActivityServiceDate(e.slice(0, limit))} className={style.editableTextStyleDays} />
@@ -1270,12 +1271,12 @@ const TimeSheetSubmissionTerms = ({
           </div>
         </div>
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <CommonLabel value="Day limit for submission of timesheet based on contract end date *"  
-           className={
-            dataCheck(dayLimitForSubmissionBasedOnContractEndDate)
-              ? style.redLable
-              : ""
-          }
+          <CommonLabel value="Day limit for submission of timesheet based on contract end date *"
+            className={
+              dataCheck(dayLimitForSubmissionBasedOnContractEndDate)
+                ? style.redLable
+                : ""
+            }
           />
           {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
             <EditableText value={dayLimitForSubmissionBasedOnContractEndDate} placeholder="0" type='number' min="0" onChange={(e) => setDayLimitForSubmissionBasedOnContractEndDate(e.slice(0, limit))} className={style.editableTextStyleDays} />
@@ -1313,9 +1314,8 @@ const TimeSheetSubmissionTerms = ({
           </button>
           <div>
             <button
-              className={`${style.newContractOutlinedButton}  ${
-                style.cursorPointer
-              } ${continueLoading ? style.disabled : ""}`}
+              className={`${style.newContractOutlinedButton}  ${style.cursorPointer
+                } ${continueLoading ? style.disabled : ""}`}
               onClick={
                 !continueLoading
                   ? () => mandatoryFieldCheck("SaveInProgress")
@@ -1325,14 +1325,13 @@ const TimeSheetSubmissionTerms = ({
               SAVE IN-PROGRESS
             </button>
             <button
-              className={`${style.newContractButtonStyle}  ${
-                style.cursorPointer
-              } ${style.marginLeft20} ${continueLoading ? style.disabled : ""}`}
+              className={`${style.newContractButtonStyle}  ${style.cursorPointer
+                } ${style.marginLeft20} ${continueLoading ? style.disabled : ""}`}
               onClick={
                 !continueLoading
                   ? () => {
-                      mandatoryFieldCheck("Continue");
-                    }
+                    mandatoryFieldCheck("Continue");
+                  }
                   : {}
               }
             >
