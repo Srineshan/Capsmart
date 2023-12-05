@@ -210,7 +210,7 @@ export const validateServices = (contract) => {
       if (!Object.keys(service?.activityResponse?.dataMap)?.includes('selectedActivityId')) {
         fieldData.push({ field: 'Duration', value: service?.duration?.hours });
         fieldData.push({ field: 'Additional details', value: service?.activityResponse?.dataMap?.additionalDetails?.length });
-        fieldData.push({ field: 'Allowable Add-On Working Hours', value: Object.values(service?.workingHours)?.filter(data => data === true)?.map(data => data)?.length });
+        fieldData.push({ field: 'Allowable Add-On Working Hours', value: service?.workingHours !== null ? Object.values(service?.workingHours)?.filter(data => data === true)?.map(data => data)?.length : 0 });
         if (service?.locationSpecified) {
           fieldData.push({ field: 'Specify Service Facility / Location', value: service?.serviceLocations?.length });
         }
