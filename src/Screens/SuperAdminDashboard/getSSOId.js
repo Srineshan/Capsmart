@@ -25,7 +25,7 @@ const GetSSOId = () => {
     }, [tenantId])
 
     const getEntityId = async () => {
-        await axios(`https://${window.location.hostname}/entity-service/entityID`, {
+        await axios(`http://ec2-35-175-13-4.compute-1.amazonaws.com:8010/entity-service/entityID`, {
             method: 'GET',
         }).then(response => {
             setTenantId(response?.data?.id);
