@@ -193,20 +193,20 @@ export const validateServices = (contract) => {
   console.log('services data', services)
   services?.map((service, index) => {
     let fieldData = [{ field: 'sites', value: service?.sites?.length },
-    { field: 'Service Days', value: (service?.serviceDays !== undefined && service?.serviceDays !== null) ? Object.keys(service?.serviceDays || {})?.filter(data => service?.serviceDays[data] === true)?.map(data => data)?.length : service?.activityType?.activityType === ADDON ? 'ADD ON' : '' },
-    { field: 'Working Hours - From', value: service?.workingPeriod?.from },
-    { field: 'Working Hours - To', value: service?.workingPeriod?.to }
+    { field: 'Service Days', value: (service?.activityTypeTemplate?.activityTypeTemplate === ADDON || service?.activityTypeTemplate?.activityTypeTemplate === HIT) ? 'ADD ON || HIT' : (service?.serviceDays !== undefined && service?.serviceDays !== null) ? Object.keys(service?.serviceDays || {})?.filter(data => service?.serviceDays[data] === true)?.map(data => data)?.length : '' },
+    { field: 'Working Hours - From', value: service?.activityTypeTemplate?.activityTypeTemplate !== HIT ? service?.workingPeriod?.from : 'HIT' },
+    { field: 'Working Hours - To', value: service?.activityTypeTemplate?.activityTypeTemplate !== HIT ? service?.workingPeriod?.to : 'HIT' }
     ];
     if (service?.additionalSchedule?.scheduleRequired) {
       fieldData.push(...[{ field: 'Additional Schedule Value', value: service?.additionalSchedule?.value }, { field: 'Additional Schedule Frequency', value: service?.additionalSchedule?.frequency }]);
     }
-    if (service?.billableService && !service?.customizedSchedule && service?.activityType?.activityType !== SUPPLEMENTAL && service?.activityType?.activityType !== ONCALLSERVICE) {
+    if (service?.billableService && !service?.customizedSchedule && service?.activityTypeTemplate?.activityTypeTemplate !== SUPPLEMENTAL && service?.activityTypeTemplate?.activityTypeTemplate !== ONCALLSERVICE) {
       fieldData.push(...[{ field: 'Payment Amount', value: service?.payableAmount?.value }]);
     }
-    if (service?.activityApprovalWFRequired && service?.activityType?.activityType === ADDON) {
+    if (service?.activityApprovalWFRequired && service?.activityTypeTemplate?.activityTypeTemplate === ADDON) {
       fieldData.push(...[{ field: 'Approval Workflow', value: service?.workFlow !== null ? service?.workFlow?.id : '' }]);
     }
-    if (service?.activityType?.activityType === ADDON) {
+    if (service?.activityTypeTemplate?.activityTypeTemplate === ADDON) {
       if (!Object.keys(service?.activityResponse?.dataMap)?.includes('selectedActivityId')) {
         fieldData.push({ field: 'Duration', value: service?.duration?.hours });
         fieldData.push({ field: 'Additional details', value: service?.activityResponse?.dataMap?.additionalDetails?.length });
@@ -217,14 +217,14 @@ export const validateServices = (contract) => {
       }
     }
     if (
-      service?.activityType?.activityType === SUPPLEMENTAL ||
-      service?.activityType?.activityType === ADMINISTRATIVE
+      service?.activityTypeTemplate?.activityTypeTemplate === SUPPLEMENTAL ||
+      service?.activityTypeTemplate?.activityTypeTemplate === ADMINISTRATIVE
     ) {
       if (!service?.dedicatedHoursSpecified) {
         fieldData.push({ field: 'Dedicated Hours Borrowed From', value: service?.hoursBorrowed?.activityType?.activityType });
       }
     }
-    if (service?.activityType?.activityType === SUPPLEMENTAL) {
+    if (service?.activityTypeTemplate?.activityTypeTemplate === SUPPLEMENTAL) {
       fieldData.push({ field: 'Supplement Services To Perform', value: service?.performingActivity?.activity });
       if (service?.baseServiceAvailable) {
         fieldData.push({ field: 'Supplement Service Type', value: service?.baseServices?.length });
@@ -241,12 +241,12 @@ export const validateServices = (contract) => {
         fieldData.push({ field: 'Hours Borrowed from', value: service?.hoursBorrowed?.activityType?.activityType });
       }
     }
-    if (service?.activityType?.activityType !== SUPPLEMENTAL && !service?.customizedSchedule && service?.activityType?.activityType !== HIT
-      && service?.activityType?.activityType !== ONCALLSERVICE && service?.activityType?.activityType !== ADMINISTRATIVE && service?.activityType?.activityType !== ADDON) {
+    if (service?.activityTypeTemplate?.activityTypeTemplate !== SUPPLEMENTAL && !service?.customizedSchedule && service?.activityTypeTemplate?.activityTypeTemplate !== HIT
+      && service?.activityTypeTemplate?.activityTypeTemplate !== ONCALLSERVICE && service?.activityTypeTemplate?.activityTypeTemplate !== ADMINISTRATIVE && service?.activityTypeTemplate?.activityTypeTemplate !== ADDON) {
       fieldData.push({ field: 'Duration', value: service?.duration?.hours });
       fieldData.push({ field: 'Total Sessions', value: service?.totalSessions?.value });
     }
-    if (service?.activityType?.activityType === CLINIC || service?.activityType?.activityType === SURGERY || service?.activityType?.activityType === PROCEDUREREADING) {
+    if (service?.activityTypeTemplate?.activityTypeTemplate === CLINIC || service?.activityTypeTemplate?.activityTypeTemplate === SURGERY || service?.activityTypeTemplate?.activityTypeTemplate === PROCEDUREREADING) {
       service?.contractedSchedules?.map(schedule => {
         if (schedule?.frequency !== "NA") {
           fieldData.push(...[{ field: 'Service Schedule', value: schedule?.minimum?.value },
@@ -260,7 +260,7 @@ export const validateServices = (contract) => {
           ])
         }
       });
-      if (service?.activityType?.activityType !== SURGERY) {
+      if (service?.activityTypeTemplate?.activityTypeTemplate !== SURGERY) {
         service?.scheduledPatientsTargets?.map((schedule) => {
           if (!schedule?.noTargetApplicable) {
             fieldData.push(...[{ field: 'Scheduled Patients Target - With Nurse', value: schedule?.withNurse?.value },
@@ -270,7 +270,7 @@ export const validateServices = (contract) => {
         });
       }
     }
-    if (service?.activityType?.activityType === HIT) {
+    if (service?.activityTypeTemplate?.activityTypeTemplate === HIT) {
       fieldData.push({ field: 'Allowable Clinical Informatics / HIT Duties & Function To Perform', value: service?.activities?.length });
       fieldData.push({ field: 'HIT Effective Date Start Date', value: service?.contractedSchedules?.[0]?.startDate });
       fieldData.push({ field: 'HIT Effective Date End Date', value: service?.contractedSchedules?.[0]?.endDate });
@@ -287,7 +287,7 @@ export const validateServices = (contract) => {
         fieldData.push({ field: 'serviceAgreementOnFile', value: service?.contractedServiceFiles?.length });
       }
     }
-    if (service?.activityType?.activityType === ADMINISTRATIVE) {
+    if (service?.activityTypeTemplate?.activityTypeTemplate === ADMINISTRATIVE) {
       fieldData.push({ field: 'Allowable Administrative Duties & Function To Perform', value: service?.activities?.length });
       if (service?.activityApprovalWFRequired) {
         fieldData.push({ field: 'Designate Request Approver', value: service?.workFlow !== null ? service?.workFlow?.id : '' });
@@ -300,7 +300,7 @@ export const validateServices = (contract) => {
         fieldData.push({ field: 'Administrative Services Payment Amount', value: service?.payableAmount?.value });
       }
     }
-    if (service?.activityType?.activityType === ONCALLSERVICE) {
+    if (service?.activityTypeTemplate?.activityTypeTemplate === ONCALLSERVICE) {
       if (service?.dedicatedHoursSpecified) {
         if (service?.totalSessions?.frequency !== 'NA') {
           fieldData.push({ field: 'Separate Administrative Hours Specified Value', value: service?.totalSessions?.value });
@@ -313,7 +313,7 @@ export const validateServices = (contract) => {
         fieldData.push({ field: 'Hours Borrowed Activity Type', value: service?.hoursBorrowed?.activityType?.activityType });
       }
     }
-    if (service?.activityType?.activityType === ONCALL) {
+    if (service?.activityTypeTemplate?.activityTypeTemplate === ONCALL) {
       fieldData.push(...[{ field: 'On Call Coverage For', value: service?.activityResponse?.dataMap?.onCallCoverageFor?.length !== 0 ? service?.activityResponse?.dataMap?.onCallCoverageFor : null },
       ])
       service?.contractedSchedules?.map(data => {
