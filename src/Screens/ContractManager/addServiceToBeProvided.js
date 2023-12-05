@@ -2193,7 +2193,8 @@ const AddServiceProvided = ({
                     serviceTypeTemplate !== ADDON &&
                     serviceTypeTemplate !== HOSPICE &&
                     serviceTypeTemplate !== SUPPLEMENTAL &&
-                    !selectedService?.customizedSchedule && (
+                    // !selectedService?.customizedSchedule && 
+                    (
                       <div>
                         <div
                           className={`${style.addManagerGrid} ${style.marginTop20} `}

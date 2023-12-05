@@ -97,7 +97,7 @@ const ActivateAccess = () => {
   }
 
   const getEntityId = async () => {
-    await axios(`https://${window.location.hostname}/entity-service/entityID`, {
+    await axios(`http://ec2-18-232-204-138.compute-1.amazonaws.com:8010/entity-service/entityID`, {
       method: 'GET',
       // headers: { "X-subdomain": "smmc-trial" },
     }).then(response => {
@@ -125,7 +125,7 @@ const ActivateAccess = () => {
   }
 
   const getUser = async () => {
-    await axios(`https://${window.location.hostname}/user-management-service/user`, {
+    await axios(`http://ec2-18-232-204-138.compute-1.amazonaws.com:8010/user-management-service/user`, {
       method: 'GET',
       headers: headers,
     }).then(response => {
@@ -157,7 +157,7 @@ const ActivateAccess = () => {
     //             "password": password,
     //         }
     //     }
-    //     axios(`https://${window.location.hostname}/user-management-service/user/updatepassword`, {
+    //     axios(`http://ec2-18-232-204-138.compute-1.amazonaws.com:8010/user-management-service/user/updatepassword`, {
     //         method: 'POST',
     //         headers: headers,
     //         data: JSON.stringify(data),
