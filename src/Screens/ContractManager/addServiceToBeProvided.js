@@ -2193,7 +2193,7 @@ const AddServiceProvided = ({
                     serviceTypeTemplate !== ADDON &&
                     serviceTypeTemplate !== HOSPICE &&
                     serviceTypeTemplate !== SUPPLEMENTAL &&
-                    // !selectedService?.customizedSchedule && 
+                    !selectedService?.customizedSchedule &&
                     (
                       <div>
                         <div
