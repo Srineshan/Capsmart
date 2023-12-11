@@ -246,7 +246,7 @@ const EditServiceProvider = ({
       return (
         <Tag
           key={index}
-          onRemove={onRemove}
+          onRemove={tag?.roleName !== "Activity Logger" && onRemove}
           large={true}
           className={style.tagStyle}
         >

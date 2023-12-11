@@ -66,18 +66,6 @@ const ActivateAccess = () => {
     getEntity();
   }, [tenantId])
 
-  const getEntityId = async () => {
-    await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/entity-service/entityID`, {
-      method: 'GET',
-      // headers: { "X-subdomain": "smmc-trial" },
-    }).then(response => {
-      var cookie = new Cookie();
-      cookie.set('entityId', response?.data?.id);
-      settenantId(response?.data?.id);
-    }).catch(error => {
-      console.log('error', error);
-    })
-  }
 
   const handlePasswordStrengthCheck = () => {
     if (/^(?=.*[@$!%#?&^()*~`])/.test(password)) {
@@ -106,6 +94,34 @@ const ActivateAccess = () => {
       setIsMin8CharacterAvailable(false);
     }
     setPasswordStrengthLength([isCapitalCharacterAvailable, isSmallCharacterAvailable, isMin8CharacterAvailable, isNumberAvailable, isSpecialCharacterAvailable]?.filter(data => data === true)?.length)
+  }
+
+  const getEntityId = async () => {
+    await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/entity-service/entityID`, {
+      method: 'GET',
+      // headers: { "X-subdomain": "smmc-trial" },
+    }).then(response => {
+      var cookie = new Cookie();
+      cookie.set('entityId', response?.data?.id);
+      settenantId(response?.data?.id);
+    }).catch(error => {
+      console.log('error', error);
+    })
+  }
+
+  const getEntityLogo = async () => {
+    const { data: data } = await GET(`entity-service/entity/logo?id=${tenantId}`);
+    setEntityLogo(data);
+  }
+
+  const getEntity = async () => {
+    const { data: data } = await GET(`entity-service/entity/${tenantId}`);
+    setEntity(data);
+  }
+
+  const headers = {
+    'Content-Type': 'application/json',
+    'X-tenantId': tenantId,
   }
 
   const getUser = async () => {
@@ -152,21 +168,6 @@ const ActivateAccess = () => {
     //         .catch(error => {
     //             console.log('Error', error);
     //             ErrorToaster(error?.response?.data);
-  }
-
-  const getEntityLogo = async () => {
-    const { data: data } = await GET(`entity-service/entity/logo?id=${tenantId}`);
-    setEntityLogo(data);
-  }
-
-  const getEntity = async () => {
-    const { data: data } = await GET(`entity-service/entity/${tenantId}`);
-    setEntity(data);
-  }
-
-  const headers = {
-    'Content-Type': 'application/json',
-    'X-tenantId': tenantId,
   }
 
   const EyeOpenElement = (index) => {

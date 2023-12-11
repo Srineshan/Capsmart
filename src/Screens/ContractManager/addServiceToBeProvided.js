@@ -175,6 +175,9 @@ const AddServiceProvided = ({
     }
   }, [selectedService, serviceTypeList]);
 
+
+  console.log('selected Service', selectedService);
+
   useEffect(() => {
     if (siteData?.length !== 0) {
       let temp = [];
@@ -2190,7 +2193,8 @@ const AddServiceProvided = ({
                     serviceTypeTemplate !== ADDON &&
                     serviceTypeTemplate !== HOSPICE &&
                     serviceTypeTemplate !== SUPPLEMENTAL &&
-                    !selectedService?.customizedSchedule && (
+                    // !selectedService?.customizedSchedule && 
+                    (
                       <div>
                         <div
                           className={`${style.addManagerGrid} ${style.marginTop20} `}
