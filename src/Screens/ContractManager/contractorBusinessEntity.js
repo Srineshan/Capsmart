@@ -85,6 +85,7 @@ const ContractorBusinessEntity = ({
   const [continueLoading, setContinueLoading] = useState(false);
   const [unassignedKeys, setUnassignedKeys] = useState([]);
   const [showSaveInProgress, setShowSaveInProgress] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
 
   useEffect(() => {
     getUserData();
@@ -391,6 +392,24 @@ const ContractorBusinessEntity = ({
     });
   };
 
+  const maskValue = (value) => {
+    if (value !== '' && value !== null && value !== undefined) {
+      return value.replace(/[0-9]/g, '*');
+    } else {
+      return ''
+    }
+  };
+
+  console.log(isFocused)
+
+  const handleFocus = () => {
+    setIsFocused(true);
+  };
+
+  const handleBlur = () => {
+    setIsFocused(false);
+  };
+
   const getContractorData = (value) => {
     if (value && selectContractInfo === "INDIVIDUAL") {
       setBusinessEntityUser({
@@ -553,9 +572,8 @@ const ContractorBusinessEntity = ({
               </div>
             )}
             <div
-              className={`${style.extentionGrid} ${
-                selectContractInfo === "INDIVIDUAL" && style.marginTop20
-              }`}
+              className={`${style.extentionGrid} ${selectContractInfo === "INDIVIDUAL" && style.marginTop20
+                }`}
               onFocus={() => {
                 checkFieldAndPopAlert(contractorNPIN?.npin, "Contractor NPIN");
               }}
@@ -643,7 +661,7 @@ const ContractorBusinessEntity = ({
                     contractorEntityTaxId?.missing ||
                     contractorEntityTaxId?.notApplicable
                   }
-                  value={contractorEntityTaxId?.taxId}
+                  value={isFocused ? contractorEntityTaxId?.taxId : maskValue(contractorEntityTaxId?.taxId)}
                   placeholder="Enter Vendor Tax ID"
                   onChange={(e) =>
                     setContractorEntityTaxId({
@@ -653,6 +671,8 @@ const ContractorBusinessEntity = ({
                       notApplicable: false,
                     })
                   }
+                  onFocus={handleFocus}
+                  onBlur={handleBlur}
                 />
                 <div className={`${style.displayInRow}`}>
                   <CommonCheckBox
@@ -1015,19 +1035,16 @@ const ContractorBusinessEntity = ({
               </button>
               <div>
                 <button
-                  className={`${style.newContractOutlinedButton}  ${
-                    style.cursorPointer
-                  } ${continueLoading ? style.disabled : ""}`}
+                  className={`${style.newContractOutlinedButton}  ${style.cursorPointer
+                    } ${continueLoading ? style.disabled : ""}`}
                   onClick={() => mandatoryFieldCheck("SaveInProgress")}
                 >
                   SAVE IN-PROGRESS
                 </button>
                 <button
-                  className={`${style.newContractButtonStyle} ${
-                    style.cursorPointer
-                  }  ${style.marginLeft20} ${
-                    continueLoading ? style.disabled : ""
-                  }`}
+                  className={`${style.newContractButtonStyle} ${style.cursorPointer
+                    }  ${style.marginLeft20} ${continueLoading ? style.disabled : ""
+                    }`}
                   onClick={() => {
                     mandatoryFieldCheck("Continue");
                   }}

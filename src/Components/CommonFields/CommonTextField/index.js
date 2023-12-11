@@ -24,7 +24,7 @@ const CommonTextField = ({ value, onChange, readOnly, className, type, maxLength
             readOnly={readOnly}
             key={key}
             defaultValue={defaultValue}
-            onKeyDown={preventNegativeValues}
+            onKeyDown={(type === 'number' || type === 'tel') ? preventNegativeValues : () => { }}
         />
     )
 }

@@ -198,7 +198,7 @@ export const validateServices = (contract) => {
     { field: 'Working Hours - To', value: service?.activityTypeTemplate?.activityTypeTemplate !== HIT ? service?.workingPeriod?.to : 'HIT' }
     ];
     if (service?.additionalSchedule?.scheduleRequired) {
-      fieldData.push(...[{ field: 'Additional Schedule Value', value: service?.additionalSchedule?.value }, { field: 'Additional Schedule Frequency', value: service?.additionalSchedule?.frequency }]);
+      fieldData.push(...[{ field: 'Additional Schedule Value', value: service?.additionalSchedule?.value }, { field: 'Additional Schedule Frequency', value: service?.additionalSchedule?.frequency === 'NA' ? '' : service?.additionalSchedule?.frequency }]);
     }
     if (service?.billableService && !service?.customizedSchedule && service?.activityTypeTemplate?.activityTypeTemplate !== SUPPLEMENTAL && service?.activityTypeTemplate?.activityTypeTemplate !== ONCALLSERVICE) {
       fieldData.push(...[{ field: 'Payment Amount', value: service?.payableAmount?.value }]);
