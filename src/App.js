@@ -11,6 +11,7 @@ import { browserName, browserVersion, osName, osVersion, isMobile, isDesktop, is
 import { SuccessToaster, ErrorToaster } from './utils/toaster';
 import axios from "axios";
 import jwt from "jwt-decode";
+import MileageRateForCustomers from "./Screens/ReferenceList/mileageRateForCustomers";
 
 
 const ReportType = React.lazy(() => import("./Screens/Reports/reportType"));
@@ -341,7 +342,7 @@ const App = ({ props }) => {
 
 
   const getEntityId = async () => {
-    await axios(`https://${window.location.hostname}/entity-service/entityID`, {
+    await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/entity-service/entityID`, {
       method: "GET",
       // headers: { "X-subdomain": "hopkins" },
     })
@@ -364,7 +365,7 @@ const App = ({ props }) => {
       }
     };
     fetch(
-      `https://${window.location.hostname}/user-management-service/auth/login`,
+      `http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/user-management-service/auth/login`,
       requestOptions
     )
       .then((response) => response.json())
@@ -625,6 +626,10 @@ const App = ({ props }) => {
               <Route
                 path="/referenceList/departmentsForCustomers"
                 element={<DepartmentsForCustomers />}
+              />
+              <Route
+                path="/referenceList/mileageRateForCustomers"
+                element={<MileageRateForCustomers />}
               />
               <Route path="/entitySitePortal" element={<Home />} />
               <Route path="/thankyou" element={<Thankyou />} />
