@@ -22,7 +22,7 @@ const MenuProps = {
     PaperProps: {
         style: {
             maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-            // width: 250,
+            width: 250,
         },
     },
 };
@@ -109,18 +109,15 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
     useEffect(() => {
         getSites();
         getContracts();
-        // if ((currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Reviewer") || currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Approver") || currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Accounts Payable")) && !currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Activity Logger")) {
-        //     setSelectedContractedServiceProvider(contractedServiceProviders?.[0]?.id);
-        //     setSelectedContractedServiceProviderToSend(contractedServiceProviders?.[0]);
-        // } else {
-        //     setSelectedContractedServiceProvider(currentUserDetails?.id);
-        //     setSelectedContractedServiceProviderToSend(currentUserDetails);
-        // }
         if (currentUserDetails?.roles?.length === 1 && currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Activity Logger")) {
             setSelectedContractedServiceProvider([currentUserDetails?.id]);
             setSelectedContractedServiceProviderToSend([currentUserDetails]);
+        } else {
+            if (contractedServiceProviders?.length === 1 && contractedServiceProviders?.length !== 0) {
+                setSelectedContractedServiceProvider([contractedServiceProviders?.[0]?.id]);
+                setSelectedContractedServiceProviderToSend([contractedServiceProviders?.[0]]);
+            }
         }
-
         if (reportFilter) {
             setFrom(new Date(reportFilter?.startDate));
             setTo(new Date(reportFilter?.endDate));
@@ -147,10 +144,10 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
         });
         let uniqueDepartments = tempDept.filter((ele, ind) => ind === tempDept.findIndex(elem => elem.id === ele.id && elem.id === ele.id));
         setDepartments(uniqueDepartments);
-        // if (uniqueDepartments?.length !== 0) {
-        //     setSelectedDepartments([uniqueDepartments?.[0]?.id]);
-        //     setSelectedDepartmentsToSend([uniqueDepartments?.[0]]);
-        // }
+        if (uniqueDepartments?.length === 1) {
+            setSelectedDepartments([uniqueDepartments?.[0]?.id]);
+            setSelectedDepartmentsToSend([uniqueDepartments?.[0]]);
+        }
     }, [selectedSitesToSend]);
 
     useEffect(() => {
@@ -227,17 +224,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
     }
 
     const getContracts = () => {
-        let tempDept = [];
-        if (currentUserDetails?.roles?.length === 1 && currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Activity Logger")) {
-            setContracts(currentUserDetails?.contracts);
-        } else {
-            contractedServiceProviders?.map(user => {
-                user?.contracts?.map(data => {
-                    tempDept.push(data);
-                })
-            });
-            setContracts(tempDept);
-        }
+        setContracts(currentUserDetails?.contracts);
         if (currentUserDetails?.contracts?.length === 1) {
             setSelectedContracts([currentUserDetails?.contracts?.[0]?.id]);
             setSelectedContractsToSend([currentUserDetails?.contracts?.[0]]);
@@ -458,112 +445,128 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                         )} */}
                         {/* {(reportType === "activitiesOrServices" || reportType === "addOnActivities" || reportType === "timesheetProcessingSummary" || reportType === "listingOfTimesheetsNotPaid" || reportType === "submittedTimesheetsPaymentStatus" || reportType === "paymentsProcessingSummary") && (
                             <>
-                                {reportType !== "paymentsProcessingSummary" && (
-                                    <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                        <InputLabel id="demo-multiple-name-label2">Site</InputLabel>
-                                        <Select
-                                            labelId="demo-multiple-name-label2"
-                                            id="demo-multiple-name2"
-                                            multiple
-                                            value={selectedSites}
-                                            onChange={handleChangeSites}
-                                            MenuProps={MenuProps}
-                                        >
-                                            {sites?.map((data) => (
-                                                <MenuItem
-                                                    key={data?.id}
-                                                    value={data?.id}
-                                                >
-                                                    {data?.siteName?.siteName}
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-                                )}
-                                {reportType !== "paymentsProcessingSummary" && (
-                                    <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                        <InputLabel id="demo-multiple-name-label2">Departments</InputLabel>
-                                        <Select
-                                            labelId="demo-multiple-name-label2"
-                                            id="demo-multiple-name2"
-                                            multiple
-                                            value={selectedDepartments}
-                                            onChange={handleChangeDepartments}
-                                            MenuProps={MenuProps}
-                                        >
-                                            {departments?.map((data) => (
-                                                <MenuItem
-                                                    key={data?.id}
-                                                    value={data?.id}
-                                                >
-                                                    {data?.departmentName?.name}
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-                                )}
-                                <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                    <InputLabel id="demo-multiple-name-label5">Contract</InputLabel>
-                                    <Select
-                                        labelId="demo-multiple-name-label5"
-                                        id="demo-multiple-name5"
-                                        multiple
-                                        value={selectedContracts}
-                                        onChange={handleChangeContracts}
-                                        MenuProps={MenuProps}
+                                {reportType !== "paymentsProcessingSummary" && ( */}
+                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                            <InputLabel id="demo-multiple-name-label2">Site</InputLabel>
+                            <Select
+                                labelId="demo-multiple-name-label2"
+                                id="demo-multiple-name2"
+                                multiple
+                                value={selectedSites}
+                                onChange={handleChangeSites}
+                                MenuProps={MenuProps}
+                            >
+                                {sites?.map((data) => (
+                                    <MenuItem
+                                        key={data?.id}
+                                        value={data?.id}
                                     >
-                                        {contracts?.map((data) => (
-                                            <MenuItem
-                                                key={data?.id}
-                                                value={data?.id}
-                                            >
-                                                {data?.contractName?.contractName}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                                {currentUserDetails?.roles?.length === 1 && currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Activity Logger") ? (
-                                    <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                        <InputLabel id="demo-multiple-name-label5">Contracted Service Provider</InputLabel>
-                                        <Select
-                                            labelId="demo-multiple-name-label5"
-                                            id="demo-multiple-name5"
-                                            value={selectedContractedServiceProvider}
-                                            onChange={handleChangeContractedServiceProviders}
-                                            MenuProps={MenuProps}
+                                        {data?.siteName?.siteName}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        {/* )}
+                                {reportType !== "paymentsProcessingSummary" && ( */}
+                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                            <InputLabel id="demo-multiple-name-label2">Departments</InputLabel>
+                            <Select
+                                labelId="demo-multiple-name-label2"
+                                id="demo-multiple-name2"
+                                multiple
+                                value={selectedDepartments}
+                                onChange={handleChangeDepartments}
+                                MenuProps={MenuProps}
+                            >
+                                {departments?.map((data) => (
+                                    <MenuItem
+                                        key={data?.id}
+                                        value={data?.id}
+                                    >
+                                        {data?.departmentName?.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        {/* )} */}
+                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                            <InputLabel id="demo-multiple-name-label5">Contract</InputLabel>
+                            <Select
+                                labelId="demo-multiple-name-label5"
+                                id="demo-multiple-name5"
+                                multiple
+                                value={selectedContracts}
+                                onChange={handleChangeContracts}
+                                MenuProps={MenuProps}
+                            >
+                                {contracts?.map((data) => (
+                                    <MenuItem
+                                        key={data?.id}
+                                        value={data?.id}
+                                    >
+                                        {data?.contractName?.contractName}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        {/* {(currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Reviewer") || currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Approver") || currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Accounts Payable") || currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Contract Manager")) ? ( */}
+                        {currentUserDetails?.roles?.length === 1 && currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Activity Logger") ? (
+                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                <InputLabel id="demo-multiple-name-label5">Contracted Service Provider</InputLabel>
+                                <Select
+                                    labelId="demo-multiple-name-label5"
+                                    id="demo-multiple-name5"
+                                    value={selectedContractedServiceProvider}
+                                    onChange={handleChangeContractedServiceProviders}
+                                    MenuProps={MenuProps}
+                                >
+                                    <MenuItem
+                                        value={currentUserDetails?.id}
+                                    >
+                                        {`${currentUserDetails?.name?.firstName} ${currentUserDetails?.name?.lastName}`}
+                                    </MenuItem>
+                                </Select>
+                            </FormControl>
+                        ) : (
+                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                <InputLabel id="demo-multiple-name-label5">Contracted Service Provider</InputLabel>
+                                <Select
+                                    labelId="demo-multiple-name-label5"
+                                    id="demo-multiple-name5"
+                                    multiple
+                                    value={selectedContractedServiceProvider}
+                                    onChange={handleChangeContractedServiceProviders}
+                                    MenuProps={MenuProps}
+                                >
+                                    {contractedServiceProviders?.map((data, index) => (
+                                        <MenuItem
+                                            key={index}
+                                            value={data?.id}
                                         >
-                                            <MenuItem
-                                                value={currentUserDetails?.id}
-                                            >
-                                                {`${currentUserDetails?.name?.firstName} ${currentUserDetails?.name?.lastName}`}
-                                            </MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                ) : (
-                                    <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                        <InputLabel id="demo-multiple-name-label5">Contracted Service Provider</InputLabel>
-                                        <Select
-                                            labelId="demo-multiple-name-label5"
-                                            id="demo-multiple-name5"
-                                            multiple
-                                            value={selectedContractedServiceProvider}
-                                            onChange={handleChangeContractedServiceProviders}
-                                            MenuProps={MenuProps}
-                                        >
-                                            {contractedServiceProviders?.map((data, index) => (
-                                                <MenuItem
-                                                    key={index}
-                                                    value={data?.id}
-                                                >
-                                                    {`${data?.name?.firstName} ${data?.name?.lastName}`}
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-                                )}
-
-                            </>
+                                            {`${data?.name?.firstName} ${data?.name?.lastName}`}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
                         )}
+                        {/* ) : (
+                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                <InputLabel id="demo-multiple-name-label5">Contracted Service Provider</InputLabel>
+                                <Select
+                                    labelId="demo-multiple-name-label5"
+                                    id="demo-multiple-name5"
+                                    value={selectedContractedServiceProvider}
+                                    onChange={handleChangeContractedServiceProviders}
+                                    MenuProps={MenuProps}
+                                >
+                                    <MenuItem
+                                        value={currentUserDetails?.id}
+                                    >
+                                        {`${currentUserDetails?.name?.firstName} ${currentUserDetails?.name?.lastName}`}
+                                    </MenuItem>
+                                </Select>
+                            </FormControl>
+                        )} */}
                     </>
                     //     )}
                     // </>
