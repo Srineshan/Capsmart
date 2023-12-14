@@ -80,6 +80,7 @@ const Navbar = () => {
       currentUserRoles?.includes("Reviewer") ||
       currentUserRoles?.includes("Approver")
     ) {
+      setIsActivityServiceLogAvailable(true);
       setIsContractComplianceAvailable(true);
       setIsContractPerformanceAvailable(true);
       setIsPaymentsAvailable(true);
