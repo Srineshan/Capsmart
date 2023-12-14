@@ -19,6 +19,7 @@ import CommonCheckBox from "../../Components/CommonFields/CommonCheckBox";
 import CommonSwitch from "../../Components/CommonFields/CommonSwitch";
 import CommonLabel from "../../Components/CommonFields/CommonLabel";
 import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
+import { valueCheck } from "./../../utils/valueCheck";
 
 import style from "./index.module.scss";
 
@@ -245,7 +246,7 @@ const EditServiceProvider = ({
       return (
         <Tag
           key={index}
-          onRemove={onRemove}
+          onRemove={tag?.roleName !== "Activity Logger" && onRemove}
           large={true}
           className={style.tagStyle}
         >
@@ -647,6 +648,14 @@ const EditServiceProvider = ({
     getEditServiceDialog(false);
   };
 
+  const dataCheck = (value) => {
+    if (getEditServiceDialog) {
+      return valueCheck(value);
+    } else {
+      return false
+    }
+  }
+
   return (
     <Dialog
       isOpen={getEditServiceDialog}
@@ -669,7 +678,9 @@ const EditServiceProvider = ({
         <div className={style.extensionBorder}></div>
         <div className={`${style.serviceBoxStyle}`}>
           <div className={`${style.extentionGrid}`}>
-            <CommonLabel value="Contractor Name*" />
+            <CommonLabel value="Contractor Name*"
+              className={dataCheck(userDetails?.firstName) ? style.redLable : ""}
+            />
             <div className={style.grid3}>
               <CommonInputField
                 className={style.fullWidth}
@@ -692,7 +703,9 @@ const EditServiceProvider = ({
             </div>
           </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <CommonLabel value="NPIN*" />
+            <CommonLabel value="NPIN*"
+              className={(!npin?.missing && !npin?.na) && (dataCheck(npin?.npin) ? style.redLable : "")}
+            />
             <div className={style.grid3}>
               <CommonInputField
                 disabled={npin?.missing || npin?.na}
@@ -726,7 +739,9 @@ const EditServiceProvider = ({
           </div>
 
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <CommonLabel value="Suffix*" />
+            <CommonLabel value="Suffix*"
+              className={dataCheck(userDetails?.suffix?.id) ? style.redLable : ""}
+            />
             <div className={style.grid3}>
               <SuffixList
                 value={userDetails?.suffix?.id || ""}
@@ -737,7 +752,9 @@ const EditServiceProvider = ({
           </div>
 
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <CommonLabel value="Allow Use of Alternate/ Personal Email Address" />
+            <CommonLabel value="Allow Use of Alternate/ Personal Email Address"
+              className={allowPersonalMail && dataCheck(userDetails?.email) ? style.redLable : ""}
+            />
             <div className={style.displayInRow}>
               <CommonSwitch
                 className={`${style.flexLeft} ${style.switchFontStyle}`}
@@ -764,7 +781,9 @@ const EditServiceProvider = ({
           </div>
           {!allowPersonalMail && (
             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-              <CommonLabel value="Contract Entity Email*" />
+              <CommonLabel value="Contract Entity Email*"
+                className={dataCheck(userDetails?.email) ? style.redLable : ""}
+              />
               <div className={style.displayInRow}>
                 <CommonInputField
                   placeholder="Enter contract entity email"
@@ -782,7 +801,9 @@ const EditServiceProvider = ({
             </div>
           </div> */}
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <CommonLabel value="Service Provider Type*" />
+            <CommonLabel value="Service Provider Type*"
+              className={dataCheck(providerType?.id) ? style.redLable : ""}
+            />
             <div className={style.grid3}>
               <ProviderTypeList
                 value={providerType?.id}
@@ -798,7 +819,9 @@ const EditServiceProvider = ({
           </div>
 
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <CommonLabel value="Cell Phone*" />
+            <CommonLabel value="Cell Phone*"
+              className={!phoneNA && dataCheck(userDetails?.phone) ? style.redLable : ""}
+            />
             <div className={style.twoCol}>
               <div
                 className={`${style.displayInRow} ${style.verticalAlignCenter}`}
@@ -831,7 +854,9 @@ const EditServiceProvider = ({
             </div>
           </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <CommonLabel value="Address" />
+            <CommonLabel value="Address"
+              className={dataCheck(address?.addressLine) ? style.redLable : ""}
+            />
             <div>
               <CommonInputField
                 className={style.fullWidth}
@@ -864,7 +889,9 @@ const EditServiceProvider = ({
             </div>
           </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <CommonLabel value="Site Level Responsibility*" />
+            <CommonLabel value="Site Level Responsibility*"
+              className={siteLevel && (siteTitleValues.length === 0) ? style.redLable : ""}
+            />
             <div>
               <div className={style.flexLeft}>
                 <CommonSwitch
@@ -939,7 +966,9 @@ const EditServiceProvider = ({
             </div>
           </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <CommonLabel value="Department Level Responsibility*" />
+            <CommonLabel value="Department Level Responsibility*"
+              className={departmentLevel && (departmentTitleValues.length === 0) ? style.redLable : ""}
+            />
             <div>
               <div className={style.flexLeft}>
                 <CommonSwitch
@@ -1027,7 +1056,9 @@ const EditServiceProvider = ({
           </div>
 
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <CommonLabel value="Assign Contractor With App User Role*" />
+            <CommonLabel value="Assign Contractor With App User Role*"
+              className={(rolesTags.length === 0) ? style.redLable : ""}
+            />
             <div>
               <CommonSelectField
                 onChange={(e) => handleRoles(e.target.value)}

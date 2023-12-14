@@ -30,7 +30,7 @@ const ProcedureReading = ({
 }) => {
   const [schedulesField, setSchedulesField] = useState([]);
   const [differentTargets, setDifferentTargets] = useState(false);
-  const contractStatus = sessionStorage.getItem('Selected Contract Status');
+  const contractStatus = sessionStorage.getItem("Selected Contract Status");
   console.log("contrac time", contractTermPeriod);
   // const [contractTermPeriod, setContractDuration] = useState({ start: contractTermPeriod?.start, end: contractTermPeriod?.end })
   const [selectedScheduleRow, setSelectedScheduleRow] = useState();
@@ -242,7 +242,7 @@ const ProcedureReading = ({
 
   const onNewClinicChange = (value, index, type) => {
     let contractedScheduleTemp = metadata?.contractedSchedules;
-    contractedScheduleTemp[index] = {
+    contractedScheduleTemp.push({
       minimum: {
         value: parseFloat(value?.min),
       },
@@ -252,9 +252,9 @@ const ProcedureReading = ({
       frequency: value?.frequency,
       startDate: format(new Date(value?.startDate), "yyyy-MM-dd").toString(),
       endDate: format(new Date(value?.endDate), "yyyy-MM-dd").toString(),
-    };
+    });
     let patientSeenTemp = metadata?.patientsSeenTargets;
-    patientSeenTemp[index] = {
+    patientSeenTemp.push({
       withNurse: {
         value: parseInt(value?.seenWithNurse),
       },
@@ -264,9 +264,9 @@ const ProcedureReading = ({
       startDate: format(new Date(value?.startDate), "yyyy-MM-dd").toString(),
       endDate: format(new Date(value?.endDate), "yyyy-MM-dd").toString(),
       noTargetApplicable: value?.seenNoTarget,
-    };
+    });
     let targetTemp = metadata?.scheduledPatientsTargets;
-    targetTemp[index] = {
+    targetTemp.push({
       withNurse: {
         value: parseInt(value?.targetWithNurse),
       },
@@ -276,7 +276,7 @@ const ProcedureReading = ({
       startDate: format(new Date(value?.startDate), "yyyy-MM-dd").toString(),
       endDate: format(new Date(value?.endDate), "yyyy-MM-dd").toString(),
       noTargetApplicable: value?.targetNoTarget,
-    };
+    });
     setMetadata({
       ...metadata,
       contractedSchedules: contractedScheduleTemp,
@@ -285,7 +285,9 @@ const ProcedureReading = ({
     });
     setNewClinicRow(value);
 
-    getAddScheduleAndTargetForDifferentPeriods(false);
+    if (type === 'saveAndExit') {
+      getAddScheduleAndTargetForDifferentPeriods(false);
+    }
   };
 
   console.log("contract Term period", metadata);
@@ -1115,7 +1117,14 @@ const ProcedureReading = ({
       )}
 
       <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-        <CommonLabel value="Additional Schedule*" />
+        <CommonLabel
+          value="Additional Schedule*"
+          className={
+            metadata?.additionalScheduleRequired &&
+            editService &&
+            (dataCheck(metadata?.additionalScheduleValue) ? style.redLable : "")
+          }
+        />
         <div className={`${style.grid3}`}>
           <div className={`${style.fullWidth}`}>
             <CommonSwitch

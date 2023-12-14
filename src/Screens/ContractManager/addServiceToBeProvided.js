@@ -48,6 +48,7 @@ import { checkActivityChange } from "./checkDependentData";
 import OnCallService from './OnCallService';
 import style from "./index.module.scss";
 import { weekdays } from "moment";
+import { valueCheck } from "../../utils/valueCheck";
 
 const AddServiceProvided = ({
   getAddServiceDialog,
@@ -173,6 +174,9 @@ const AddServiceProvided = ({
       );
     }
   }, [selectedService, serviceTypeList]);
+
+
+  console.log('selected Service', selectedService);
 
   useEffect(() => {
     if (siteData?.length !== 0) {
@@ -997,7 +1001,7 @@ const AddServiceProvided = ({
           metadata?.weekdayNightsPayment !== 0
         ) {
           console.log('inside weeknight else');
-          if (!activities?.map(data => data?.activity).includes(metadata?.weekdayNightActivity)) {
+          if (!activities?.map(data => data?.activity).includes(metadata?.weekdayNightActivity) && metadata?.weekdayNightActivity !== '' && metadata?.weekdayNightActivity !== null) {
             activities?.push({ activity: metadata?.weekdayNightActivity })
           }
         }
@@ -1851,6 +1855,14 @@ const AddServiceProvided = ({
     setAnchorElDoc(null);
   };
 
+  const dataCheck = (value) => {
+    if (editService) {
+      return valueCheck(value);
+    } else {
+      return false;
+    }
+  };
+
   return (
     <>
       <div>
@@ -2055,7 +2067,9 @@ const AddServiceProvided = ({
                   <div
                     className={`${style.addManagerGrid} ${style.marginTop20} `}
                   >
-                    <CommonLabel value="Activity / Service Type Contracted for*" />
+                    <CommonLabel value="Activity / Service Type Contracted for*"
+                      className={editService && (!serviceTypeList || serviceTypeList?.length === 0) ? style.redLable : ""}
+                    />
                     <div>
                       <CommonSelectField
                         value={serviceType}
@@ -2094,7 +2108,9 @@ const AddServiceProvided = ({
                     <div
                       className={`${style.addManagerGrid} ${style.marginTop20} `}
                     >
-                      <CommonLabel value="Designate Specific Contractor*" />
+                      <CommonLabel value="Designate Specific Contractor*"
+                        className={editService && isDesignatedSpecificContractor && (!usersTags || usersTags?.length === 0) ? style.redLable : ""}
+                      />
                       <div>
                         <div className={`${style.displayInRow} `}>
                           <CommonSwitch
@@ -2129,7 +2145,7 @@ const AddServiceProvided = ({
                             </p>
                           )}
                         </div>
-                        {usersTags?.length !== 0 && (
+                        {isDesignatedSpecificContractor && usersTags?.length !== 0 && (
                           <div
                             className={`${style.marginTop20} ${style.marginLeft20} `}
                           >
@@ -2177,12 +2193,15 @@ const AddServiceProvided = ({
                     serviceTypeTemplate !== ADDON &&
                     serviceTypeTemplate !== HOSPICE &&
                     serviceTypeTemplate !== SUPPLEMENTAL &&
-                    !selectedService?.customizedSchedule && (
+                    !selectedService?.customizedSchedule &&
+                    (
                       <div>
                         <div
                           className={`${style.addManagerGrid} ${style.marginTop20} `}
                         >
-                          <CommonLabel value="Activities To Be Performed*" />
+                          <CommonLabel value="Activities To Be Performed*"
+                            className={editService && (!selectedActivity || selectedActivity?.length === 0) ? style.redLable : ""}
+                          />
                           <div>
                             <div className={style.addGrid}>
                               <DatalistInput
@@ -2235,7 +2254,9 @@ const AddServiceProvided = ({
                       <div
                         className={`${style.addManagerGrid} ${style.marginTop20} `}
                       >
-                        <CommonLabel value="Specify Service Facility / Location (Cost Center)*" />
+                        <CommonLabel value="Specify Service Facility / Location (Cost Center)*"
+                          className={editService && showLocation && (!selectedLocation || selectedLocation?.length === 0) ? style.redLable : ""}
+                        />
                         <div>
                           <div className={`${style.displayInRow} `}>
                             <CommonSwitch

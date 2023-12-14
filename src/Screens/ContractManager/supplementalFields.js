@@ -204,20 +204,11 @@ const SupplementalFields = ({
     }, [isReset]);
 
     useEffect(() => {
-        console.log(
-            "supplementServiceName",
-            metadata?.supplementalActivityType,
-            metadata?.supplementServiceName
-        );
-        console.log("services", services);
         // if (!editService) {
         let temp = [];
-        console.log('value check', metadata?.supplementalActivityType);
         metadata?.supplementalActivityType?.map(supplementalActivityType => {
             services?.filter(service => service?.activityType?.activityType === supplementalActivityType)?.map(service => {
-                console.log('inside service', metadata?.supplementServiceName);
                 metadata?.supplementServiceName?.filter(serviceName => service?.activities?.map(activity => activity?.activity)?.includes(serviceName?.split(' - ')?.[1]))?.map(serviceName => {
-                    console.log('inside servicename')
                     temp.push({
                         "activityType": {
                             "activityType": supplementalActivityType
@@ -379,6 +370,8 @@ const SupplementalFields = ({
         });
     };
 
+    console.log('supplementalService', metadata?.supplementalActivityType)
+
     const avilableActivityItems = useMemo(
         () =>
             availableActivities?.map((data) => ({
@@ -395,9 +388,11 @@ const SupplementalFields = ({
     };
 
     const updateSupplementalActivity = (value) => {
-        let temp = metadata?.supplementalActivityType;
-        temp.push(value);
-        setMetadata({ ...metadata, supplementalActivityType: temp });
+        if (value !== "") {
+            let temp = metadata?.supplementalActivityType;
+            temp.push(value);
+            setMetadata({ ...metadata, supplementalActivityType: temp });
+        }
     };
 
     console.log("metadata", metadata);
@@ -452,16 +447,11 @@ const SupplementalFields = ({
             </div> */}
             {
                 metadata?.baseServiceAvailable && (
-
                     <div>
                         <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
                             <CommonLabel
                                 value="Supplemental Service Type*"
-                                className={
-                                    dataCheck(metadata?.supplementalActivityType)
-                                        ? style.redLable
-                                        : ""
-                                }
+                                className={editService && (!metadata?.supplementalActivityType || metadata?.supplementalActivityType?.length === 0) ? style.redLable : ""}
                             />
                             <div>
                                 <div>
@@ -508,14 +498,8 @@ const SupplementalFields = ({
                 <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
                     <CommonLabel
                         value="Supplement Services To Perform*"
-                        className={
-                            dataCheck(
-                                metadata?.supplementServiceName ||
-                                metadata?.supplementServiceName.length === 0
-                            )
-                                ? style.redLable
-                                : ""
-                        }
+                        className={editService && (!metadata?.supplementServiceName || metadata?.supplementServiceName?.length === 0) ? style.redLable : ""}
+
                     />
                     <div>
                         <div className={style.addGrid}>
