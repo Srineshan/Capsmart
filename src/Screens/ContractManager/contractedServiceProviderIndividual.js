@@ -762,6 +762,12 @@ const ContractedServicesProviderIndividual = ({
     }
   };
 
+  useEffect(()=>{
+    if(serviceProviderType?.id === ""){
+      setNpinNotApplicable(true)
+    }
+  },[serviceProviderType])
+
   return (
     <div className={style.cloneBlockStyle}>
       <div className={`${style.newContractFromCloneBoxStyle}`}>
@@ -782,7 +788,7 @@ const ContractedServicesProviderIndividual = ({
               }
             />
             {/* <div className={style.grid2}> */}
-            <ProviderTypeList
+            {/* <ProviderTypeList
               value={serviceProviderType?.id}
               onChangeFunc={(id, value) =>
                 setServiceProviderType({
@@ -790,6 +796,26 @@ const ContractedServicesProviderIndividual = ({
                   contractedServiceProviderType: value,
                 })
               }
+              className={[style.fullWidth]}
+            /> */}
+            <ProviderTypeList
+              value={serviceProviderType?.id}
+              onChangeFunc={(id, value) => {
+                // Add more conditional checks if needed
+                if (id && value) {
+                  setNpinNotApplicable(false)
+                  setServiceProviderType({
+                    id: id,
+                    contractedServiceProviderType: value,
+                  });
+                }else{
+                  setNpinNotApplicable(true)
+                  setServiceProviderType({
+                    id: id,
+                    contractedServiceProviderType: value,
+                  });
+                }
+              }}
               className={[style.fullWidth]}
             />
             {/* </div> */}

@@ -1196,7 +1196,7 @@ const ContractIdTermLimitIndividual = ({
                       Upload File
                     </label>
                   </button>
-                  <input id="file-upload" type="file" accept="image/*, .pdf" onChange={(e) => { handleFileUpload(e); }} disabled={(contractStatus === "ACTIVE" || !fullyExecutedContract) ? true : false} />
+                  <input id="file-upload" type="file" accept="*/*" onChange={(e) => { handleFileUpload(e); }} disabled={(contractStatus === "ACTIVE" || !fullyExecutedContract) ? true : false} />
                 </div>
               </div>
               {/* {fullyExecutedContract && (
@@ -1764,11 +1764,11 @@ const ContractIdTermLimitIndividual = ({
                 labelList={['Agreement Draft', 'Executed Agreement', 'Contract Amendment', 'Exhibit', 'Appendix Addendum', 'Schedule', 'Attachment']}
                 disabledList={[false, false]} />
             </div>
-            <CommonInputField className={`${style.fullWidth} ${style.marginTop10}`} placeholder="Document Name"
+            <CommonInputField className={`${style.fullWidth} ${style.marginTop10}`} placeholder="Document Name *"
               value={fileFieldData?.documentName}
               maxLength={TEXTFIELDLEN}
               onChange={(e) => handleFileChange(e, 'documentName')} />
-            <TextArea rows={4} placeholder="Document Description" value={fileFieldData?.documentDescription}
+            <TextArea rows={4} placeholder="Document Description *" value={fileFieldData?.documentDescription}
               maxLength={DESCLEN} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileChange(e, 'documentDescription')} />
             {/* <div>
               <CommonInputField value={fileFieldData?.fileName !== '' ? fileFieldData?.fileName : ''} leftElement={leftElement()} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileUpload(e)} />

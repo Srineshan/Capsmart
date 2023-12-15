@@ -707,7 +707,6 @@ const ContractorBusinessEntity = ({
             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
               <CommonLabel
                 value="Business Entity Name*"
-                maxLength={TEXTFIELDLEN100}
                 className={
                   !businessEntity?.notApplicable &&
                   (dataCheck(businessEntity?.name) ? style.redLable : "")
@@ -717,6 +716,7 @@ const ContractorBusinessEntity = ({
                 <CommonInputField
                   className={style.fullWidth}
                   value={businessEntity?.name}
+                  maxLength={TEXTFIELDLEN100}
                   disabled={businessEntity?.notApplicable}
                   onFocus={() => {
                     checkFieldAndPopAlert(

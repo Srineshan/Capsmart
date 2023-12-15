@@ -30,7 +30,7 @@ import { format } from "date-fns";
 import style from "./index.module.scss";
 import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
 
-const TEXTFIELDLEN = 50;
+const TEXTFIELDLEN50 = 50;
 
 const AddonClinicFields = ({
   getMetaData,
@@ -1172,6 +1172,7 @@ const AddonClinicFields = ({
             onChange={(e) =>
               setNewServices({ ...newServices, name: e.target.value })
             }
+            maxLength={TEXTFIELDLEN50}
           />
           <div
             className={`${style.addAddonServiceButton} ${style.alignCenter}`}
