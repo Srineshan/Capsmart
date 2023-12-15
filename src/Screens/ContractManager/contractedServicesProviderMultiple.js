@@ -13,7 +13,7 @@ const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newSe
   const [users, setUsers] = useState([]);
   const [editServiceProviderDialog, setEditServiceProviderDialog] = useState(false);
   const [userProviderData, setUserProviderData] = useState(undefined);
-  const tableHeaderValues = ['DATA STATUS', 'CONTRACT NAME', 'CONTRACTOR TYPE', 'SITE LEVEL', 'DEPT LEVEL'];
+  const tableHeaderValues = ['DATA STATUS', "CONTRACTOR'S NAME", 'CONTRACTOR TYPE', 'SITE LEVEL', 'DEPT LEVEL'];
   const [providerDataStatus, setProviderDataStatus] = useState([]);
   const [tabValidation, setTabValidation] = useState();
 

@@ -336,9 +336,9 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 onChange={(e) => { setRenewalreportingTimePeriod(e.target.value) }}
                                 label="Renewal Time Frame"
                             >
-                                <MenuItem value={30}>Renewal within Next 30 days</MenuItem>
-                                <MenuItem value={60}>Renewal within Next 60 days</MenuItem>
-                                <MenuItem value={90}>Renewal within Next 90 days</MenuItem>
+                                <MenuItem value={30}>Renewal Within Next 30 days</MenuItem>
+                                <MenuItem value={60}>Renewal Within Next 60 days</MenuItem>
+                                <MenuItem value={90}>Renewal Within Next 90 days</MenuItem>
                             </Select>
                         </FormControl>
                         <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>

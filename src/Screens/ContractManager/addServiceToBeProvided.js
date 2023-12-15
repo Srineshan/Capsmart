@@ -48,6 +48,7 @@ import { checkActivityChange } from "./checkDependentData";
 import OnCallService from './OnCallService';
 import style from "./index.module.scss";
 import { weekdays } from "moment";
+import { valueCheck } from "../../utils/valueCheck";
 
 const AddServiceProvided = ({
   getAddServiceDialog,
@@ -173,6 +174,9 @@ const AddServiceProvided = ({
       );
     }
   }, [selectedService, serviceTypeList]);
+
+
+  console.log('selected Service', selectedService);
 
   useEffect(() => {
     if (siteData?.length !== 0) {
@@ -889,6 +893,16 @@ const AddServiceProvided = ({
       ErrorToaster("Atleast one location has to be selected if yes");
       return;
     }
+    if (serviceTypeTemplate !== CLINIC && serviceTypeTemplate !== PROCEDUREREADING && metadata?.max < metadata?.min) {
+      ErrorToaster("Maximum Value cannot be less than the minimum value");
+      return;
+    } else {
+      if (metadata?.contractedSchedules?.filter(data => data?.minimum?.value > data?.maximum?.value)?.map(data => data)?.length || 0) {
+        ErrorToaster("Maximum Value cannot be less than the minimum value");
+        return;
+      }
+    }
+
     if (
       (serviceTypeTemplate === CLINIC ||
         serviceTypeTemplate === PROCEDUREREADING) &&
@@ -966,55 +980,55 @@ const AddServiceProvided = ({
       // }
       console.log('customize log', metadata);
       if (metadata?.customizedSchedule) {
-        activities = [];
-        metadata?.serviceDaysArray?.map((serviceDays) => {
-          console.log('Activity', activities)
-          if (serviceDays === "Weekdays") {
-            if
-              (metadata?.weekdayMin ||
-              metadata?.weekdayMax ||
-              metadata?.weekdayPayment !== 0
-            ) {
-              console.log('inside weekday else');
-              if (!activities?.map(data => data?.activity).includes(metadata?.weekdayActivity) && metadata?.weekdayActivity !== '' && metadata?.weekdayActivity !== null) {
-                activities?.push({ activity: metadata?.weekdayActivity });
-              }
-
-            }
-            if (
-              metadata?.weekdayNightsMin ||
-              metadata?.weekdayNightsMax ||
-              metadata?.weekdayNightsPayment !== 0
-            ) {
-              console.log('inside weeknight else');
-              if (!activities?.map(data => data?.activity).includes(metadata?.weekdayNightActivity) && metadata?.weekdayNightActivity !== '' && metadata?.weekdayNightActivity !== null) {
-                activities?.push({ activity: metadata?.weekdayNightActivity })
-              }
-            }
-
-          }
-          if (
-            metadata?.weekendMin ||
-            metadata?.weekendMax ||
-            metadata?.weekendPayment !== 0
-          ) {
-            console.log('inside weekend else');
-            if (!activities?.map(data => data?.activity).includes(metadata?.weekendActivity) && metadata?.weekendActivity !== '' && metadata?.weekendActivity !== null) {
-              activities?.push({ activity: metadata?.weekendActivity })
-            }
-          }
-          if (
-            metadata?.holidayMin ||
-            metadata?.holidayMax ||
-            metadata?.holidayPayment !== 0
-          ) {
-            console.log('inside holiday else');
-            if (!activities?.map(data => data?.activity).includes(metadata?.holidayActivity) && metadata?.holidayActivity !== '' && metadata?.holidayActivity !== null) {
-              activities?.push({ activity: metadata?.holidayActivity })
-            }
+        console.log('inside Custom SChedule', metadata);
+        // activities = [];
+        // metadata?.serviceDaysArray?.map((serviceDays) => {
+        console.log('Activity', activities)
+        if
+          (metadata?.weekdayMin ||
+          metadata?.weekdayMax ||
+          metadata?.weekdayPayment !== 0
+        ) {
+          console.log('inside weekday else');
+          if (!activities?.map(data => data?.activity).includes(metadata?.weekdayActivity) && metadata?.weekdayActivity !== '' && metadata?.weekdayActivity !== null) {
+            activities?.push({ activity: metadata?.weekdayActivity });
           }
 
-        });
+        }
+        if (
+          metadata?.weekdayNightsMin ||
+          metadata?.weekdayNightsMax ||
+          metadata?.weekdayNightsPayment !== 0
+        ) {
+          console.log('inside weeknight else');
+          if (!activities?.map(data => data?.activity).includes(metadata?.weekdayNightActivity) && metadata?.weekdayNightActivity !== '' && metadata?.weekdayNightActivity !== null) {
+            activities?.push({ activity: metadata?.weekdayNightActivity })
+          }
+        }
+
+        if (
+          metadata?.weekendMin ||
+          metadata?.weekendMax ||
+          metadata?.weekendPayment !== 0
+        ) {
+          console.log('inside weekend else');
+          if (!activities?.map(data => data?.activity).includes(metadata?.weekendActivity) && metadata?.weekendActivity !== '' && metadata?.weekendActivity !== null) {
+            activities?.push({ activity: metadata?.weekendActivity })
+          }
+        }
+        if (
+          metadata?.holidayMin ||
+          metadata?.holidayMax ||
+          metadata?.holidayPayment !== 0
+        ) {
+          console.log('inside holiday else');
+          if (!activities?.map(data => data?.activity).includes(metadata?.holidayActivity) && metadata?.holidayActivity !== '' && metadata?.holidayActivity !== null) {
+            activities?.push({ activity: metadata?.holidayActivity })
+          }
+        }
+        // }
+
+        //   );
       }
       performingActivity = activities?.map(data => data?.activity)?.join("-");
       console.log('Performing Actiity', performingActivity, activities)
@@ -1042,7 +1056,6 @@ const AddServiceProvided = ({
         });
       });
     }
-
     if (serviceTypeTemplate === SUPPLEMENTAL) {
       performingActivity =
         metadata?.supplementServiceName?.map((data) => data)?.join("-") || "";
@@ -1085,7 +1098,11 @@ const AddServiceProvided = ({
           ?.map((data) => data?.activity)
           ?.join("-");
       }
-      if (activities?.length === 0 && serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE) {
+      if (serviceTypeTemplate === HIT && dataValues?.serviceAgreementOnFile && dataValues?.contractedServiceFiles?.length === 0) {
+        ErrorToaster(`Upload atleast one Service Agreement File to continue`)
+        return;
+      }
+      if (activities?.length === 0 && serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE && (serviceTypeTemplate === ONCALL && !dataValues?.customizedSchedule)) {
         let message =
           serviceTypeTemplate === SUPPLEMENTAL
             ? "Supplement Services"
@@ -1250,6 +1267,7 @@ const AddServiceProvided = ({
           payableAmount: {
             value: parseFloat(dataValues?.sessionAmount),
           },
+          patientConsultRequired: dataValues?.patientConsultRequired || false,
           professionalServiceRequired: dataValues?.professionalServiceRequired || false,
           ...((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ONCALLSERVICE ||
             serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === HIT) &&
@@ -1837,6 +1855,14 @@ const AddServiceProvided = ({
     setAnchorElDoc(null);
   };
 
+  const dataCheck = (value) => {
+    if (editService) {
+      return valueCheck(value);
+    } else {
+      return false;
+    }
+  };
+
   return (
     <>
       <div>
@@ -2041,7 +2067,9 @@ const AddServiceProvided = ({
                   <div
                     className={`${style.addManagerGrid} ${style.marginTop20} `}
                   >
-                    <CommonLabel value="Activity / Service Type Contracted for*" />
+                    <CommonLabel value="Activity / Service Type Contracted for*"
+                      className={editService && (!serviceTypeList || serviceTypeList?.length === 0) ? style.redLable : ""}
+                    />
                     <div>
                       <CommonSelectField
                         value={serviceType}
@@ -2080,7 +2108,9 @@ const AddServiceProvided = ({
                     <div
                       className={`${style.addManagerGrid} ${style.marginTop20} `}
                     >
-                      <CommonLabel value="Designate Specific Contractor*" />
+                      <CommonLabel value="Designate Specific Contractor*"
+                        className={editService && isDesignatedSpecificContractor && (!usersTags || usersTags?.length === 0) ? style.redLable : ""}
+                      />
                       <div>
                         <div className={`${style.displayInRow} `}>
                           <CommonSwitch
@@ -2115,7 +2145,7 @@ const AddServiceProvided = ({
                             </p>
                           )}
                         </div>
-                        {usersTags?.length !== 0 && (
+                        {isDesignatedSpecificContractor && usersTags?.length !== 0 && (
                           <div
                             className={`${style.marginTop20} ${style.marginLeft20} `}
                           >
@@ -2163,12 +2193,15 @@ const AddServiceProvided = ({
                     serviceTypeTemplate !== ADDON &&
                     serviceTypeTemplate !== HOSPICE &&
                     serviceTypeTemplate !== SUPPLEMENTAL &&
-                    !selectedService?.customizedSchedule && (
+                    !selectedService?.customizedSchedule &&
+                    (
                       <div>
                         <div
                           className={`${style.addManagerGrid} ${style.marginTop20} `}
                         >
-                          <CommonLabel value="Activities To Be Performed*" />
+                          <CommonLabel value="Activities To Be Performed*"
+                            className={editService && (!selectedActivity || selectedActivity?.length === 0) ? style.redLable : ""}
+                          />
                           <div>
                             <div className={style.addGrid}>
                               <DatalistInput
@@ -2221,7 +2254,9 @@ const AddServiceProvided = ({
                       <div
                         className={`${style.addManagerGrid} ${style.marginTop20} `}
                       >
-                        <CommonLabel value="Specify Service Facility / Location (Cost Center)*" />
+                        <CommonLabel value="Specify Service Facility / Location (Cost Center)*"
+                          className={editService && showLocation && (!selectedLocation || selectedLocation?.length === 0) ? style.redLable : ""}
+                        />
                         <div>
                           <div className={`${style.displayInRow} `}>
                             <CommonSwitch

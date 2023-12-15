@@ -1206,7 +1206,7 @@ const ReportTypeOverview = () => {
                                                 <div className={`${style.grid2} ${style.marginTop20} `}>
                                                     <div>
                                                         <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Renewal Time Frame </div>
-                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{`Renewal within Next ${dataToUseInReport?.renewalreportingTimePeriod} days`}</div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{`Renewal Within Next ${dataToUseInReport?.renewalreportingTimePeriod} days`}</div>
                                                     </div>
                                                     <div>
                                                         <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Sites </div>

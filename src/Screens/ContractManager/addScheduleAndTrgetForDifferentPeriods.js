@@ -2,35 +2,71 @@ import React, { useState, useEffect } from 'react';
 import { Dialog, Classes, Icon, Intent, EditableText, Checkbox } from '@blueprintjs/core';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
-import { format } from 'date-fns';
+import { sub, add } from "date-fns";
 import TextField from '@mui/material/TextField';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import CommonTextField from '../../Components/CommonFields/CommonTextField';
+import CommonCheckBox from "../../Components/CommonFields/CommonCheckBox";
+import CommonDateField from "../../Components/CommonFields/CommonDateField";
 import InputAdornment from '@mui/material/InputAdornment';
 
 import style from './index.module.scss';
+import { ErrorToaster } from '../../utils/toaster';
 
 const AddScheduleAndTargetForDifferentPeriods = ({ getAddScheduleAndTargetForDifferentPeriods, initialValue, onNewClinicChange, selectedScheduleRow, metadata, contractTermPeriod }) => {
-    const [serviceSchedule, setServiceSchedule] = useState();
-    console.log('metadata', metadata);
-    useEffect(() => {
-        if (selectedScheduleRow < metadata?.contractedSchedules?.length) {
-            let contractedTemp = metadata?.contractedSchedules;
-            let patientTemp = metadata?.patientsSeenTargets;
-            let scheduledPatientsTemp = metadata?.scheduledPatientsTargets;
-            setServiceSchedule({
-                startDate: new Date(contractedTemp?.startDate), endDate: new Date(contractedTemp?.endDate), min: contractedTemp?.minimum?.value, max: contractedTemp?.maximum?.value, frequency: contractedTemp?.frequency, seenWithNurse: patientTemp?.withNurse?.value, seenWithoutNurse: patientTemp?.withtoutNurse?.value, seenNoTarget: patientTemp?.noTargetApplicable, targetWithNurse: scheduledPatientsTemp?.withNurse?.value, targetWithoutNurse: scheduledPatientsTemp?.withoutNurse, targetNoTarget: scheduledPatientsTemp?.noTargetApplicable
-            }
-            )
-        } else {
-            setServiceSchedule({ startDate: new Date(), endDate: new Date(), min: 0, max: 0, frequency: 'WEEK', seenWithNurse: 0, seenWithoutNurse: 0, seenNoTarget: false, targetWithNurse: 0, targetWithoutNurse: 0, targetNoTarget: false })
-        }
-    }, [metadata])
+    const [serviceSchedule, setServiceSchedule] = useState({ startDate: new Date(), endDate: new Date(), min: 0, max: 0, frequency: 'WEEK', seenWithNurse: 0, seenWithoutNurse: 0, seenNoTarget: false, targetWithNurse: 0, targetWithoutNurse: 0, targetNoTarget: false });
+    const [calendarStart, setCalendarStart] = useState(false);
+    const [calendarEnd, setCalendarEnd] = useState(false);
+    console.log('metadata', metadata, serviceSchedule, selectedScheduleRow, metadata?.contractedSchedules?.length);
+    // useEffect(() => {
+    //     if (selectedScheduleRow < metadata?.contractedSchedules?.length) {
+    //         let contractedTemp = metadata?.contractedSchedules;
+    //         let patientTemp = metadata?.patientsSeenTargets;
+    //         let scheduledPatientsTemp = metadata?.scheduledPatientsTargets;
+    //         setServiceSchedule({
+    //             startDate: new Date(contractedTemp?.startDate), endDate: new Date(contractedTemp?.endDate), min: contractedTemp?.minimum?.value, max: contractedTemp?.maximum?.value, frequency: contractedTemp?.frequency, seenWithNurse: patientTemp?.withNurse?.value, seenWithoutNurse: patientTemp?.withtoutNurse?.value, seenNoTarget: patientTemp?.noTargetApplicable, targetWithNurse: scheduledPatientsTemp?.withNurse?.value, targetWithoutNurse: scheduledPatientsTemp?.withoutNurse, targetNoTarget: scheduledPatientsTemp?.noTargetApplicable
+    //         }
+    //         )
+    //     } else {
+    //         setServiceSchedule({ startDate: new Date(), endDate: new Date(), min: 0, max: 0, frequency: 'WEEK', seenWithNurse: 0, seenWithoutNurse: 0, seenNoTarget: false, targetWithNurse: 0, targetWithoutNurse: 0, targetNoTarget: false })
+    //     }
+    // }, [metadata])
 
     const onScheduleChange = (name, value) => {
         setServiceSchedule({ ...serviceSchedule, [name]: value });
+    }
+
+    const reset = () => {
+        setServiceSchedule({ startDate: new Date(), endDate: new Date(), min: 0, max: 0, frequency: 'WEEK', seenWithNurse: 0, seenWithoutNurse: 0, seenNoTarget: false, targetWithNurse: 0, targetWithoutNurse: 0, targetNoTarget: false })
+    }
+
+    const validate = (serviceSchedule, selectedScheduleRow, type) => {
+        if (serviceSchedule?.startDate === null || serviceSchedule?.startDate === 'Invalid Date' || serviceSchedule?.endDate === null || serviceSchedule?.endDate === 'Invalid Date') {
+            ErrorToaster('Enter Valid Date');
+            return;
+        }
+        if (serviceSchedule?.startDate > serviceSchedule?.endDate) {
+            ErrorToaster('Start Date Should Be Less Than End Date');
+            return;
+        }
+        if (serviceSchedule?.min === 0 || serviceSchedule?.frequency === '') {
+            ErrorToaster('Regular Clinic Schedule Min And Frequency Values Are Mandatory');
+            return;
+        }
+        if (!serviceSchedule?.seenNoTarget && (serviceSchedule?.seenWithNurse === 0 || serviceSchedule?.seenWithoutNurse === 0)) {
+            ErrorToaster('Patient Seen Target Is Mandatory Other Than No Target Applicable');
+            return;
+        }
+        if (!serviceSchedule?.targetNoTarget && (serviceSchedule?.targetWithNurse === 0 || serviceSchedule?.targetWithoutNurse === 0)) {
+            ErrorToaster('Scheduled Patient Target Is Mandatory Other Than No Target Applicable');
+            return;
+        }
+        onNewClinicChange(serviceSchedule, selectedScheduleRow, type)
+        if (type === 'addMore') {
+            reset();
+        }
     }
 
     return (
@@ -50,7 +86,7 @@ const AddScheduleAndTargetForDifferentPeriods = ({ getAddScheduleAndTargetForDif
                                 <div className={style.extentionLableStyle}>Applicable Period*</div>
                                 <div className={style.termPeriodWithAddGrid}>
                                     <div>
-                                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                        {/* <LocalizationProvider dateAdapter={AdapterDateFns}>
                                             <DatePicker
                                                 InputProps={{
                                                     style: {
@@ -71,11 +107,37 @@ const AddScheduleAndTargetForDifferentPeriods = ({ getAddScheduleAndTargetForDif
                                                 }}
 
                                             />
-                                        </LocalizationProvider>
+                                        </LocalizationProvider> */}
+                                        <CommonDateField
+                                            open={calendarStart}
+                                            onOpen={() => setCalendarStart(true)}
+                                            onClose={() => setCalendarStart(false)}
+                                            minDate={sub(new Date(), { years: 3 })}
+                                            maxDate={add(new Date(), { months: 6 })}
+                                            value={serviceSchedule?.startDate}
+                                            onChange={(newValue) => {
+                                                onScheduleChange('startDate', newValue ? new Date(newValue) : null);
+                                            }}
+                                            InputProps={{
+                                                style: {
+                                                    fontSize: 14,
+                                                    height: 30,
+                                                },
+                                            }}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    inputProps={{
+                                                        ...params.inputProps,
+                                                        placeholder: "Start Date",
+                                                    }}
+                                                />
+                                            )}
+                                        />
                                     </div>
                                     <p className={`${style.toStyle} ${style.alignCenter}`}>To</p>
                                     <div >
-                                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                        {/* <LocalizationProvider dateAdapter={AdapterDateFns}>
                                             <DatePicker
                                                 InputProps={{
                                                     style: {
@@ -95,7 +157,34 @@ const AddScheduleAndTargetForDifferentPeriods = ({ getAddScheduleAndTargetForDif
                                                     onScheduleChange('endDate', !newValue ? null : new Date(newValue));
                                                 }}
                                             />
-                                        </LocalizationProvider>
+                                        </LocalizationProvider> */}
+                                        <CommonDateField
+                                            open={calendarEnd}
+                                            onOpen={() => setCalendarEnd(true)}
+                                            onClose={() => setCalendarEnd(false)}
+                                            value={serviceSchedule?.endDate}
+                                            onChange={(newValue) => {
+                                                onScheduleChange('endDate', !newValue ? null : new Date(newValue));
+                                            }}
+                                            InputProps={{
+                                                style: {
+                                                    fontSize: 14,
+                                                    height: 30,
+                                                },
+                                            }}
+                                            minDate={serviceSchedule?.startDate}
+                                            maxDate={add(new Date(), { years: 5 })}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    //  onClick={() => setCalendarEnd(true)}
+                                                    inputProps={{
+                                                        ...params.inputProps,
+                                                        placeholder: "End Date",
+                                                    }}
+                                                />
+                                            )}
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -171,7 +260,13 @@ const AddScheduleAndTargetForDifferentPeriods = ({ getAddScheduleAndTargetForDif
                                         type='number'
                                         disabled={serviceSchedule?.seenNoTarget}
                                     />
-                                    <Checkbox label="No Target Applicable" className={`${style.marginLeft20} ${style.fullWidth} ${style.verticalAlignCenter}`} value={serviceSchedule?.seenNoTarget} onChange={(e) => onScheduleChange('seenNoTarget', e.target.checked)} />
+                                    <CommonCheckBox
+                                        label="No Target Applicable"
+                                        checked={serviceSchedule?.seenNoTarget}
+                                        onChange={(e) => onScheduleChange('seenNoTarget', e.target.checked)}
+                                        className={`${style.marginLeft20} ${style.fullWidth} ${style.verticalAlignCenter}`}
+                                    />
+                                    {/* <Checkbox label="No Target Applicable" className={`${style.marginLeft20} ${style.fullWidth} ${style.verticalAlignCenter}`} value={serviceSchedule?.seenNoTarget} onChange={(e) => onScheduleChange('seenNoTarget', e.target.checked)} /> */}
                                 </div>
                             </div>
 
@@ -188,7 +283,7 @@ const AddScheduleAndTargetForDifferentPeriods = ({ getAddScheduleAndTargetForDif
                                     </div> */}
                                     <CommonTextField
                                         InputProps={{
-                                            startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>WITHOUT NURSE</InputAdornment>,
+                                            startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>WITH NURSE</InputAdornment>,
                                         }}
                                         className={style.threeFieldWidth}
                                         onChange={(e) => onScheduleChange('targetWithNurse', e.target.value.slice(0, 5))}
@@ -206,7 +301,13 @@ const AddScheduleAndTargetForDifferentPeriods = ({ getAddScheduleAndTargetForDif
                                         type='number'
                                         disabled={serviceSchedule?.targetNoTarget}
                                     />
-                                    <Checkbox label="No Target Applicable" className={`${style.marginLeft20} ${style.fullWidth} ${style.verticalAlignCenter}`} value={serviceSchedule?.targetNoTarget} onChange={(e) => onScheduleChange('targetNoTarget', e.target.checked)} />
+                                    <CommonCheckBox
+                                        label="No Target Applicable"
+                                        checked={serviceSchedule?.targetNoTarget}
+                                        onChange={(e) => onScheduleChange('targetNoTarget', e.target.checked)}
+                                        className={`${style.marginLeft20} ${style.fullWidth} ${style.verticalAlignCenter}`}
+                                    />
+                                    {/* <Checkbox label="No Target Applicable" className={`${style.marginLeft20} ${style.fullWidth} ${style.verticalAlignCenter}`} value={serviceSchedule?.targetNoTarget} onChange={(e) => onScheduleChange('targetNoTarget', e.target.checked)} /> */}
                                 </div>
                             </div>
                         </>
@@ -214,13 +315,13 @@ const AddScheduleAndTargetForDifferentPeriods = ({ getAddScheduleAndTargetForDif
                 </div>
                 <div>
                     <div className={`${style.floatRight} `}>
-                        <button className={`${style.buttonStyle} ${style.marginLeft20} `} >ADD MORE</button>
-                        <button className={`${style.buttonStyle} ${style.marginLeft20} `} onClick={() => onNewClinicChange(serviceSchedule, selectedScheduleRow)}>SAVE & EXIT</button>
+                        <button className={`${style.buttonStyle} ${style.marginLeft20} ${style.cursorPointer}`} onClick={() => validate(serviceSchedule, selectedScheduleRow, 'addMore')}>ADD MORE</button>
+                        <button className={`${style.buttonStyle} ${style.marginLeft20} ${style.cursorPointer}`} onClick={() => validate(serviceSchedule, selectedScheduleRow, 'saveAndExit')}>SAVE & EXIT</button>
                     </div>
                 </div>
-            </Dialog>
+            </Dialog >
 
-        </div>
+        </div >
     )
 }
 

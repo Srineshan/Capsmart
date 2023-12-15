@@ -7,6 +7,7 @@ import RedirectingPopUp from './redirectingPopUp';
 import CommonInputField from '../../Components/CommonFields/CommonInputField';
 import ContractValidationCheckSummary from './contractValidationCheckSummary';
 import CommonLabel from '../../Components/CommonFields/CommonLabel';
+import { valueCheck } from "./../../utils/valueCheck";
 
 import style from './index.module.scss';
 
@@ -119,7 +120,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     if (id === '' || id === undefined) {
       await POST(`timesheet-management-service/workflow`, JSON.stringify(data))
         .then(response => {
-          handleContinue(response?.data);
+          handleContinue(response?.data, data?.workFlowMap);
         })
         .catch(error => {
           ErrorToaster('Unexpected Error');
@@ -145,6 +146,12 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
 
   const handleTimeSheetWorkFlow = (name, reviewer, approver, aggregator, activeTab) => {
     let data;
+    let aggregatorFirstName = provider?.filter(data => data?.id === aggregator)?.map(data => data)?.[0]?.name?.firstName + " ";
+    let aggregatorMiddleName = provider?.filter(data => data?.id === aggregator)?.map(data => data)?.[0]?.name?.middleName + " ";
+    let aggregatorLastName = provider?.filter(data => data?.id === aggregator)?.map(data => data)?.[0]?.name?.lastName || '';
+    let firstName = getSelectedUserDetails(reviewer)?.name?.firstName + " ";
+    let lastName = getSelectedUserDetails(reviewer)?.name?.lastName;
+    let middleName = getSelectedUserDetails(reviewer)?.name?.middleName + " ";
     if (selectContractInfo === 'MULTIPLE' && reviewer === approver) {
       data = {
         "name": {
@@ -157,7 +164,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 "id": aggregator,
                 "title": { id: timesheet?.aggregatorTitle?.id, title: timesheet?.aggregatorTitle?.title },
                 "name": {
-                  "name": provider?.filter(data => data?.id === aggregator)?.map(data => data)?.[0]?.name?.firstName || '',
+                  "name": aggregatorFirstName + aggregatorMiddleName + aggregatorLastName,
                 },
                 "suffix": {
                   "id": provider?.filter(data => data?.id === aggregator)?.map(data => data)?.[0]?.name?.suffix?.id || '',
@@ -173,7 +180,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 "id": reviewer,
                 "title": { id: timesheet?.reviewerTitle?.id, title: timesheet?.reviewerTitle?.title },
                 "name": {
-                  "name": getSelectedUserDetails(reviewer)?.name?.firstName || '',
+                  "name": firstName + middleName + lastName,
                 },
                 "suffix": {
                   "id": getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
@@ -200,7 +207,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 "id": aggregator,
                 "title": { id: timesheet?.aggregatorTitle?.id, title: timesheet?.aggregator?.title },
                 "name": {
-                  "name": provider?.filter(data => data?.id === aggregator)?.map(data => data)?.[0]?.name?.firstName || '',
+                  "name": aggregatorFirstName + aggregatorMiddleName + aggregatorLastName,
                 },
                 "suffix": {
                   "id": provider?.filter(data => data?.id === aggregator)?.map(data => data)?.[0]?.name?.suffix?.id || '',
@@ -216,7 +223,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 "id": reviewer,
                 "title": { id: timesheet?.reviewerTitle?.id, title: timesheet?.reviewerTitle?.title },
                 "name": {
-                  "name": getSelectedUserDetails(reviewer)?.name?.firstName || '',
+                  "name": firstName + middleName + lastName,
                 },
                 "suffix": {
                   "id": getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
@@ -232,7 +239,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 "id": approver,
                 "title": { id: timesheet?.approverTitle?.id, title: timesheet?.approverTitle?.title },
                 "name": {
-                  "name": getSelectedUserDetails(approver)?.name?.firstName || '',
+                  "name": firstName + middleName + lastName,
                 },
                 "suffix": {
                   "id": getSelectedUserDetails(approver)?.name?.suffix?.id || '',
@@ -259,7 +266,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 "id": reviewer,
                 "title": { id: timesheet?.reviewerTitle?.id, title: timesheet?.reviewerTitle?.title },
                 "name": {
-                  "name": getSelectedUserDetails(reviewer)?.name?.firstName || '',
+                  "name": firstName + middleName + lastName,
                 },
                 "suffix": {
                   "id": getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
@@ -285,7 +292,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 "id": reviewer,
                 "title": { id: timesheet?.reviewerTitle?.id, title: timesheet?.reviewerTitle?.title },
                 "name": {
-                  "name": getSelectedUserDetails(reviewer)?.name?.firstName || '',
+                  "name": firstName + middleName + lastName,
                 },
                 "suffix": {
                   "id": getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
@@ -301,7 +308,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 "id": approver,
                 "title": { id: timesheet?.approverTitle?.id, title: timesheet?.approverTitle?.title },
                 "name": {
-                  "name": getSelectedUserDetails(approver)?.name?.firstName || '',
+                  "name": firstName + middleName + lastName,
                 },
                 "suffix": {
                   "id": getSelectedUserDetails(approver)?.name?.suffix?.id || '',
@@ -347,7 +354,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     }
   }
 
-  const handleContinue = async (workflowId) => {
+  const handleContinue = async (workflowId, workFlowMap) => {
     let temp = timesheetProcessingWorkflow;
     temp?.push({
       "timesheetLabel": {
@@ -357,9 +364,8 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
       "workFlowDescription": {},
       "workFlow": {
         "id": workflowId,
-        "workFlowName": {
-          "name": activeTab
-        }
+        "name": { 'name': activeTab },
+        "workFlowMap": workFlowMap,
       },
       "customWorkFlow": false
     })
@@ -377,7 +383,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
 
   const getTimeSheetSubmissionTerms = async () => {
     const { data: timesheetFlow } = await GET(`contract-managment-service/contracts/${contractId}/timesheetProcessingWorkFlow`);
-    let id = timesheetFlow?.workFlowDetails?.filter(data => data?.workFlow?.workFlowName?.name === activeTab)?.map(data => data?.workFlow?.id)[0];
+    let id = timesheetFlow?.workFlowDetails?.filter(data => data?.workFlow?.name?.name === activeTab)?.map(data => data?.workFlow?.id)[0];
     if (timesheetFlow) {
       let workflowData = timesheetWorkFlow?.filter(data => data?.id === id)?.map(data => data?.workFlowMap?.workflow)[0];
       let workFlowValues = (workflowData !== undefined && workflowData !== null) ? Object.values(workflowData) : [];
@@ -414,6 +420,13 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />
   }
 
+  const dataCheck = (value) => {
+    if (timesheetProcessingWorkflow) {
+      return valueCheck(value);
+    } else {
+      return false
+    }
+  }
 
   return (
     <>

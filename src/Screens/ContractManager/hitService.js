@@ -294,7 +294,8 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                 approver: approver,
                 contractedServiceFiles: serviceSelected?.contractedServiceFiles || [],
                 serviceAgreementOnFile: serviceSelected?.serviceAgreementOnFile,
-                // contractTermPeriodFrom: serviceSelected?.contractedSchedules?.
+                contractTermPeriodFrom: serviceSelected?.contractedSchedules?.[0]?.startDate !== null ? new Date(serviceSelected?.contractedSchedules?.[0]?.startDate?.replace('-', '/')) : null,
+                contractTermPeriodTo: serviceSelected?.contractedSchedules?.[0]?.endDate !== null ? new Date(serviceSelected?.contractedSchedules?.[0]?.endDate?.replace('-', '/')) : null,
             });
             setFullyExecutedContractData(serviceSelected?.contractedServiceFiles || [])
         }
@@ -600,7 +601,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                                     {data?.podRequired && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
                                 </>)}
 
-                                {metadata?.selectedActivities?.map(selectedActivity => selectedActivity?.activity)?.includes(data?.activity) && <EditOutlinedIcon style={{ color: '#7165E3' }} onClick={() => {
+                                {metadata?.selectedActivities?.map(selectedActivity => selectedActivity?.activity)?.includes(data?.activity) && <EditOutlinedIcon style={{ color: '#7165E3' }} className={`${style.cursorPointer}`} onClick={() => {
                                     setEditAdminActivitySelected(true);
                                     let adminActivity = metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities)[0];
                                     setAdminActivity({
@@ -625,7 +626,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                 <div className={`${style.addonAddBox} ${style.marginTop20}`}>
                     <div className={`${style.addManagerGrid}`}>
                         <CommonLabel value='Additional Clinical Informatics / HIT Services Name' />
-                        <CommonInputField placeholder='Clinical Informatics / HIT Service Name' className={style.fullWidth} value={adminActivity?.activity} onChange={(e) => handleAdminActivity('activity', e.target.value)} />
+                        <CommonInputField placeholder='Clinical Informatics / HIT Service Name' readOnly={editAdminActivitySelected} className={style.fullWidth} value={adminActivity?.activity} onChange={(e) => handleAdminActivity('activity', e.target.value)} />
                     </div>
 
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -673,11 +674,11 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                     </div>
 
                     <div>
-                        <div className={` ${style.marginTop20}`}>
-                            <button className={`${style.outlinedButton} `} onClick={(e) => { setShowAdminActivity(false); setEditAdminActivitySelected(false); }}>CANCEL</button>
-                            <button className={`${style.buttonStyle}  ${isLoading ? style.disabled : ''}`} onClick={(e) => { submit() }}>SAVE</button>
+                        <div className={` ${style.floatRight}`}>
+                            <button className={`${style.outlinedButton} ${style.cursorPointer}`} onClick={(e) => { setShowAdminActivity(false); setEditAdminActivitySelected(false); }}>CANCEL</button>
+                            <button className={`${style.buttonStyle}  ${style.marginLeft20} ${style.cursorPointer} ${isLoading ? style.disabled : ''}`} onClick={(e) => { submit() }}>SAVE</button>
                         </div>
-                        <br />
+                        <br /><br />
                     </div>
                 </div>
             }
@@ -820,7 +821,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                                     height: 30,
                                 },
                             }}
-                            minDate={contractTermPeriodFrom}
+                            minDate={metadata?.contractTermPeriodFrom}
                             maxDate={new Date(contractTermPeriod?.end)}
                             renderInput={(params) => <TextField  {...params}
                                 inputProps={{
