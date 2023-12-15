@@ -128,6 +128,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
 
     const getAllDeptList = async () => {
         const { data: deptList } = await GET(`entity-service/department/${dataToUseInReport?.selectedSites}`);
+        // setDepartments(deptList)
     }
 
     const podTypes = ['Medical Staff Membership & Privileges',
@@ -146,12 +147,13 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
         if (currentUserDetails?.roles?.length === 1 && currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Activity Logger")) {
             setSelectedContractedServiceProvider([currentUserDetails?.id]);
             setSelectedContractedServiceProviderToSend([currentUserDetails]);
-        } else {
-            if (contractedServiceProviders?.length === 1 && contractedServiceProviders?.length !== 0) {
-                setSelectedContractedServiceProvider([contractedServiceProviders?.[0]?.id]);
-                setSelectedContractedServiceProviderToSend([contractedServiceProviders?.[0]]);
-            }
         }
+        // else {
+        //     if (contractedServiceProviders?.length === 1 && contractedServiceProviders?.length !== 0) {
+        //         setSelectedContractedServiceProvider([contractedServiceProviders?.[0]?.id]);
+        //         setSelectedContractedServiceProviderToSend([contractedServiceProviders?.[0]]);
+        //     }
+        // }
         if (reportFilter) {
             setFrom(new Date(reportFilter?.startDate));
             setTo(new Date(reportFilter?.endDate));
@@ -182,6 +184,9 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
             setSelectedDepartments([tempDept?.[0]?.dept?.id]);
             setSelectedDepartmentsToSend([tempDept?.[0]?.dept]);
         }
+        // if (currentUserDetails?.roles?.length >= 1 || (currentUserDetails?.roles?.length === 1 && !currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Activity Logger"))) {
+        //     getAllDeptList();
+        // }
     }, [selectedSitesToSend]);
 
     useEffect(() => {
@@ -275,9 +280,6 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
         setSelectedSitesToSend(
             typeof value === 'string' ? sites?.filter(data => value.split(',')?.includes(data?.id))?.map(data => data) : sites?.filter(data => value?.includes(data?.id))?.map(data => data),
         );
-        if (!currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Activity Logger")) {
-            getContractAndUserList();
-        }
     };
 
     const handleChangeDepartments = (event) => {
@@ -290,7 +292,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
         setSelectedDepartmentsToSend(
             typeof value === 'string' ? departments?.filter(data => value.split(',')?.includes(data?.dept?.id))?.map(data => data?.dept) : departments?.filter(data => value?.includes(data?.dept?.id))?.map(data => data?.dept),
         );
-        if (!currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Activity Logger")) {
+        if (currentUserDetails?.roles?.length >= 1 || (currentUserDetails?.roles?.length === 1 && !currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Activity Logger"))) {
             getContractAndUserList();
         }
     };
