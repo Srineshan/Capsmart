@@ -22,7 +22,7 @@ const Login = (props) => {
   // }, []);
 
   // const getEntityId = async () => {
-  //   await axios(`http://ec2-54-210-154-191.compute-1.amazonaws.com/entity-service/entityID`, {
+  //   await axios(`https://${window.location.hostname}/entity-service/entityID`, {
   //     method: "GET",
   //     headers: { "X-subdomain": "hopkins" },
   //   })
@@ -53,7 +53,7 @@ const Login = (props) => {
   //     body: JSON.stringify(user),
   //   };
   //   fetch(
-  //     `http://ec2-54-210-154-191.compute-1.amazonaws.com/user-management-service/auth/login`,
+  //     `https://${window.location.hostname}/user-management-service/auth/login`,
   //     requestOptions
   //   )
   //     .then((response) => response.json())

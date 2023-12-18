@@ -10,7 +10,7 @@ const NotifyEntityUser = () => {
   const [userId, setUserId] = useState("");
 
   const notifyFunction = async () => {
-    await axios(`http://ec2-54-210-154-191.compute-1.amazonaws.com/user-management-service/user/${userId}/notifyEntityUser`, {
+    await axios(`https://${window.location.hostname}/user-management-service/user/${userId}/notifyEntityUser`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
