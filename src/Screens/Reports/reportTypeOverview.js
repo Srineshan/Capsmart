@@ -565,7 +565,8 @@ const ReportTypeOverview = () => {
             Object.keys(timesheetProcessingSummaryData?.statusSummary?.payment)?.map((data, index) => {
                 tempStackedSeries.push({
                     'data': Object.keys(timesheetProcessingSummaryData?.statusSummary)?.map(stackedData => Object?.values(timesheetProcessingSummaryData?.statusSummary[stackedData])?.[index]),
-                    'name': data
+                    'name': data,
+                    'color': data === 'completed' ? '#1DD174' : data === 'pending' ? '#F46044' : '#FFD950'
                 })
                 setStackedSeries(tempStackedSeries);
             })
