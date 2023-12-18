@@ -1021,10 +1021,10 @@ const ReportTypeOverview = () => {
             contractManagementContractName.push(data?.contractName?.contractName);
             contractManagementContractId.push(data?.contractDetail?.contractId?.id)
             contractManagementExpirationDate.push(format(new Date(data?.contractDetail?.contractTerm?.endDate), 'MM-dd-yyyy'))
-            contractManagementContractingEntity.push(data?.contractorBusinessEntity !== null ? data?.contractorBusinessEntity?.businessEntity?.name : '-');
-            contractManagementPointOfContact.push(`${user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.name?.firstName)} ${user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.name?.lastName)} `);
-            contractManagementPointOfContactNumber.push(user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.communication?.mobileNumber));
-            contractManagementEmail.push(user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.email?.officialEmail));
+            contractManagementContractingEntity.push(!data?.contractorBusinessEntity?.businessEntity?.notApplicable ? data?.contractorBusinessEntity?.businessEntity?.name : '-');
+            contractManagementPointOfContact.push(`${data?.contractorBusinessEntity?.businessEntityUser?.name?.firstName} ${data?.contractorBusinessEntity?.businessEntityUser?.name?.lastName} `);
+            contractManagementPointOfContactNumber.push(data?.contractorBusinessEntity?.businessEntityUser?.contactNumber?.number);
+            contractManagementEmail.push(data?.contractorBusinessEntity?.businessEntityUser?.email?.officialEmail);
         })
 
         return [
@@ -1195,7 +1195,7 @@ const ReportTypeOverview = () => {
                                                 <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter} ${style.marginTop5} `}>
                                                     {reportTitleList[reportType]}
                                                 </div>
-                                                {dataToUseInReport?.reportingTimePeriod !== "" && (
+                                                {(reportType !== "upcomingContractRenewals" && reportType !== "oneTimeContract" && dataToUseInReport?.reportingTimePeriod !== "") && (
                                                     <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5} `}>Reporting Period used for this report : {dataToUseInReport?.reportingTimePeriod} ({dataToUseInReport?.fromToDisplay} to {dataToUseInReport?.toToDisplay}) </div>
                                                 )}
                                             </div>
@@ -1851,7 +1851,7 @@ const ReportTypeOverview = () => {
                                                                     tableHeader={['Contract Name', 'Contract ID', 'Contract Expiration Date', 'Contracting Entity', 'Point of Contact', 'Point of Contact Number', 'Email Address', 'Service Providers']}
                                                                     tableValue={multipleContract}
                                                                     activitiesServicesValues={getContractManagementUpcomingValues('MULTIPLE')}
-                                                                    styleName={style.individualServiceReportGrid}
+                                                                    styleName={style.multipleServiceReportGrid}
                                                                 />
                                                             )}
                                                         </>
