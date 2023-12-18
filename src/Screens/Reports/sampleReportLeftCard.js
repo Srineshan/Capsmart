@@ -22,7 +22,7 @@ const MenuProps = {
     PaperProps: {
         style: {
             maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-            width: 250,
+            // width: 250,
         },
     },
 };
@@ -57,7 +57,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
         timesheetProcessingSummary: 'TIMESHEET',
         listingOfTimesheetsNotPaid: 'TIMESHEET',
         submittedTimesheetsPaymentStatus: 'TIMESHEET',
-        paymentsProcessingSummary: 'ACTIVITY',
+        paymentsProcessingSummary: 'TIMESHEET',
     }
 
     let cookie = new Cookie();
@@ -105,23 +105,27 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
         const { data: user } = await GET(`user-management-service/user?userType=CONTRACTED_SERVICE_PROVIDER_USER`);
         setContractedServiceProviders(user);
     }
-
+    console.log(currentUserDetails?.roles?.length >= 2, currentUserDetails?.roles?.length === 1, currentUserDetails?.roles?.filter(data => data?.roleName === "Activity Logger")?.length === 0)
     const getContractAndUserList = async () => {
-        if (currentUserDetails?.roles?.length === 1 && currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Activity Logger")) {
-            setSelectedContractedServiceProvider([currentUserDetails?.id]);
-            setSelectedContractedServiceProviderToSend([currentUserDetails]);
-            setContracts(currentUserDetails?.contracts);
-            if (currentUserDetails?.contracts?.length === 1) {
-                setSelectedContracts([currentUserDetails?.contracts?.[0]?.id]);
-                setSelectedContractsToSend([currentUserDetails?.contracts?.[0]]);
-            }
-        } else {
-            const { data: contractAndUserList } = await GET(`contract-managment-service/reports/filter/usersAndContracts?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&reportCategory=${reportCategory[reportType]}`);
-            setContractedServiceProviders(contractAndUserList?.users);
-            setContracts(contractAndUserList?.contracts);
-            if (contractAndUserList?.contracts?.length === 1) {
-                setSelectedContracts([contractAndUserList?.contracts?.[0]?.id]);
-                setSelectedContractsToSend([contractAndUserList?.contracts?.[0]]);
+        if (reportType !== "upcomingContractRenewals" && reportType !== "oneTimeContract") {
+            if (currentUserDetails?.roles?.length >= 2 || (currentUserDetails?.roles?.length === 1 && currentUserDetails?.roles?.filter(data => data?.roleName === "Activity Logger")?.length === 0)) {
+                const { data: contractAndUserList } = await GET(`contract-managment-service/reports/filter/usersAndContracts?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&reportCategory=${reportCategory[reportType]}`);
+                setContractedServiceProviders(contractAndUserList?.users);
+                setContracts(contractAndUserList?.contracts);
+                if (contractAndUserList?.contracts?.length === 1) {
+                    setSelectedContracts([contractAndUserList?.contracts?.[0]?.id]);
+                    setSelectedContractsToSend([contractAndUserList?.contracts?.[0]]);
+                }
+            } else {
+                if (currentUserDetails?.id !== undefined) {
+                    setSelectedContractedServiceProvider([currentUserDetails?.id]);
+                    setSelectedContractedServiceProviderToSend([currentUserDetails]);
+                }
+                setContracts(currentUserDetails?.contracts);
+                if (currentUserDetails?.contracts?.length === 1) {
+                    setSelectedContracts([currentUserDetails?.contracts?.[0]?.id]);
+                    setSelectedContractsToSend([currentUserDetails?.contracts?.[0]]);
+                }
             }
         }
     }
@@ -184,10 +188,14 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
             setSelectedDepartments([tempDept?.[0]?.dept?.id]);
             setSelectedDepartmentsToSend([tempDept?.[0]?.dept]);
         }
-        // if (currentUserDetails?.roles?.length >= 1 || (currentUserDetails?.roles?.length === 1 && !currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Activity Logger"))) {
+        // if (currentUserDetails?.roles?.length >= 2 || (currentUserDetails?.roles?.length === 1 && !currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Activity Logger"))) {
         //     getAllDeptList();
         // }
     }, [selectedSitesToSend]);
+
+    useEffect(() => {
+        getContractAndUserList();
+    }, [selectedSitesToSend, selectedDepartmentsToSend, currentUserDetails]);
 
     useEffect(() => {
         if (reportType === "activitiesOrServices" || reportType === "paymentsProcessingSummary" || reportType === "addOnActivities" || reportType === "timesheetProcessingSummary" || reportType === "listingOfTimesheetsNotPaid" || reportType === "submittedTimesheetsPaymentStatus") {
@@ -292,9 +300,6 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
         setSelectedDepartmentsToSend(
             typeof value === 'string' ? departments?.filter(data => value.split(',')?.includes(data?.dept?.id))?.map(data => data?.dept) : departments?.filter(data => value?.includes(data?.dept?.id))?.map(data => data?.dept),
         );
-        if (currentUserDetails?.roles?.length >= 1 || (currentUserDetails?.roles?.length === 1 && !currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Activity Logger"))) {
-            getContractAndUserList();
-        }
     };
 
     const handleChangeContracts = (event) => {
@@ -328,7 +333,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                 {(reportType === "upcomingContractRenewals" || reportType === "oneTimeContract") ? (
                     <>
                         <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                            <InputLabel id="demo-simple-select-standard-label1">Renewal Time Frame</InputLabel>
+                            <InputLabel id="demo-simple-select-standard-label1">{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Time Frame</InputLabel>
                             <Select
                                 labelId="demo-simple-select-standard-label1"
                                 id="demo-simple-select-standard1"
@@ -336,9 +341,9 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 onChange={(e) => { setRenewalreportingTimePeriod(e.target.value) }}
                                 label="Renewal Time Frame"
                             >
-                                <MenuItem value={30}>Renewal Within Next 30 days</MenuItem>
-                                <MenuItem value={60}>Renewal Within Next 60 days</MenuItem>
-                                <MenuItem value={90}>Renewal Within Next 90 days</MenuItem>
+                                <MenuItem value={30}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 30 days</MenuItem>
+                                <MenuItem value={60}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 60 days</MenuItem>
+                                <MenuItem value={90}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 90 days</MenuItem>
                             </Select>
                         </FormControl>
                         <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
@@ -362,10 +367,10 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                             </Select>
                         </FormControl>
                         <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                            <InputLabel id="demo-multiple-name-label3">Departments</InputLabel>
+                            <InputLabel id="demo-multiple-name-label2">Departments</InputLabel>
                             <Select
-                                labelId="demo-multiple-name-label3"
-                                id="demo-multiple-name3"
+                                labelId="demo-multiple-name-label2"
+                                id="demo-multiple-name2"
                                 multiple
                                 value={selectedDepartments}
                                 onChange={handleChangeDepartments}
@@ -376,7 +381,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                         key={data?.dept?.id}
                                         value={data?.dept?.id}
                                     >
-                                        {data?.site?.siteName?.siteName - data?.dept?.departmentName?.name}
+                                        {`${data?.site?.siteName?.siteName} - ${data?.dept?.departmentName?.name}`}
                                     </MenuItem>
                                 ))}
                             </Select>
@@ -525,7 +530,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                         key={data?.dept?.id}
                                         value={data?.dept?.id}
                                     >
-                                        {data?.site?.siteName?.siteName - data?.dept?.departmentName?.name}
+                                        {`${data?.site?.siteName?.siteName} - ${data?.dept?.departmentName?.name}`}
                                     </MenuItem>
                                 ))}
                             </Select>

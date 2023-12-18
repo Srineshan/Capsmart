@@ -291,6 +291,32 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                         </Link>
                                     </div>
                                 ))}
+                                {reportType === 'contractManagement' && (
+                                    <div className={style.scrollStyle}>
+                                        <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                            <div className={style.tableDataReportsFontStyle}>1</div>
+                                            <Link to="/reportTypeOverview/upcomingContractRenewals" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Upcoming Contract Renewals</div></Link>
+                                            <div className={style.tableDataReportsFontStyle}>Upcoming Contract Renewals</div>
+                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy H:m')} </div>
+                                            {/* <div className={style.tableDataReportsFontStyle}>Carlos C</div> */}
+                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy H:m')}</div>
+                                            <Link to={"/reportTypeOverview/upcomingContractRenewals"} className={style.linkStyle}>
+                                                <Run />
+                                            </Link>
+                                        </div>
+                                        <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                            <div className={style.tableDataReportsFontStyle}>2</div>
+                                            <Link to="/reportTypeOverview/oneTimeContract" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>List of One Time Contracts that will Terminate on Expiration</div></Link>
+                                            <div className={style.tableDataReportsFontStyle}>List of One Time Contracts that will Terminate on Expiration</div>
+                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy H:m')} </div>
+                                            {/* <div className={style.tableDataReportsFontStyle}>Carlos C</div> */}
+                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy H:m')}</div>
+                                            <Link to={"/reportTypeOverview/oneTimeContract"} className={style.linkStyle}>
+                                                <Run />
+                                            </Link>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                             {/* {reportType === 'servicesOrActivities' ? (
                                 <div className={style.scrollStyle}>

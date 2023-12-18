@@ -43,10 +43,10 @@
     font: normal normal medium 12px/24px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
-    word-wrap: break-word !important;
+    // word-wrap: break-word !important;
     text-transform: capitalize;
-    // word-break: break-word;
-    // width: auto;
+    word-break: break-word;
+    width: auto;
 }
 
 .row1Background {

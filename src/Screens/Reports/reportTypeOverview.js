@@ -146,7 +146,7 @@ const ReportTypeOverview = () => {
 
     useEffect(() => {
         getUpdatedValuesWithParams();
-    }, [selectedPodTypeFromTile, dataToUseInReport?.from, dataToUseInReport?.to, dataToUseInReport?.selectedContracts, dataToUseInReport?.selectedContractedServiceProvider, dataToUseInReport?.selectedSites, dataToUseInReport?.selectedDepartments])
+    }, [selectedPodTypeFromTile, dataToUseInReport?.from, dataToUseInReport?.to, dataToUseInReport?.selectedContracts, dataToUseInReport?.selectedContractedServiceProvider, dataToUseInReport?.selectedSites, dataToUseInReport?.selectedDepartments, dataToUseInReport?.renewalreportingTimePeriod, dataToUseInReport?.contractContinuationPolicy])
 
     useEffect(() => {
         setApexStackedBarChartDisplay(<ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} />);
@@ -671,7 +671,7 @@ const ReportTypeOverview = () => {
     }
 
     const getOneTimeContractWithParameters = async () => {
-        const { data: oneTimeContract } = await GET(`contract-managment-service/reports/oneTimeContractReport?renewalDays=${dataToUseInReport?.renewalreportingTimePeriod}`);
+        const { data: oneTimeContract } = await GET(`contract-managment-service/reports/oneTimeContractReport?renewalDays=${dataToUseInReport?.renewalreportingTimePeriod}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
         if (oneTimeContract) {
             setOneTimeContract(oneTimeContract);
         }
@@ -1206,8 +1206,8 @@ const ReportTypeOverview = () => {
                                             {(reportType === "upcomingContractRenewals" || reportType === "oneTimeContract") ? (
                                                 <div className={`${style.grid2} ${style.marginTop20} `}>
                                                     <div>
-                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Renewal Time Frame </div>
-                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{`Renewal Within Next ${dataToUseInReport?.renewalreportingTimePeriod} days`}</div>
+                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Time Frame </div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{`${reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next ${dataToUseInReport?.renewalreportingTimePeriod} days`}</div>
                                                     </div>
                                                     <div>
                                                         <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Sites </div>
@@ -1834,26 +1834,31 @@ const ReportTypeOverview = () => {
                                                 //     </>
                                                 // ) 
                                                 : (reportType === "upcomingContractRenewals" || reportType === "oneTimeContract") ? (
-                                                    <>
-                                                        {individualContract?.length !== 0 && (
-                                                            <ReportsTable
-                                                                tableType={'Individual Service Provider Contract Renewal'}
-                                                                tableHeader={['Contract Name', 'Contract ID', 'Contract Expiration Date', 'Contracting Entity', 'Point of Contact', 'Point of Contact Number', 'Email Address']}
-                                                                tableValue={individualContract}
-                                                                activitiesServicesValues={getContractManagementUpcomingValues('INDIVIDUAL')}
-                                                                styleName={style.individualServiceReportGrid}
-                                                            />
-                                                        )}
-                                                        {multipleContract?.length !== 0 && (
-                                                            <ReportsTable
-                                                                tableType={'Multiple Service Provider Contract Renewal'}
-                                                                tableHeader={['Contract Name', 'Contract ID', 'Contract Expiration Date', 'Contracting Entity', 'Point of Contact', 'Point of Contact Number', 'Email Address', 'Service Providers']}
-                                                                tableValue={multipleContract}
-                                                                activitiesServicesValues={getContractManagementUpcomingValues('MULTIPLE')}
-                                                                styleName={style.individualServiceReportGrid}
-                                                            />
-                                                        )}
-                                                    </>
+                                                    (individualContract?.length !== 0 || multipleContract?.length !== 0) ? (
+                                                        <>
+                                                            {individualContract?.length !== 0 && (
+                                                                <ReportsTable
+                                                                    tableType={'Individual Service Provider Contract Renewal'}
+                                                                    tableHeader={['Contract Name', 'Contract ID', 'Contract Expiration Date', 'Contracting Entity', 'Point of Contact', 'Point of Contact Number', 'Email Address']}
+                                                                    tableValue={individualContract}
+                                                                    activitiesServicesValues={getContractManagementUpcomingValues('INDIVIDUAL')}
+                                                                    styleName={style.individualServiceReportGrid}
+                                                                />
+                                                            )}
+                                                            {multipleContract?.length !== 0 && (
+                                                                <ReportsTable
+                                                                    tableType={'Multiple Service Provider Contract Renewal'}
+                                                                    tableHeader={['Contract Name', 'Contract ID', 'Contract Expiration Date', 'Contracting Entity', 'Point of Contact', 'Point of Contact Number', 'Email Address', 'Service Providers']}
+                                                                    tableValue={multipleContract}
+                                                                    activitiesServicesValues={getContractManagementUpcomingValues('MULTIPLE')}
+                                                                    styleName={style.individualServiceReportGrid}
+                                                                />
+                                                            )}
+                                                        </>
+                                                    ) : (
+                                                        <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
+                                                            subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
+                                                    )
                                                 ) : reportType === "complianceStatus" ? (
                                                     <>
                                                         <div className={style.marginTop40}>
