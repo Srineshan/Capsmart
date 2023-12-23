@@ -17,6 +17,7 @@ import { valueCheck } from "./../../utils/valueCheck";
 
 import style from "./index.module.scss";
 import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
+import MissedMandatoryFieldAlert from "./missedMandatoryFieldAlert";
 
 const PaymentAndCompensation = ({
   selectContractInfo,
@@ -73,6 +74,9 @@ const PaymentAndCompensation = ({
   const limit5 = 5;
   const limit7 = 7;
   const limit9 = 9;
+  const [unassignedKeys, setUnassignedKeys] = useState([]);
+  const [showSaveInProgress, setShowSaveInProgress] = useState(false);
+  const [buttonName, setButtonName] = useState("");
 
   const getContractDetail = async () => {
     const { data: contractData } = await GET(
@@ -86,9 +90,57 @@ const PaymentAndCompensation = ({
     setCompensationPolicy(contractData?.contractDetail?.compensationPolicy);
   };
 
+  const mandatoryFieldCheck = (buttonType) => {
+    setContinueLoading(true);
+    if (buttonType === "SaveInProgress" || buttonType === "Continue") {
+      saveInProgresscheck(buttonType);
+      setButtonName(buttonType)
+    }
+  };
+
+  const saveInProgresscheck = (buttonType) => {
+    var keys = [];
+
+    if (compensation === "RVUBASED" && valueCheck(rvuQuantity?.quantity)) {
+      keys.push("RVU Quantity");
+    }
+    if (compensation === "RVUBASED" && valueCheck(fteEquivalent?.value)) {
+      keys.push("FTE Equivalent");
+    }
+    if (compensation === "RVUBASED" && valueCheck(rvuReferenceUsed?.value)) {
+      keys.push("RVU Reference Used");
+    }
+    if (compensation === "RVUBASED" && valueCheck(rvuQuantityVariance?.value)) {
+      keys.push("RVU Quantity Variance (+/-)");
+    }
+    if (compensation === "RVUBASED" && valueCheck(rvuQuantityPeriod?.days)) {
+      keys.push("RVU Quantity Period");
+    }
+    if (!dollarRate?.notApplicable && valueCheck(dollarRate?.hour)) {
+      keys.push("Dollar Hourly Rate");
+    }
+  
+    setUnassignedKeys(keys);
+    if (keys?.length !== 0) {
+      setShowSaveInProgress(true);
+      setContinueLoading(true)
+    } else {
+      handleContinue(buttonType);
+    }
+  };
+
+  const saveInProgressFunction = (type) => {
+    handleContinue(type);
+    setShowSaveInProgress(false)
+  };
+
+  const getSaveInProgressAlert = (value) => {
+    setShowSaveInProgress(value);
+    setContinueLoading(value)
+  };
+
   const handleContinue = async (buttonType) => {
-    if (!continueLoading) {
-      setContinueLoading(true);
+    setContinueLoading(true);
       const data = {
         compensationBasis: compensation,
         rvuQuantity: rvuQuantity,
@@ -119,7 +171,6 @@ const PaymentAndCompensation = ({
         getCurrentPage("Timesheet Processing Workflow");
       }
       getTabDataStatus();
-    }
   };
 
   const getPaymentAndCompensation = async () => {
@@ -268,7 +319,9 @@ const PaymentAndCompensation = ({
       temp[i] = (
         <div className={`${style.contractedBorderStyle} ${style.marginTop20}`}>
           <div className={`${style.extentionGrid}`}>
-            <CommonLabel value="Timesheet Name*" />
+            <CommonLabel value="Timesheet Name*" 
+              className={dataCheck(timeSheetTabs?.[i]?.timesheetLabel?.label) ? style.redLable : ""}
+            />
             <CommonInputField
               className={style.fullWidth}
               value={timeSheetTabs?.[i]?.timesheetLabel?.label || ""}
@@ -397,7 +450,7 @@ const PaymentAndCompensation = ({
               )}
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                 <CommonLabel value="Max. Compensation Value for Contract Period*" 
-                  className={dataCheck(timesheetPayments?.[i]?.maxPaymentPerContract) ? style.redLable : ""}
+                  className={isNaN(timesheetPayments?.[i]?.maxPaymentPerContract) || valueCheck(timesheetPayments?.[i]?.maxPaymentPerContract) ? style.redLable : ""}
                 />
                 <div className={style.displayInRow}>
                   <CommonTextField
@@ -710,7 +763,7 @@ const PaymentAndCompensation = ({
             )}
             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
               <CommonLabel value="Dollar Hourly Rate*"             
-                className={dataCheck(dollarRate?.hour) ? style.redLable : ""}
+                className={!dollarRate?.notApplicable && dataCheck(dollarRate?.hour) ? style.redLable : ""}
               />
               <div className={style.twoCol}>
                 <CommonTextField
@@ -773,8 +826,7 @@ const PaymentAndCompensation = ({
                   className={`${style.newContractOutlinedButton}  ${
                     style.cursorPointer
                   } ${continueLoading ? style.disabled : ""}`}
-                  onClick={() => handleContinue("Save In Progress")}
-                >
+                  onClick={!continueLoading ? () => mandatoryFieldCheck('SaveInProgress') : {}}                >
                   SAVE IN-PROGRESS
                 </button>
                 <button
@@ -783,13 +835,21 @@ const PaymentAndCompensation = ({
                   } ${style.marginLeft20} ${
                     continueLoading ? style.disabled : ""
                   }`}
-                  onClick={() => handleContinue("Continue")}
-                >
+                  onClick={!continueLoading ? () => { mandatoryFieldCheck('Continue') } : {}}                >
                   CONTINUE
                 </button>
               </div>
             </div>
           )}
+
+          <MissedMandatoryFieldAlert
+            alert={showSaveInProgress}
+            getSaveInProgressAlert={getSaveInProgressAlert}
+            fieldData={unassignedKeys}
+            saveInProgressFunction={saveInProgressFunction}
+            setContinueLoading={setContinueLoading}
+            buttonName={buttonName}
+          />
         </div>
       ) : (
         <RedirectingPopUp
