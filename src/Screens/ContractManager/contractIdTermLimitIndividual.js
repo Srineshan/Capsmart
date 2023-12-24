@@ -124,6 +124,7 @@ const ContractIdTermLimitIndividual = ({
   const [unassignedKeys, setUnassignedKeys] = useState([]);
   const [showSaveInProgress, setShowSaveInProgress] = useState(false);
   const [fileItems, setFileItems] = useState([]);
+  const [isAggregationNeeded, setIsAggregationNeeded] = useState(false);
   const contractStatus = sessionStorage.getItem("Selected Contract Status");
 
   useEffect(() => {
@@ -233,6 +234,7 @@ const ContractIdTermLimitIndividual = ({
       `contract-managment-service/contracts/${createdContractId}/contractDetail`
     );
     if (contractData) {
+      console.log('contractData', contractData)
       let validateTab = validateContractIDTermLimit(contractData);
       setValidationData(validateTab);
       console.log("validation Data", validationData);
@@ -291,6 +293,7 @@ const ContractIdTermLimitIndividual = ({
       setFullyExecutedContractData(contractDetail?.contractFiles);
       setFileFields(contractDetail?.contractFiles);
       setSelectedSites(contractDetail?.site?.sites || []);
+      setIsAggregationNeeded(contractDetail?.aggregationNeeded);
       onSelectDepartment(contractDetail?.site?.sites || []);
       if (contractDetail?.site?.sites?.length === 0) {
         getSites();
@@ -353,6 +356,7 @@ const ContractIdTermLimitIndividual = ({
       setFileFields(contractDetail?.contractFiles);
       setSelectedSites(contractDetail?.site?.sites || []);
       onSelectDepartment(contractDetail?.site?.sites || []);
+      setIsAggregationNeeded(contractDetail?.aggregationNeeded);
       if (contractDetail?.site?.sites?.length === 0) {
         getSites();
       }
@@ -500,6 +504,8 @@ const ContractIdTermLimitIndividual = ({
     setShowSaveInProgress(value);
   };
 
+  console.log('selectedContractType', selectedContractType)
+
   const addContract = async (buttonText) => {
     let sites = getSiteData();
     // let conflictedData = checkSiteAndDepartment(contracts, sites, contractIdFromActive);
@@ -627,6 +633,7 @@ const ContractIdTermLimitIndividual = ({
         fullyExecutedContract: fullyExecutedContract,
         siteSpecificContract: siteSpecific,
         departmentSpecificContract: departmentSpecific,
+        aggregationNeeded: isAggregationNeeded,
       },
       newContract: selectedContractType === "New Contract" ? true : false,
     };
@@ -1471,6 +1478,24 @@ const ContractIdTermLimitIndividual = ({
             />
           </div>
         </div>
+        {contractType === 'MULTIPLE' &&
+          <div
+            className={`${style.extentionGrid} ${style.marginTop20}`}
+            onFocus={() => {
+              deptFieldCheck(departmentSpecific);
+            }}
+          >
+            <CommonLabel value="Is Aggregation Needed*" />
+            <CommonSwitch
+              checked={isAggregationNeeded}
+              className={` ${style.textAlignLeft} ${style.switchFontStyle}`}
+              label={isAggregationNeeded ? "YES" : "NO"}
+              onChange={() => {
+                setIsAggregationNeeded(!isAggregationNeeded);
+              }}
+            />
+          </div>
+        }
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <CommonLabel
