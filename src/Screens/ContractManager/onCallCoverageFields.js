@@ -120,7 +120,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         holidayPayment: 0,
         holidayPaymentNa: false,
         professionalServiceRequired: false,
-        patientConsultRequired: false,
+        // patientConsultRequired: false,
     });
 
     useEffect(() => {
@@ -231,7 +231,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
             holidayPayment: 0,
             holidayPaymentNa: false,
             professionalServiceRequired: false,
-            patientConsultRequired: false,
+            // patientConsultRequired: false,
         });
     }
 
@@ -448,7 +448,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                 workflowId: serviceSelected?.dependentService?.workFlow?.id,
                 workflowName: serviceSelected?.dependentService?.workFlow?.workFlowName?.name,
                 professionalServiceRequired: serviceSelected?.professionalServiceRequired,
-                patientConsultRequired: serviceSelected?.patientConsultRequired,
+                // patientConsultRequired: serviceSelected?.patientConsultRequired,
             });
         }
     }
@@ -584,12 +584,12 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                 </div>
             </div>
 
-            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+            {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Patient Consult Required' />
                 <div className={style.onCallBillableGrid}>
                     <CommonSwitch checked={metadata?.patientConsultRequired} label={metadata?.patientConsultRequired ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} onChange={(e) => setMetadata({ ...metadata, patientConsultRequired: !metadata?.patientConsultRequired })} />
                 </div>
-            </div>
+            </div> */}
 
 
 
