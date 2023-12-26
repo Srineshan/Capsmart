@@ -470,6 +470,7 @@ const ContractIdTermLimitIndividual = (
           }
         })
         data.sites = { sites: sites };
+        console.log('modified sites', sites)
       })
       console.log('modifiedContractUser', modifiedContractUser);
       await PUT('user-management-service/user/bulk', JSON.stringify(modifiedContractUser))
