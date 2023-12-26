@@ -926,31 +926,31 @@ const ReportTypeOverview = () => {
         if (value === 'paidOnTime') {
             paymentsReportLog?.paidOnTime?.map(data => {
                 timeSheet.push(data?.timesheet?.timesheetName);
-                period.push(data?.payment ? `${format(new Date(data?.payment?.paymentPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.payment?.paymentPeriod?.endDate), 'MMM d yyyy')} ` : '-')
+                period.push(data?.payment !== null ? `${format(new Date(data?.payment?.paymentPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.payment?.paymentPeriod?.endDate), 'MMM d yyyy')} ` : `${format(new Date(data?.timesheet?.timesheetPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.timesheet?.timesheetPeriod?.endDate), 'MMM d yyyy')} `)
                 serviceProvider.push(data?.timesheet?.user?.name);
                 deptAndSite.push(`${Object.values(Object.values(data?.timesheet?.siteDepartmentDetails?.siteDepartmentDetailMap)?.[0]?.departmentMap)?.[0]?.name}, ${Object.values(data?.timesheet?.siteDepartmentDetails?.siteDepartmentDetailMap)?.[0]?.name}`)
-                invoiceAmount.push(data?.payment !== null ? `$ ${data?.payment?.expectedPayment?.payment} ` : '-');
-                paidAmount.push(data?.payment !== null ? `$ ${data?.payment?.actualPayment?.payment} ` : '-');
+                invoiceAmount.push(data?.payment !== null ? `$ ${data?.payment?.expectedPayment?.payment} ` : `$ ${data?.timesheet?.policyBasedPayment} `);
+                paidAmount.push(data?.payment !== null ? `$ ${data?.payment?.actualPayment?.payment} ` : `$ ${data?.timesheet?.paid} `);
             })
         }
         if (value === 'timesheetNotPaid') {
             paymentsReportLog?.paymentNotDone?.map(data => {
                 timeSheet.push(data?.timesheet?.timesheetName);
-                period.push(data?.payment !== null ? `${format(new Date(data?.payment?.paymentPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.payment?.paymentPeriod?.endDate), 'MMM d yyyy')} ` : '-')
+                period.push(data?.payment !== null ? `${format(new Date(data?.payment?.paymentPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.payment?.paymentPeriod?.endDate), 'MMM d yyyy')} ` : `${format(new Date(data?.timesheet?.timesheetPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.timesheet?.timesheetPeriod?.endDate), 'MMM d yyyy')} `)
                 serviceProvider.push(data?.timesheet?.user?.name);
                 deptAndSite.push(`${Object.values(Object.values(data?.timesheet?.siteDepartmentDetails?.siteDepartmentDetailMap)?.[0]?.departmentMap)?.[0]?.name}, ${Object.values(data?.timesheet?.siteDepartmentDetails?.siteDepartmentDetailMap)?.[0]?.name}`)
-                invoiceAmount.push(data?.payment !== null ? `$ ${data?.payment?.expectedPayment?.payment} ` : '-');
-                paidAmount.push(data?.payment !== null ? `$ ${data?.payment?.actualPayment?.payment} ` : '-');
+                invoiceAmount.push(data?.payment !== null ? `$ ${data?.payment?.expectedPayment?.payment} ` : `$ ${data?.timesheet?.policyBasedPayment} `);
+                paidAmount.push(data?.payment !== null ? `$ ${data?.payment?.actualPayment?.payment} ` : `$ ${data?.timesheet?.paid} `);
             })
         }
         if (value === 'rejectedTimesheetPayments') {
             paymentsReportLog?.rejected?.map(data => {
                 timeSheet.push(data?.timesheet?.timesheetName);
-                period.push(data?.payment !== null ? `${format(new Date(data?.payment?.paymentPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.payment?.paymentPeriod?.endDate), 'MMM d yyyy')} ` : '-')
+                period.push(data?.payment !== null ? `${format(new Date(data?.payment?.paymentPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.payment?.paymentPeriod?.endDate), 'MMM d yyyy')} ` : `${format(new Date(data?.timesheet?.timesheetPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.timesheet?.timesheetPeriod?.endDate), 'MMM d yyyy')} `)
                 serviceProvider.push(data?.timesheet?.user?.name);
                 deptAndSite.push(`${Object.values(Object.values(data?.timesheet?.siteDepartmentDetails?.siteDepartmentDetailMap)?.[0]?.departmentMap)?.[0]?.name}, ${Object.values(data?.timesheet?.siteDepartmentDetails?.siteDepartmentDetailMap)?.[0]?.name}`)
-                invoiceAmount.push(data?.payment !== null ? `$ ${data?.payment?.expectedPayment?.payment} ` : '-');
-                paidAmount.push(data?.payment !== null ? `$ ${data?.payment?.actualPayment?.payment} ` : '-');
+                invoiceAmount.push(data?.payment !== null ? `$ ${data?.payment?.expectedPayment?.payment} ` : `$ ${data?.timesheet?.policyBasedPayment} `);
+                paidAmount.push(data?.payment !== null ? `$ ${data?.payment?.actualPayment?.payment} ` : `$ ${data?.timesheet?.paid} `);
             })
         }
         if (value === 'delayedTimesheetPayments') {
@@ -958,19 +958,19 @@ const ReportTypeOverview = () => {
                 timeSheet.push(data?.timesheet?.timesheetName);
                 serviceProvider.push(data?.timesheet?.user?.name);
                 deptAndSite.push(`${Object.values(Object.values(data?.timesheet?.siteDepartmentDetails?.siteDepartmentDetailMap)?.[0]?.departmentMap)?.[0]?.name}, ${Object.values(data?.timesheet?.siteDepartmentDetails?.siteDepartmentDetailMap)?.[0]?.name}`)
-                period.push(data?.payment !== null ? `${format(new Date(data?.payment?.paymentPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.payment?.paymentPeriod?.endDate), 'MMM d yyyy')} ` : '-')
-                invoiceAmount.push(data?.payment !== null ? `$ ${data?.payment?.expectedPayment?.payment} ` : '-');
-                paidAmount.push(data?.payment !== null ? `$ ${data?.payment?.actualPayment?.payment} ` : '-');
+                period.push(data?.payment !== null ? `${format(new Date(data?.payment?.paymentPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.payment?.paymentPeriod?.endDate), 'MMM d yyyy')} ` : `${format(new Date(data?.timesheet?.timesheetPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.timesheet?.timesheetPeriod?.endDate), 'MMM d yyyy')} `)
+                invoiceAmount.push(data?.payment !== null ? `$ ${data?.payment?.expectedPayment?.payment} ` : `$ ${data?.timesheet?.policyBasedPayment} `);
+                paidAmount.push(data?.payment !== null ? `$ ${data?.payment?.actualPayment?.payment} ` : `$ ${data?.timesheet?.paid} `);
             })
         }
         if (value === 'paymentPastDue') {
             paymentsReportLog?.paymentPastDue?.map(data => {
                 timeSheet.push(data?.timesheet?.timesheetName);
-                period.push(data?.payment !== null ? `${format(new Date(data?.payment?.paymentPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.payment?.paymentPeriod?.endDate), 'MMM d yyyy')} ` : '-')
+                period.push(data?.payment !== null ? `${format(new Date(data?.payment?.paymentPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.payment?.paymentPeriod?.endDate), 'MMM d yyyy')} ` : `${format(new Date(data?.timesheet?.timesheetPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.timesheet?.timesheetPeriod?.endDate), 'MMM d yyyy')} `)
                 serviceProvider.push(data?.timesheet?.user?.name);
                 deptAndSite.push(`${Object.values(Object.values(data?.timesheet?.siteDepartmentDetails?.siteDepartmentDetailMap)?.[0]?.departmentMap)?.[0]?.name}, ${Object.values(data?.timesheet?.siteDepartmentDetails?.siteDepartmentDetailMap)?.[0]?.name}`)
-                invoiceAmount.push(data?.payment !== null ? `$ ${data?.payment?.expectedPayment?.payment} ` : '-');
-                paidAmount.push(data?.payment !== null ? `$ ${data?.payment?.actualPayment?.payment} ` : '-');
+                invoiceAmount.push(data?.payment !== null ? `$ ${data?.payment?.expectedPayment?.payment} ` : `$ ${data?.timesheet?.policyBasedPayment} `);
+                paidAmount.push(data?.payment !== null ? `$ ${data?.payment?.actualPayment?.payment} ` : `$ ${data?.timesheet?.paid} `);
             })
         }
 
