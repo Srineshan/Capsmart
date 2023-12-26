@@ -166,7 +166,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
             setSelectedDepartments(reportFilter?.departments);
             setReportingTimePeriod(reportFilter?.reportingTimePeriod);
         }
-    }, [currentUserDetails, contractedServiceProviders])
+    }, [currentUserDetails])
 
     useEffect(() => {
         getDataToUseInReport(dataToUseInReport);
