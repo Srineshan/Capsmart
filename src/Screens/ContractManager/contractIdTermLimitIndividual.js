@@ -294,7 +294,7 @@ const ContractIdTermLimitIndividual = ({
       setFileFields(contractDetail?.contractFiles);
       setSelectedSites(contractDetail?.site?.sites || []);
       setIsAggregationNeeded(contractDetail?.aggregationNeeded);
-      onSelectDepartment(contractDetail?.site?.sites || []);
+      setSelectedDepartmentSites(contractDetail?.site?.sites || []);
       if (contractDetail?.site?.sites?.length === 0) {
         getSites();
       }
@@ -355,7 +355,7 @@ const ContractIdTermLimitIndividual = ({
       setFullyExecutedContractData(contractDetail?.contractFiles);
       setFileFields(contractDetail?.contractFiles);
       setSelectedSites(contractDetail?.site?.sites || []);
-      onSelectDepartment(contractDetail?.site?.sites || []);
+      setSelectedDepartmentSites(contractDetail?.site?.sites || []);
       setIsAggregationNeeded(contractDetail?.aggregationNeeded);
       if (contractDetail?.site?.sites?.length === 0) {
         getSites();

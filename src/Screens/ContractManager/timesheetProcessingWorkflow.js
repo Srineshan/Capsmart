@@ -54,6 +54,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
 
   useEffect(() => {
     getUserData();
+    getProviderData();
   }, [sites])
 
   useEffect(() => {
@@ -88,6 +89,8 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     setSites(contractData?.contractDetail?.site?.sites);
   }
 
+  console.log('aggregationNeeded', isAggregationNeeded, provider)
+
 
   const getProviderData = async () => {
     if (contractId !== '' && (selectContractInfo === 'MULTIPLE' && isAggregationNeeded)) {
@@ -107,6 +110,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     }
   }
 
+
   const getTimeSheetValues = async () => {
     setIsLoading(true);
     const { data: timesheetSubmissionTerms } = await GET(`contract-managment-service/contracts/${contractId}/timesheetSubmissionTerms`);
@@ -114,8 +118,6 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     setActiveTab(timesheetSubmissionTerms?.timesheetActivitiesPeriods?.map(data => data.timesheetLabel?.label)?.[0] || '');
     setIsLoading(false);
   }
-
-
 
   const updateTimeSheetWorkflow = async (data, workFlowName, type) => {
     let id = timesheet?.id;
