@@ -24,6 +24,7 @@ import UserCard from './userCard';
 import Table from '../../Components/TableDesign';
 import LeftStatsCard from '../../Components/LeftStatsCard';
 import LoadingScreen from '../../Components/LoadingScreen';
+import CloseIcon from '@mui/icons-material/Close';
 
 import { validateTimesheetSubmission } from './contractValidation';
 
@@ -65,7 +66,8 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
   const [selectedContractPreImplementationData, setSelectedContractPreImplementationData] = useState();
   const [metadata, setMetadata] = useState();
   const [CSPSubDomain, setCSPSubDomain] = useState("");
-
+  const [contractFilterValues, setContractFilterValues] = useState();
+  console.log(contractFilterValues)
   useEffect(() => {
     getContractsMetadata();
     getEntityData();
@@ -417,6 +419,10 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
     setIsExpanded(value);
   }
 
+  const getContractFilterValues = (value) => {
+    setContractFilterValues(value);
+  }
+
   let tableHeaderValues = selectedContract === 'activecontracts' ? activeHeaderValues : selectedContract === 'draft' ? (isDraft ? draftHeaderValues : activationPendingHeaderValues) : selectedContract === 'upcomingrenewals' ? upcomingHeaderValues : expiredHeaderValues;
   let tableSortValues = selectedContract === 'activecontracts' ? activeColSortValues : selectedContract === 'draft' ? (isDraft ? draftColSortValues : activationPendingColSortValues) : selectedContract === 'upcomingrenewals' ? upcomingColSortValues : expiredColSortValues;
   let tableDataValues = selectedContract === 'activecontracts' ? getActiveContractsValues() : selectedContract === "draft" ? getDraftContractsValues() : getUpcomingContractsValues();
@@ -429,7 +435,7 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
       <div className={isExpanded ? style.bigCardGrid : style.smallCardGrid}>
         <div>
           <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
-            <LeftStatsCard metadata={metadata} />
+            <LeftStatsCard metadata={metadata} getContractFilterValues={getContractFilterValues} />
           </SideBar>
         </div>
         <div>
@@ -493,6 +499,49 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
                 </div>
               </div>
             </div>
+            {(contractFilterValues !== undefined && (
+              contractFilterValues?.contractType !== '' ||
+              contractFilterValues?.contractId !== '' ||
+              (contractFilterValues?.numberOfContract?.min !== 0 || contractFilterValues?.numberOfContract?.max !== 0) ||
+              (contractFilterValues?.contractTimeCommitment?.from !== null || contractFilterValues?.contractTimeCommitment?.to !== null))) && (
+                <div className={`${style.displayInRow} ${style.marginTop} ${style.marginLeftRight20}`}>
+                  <div className={` ${style.verticalAlignCenter}`}>
+                    <div className={`${style.contractFiltersHeading} ${style.marginTop}`}>Filters Applied: </div>
+                  </div>
+                  {contractFilterValues?.contractType !== '' && (
+                    <div className={` ${style.marginLeft10}`}>
+                      <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
+                        <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${contractFilterValues?.contractType}(0)`}</div>
+                        <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => { }} />
+                      </div>
+                    </div>
+                  )}
+                  {contractFilterValues?.contractId !== '' && (
+                    <div className={` ${style.marginLeft10}`}>
+                      <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
+                        <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${contractFilterValues?.contractId}(0)`}</div>
+                        <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer} ${style.marginRight5}`} onClick={() => { }} />
+                      </div>
+                    </div>
+                  )}
+                  {(contractFilterValues?.numberOfContract?.min !== 0 || contractFilterValues?.numberOfContract?.max !== 0) && (
+                    <div className={` ${style.marginLeft10}`}>
+                      <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
+                        <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${contractFilterValues?.numberOfContract?.min} - ${contractFilterValues?.numberOfContract?.max}(0)`}</div>
+                        <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer} ${style.marginRight5}`} onClick={() => { }} />
+                      </div>
+                    </div>
+                  )}
+                  {(contractFilterValues?.contractTimeCommitment?.from !== null || contractFilterValues?.contractTimeCommitment?.to !== null) && (
+                    <div className={` ${style.marginLeft10}`}>
+                      <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
+                        <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${format(new Date(contractFilterValues?.contractTimeCommitment?.from), 'MM/dd/yyyy')} - ${format(new Date(contractFilterValues?.contractTimeCommitment?.to), 'MM/dd/yyyy')}(0)`}</div>
+                        <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer} ${style.marginRight5}`} onClick={() => { }} />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             {isLoading ?
               <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
                 <CircularProgress sx={{ color: "#7165E3" }} />

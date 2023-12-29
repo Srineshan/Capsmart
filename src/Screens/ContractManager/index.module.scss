@@ -1919,7 +1919,7 @@ input[type="file"] {
 }
 
 .contractScrollStyle {
-  height: calc(100vh - 415px);
+  height: calc(100vh - 420px);
   overflow: scroll;
 }
 
@@ -2044,6 +2044,24 @@ input[type="number"] {
   min-height: 23px;
   min-width: 70px;
   padding: 5px;
+}
+
+.contractFilterCard {
+  background: #E8E7FD 0% 0% no-repeat padding-box;
+  border-radius: 10px;
+  min-height: 15px;
+  min-width: 70px;
+}
+
+.contractFiltersHeading {
+  font: normal normal normal 10px/12px Montserrat;
+  color: #525762;
+}
+
+.contractFiltersTextStyle {
+  text-align: left;
+  font: normal normal medium 10px/12px Montserrat;
+  color: #52575d;
 }
 
 .siteDeptTextStyle {

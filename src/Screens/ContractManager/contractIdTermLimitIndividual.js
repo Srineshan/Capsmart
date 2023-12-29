@@ -1341,6 +1341,7 @@ const ContractIdTermLimitIndividual = ({
                   "Contract Term Period Start Date"
                 );
               }}
+              className={style.leftAlign}
             >
               <CommonDateField
                 open={calendarStart}
@@ -1388,6 +1389,7 @@ const ContractIdTermLimitIndividual = ({
                   "Contract Term Period End Date"
                 );
               }}
+              className={style.rightAlign}
             >
               <CommonDateField
                 open={calendarEnd}
