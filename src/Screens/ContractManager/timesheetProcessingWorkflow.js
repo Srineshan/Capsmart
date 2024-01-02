@@ -124,7 +124,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     if (id === '' || id === undefined) {
       await POST(`timesheet-management-service/workflow`, JSON.stringify(data))
         .then(response => {
-          handleContinue(response?.data, data?.workFlowMap);
+          handleContinue(response?.data, data?.workFlowMap, 'post');
         })
         .catch(error => {
           ErrorToaster('Unexpected Error');
@@ -133,7 +133,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     else {
       await PUT(`timesheet-management-service/workflow/${id}`, data)
         .then(response => {
-          SuccessToaster('Workflow Updated Successfully');
+          handleContinue(id, data?.workFlowMap, 'put');
         })
         .catch(error => {
           ErrorToaster('Unexpected Error');
@@ -147,6 +147,8 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     let user = users?.filter(user => user?.id === id)?.map(data => data)[0];
     return user;
   }
+
+  console.log('selectContractInfo', selectContractInfo)
 
   const handleTimeSheetWorkFlow = (name, reviewer, approver, aggregator, activeTab) => {
     let data;
@@ -358,21 +360,39 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     }
   }
 
-  const handleContinue = async (workflowId, workFlowMap) => {
+  const handleContinue = async (workflowId, workFlowMap, method) => {
     let temp = timesheetProcessingWorkflow;
-    temp?.push({
-      "timesheetLabel": {
-        "label": activeTab
-      },
-      "workFlowTemplate": {},
-      "workFlowDescription": {},
-      "workFlow": {
-        "id": workflowId,
-        "name": { 'name': activeTab },
-        "workFlowMap": workFlowMap,
-      },
-      "customWorkFlow": false
-    })
+    if (method === 'post') {
+      temp?.push({
+        "timesheetLabel": {
+          "label": activeTab
+        },
+        "workFlowTemplate": {},
+        "workFlowDescription": {},
+        "workFlow": {
+          "id": workflowId,
+          "name": { 'name': activeTab },
+          "workFlowMap": workFlowMap,
+        },
+        "customWorkFlow": false
+      })
+    } else {
+      let index = temp.findIndex(data => data.workFlow.id === workflowId);
+      console.log('index value', index)
+      temp[index] = {
+        "timesheetLabel": {
+          "label": activeTab
+        },
+        "workFlowTemplate": {},
+        "workFlowDescription": {},
+        "workFlow": {
+          "id": workflowId,
+          "name": { 'name': activeTab },
+          "workFlowMap": workFlowMap,
+        },
+        "customWorkFlow": false
+      }
+    }
     let data = { "workFlowDetails": temp }
     await PUT(`contract-managment-service/contracts/${contractId}/timesheetProcessingWorkFlow`, data)
       .then(response => {
