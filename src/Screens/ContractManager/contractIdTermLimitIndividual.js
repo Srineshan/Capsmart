@@ -1179,8 +1179,8 @@ const ContractIdTermLimitIndividual = ({
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <CommonLabel value="Contract Documents On File*" />
-          {contractStatus === "ACTIVE" ?
-            { fileItems }
+          {contractStatus === "ACTIVE" && fileItems?.length !== 0 ?
+            <div> {fileItems}</div>
             : (
               <div
                 onFocus={() => {
