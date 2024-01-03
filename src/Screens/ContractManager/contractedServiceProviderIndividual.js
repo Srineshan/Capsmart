@@ -525,7 +525,7 @@ const ContractedServicesProviderIndividual = ({
         landlineNumber: "string",
         mobileNumberNotApplicable: mobileNA,
       },
-      roles: roles,
+      roles: selectedRoles,
       address: address,
       tenant: {
         tenantId: TenantID,
