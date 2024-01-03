@@ -600,7 +600,7 @@ const OnCallService = ({
                             <CommonLabel
                                 value="Separate Service Hours Specified*"
                                 className={
-                                    dataCheck(metadata?.totalSession) ? style.redLable : ""
+                                    dataCheck(metadata?.totalSession) && metadata?.sessionsAsNeeded === false ? style.redLable : ""
                                 }
                             />
                             <div className={style.grid3WithoutGap}>
@@ -618,7 +618,9 @@ const OnCallService = ({
                                         }}
                                         onChange={(e) =>
                                             e.target.value >= 0 &&
-                                            handleValueChange("totalSession", e.target.value)
+                                            handleValueChange("totalSession", (e.target.value = Math.max(0, Number(e.target.value))
+                                            .toString()
+                                            .slice(0, 3)))
                                         }
                                         value={metadata?.totalSession}
                                     />
@@ -705,7 +707,12 @@ const OnCallService = ({
                                             value={metadata?.sessionAmount}
                                             onChange={(e) =>
                                                 e.target.value >= 0 &&
-                                                handleValueChange("sessionAmount", e.target.value)
+                                                handleValueChange(
+                                                  "sessionAmount",
+                                                  (e.target.value = Math.max(0, Number(e.target.value))
+                                                    .toString()
+                                                    .slice(0, 9))
+                                                )
                                             }
                                         />
                                     </div>

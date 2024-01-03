@@ -779,7 +779,9 @@ const AddonClinicFields = ({
                   InputProps={{
                     endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                   }}
-                  onChange={(e) => e.target.value > 0 && updateSessionDuration(data?.performingActivity, e.target.value)}
+                  onChange={(e) => e.target.value > 0 && updateSessionDuration(data?.performingActivity, (e.target.value = Math.max(0, Number(e.target.value))
+                    .toString()
+                    .slice(0, 9)))}
                   defaultValue={data?.sessionDuration}
                 />
               </div>
@@ -797,7 +799,9 @@ const AddonClinicFields = ({
                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
                       }}
                       defaultValue={data?.sessionAmount}
-                      onChange={(e) => updateRate(data?.performingActivity, e.target.value)}
+                      onChange={(e) => updateRate(data?.performingActivity, (e.target.value = Math.max(0, Number(e.target.value))
+                        .toString()
+                        .slice(0, 9)))}
                     />
                   </div>
                   <div className={style.verticalAlignCenter}>
@@ -1225,7 +1229,9 @@ const AddonClinicFields = ({
                 }}
                 onChange={(e) =>
                   e.target.value >= 0 &&
-                  handleNewServiceChange("sessionDuration", e.target.value)
+                  handleNewServiceChange("sessionDuration", (e.target.value = Math.max(0, Number(e.target.value))
+                  .toString()
+                  .slice(0, 9)))
                 }
                 value={newServices?.sessionDuration}
               />
@@ -1246,7 +1252,9 @@ const AddonClinicFields = ({
                     }}
                     value={newServices?.rate}
                     onChange={(e) => {
-                      handleNewServiceChange("rate", e.target.value);
+                      handleNewServiceChange("rate", (e.target.value = Math.max(0, Number(e.target.value))
+                      .toString()
+                      .slice(0, 9)));
                     }}
                   />
                 </div>

@@ -1230,7 +1230,9 @@ const ProcedureReading = ({
               e.target.value >= 0 &&
               setMetadata({
                 ...metadata,
-                sessionDuration: e.target.value,
+                sessionDuration: (e.target.value = Math.max(0, Number(e.target.value))
+                .toString()
+                .slice(0, 9)),
                 sessionAmount: "0",
               })
             }
@@ -1263,7 +1265,9 @@ const ProcedureReading = ({
                 }}
                 onChange={(e) =>
                   e.target.value >= 0 &&
-                  handleValueChange("sessionAmount", e.target.value)
+                  handleValueChange("sessionAmount", (e.target.value = Math.max(0, Number(e.target.value))
+                  .toString()
+                  .slice(0, 9)))
                 }
                 value={metadata?.sessionAmount}
               />

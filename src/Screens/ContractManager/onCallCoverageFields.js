@@ -730,7 +730,9 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                     startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                   }}
                   onChange={(e) => setMetadata({
-                    ...metadata, weekdayPayment: parseFloat(e.target.value), weekdayPaymentNa: false
+                    ...metadata, weekdayPayment: parseFloat((e.target.value = Math.max(0, Number(e.target.value))
+                    .toString()
+                    .slice(0, 9))), weekdayPaymentNa: false
                   })}
                 />
               </div>
@@ -875,7 +877,9 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                     startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                   }}
                   onChange={(e) => setMetadata({
-                    ...metadata, weekdayNightsPayment: parseFloat(e.target.value), weekdayNightsPaymentNa: false
+                    ...metadata, weekdayNightsPayment: parseFloat((e.target.value = Math.max(0, Number(e.target.value))
+                    .toString()
+                    .slice(0, 9))), weekdayNightsPaymentNa: false
                   })}
                 />
               </div>
@@ -1018,7 +1022,9 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                     startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                   }}
                   onChange={(e) => setMetadata({
-                    ...metadata, weekendPayment: parseFloat(e.target.value), weekendPaymentNa: false
+                    ...metadata, weekendPayment: parseFloat((e.target.value = Math.max(0, Number(e.target.value))
+                    .toString()
+                    .slice(0, 9))), weekendPaymentNa: false
                   })}
                 />
               </div>
@@ -1178,7 +1184,9 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                     startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                   }}
                   onChange={(e) => setMetadata({
-                    ...metadata, holidayPayment: parseFloat(e.target.value), holidayPaymentNa: false
+                    ...metadata, holidayPayment: parseFloat((e.target.value = Math.max(0, Number(e.target.value))
+                    .toString()
+                    .slice(0, 9))), holidayPaymentNa: false
                   })}
                 />
               </div>
@@ -1288,7 +1296,9 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                     endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                   }}
                   value={metadata?.sessionDuration}
-                  onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, sessionDuration: e.target.value, sessionAmount: '0' })}
+                  onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, sessionDuration: (e.target.value = Math.max(0, Number(e.target.value))
+                    .toString()
+                    .slice(0, 9)), sessionAmount: '0' })}
                 />
               </div>
             </div>
@@ -1305,7 +1315,9 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
                       }}
                       value={metadata?.sessionAmount}
-                      onChange={(e) => e.target.value >= 0 && handleValueChange('sessionAmount', (e.target.value).slice(0, 7))}
+                      onChange={(e) => e.target.value >= 0 && handleValueChange('sessionAmount',(e.target.value = Math.max(0, Number(e.target.value))
+                      .toString()
+                      .slice(0, 9)))}
                     />
                   </div>
                   <div className={style.verticalAlignCenter}>
