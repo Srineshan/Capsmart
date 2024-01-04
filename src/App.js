@@ -396,7 +396,7 @@ const App = ({ props }) => {
   };
 
   const getEntityId = async () => {
-    await axios(`https://${window.location.hostname}/entity-service/entityID`, {
+    await axios(`http://ec2-35-175-13-4.compute-1.amazonaws.com:8010/entity-service/entityID`, {
       method: "GET",
       // headers: { "X-subdomain": "hopkins" },
     })
@@ -418,7 +418,7 @@ const App = ({ props }) => {
       },
     };
     fetch(
-      `https://${window.location.hostname}/user-management-service/auth/login`,
+      `http://ec2-35-175-13-4.compute-1.amazonaws.com:8010/user-management-service/auth/login`,
       requestOptions
     )
       .then((response) => response.json())
