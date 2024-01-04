@@ -48,8 +48,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
     const [selectedContractedServiceProvider, setSelectedContractedServiceProvider] = useState([]);
     const [selectedContractedServiceProviderToSend, setSelectedContractedServiceProviderToSend] = useState([]);
     const [user, setUsers] = useState([]);
-    const [from, setFrom] = useState(startOfWeek(new Date()));
-    const [to, setTo] = useState(endOfWeek(new Date()));
+    const [from, setFrom] = useState(startOfMonth(new Date()));
+    const [to, setTo] = useState(endOfMonth(new Date()));
     let reportFilter = JSON.parse(sessionStorage.getItem('reportFilter'));
     let reportCategory = {
         activitiesOrServices: 'ACTIVITY',

@@ -144,7 +144,11 @@ const SiteUsers = ({ getActiveStep }) => {
   };
 
   const getContracts = async () => {
+<<<<<<< HEAD
     await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/contract-managment-service/contracts`, {
+=======
+    await axios(`http://ec2-35-175-13-4.compute-1.amazonaws.com:8010/contract-managment-service/contracts`, {
+>>>>>>> 5eae0c2cb60da0945cbac107a591d30987f047d1
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
