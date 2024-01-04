@@ -32,7 +32,7 @@ import SideBar from '../../Components/Sidebar';
 import PreImplementationDataDialog from './preImplementationDataDialog';
 import ReviewAndApprovalStatusSummary from './reviewAndApprovalStatusSummary';
 
-const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts, getSelectedContract, getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page, getActiveContractView }) => {
+const ContractList = ({ isLoading, getSearchKey,searchKey, getDeleteDraftDialog, contracts, getSelectedContract, getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page, getActiveContractView }) => {
   const [selectedContractId, setSelectedContractId] = useState();
   const activeHeaderValues = ["", "", "CONTRACT TYPE", "ID",
     "",
@@ -460,7 +460,7 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
               </div>
               <div className={`${style.displayInRow} ${style.marginTop10} ${style.marginLeft} ${style.verticalAlignCenter}`}>
                 <div className={style.marginLeft}>
-                  <SearchBar getSearchKey={getSearchKey} />
+                  <SearchBar getSearchKey={getSearchKey} searchKey={searchKey} />
                 </div>
                 {
                   //   <div className={`${isDownloadClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft}`} onClick={() => setIsDownloadClicked(!isDownloadClicked)}>
