@@ -124,7 +124,7 @@ const ContractIdTermLimitIndividual = ({
   const [unassignedKeys, setUnassignedKeys] = useState([]);
   const [showSaveInProgress, setShowSaveInProgress] = useState(false);
   const [fileItems, setFileItems] = useState([]);
-  const [isAggregationNeeded, setIsAggregationNeeded] = useState(false);
+  const [isAggregationNeeded, setIsAggregationNeeded] = useState(true);
   const contractStatus = sessionStorage.getItem("Selected Contract Status");
 
   useEffect(() => {

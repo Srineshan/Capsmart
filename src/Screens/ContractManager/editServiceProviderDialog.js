@@ -263,16 +263,16 @@ const EditServiceProvider = ({
       setRoles(roles);
     }
     let temp = selectedRoles;
-    if (
-      !selectedRoles?.map((data) => data?.roleName)?.includes("Activity Logger")
-    ) {
-      temp.push(
-        roles
-          ?.filter((role) => role?.roleName === "Activity Logger")
-          ?.map((data) => data)[0]
-      );
-      setSelectedRoles(temp);
-    }
+    // if (
+    //   !selectedRoles?.map((data) => data?.roleName)?.includes("Activity Logger")
+    // ) {
+    //   temp.push(
+    //     roles
+    //       ?.filter((role) => role?.roleName === "Activity Logger")
+    //       ?.map((data) => data)[0]
+    //   );
+    setSelectedRoles(temp);
+    // }
   };
 
   const handleUserData = (name, value) => {
@@ -555,11 +555,11 @@ const EditServiceProvider = ({
         title: "",
       },
       email: {
-        officialEmail: userDetails?.email,
+        officialEmail: userDetails?.email?.trim(),
       },
-      ssoId: userDetails?.ssoId,
+      ssoId: userDetails?.ssoId?.trim(),
       communication: {
-        personalEmail: userDetails?.email,
+        personalEmail: userDetails?.email?.trim(),
         mobileNumber: userDetails?.phone,
         landlineNumber: "",
         mobileNumberNotApplicable: phoneNA,
@@ -1073,7 +1073,7 @@ const EditServiceProvider = ({
                   )?.length === 0
                     ? roles?.map((data) => data?.roleName)
                     : roles
-                      ?.filter((data) => data?.roleName !== "Aggregator")
+                      ?.filter((data) => data?.roleName !== "Aggregator" && data?.roleName !== "Activity Logger")
                       ?.map((data) => data?.roleName)
                 }
                 labelList={
@@ -1084,7 +1084,7 @@ const EditServiceProvider = ({
                   )?.length === 0
                     ? roles?.map((data) => data?.roleName)
                     : roles
-                      ?.filter((data) => data?.roleName !== "Aggregator")
+                      ?.filter((data) => data?.roleName !== "Aggregator" && data?.roleName !== "Activity Logger")
                       ?.map((data) => data?.roleName)
                 }
                 disabledList={
@@ -1095,7 +1095,7 @@ const EditServiceProvider = ({
                   )?.length === 0
                     ? roles?.map((data) => false)
                     : roles
-                      ?.filter((data) => data?.roleName !== "Aggregator")
+                      ?.filter((data) => data?.roleName !== "Aggregator" && data?.roleName !== "Activity Logger")
                       ?.map((data) => false)
                 }
               />

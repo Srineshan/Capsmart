@@ -456,6 +456,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
 
 
   const handleTimeSheetWorkFlow = (name, reviewer, approver, activeTab) => {
+    console.log('user data', getSelectedUserDetails(reviewer));
     let data = {
       "name": {
         "name": name
@@ -467,27 +468,32 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
               "id": reviewer,
               "title": { id: absence?.reviewerTitle?.id, title: absence?.reviewerTitle?.title },
               "name": {
-                "name": getSelectedUserDetails(reviewer)?.name?.firstName || '',
+                "name": getSelectedUserDetails(reviewer)?.name?.firstName + " " + getSelectedUserDetails(reviewer)?.name?.middleName + " " + getSelectedUserDetails(reviewer)?.name?.lastName,
+                "firstName": getSelectedUserDetails(reviewer)?.name?.firstName,
+                "middleName": getSelectedUserDetails(reviewer)?.name?.middleName,
+                "lastName": getSelectedUserDetails(reviewer)?.name?.lastName,
               },
-              "suffix": getSelectedUserDetails(reviewer)?.name?.suffix
+              "suffix": {
+                "id": getSelectedUserDetails(reviewer)?.name?.suffix?.id,
+                "suffix": getSelectedUserDetails(reviewer)?.name?.suffix?.suffix,
+              },
+              "workFlowStatus": {
+                "status": "APPROVED"
+              }
             },
-            "workFlowStatus": {
-              "status": "APPROVED"
-            }
-          },
+          }
         }
       }
     }
-    return data;
+    return data
   }
 
-  const updateWorkflow = async (workflowId, workFlowName, type) => {
+  const updateWorkflow = async (workFlowData, workflowId, workFlowName, type) => {
     let workFlowValue = {
       "workFlow": {
         "id": workflowId,
-        "workFlowName": {
-          "name": workFlowName,
-        }
+        "name": workFlowName,
+        "workFlowMap": workFlowData?.workFlowMap,
       },
       "workFlowRequired": addApprover,
     };
@@ -527,7 +533,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
         console.log('inside post id is empty')
         await POST(`timesheet-management-service/workflow`, JSON.stringify(data))
           .then(response => {
-            updateWorkflow(response?.data, workFlowName, type);
+            updateWorkflow(data, response?.data, workFlowName, type);
           })
           .catch(error => {
             ErrorToaster('Unexpected Error');
@@ -537,7 +543,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
         console.log('inside put id has value')
         await PUT(`timesheet-management-service/workflow/${id}`, data)
           .then(response => {
-            updateWorkflow(absence.id, workFlowName, type);
+            updateWorkflow(data, absence.id, workFlowName, type);
             console.log('Success!');
           })
           .catch(error => {
