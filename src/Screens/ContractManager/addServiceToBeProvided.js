@@ -505,7 +505,7 @@ const AddServiceProvided = ({
       temp?.map((data, index) => {
         data.serviceLocations = data?.locationSpecified
           ? data?.locations
-          : locationItems;
+          : [];
         data.performingActivity = data?.activities
           ?.map((data) => data?.activity)
           ?.join("-");
@@ -627,7 +627,7 @@ const AddServiceProvided = ({
       temp?.map((data, index) => {
         data.serviceLocations = data?.locationSpecified
           ? data?.locations
-          : locationItems;
+          : [];
         data.patientMRNRequired = data?.patientMRNRequired;
         data.cptcodeRequired = data?.cptcodeRequired;
         data.reasonRequired = data?.reasonRequired;
@@ -1166,10 +1166,10 @@ const AddServiceProvided = ({
             (serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE)
               ? dataValues?.locationSpecified
                 ? dataValues?.locations
-                : locationItems
+                : []
               : showLocation
                 ? selectedLocation
-                : locationItems,
+                : [],
           ...((serviceTypeTemplate === CLINIC ||
             serviceTypeTemplate === PROCEDUREREADING) && {
             contractedSchedules: metadata?.contractedSchedules,
