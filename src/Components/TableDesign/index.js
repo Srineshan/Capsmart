@@ -149,7 +149,7 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, hidePagination, 
                     ))}
                 </div>
                 <div className={`${scrollStyle}`}>
-                    {tableData?.legth !== 0 ? tableData?.map((data, index) => (
+                    {tableData?.length !== 0 ? tableData?.map((data, index) => (
                         <>
                             <div className={`${style.tableData} ${gridStyle} ${index % 2 === 0 && style.alternativeBackgroundColor}`} key={index}>
                                 {tableDataValues?.map((tableData, tableDataIndex) => (

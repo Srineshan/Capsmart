@@ -41,7 +41,7 @@ const Contracts = () => {
 
     useEffect(() => {
         getContracts();
-    }, [selectedContract, searchKey, page, newContractFromClone])
+    }, [selectedContract, searchKey, page, newContractFromClone, totalCount])
 
     useEffect(() => {
         sessionStorage.setItem('isEditable', selectedContract !== 'draft' ? false : true)
@@ -52,6 +52,7 @@ const Contracts = () => {
     }, [sessionStorage?.getItem('isEditable')])
 
     const getSelectedContract = (value) => {
+        setSearchKey("");
         setSelectedContract(value);
         setPage(1);
     }
@@ -166,6 +167,7 @@ const Contracts = () => {
                     totalCount={totalCount}
                     page={page}
                     getActiveContractView={getActiveContractView}
+                    searchKey={searchKey}
                 />
 
                 {extensionDialog && (
