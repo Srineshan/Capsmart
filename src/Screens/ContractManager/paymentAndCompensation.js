@@ -3,6 +3,8 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
+// import CurrencyInput from 'react-currency-input-field';
+import CurrencyFormat from 'react-currency-format';
 import { GET, PUT } from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import LoadingScreen from '../../Components/LoadingScreen';
@@ -175,6 +177,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
     }, [contractId])
 
     const updateTimesheetPayment = (value, name, index) => {
+        console.log(value, name, index)
         let temp = timesheetPayments;
         temp?.filter((data, indexVal) => index === indexVal)?.map(data => {
             if (name === 'maxPaymentPerContract') {
@@ -277,7 +280,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                 <>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                         <CommonLabel value='Fixed Compensation Value Per Timesheet Submission*' />
-                                        <CommonTextField
+                                        {/* <CommonTextField
                                             className={style.twoFieldWidth}
                                             // type="number"
                                             min="0"
@@ -286,7 +289,11 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                             }}
                                             onChange={(e) => fixedCompensationValue(e.target.value.slice(0, limit9).replace(/,/g, ""), 'maxPaymentPerTimesheetSubmission', i)}
                                             value={Number(timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission || 0)?.toLocaleString()}
-                                        />
+                                        /> */}
+                                        <div>
+                                            <CurrencyFormat thousandSeparator={true} prefix={'$'} value={timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission || 0} maxLength={13}
+                                                decimalScale={2} fixedDecimalScale={true} className={`${style.currencyFormatInput} ${style.twoFieldWidth}`} inputmode="numeric" onValueChange={(values) => fixedCompensationValue(values?.floatValue, 'maxPaymentPerTimesheetSubmission', i)} />
+                                        </div>
                                     </div>
                                     {compensationPolicy !== 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET' &&
                                         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -303,7 +310,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <CommonLabel value='Max. Compensation Value for Contract Period*' />
                                 <div className={style.displayInRow}>
-                                    <CommonTextField
+                                    {/* <CommonTextField
                                         className={style.twoFieldWidth}
                                         // type="number"
                                         min="0"
@@ -315,8 +322,23 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                     // onChange={(e) => updateTimesheetPayment(e.target.value.slice(0, limit9).replace(/,/g, ""), 'maxPaymentPerContract', i)}
                                     // value={Number(timesheetPayments?.[i]?.maxPaymentPerContract)?.toLocaleString()}
 
-                                    />
-                                    <CommonLabel className={`${style.marginLeft20} ${style.threeFieldWidth}`} value={`$ ${(timesheetPayments?.[i]?.maxPaymentPerContract / ((monthDiff(new Date(contractPeriod?.start), new Date(contractPeriod?.end))) / 12) || 0)?.toLocaleString(undefined, {
+                                    /> */}
+                                    {/* <CurrencyInput
+                                        key={i}
+                                        name="input-name"
+                                        placeholder="Please enter a number"
+                                        defaultValue={timesheetPayments?.[i]?.maxPaymentPerContract || 0}
+                                        value={timesheetPayments?.[i]?.maxPaymentPerContract || 0}
+                                        decimalsLimit={2}
+                                        prefix="$"
+                                        maxLength={12}
+                                        onValueChange={(value, name, values) => { updateTimesheetPayment(value, 'maxPaymentPerContract', i); console.log(value, name, values) }}
+                                    /> */}
+                                    <div>
+                                        <CurrencyFormat thousandSeparator={true} prefix={'$'} value={timesheetPayments?.[i]?.maxPaymentPerContract || 0} maxLength={13}
+                                            decimalScale={2} fixedDecimalScale={true} className={`${style.currencyFormatInput} ${style.twoFieldWidth}`} inputmode="numeric" onValueChange={(values) => updateTimesheetPayment(values?.floatValue, 'maxPaymentPerContract', i)} />
+                                    </div>
+                                    <CommonLabel className={`${style.marginLeft20} ${style.twoFieldWidth}`} value={`$ ${(timesheetPayments?.[i]?.maxPaymentPerContract / ((monthDiff(new Date(contractPeriod?.start), new Date(contractPeriod?.end))) / 12) || 0)?.toLocaleString(undefined, {
                                         minimumFractionDigits: 2,
                                         maximumFractionDigits: 2
                                     })} Per Contract Year`} />
