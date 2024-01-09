@@ -909,7 +909,7 @@ const ReportTypeOverview = () => {
             currentStatus.push(availableTimesheetStatus[data?.timesheet?.timesheetStatus?.status]);
             statusDate.push(format(new Date(data?.timesheet?.lastModifiedDate || new Date()), 'd MMM yyyy'));
             paymentStatus.push(data?.payment !== null ? 'Paid' : '-');
-            paymentAmount.push(data?.payment !== null ? data?.payment?.actualPayment?.payment : '-');
+            paymentAmount.push(`${data?.payment !== null ? `$${data?.payment?.actualPayment?.payment}` : '-'}`);
             paymentDate.push(data?.payment !== null ? format(new Date(data?.payment?.paymentDate?.date || new Date()), 'd MMM yyyy') : '-')
         })
 
