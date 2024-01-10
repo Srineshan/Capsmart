@@ -102,9 +102,7 @@ const Login = (props) => {
     );
   };
 
-  const login = () => {
-
-  }
+  const login = () => { };
 
   return (
     <div className={`${style.loginGrid} ${style.loginBackground}`}>

@@ -44,3 +44,5 @@ export const GetDateFromHours = (time) => {
   let now = new Date();
   return new Date(now.getFullYear(), now.getMonth(), now.getDate(), ...time);
 }
+
+export const preventNegativeValues = (e) => ["e", "E", "+", "-"].includes(e.key) && e.preventDefault()

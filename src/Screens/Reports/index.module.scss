@@ -832,8 +832,14 @@
 
 .individualServiceReportGrid {
     display: grid;
-    grid-template-columns: 11% 11% 11% 11% 11% 11% 11% 11%;
-    grid-gap: 20px;
+    grid-template-columns: 14% 14% 14% 14% 14% 13% 13%;
+    grid-gap: 0.5%;
+}
+
+.multipleServiceReportGrid {
+    display: grid;
+    grid-template-columns: 12% 12% 12% 12% 12% 12% 12% 12%;
+    grid-gap: 0.5%;
 }
 
 .grid12 {

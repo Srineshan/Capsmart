@@ -116,7 +116,7 @@ const OnCallCoverageFieldsBackup = ({
     weekdayTo: null,
     weekdayDuration: 0,
     weekdayMin: 0,
-    weekdayMax: 0,
+    weekdayMax: 99999999,
     weekdayPayment: 0,
     weekdayPaymentNa: false,
     weekdayFrequency: "WEEK",
@@ -126,7 +126,7 @@ const OnCallCoverageFieldsBackup = ({
     weekdayNightsTo: null,
     weekdayNightsDuration: 0,
     weekdayNightsMin: 0,
-    weekdayNightsMax: 0,
+    weekdayNightsMax: 99999999,
     weekdayNightsPayment: 0,
     weekdayNightsPaymentNa: false,
     weekdayNightsFrequency: "WEEK",
@@ -138,7 +138,7 @@ const OnCallCoverageFieldsBackup = ({
     weekendEndday: "",
     weekendDuration: 0,
     weekendMin: 0,
-    weekendMax: 0,
+    weekendMax: 99999999,
     weekendPayment: 0,
     weekendPaymentNa: false,
     weekendFrequency: "WEEK",
@@ -150,7 +150,7 @@ const OnCallCoverageFieldsBackup = ({
     holidayTerm: "PRIOR_DAY",
     holidayDuration: 0,
     holidayMin: 0,
-    holidayMax: 0,
+    holidayMax: 99999999,
     holidayPayment: 0,
     holidayPaymentNa: false,
     encounterDocumentationRequired: true,
@@ -225,7 +225,7 @@ const OnCallCoverageFieldsBackup = ({
       weekdayTo: null,
       weekdayDuration: 0,
       weekdayMin: 0,
-      weekdayMax: 0,
+      weekdayMax: 99999999,
       weekdayPayment: 0,
       weekdayPaymentNa: false,
       weekdayFrequency: "WEEK",
@@ -235,7 +235,7 @@ const OnCallCoverageFieldsBackup = ({
       weekdayNightsTo: null,
       weekdayNightsDuration: 0,
       weekdayNightsMin: 0,
-      weekdayNightsMax: 0,
+      weekdayNightsMax: 99999999,
       weekdayNightsPayment: 0,
       weekdayNightsPaymentNa: false,
       weekdayNightsFrequency: "WEEK",
@@ -247,7 +247,7 @@ const OnCallCoverageFieldsBackup = ({
       weekendEndday: "",
       weekendDuration: 0,
       weekendMin: 0,
-      weekendMax: 0,
+      weekendMax: 99999999,
       weekendPayment: 0,
       weekendPaymentNa: false,
       weekendFrequency: "WEEK",
@@ -259,7 +259,7 @@ const OnCallCoverageFieldsBackup = ({
       holidayTerm: "PRIOR_DAY",
       holidayDuration: 0,
       holidayMin: 0,
-      holidayMax: 0,
+      holidayMax: 99999999,
       holidayPayment: 0,
       holidayPaymentNa: false,
       encounterDocumentationRequired: true,
@@ -281,7 +281,7 @@ const OnCallCoverageFieldsBackup = ({
         weekdayTo: null,
         weekdayDuration: 0,
         weekdayMin: 0,
-        weekdayMax: 0,
+        weekdayMax: 99999999,
         weekdayPayment: 0,
         weekdayPaymentNa: false,
         weekdayFrequency: "WEEK",
@@ -291,7 +291,7 @@ const OnCallCoverageFieldsBackup = ({
         weekdayNightsTo: null,
         weekdayNightsDuration: 0,
         weekdayNightsMin: 0,
-        weekdayNightsMax: 0,
+        weekdayNightsMax: 99999999,
         weekdayNightsPayment: 0,
         weekdayNightsPaymentNa: false,
         weekdayFrequency: "WEEK",
@@ -303,7 +303,7 @@ const OnCallCoverageFieldsBackup = ({
         weekendEndday: "",
         weekendDuration: 0,
         weekendMin: 0,
-        weekendMax: 0,
+        weekendMax: 99999999,
         weekendPayment: 0,
         weekendPaymentNa: false,
         weekendFrequency: "WEEK",
@@ -317,7 +317,7 @@ const OnCallCoverageFieldsBackup = ({
         holidayPayment: 0,
         holidayPaymentNa: false,
         holidayMin: 0,
-        holidayMax: 0,
+        holidayMax: 99999999,
         patientMRNRequired: false,
         attendingDocRequired: false,
         encounterDocumentationRequired: true,
@@ -799,7 +799,7 @@ const OnCallCoverageFieldsBackup = ({
           ...metadata,
           [name]: value,
           weekdayMin: 0,
-          weekdayMax: 0,
+          weekdayMax: 99999999,
         });
       }
       if (name === "weekdayNightsFrequency") {
@@ -807,7 +807,7 @@ const OnCallCoverageFieldsBackup = ({
           ...metadata,
           [name]: value,
           weekdayNightsMin: 0,
-          weekdayNightsMax: 0,
+          weekdayNightsMax: 99999999,
         });
       }
       if (name === "weekendFrequency") {
@@ -815,7 +815,7 @@ const OnCallCoverageFieldsBackup = ({
           ...metadata,
           [name]: value,
           weekendMin: 0,
-          weekendMax: 0,
+          weekendMax: 99999999,
         });
       }
       if (name === "holidayFrequency") {
@@ -823,7 +823,7 @@ const OnCallCoverageFieldsBackup = ({
           ...metadata,
           [name]: value,
           holidayMin: 0,
-          holidayMax: 0,
+          holidayMax: 99999999,
         });
       }
     } else {
@@ -1051,7 +1051,7 @@ const OnCallCoverageFieldsBackup = ({
                     "weekdayMax"
                   )
                 }
-                value={metadata?.weekdayMax === 0 ? "" : metadata?.weekdayMax}
+                value={(metadata?.weekdayMax === 0 || metadata?.weekdayMax === 99999999) ? '' : metadata?.weekdayMax}
                 type="number"
                 disabled={
                   metadata?.weekdayFrequency === "NA" ||
@@ -1271,8 +1271,9 @@ const OnCallCoverageFieldsBackup = ({
                     "weekdayNightsMax"
                   )
                 }
+
                 value={
-                  metadata?.weekdayNightsMax === 0
+                  (metadata?.weekdayNightsMax === 0 || metadata?.weekdayNightsMax === 99999999)
                     ? ""
                     : metadata?.weekdayNightsMax
                 }
@@ -1596,7 +1597,7 @@ const OnCallCoverageFieldsBackup = ({
                     "weekendMax"
                   )
                 }
-                value={metadata?.weekendMax === 0 ? "" : metadata?.weekendMax}
+                value={(metadata?.weekendMax === 0 || metadata?.weekendMax === 99999999) ? "" : metadata?.weekendMax}
                 type="number"
                 disabled={
                   metadata?.weekendFrequency === "NA" ||
@@ -1849,7 +1850,7 @@ const OnCallCoverageFieldsBackup = ({
                     "holidayMax"
                   )
                 }
-                value={metadata?.holidayMax === 0 ? "" : metadata?.holidayMax}
+                value={(metadata?.holidayMax === 0 || metadata?.holidayMax === 99999999) ? "" : metadata?.holidayMax}
                 type="number"
                 disabled={
                   metadata?.holidayFrequency === "NA" ||

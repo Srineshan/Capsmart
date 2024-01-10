@@ -20,8 +20,10 @@ import CommonCheckBox from "../../Components/CommonFields/CommonCheckBox";
 import CommonSwitch from "../../Components/CommonFields/CommonSwitch";
 import CommonLabel from "../../Components/CommonFields/CommonLabel";
 import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
+import { valueCheck } from "./../../utils/valueCheck";
 
 import style from "./index.module.scss";
+import MissedMandatoryFieldAlert from "./missedMandatoryFieldAlert";
 
 const ContractedServicesProviderIndividual = ({
   getViewPage3,
@@ -95,7 +97,9 @@ const ContractedServicesProviderIndividual = ({
   const [ssoId, setSsoId] = useState(null);
   const [tempSite, setTempSite] = useState([]);
   const [CSPSubDomain, setCSPSubDomain] = useState("");
-  const contractStatus = sessionStorage.getItem('Selected Contract Status');
+  const [unassignedKeys, setUnassignedKeys] = useState([]);
+  const [showSaveInProgress, setShowSaveInProgress] = useState(false);
+  const contractStatus = sessionStorage.getItem("Selected Contract Status");
 
   useEffect(() => {
     getRoles();
@@ -448,7 +452,50 @@ const ContractedServicesProviderIndividual = ({
     return value;
   };
 
-  const handleSave = async (buttonType) => {
+  const mandatoryFieldCheck = (buttonType) => {
+    if (buttonType === "SaveInProgress") {
+      saveInProgresscheck();
+    } else {
+      handleSave("Continue");
+    }
+  };
+
+  const saveInProgresscheck = () => {
+    var keys = [];
+
+    if (serviceProviderType?.id === "") {
+      keys.push("Service Provider Type");
+    }
+    if (address?.addressLine === "") {
+      keys.push("Address");
+    }
+    if (siteLevel && siteTitleValues.length === 0) {
+      keys.push("Site Level Responsibility");
+    }
+    if (departmentLevel && departmentTitleValues?.length === 0) {
+      keys.push("Department Level Responsibility");
+    }
+    if (isUserPresent && rolesTags.length === 0) {
+      keys.push("Assign Contractor With App User Role");
+    }
+
+    setUnassignedKeys(keys);
+    if (keys?.length !== 0) {
+      setShowSaveInProgress(true);
+    } else {
+      handleSave("SaveInProgress");
+    }
+  };
+
+  const saveInProgressFunction = () => {
+    handleSave("SaveInProgress");
+  };
+
+  const getSaveInProgressAlert = (value) => {
+    setShowSaveInProgress(value);
+  };
+
+  const handleSave = async (buttonText) => {
     setContinueLoading(true);
     let roles = userProviderData?.roles || [];
     selectedRoles?.map((data) => {
@@ -481,7 +528,7 @@ const ContractedServicesProviderIndividual = ({
       return;
     } else if (
       (allowPersonalMail && !contractorEmail?.includes("@")) ||
-      allowPersonalMail && contractorEmail?.includes(`@${CSPSubDomain}`) ||
+      (allowPersonalMail && contractorEmail?.includes(`@${CSPSubDomain}`)) ||
       (allowPersonalMail && !contractorEmail?.includes("."))
     ) {
       ErrorToaster("Enter a Valid Personal Email");
@@ -511,16 +558,16 @@ const ContractedServicesProviderIndividual = ({
       contracts: getContractsData(),
       title: {},
       email: {
-        officialEmail: contractorEmail,
+        officialEmail: contractorEmail.trim(),
       },
-      ssoId: isUserPresent ? ssoId : { id: contractorEmail },
+      ssoId: isUserPresent ? ssoId : { id: contractorEmail?.trim() },
       ...(!isUserPresent && {
         password: {
           password: "string",
         },
       }),
       communication: {
-        personalEmail: contractorEmail,
+        personalEmail: contractorEmail.trim(),
         mobileNumber: contractorPhone,
         landlineNumber: "string",
         mobileNumberNotApplicable: mobileNA,
@@ -560,12 +607,15 @@ const ContractedServicesProviderIndividual = ({
         });
     }
     setContinueLoading(false);
-    if (buttonType === "Continue") {
+
+    if (buttonText === "Continue") {
       getViewPage3(true);
       getCurrentPage("Contractor Business Entity");
     } else {
       getShowAlert(true);
     }
+    setUnassignedKeys([]);
+
     getTabDataStatus();
   };
 
@@ -704,6 +754,14 @@ const ContractedServicesProviderIndividual = ({
 
   console.log("dept", departmentTitleValues, "site", siteTitleValues);
 
+  const dataCheck = (value) => {
+    if (isUserPresent) {
+      return valueCheck(value);
+    } else {
+      return false;
+    }
+  };
+
   return (
     <div className={style.cloneBlockStyle}>
       <div className={`${style.newContractFromCloneBoxStyle}`}>
@@ -717,7 +775,12 @@ const ContractedServicesProviderIndividual = ({
               );
             }}
           >
-            <CommonLabel value="Service Provider Type*" />
+            <CommonLabel
+              value="Service Provider Type*"
+              className={
+                dataCheck(serviceProviderType?.id) ? style.redLable : ""
+              }
+            />
             {/* <div className={style.grid2}> */}
             <ProviderTypeList
               value={serviceProviderType?.id}
@@ -737,7 +800,14 @@ const ContractedServicesProviderIndividual = ({
               checkFieldAndPopAlert(npin, "NPIN");
             }}
           >
-            <CommonLabel value="NPIN*" />
+            <CommonLabel
+              value="NPIN*"
+              className={
+                !npinMissing &&
+                !npinNotApplicable &&
+                (dataCheck(npin) ? style.redLable : "")
+              }
+            />
             <div className={style.grid3}>
               <CommonInputField
                 className={style.fullWidth}
@@ -771,7 +841,10 @@ const ContractedServicesProviderIndividual = ({
             </div>
           </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <CommonLabel value="Contractor Name*" />
+            <CommonLabel
+              value="Contractor Name*"
+              className={dataCheck(contractorFirstName) ? style.redLable : ""}
+            />
             <div className={style.grid3}>
               <CommonInputField
                 className={style.fullWidth}
@@ -820,7 +893,12 @@ const ContractedServicesProviderIndividual = ({
               checkFieldAndPopAlert(contractorNameSuffix?.id, "Suffix");
             }}
           >
-            <CommonLabel value="Suffix*" />
+            <CommonLabel
+              value="Suffix*"
+              className={
+                dataCheck(contractorNameSuffix?.id) ? style.redLable : ""
+              }
+            />
             <div className={style.grid3}>
               <SuffixList
                 value={contractorNameSuffix?.id}
@@ -837,7 +915,14 @@ const ContractedServicesProviderIndividual = ({
           </div>
 
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <CommonLabel value="Allow Use of Alternate/ Personal Email Address" />
+            <CommonLabel
+              value="Allow Use of Alternate/ Personal Email Address"
+              className={
+                allowPersonalMail && dataCheck(contractorEmail)
+                  ? style.redLable
+                  : ""
+              }
+            />
             <div className={style.displayInRow}>
               <CommonSwitch
                 className={`${style.flexLeft} ${style.switchFontStyle}`}
@@ -872,7 +957,10 @@ const ContractedServicesProviderIndividual = ({
                 checkFieldAndPopAlert(contractorEmail, "Email Contractor id");
               }}
             >
-              <CommonLabel value="Contract Entity Email*" />
+              <CommonLabel
+                value="Contract Entity Email*"
+                className={dataCheck(contractorEmail) ? style.redLable : ""}
+              />
               <div className={style.displayInRow}>
                 <CommonInputField
                   placeholder="Enter entity specific email"
@@ -901,7 +989,12 @@ const ContractedServicesProviderIndividual = ({
               checkFieldAndPopAlert(contractorPhone, "Cell Phone");
             }}
           >
-            <CommonLabel value="Cell Phone*" />
+            <CommonLabel
+              value="Cell Phone*"
+              className={
+                !mobileNA && dataCheck(contractorPhone) ? style.redLable : ""
+              }
+            />
             <div className={style.twoCol}>
               <div
                 className={`${style.displayInRow} ${style.verticalAlignCenter}`}
@@ -935,7 +1028,10 @@ const ContractedServicesProviderIndividual = ({
             </div>
           </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <CommonLabel value="Address" />
+            <CommonLabel
+              value="Address"
+              className={dataCheck(address?.addressLine) ? style.redLable : ""}
+            />
             <div>
               <CommonInputField
                 className={style.fullWidth}
@@ -999,7 +1095,12 @@ const ContractedServicesProviderIndividual = ({
             );
           }}
         >
-          <CommonLabel value="Site Level Responsibility*" />
+          <CommonLabel
+            value="Site Level Responsibility*"
+            className={
+              siteLevel && siteTitleValues.length === 0 ? style.redLable : ""
+            }
+          />
           <div>
             <div className={style.flexLeft}>
               <CommonSwitch
@@ -1071,7 +1172,9 @@ const ContractedServicesProviderIndividual = ({
                 <TagInput
                   values={siteTitleValues}
                   className={`${style.marginTop20}`}
-                  onRemove={contractStatus === "ACTIVE" ? () => { } : handleSiteRemove}
+                  onRemove={
+                    contractStatus === "ACTIVE" ? () => { } : handleSiteRemove
+                  }
                   separator={/[\s,]/}
                   addOnBlur={true}
                   addOnPaste={true}
@@ -1089,7 +1192,14 @@ const ContractedServicesProviderIndividual = ({
             );
           }}
         >
-          <CommonLabel value="Department Level Responsibility*" />
+          <CommonLabel
+            value="Department Level Responsibility*"
+            className={
+              departmentLevel && departmentTitleValues?.length === 0
+                ? style.redLable
+                : ""
+            }
+          />
           <div>
             <div className={style.flexLeft}>
               <CommonSwitch
@@ -1173,7 +1283,9 @@ const ContractedServicesProviderIndividual = ({
                   <TagInput
                     values={departmentTitleValues}
                     className={`${style.marginTop20}`}
-                    onRemove={contractStatus === "ACTIVE" ? () => { } : handleDeptRemove}
+                    onRemove={
+                      contractStatus === "ACTIVE" ? () => { } : handleDeptRemove
+                    }
                     separator={/[\s,]/}
                     addOnBlur={true}
                     addOnPaste={true}
@@ -1190,7 +1302,12 @@ const ContractedServicesProviderIndividual = ({
             checkFieldAndPopAlert(true, "Assign Contractor With App User Role");
           }}
         >
-          <CommonLabel value="Assign Contractor With App User Role*" />
+          <CommonLabel
+            value="Assign Contractor With App User Role*"
+            className={
+              isUserPresent && rolesTags.length === 0 ? style.redLable : ""
+            }
+          />
           <div>
             <CommonSelectField
               onChange={(e) => handleRoles(e.target.value)}
@@ -1223,7 +1340,9 @@ const ContractedServicesProviderIndividual = ({
             <button
               className={`${style.newContractOutlinedButton}  ${style.cursorPointer
                 } ${continueLoading ? style.disabled : ""}`}
-              onClick={() => !continueLoading && handleSave("Save In Progress")}
+              onClick={() =>
+                !continueLoading && mandatoryFieldCheck("SaveInProgress")
+              }
             >
               SAVE IN-PROGRESS
             </button>
@@ -1232,7 +1351,7 @@ const ContractedServicesProviderIndividual = ({
                 }  ${style.cursorPointer} ${continueLoading ? style.disabled : ""
                 }`}
               onClick={() => {
-                !continueLoading && handleSave("Continue");
+                !continueLoading && mandatoryFieldCheck("Continue");
               }}
             >
               CONTINUE
@@ -1240,6 +1359,13 @@ const ContractedServicesProviderIndividual = ({
           </div>
         </div>
       )}
+
+      <MissedMandatoryFieldAlert
+        alert={showSaveInProgress}
+        getSaveInProgressAlert={getSaveInProgressAlert}
+        fieldData={unassignedKeys}
+        saveInProgressFunction={saveInProgressFunction}
+      />
     </div>
   );
 };

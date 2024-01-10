@@ -1,11 +1,12 @@
 import React from 'react';
 import Chart from 'react-apexcharts';
 
-const ApexLineChart = ({ lineData }) => {
+const ApexLineChart = ({ lineData, lineCategory }) => {
 
     const chartData = {
         series: [
             {
+                name: lineCategory,
                 data: lineData?.map(data => data?.value)
             }
         ],

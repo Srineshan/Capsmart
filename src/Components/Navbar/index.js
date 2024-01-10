@@ -67,6 +67,7 @@ const Navbar = () => {
   const [isSystemAdministrationAvailable, setIsSystemAdministrationAvailable] =
     useState(false);
   const [isSupportAvailable, setIsSupportAvailable] = useState(false);
+  let selectedWorkingMode = sessionStorage.getItem('SelectedWorkingMode');
 
   useEffect(() => {
     if (currentUserRoles?.includes("Activity Logger")) {
@@ -80,7 +81,7 @@ const Navbar = () => {
       currentUserRoles?.includes("Reviewer") ||
       currentUserRoles?.includes("Approver")
     ) {
-      setIsActivityServiceLogAvailable(true);
+      // setIsActivityServiceLogAvailable(true);
       setIsContractComplianceAvailable(true);
       setIsContractPerformanceAvailable(true);
       setIsPaymentsAvailable(true);
@@ -93,7 +94,7 @@ const Navbar = () => {
       setIsReviewsAndApprovalsAvailable(true);
     } else if (currentUserRoles?.includes("Contract Manager")) {
       setIsContractManagementAvailable(true);
-      setIsPaymentsAvailable(true);
+      // setIsPaymentsAvailable(true);
     } else if (
       currentUserRoles?.includes("Super Sys Admin") ||
       currentUserRoles?.includes("Entity Sys Admin") ||
@@ -197,9 +198,6 @@ const Navbar = () => {
     //   }
     // })
 
-
-
-
     // window.location.href = respose.headers?.get('Location')
     // axios.post(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/logout`, {
     //   // Add parameters here
@@ -220,16 +218,17 @@ const Navbar = () => {
     //     console.log(error);
     //   })
     await PUT(`logout`, null)
-      .then(response => {
-        const logouturi = response.headers['location'] || '';
-        cookies.remove("user", { path: '/' });
-        cookies.remove("entityId", { path: '/' });
+      .then((response) => {
+        const logouturi = response.headers["location"] || "";
+        cookies.remove("user", { path: "/" });
+        cookies.remove("entityId", { path: "/" });
         if (logouturi) {
           window.location.href = logouturi;
         }
-      }).catch(error => {
-        ErrorToaster('Unexpected Error');
       })
+      .catch((error) => {
+        ErrorToaster("Unexpected Error");
+      });
   };
 
   useEffect(() => {
@@ -296,6 +295,8 @@ const Navbar = () => {
     }
   };
 
+  console.log(selectedWorkingMode)
+
   return (
     <div className={style.navbarStyle}>
       <div className={style.spaceBetween}>
@@ -310,7 +311,7 @@ const Navbar = () => {
               }`}
             onClick={homeRoute}
           >
-            <p>HOME - {currentUserRoles?.[0]?.toUpperCase()}</p>
+            <p>HOME - {(selectedWorkingMode !== null && selectedWorkingMode !== '' && selectedWorkingMode !== undefined) ? selectedWorkingMode : currentUserRoles?.[0]?.toUpperCase()}</p>
           </div>
 
           {
@@ -324,7 +325,8 @@ const Navbar = () => {
           }
           <div>
             <div
-              className={`${style.menuStyle} ${(window.location.pathname.includes("/reports") || window.location.pathname.includes("/reportTypeOverview")) &&
+              className={`${style.menuStyle} ${(window.location.pathname.includes("/reports") ||
+                window.location.pathname.includes("/reportTypeOverview")) &&
                 style.activeMenuColor
                 }`}
               ref={popoverAnchor}
@@ -366,7 +368,10 @@ const Navbar = () => {
                     </Link>
                   )}
                   {isTimesheetsAvailable && (
-                    <Link to={'/reports/timesheets'} className={style.noFontStyle}>
+                    <Link
+                      to={"/reports/timesheets"}
+                      className={style.noFontStyle}
+                    >
                       <div className={style.options}>Timesheets</div>
                     </Link>
                   )}
@@ -377,11 +382,14 @@ const Navbar = () => {
                                     <div className={style.options}>Task Management</div>
                                 </Link> */}
                   {isPaymentsAvailable && (
-                    <Link to={"/reports/payments"} className={style.noFontStyle}>
+                    <Link
+                      to={"/reports/payments"}
+                      className={style.noFontStyle}
+                    >
                       <div className={style.options}>Payments</div>
                     </Link>
                   )}
-                  {/* {isContractManagementAvailable && (
+                  {isContractManagementAvailable && (
                     <Link
                       to={"/reports/contractManagement"}
                       className={style.noFontStyle}
@@ -389,6 +397,7 @@ const Navbar = () => {
                       <div className={style.options}>Contract Management</div>
                     </Link>
                   )}
+                  {/*
                   {isContractComplianceAvailable && (
                     <Link
                       to={"/reports/contractCompliance"}
@@ -449,7 +458,11 @@ const Navbar = () => {
                       </Link>
                     )}
                     <Link
-                      to={isSuperAdminAccess ? "/partnerPortal" : `/entitySetup/${TenantID}/appSubscription`}
+                      to={
+                        isSuperAdminAccess
+                          ? "/partnerPortal"
+                          : `/entitySetup/${TenantID}/appSubscription`
+                      }
                       className={style.noFontStyle}
                     >
                       <div className={style.options}>ENTITY MANAGEMENT</div>
@@ -459,7 +472,7 @@ const Navbar = () => {
               </div>
             </div>
           )}
-          {/* <div>
+          <div>
             <div
               className={`${style.menuStyle} ${window.location.pathname === "/help" && style.activeMenuColor
                 }`}
@@ -497,7 +510,7 @@ const Navbar = () => {
                 </div>
               </Popover>
             </div>
-          </div> */}
+          </div>
         </div>
         <div className={style.displayInRow}>
           {/* {!window.location.pathname.includes('reportTypeOverview') && (
@@ -511,7 +524,10 @@ const Navbar = () => {
           <img src={NotificationsIcon} alt="print" className={style.icons} />
           <img src={RedBackground} alt="print" className={style.notificationIcon} />
           <img src={NotificationCount} alt="print" className={style.notificationCount} /> */}
-          <div className={`${style.logoutStyle} ${style.cursorPointer}`} onClick={logout}>
+          <div
+            className={`${style.logoutStyle} ${style.cursorPointer}`}
+            onClick={logout}
+          >
             <p>Logout</p>
           </div>
           <img

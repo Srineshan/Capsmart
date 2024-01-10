@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
-import { InputGroup, Icon } from '@blueprintjs/core';
+import React, { useState } from "react";
+import { InputGroup, Icon } from "@blueprintjs/core";
 import axios from "axios";
 import { Auth } from "./../../utils/auth";
 import { TenantID, GET } from "./../dataSaver";
 
-
-import style from './index.module.scss';
+import style from "./index.module.scss";
 
 const Notify = () => {
   const [userId, setUserId] = useState('');

@@ -27,7 +27,7 @@ const ClinicBlocksFields = ({
   editService,
 }) => {
   const [selectedScheduleRow, setSelectedScheduleRow] = useState();
-  const contractStatus = sessionStorage.getItem('Selected Contract Status');
+  const contractStatus = sessionStorage.getItem("Selected Contract Status");
   const [
     addScheduleAndTargetForDifferentPeriods,
     setAddScheduleAndTargetForDifferentPeriods,
@@ -238,19 +238,19 @@ const ClinicBlocksFields = ({
 
   const onNewClinicChange = (value, index, type) => {
     let contractedScheduleTemp = metadata?.contractedSchedules;
-    contractedScheduleTemp[index] = {
+    contractedScheduleTemp.push({
       minimum: {
         value: parseFloat(value?.min),
       },
       maximum: {
-        value: parseFloat(value?.max),
+        value: parseFloat(value?.max) === 0 ? 99999999 : parseFloat(value?.max),
       },
       frequency: value?.frequency,
       startDate: format(new Date(value?.startDate), "yyyy-MM-dd").toString(),
       endDate: format(new Date(value?.endDate), "yyyy-MM-dd").toString(),
-    };
+    });
     let patientSeenTemp = metadata?.patientsSeenTargets;
-    patientSeenTemp[index] = {
+    patientSeenTemp.push({
       withNurse: {
         value: parseInt(value?.seenWithNurse),
       },
@@ -260,9 +260,9 @@ const ClinicBlocksFields = ({
       startDate: format(new Date(value?.startDate), "yyyy-MM-dd").toString(),
       endDate: format(new Date(value?.endDate), "yyyy-MM-dd").toString(),
       noTargetApplicable: value?.seenNoTarget,
-    };
+    });
     let targetTemp = metadata?.scheduledPatientsTargets;
-    targetTemp[index] = {
+    targetTemp.push({
       withNurse: {
         value: parseInt(value?.targetWithNurse),
       },
@@ -272,7 +272,7 @@ const ClinicBlocksFields = ({
       startDate: format(new Date(value?.startDate), "yyyy-MM-dd").toString(),
       endDate: format(new Date(value?.endDate), "yyyy-MM-dd").toString(),
       noTargetApplicable: value?.targetNoTarget,
-    };
+    });
     setMetadata({
       ...metadata,
       contractedSchedules: contractedScheduleTemp,
@@ -280,8 +280,9 @@ const ClinicBlocksFields = ({
       scheduledPatientsTargets: targetTemp,
     });
     setNewClinicRow(value);
-
-    getAddScheduleAndTargetForDifferentPeriods(false);
+    if (type === 'saveAndExit') {
+      getAddScheduleAndTargetForDifferentPeriods(false);
+    }
   };
 
   useEffect(() => {
@@ -475,7 +476,6 @@ const ClinicBlocksFields = ({
         value: 0,
       };
       temp[0]["frequency"] = value;
-
     } else if (name === "noTargetApplicable" && value) {
       temp[0][name] = value;
       temp[0]["withNurse"] = {
@@ -524,6 +524,8 @@ const ClinicBlocksFields = ({
       return false;
     }
   };
+
+  console.log(metadata)
 
   return (
     <div>
@@ -596,7 +598,9 @@ const ClinicBlocksFields = ({
                       </InputAdornment>
                     ),
                   }}
-                  disabled={metadata?.contractedSchedules?.[0]?.frequency === 'NA'}
+                  disabled={
+                    metadata?.contractedSchedules?.[0]?.frequency === "NA"
+                  }
                   className={style.threeFieldWidth}
                   onChange={(e) =>
                     onSameTargetChange(
@@ -629,7 +633,9 @@ const ClinicBlocksFields = ({
                       </InputAdornment>
                     ),
                   }}
-                  disabled={metadata?.contractedSchedules?.[0]?.frequency === 'NA'}
+                  disabled={
+                    metadata?.contractedSchedules?.[0]?.frequency === "NA"
+                  }
                   className={style.threeFieldWidth}
                   onChange={(e) =>
                     onSameTargetChange(
@@ -1000,7 +1006,7 @@ const ClinicBlocksFields = ({
               <p
                 className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`}
               >
-                {data?.maximum?.value || "-"}
+                {(data?.maximum?.value === 0 || data?.maximum?.value === 99999999) ? "-" : data?.maximum?.value}
               </p>
               <p
                 className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`}
@@ -1051,7 +1057,14 @@ const ClinicBlocksFields = ({
       )}
 
       <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-        <CommonLabel value="Additional Schedule*" />
+        <CommonLabel
+          value="Additional Schedule*"
+          className={
+            metadata?.additionalScheduleRequired &&
+            editService &&
+            (dataCheck(metadata?.additionalScheduleValue) ? style.redLable : "")
+          }
+        />
         <div className={`${style.grid3}`}>
           <div className={`${style.fullWidth}`}>
             <CommonSwitch

@@ -146,7 +146,7 @@ const ReportTypeOverview = () => {
 
     useEffect(() => {
         getUpdatedValuesWithParams();
-    }, [selectedPodTypeFromTile, dataToUseInReport?.from, dataToUseInReport?.to, dataToUseInReport?.selectedContracts, dataToUseInReport?.selectedContractedServiceProvider, dataToUseInReport?.selectedSites, dataToUseInReport?.selectedDepartments])
+    }, [selectedPodTypeFromTile, dataToUseInReport?.from, dataToUseInReport?.to, dataToUseInReport?.selectedContracts, dataToUseInReport?.selectedContractedServiceProvider, dataToUseInReport?.selectedSites, dataToUseInReport?.selectedDepartments, dataToUseInReport?.renewalreportingTimePeriod, dataToUseInReport?.contractContinuationPolicy])
 
     useEffect(() => {
         setApexStackedBarChartDisplay(<ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} />);
@@ -314,22 +314,25 @@ const ReportTypeOverview = () => {
         }
     }
 
-    const getAcvityAndServices = async () => {
-        if (!isMyReport) {
-            const { data: chartDataValues } = await GET(`timesheet-management-service/report/activityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
-            setActivitiesOrServicesValues(chartDataValues);
-        } else {
-            const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/activityServiceReport?id=${myReportId}`);
-            setActivitiesOrServicesValues(chartDataValues);
-        }
-    }
+    // const getAcvityAndServices = async () => {
+    //     if (!isMyReport) {
+    //         const { data: chartDataValues } = await GET(`timesheet-management-service/report/activityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
+    //         setActivitiesOrServicesValues(chartDataValues);
+    //     } else {
+    //         const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/activityServiceReport?id=${myReportId}`);
+    //         setActivitiesOrServicesValues(chartDataValues);
+    //     }
+    // }
 
     const setActivitiesOrServices = () => {
         setReportLog(activitiesOrServicesValues?.activities);
         if (activitiesOrServicesValues) {
             let temp = [];
-            activitiesOrServicesValues?.activityServiceReports?.map((pie, index) => {
-                temp[index] = { key: pie.activityStatus, value: pie.count }
+            // activitiesOrServicesValues?.activityServiceReports?.map((pie, index) => {
+            //     temp[index] = { key: pie.activityStatus, value: pie.count }
+            // })
+            Object?.keys(activitiesOrServicesValues?.activityServiceReports)?.map((data, index) => {
+                temp[index] = { key: data, value: Object?.values(activitiesOrServicesValues?.activityServiceReports)?.[index] }
             })
             setPieData(temp);
             let lineTemp = [];
@@ -388,25 +391,30 @@ const ReportTypeOverview = () => {
         showActivitiesOrServicesReport();
     }
 
-    const getAddOnServices = async () => {
-        if (!isMyReport) {
-            const { data: chartDataValues } = await GET(`timesheet-management-service/report/addOnActivityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
-            setAddOnServicesValues(chartDataValues);
-        } else {
-            const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/addOnActivityServiceReport?id=${myReportId}`);
-            setAddOnServicesValues(chartDataValues);
-        }
-    }
+    // const getAddOnServices = async () => {
+    //     if (!isMyReport) {
+    //         const { data: chartDataValues } = await GET(`timesheet-management-service/report/addOnActivityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
+    //         setAddOnServicesValues(chartDataValues);
+    //     } else {
+    //         const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/addOnActivityServiceReport?id=${myReportId}`);
+    //         setAddOnServicesValues(chartDataValues);
+    //     }
+    // }
 
     const setAddOnServices = () => {
         setAddOnAcceptedReportLog(addOnServicesValues?.approvedActivities);
         setAddOnRejectedReportLog(addOnServicesValues?.rejectedActivities);
         if (addOnServicesValues) {
             let temp = [];
-            addOnServicesValues?.addOnActivityServiceReports?.map((pie, index) => {
-                temp[index] = { key: pie.addOnActivityRequestStatus, value: pie.count }
-            })
-            setPieData(temp);
+            // addOnServicesValues?.addOnActivityServiceReports?.map((pie, index) => {
+            //     temp[index] = { key: pie.addOnActivityRequestStatus, value: pie.count }
+            // })
+            if (addOnServicesValues?.addOnActivityServiceReports !== null) {
+                Object?.keys(addOnServicesValues?.addOnActivityServiceReports)?.map((data, index) => {
+                    temp[index] = { key: data, value: Object?.values(addOnServicesValues?.addOnActivityServiceReports)?.[index] }
+                })
+                setPieData(temp);
+            }
             if (addOnServicesValues?.addOnActivityStatusByCategorys?.length !== 0) {
                 setSeries([{
                     'data': addOnServicesValues?.addOnActivityStatusByCategorys?.map(data => data?.approved),
@@ -417,12 +425,12 @@ const ReportTypeOverview = () => {
                     'name': 'In Progress'
                 },
                 {
-                    'data': addOnServicesValues?.addOnActivityStatusByCategorys?.map(data => data?.onhold),
-                    'name': 'On Hold'
-                },
-                {
                     'data': addOnServicesValues?.addOnActivityStatusByCategorys?.map(data => data?.rejected),
                     'name': 'Rejected'
+                },
+                {
+                    'data': addOnServicesValues?.addOnActivityStatusByCategorys?.map(data => data?.onhold),
+                    'name': 'On Hold'
                 }])
                 setCategories(addOnServicesValues?.addOnActivityStatusByCategorys?.map(data => data?.activity));
             } else {
@@ -461,8 +469,10 @@ const ReportTypeOverview = () => {
 
     const getAddOnServicesWithParameter = async () => {
         if (!isMyReport) {
-            const { data: chartDataValues } = await GET(`timesheet-management-service/report/addOnActivityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
-            setAddOnServicesValues(chartDataValues);
+            if (dataToUseInReport?.from !== undefined && dataToUseInReport?.to !== undefined && dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.selectedContractedServiceProvider !== undefined && dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
+                const { data: chartDataValues } = await GET(`timesheet-management-service/report/addOnActivityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
+                setAddOnServicesValues(chartDataValues);
+            }
         } else {
             const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/addOnActivityServiceReport?id=${myReportId}`);
             setAddOnServicesValues(chartDataValues);
@@ -471,8 +481,10 @@ const ReportTypeOverview = () => {
 
     const getAcvityAndServicesWithParameter = async () => {
         if (!isMyReport) {
-            const { data: chartDataValues } = await GET(`timesheet-management-service/report/activityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts || []}&users=${dataToUseInReport?.selectedContractedServiceProvider || []}&sites=${dataToUseInReport?.selectedSites || []}&departments=${dataToUseInReport?.selectedDepartments || []}`);
-            setActivitiesOrServicesValues(chartDataValues);
+            if (dataToUseInReport?.from !== undefined && dataToUseInReport?.to !== undefined && dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.selectedContractedServiceProvider !== undefined && dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
+                const { data: chartDataValues } = await GET(`timesheet-management-service/report/activityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts || []}&users=${dataToUseInReport?.selectedContractedServiceProvider || []}&sites=${dataToUseInReport?.selectedSites || []}&departments=${dataToUseInReport?.selectedDepartments || []}`);
+                setActivitiesOrServicesValues(chartDataValues);
+            }
         } else {
             const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/activityServiceReport?id=${myReportId}`);
             setActivitiesOrServicesValues(chartDataValues);
@@ -488,8 +500,10 @@ const ReportTypeOverview = () => {
     const getPayments = async () => {
         let chartData;
         if (!isMyReport) {
-            const { data: chartDataValues } = await GET(`timesheet-management-service/report/paymentProcessingSummary?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts || []}&users=${dataToUseInReport?.selectedContractedServiceProvider || []}`);
-            chartData = chartDataValues;
+            if (dataToUseInReport?.from !== undefined && dataToUseInReport?.to !== undefined && dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.selectedContractedServiceProvider !== undefined && dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
+                const { data: chartDataValues } = await GET(`timesheet-management-service/report/paymentProcessingSummary?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts || []}&users=${dataToUseInReport?.selectedContractedServiceProvider || []}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
+                chartData = chartDataValues;
+            }
         } else {
             const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/paymentProcessingSummary?id=${myReportId}`);
             chartData = chartDataValues;
@@ -525,8 +539,10 @@ const ReportTypeOverview = () => {
         if (filter === 'withoutParameter') {
             let chartData;
             if (!isMyReport) {
-                const { data: chartDataValues } = await GET(`timesheet-management-service/report/timesheetProcessingSummary?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
-                chartData = chartDataValues;
+                if (dataToUseInReport?.from !== undefined && dataToUseInReport?.to !== undefined && dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.selectedContractedServiceProvider !== undefined && dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
+                    const { data: chartDataValues } = await GET(`timesheet-management-service/report/timesheetProcessingSummary?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
+                    chartData = chartDataValues;
+                }
             } else {
                 const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/timesheetProcessingSummary?id=${myReportId}`);
                 chartData = chartDataValues;
@@ -535,8 +551,10 @@ const ReportTypeOverview = () => {
         } else {
             let chartData;
             if (!isMyReport) {
-                const { data: chartDataValues } = await GET(`timesheet-management-service/report/timesheetProcessingSummary?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
-                chartData = chartDataValues;
+                if (dataToUseInReport?.from !== undefined && dataToUseInReport?.to !== undefined && dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.selectedContractedServiceProvider !== undefined && dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
+                    const { data: chartDataValues } = await GET(`timesheet-management-service/report/timesheetProcessingSummary?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
+                    chartData = chartDataValues;
+                }
             } else {
                 const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/timesheetProcessingSummary?id=${myReportId}`);
                 chartData = chartDataValues;
@@ -557,7 +575,8 @@ const ReportTypeOverview = () => {
             Object.keys(timesheetProcessingSummaryData?.statusSummary?.payment)?.map((data, index) => {
                 tempStackedSeries.push({
                     'data': Object.keys(timesheetProcessingSummaryData?.statusSummary)?.map(stackedData => Object?.values(timesheetProcessingSummaryData?.statusSummary[stackedData])?.[index]),
-                    'name': data
+                    'name': data,
+                    'color': data === 'completed' ? '#1DD174' : data === 'pending' ? '#F46044' : '#FFD950'
                 })
                 setStackedSeries(tempStackedSeries);
             })
@@ -573,8 +592,10 @@ const ReportTypeOverview = () => {
         if (filter === 'withoutParameter') {
             let chartData;
             if (!isMyReport) {
-                const { data: chartDataValues } = await GET(`timesheet-management-service/report/notPaidTimesheets?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
-                chartData = chartDataValues;
+                if (dataToUseInReport?.from !== undefined && dataToUseInReport?.to !== undefined && dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.selectedContractedServiceProvider !== undefined && dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
+                    const { data: chartDataValues } = await GET(`timesheet-management-service/report/notPaidTimesheets?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
+                    chartData = chartDataValues;
+                }
             } else {
                 const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/notPaidTimesheets?id=${myReportId}`);
                 chartData = chartDataValues;
@@ -585,8 +606,10 @@ const ReportTypeOverview = () => {
         } else {
             let chartData;
             if (!isMyReport) {
-                const { data: chartDataValues } = await GET(`timesheet-management-service/report/notPaidTimesheets?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
-                chartData = chartDataValues;
+                if (dataToUseInReport?.from !== undefined && dataToUseInReport?.to !== undefined && dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.selectedContractedServiceProvider !== undefined && dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
+                    const { data: chartDataValues } = await GET(`timesheet-management-service/report/notPaidTimesheets?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
+                    chartData = chartDataValues;
+                }
             } else {
                 const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/notPaidTimesheets?id=${myReportId}`);
                 chartData = chartDataValues;
@@ -602,8 +625,10 @@ const ReportTypeOverview = () => {
         if (filter === 'withoutParameter') {
             let chartData;
             if (!isMyReport) {
-                const { data: chartDataValues } = await GET(`timesheet-management-service/report/submittedTimesheetsPaymentStatus?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
-                chartData = chartDataValues;
+                if (dataToUseInReport?.from !== undefined && dataToUseInReport?.to !== undefined && dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.selectedContractedServiceProvider !== undefined && dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
+                    const { data: chartDataValues } = await GET(`timesheet-management-service/report/submittedTimesheetsPaymentStatus?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
+                    chartData = chartDataValues;
+                }
             } else {
                 const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/submittedTimesheetsPaymentStatus?id=${myReportId}`);
                 chartData = chartDataValues;
@@ -614,8 +639,10 @@ const ReportTypeOverview = () => {
         } else {
             let chartData;
             if (!isMyReport) {
-                const { data: chartDataValues } = await GET(`timesheet-management-service/report/submittedTimesheetsPaymentStatus?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
-                chartData = chartDataValues;
+                if (dataToUseInReport?.from !== undefined && dataToUseInReport?.to !== undefined && dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.selectedContractedServiceProvider !== undefined && dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
+                    const { data: chartDataValues } = await GET(`timesheet-management-service/report/submittedTimesheetsPaymentStatus?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
+                    chartData = chartDataValues;
+                }
             } else {
                 const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/submittedTimesheetsPaymentStatus?id=${myReportId}`);
                 chartData = chartDataValues;
@@ -662,7 +689,7 @@ const ReportTypeOverview = () => {
     }
 
     const getOneTimeContractWithParameters = async () => {
-        const { data: oneTimeContract } = await GET(`contract-managment-service/reports/oneTimeContractReport?renewalDays=${dataToUseInReport?.renewalreportingTimePeriod}`);
+        const { data: oneTimeContract } = await GET(`contract-managment-service/reports/oneTimeContractReport?renewalDays=${dataToUseInReport?.renewalreportingTimePeriod}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
         if (oneTimeContract) {
             setOneTimeContract(oneTimeContract);
         }
@@ -690,6 +717,7 @@ const ReportTypeOverview = () => {
     let endDateTime = [];
     let contractProvider = [];
     let reasonNotDone = [];
+    let siteName = [];
 
     const getActivitiesServicesValues = (value) => {
         activityPerformed = [];
@@ -697,14 +725,14 @@ const ReportTypeOverview = () => {
         endDateTime = [];
         contractProvider = [];
         reasonNotDone = [];
+        siteName = [];
         reportLog?.filter(data => data?.activityStatus === value)?.map(data => {
             activityPerformed.push(data?.activityPerformed?.activity);
             startDateTime.push(`${format(new Date(data?.activityTimeFrame?.stateDate), 'MM-dd-yyyy')}, ${data?.activityTimeFrame?.startTime}`)
             endDateTime.push(`${format(new Date(data?.activityTimeFrame?.endDate), 'MM-dd-yyyy')}, ${data?.activityTimeFrame?.endTme}`)
-            user?.filter(user => user?.id === data?.user?.id)?.map(data => {
-                contractProvider.push(data?.name?.firstName)
-            });
+            contractProvider.push(data?.user?.name)
             reasonNotDone.push(data?.activityNotes?.notes);
+            siteName.push(data?.site?.name)
         })
 
         return value === "DONE" ? [
@@ -712,17 +740,17 @@ const ReportTypeOverview = () => {
             startDateTime,
             endDateTime,
             contractProvider,
-            ''
+            siteName
         ] : value === "TODO" ? [
             activityPerformed,
             startDateTime,
             contractProvider,
-            ''
+            siteName
         ] : [
             activityPerformed,
             startDateTime,
             contractProvider,
-            '',
+            siteName,
             reasonNotDone
         ];
     }
@@ -745,7 +773,7 @@ const ReportTypeOverview = () => {
         if (value === "Rejected") {
             addOnRejectedReportLog !== [] && addOnRejectedReportLog?.map(data => {
                 addonActivityServices.push(data?.activity?.activity?.activity);
-                requestDateTime.push(`${formatInTimeZone(new Date(data?.activity?.createdDate), 'America/New_York', 'MM-dd-yyyy, HH:mm')}`)
+                requestDateTime.push(`${format(new Date(data?.activity?.activityTimeFrame?.startDateTime), 'MM-dd-yyyy, HH:mm')}`)
                 rejectedDateTime.push(`${data?.logs?.filter(filterData => filterData?.workFlowAction === "REJECTED") !== [] ? formatInTimeZone(new Date(data?.logs?.filter(filterData => filterData?.workFlowAction === "REJECTED")?.[0]?.createdDate), 'America/New_York', 'MM-dd-yyyy, HH:mm') : '-'}`)
                 requestingProvider.push(data?.activity?.user?.name)
                 requestReviewer.push(data?.logs?.filter(filterData => filterData?.workFlowAction === "REJECTED") !== [] ? data?.logs?.filter(filterData => filterData?.workFlowAction === "REJECTED")?.[0]?.workFlowUser?.name?.name : '-');
@@ -755,7 +783,7 @@ const ReportTypeOverview = () => {
         if (value === "Approved") {
             addOnAcceptedReportLog !== [] && addOnAcceptedReportLog?.map(data => {
                 addonActivityServices.push(data?.activity?.activity?.activity);
-                requestDateTime.push(`${formatInTimeZone(new Date(data?.activity?.createdDate), 'America/New_York', 'MM-dd-yyyy, HH:mm')}`)
+                requestDateTime.push(`${format(new Date(data?.activity?.activityTimeFrame?.startDateTime), 'MM-dd-yyyy, HH:mm')}`)
                 rejectedDateTime.push(`${data?.logs?.filter(filterData => filterData?.workFlowAction === "APPROVED")?.length !== 0 ? formatInTimeZone(new Date(data?.logs?.filter(filterData => filterData?.workFlowAction === "APPROVED")?.[0]?.createdDate), 'America/New_York', 'MM-dd-yyyy, HH:mm') : '-'}`)
                 requestingProvider.push(data?.activity?.user?.name)
                 requestReviewer.push(data?.logs?.filter(filterData => filterData?.workFlowAction === "APPROVED")?.length !== 0 ? data?.logs?.filter(filterData => filterData?.workFlowAction === "APPROVED")?.[0]?.workFlowUser?.name?.name : '-');
@@ -818,7 +846,7 @@ const ReportTypeOverview = () => {
     let currentStatus = [];
     let invoiceAmount = [];
 
-    const getNotPaidTimesheetsValues = () => {
+    const getNotPaidTimesheetsValues = (data) => {
         timesheet = [];
         period = [];
         departmentAndSite = [];
@@ -826,15 +854,13 @@ const ReportTypeOverview = () => {
         invoiceAmount = [];
         serviceProvider = [];
 
-        notPaidTimesheetsData?.unPaidTimesheetsByContract?.map(data => {
-            data?.timesheets?.map(timesheetData => {
-                timesheet.push(timesheetData?.timesheetName);
-                period.push(`${format(new Date(timesheetData?.timesheetPeriod?.startDate) || new Date(), 'MMM dd')} - ${format(new Date(timesheetData?.timesheetPeriod?.endDate) || new Date(), 'MMM dd yyyy')}`)
-                departmentAndSite.push(`${Object.values(Object.values(timesheetData?.siteDepartmentDetails?.siteDepartmentDetailMap)?.[0]?.departmentMap)?.[0]?.name}, ${Object.values(timesheetData?.siteDepartmentDetails?.siteDepartmentDetailMap)?.[0]?.name}`)
-                currentStatus.push(availableTimesheetStatus[timesheetData?.timesheetStatus?.status]);
-                invoiceAmount.push(`$${timesheetData?.policyBasedPayment}`);
-                serviceProvider.push(timesheetData?.user?.name);
-            })
+        data?.timesheets?.map(timesheetData => {
+            timesheet.push(timesheetData?.timesheetName);
+            period.push(`${format(new Date(timesheetData?.timesheetPeriod?.startDate) || new Date(), 'MMM dd')} - ${format(new Date(timesheetData?.timesheetPeriod?.endDate) || new Date(), 'MMM dd yyyy')}`)
+            departmentAndSite.push(`${Object.values(Object.values(timesheetData?.siteDepartmentDetails?.siteDepartmentDetailMap)?.[0]?.departmentMap)?.[0]?.name}, ${Object.values(timesheetData?.siteDepartmentDetails?.siteDepartmentDetailMap)?.[0]?.name}`)
+            currentStatus.push(availableTimesheetStatus[timesheetData?.timesheetStatus?.status]);
+            invoiceAmount.push(`$${timesheetData?.policyBasedPayment}`);
+            serviceProvider.push(timesheetData?.user?.name);
         })
 
         return [
@@ -917,31 +943,31 @@ const ReportTypeOverview = () => {
         if (value === 'paidOnTime') {
             paymentsReportLog?.paidOnTime?.map(data => {
                 timeSheet.push(data?.timesheet?.timesheetName);
-                period.push(data?.payment ? `${format(new Date(data?.payment?.paymentPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.payment?.paymentPeriod?.endDate), 'MMM d yyyy')} ` : '-')
+                period.push(data?.payment !== null ? `${format(new Date(data?.payment?.paymentPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.payment?.paymentPeriod?.endDate), 'MMM d yyyy')} ` : `${format(new Date(data?.timesheet?.timesheetPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.timesheet?.timesheetPeriod?.endDate), 'MMM d yyyy')} `)
                 serviceProvider.push(data?.timesheet?.user?.name);
                 deptAndSite.push(`${Object.values(Object.values(data?.timesheet?.siteDepartmentDetails?.siteDepartmentDetailMap)?.[0]?.departmentMap)?.[0]?.name}, ${Object.values(data?.timesheet?.siteDepartmentDetails?.siteDepartmentDetailMap)?.[0]?.name}`)
-                invoiceAmount.push(data?.payment !== null ? `$ ${data?.payment?.expectedPayment?.payment} ` : '-');
-                paidAmount.push(data?.payment !== null ? `$ ${data?.payment?.actualPayment?.payment} ` : '-');
+                invoiceAmount.push(data?.payment !== null ? `$ ${data?.payment?.expectedPayment?.payment} ` : `$ ${data?.timesheet?.policyBasedPayment} `);
+                paidAmount.push(data?.payment !== null ? `$ ${data?.payment?.actualPayment?.payment} ` : `$ ${data?.timesheet?.paid} `);
             })
         }
         if (value === 'timesheetNotPaid') {
             paymentsReportLog?.paymentNotDone?.map(data => {
                 timeSheet.push(data?.timesheet?.timesheetName);
-                period.push(data?.payment !== null ? `${format(new Date(data?.payment?.paymentPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.payment?.paymentPeriod?.endDate), 'MMM d yyyy')} ` : '-')
+                period.push(data?.payment !== null ? `${format(new Date(data?.payment?.paymentPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.payment?.paymentPeriod?.endDate), 'MMM d yyyy')} ` : `${format(new Date(data?.timesheet?.timesheetPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.timesheet?.timesheetPeriod?.endDate), 'MMM d yyyy')} `)
                 serviceProvider.push(data?.timesheet?.user?.name);
                 deptAndSite.push(`${Object.values(Object.values(data?.timesheet?.siteDepartmentDetails?.siteDepartmentDetailMap)?.[0]?.departmentMap)?.[0]?.name}, ${Object.values(data?.timesheet?.siteDepartmentDetails?.siteDepartmentDetailMap)?.[0]?.name}`)
-                invoiceAmount.push(data?.payment !== null ? `$ ${data?.payment?.expectedPayment?.payment} ` : '-');
-                paidAmount.push(data?.payment !== null ? `$ ${data?.payment?.actualPayment?.payment} ` : '-');
+                invoiceAmount.push(data?.payment !== null ? `$ ${data?.payment?.expectedPayment?.payment} ` : `$ ${data?.timesheet?.policyBasedPayment} `);
+                paidAmount.push(data?.payment !== null ? `$ ${data?.payment?.actualPayment?.payment} ` : `$ ${data?.timesheet?.paid} `);
             })
         }
         if (value === 'rejectedTimesheetPayments') {
             paymentsReportLog?.rejected?.map(data => {
                 timeSheet.push(data?.timesheet?.timesheetName);
-                period.push(data?.payment !== null ? `${format(new Date(data?.payment?.paymentPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.payment?.paymentPeriod?.endDate), 'MMM d yyyy')} ` : '-')
+                period.push(data?.payment !== null ? `${format(new Date(data?.payment?.paymentPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.payment?.paymentPeriod?.endDate), 'MMM d yyyy')} ` : `${format(new Date(data?.timesheet?.timesheetPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.timesheet?.timesheetPeriod?.endDate), 'MMM d yyyy')} `)
                 serviceProvider.push(data?.timesheet?.user?.name);
                 deptAndSite.push(`${Object.values(Object.values(data?.timesheet?.siteDepartmentDetails?.siteDepartmentDetailMap)?.[0]?.departmentMap)?.[0]?.name}, ${Object.values(data?.timesheet?.siteDepartmentDetails?.siteDepartmentDetailMap)?.[0]?.name}`)
-                invoiceAmount.push(data?.payment !== null ? `$ ${data?.payment?.expectedPayment?.payment} ` : '-');
-                paidAmount.push(data?.payment !== null ? `$ ${data?.payment?.actualPayment?.payment} ` : '-');
+                invoiceAmount.push(data?.payment !== null ? `$ ${data?.payment?.expectedPayment?.payment} ` : `$ ${data?.timesheet?.policyBasedPayment} `);
+                paidAmount.push(data?.payment !== null ? `$ ${data?.payment?.actualPayment?.payment} ` : `$ ${data?.timesheet?.paid} `);
             })
         }
         if (value === 'delayedTimesheetPayments') {
@@ -949,19 +975,19 @@ const ReportTypeOverview = () => {
                 timeSheet.push(data?.timesheet?.timesheetName);
                 serviceProvider.push(data?.timesheet?.user?.name);
                 deptAndSite.push(`${Object.values(Object.values(data?.timesheet?.siteDepartmentDetails?.siteDepartmentDetailMap)?.[0]?.departmentMap)?.[0]?.name}, ${Object.values(data?.timesheet?.siteDepartmentDetails?.siteDepartmentDetailMap)?.[0]?.name}`)
-                period.push(data?.payment !== null ? `${format(new Date(data?.payment?.paymentPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.payment?.paymentPeriod?.endDate), 'MMM d yyyy')} ` : '-')
-                invoiceAmount.push(data?.payment !== null ? `$ ${data?.payment?.expectedPayment?.payment} ` : '-');
-                paidAmount.push(data?.payment !== null ? `$ ${data?.payment?.actualPayment?.payment} ` : '-');
+                period.push(data?.payment !== null ? `${format(new Date(data?.payment?.paymentPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.payment?.paymentPeriod?.endDate), 'MMM d yyyy')} ` : `${format(new Date(data?.timesheet?.timesheetPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.timesheet?.timesheetPeriod?.endDate), 'MMM d yyyy')} `)
+                invoiceAmount.push(data?.payment !== null ? `$ ${data?.payment?.expectedPayment?.payment} ` : `$ ${data?.timesheet?.policyBasedPayment} `);
+                paidAmount.push(data?.payment !== null ? `$ ${data?.payment?.actualPayment?.payment} ` : `$ ${data?.timesheet?.paid} `);
             })
         }
         if (value === 'paymentPastDue') {
             paymentsReportLog?.paymentPastDue?.map(data => {
                 timeSheet.push(data?.timesheet?.timesheetName);
-                period.push(data?.payment !== null ? `${format(new Date(data?.payment?.paymentPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.payment?.paymentPeriod?.endDate), 'MMM d yyyy')} ` : '-')
+                period.push(data?.payment !== null ? `${format(new Date(data?.payment?.paymentPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.payment?.paymentPeriod?.endDate), 'MMM d yyyy')} ` : `${format(new Date(data?.timesheet?.timesheetPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.timesheet?.timesheetPeriod?.endDate), 'MMM d yyyy')} `)
                 serviceProvider.push(data?.timesheet?.user?.name);
                 deptAndSite.push(`${Object.values(Object.values(data?.timesheet?.siteDepartmentDetails?.siteDepartmentDetailMap)?.[0]?.departmentMap)?.[0]?.name}, ${Object.values(data?.timesheet?.siteDepartmentDetails?.siteDepartmentDetailMap)?.[0]?.name}`)
-                invoiceAmount.push(data?.payment !== null ? `$ ${data?.payment?.expectedPayment?.payment} ` : '-');
-                paidAmount.push(data?.payment !== null ? `$ ${data?.payment?.actualPayment?.payment} ` : '-');
+                invoiceAmount.push(data?.payment !== null ? `$ ${data?.payment?.expectedPayment?.payment} ` : `$ ${data?.timesheet?.policyBasedPayment} `);
+                paidAmount.push(data?.payment !== null ? `$ ${data?.payment?.actualPayment?.payment} ` : `$ ${data?.timesheet?.paid} `);
             })
         }
 
@@ -1012,10 +1038,10 @@ const ReportTypeOverview = () => {
             contractManagementContractName.push(data?.contractName?.contractName);
             contractManagementContractId.push(data?.contractDetail?.contractId?.id)
             contractManagementExpirationDate.push(format(new Date(data?.contractDetail?.contractTerm?.endDate), 'MM-dd-yyyy'))
-            contractManagementContractingEntity.push(data?.contractorBusinessEntity !== null ? data?.contractorBusinessEntity?.businessEntity?.name : '-');
-            contractManagementPointOfContact.push(`${user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.name?.firstName)} ${user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.name?.lastName)} `);
-            contractManagementPointOfContactNumber.push(user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.communication?.mobileNumber));
-            contractManagementEmail.push(user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.email?.officialEmail));
+            contractManagementContractingEntity.push(!data?.contractorBusinessEntity?.businessEntity?.notApplicable ? data?.contractorBusinessEntity?.businessEntity?.name : '-');
+            contractManagementPointOfContact.push(`${data?.contractorBusinessEntity?.businessEntityUser?.name?.firstName} ${data?.contractorBusinessEntity?.businessEntityUser?.name?.lastName} `);
+            contractManagementPointOfContactNumber.push(data?.contractorBusinessEntity?.businessEntityUser?.contactNumber?.number);
+            contractManagementEmail.push(data?.contractorBusinessEntity?.businessEntityUser?.email?.officialEmail);
         })
 
         return [
@@ -1084,6 +1110,8 @@ const ReportTypeOverview = () => {
         return headerValues;
     }
 
+    console.log(pieData, pieData[1]?.value, dataToUseInReport)
+
     const showActivitiesOrServicesReport = () => {
         return (
             <>
@@ -1104,7 +1132,7 @@ const ReportTypeOverview = () => {
                 <div className={style.marginTop40}>
                     <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20} `}>Trend For Activities / Services Completed</div>
                     <div className={style.reportWidthToFitFullScreen}>
-                        <ApexLineChart lineData={lineData} />
+                        <ApexLineChart lineData={lineData} lineCategory={'Completed Activity'} />
                     </div>
                 </div>
                 <div className={`${style.headerBorderStyle} ${style.marginTop40} `}></div>
@@ -1184,7 +1212,7 @@ const ReportTypeOverview = () => {
                                                 <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter} ${style.marginTop5} `}>
                                                     {reportTitleList[reportType]}
                                                 </div>
-                                                {dataToUseInReport?.reportingTimePeriod !== "" && (
+                                                {(reportType !== "upcomingContractRenewals" && reportType !== "oneTimeContract" && dataToUseInReport?.reportingTimePeriod !== "") && (
                                                     <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5} `}>Reporting Period used for this report : {dataToUseInReport?.reportingTimePeriod} ({dataToUseInReport?.fromToDisplay} to {dataToUseInReport?.toToDisplay}) </div>
                                                 )}
                                             </div>
@@ -1195,8 +1223,8 @@ const ReportTypeOverview = () => {
                                             {(reportType === "upcomingContractRenewals" || reportType === "oneTimeContract") ? (
                                                 <div className={`${style.grid2} ${style.marginTop20} `}>
                                                     <div>
-                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Renewal Time Frame </div>
-                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{`Renewal within Next ${dataToUseInReport?.renewalreportingTimePeriod} days`}</div>
+                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Time Frame </div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{`${reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next ${dataToUseInReport?.renewalreportingTimePeriod} days`}</div>
                                                     </div>
                                                     <div>
                                                         <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Sites </div>
@@ -1216,7 +1244,7 @@ const ReportTypeOverview = () => {
                                                         </div>
                                                     )}
                                                 </div>
-                                            ) : (reportType === "activitiesOrServices" || reportType === "addOnActivities" || reportType === "timesheetProcessingSummary" || reportType === "listingOfTimesheetsNotPaid" || reportType === "submittedTimesheetsPaymentStatus") ? (
+                                            ) : (reportType === "activitiesOrServices" || reportType === "addOnActivities" || reportType === "timesheetProcessingSummary" || reportType === "listingOfTimesheetsNotPaid" || reportType === "submittedTimesheetsPaymentStatus" || reportType === "paymentsProcessingSummary") ? (
                                                 <div className={`${style.grid2} ${style.marginTop20} `}>
                                                     <div>
                                                         <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Sites </div>
@@ -1233,49 +1261,52 @@ const ReportTypeOverview = () => {
                                                     <div>
                                                         <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Contracted Service Provider </div>
                                                         <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedContractedServiceProviderToSend?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`).join(', ') || 'All Contracted Service Providers'}</div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedContractedServiceProviderToSend?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`).join(', ') || 'All Contracted Service Providers'}</div>
                                                     </div>
                                                 </div>
-                                            ) : (reportType === "paymentsProcessingSummary") ? (
-                                                <div className={`${style.grid2} ${style.marginTop20} `}>
-                                                    <div>
-                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Departments</div>
-                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
-                                                    </div>
-                                                </div>
-                                            ) : (reportType === "compensationCostAnalysis") ? (
-                                                <div className={`${style.marginTop20} `}>
-                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Contract </div>
-                                                    <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedContractsToSend?.map(data => data?.contractName?.contractName).join(', ') || 'All Contracts'}</div>
-                                                </div>
-                                            ) : (reportType === "nonCompliant") ? (
-                                                <div className={`${style.grid2} ${style.marginTop20} `}>
-                                                    <div>
-                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Sites </div>
-                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedSitesToSend?.map(data => data?.siteName?.siteName).join(', ') || 'All Sites'}</div>
-                                                    </div>
-                                                    <div>
-                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Departments</div>
-                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
-                                                    </div>
-                                                    <div>
-                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Contracts </div>
+                                            )
+                                                //  : (reportType === "paymentsProcessingSummary") ? (
+                                                //     <div className={`${style.grid2} ${style.marginTop20} `}>
+                                                //         <div>
+                                                //             <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Departments</div>
+                                                //             <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
+                                                //         </div>
+                                                //     </div>
+                                                // )
+                                                : (reportType === "compensationCostAnalysis") ? (
+                                                    <div className={`${style.marginTop20} `}>
+                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Contract </div>
                                                         <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedContractsToSend?.map(data => data?.contractName?.contractName).join(', ') || 'All Contracts'}</div>
                                                     </div>
-                                                    <div>
-                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Contract Status</div>
-                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.contractStatus === 'ACTIVE' ? 'Active'
-                                                            : dataToUseInReport?.contractStatus === 'DRAFT' ? 'Draft'
-                                                                : dataToUseInReport?.contractStatus === 'EXPIRED' ? 'Expired'
-                                                                    : dataToUseInReport?.contractStatus === 'TERMINATED' ? 'Terminated' : ''}</div>
+                                                ) : (reportType === "nonCompliant") ? (
+                                                    <div className={`${style.grid2} ${style.marginTop20} `}>
+                                                        <div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Sites </div>
+                                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedSitesToSend?.map(data => data?.siteName?.siteName).join(', ') || 'All Sites'}</div>
+                                                        </div>
+                                                        <div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Departments</div>
+                                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
+                                                        </div>
+                                                        <div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Contracts </div>
+                                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedContractsToSend?.map(data => data?.contractName?.contractName).join(', ') || 'All Contracts'}</div>
+                                                        </div>
+                                                        <div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Contract Status</div>
+                                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.contractStatus === 'ACTIVE' ? 'Active'
+                                                                : dataToUseInReport?.contractStatus === 'DRAFT' ? 'Draft'
+                                                                    : dataToUseInReport?.contractStatus === 'EXPIRED' ? 'Expired'
+                                                                        : dataToUseInReport?.contractStatus === 'TERMINATED' ? 'Terminated' : ''}</div>
+                                                        </div>
+                                                        <div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Proof Of Documentation </div>
+                                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.podType || 'Select One'}</div>
+                                                        </div>
                                                     </div>
-                                                    <div>
-                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Proof Of Documentation </div>
-                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.podType || 'Select One'}</div>
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <div className={`${style.grid2} ${style.marginTop20} `}>
-                                                    {/* <div>
+                                                ) : (
+                                                    <div className={`${style.grid2} ${style.marginTop20} `}>
+                                                        {/* <div>
                                                         <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Service Site </div>
                                                         <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Site 1, Site 2, Site 3</div>
                                                     </div>
@@ -1299,8 +1330,8 @@ const ReportTypeOverview = () => {
                                                         <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Completion Status</div>
                                                         <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Medical/ Surgical Care Services</div>
                                                     </div> */}
-                                                </div>
-                                            )}
+                                                    </div>
+                                                )}
                                             <div className={`${style.headerBorderStyle} ${style.marginTop40} `}></div>
                                             {reportType === "activitiesOrServices" ? (
                                                 <>
@@ -1586,7 +1617,9 @@ const ReportTypeOverview = () => {
                                                             <div className={style.grid2}>
                                                                 <div>
                                                                     <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>Payment Status</div>
-                                                                    <ApexPieChart pieData={pieData} />
+                                                                    {(pieData[0]?.value !== 0 || pieData[1]?.value !== 0) && (
+                                                                        <ApexPieChart pieData={pieData} />
+                                                                    )}
                                                                 </div>
                                                                 <div>
                                                                     <div className={style.spaceBetween}>
@@ -1621,8 +1654,8 @@ const ReportTypeOverview = () => {
                                                             {timesheetProcessingSummaryData?.rejectedTimesheets?.length !== 0 && (
                                                                 <>
                                                                     <ReportsTable
-                                                                        tableType={'Timesheets With Payment On Time'}
-                                                                        tableHeader={['Timesheet', 'Period', 'Approval Date', 'Rejected by', 'Service Provider']}
+                                                                        tableType={'Timesheets Rejected'}
+                                                                        tableHeader={['Timesheet', 'Period', 'Rejected Date', 'Rejected by', 'Service Provider']}
                                                                         tableValue={timesheetProcessingSummaryData?.rejectedTimesheets}
                                                                         activitiesServicesValues={getTimesheetProcessingSummaryValues('Rejected')}
                                                                         styleName={style.grid5}
@@ -1669,8 +1702,8 @@ const ReportTypeOverview = () => {
                                                                         <ReportsTable
                                                                             tableType={data?.contractName}
                                                                             tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Current Status', 'Invoice Amount']}
-                                                                            tableValue={notPaidTimesheetsData?.unPaidTimesheetsByContract}
-                                                                            activitiesServicesValues={getNotPaidTimesheetsValues()}
+                                                                            tableValue={data?.timesheets}
+                                                                            activitiesServicesValues={getNotPaidTimesheetsValues(data)}
                                                                             styleName={style.grid6}
                                                                         />
                                                                     ))}
@@ -1819,26 +1852,31 @@ const ReportTypeOverview = () => {
                                                 //     </>
                                                 // ) 
                                                 : (reportType === "upcomingContractRenewals" || reportType === "oneTimeContract") ? (
-                                                    <>
-                                                        {individualContract?.length !== 0 && (
-                                                            <ReportsTable
-                                                                tableType={'Individual Service Provider Contract Renewal'}
-                                                                tableHeader={['Contract Name', 'Contract ID', 'Contract Expiration Date', 'Contracting Entity', 'Point of Contact', 'Point of Contact Number', 'Email Address']}
-                                                                tableValue={individualContract}
-                                                                activitiesServicesValues={getContractManagementUpcomingValues('INDIVIDUAL')}
-                                                                styleName={style.individualServiceReportGrid}
-                                                            />
-                                                        )}
-                                                        {multipleContract?.length !== 0 && (
-                                                            <ReportsTable
-                                                                tableType={'Multiple Service Provider Contract Renewal'}
-                                                                tableHeader={['Contract Name', 'Contract ID', 'Contract Expiration Date', 'Contracting Entity', 'Point of Contact', 'Point of Contact Number', 'Email Address', 'Service Providers']}
-                                                                tableValue={multipleContract}
-                                                                activitiesServicesValues={getContractManagementUpcomingValues('MULTIPLE')}
-                                                                styleName={style.individualServiceReportGrid}
-                                                            />
-                                                        )}
-                                                    </>
+                                                    (individualContract?.length !== 0 || multipleContract?.length !== 0) ? (
+                                                        <>
+                                                            {individualContract?.length !== 0 && (
+                                                                <ReportsTable
+                                                                    tableType={'Individual Service Provider Contract Renewal'}
+                                                                    tableHeader={['Contract Name', 'Contract ID', 'Contract Expiration Date', 'Contracting Entity', 'Point of Contact', 'Point of Contact Number', 'Email Address']}
+                                                                    tableValue={individualContract}
+                                                                    activitiesServicesValues={getContractManagementUpcomingValues('INDIVIDUAL')}
+                                                                    styleName={style.individualServiceReportGrid}
+                                                                />
+                                                            )}
+                                                            {multipleContract?.length !== 0 && (
+                                                                <ReportsTable
+                                                                    tableType={'Multiple Service Provider Contract Renewal'}
+                                                                    tableHeader={['Contract Name', 'Contract ID', 'Contract Expiration Date', 'Contracting Entity', 'Point of Contact', 'Point of Contact Number', 'Email Address', 'Service Providers']}
+                                                                    tableValue={multipleContract}
+                                                                    activitiesServicesValues={getContractManagementUpcomingValues('MULTIPLE')}
+                                                                    styleName={style.multipleServiceReportGrid}
+                                                                />
+                                                            )}
+                                                        </>
+                                                    ) : (
+                                                        <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
+                                                            subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
+                                                    )
                                                 ) : reportType === "complianceStatus" ? (
                                                     <>
                                                         <div className={style.marginTop40}>

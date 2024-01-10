@@ -813,7 +813,7 @@ const AddServiceProvided = ({
       let data = metadata;
       if (data?.approver !== undefined) {
         let workFlowData;
-        let name = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`;
+        let name = `${data?.approver?.name?.firstName} + " " +${data?.approver?.name?.middleName} + " " + ${data?.approver?.name?.lastName}`;
         workFlowData = workFlowDataGenerator(
           "Administrative Service Workflow",
           [
@@ -821,6 +821,9 @@ const AddServiceProvided = ({
               step: 1,
               userId: data?.approver?.id,
               userName: name,
+              firstName: data?.approver?.name?.firstName,
+              middleName: data?.approver?.name?.middleName,
+              lastName: data?.approver?.name?.lastName,
               userTitle: {
                 title: data?.approverTitle?.title,
                 id: data?.approverTitle?.id,

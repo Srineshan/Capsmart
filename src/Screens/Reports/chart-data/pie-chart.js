@@ -4,11 +4,11 @@ import Chart from 'react-apexcharts';
 const ApexPieChart = ({ pieData }) => {
 
   const getLabel = (data) => {
-    if (data === "DONE")
+    if (data === "done")
       return 'Done';
-    else if (data === "TODO")
+    else if (data === "todo")
       return 'To Do';
-    else if (data === "NOTDONE")
+    else if (data === "notDone")
       return 'Not Done';
     if (data === "paidOnTime")
       return 'Paid On Time';
@@ -16,27 +16,21 @@ const ApexPieChart = ({ pieData }) => {
       return 'Payments Delayed';
     else if (data === "rejected")
       return 'Rejected';
-    else if (data === "approved")
-      return 'Approved';
-    else if (data === "INPROGRESS")
-      return 'In-Progress';
     else if (data === "paidNotDone")
       return 'Payment Not Made';
     else if (data === "paidPastDue")
       return 'Payment Past Due';
-    else if (data === "ONHOLD")
+    else if (data === "onhold")
       return 'On Hold';
-    else if (data === "SUBMITTED")
-      return 'Submitted';
-    else if (data === "REJECTED")
-      return 'Rejected';
-    else if (data === "NA")
+    else if (data === "na")
       return 'NA';
-    else if (data === "SUBMITTED")
+    else if (data === "inprogress")
+      return 'In-Progress';
+    else if (data === "submitted")
       return 'Submitted';
-    else if (data === "APPROVED")
+    else if (data === "approved")
       return 'Approved';
-    else if (data === "REVIEWED")
+    else if (data === "reviewed")
       return 'Reviewed';
     else if (data === "paid")
       return 'Paid';
@@ -72,7 +66,7 @@ const ApexPieChart = ({ pieData }) => {
         curve: 'smooth',
         width: 0
       },
-      colors: ["#1DD174", "#FFD950", "#F46044", '#7165E3', '#AE3CEA'],
+      colors: ["#1DD174", "#FFD950", "#F46044", '#7165E3', '#AE3CEA', '#4AB8FC', '#0B1542'],
       dataLabels: {
         enabled: false,
       },
