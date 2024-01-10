@@ -194,7 +194,7 @@ const NewServiceProvider = ({
       return (
         <Tag
           key={index}
-          onRemove={onRemove}
+          onRemove={tag?.roleName !== "Activity Logger" && onRemove}
           large={true}
           className={style.tagStyle}
         >
@@ -211,16 +211,16 @@ const NewServiceProvider = ({
       setRoles(roles);
     }
     let temp = selectedRoles;
-    if (
-      !selectedRoles?.map((data) => data?.roleName)?.includes("Activity Logger")
-    ) {
-      temp.push(
-        roles
-          ?.filter((role) => role?.roleName === "Activity Logger")
-          ?.map((data) => data)[0]
-      );
-      setSelectedRoles(temp);
-    }
+    // if (
+    //   !selectedRoles?.map((data) => data?.roleName)?.includes("Activity Logger")
+    // ) {
+    //   temp.push(
+    //     roles
+    //       ?.filter((role) => role?.roleName === "Activity Logger")
+    //       ?.map((data) => data)[0]
+    //   );
+    setSelectedRoles(temp);
+    // }
   };
 
   const getContractDetail = async () => {
@@ -356,15 +356,15 @@ const NewServiceProvider = ({
         id: "",
       },
       email: {
-        officialEmail: userDetails?.email,
+        officialEmail: userDetails?.email?.trim(),
       },
       // "ssoId": userDetails?.ssoId,
-      ssoId: { id: userDetails?.email },
+      ssoId: { id: userDetails?.email?.trim() },
       password: {
         password: "",
       },
       communication: {
-        personalEmail: userDetails?.email,
+        personalEmail: userDetails?.email?.trim(),
         mobileNumber: userDetails?.phone,
         landlineNumber: "string",
         mobileNumberNotApplicable: phoneNA,
@@ -432,7 +432,7 @@ const NewServiceProvider = ({
           userData?.filter((data) =>
             data?.roles
               ?.map((role) => role?.roleName)
-              ?.includes("Activity Logger")
+              ?.includes("Aggregator")
           )
         );
       }
@@ -1011,36 +1011,24 @@ const NewServiceProvider = ({
                 firstOptionLabel={"Select Role-multi select"}
                 firstOptionValue={"0"}
                 valueList={
-                  contractUsers?.filter((data) =>
-                    data?.roles
-                      ?.map((role) => role?.roleName)
-                      ?.includes("Aggregator")
-                  )?.length === 0
+                  contractUsers?.length === 0
                     ? roles?.map((data) => data?.roleName)
                     : roles
-                      ?.filter((data) => data?.roleName !== "Aggregator")
+                      ?.filter((data) => data?.roleName !== "Aggregator" && data?.roleName !== "Activity Logger")
                       ?.map((data) => data?.roleName)
                 }
                 labelList={
-                  contractUsers?.filter((data) =>
-                    data?.roles
-                      ?.map((role) => role?.roleName)
-                      ?.includes("Aggregator")
-                  )?.length === 0
+                  contractUsers?.length === 0
                     ? roles?.map((data) => data?.roleName)
                     : roles
-                      ?.filter((data) => data?.roleName !== "Aggregator")
+                      ?.filter((data) => data?.roleName !== "Aggregator" && data?.roleName !== "Activity Logger")
                       ?.map((data) => data?.roleName)
                 }
                 disabledList={
-                  contractUsers?.filter((data) =>
-                    data?.roles
-                      ?.map((role) => role?.roleName)
-                      ?.includes("Aggregator")
-                  )?.length === 0
+                  contractUsers?.length === 0
                     ? roles?.map((data) => false)
                     : roles
-                      ?.filter((data) => data?.roleName !== "Aggregator")
+                      ?.filter((data) => data?.roleName !== "Aggregator" && data?.roleName !== "Activity Logger")
                       ?.map((data) => false)
                 }
               />

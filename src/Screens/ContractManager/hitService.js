@@ -74,7 +74,9 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         totalSessionFrequency: 'NA',
         sessionAmount: '0',
         hourlyRate: '0',
-        sessionDuration: '0',
+        sessionDuration: '1',
+        serviceRate: '0',
+        serviceRateFrequency: 'SESSION',
         serviceDays: {
             tuesday: false,
             wednesday: false,
@@ -208,8 +210,6 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         setFileFieldData({ ...fileFieldData, [name]: e.target.value });
     }
 
-    console.log('File Field Data', fileFieldData);
-
     const getFileData = () => {
         let temp = [];
         console.log('entered', fullyExecutedContractData)
@@ -245,7 +245,9 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
             totalSessionFrequency: 'NA',
             sessionAmount: '0',
             hourlyRate: '0',
-            sessionDuration: '0',
+            sessionDuration: '1',
+            serviceRate: '0',
+            serviceRateFrequency: 'SESSION',
             serviceDays: {
                 tuesday: false,
                 wednesday: false,
@@ -287,14 +289,17 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                 serviceDays: serviceSelected?.serviceDays,
                 sessionAmount: serviceSelected?.payableAmount?.value,
                 hourlyRate: (serviceSelected?.payableAmount?.value / serviceSelected?.duration?.hours) || 0,
-                sessionDuration: serviceSelected?.duration?.hours || '0',
+                sessionDuration: serviceSelected?.duration?.hours || '1',
+                serviceRate: serviceSelected?.serviceRate?.rate || '0',
+                serviceRateFrequency: serviceSelected?.serviceRate?.rateFrequency,
                 workflowId: serviceSelected?.workFlow?.id,
                 workflowName: serviceSelected?.workFlow?.workFlowName?.name,
                 activityApprovalWFRequired: serviceSelected?.activityApprovalWFRequired,
                 approver: approver,
                 contractedServiceFiles: serviceSelected?.contractedServiceFiles || [],
                 serviceAgreementOnFile: serviceSelected?.serviceAgreementOnFile,
-                // contractTermPeriodFrom: serviceSelected?.contractedSchedules?.
+                contractTermPeriodFrom: serviceSelected?.contractedSchedules?.[0]?.startDate !== null ? new Date(serviceSelected?.contractedSchedules?.[0]?.startDate?.replace('-', '/')) : null,
+                contractTermPeriodTo: serviceSelected?.contractedSchedules?.[0]?.endDate !== null ? new Date(serviceSelected?.contractedSchedules?.[0]?.endDate?.replace('-', '/')) : null,
             });
             setFullyExecutedContractData(serviceSelected?.contractedServiceFiles || [])
         }
@@ -328,7 +333,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
             if (value) {
                 setMetadata({ ...metadata, sessionDuration: '1', totalSession: '0', sessionAmount: '', totalSessionFrequency: 'NA', dedicatedHoursActivityType: '', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
             } else {
-                setMetadata({ ...metadata, sessionDuration: '0', dedicatedHoursActivityType: '', sessionAmount: '', totalSession: '0', totalSessionFrequency: 'NA', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
+                setMetadata({ ...metadata, sessionDuration: '1', dedicatedHoursActivityType: '', sessionAmount: '', totalSession: '0', totalSessionFrequency: 'NA', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
             }
         }
         if (name === 'totalSessionFrequency' && value === "NA") {
@@ -390,6 +395,8 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                     dedicatedHoursActivityType: dedicatedHoursActivityType,
                     dedicatedHoursPerformingActivity: dedicatedHoursPerformingActivity,
                     sessionDuration: data?.duration?.hours,
+                    serviceRate: data?.serviceRate?.rate,
+                    serviceRateFrequency: data?.serviceRate?.rateFrequency,
                     totalSession: data?.totalSessions?.value,
                     totalSessionFrequency: data?.totalSessions?.frequency,
                     sessionAmount: data?.payableAmount?.value,
@@ -540,6 +547,35 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                                 disabledList={[false, false]} />
                         </div>
                     </div>
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <CommonLabel value='Service Rate' />
+                        <div className={`${style.displayInRow}`}>
+                            <div className={`${style.threeFieldWidth}`}>
+                                <CommonTextField
+                                    type="number"
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
+                                    }}
+                                    value={metadata?.serviceRate}
+                                    onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, serviceRate: parseFloat(e.target.value), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? parseFloat(e.target.value) : (parseFloat(e.target.value) * metadata?.totalSession) })}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <CommonLabel value='Service Frequency' />
+                        <div className={`${style.displayInRow}`}>
+                            <div className={`${style.threeFieldWidth}`}>
+                                <CommonSelectField
+                                    value={metadata?.serviceRateFrequency || ''}
+                                    onChange={(e) => setMetadata({ ...metadata, serviceRateFrequency: e.target.value, sessionAmount: (e.target.value === 'SESSION') ? metadata?.serviceRate : (metadata?.serviceRate * metadata?.totalSession) })}
+                                    firstOptionLabel={'Select Frequency'} firstOptionValue={''}
+                                    valueList={['SESSION', 'HOUR']}
+                                    labelList={['Per Session', 'Per Hour']}
+                                    disabledList={[false, false]} />
+                            </div>
+                        </div>
+                    </div>
 
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                         <CommonLabel value={metadata?.totalSessionFrequency === 'NA' ? 'Hourly Rate*' : 'Total Agreed to Compensation*'} />
@@ -550,6 +586,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                                     InputProps={{
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                     }}
+                                    disabled={true}
                                     onChange={(e) => e.target.value >= 0 && handleValueChange('sessionAmount', (e.target.value).slice(0, 6))}
                                     value={metadata?.sessionAmount}
                                 />
@@ -600,7 +637,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                                     {data?.podRequired && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
                                 </>)}
 
-                                {metadata?.selectedActivities?.map(selectedActivity => selectedActivity?.activity)?.includes(data?.activity) && <EditOutlinedIcon style={{ color: '#7165E3' }} onClick={() => {
+                                {metadata?.selectedActivities?.map(selectedActivity => selectedActivity?.activity)?.includes(data?.activity) && <EditOutlinedIcon style={{ color: '#7165E3' }} className={`${style.cursorPointer}`} onClick={() => {
                                     setEditAdminActivitySelected(true);
                                     let adminActivity = metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities)[0];
                                     setAdminActivity({
@@ -625,7 +662,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                 <div className={`${style.addonAddBox} ${style.marginTop20}`}>
                     <div className={`${style.addManagerGrid}`}>
                         <CommonLabel value='Additional Clinical Informatics / HIT Services Name' />
-                        <CommonInputField placeholder='Clinical Informatics / HIT Service Name' className={style.fullWidth} value={adminActivity?.activity} onChange={(e) => handleAdminActivity('activity', e.target.value)} />
+                        <CommonInputField placeholder='Clinical Informatics / HIT Service Name' readOnly={editAdminActivitySelected} className={style.fullWidth} value={adminActivity?.activity} onChange={(e) => handleAdminActivity('activity', e.target.value)} />
                     </div>
 
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -673,11 +710,11 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                     </div>
 
                     <div>
-                        <div className={` ${style.marginTop20}`}>
-                            <button className={`${style.outlinedButton} `} onClick={(e) => { setShowAdminActivity(false); setEditAdminActivitySelected(false); }}>CANCEL</button>
-                            <button className={`${style.buttonStyle}  ${isLoading ? style.disabled : ''}`} onClick={(e) => { submit() }}>SAVE</button>
+                        <div className={` ${style.floatRight}`}>
+                            <button className={`${style.outlinedButton} ${style.cursorPointer}`} onClick={(e) => { setShowAdminActivity(false); setEditAdminActivitySelected(false); }}>CANCEL</button>
+                            <button className={`${style.buttonStyle}  ${style.marginLeft20} ${style.cursorPointer} ${isLoading ? style.disabled : ''}`} onClick={(e) => { submit() }}>SAVE</button>
                         </div>
-                        <br />
+                        <br /><br />
                     </div>
                 </div>
             }
@@ -820,7 +857,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                                     height: 30,
                                 },
                             }}
-                            minDate={contractTermPeriodFrom}
+                            minDate={metadata?.contractTermPeriodFrom}
                             maxDate={new Date(contractTermPeriod?.end)}
                             renderInput={(params) => <TextField  {...params}
                                 inputProps={{

@@ -42,11 +42,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     "LAST UPDATED",
     "ACTION"
   ];
-  const draftHeaderValues = ["", "CONTRACT TYPE", "ID",
-    // "",
-    "NAME", "ACTIVATION STATUS", "LAST UPDATED",
-    // "REF DOCS",
-    "LAST UPDATED BY", "MANAGER", "ACTION"];
+  const draftHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "ACTIVATION STATUS", "LAST UPDATED", "REF DOCS", "LAST UPDATED BY", "MANAGER", "ACTION"];
   const activationPendingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "REVIEWS", "APPROVALS", "REF DOCS", "GO LIVE DATE", "EFFECTIVE DATE", "MANAGER", "ACTION"];
   const upcomingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "EXPIRATION DATE", "EXPIRING IN", "LAST UPDATE", "MANAGER", "ACTION"];
   const expiredHeaderValues = ["CHECKBOX", "CONTRACT TYPE", "ID", "NAME", "TERMINATION DATE", "NEW CONTRACT ID", "LAST UPDATE", "MANAGER"];
@@ -309,8 +305,8 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
       approvals.push('3/3');
       goLiveDate.push('07/19/2019');
       activationStatus.push(data?.contractStatus === 'ACTIVATION_READY' ? 'Activation pending' : 'Not Activated');
-      icon.push(<TextSnippetOutlinedIcon style={{ color: '#F94848' }} />);
-      iconHoverText.push('No Document Uploaded');
+      icon.push(<TextSnippetOutlinedIcon style={{ color: data?.contractDetail?.contractFiles?.length === 0 ? '#F94848' : '#14B15A' }} />);
+      iconHoverText.push(data?.contractDetail?.contractFiles?.length === 0 ? 'No Document Uploaded' : 'Document Uploaded');
       effectiveDate.push(format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy'));
       manager.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
       lastUpdated.push(format(new Date(data?.lastModifiedDate), 'MM-dd-yyyy'))
@@ -326,7 +322,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
       { "type": "text", "value": name, "onClickFunction": onClickFunction },
       { "type": "text", "value": activationStatus, "onClickFunction": onClickFunction },
       { "type": "text", "value": lastUpdated, "onClickFunction": onClickFunction },
-      // { "type": "icon", "icon": icon, "hoverText": iconHoverText, 'isShowHoverText': true },
+      { "type": "icon", "icon": icon, "hoverText": iconHoverText, 'isShowHoverText': true },
       { "type": "text", "value": lastUpdatedBy, "onClickFunction": onClickFunction },
       { "type": "text", "value": manager, "onClickFunction": onClickFunction },
       { "type": "action", "value": action },

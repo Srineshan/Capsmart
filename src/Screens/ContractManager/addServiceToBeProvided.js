@@ -650,6 +650,10 @@ const AddServiceProvided = ({
         data.activityTypeTemplate = {
           activityTypeTemplate: serviceTypeTemplate,
         };
+        // data.serviceRate = {
+        //   rate: data?.serviceRate,
+        //   rateFrequency: data?.serviceRateFrequency,
+        // };
         data.performingActivity = data?.activities
           ?.map((data) => data?.activity)
           ?.join("-");
@@ -809,7 +813,7 @@ const AddServiceProvided = ({
       let data = metadata;
       if (data?.approver !== undefined) {
         let workFlowData;
-        let name = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`;
+        let name = `${data?.approver?.name?.firstName} + " " +${data?.approver?.name?.middleName} + " " + ${data?.approver?.name?.lastName}`;
         workFlowData = workFlowDataGenerator(
           "Administrative Service Workflow",
           [
@@ -817,6 +821,9 @@ const AddServiceProvided = ({
               step: 1,
               userId: data?.approver?.id,
               userName: name,
+              firstName: data?.approver?.name?.firstName,
+              middleName: data?.approver?.name?.middleName,
+              lastName: data?.approver?.name?.lastName,
               userTitle: {
                 title: data?.approverTitle?.title,
                 id: data?.approverTitle?.id,
@@ -1074,6 +1081,10 @@ const AddServiceProvided = ({
         item.duration = {
           hours: parseInt(item?.sessionDuration),
         };
+        item.serviceRate = {
+          rate: metadata?.[index]?.serviceRate,
+          rateFrequency: metadata?.[index]?.serviceRateFrequency,
+        }
         console.log("performing Activity", metadata?.[index]?.parentActivity);
         item.addOnActivityType = {
           activityType: metadata?.[index]?.parentActivity,
@@ -1093,6 +1104,7 @@ const AddServiceProvided = ({
       let dataValues = metadata;
       if (serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE) {
         dataValues = metadata?.[0];
+
         parentActivity = dataValues?.addOnActivityType;
         performingActivity = dataValues?.activities
           ?.map((data) => data?.activity)
@@ -1293,6 +1305,10 @@ const AddServiceProvided = ({
           }),
           ...((serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE) && {
             hourlyRate: dataValues?.hourlyRate,
+            serviceRate: {
+              rate: dataValues?.serviceRate,
+              rateFrequency: dataValues?.serviceRateFrequency,
+            },
           }),
           ...([CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(
             serviceTypeTemplate
@@ -1510,6 +1526,12 @@ const AddServiceProvided = ({
             ? dataValues?.dedicatedHoursSpecified
             : false,
           billableService: dataValues?.billableService,
+          ...((serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE && {
+            serviceRate: {
+              rate: dataValues?.serviceRate,
+              rateFrequency: dataValues?.serviceRateFrequency,
+            },
+          })),
           dependantServiceIncluded:
             dataValues?.dependantServiceIncluded || false,
           customizedSchedule: dataValues?.customizedSchedule || false,
@@ -2401,8 +2423,7 @@ const AddServiceProvided = ({
                           contractId={contractId}
                           contractTermPeriod={contractTermPeriod}
                         />
-                      )
-                        :
+                      ) :
                         (
                           <AdministrativeFields
                             getMetaData={getMetaData}

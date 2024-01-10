@@ -40,6 +40,10 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
   }, [])
 
   useEffect(() => {
+    getDataStatus();
+  }, [contractedServices])
+
+  useEffect(() => {
     setUserLength(users?.length);
   }, [users])
 
@@ -201,6 +205,8 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
       isEditable && { "type": "text", "value": deleteIcon, "onClickFunction": onClickCrossFunction },
     ];
   }
+
+  console.log('servicesValid', servicesValid)
 
   if (isLoading) {
     return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />
