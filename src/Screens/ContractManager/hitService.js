@@ -74,7 +74,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         totalSessionFrequency: 'NA',
         sessionAmount: '0',
         hourlyRate: '0',
-        sessionDuration: '0',
+        sessionDuration: '1',
         serviceRate: '0',
         serviceRateFrequency: 'SESSION',
         serviceDays: {
@@ -245,7 +245,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
             totalSessionFrequency: 'NA',
             sessionAmount: '0',
             hourlyRate: '0',
-            sessionDuration: '0',
+            sessionDuration: '1',
             serviceRate: '0',
             serviceRateFrequency: 'SESSION',
             serviceDays: {
@@ -289,7 +289,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                 serviceDays: serviceSelected?.serviceDays,
                 sessionAmount: serviceSelected?.payableAmount?.value,
                 hourlyRate: (serviceSelected?.payableAmount?.value / serviceSelected?.duration?.hours) || 0,
-                sessionDuration: serviceSelected?.duration?.hours || '0',
+                sessionDuration: serviceSelected?.duration?.hours || '1',
                 serviceRate: serviceSelected?.serviceRate?.rate || '0',
                 serviceRateFrequency: serviceSelected?.serviceRate?.rateFrequency,
                 workflowId: serviceSelected?.workFlow?.id,
@@ -332,7 +332,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
             if (value) {
                 setMetadata({ ...metadata, sessionDuration: '1', totalSession: '0', sessionAmount: '', totalSessionFrequency: 'NA', dedicatedHoursActivityType: '', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
             } else {
-                setMetadata({ ...metadata, sessionDuration: '0', dedicatedHoursActivityType: '', sessionAmount: '', totalSession: '0', totalSessionFrequency: 'NA', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
+                setMetadata({ ...metadata, sessionDuration: '1', dedicatedHoursActivityType: '', sessionAmount: '', totalSession: '0', totalSessionFrequency: 'NA', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
             }
         }
         if (name === 'totalSessionFrequency' && value === "NA") {

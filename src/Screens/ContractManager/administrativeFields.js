@@ -52,7 +52,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         totalSession: '0',
         totalSessionFrequency: 'NA',
         sessionAmount: '0',
-        sessionDuration: '0',
+        sessionDuration: '1',
         serviceRate: '0',
         serviceRateFrequency: 'SESSION',
         serviceDays: {
@@ -114,7 +114,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             totalSession: '0',
             totalSessionFrequency: 'NA',
             sessionAmount: '0',
-            sessionDuration: '0',
+            sessionDuration: '1',
             serviceRate: '0',
             serviceRateFrequency: 'SESSION',
             serviceDays: {
@@ -156,7 +156,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                 workingTimeTo: GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
                 serviceDays: serviceSelected?.serviceDays,
                 sessionAmount: serviceSelected?.payableAmount?.value,
-                sessionDuration: serviceSelected?.duration?.hours || '0',
+                sessionDuration: serviceSelected?.duration?.hours || '1',
                 serviceRate: serviceSelected?.serviceRate?.rate || '0',
                 serviceRateFrequency: serviceSelected?.serviceRate?.rateFrequency,
                 workflowId: serviceSelected?.workFlow?.id,
@@ -194,7 +194,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             if (value) {
                 setMetadata({ ...metadata, sessionDuration: '1', totalSession: '0', sessionAmount: '', totalSessionFrequency: 'NA', dedicatedHoursActivityType: '', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
             } else {
-                setMetadata({ ...metadata, sessionDuration: '0', dedicatedHoursActivityType: '', sessionAmount: '', totalSession: '0', totalSessionFrequency: 'NA', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
+                setMetadata({ ...metadata, sessionDuration: '1', dedicatedHoursActivityType: '', sessionAmount: '', totalSession: '0', totalSessionFrequency: 'NA', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
             }
         }
         if (name === 'totalSessionFrequency' && value === 'NA') {
