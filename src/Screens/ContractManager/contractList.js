@@ -49,7 +49,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     "LAST UPDATED BY", "MANAGER", "ACTION"];
   const activationPendingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "REVIEWS", "APPROVALS", "REF DOCS", "GO LIVE DATE", "EFFECTIVE DATE", "MANAGER", "ACTION"];
   const upcomingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "EXPIRATION DATE", "EXPIRING IN", "LAST UPDATE", "MANAGER", "ACTION"];
-  const expiredHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "TERMINATION DATE", "NEW CONTRACT ID", "LAST UPDATE", "MANAGER"];
+  const expiredHeaderValues = ["CHECKBOX", "CONTRACT TYPE", "ID", "NAME", "TERMINATION DATE", "NEW CONTRACT ID", "LAST UPDATE", "MANAGER"];
   const activeColSortValues = [false, false, false, false, true, true, false, false, false, false];
   const draftColSortValues = [false, false, true, true, false, false, false, false, false];
   const upcomingColSortValues = [false, false, true, true, false, false, false, false, false];
@@ -395,8 +395,8 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     lastUpdated = [];
 
     contracts?.map(data => {
-      dot.push('yellow');
-      dotTooltipValues.push('In-Progress');
+      dot.push(true);
+      dotTooltipValues.push('Selected');
       contractType.push(data?.contractType === 'MULTIPLE' ? 'MULTI - PROVIDER' : data?.contractType);
       contractId.push(data?.contractDetail?.contractId?.id);
       name.push(data?.contractName?.contractName);
@@ -407,7 +407,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     })
 
     return [
-      { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
+      { "type": "checkbox", "value": dot, 'tooltipValue': dotTooltipValues },
       { "type": "text", "value": contractType, "onClickFunction": onClickFunction },
       { "type": "text", "value": contractId, "onClickFunction": onClickFunction },
       { "type": "text", "value": name, "onClickFunction": onClickFunction },
