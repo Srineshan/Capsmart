@@ -53,6 +53,8 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         totalSessionFrequency: 'NA',
         sessionAmount: '0',
         sessionDuration: '0',
+        serviceRate: '0',
+        serviceRateFrequency: 'SESSION',
         serviceDays: {
             tuesday: false,
             wednesday: false,
@@ -113,6 +115,8 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             totalSessionFrequency: 'NA',
             sessionAmount: '0',
             sessionDuration: '0',
+            serviceRate: '0',
+            serviceRateFrequency: 'SESSION',
             serviceDays: {
                 tuesday: false,
                 wednesday: false,
@@ -153,6 +157,8 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                 serviceDays: serviceSelected?.serviceDays,
                 sessionAmount: serviceSelected?.payableAmount?.value,
                 sessionDuration: serviceSelected?.duration?.hours || '0',
+                serviceRate: serviceSelected?.serviceRate?.rate || '0',
+                serviceRateFrequency: serviceSelected?.serviceRate?.rateFrequency,
                 workflowId: serviceSelected?.workFlow?.id,
                 workflowName: serviceSelected?.workFlow?.workFlowName?.name,
                 activityApprovalWFRequired: serviceSelected?.activityApprovalWFRequired,
@@ -246,6 +252,8 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                     dedicatedHoursActivityType: dedicatedHoursActivityType,
                     dedicatedHoursPerformingActivity: dedicatedHoursPerformingActivity,
                     sessionDuration: data?.duration?.hours,
+                    serviceRate: data?.serviceRate?.rate,
+                    serviceRateFrequency: data?.serviceRate?.rateFrequency,
                     totalSession: data?.totalSessions?.value,
                     totalSessionFrequency: data?.totalSessions?.frequency,
                     sessionAmount: data?.payableAmount?.value,
@@ -397,6 +405,36 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                     </div>
 
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <CommonLabel value='Service Rate' />
+                        <div className={`${style.displayInRow}`}>
+                            <div className={`${style.threeFieldWidth}`}>
+                                <CommonTextField
+                                    type="number"
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
+                                    }}
+                                    value={metadata?.serviceRate}
+                                    onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, serviceRate: parseFloat(e.target.value), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? parseFloat(e.target.value) : (parseFloat(e.target.value) * metadata?.totalSession) })}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <CommonLabel value='Service Frequency' />
+                        <div className={`${style.displayInRow}`}>
+                            <div className={`${style.threeFieldWidth}`}>
+                                <CommonSelectField
+                                    value={metadata?.serviceRateFrequency || ''}
+                                    onChange={(e) => setMetadata({ ...metadata, serviceRateFrequency: e.target.value, sessionAmount: (e.target.value === 'SESSION') ? metadata?.serviceRate : (metadata?.serviceRate * metadata?.totalSession) })}
+                                    firstOptionLabel={'Select Frequency'} firstOptionValue={''}
+                                    valueList={['SESSION', 'HOUR']}
+                                    labelList={['Per Session', 'Per Hour']}
+                                    disabledList={[false, false]} />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                         <CommonLabel value='Administrative Services Payment Amount*' />
                         <div className={`${style.displayInRow}`}>
                             <div className={`${style.threeFieldWidth}`}>
@@ -405,6 +443,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                     InputProps={{
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                     }}
+                                    disabled={true}
                                     onChange={(e) => e.target.value >= 0 && handleValueChange('sessionAmount', (e.target.value).slice(0, 6))}
                                     value={metadata?.sessionAmount}
                                 />

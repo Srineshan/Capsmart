@@ -166,14 +166,14 @@ const Navbar = () => {
   const idHelp = open ? "mouse-over-popover" : undefined;
 
   const logoutURL = () => {
-    window.location.href = `https://${window.location.hostname}/logout`;
+    window.location.href = `http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/logout`;
   }
 
   const logout = async () => {
     const cookies = new Cookies();
     let token = cookies.get("user");
     let entityId = cookies.get("entityId");
-    // await fetch(`https://${window.location.hostname}/logout`, {
+    // await fetch(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/logout`, {
     //   // redirect: 'manual',
     //   method: 'PUT',
     //   body: JSON.stringify({}),
@@ -185,7 +185,7 @@ const Navbar = () => {
     // })
 
     // let data = JSON.stringify({});
-    // await axios(`https://${window.location.hostname}/logout`, {
+    // await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/logout`, {
     //   method: 'PUT',
     //   data,
     // }).then(response => {
@@ -201,7 +201,7 @@ const Navbar = () => {
 
 
     // window.location.href = respose.headers?.get('Location')
-    // axios.post(`https://${window.location.hostname}/logout`, {
+    // axios.post(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/logout`, {
     //   // Add parameters here
     //   // transformRequest: (data, headers) => {
     //   //   delete headers.common['X-XSRF-TOKEN'];

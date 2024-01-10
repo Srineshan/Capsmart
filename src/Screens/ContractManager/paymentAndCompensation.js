@@ -285,7 +285,8 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                                 startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                             }}
                                             onChange={(e) => fixedCompensationValue(e.target.value.slice(0, limit9).replace(/,/g, ""), 'maxPaymentPerTimesheetSubmission', i)}
-                                            value={Number(timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission || 0)?.toLocaleString()}
+                                            // value={Number(timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission || 0)?.toLocaleString()}
+                                            value={Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission || 0)}
                                         />
                                     </div>
                                     {compensationPolicy !== 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET' &&
