@@ -539,7 +539,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                     //     </>
                                 }
 
-                                {metadata?.selectedActivities?.map(selectedActivity => selectedActivity?.activity)?.includes(data?.activity) && <EditOutlinedIcon style={{ color: '#7165E3' }} onClick={() => {
+                                {metadata?.selectedActivities?.map(selectedActivity => selectedActivity?.activity)?.includes(data?.activity) && <EditOutlinedIcon style={{ color: '#7165E3', cursor: 'pointer' }} onClick={() => {
                                     setEditAdminActivitySelected(true);
                                     let adminActivity = metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities)[0];
                                     setAdminActivity({
@@ -598,8 +598,8 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
 
                     <div>
                         <div className={`${style.twoCol} ${style.marginTop20}`}>
-                            <button className={`${style.outlinedButton} ${style.fullWidth}`} onClick={(e) => { setShowAdminActivity(false); setEditAdminActivitySelected(false); }}>CANCEL</button>
-                            <button className={`${style.buttonStyle} ${style.fullWidth} ${isLoading ? style.disabled : ''}`} onClick={(e) => { submit() }}>SAVE</button>
+                            <button className={`${style.outlinedButton} ${style.fullWidth} ${style.cursorPointer}`} onClick={(e) => { setShowAdminActivity(false); setEditAdminActivitySelected(false); }}>CANCEL</button>
+                            <button className={`${style.buttonStyle} ${style.fullWidth} ${isLoading ? style.disabled : ''} ${style.cursorPointer}`} onClick={(e) => { submit() }}>SAVE</button>
                         </div>
                         <br />
                     </div>
