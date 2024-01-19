@@ -365,6 +365,7 @@ const AddonClinicFields = ({
       });
     setMetadata(temp);
     getFields();
+    generateCustomAddOnFields();
   };
 
   const onApproverSelected = (value, serviceName, title) => {

@@ -577,9 +577,8 @@ const AddServiceProvided = ({
               .then((response) => {
                 data.workFlow = {
                   id: response?.data,
-                  workFlowName: {
-                    name: data?.performingActivity,
-                  },
+                  name: data?.performingActivity,
+                  workFlowMap: workFlowData?.workFlowMap,
                 };
                 dataValue.push(data);
                 if (temp?.length - 1 === index) {
@@ -598,9 +597,8 @@ const AddServiceProvided = ({
               .then((response) => {
                 data.workFlow = {
                   id: data?.workflowId,
-                  workFlowName: {
-                    name: data?.workflowName,
-                  },
+                  name: data?.workflowName,
+                  workFlowMap: workFlowData?.workFlowMap,
                 };
                 dataValue.push(data);
                 setMetadata(dataValue);
@@ -694,6 +692,9 @@ const AddServiceProvided = ({
                   step: 1,
                   userId: data?.approver?.id,
                   userName: approverName,
+                  firstName: data?.approver?.name?.firstName,
+                  middleName: data?.approver?.name?.middleName,
+                  lastName: data?.approver?.name?.lastName,
                   userTitle: {
                     title: data?.approverTitle?.title,
                     id: data?.approverTitle?.id,
@@ -725,9 +726,8 @@ const AddServiceProvided = ({
               .then((response) => {
                 data.workFlow = {
                   id: response?.data,
-                  workFlowName: {
-                    name: data?.performingActivity?.activity,
-                  },
+                  name: data?.performingActivity?.activity,
+                  workFlowMap: workFlowData?.workFlowMap,
                 };
                 dataValue.push(data);
                 if (temp?.length - 1 === index) {
@@ -756,6 +756,9 @@ const AddServiceProvided = ({
               step: 1,
               userId: data?.approver?.id,
               userName: name,
+              firstName: data?.approver?.name?.firstName,
+              middleName: data?.approver?.name?.middleName,
+              lastName: data?.approver?.name?.lastName,
               userTitle: {
                 title: data?.approverTitle?.title,
                 id: data?.approverTitle?.id,
@@ -777,9 +780,8 @@ const AddServiceProvided = ({
             .then((response) => {
               data.workFlow = {
                 id: response?.data,
-                workFlowName: {
-                  name: data?.performingActivity?.activity,
-                },
+                name: data?.performingActivity?.activity,
+                workFlowMap: workFlowData?.workFlowMap,
               };
               setMetadata(data);
               setIsWorkFlowUpdated(true);
@@ -795,9 +797,8 @@ const AddServiceProvided = ({
             .then((response) => {
               data.workFlow = {
                 id: data?.workflowId,
-                workFlowName: {
-                  name: data?.workflowName,
-                },
+                name: data?.workflowName,
+                workFlowMap: workFlowData?.workFlowMap,
               };
               setMetadata(data);
               setIsWorkFlowUpdated(true);
@@ -845,9 +846,8 @@ const AddServiceProvided = ({
             .then((response) => {
               data.workFlow = {
                 id: response?.data,
-                workFlowName: {
-                  name: data?.performingActivity?.activity,
-                },
+                name: data?.performingActivity?.activity,
+                workFlowMap: workFlowData?.workFlowMap,
               };
               setMetadata(data);
               setIsWorkFlowUpdated(true);
@@ -863,9 +863,8 @@ const AddServiceProvided = ({
             .then((response) => {
               data.workFlow = {
                 id: data?.workflowId,
-                workFlowName: {
-                  name: data?.workflowName,
-                },
+                name: data?.workflowName,
+                workFlowMap: workFlowData?.workFlowMap,
               };
               setMetadata(data);
               setIsWorkFlowUpdated(true);
@@ -1073,6 +1072,7 @@ const AddServiceProvided = ({
     let data = [];
     if ((serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE) && !editService) {
       data = metadata;
+
       data.map((item, index) => {
         item.workingPeriod = metadata?.[index]?.workingPeriod;
         item.serviceLocations = metadata?.[index]?.serviceLocations
@@ -1082,8 +1082,9 @@ const AddServiceProvided = ({
           hours: parseInt(item?.sessionDuration),
         };
         item.serviceRate = {
-          rate: metadata?.[index]?.serviceRate,
-          rateFrequency: metadata?.[index]?.serviceRateFrequency,
+          rate: metadata?.[index]?.serviceRate?.rate,
+          rateFrequency: metadata?.[index]?.serviceRate?.rateFrequency,
+          duration: item?.sessionDuration,
         }
         console.log("performing Activity", metadata?.[index]?.parentActivity);
         item.addOnActivityType = {
@@ -1308,6 +1309,7 @@ const AddServiceProvided = ({
             serviceRate: {
               rate: dataValues?.serviceRate,
               rateFrequency: dataValues?.serviceRateFrequency,
+              duration: dataValues?.sessionDuration,
             },
           }),
           ...([CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(
@@ -1364,6 +1366,11 @@ const AddServiceProvided = ({
                   duration: {
                     hours: parseFloat(dataValues?.weekdayDuration),
                   },
+                  serviceRate: {
+                    rate: parseFloat(dataValues?.weekdayDayServiceRate),
+                    rateFrequency: dataValues?.weekdayDayServiceFrequency,
+                    duration: dataValues?.weekdayDuration,
+                  },
                   activity: {
                     activity: dataValues?.weekdayActivity
                   },
@@ -1404,6 +1411,11 @@ const AddServiceProvided = ({
                   },
                   payableAmount: {
                     value: parseFloat(dataValues?.weekdayNightsPayment),
+                  },
+                  serviceRate: {
+                    rate: parseFloat(dataValues?.weekdayNightServiceRate),
+                    rateFrequency: dataValues?.weekdayNightServiceFrequency,
+                    duration: dataValues?.weekdayNightsDuration,
                   },
                   hourlyRate: {
                     value: isNaN(
@@ -1448,6 +1460,11 @@ const AddServiceProvided = ({
                   payableAmount: {
                     value: parseFloat(dataValues?.weekendPayment),
                   },
+                  serviceRate: {
+                    rate: parseFloat(dataValues?.weekendServiceRate),
+                    rateFrequency: dataValues?.weekendServiceFrequency,
+                    duration: dataValues?.weekendDuration,
+                  },
                   hourlyRate: {
                     value: isNaN(
                       dataValues?.weekendPayment / dataValues?.weekendDuration
@@ -1476,6 +1493,11 @@ const AddServiceProvided = ({
                   },
                   duration: {
                     hours: parseFloat(dataValues?.holidayDuration),
+                  },
+                  serviceRate: {
+                    rate: parseFloat(dataValues?.holidayServiceRate),
+                    rateFrequency: dataValues?.holidayServiceFrequency,
+                    duration: dataValues?.holidayDuration,
                   },
                   activity: {
                     activity: dataValues?.holidayActivity
@@ -1530,6 +1552,7 @@ const AddServiceProvided = ({
             serviceRate: {
               rate: dataValues?.serviceRate,
               rateFrequency: dataValues?.serviceRateFrequency,
+              duration: !serviceTypeTemplate.includes([ADMINISTRATIVE, SUPPLEMENTAL, HIT]) && dataValues?.dedicatedHoursSpecified ? parseFloat(dataValues?.totalSession) : parseFloat(dataValues?.sessionDuration),
             },
           })),
           dependantServiceIncluded:

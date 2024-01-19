@@ -448,37 +448,6 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                             </div>
                         </div>
                     </div>
-
-                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        <CommonLabel value='Service Rate' />
-                        <div className={`${style.displayInRow}`}>
-                            <div className={`${style.threeFieldWidth}`}>
-                                <CommonTextField
-                                    type="number"
-                                    InputProps={{
-                                        startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
-                                    }}
-                                    value={metadata?.serviceRate}
-                                    onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, serviceRate: parseFloat(e.target.value), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? parseFloat(e.target.value) : (parseFloat(e.target.value) * metadata?.totalSession) })}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        <CommonLabel value='Service Frequency' />
-                        <div className={`${style.displayInRow}`}>
-                            <div className={`${style.threeFieldWidth}`}>
-                                <CommonSelectField
-                                    value={metadata?.serviceRateFrequency || ''}
-                                    onChange={(e) => setMetadata({ ...metadata, serviceRateFrequency: e.target.value, sessionAmount: (e.target.value === 'SESSION') ? metadata?.serviceRate : (metadata?.serviceRate * metadata?.totalSession) })}
-                                    firstOptionLabel={'Select Frequency'} firstOptionValue={''}
-                                    valueList={['SESSION', 'HOUR']}
-                                    labelList={['Per Session', 'Per Hour']}
-                                    disabledList={[false, false]} />
-                            </div>
-                        </div>
-                    </div>
-
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                         <CommonLabel value='Administrative Services Payment Amount*'
                             className={dataCheck(metadata?.sessionAmount) ? style.redLable : ""}
