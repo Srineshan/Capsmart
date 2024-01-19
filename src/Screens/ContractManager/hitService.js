@@ -637,7 +637,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                                     {data?.podRequired && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
                                 </>)}
 
-                                {metadata?.selectedActivities?.map(selectedActivity => selectedActivity?.activity)?.includes(data?.activity) && <EditOutlinedIcon style={{ color: '#7165E3' }} className={`${style.cursorPointer}`} onClick={() => {
+                                {metadata?.selectedActivities?.map(selectedActivity => selectedActivity?.activity)?.includes(data?.activity) && <EditOutlinedIcon style={{ color: '#7165E3', cursor: 'pointer' }} className={`${style.cursorPointer}`} onClick={() => {
                                     setEditAdminActivitySelected(true);
                                     let adminActivity = metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities)[0];
                                     setAdminActivity({
@@ -711,8 +711,8 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
 
                     <div>
                         <div className={` ${style.floatRight}`}>
-                            <button className={`${style.outlinedButton} ${style.cursorPointer}`} onClick={(e) => { setShowAdminActivity(false); setEditAdminActivitySelected(false); }}>CANCEL</button>
-                            <button className={`${style.buttonStyle}  ${style.marginLeft20} ${style.cursorPointer} ${isLoading ? style.disabled : ''}`} onClick={(e) => { submit() }}>SAVE</button>
+                            <button className={`${style.outlinedButton} ${style.cursorPointer} ${style.cursorPointer}`} onClick={(e) => { setShowAdminActivity(false); setEditAdminActivitySelected(false); }}>CANCEL</button>
+                            <button className={`${style.buttonStyle}  ${style.marginLeft20} ${style.cursorPointer} ${isLoading ? style.disabled : ''} ${style.cursorPointer}`} onClick={(e) => { submit() }}>SAVE</button>
                         </div>
                         <br /><br />
                     </div>
