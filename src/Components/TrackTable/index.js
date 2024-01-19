@@ -54,7 +54,7 @@ const TrackTable = ({ heading, columnHeading, tableHead, tableHeadTop, tableHead
                                 </div>
                             ) : arrayData?.type === 'text' ?
                                 arrayData?.values?.map((data, indexForColor) => (
-                                    <div className={`${style.marginLeft20} ${style.tableDataTextStyle} ${arrayData?.color?.[indexForColor]} ${(arrayData !== array[arrayDataIndex - 1]) ? style.marginDifferenceFromPrevIndex : style.marginTop20}`}>{data}</div>
+                                    <div className={`${style.marginLeft20} ${style.tableDataTextStyle} ${arrayData?.color?.[indexForColor]} ${(arrayData !== array[arrayDataIndex - 1]) ? style.marginDifferenceFromPrevIndex : style.marginTop20}`}>{data < 0 ? `(${data})` : data}</div>
                                 )) : arrayData?.type === 'nteAmount' ?
                                     (
                                         <div className={style.alignCenter}>

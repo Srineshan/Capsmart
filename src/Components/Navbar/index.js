@@ -337,10 +337,8 @@ const Navbar = () => {
           {isContractManager && (
             <div>
               <div
-                className={`${style.menuStyle} ${(window.location.pathname.includes("/reports") ||
-                  window.location.pathname.includes("/trackContracts")) &&
-                  style.activeMenuColor
-                  }`}
+                className={`${style.menuStyle} ${window.location.pathname.includes("/trackContracts") ?
+                  style.activeMenuColor : ''}`}
                 ref={popoverAnchorTracker}
                 onMouseEnter={(e) => handleClickTracker(e)}
                 onMouseLeave={() => handleCloseTracker()}

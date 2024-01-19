@@ -141,8 +141,8 @@ const TrackYourContracts = () => {
                     completedHours?.push({ type: 'text', values: filteredServiceValues?.[data]?.map(data => data?.complated?.hours) })
                     toBeProposedUnits?.push({ type: 'text', values: filteredServiceValues?.[data]?.map(data => data?.inprogress?.units) })
                     toBeProposedHours?.push({ type: 'text', values: filteredServiceValues?.[data]?.map(data => data?.inprogress?.hours) })
-                    balanceUnits?.push({ type: 'text', values: filteredServiceValues?.[data]?.map(data => data?.balance?.units), color: filteredServiceValues?.[data]?.map(data => data?.balanceUnitsStatus === 'SUFFICIENT' ? style.greenBigNumber : data?.balanceUnitsStatus === 'DEFICIT' ? style.redBigNumber : style.yellowBigNumber) })
-                    balanceHours?.push({ type: 'text', values: filteredServiceValues?.[data]?.map(data => data?.balance?.hours), color: filteredServiceValues?.[data]?.map(data => data?.balanceUnitsStatus === 'SUFFICIENT' ? style.greenBigNumber : data?.balanceUnitsStatus === 'DEFICIT' ? style.redBigNumber : style.yellowBigNumber) })
+                    balanceUnits?.push({ type: 'text', values: filteredServiceValues?.[data]?.map(data => data?.balance?.units), color: filteredServiceValues?.[data]?.map(data => data?.balanceUnitsStatus === 'SUFFICIENT' ? style.greenBigNumber : data?.balanceUnitsStatus === 'DEFICIT' ? style.yellowBigNumber : style.redBigNumber) })
+                    balanceHours?.push({ type: 'text', values: filteredServiceValues?.[data]?.map(data => data?.balance?.hours), color: filteredServiceValues?.[data]?.map(data => data?.balanceUnitsStatus === 'SUFFICIENT' ? style.greenBigNumber : data?.balanceUnitsStatus === 'DEFICIT' ? style.yellowBigNumber : style.redBigNumber) })
                 }
             })
 
@@ -223,7 +223,7 @@ const TrackYourContracts = () => {
                         ) : (
                             <>
                                 <div className={style.spaceBetween}>
-                                    <div className={style.trackServiceProviderName}>STATUS OF ACTIVITIES/ SERVICES BY SERVICE PROVIDER FOR NOVEMBER 2023</div>
+                                    <div className={style.trackServiceProviderName}>{`STATUS OF ACTIVITIES/ SERVICES BY SERVICE PROVIDER FOR ${format(new Date(), 'MMMM yyyy')}`}</div>
                                     <PrintOutlinedIcon className={`${style.headerPrintIcon} ${style.cursorPointer}`} style={{ color: "#7165E3" }} />
                                 </div>
                                 {selectedContractedServiceProvider !== '' && (
