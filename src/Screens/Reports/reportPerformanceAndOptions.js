@@ -39,6 +39,26 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
     const [anchorElFullscreen, setAnchorElFullscreen] = useState(null);
     const openFullscreen = Boolean(anchorElFullscreen);
 
+    const reportTitleList = {
+        upcomingContractRenewals: 'Upcoming Contract Renewals',
+        oneTimeContract: "List of One Time Contracts that will Terminate on Expiration",
+        scheduledActivity: "Scheduled Activity/ Services - Forcasted To Actual",
+        scheduledActivityByContract: "Scheduled Activity/ Services - Forcasted To Actual By Contract",
+        complianceStatus: "Proof Of Documentation Status By Contractor",
+        nonCompliant: 'List of Contracts that are non compliant with proof of documentation requirement',
+        paymentsProcessingSummary: 'Payments Processing Summary',
+        compensationCostAnalysis: 'Compensation Cost Analysis',
+        timesheetProcessingSummary: 'Timesheet Processing Summary',
+        listingOfTimesheetsNotPaid: 'Listing Of Timesheets Not Paid',
+        submittedTimesheetsPaymentStatus: 'Submitted Timesheets Payment Status',
+        addOnActivities: 'Add On Activities/ Services Requests Status Summary',
+        activitiesOrServices: 'Activities/ Services Log Status Summary',
+        contractDocumentsOnFile: 'Contract Documents On File',
+        multiProviderContractReport: 'Multi Provider Contract Report',
+        contractSetupWithBusinessEntity: 'Contract Setup With Business Entity',
+        currentRemitToAddressForActiveContracts: 'Current Remit To Address For Active Contracts',
+    }
+
     const getSaveReportDialog = (value) => {
         setShowSaveReport(value);
     }
@@ -48,18 +68,7 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
             <div className={`${style.spaceBetween} ${style.alignCenter}`}>
                 <div className={`${style.displayInRow} ${style.cardPadding} ${style.alignCenter}`}>
                     <div className={style.reportTypeTextStyle}>
-                        {reportType === "upcomingContractRenewals" ? 'Upcoming Contract Renewals'
-                            : reportType === "oneTimeContract" ? "List of One Time Contracts that will Terminate on Expiration"
-                                : reportType === "scheduledActivity" ? "Scheduled Activity/ Services - Forcasted To Actual"
-                                    : reportType === "complianceStatus" ? "Proof Of Documentation Status By Contractor"
-                                        : reportType === "nonCompliant" ? 'List of Contracts that are non compliant with proof of documentation requirement'
-                                            : reportType === "paymentsProcessingSummary" ? 'Payments Processing Summary'
-                                                : reportType === "compensationCostAnalysis" ? 'Compensation Cost Analysis'
-                                                    : reportType === "timesheetProcessingSummary" ? 'Timesheet Processing Summary'
-                                                        : reportType === "listingOfTimesheetsNotPaid" ? 'Listing Of Timesheets Not Paid'
-                                                            : reportType === "submittedTimesheetsPaymentStatus" ? 'Submitted Timesheets Payment Status'
-                                                                : reportType === "addOnActivities" ? 'Add On Activities/ Services Requests Status Summary'
-                                                                    : 'Activities/ Services Log Status Summary'}
+                        {reportTitleList[reportType]}
                     </div>
                 </div>
                 <div className={` ${style.margin20}`}>

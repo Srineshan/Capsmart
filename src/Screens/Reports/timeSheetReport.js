@@ -308,10 +308,54 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                             <div className={style.tableDataReportsFontStyle}>2</div>
                                             <Link to="/reportTypeOverview/oneTimeContract" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>List of One Time Contracts that will Terminate on Expiration</div></Link>
                                             <div className={style.tableDataReportsFontStyle}>List of One Time Contracts that will Terminate on Expiration</div>
-                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy H:m')} </div>
+                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy HH:mm')} </div>
                                             {/* <div className={style.tableDataReportsFontStyle}>Carlos C</div> */}
-                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy H:m')}</div>
+                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy')}</div>
                                             <Link to={"/reportTypeOverview/oneTimeContract"} className={style.linkStyle}>
+                                                <Run />
+                                            </Link>
+                                        </div>
+                                        <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                            <div className={style.tableDataReportsFontStyle}>3</div>
+                                            <Link to="/reportTypeOverview/contractDocumentsOnFile" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Contract Documents On File</div></Link>
+                                            <div className={style.tableDataReportsFontStyle}>Contract Documents On File</div>
+                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy HH:mm')} </div>
+                                            {/* <div className={style.tableDataReportsFontStyle}>Carlos C</div> */}
+                                            <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'd MMM yyyy')}</div>
+                                            <Link to={"/reportTypeOverview/contractDocumentsOnFile"} className={style.linkStyle}>
+                                                <Run />
+                                            </Link>
+                                        </div>
+                                        <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                            <div className={style.tableDataReportsFontStyle}>4</div>
+                                            <Link to="/reportTypeOverview/multiProviderContractReport" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Multi Provider Contract Report</div></Link>
+                                            <div className={style.tableDataReportsFontStyle}>Multi Provider Contract Report</div>
+                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy HH:mm')} </div>
+                                            {/* <div className={style.tableDataReportsFontStyle}>Carlos C</div> */}
+                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy')}</div>
+                                            <Link to={"/reportTypeOverview/multiProviderContractReport"} className={style.linkStyle}>
+                                                <Run />
+                                            </Link>
+                                        </div>
+                                        <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                            <div className={style.tableDataReportsFontStyle}>5</div>
+                                            <Link to="/reportTypeOverview/contractSetupWithBusinessEntity" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Contract Setup With Business Entity</div></Link>
+                                            <div className={style.tableDataReportsFontStyle}>Contract Setup With Business Entity</div>
+                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy HH:mm')} </div>
+                                            {/* <div className={style.tableDataReportsFontStyle}>Carlos C</div> */}
+                                            <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'd MMM yyyy')}</div>
+                                            <Link to={"/reportTypeOverview/contractSetupWithBusinessEntity"} className={style.linkStyle}>
+                                                <Run />
+                                            </Link>
+                                        </div>
+                                        <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                            <div className={style.tableDataReportsFontStyle}>6</div>
+                                            <Link to="/reportTypeOverview/currentRemitToAddressForActiveContracts" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Current Remit To Address For Active Contracts</div></Link>
+                                            <div className={style.tableDataReportsFontStyle}>Current Remit To Address For Active Contracts</div>
+                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy HH:mm')} </div>
+                                            {/* <div className={style.tableDataReportsFontStyle}>Carlos C</div> */}
+                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy')}</div>
+                                            <Link to={"/reportTypeOverview/currentRemitToAddressForActiveContracts"} className={style.linkStyle}>
                                                 <Run />
                                             </Link>
                                         </div>

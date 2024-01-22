@@ -330,22 +330,26 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
         <div>
             <div className={`${style.leftCard} ${style.marginTop20} ${style.bigCalendarLeftCardWidth}`}>
                 <div className={style.reportTypeTextStyle}>Reporting Parameter Selection For This Report</div>
-                {(reportType === "upcomingContractRenewals" || reportType === "oneTimeContract") ? (
+                {(reportType === "upcomingContractRenewals" || reportType === "oneTimeContract" ||
+                    reportType === "contractDocumentsOnFile" || reportType === "multiProviderContractReport" ||
+                    reportType === "contractSetupWithBusinessEntity" || reportType === "currentRemitToAddressForActiveContracts") ? (
                     <>
-                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                            <InputLabel id="demo-simple-select-standard-label1">{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Time Frame</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-standard-label1"
-                                id="demo-simple-select-standard1"
-                                value={renewalreportingTimePeriod}
-                                onChange={(e) => { setRenewalreportingTimePeriod(e.target.value) }}
-                                label="Renewal Time Frame"
-                            >
-                                <MenuItem value={30}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 30 days</MenuItem>
-                                <MenuItem value={60}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 60 days</MenuItem>
-                                <MenuItem value={90}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 90 days</MenuItem>
-                            </Select>
-                        </FormControl>
+                        {reportType === "upcomingContractRenewals" && (
+                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                <InputLabel id="demo-simple-select-standard-label1">{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Time Frame</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-standard-label1"
+                                    id="demo-simple-select-standard1"
+                                    value={renewalreportingTimePeriod}
+                                    onChange={(e) => { setRenewalreportingTimePeriod(e.target.value) }}
+                                    label="Renewal Time Frame"
+                                >
+                                    <MenuItem value={30}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 30 days</MenuItem>
+                                    <MenuItem value={60}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 60 days</MenuItem>
+                                    <MenuItem value={90}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 90 days</MenuItem>
+                                </Select>
+                            </FormControl>
+                        )}
                         <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                             <InputLabel id="demo-multiple-name-label2">Site</InputLabel>
                             <Select
@@ -386,7 +390,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 ))}
                             </Select>
                         </FormControl>
-                        {reportType !== "oneTimeContract" && (
+                        {reportType === "upcomingContractRenewals" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-simple-select-standard-label4">Contract Continuation Policy</InputLabel>
                                 <Select

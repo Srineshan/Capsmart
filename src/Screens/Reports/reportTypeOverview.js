@@ -291,7 +291,11 @@ const ReportTypeOverview = () => {
         listingOfTimesheetsNotPaid: 'Listing Of Timesheets Not Paid',
         submittedTimesheetsPaymentStatus: 'Submitted Timesheets Payment Status',
         addOnActivities: 'Add On Activities/ Services Requests Status Summary',
-        activitiesOrServices: 'Activities/ Services Log Status Summary'
+        activitiesOrServices: 'Activities/ Services Log Status Summary',
+        contractDocumentsOnFile: 'Contract Documents On File',
+        multiProviderContractReport: 'Multi Provider Contract Report',
+        contractSetupWithBusinessEntity: 'Contract Setup With Business Entity',
+        currentRemitToAddressForActiveContracts: 'Current Remit To Address For Active Contracts',
     }
 
     const handlePrint = useReactToPrint({
@@ -1212,20 +1216,27 @@ const ReportTypeOverview = () => {
                                                 <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter} ${style.marginTop5} `}>
                                                     {reportTitleList[reportType]}
                                                 </div>
-                                                {(reportType !== "upcomingContractRenewals" && reportType !== "oneTimeContract" && dataToUseInReport?.reportingTimePeriod !== "") && (
-                                                    <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5} `}>Reporting Period used for this report : {dataToUseInReport?.reportingTimePeriod} ({dataToUseInReport?.fromToDisplay} to {dataToUseInReport?.toToDisplay}) </div>
-                                                )}
+                                                {(reportType !== "upcomingContractRenewals" && reportType !== "oneTimeContract" &&
+                                                    reportType !== "contractDocumentsOnFile" && reportType !== "multiProviderContractReport" &&
+                                                    reportType !== "contractSetupWithBusinessEntity" && reportType !== "currentRemitToAddressForActiveContracts" &&
+                                                    dataToUseInReport?.reportingTimePeriod !== "") && (
+                                                        <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5} `}>Reporting Period used for this report : {dataToUseInReport?.reportingTimePeriod} ({dataToUseInReport?.fromToDisplay} to {dataToUseInReport?.toToDisplay}) </div>
+                                                    )}
                                             </div>
                                         </div>
                                         <div className={`${style.mildBorderStyle} ${style.marginTop20} `}></div>
                                         <div className={style.marginTop20}>
                                             <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Reporting Parameters Applied</div>
-                                            {(reportType === "upcomingContractRenewals" || reportType === "oneTimeContract") ? (
+                                            {(reportType === "upcomingContractRenewals" || reportType === "oneTimeContract" ||
+                                                reportType === "contractDocumentsOnFile" || reportType === "multiProviderContractReport" ||
+                                                reportType === "contractSetupWithBusinessEntity" || reportType === "currentRemitToAddressForActiveContracts") ? (
                                                 <div className={`${style.grid2} ${style.marginTop20} `}>
-                                                    <div>
-                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Time Frame </div>
-                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{`${reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next ${dataToUseInReport?.renewalreportingTimePeriod} days`}</div>
-                                                    </div>
+                                                    {reportType === "upcomingContractRenewals" && (
+                                                        <div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Time Frame </div>
+                                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{`${reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next ${dataToUseInReport?.renewalreportingTimePeriod} days`}</div>
+                                                        </div>
+                                                    )}
                                                     <div>
                                                         <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Sites </div>
                                                         <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedSitesToSend?.map(data => data?.siteName?.siteName).join(', ') || 'All Sites'}</div>
@@ -1876,6 +1887,66 @@ const ReportTypeOverview = () => {
                                                         <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
                                                             subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
                                                     )
+                                                ) : (reportType === "contractDocumentsOnFile") ? (
+                                                    // (individualContract?.length !== 0 || multipleContract?.length !== 0) ? (
+                                                    //     <>
+                                                    <ReportsTable
+                                                        tableType={'CONTRACT NAME - {{ FEB 1, 2023 - JAN 31, 2024}}'}
+                                                        tableHeader={['Document Name', 'Document Type', 'Description', 'Uploaded By', 'Last Updated By', 'Last Updated', 'File']}
+                                                        tableValue={['', '']}
+                                                        activitiesServicesValues={[['Document 1', 'Document 2'], ['Contract Amendment', 'Exhibit'], ['Description reg the doc', 'Description reg the doc 2'], ['Contract Manager 1', 'Contract Manager 2'], ['Contract Manager 2', 'Contract Manager 1'], ['10-31-2023', '11-22-2023'], ['View', 'View']]}
+                                                        styleName={style.grid7}
+                                                    />
+                                                    //     </>
+                                                    // ) : (
+                                                    //     <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
+                                                    //         subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
+                                                    // )
+                                                ) : (reportType === "multiProviderContractReport") ? (
+                                                    // (individualContract?.length !== 0 || multipleContract?.length !== 0) ? (
+                                                    //     <>
+                                                    <ReportsTable
+                                                        tableType={'CONTRACT NAME - {{ FEB 1, 2023 - JAN 31, 2024}}'}
+                                                        tableHeader={['Service Provider Name', 'Service Provider Type', 'Cell Phone', 'Email', 'Address Line 1', 'State', 'City']}
+                                                        tableValue={['', '']}
+                                                        activitiesServicesValues={[['Provider 1, MD', 'Provider 2, MD'], ['Dental Professional', 'Physician / Doctor'], ['(034) 324-1341', '(687) 468-7364'], ['provider1@timesmart.com', 'provider2@timesmart.com'], ['1212, AAA street', '761, BAA street'], ['California', 'Texas'], ['San Diego', 'Austin']]}
+                                                        styleName={style.grid7}
+                                                    />
+                                                    //     </>
+                                                    // ) : (
+                                                    //     <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
+                                                    //         subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
+                                                    // )
+                                                ) : (reportType === "contractSetupWithBusinessEntity") ? (
+                                                    // (individualContract?.length !== 0 || multipleContract?.length !== 0) ? (
+                                                    //     <>
+                                                    <ReportsTable
+                                                        tableType={'{{Need to fix}}'}
+                                                        tableHeader={['Contract Name', 'Contract Type', 'Point Of Contact', 'Email', 'Address Line 1', 'State', 'City']}
+                                                        tableValue={['', '']}
+                                                        activitiesServicesValues={[['Gordon Mak Contract', 'Jessie John Contract'], ['Type 1', 'Type 2'], ['Melissa Selner', 'Gaurav Abbi'], ['provider1@timesmart.com', 'provider2@timesmart.com'], ['1212, AAA street', '761, BAA street'], ['California', 'Texas'], ['San Diego', 'Austin']]}
+                                                        styleName={style.grid7}
+                                                    />
+                                                    //     </>
+                                                    // ) : (
+                                                    //     <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
+                                                    //         subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
+                                                    // )
+                                                ) : (reportType === "currentRemitToAddressForActiveContracts") ? (
+                                                    // (individualContract?.length !== 0 || multipleContract?.length !== 0) ? (
+                                                    //     <>
+                                                    <ReportsTable
+                                                        tableType={'Current Remit To Address For Active Contracts'}
+                                                        tableHeader={['Contract Name', 'Contract Type', 'Point Of Contact', 'Email', 'Remit To Address Line 1', 'State', 'City']}
+                                                        tableValue={['', '']}
+                                                        activitiesServicesValues={[['Gordon Mak Contract', 'Jessie John Contract'], ['Type 1', 'Type 2'], ['Melissa Selner', 'Gaurav Abbi'], ['provider1@timesmart.com', 'provider2@timesmart.com'], ['1212, AAA street', '761, BAA street'], ['California', 'Texas'], ['San Diego', 'Austin']]}
+                                                        styleName={style.grid7}
+                                                    />
+                                                    //     </>
+                                                    // ) : (
+                                                    //     <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
+                                                    //         subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
+                                                    // )
                                                 ) : reportType === "complianceStatus" ? (
                                                     <>
                                                         <div className={style.marginTop40}>
