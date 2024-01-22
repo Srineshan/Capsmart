@@ -1,7 +1,7 @@
 import React, { Fragment, useState, useEffect, cloneElement } from 'react';
 import Navbar from './../../Components/Navbar';
 import SideBar from '../../Components/Sidebar';
-import DataGrid from 'react-data-grid';
+// import DataGrid from 'react-data-grid';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 import { GET } from '../dataSaver';
 import { useParams } from 'react-router-dom';
@@ -11,6 +11,8 @@ import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import { format } from 'date-fns';
 import Select from '@mui/material/Select';
+import { DataGrid } from '@mui/x-data-grid';
+
 import 'react-data-grid/lib/styles.css';
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
 
@@ -40,14 +42,118 @@ const TrackYourContracts = () => {
     const [userId, setUserId] = useState(userDetail?.id);
     const [selectedContracts, setSelectedContracts] = useState([]);
     const [activityTrackServices, setActivityTrackServices] = useState([]);
+    const [contractTrackCompensationValues, setContractTrackCompensationValues] = useState([]);
+    // const columns = [
+    //     { key: 'id', name: 'ID' },
+    //     { key: 'title', name: 'Title' }
+    // ];
+
+    // const rows = [
+    //     { id: 0, title: 'Example' },
+    //     { id: 1, title: 'Demo' }
+    // ];
+
+    console.log(trackType)
+
     const columns = [
-        { key: 'id', name: 'ID' },
-        { key: 'title', name: 'Title' }
+        { field: 'id', headerName: 'ID', width: 90 },
+        {
+            field: 'firstName',
+            headerName: 'First name',
+            width: 150,
+            editable: true,
+        },
+        {
+            field: 'lastName',
+            headerName: 'Last name',
+            width: 150,
+            editable: true,
+        },
+        {
+            field: 'age',
+            headerName: 'Age',
+            type: 'number',
+            width: 110,
+            editable: true,
+        },
+        {
+            field: 'fullName',
+            headerName: 'Full name',
+            description: 'This column has a value getter and is not sortable.',
+            sortable: false,
+            width: 160,
+            valueGetter: (params) =>
+                `${params.row.firstName || ''} ${params.row.lastName || ''}`,
+        },
+    ];
+
+    const getColumns = () => {
+        let tempCol = [
+            { field: 'service', headerName: '', width: 200 },
+            { field: 'hourlyRate', headerName: 'Pro-Rata Hourly Rate', width: 140 },
+            { field: 'cyExpectedHours', headerName: 'Expected (Hours)', width: 140 },
+            { field: 'cyExpectedAmount', headerName: 'Expected (Amount)', width: 140 },
+            { field: 'cym1ExpectedHours', headerName: 'Expected (Hours)', width: 140 },
+            { field: 'cym1ExpectedAmount', headerName: 'Expected (Amount)', width: 140 },
+        ];
+
+        tempCol = contractTrackCompensationValues?.map((data, index) => {
+            data?.timesheetActivitiesWithActualValuesList?.map((actualValue, actualIndex) => {
+                tempCol.push({ field: `cy${index + 1}m${actualIndex + 2}ActualHours`, headerName: `CY${index + 1} M${actualIndex + 2} Actual Hours`, width: 140 },
+                    tempCol.push({ field: `cy${index + 1}m${actualIndex + 2}ActualAmount`, headerName: `CY${index + 1} M${actualIndex + 2} Actual Amount`, width: 140 })
+                )
+            })
+        }) || []
+
+        return tempCol;
+    }
+
+    const getRows = () => {
+        let tempRow = contractTrackCompensationValues?.map((data, index) => {
+            data?.activityWithExpectedValuesList?.map((expectedValue, expectedIndex) => {
+                tempRow.push({
+                    id: `${expectedIndex}`,
+                    service: `${data?.activityType} - ${data?.performingActivity}`,
+                    hourlyRate: `${data?.hourlyRate}`,
+                    cyExpectedHours: data?.expectedHoursInYear,
+                    cyExpectedAmount: data?.expectedAmountInYear,
+                    cym1ExpectedHours: data?.expectedHoursInMonth,
+                    cym1ExpectedAmount: data?.expectedAmountInMonth
+                })
+                if (data?.timesheetActivitiesWithActualValuesList?.length !== 0) {
+                    data?.timesheetActivitiesWithActualValuesList?.map((actualValue, actualIndex) => {
+                        actualValue?.activityWithActualValuesList?.map(value => {
+                            let key1 = `cy${index + 1}m${expectedIndex + 2 + actualIndex}ActualHours`;
+                            let key2 = `cy${index + 1}m${expectedIndex + 2 + actualIndex}ActualAmount`;
+                            tempRow[expectedIndex]?.[key1] = value?.actualHours;
+                            tempRow[expectedIndex]?.[key2] = value?.actualAmount;
+                        })
+                    })
+                }
+            })
+        }) || [];
+
+        return tempRow;
+    }
+
+    const columnGroupingModel = [
+        {
+            groupId: 'CY 2021',
+            description: '',
+            children: [{ field: 'cyExpectedHours' }, { field: 'cyExpectedAmount' }],
+        },
+        {
+            groupId: 'CY1 M1 2021',
+            description: '',
+            children: [{ field: 'cym1ExpectedHours' }, { field: 'cym1ExpectedAmount' }],
+        },
     ];
 
     const rows = [
-        { id: 0, title: 'Example' },
-        { id: 1, title: 'Demo' }
+        { service: 1, hourlyRate: 'Snow', cyExpectedHours: 'Jon', cyExpectedAmount: 14, cym1ExpectedHours: 'Jon', cym1ExpectedAmount: 14 },
+        { service: 2, hourlyRate: 'Lannister', cyExpectedHours: 'Cersei', cyExpectedAmount: 31, cym1ExpectedHours: 'Jon', cym1ExpectedAmount: 14 },
+        { service: 3, hourlyRate: 'Lannister', cyExpectedHours: 'Jaime', cyExpectedAmount: 31, cym1ExpectedHours: 'Jon', cym1ExpectedAmount: 14 },
+        { service: 4, hourlyRate: 'Stark', cyExpectedHours: 'Arya', cyExpectedAmount: 11, cym1ExpectedHours: 'Jon', cym1ExpectedAmount: 14 },
     ];
 
     const compensationPolicy = {
@@ -61,15 +167,28 @@ const TrackYourContracts = () => {
         setUserId(userDetail?.id);
         setUserDetails();
         getActivityLogger();
+        getContractAndUserList();
     }, [])
 
-    useEffect(() => {
-        setContracts(currentUserDetails?.contracts);
-    }, [currentUserDetails])
+    const getContractAndUserList = async () => {
+        const { data: contractAndUserList } = await GET(`contract-managment-service/reports/filter/usersAndContracts?reportCategory=TIMESHEET`);
+        console.log(contractAndUserList)
+        setContracts(contractAndUserList?.contracts);
+    }
+
+    // useEffect(() => {
+    //     setContracts(currentUserDetails?.contracts);
+    // }, [currentUserDetails])
 
     useEffect(() => {
         getContractTrackValues();
     }, [selectedContractedServiceProvider])
+
+    useEffect(() => {
+        if (selectedContracts?.length !== 0) {
+            getContractTrackCompensation();
+        }
+    }, [selectedContracts])
 
     const getIsExpanded = (value) => {
         setIsExpanded(value);
@@ -83,6 +202,12 @@ const TrackYourContracts = () => {
     const getContractTrackValues = async () => {
         const { data: data } = await GET(`timesheet-management-service/activity/track/services?userIds=${[selectedContractedServiceProvider]}`);
         setActivityTrackServices(data);
+        console.log(data)
+    }
+
+    const getContractTrackCompensation = async () => {
+        const { data: data } = await GET(`timesheet-management-service/timesheet/track/compensation?contractId=${selectedContracts}`);
+        setContractTrackCompensationValues(data);
         console.log(data)
     }
 
@@ -214,7 +339,22 @@ const TrackYourContracts = () => {
                                     </FormControl>
                                 </div>
                                 <div className={`${style.trackTableBackgroudcard} ${style.marginTop20}`}>
-                                    <DataGrid columns={columns} rows={rows} className='rdg-light' />;
+                                    {/* <DataGrid columns={columns} rows={rows} className='rdg-light' />; */}
+                                    <DataGrid
+                                        rows={getRows()}
+                                        columns={getColumns()}
+                                        initialState={{
+                                            pagination: {
+                                                paginationModel: {
+                                                    pageSize: 5,
+                                                },
+                                            },
+                                        }}
+                                        pageSizeOptions={[5]}
+                                        experimentalFeatures={{ columnGrouping: true }}
+                                        className={style.whiteBackground}
+                                        columnGroupingModel={columnGroupingModel}
+                                    />
                                 </div>
                                 <div>
 

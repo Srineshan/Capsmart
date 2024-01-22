@@ -473,7 +473,7 @@ const App = ({ props }) => {
               <Route path="/contracts" element={<ActiveContracts />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/notifyUser" element={<Notify />} />
-              <Route path="/trackContracts/:trackContractType" element={<TrackYourContracts />} />
+              <Route path="/trackContracts/:trackType" element={<TrackYourContracts />} />
               <Route path="/contracts/moveToDraft" element={<MoveToDraft />} />
               <Route path="/remindContractors" element={<RemindContractors />} />
               <Route path="notifyEntityUser" element={<NotifyEntityUser />} />
