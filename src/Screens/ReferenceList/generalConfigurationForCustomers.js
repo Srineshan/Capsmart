@@ -21,7 +21,7 @@ import style from "./index.module.scss";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
 
-const MileageRateForCustomers = () => {
+const GeneralConfigurationForCustomers = () => {
   const [isSelected, setIsSelected] = useState(false);
   const [showAddCompanyDialog, setShowAddCompanyDialog] = useState(false);
 
@@ -116,7 +116,7 @@ const MileageRateForCustomers = () => {
             </div>
             <div>
               <LevelTwoHeader
-                heading={"MILEAGE RATE"}
+                heading={"GENERAL CONFIGURATION"}
                 // updatedTime={`UPDATED ON ${lastUpdatedDate} `}
                 path={"/Screens/ReferenceList/customerAdminDashboard"}
                 callingFrom={"Customer Admin"}
@@ -129,71 +129,42 @@ const MileageRateForCustomers = () => {
                     <div className={style.customersAdminColumngrid3}>
                       <div></div>
                       <div>
-                        <div className={style.customersAdminCardStyle3}>
-                          <div className={`${style.GeneralConfigHeaderInsideContainer} ${style.displayInRow}`}>       
-                            <p></p>
-                            <p className={`${style.tableHeaderIndustriesFontStyle7} `}>
-                              Year</p>
-                            <p className={`${style.tableHeaderIndustriesFontStyle7} `}>
-                              Mileage Rate</p>
-                            <p className={`${style.tableHeaderIndustriesFontStyle7}`}>
-                              Edit </p>
-                            <p className={`${style.tableHeaderIndustriesFontStyle7} `}>
-                              Delete </p>
-                            <img
-                            src={AddNewEntity}
-                            alt=""
-                            className={`${style.colorFileStyle} `}
-                            onClick={() => {
-                              getAddMileageRateDialog(true);
-                              setIsEdit(false);
-                            }}
-                          />
+                        <div className={`${style.customersAdminCardStyle3} `}>
+                          <div className={`${style.editHealthCareGrid2} ${style.marginLeft20} ${style.marginTop10}`}>
+                            <div className={style.entityLableStyle3}>Certification Language for Approver*</div>
+                            <div className={style.displayInRow}>
+                              <InputGroup
+                                value={""}
+                                className={style.halfWidth}
+                              />
+                            </div>
                           </div>
-                          {
-                            mileageRateData?.map((data,index)=>{
-                              return (
-                                <>
-                                <div>
-                                  <div
-                                    className={`${style.GeneralConfigHeaderInsideContainer} ${style.displayInRow}`} key={index}
-                                  >
-                                    <p></p>
-                                    <p
-                                      className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft10}`}
-                                    >
-                                      {data?.year}
-                                    </p>
-                                    <p className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft10}`}>{data?.mileageRate?.value}</p>
-                                    <div className={style.displayInRow}>
-                                      
-                                      <img
-                                        src={EditHcRow}
-                                        alt=""
-                                        className={`${style.colorFileStyle}`}
-                                        onClick={() =>{
-                                            setIsEdit(true);
-                                            getAddMileageRateDialog(true);
-                                            setSelectedMileageRate(data)
-                                          }}
-                                      />
-                                    </div>
-                                    <div className={style.displayInRow}>
-                                      <img
-                                        src={DeleteHcRow}
-                                        alt=""
-                                        className={`${style.colorFileStyle}`}
-                                        onClick={() =>
-                                          handleDeleteMileageRate(data?.id)
-                                        }
-                                      />
-                                    </div>
-                                  </div>
-                                </div>
-                                </>
-                              )
-                            })
-                          }
+                          <div className={`${style.editHealthCareGrid2} ${style.marginLeft20} ${style.marginTop10}`}>
+                            <div className={style.entityLableStyle3}>Certification Language for Reviewer*</div>
+                            <div className={style.displayInRow}>
+                              <InputGroup
+                                value={""}
+                                className={style.halfWidth}
+                              />
+                            </div>
+                          </div>
+                          <div className={`${style.editHealthCareGrid2} ${style.marginLeft20} ${style.marginTop10}`}>
+                            <div className={style.entityLableStyle3}>Certification Language for Accounts Payable*</div>
+                            <div className={style.displayInRow}>
+                              <InputGroup
+                                value={""}
+                                className={style.halfWidth}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className={`${style.floatRight} ${style.marginTop10}`}>
+                          <button
+                            className={`${style.buttonStyle} ${style.marginLeft20}`}
+                            // onClick={() => handleSave()}
+                          >
+                            SAVE
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -230,4 +201,4 @@ const MileageRateForCustomers = () => {
   );
 };
 
-export default MileageRateForCustomers;
+export default GeneralConfigurationForCustomers;
