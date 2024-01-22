@@ -557,7 +557,7 @@ const EditServiceProvider = ({
       email: {
         officialEmail: userDetails?.email?.trim(),
       },
-      ssoId: userDetails?.ssoId?.trim(),
+      ssoId: userDetails?.ssoId?.id?.trim(),
       communication: {
         personalEmail: userDetails?.email?.trim(),
         mobileNumber: userDetails?.phone,
@@ -1110,12 +1110,10 @@ const EditServiceProvider = ({
             <button
               className={`${style.buttonStyle}  ${style.cursorPointer} ${style.marginLeft20
                 } ${continueLoading ? style.disabled : ""}`}
-              onClick={
-                !continueLoading
-                  ? () => {
-                    handleSave();
-                  }
-                  : {}
+              onClick={() => {
+                !continueLoading &&
+                  handleSave();
+              }
               }
             >
               SAVE & EXIT
