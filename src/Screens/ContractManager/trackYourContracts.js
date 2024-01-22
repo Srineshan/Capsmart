@@ -120,16 +120,16 @@ const TrackYourContracts = () => {
                     cym1ExpectedHours: data?.expectedHoursInMonth,
                     cym1ExpectedAmount: data?.expectedAmountInMonth
                 })
-                if (data?.timesheetActivitiesWithActualValuesList?.length !== 0) {
-                    data?.timesheetActivitiesWithActualValuesList?.map((actualValue, actualIndex) => {
-                        actualValue?.activityWithActualValuesList?.map(value => {
-                            let key1 = `cy${index + 1}m${expectedIndex + 2 + actualIndex}ActualHours`;
-                            let key2 = `cy${index + 1}m${expectedIndex + 2 + actualIndex}ActualAmount`;
-                            tempRow[expectedIndex]?.[key1] = value?.actualHours;
-                            tempRow[expectedIndex]?.[key2] = value?.actualAmount;
-                        })
-                    })
-                }
+                // if (data?.timesheetActivitiesWithActualValuesList?.length !== 0) {
+                //     data?.timesheetActivitiesWithActualValuesList?.map((actualValue, actualIndex) => {
+                //         actualValue?.activityWithActualValuesList?.map(value => {
+                //             let key1 = `cy${index + 1}m${expectedIndex + 2 + actualIndex}ActualHours`;
+                //             let key2 = `cy${index + 1}m${expectedIndex + 2 + actualIndex}ActualAmount`;
+                //             tempRow[expectedIndex]?.[key1] = value?.actualHours;
+                //             tempRow[expectedIndex]?.[key2] = value?.actualAmount;
+                //         })
+                //     })
+                // }
             })
         }) || [];
 
