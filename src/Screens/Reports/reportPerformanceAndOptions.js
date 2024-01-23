@@ -54,8 +54,8 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
         addOnActivities: 'Add On Activities/ Services Requests Status Summary',
         activitiesOrServices: 'Activities/ Services Log Status Summary',
         contractDocumentsOnFile: 'Contract Documents On File',
-        multiProviderContractReport: 'Multi Provider Contract Report',
-        contractSetupWithBusinessEntity: 'Contract Setup With Business Entity',
+        multiProviderContractsList: 'Multi Provider Contracts List',
+        contractsWithABusinessEntity: 'Contracts With A Business Entity',
         currentRemitToAddressForActiveContracts: 'Current Remit To Address For Active Contracts',
     }
 

@@ -44,6 +44,10 @@ const ReportTypeOverview = () => {
     const [isNoData, setIsNoData] = useState(false);
     const [contractRenewalReport, setContractRenewalReport] = useState([]);
     const [oneTimeContract, setOneTimeContract] = useState([]);
+    const [contractDocumentsOnFileValues, setContractDocumentsOnFileValues] = useState([]);
+    const [multiProviderContractValues, setMultiProviderContractValues] = useState([]);
+    const [contractsWithBusinessEntityValues, setContractsWithBusinessEntityValues] = useState([]);
+    const [currentRemitToAddressValues, setCurrentRemitToAddressValues] = useState([]);
     const [nonCompliantContract, setNonCompliantContract] = useState([]);
     const [selectedPodTypeFromTile, setSelectedPodTypeFromTile] = useState('');
     const [nonCompliantContractTile, setNonCompliantContractTile] = useState([]);
@@ -146,7 +150,7 @@ const ReportTypeOverview = () => {
 
     useEffect(() => {
         getUpdatedValuesWithParams();
-    }, [selectedPodTypeFromTile, dataToUseInReport?.from, dataToUseInReport?.to, dataToUseInReport?.selectedContracts, dataToUseInReport?.selectedContractedServiceProvider, dataToUseInReport?.selectedSites, dataToUseInReport?.selectedDepartments, dataToUseInReport?.renewalreportingTimePeriod, dataToUseInReport?.contractContinuationPolicy])
+    }, [selectedPodTypeFromTile, dataToUseInReport?.from, dataToUseInReport?.to, dataToUseInReport?.selectedContracts, dataToUseInReport?.selectedContractedServiceProvider, dataToUseInReport?.selectedSites, dataToUseInReport?.selectedDepartments, dataToUseInReport?.renewalreportingTimePeriod, dataToUseInReport?.contractContinuationPolicy, dataToUseInReport?.contractStatus])
 
     useEffect(() => {
         setApexStackedBarChartDisplay(<ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} />);
@@ -158,6 +162,18 @@ const ReportTypeOverview = () => {
         }
         if (reportType === 'oneTimeContract') {
             getOneTimeContractWithParameters();
+        }
+        if (reportType === 'contractDocumentsOnFile') {
+            getContractDocumentsOnFile();
+        }
+        if (reportType === 'multiProviderContractsList') {
+            getMultiProviderContractsList();
+        }
+        if (reportType === 'contractsWithABusinessEntity') {
+            getContractsWithABusinessEntity();
+        }
+        if (reportType === 'currentRemitToAddressForActiveContracts') {
+            getCurrentRemitToAddressForActiveContracts();
         }
         if (reportType === 'nonCompliant') {
             getNonCompliantContractReportTile();
@@ -198,6 +214,18 @@ const ReportTypeOverview = () => {
             }
             if (reportType === 'oneTimeContract') {
                 getOneTimeContractWithParameters();
+            }
+            if (reportType === 'contractDocumentsOnFile') {
+                getContractDocumentsOnFile();
+            }
+            if (reportType === 'multiProviderContractsList') {
+                getMultiProviderContractsList();
+            }
+            if (reportType === 'contractsWithABusinessEntity') {
+                getContractsWithABusinessEntity();
+            }
+            if (reportType === 'currentRemitToAddressForActiveContracts') {
+                getCurrentRemitToAddressForActiveContracts();
             }
             if (reportType === 'nonCompliant') {
                 getNonCompliantContractReportTile();
@@ -293,8 +321,8 @@ const ReportTypeOverview = () => {
         addOnActivities: 'Add On Activities/ Services Requests Status Summary',
         activitiesOrServices: 'Activities/ Services Log Status Summary',
         contractDocumentsOnFile: 'Contract Documents On File',
-        multiProviderContractReport: 'Multi Provider Contract Report',
-        contractSetupWithBusinessEntity: 'Contract Setup With Business Entity',
+        multiProviderContractsList: 'Multi Provider Contracts List',
+        contractsWithABusinessEntity: 'Contracts With A Business Entity',
         currentRemitToAddressForActiveContracts: 'Current Remit To Address For Active Contracts',
     }
 
@@ -696,6 +724,46 @@ const ReportTypeOverview = () => {
         const { data: oneTimeContract } = await GET(`contract-managment-service/reports/oneTimeContractReport?renewalDays=${dataToUseInReport?.renewalreportingTimePeriod}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
         if (oneTimeContract) {
             setOneTimeContract(oneTimeContract);
+        }
+        setIsLoading(false);
+    }
+
+    const getContractDocumentsOnFile = async () => {
+        if (dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
+            const { data: contractDocumentsOnFile } = await GET(`contract-managment-service/reports/contractDocumentsOnFile?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&contractStatus=${dataToUseInReport?.contractStatus}`);
+            if (contractDocumentsOnFile) {
+                setContractDocumentsOnFileValues(contractDocumentsOnFile);
+            }
+        }
+        setIsLoading(false);
+    }
+
+    const getMultiProviderContractsList = async () => {
+        if (dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
+            const { data: multiProviderContract } = await GET(`contract-managment-service/reports/multiProviderContract?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&contractStatus=${dataToUseInReport?.contractStatus}`);
+            if (multiProviderContract) {
+                setMultiProviderContractValues(multiProviderContract);
+            }
+        }
+        setIsLoading(false);
+    }
+
+    const getContractsWithABusinessEntity = async () => {
+        if (dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
+            const { data: contractsWithBusinessEntity } = await GET(`contract-managment-service/reports/contractsWithBusinessEntity?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&contractStatus=${dataToUseInReport?.contractStatus}`);
+            if (contractsWithBusinessEntity) {
+                setContractsWithBusinessEntityValues(contractsWithBusinessEntity);
+            }
+        }
+        setIsLoading(false);
+    }
+
+    const getCurrentRemitToAddressForActiveContracts = async () => {
+        if (dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
+            const { data: currentRemitToAddress } = await GET(`contract-managment-service/reports/currentRemitToAddress?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
+            if (currentRemitToAddress) {
+                setCurrentRemitToAddressValues(currentRemitToAddress);
+            }
         }
         setIsLoading(false);
     }
@@ -1107,6 +1175,142 @@ const ReportTypeOverview = () => {
         ];
     }
 
+
+    let documentName = [];
+    let documentType = [];
+    let documentDescription = [];
+    let lastUploadedBy = [];
+    let lastUpdatedDate = [];
+    let fileURL = [];
+
+    const getContractDocumentsOnFileValues = (value) => {
+        documentName = [];
+        documentType = [];
+        documentDescription = [];
+        lastUploadedBy = [];
+        lastUpdatedDate = [];
+        fileURL = [];
+
+        value?.contractDetail?.contractFiles?.map(data => {
+            documentName.push(data?.documentName);
+            documentType.push(data?.documentType)
+            documentDescription.push(data?.documentDescription)
+            lastUploadedBy.push(data?.uploadedBy?.name?.name)
+            lastUpdatedDate.push(data?.lastModifiedDate !== null ? format(new Date(data?.lastModifiedDate), 'MMM d, yyyy') : '-');
+            fileURL.push(data?.fileURL);
+        })
+
+        return [
+            documentName,
+            documentType,
+            documentDescription,
+            lastUploadedBy,
+            lastUpdatedDate
+        ];
+    }
+
+    let serviceProviderName = [];
+    let serviceProviderType = [];
+    let cellPhone = [];
+    let email = [];
+    let city = [];
+    let state = [];
+
+    const getMultipleContractsListValues = (value) => {
+        serviceProviderName = [];
+        serviceProviderType = [];
+        cellPhone = [];
+        email = [];
+        city = [];
+        state = [];
+
+        value?.users?.map(data => {
+            serviceProviderName.push(data?.roles?.filter(data => data?.roleName === "Aggregator")?.length !== 0 ? `${data?.name?.firstName} ${data?.name?.lastName} - Lead Timesheet Aggregator` : `${data?.name?.firstName} ${data?.name?.lastName}`);
+            serviceProviderType.push(data?.serviceProviderType?.contractedServiceProviderType)
+            cellPhone.push(data?.communication?.mobileNumber)
+            email.push(data?.email?.officialEmail)
+            city.push(data?.address?.city);
+            state.push(data?.address?.state);
+        })
+
+        return [
+            serviceProviderName,
+            serviceProviderType,
+            cellPhone,
+            email,
+            city,
+            state
+        ];
+    }
+
+    let contractName = [];
+    let contractType = [];
+    let contractBusinessEntity = [];
+    let address = [];
+    let pointOfContact = [];
+
+    const getContractsWithBusinessEntityValues = () => {
+        contractName = [];
+        contractType = [];
+        contractBusinessEntity = [];
+        address = [];
+        pointOfContact = [];
+        email = [];
+        city = [];
+        state = [];
+
+        contractsWithBusinessEntityValues?.map(data => {
+            contractName.push(data?.contractName?.contractName);
+            contractType.push(data?.contractType)
+            contractBusinessEntity.push(data?.contractorBusinessEntity?.businessEntity?.name);
+            address.push(data?.contractorBusinessEntity?.mailingAddress?.addressLine)
+            pointOfContact.push(`${data?.contractorBusinessEntity?.businessEntityUser?.name?.firstName} ${data?.contractorBusinessEntity?.businessEntityUser?.name?.lastName}`)
+            email.push(data?.contractorBusinessEntity?.businessEntityUser?.email?.officialEmail)
+            city.push(data?.contractorBusinessEntity?.mailingAddress?.city);
+            state.push(data?.contractorBusinessEntity?.mailingAddress?.state);
+        })
+
+        return [
+            contractName,
+            contractType,
+            contractBusinessEntity,
+            address,
+            city,
+            state,
+            pointOfContact,
+            email
+        ];
+    }
+
+    let zipcode = [];
+
+    const getCurrentRemitToAddressForActiveContractsValues = () => {
+        contractName = [];
+        contractType = [];
+        address = [];
+        city = [];
+        state = [];
+        zipcode = [];
+
+        currentRemitToAddressValues?.map(data => {
+            contractName.push(data?.contractName?.contractName);
+            contractType.push(data?.contractType)
+            address.push(data?.contractorBusinessEntity?.mailingAddress?.addressLine)
+            city.push(data?.contractorBusinessEntity?.mailingAddress?.city);
+            state.push(data?.contractorBusinessEntity?.mailingAddress?.state);
+            zipcode.push(data?.contractorBusinessEntity?.mailingAddress?.zipcode)
+        })
+
+        return [
+            contractName,
+            contractType,
+            address,
+            city,
+            state,
+            zipcode
+        ];
+    }
+
     const getHeaderValues = () => {
         let headerValues = [];
         headerValues.push('');
@@ -1217,8 +1421,8 @@ const ReportTypeOverview = () => {
                                                     {reportTitleList[reportType]}
                                                 </div>
                                                 {(reportType !== "upcomingContractRenewals" && reportType !== "oneTimeContract" &&
-                                                    reportType !== "contractDocumentsOnFile" && reportType !== "multiProviderContractReport" &&
-                                                    reportType !== "contractSetupWithBusinessEntity" && reportType !== "currentRemitToAddressForActiveContracts" &&
+                                                    reportType !== "contractDocumentsOnFile" && reportType !== "multiProviderContractsList" &&
+                                                    reportType !== "contractsWithABusinessEntity" && reportType !== "currentRemitToAddressForActiveContracts" &&
                                                     dataToUseInReport?.reportingTimePeriod !== "") && (
                                                         <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5} `}>Reporting Period used for this report : {dataToUseInReport?.reportingTimePeriod} ({dataToUseInReport?.fromToDisplay} to {dataToUseInReport?.toToDisplay}) </div>
                                                     )}
@@ -1228,8 +1432,8 @@ const ReportTypeOverview = () => {
                                         <div className={style.marginTop20}>
                                             <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Reporting Parameters Applied</div>
                                             {(reportType === "upcomingContractRenewals" || reportType === "oneTimeContract" ||
-                                                reportType === "contractDocumentsOnFile" || reportType === "multiProviderContractReport" ||
-                                                reportType === "contractSetupWithBusinessEntity" || reportType === "currentRemitToAddressForActiveContracts") ? (
+                                                reportType === "contractDocumentsOnFile" || reportType === "multiProviderContractsList" ||
+                                                reportType === "contractsWithABusinessEntity" || reportType === "currentRemitToAddressForActiveContracts") ? (
                                                 <div className={`${style.grid2} ${style.marginTop20} `}>
                                                     {reportType === "upcomingContractRenewals" && (
                                                         <div>
@@ -1245,6 +1449,13 @@ const ReportTypeOverview = () => {
                                                         <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Departments</div>
                                                         <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
                                                     </div>
+                                                    {(reportType === "contractDocumentsOnFile" || reportType === "multiProviderContractsList" ||
+                                                        reportType === "contractsWithABusinessEntity") && (
+                                                            <div>
+                                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Contract Status</div>
+                                                                <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.contractStatus}</div>
+                                                            </div>
+                                                        )}
                                                     {reportType === "upcomingContractRenewals" && (
                                                         <div>
                                                             <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Contract Continuation Policy</div>
@@ -1890,42 +2101,48 @@ const ReportTypeOverview = () => {
                                                 ) : (reportType === "contractDocumentsOnFile") ? (
                                                     // (individualContract?.length !== 0 || multipleContract?.length !== 0) ? (
                                                     //     <>
-                                                    <ReportsTable
-                                                        tableType={'CONTRACT NAME - {{ FEB 1, 2023 - JAN 31, 2024}}'}
-                                                        tableHeader={['Document Name', 'Document Type', 'Description', 'Uploaded By', 'Last Updated By', 'Last Updated', 'File']}
-                                                        tableValue={['', '']}
-                                                        activitiesServicesValues={[['Document 1', 'Document 2'], ['Contract Amendment', 'Exhibit'], ['Description reg the doc', 'Description reg the doc 2'], ['Contract Manager 1', 'Contract Manager 2'], ['Contract Manager 2', 'Contract Manager 1'], ['10-31-2023', '11-22-2023'], ['View', 'View']]}
-                                                        styleName={style.grid7}
-                                                    />
+                                                    contractDocumentsOnFileValues?.map((data, index) => (
+                                                        <ReportsTable
+                                                            tableType={`${data?.contractName?.contractName} - ${format(new Date(data?.contractDetail?.contractTerm?.startDate), 'MMM d, yyyy')} - ${format(new Date(data?.contractDetail?.contractTerm?.endDate), 'MMM d, yyyy')} (${dataToUseInReport?.contractStatus})`}
+                                                            tableHeader={['Document Name', 'Document Type', 'Description', 'Last Uploaded By', 'Last Updated Date']}
+                                                            tableValue={data?.contractDetail?.contractFiles}
+                                                            activitiesServicesValues={getContractDocumentsOnFileValues(data)}
+                                                            styleName={style.grid5}
+                                                            clickable={true}
+                                                            directionList={fileURL}
+                                                        />
+                                                    ))
                                                     //     </>
                                                     // ) : (
                                                     //     <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
                                                     //         subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
                                                     // )
-                                                ) : (reportType === "multiProviderContractReport") ? (
+                                                ) : (reportType === "multiProviderContractsList") ? (
                                                     // (individualContract?.length !== 0 || multipleContract?.length !== 0) ? (
                                                     //     <>
-                                                    <ReportsTable
-                                                        tableType={'CONTRACT NAME - {{ FEB 1, 2023 - JAN 31, 2024}}'}
-                                                        tableHeader={['Service Provider Name', 'Service Provider Type', 'Cell Phone', 'Email', 'Address Line 1', 'State', 'City']}
-                                                        tableValue={['', '']}
-                                                        activitiesServicesValues={[['Provider 1, MD', 'Provider 2, MD'], ['Dental Professional', 'Physician / Doctor'], ['(034) 324-1341', '(687) 468-7364'], ['provider1@timesmart.com', 'provider2@timesmart.com'], ['1212, AAA street', '761, BAA street'], ['California', 'Texas'], ['San Diego', 'Austin']]}
-                                                        styleName={style.grid7}
-                                                    />
+                                                    multiProviderContractValues?.map(data => (
+                                                        <ReportsTable
+                                                            tableType={`${data?.contract?.contractName?.contractName} - ${format(new Date(data?.contract?.contractDetail?.contractTerm?.startDate || new Date()), 'MMM d, yyyy')} - ${format(new Date(data?.contractDetail?.contractTerm?.endDate || new Date()), 'MMM d, yyyy')}  (${dataToUseInReport?.contractStatus})`}
+                                                            tableHeader={['Service Provider Name', 'Service Provider Type', 'Cell Phone', 'Email', 'City', 'State']}
+                                                            tableValue={data?.users}
+                                                            activitiesServicesValues={getMultipleContractsListValues(data)}
+                                                            styleName={style.grid6}
+                                                        />
+                                                    ))
                                                     //     </>
                                                     // ) : (
                                                     //     <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
                                                     //         subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
                                                     // )
-                                                ) : (reportType === "contractSetupWithBusinessEntity") ? (
+                                                ) : (reportType === "contractsWithABusinessEntity") ? (
                                                     // (individualContract?.length !== 0 || multipleContract?.length !== 0) ? (
                                                     //     <>
                                                     <ReportsTable
-                                                        tableType={'{{Need to fix}}'}
-                                                        tableHeader={['Contract Name', 'Contract Type', 'Point Of Contact', 'Email', 'Address Line 1', 'State', 'City']}
-                                                        tableValue={['', '']}
-                                                        activitiesServicesValues={[['Gordon Mak Contract', 'Jessie John Contract'], ['Type 1', 'Type 2'], ['Melissa Selner', 'Gaurav Abbi'], ['provider1@timesmart.com', 'provider2@timesmart.com'], ['1212, AAA street', '761, BAA street'], ['California', 'Texas'], ['San Diego', 'Austin']]}
-                                                        styleName={style.grid7}
+                                                        tableType={`Contracts With A Business Entity  (${dataToUseInReport?.contractStatus})`}
+                                                        tableHeader={['Contract Name', 'Contract Type', 'Business Entity', 'Address', 'City', 'State', 'Point Of Contact', 'Email']}
+                                                        tableValue={contractsWithBusinessEntityValues}
+                                                        activitiesServicesValues={getContractsWithBusinessEntityValues()}
+                                                        styleName={style.grid8}
                                                     />
                                                     //     </>
                                                     // ) : (
@@ -1937,10 +2154,10 @@ const ReportTypeOverview = () => {
                                                     //     <>
                                                     <ReportsTable
                                                         tableType={'Current Remit To Address For Active Contracts'}
-                                                        tableHeader={['Contract Name', 'Contract Type', 'Point Of Contact', 'Email', 'Remit To Address Line 1', 'State', 'City']}
-                                                        tableValue={['', '']}
-                                                        activitiesServicesValues={[['Gordon Mak Contract', 'Jessie John Contract'], ['Type 1', 'Type 2'], ['Melissa Selner', 'Gaurav Abbi'], ['provider1@timesmart.com', 'provider2@timesmart.com'], ['1212, AAA street', '761, BAA street'], ['California', 'Texas'], ['San Diego', 'Austin']]}
-                                                        styleName={style.grid7}
+                                                        tableHeader={['Contract Name', 'Contract Type', 'Remit To Address', 'City', 'State', 'Zipcode']}
+                                                        tableValue={currentRemitToAddressValues}
+                                                        activitiesServicesValues={getCurrentRemitToAddressForActiveContractsValues()}
+                                                        styleName={style.grid6}
                                                     />
                                                     //     </>
                                                     // ) : (

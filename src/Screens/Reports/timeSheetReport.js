@@ -328,23 +328,23 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                         </div>
                                         <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
                                             <div className={style.tableDataReportsFontStyle}>4</div>
-                                            <Link to="/reportTypeOverview/multiProviderContractReport" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Multi Provider Contract Report</div></Link>
-                                            <div className={style.tableDataReportsFontStyle}>Multi Provider Contract Report</div>
+                                            <Link to="/reportTypeOverview/multiProviderContractsList" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Multi Provider Contracts List</div></Link>
+                                            <div className={style.tableDataReportsFontStyle}>Multi Provider Contracts List</div>
                                             <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy HH:mm')} </div>
                                             {/* <div className={style.tableDataReportsFontStyle}>Carlos C</div> */}
                                             <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy')}</div>
-                                            <Link to={"/reportTypeOverview/multiProviderContractReport"} className={style.linkStyle}>
+                                            <Link to={"/reportTypeOverview/multiProviderContractsList"} className={style.linkStyle}>
                                                 <Run />
                                             </Link>
                                         </div>
                                         <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
                                             <div className={style.tableDataReportsFontStyle}>5</div>
-                                            <Link to="/reportTypeOverview/contractSetupWithBusinessEntity" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Contract Setup With Business Entity</div></Link>
-                                            <div className={style.tableDataReportsFontStyle}>Contract Setup With Business Entity</div>
+                                            <Link to="/reportTypeOverview/contractsWithABusinessEntity" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Contracts With A Business Entity</div></Link>
+                                            <div className={style.tableDataReportsFontStyle}>Contracts With A Business Entity</div>
                                             <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy HH:mm')} </div>
                                             {/* <div className={style.tableDataReportsFontStyle}>Carlos C</div> */}
                                             <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'd MMM yyyy')}</div>
-                                            <Link to={"/reportTypeOverview/contractSetupWithBusinessEntity"} className={style.linkStyle}>
+                                            <Link to={"/reportTypeOverview/contractsWithABusinessEntity"} className={style.linkStyle}>
                                                 <Run />
                                             </Link>
                                         </div>

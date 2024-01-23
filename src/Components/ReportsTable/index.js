@@ -2,7 +2,8 @@ import React from 'react';
 
 import style from './index.module.scss';
 
-const ReportsTable = ({ tableType, tableHeader, tableValue, activitiesServicesValues, styleName }) => {
+const ReportsTable = ({ tableType, tableHeader, tableValue, activitiesServicesValues, styleName, clickable, directionList }) => {
+    console.log(clickable, directionList, tableValue)
     return (
         <div className={style.marginTop40}>
             <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{tableType}</div>
@@ -11,8 +12,16 @@ const ReportsTable = ({ tableType, tableHeader, tableValue, activitiesServicesVa
                     <div className={`${style.reportRunByTextStyle} ${style.verticalAlignCenter}`} key={index}>{data}</div>
                 ))}
             </div>
-            {
+            {clickable ?
                 tableValue?.map((data, index) => (
+                    <div className={`${styleName ? `${styleName}` : ''} ${index % 2 === 0 ? style.row1Background : style.row2Background}`} key={`${data}${index}`}>
+                        {activitiesServicesValues?.map((innerData, innerIndex) => (
+                            <a href={directionList[index]} target='_blank' className={style.noTextDecoration}>
+                                <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.verticalAlignCenter}`} key={`${innerIndex}${innerData?.[index]}`}>{innerData?.[index] !== '' ? innerData?.[index] : '-'}</div>
+                            </a>
+                        ))}
+                    </div>
+                )) : tableValue?.map((data, index) => (
                     <div className={`${styleName ? `${styleName}` : ''} ${index % 2 === 0 ? style.row1Background : style.row2Background}`} key={`${data}${index}`}>
                         {activitiesServicesValues?.map((innerData, innerIndex) => (
                             <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.verticalAlignCenter}`} key={`${innerIndex}${innerData?.[index]}`}>{innerData?.[index] !== '' ? innerData?.[index] : '-'}</div>
