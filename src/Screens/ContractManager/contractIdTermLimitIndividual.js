@@ -124,7 +124,7 @@ const ContractIdTermLimitIndividual = ({
   const [unassignedKeys, setUnassignedKeys] = useState([]);
   const [showSaveInProgress, setShowSaveInProgress] = useState(false);
   const [fileItems, setFileItems] = useState([]);
-  const [isAggregationNeeded, setIsAggregationNeeded] = useState(false);
+  const [isAggregationNeeded, setIsAggregationNeeded] = useState(true);
   const contractStatus = sessionStorage.getItem("Selected Contract Status");
 
   useEffect(() => {
@@ -686,14 +686,12 @@ const ContractIdTermLimitIndividual = ({
           }
         });
         data.sites = { sites: sites };
-      });
-      console.log("modifiedContractUser", modifiedContractUser);
-      await PUT(
-        "user-management-service/user/bulk",
-        JSON.stringify(modifiedContractUser)
-      )
-        .then((response) => {
-          SuccessToaster("User Updated Successfully");
+        console.log('modified sites', sites)
+      })
+      console.log('modifiedContractUser', modifiedContractUser);
+      await PUT('user-management-service/user/bulk', JSON.stringify(modifiedContractUser))
+        .then(response => {
+          SuccessToaster('User Updated Successfully');
         })
         .catch((error) => {
           ErrorToaster("Unexpected Error");
@@ -1179,8 +1177,8 @@ const ContractIdTermLimitIndividual = ({
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <CommonLabel value="Contract Documents On File*" />
-          {contractStatus === "ACTIVE" ?
-            { fileItems }
+          {contractStatus === "ACTIVE" && fileItems?.length !== 0 ?
+            <div> {fileItems}</div>
             : (
               <div
                 onFocus={() => {

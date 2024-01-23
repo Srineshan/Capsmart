@@ -65,7 +65,7 @@ const GetSSOId = () => {
       });
   };
 
-  console.log(window.location.href);
+  console.log(window.location.href)
 
   return (
     <div className={style.fullHeight}>

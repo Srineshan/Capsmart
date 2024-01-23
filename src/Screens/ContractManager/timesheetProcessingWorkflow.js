@@ -28,7 +28,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
   const [tabIndex, setTabIndex] = useState(0);
   const [isShowValidationCheck, setIsShowValidationCheck] = useState(false);
   const [continueLoading, setContinueLoading] = useState(false);
-  const [isAggregationNeeded, setIsAggregationNeeded] = useState(false);
+  const [isAggregationNeeded, setIsAggregationNeeded] = useState(true);
 
   const [selectedTimeSheet, setSelectedTimeSheet] = useState({ id: '', reviewer: '', reviewerTitle: {}, approver: '', approverTitle: {} });
 
@@ -155,9 +155,12 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     let aggregatorFirstName = provider?.filter(data => data?.id === aggregator)?.map(data => data)?.[0]?.name?.firstName + " ";
     let aggregatorMiddleName = provider?.filter(data => data?.id === aggregator)?.map(data => data)?.[0]?.name?.middleName + " ";
     let aggregatorLastName = provider?.filter(data => data?.id === aggregator)?.map(data => data)?.[0]?.name?.lastName || '';
-    let firstName = getSelectedUserDetails(reviewer)?.name?.firstName + " ";
-    let lastName = getSelectedUserDetails(reviewer)?.name?.lastName;
-    let middleName = getSelectedUserDetails(reviewer)?.name?.middleName + " ";
+    let approverFirstName = getSelectedUserDetails(approver)?.name?.firstName + " ";
+    let approverLastName = getSelectedUserDetails(approver)?.name?.lastName;
+    let approverMiddleName = getSelectedUserDetails(approver)?.name?.middleName + " ";
+    let reviewerFirstName = getSelectedUserDetails(reviewer)?.name?.firstName + " ";
+    let reviewerLastName = getSelectedUserDetails(reviewer)?.name?.lastName;
+    let reviewerMiddleName = getSelectedUserDetails(reviewer)?.name?.middleName + " ";
     if ((selectContractInfo === 'MULTIPLE' && isAggregationNeeded) && reviewer === approver) {
       data = {
         "name": {
@@ -171,6 +174,9 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 "title": { id: timesheet?.aggregatorTitle?.id, title: timesheet?.aggregatorTitle?.title },
                 "name": {
                   "name": aggregatorFirstName + aggregatorMiddleName + aggregatorLastName,
+                  "firstName": aggregatorFirstName,
+                  "middleName": aggregatorMiddleName,
+                  "lastName": aggregatorLastName,
                 },
                 "suffix": {
                   "id": provider?.filter(data => data?.id === aggregator)?.map(data => data)?.[0]?.name?.suffix?.id || '',
@@ -186,7 +192,10 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 "id": reviewer,
                 "title": { id: timesheet?.reviewerTitle?.id, title: timesheet?.reviewerTitle?.title },
                 "name": {
-                  "name": firstName + middleName + lastName,
+                  "name": reviewerFirstName + reviewerMiddleName + reviewerLastName,
+                  "firstName": reviewerFirstName,
+                  "middleName": reviewerMiddleName,
+                  "lastName": reviewerLastName,
                 },
                 "suffix": {
                   "id": getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
@@ -214,6 +223,9 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 "title": { id: timesheet?.aggregatorTitle?.id, title: timesheet?.aggregator?.title },
                 "name": {
                   "name": aggregatorFirstName + aggregatorMiddleName + aggregatorLastName,
+                  "firstName": aggregatorFirstName,
+                  "middleName": aggregatorMiddleName,
+                  "lastName": aggregatorLastName,
                 },
                 "suffix": {
                   "id": provider?.filter(data => data?.id === aggregator)?.map(data => data)?.[0]?.name?.suffix?.id || '',
@@ -229,7 +241,10 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 "id": reviewer,
                 "title": { id: timesheet?.reviewerTitle?.id, title: timesheet?.reviewerTitle?.title },
                 "name": {
-                  "name": firstName + middleName + lastName,
+                  "name": reviewerFirstName + reviewerMiddleName + reviewerLastName,
+                  "firstName": reviewerFirstName,
+                  "middleName": reviewerMiddleName,
+                  "lastName": reviewerLastName,
                 },
                 "suffix": {
                   "id": getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
@@ -245,7 +260,10 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 "id": approver,
                 "title": { id: timesheet?.approverTitle?.id, title: timesheet?.approverTitle?.title },
                 "name": {
-                  "name": firstName + middleName + lastName,
+                  "name": approverFirstName + approverMiddleName + approverLastName,
+                  "firstName": approverFirstName,
+                  "middleName": approverMiddleName,
+                  "lastName": approverLastName,
                 },
                 "suffix": {
                   "id": getSelectedUserDetails(approver)?.name?.suffix?.id || '',
@@ -260,7 +278,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
         }
       }
     }
-    else if ((selectContractInfo !== 'MULTIPLE' && isAggregationNeeded) && reviewer === approver) {
+    else if ((!isAggregationNeeded) && reviewer === approver) {
       data = {
         "name": {
           "name": name
@@ -272,7 +290,10 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 "id": reviewer,
                 "title": { id: timesheet?.reviewerTitle?.id, title: timesheet?.reviewerTitle?.title },
                 "name": {
-                  "name": firstName + middleName + lastName,
+                  "name": reviewerFirstName + reviewerMiddleName + reviewerLastName,
+                  "firstName": reviewerFirstName,
+                  "middleName": reviewerMiddleName,
+                  "lastName": reviewerLastName,
                 },
                 "suffix": {
                   "id": getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
@@ -298,7 +319,10 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 "id": reviewer,
                 "title": { id: timesheet?.reviewerTitle?.id, title: timesheet?.reviewerTitle?.title },
                 "name": {
-                  "name": firstName + middleName + lastName,
+                  "name": reviewerFirstName + reviewerMiddleName + reviewerLastName,
+                  "firstName": reviewerFirstName,
+                  "middleName": reviewerMiddleName,
+                  "lastName": reviewerLastName,
                 },
                 "suffix": {
                   "id": getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
@@ -314,7 +338,10 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 "id": approver,
                 "title": { id: timesheet?.approverTitle?.id, title: timesheet?.approverTitle?.title },
                 "name": {
-                  "name": firstName + middleName + lastName,
+                  "name": approverFirstName + approverMiddleName + approverLastName,
+                  "firstName": approverFirstName,
+                  "middleName": approverMiddleName,
+                  "lastName": approverLastName,
                 },
                 "suffix": {
                   "id": getSelectedUserDetails(approver)?.name?.suffix?.id || '',

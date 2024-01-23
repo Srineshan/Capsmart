@@ -39,6 +39,8 @@ const SurgerySessionFields = ({
     billableService: true,
     rateType: "HOURLY",
     sessionDuration: "0",
+    serviceRate: "0",
+    serviceRateFrequency: "SESSION",
     sessionAmount: "0",
     totalSession: "0",
     totalSessionFrequency: "YEAR",
@@ -110,6 +112,8 @@ const SurgerySessionFields = ({
       billableService: true,
       rateType: "HOURLY",
       sessionDuration: "0",
+      serviceRate: "0",
+      serviceRateFrequency: "SESSION",
       sessionAmount: "0",
       totalSession: "0",
       totalSessionFrequency: "YEAR",
@@ -154,6 +158,8 @@ const SurgerySessionFields = ({
         billableService: serviceSelected?.billableService,
         rateType: serviceSelected?.rateType,
         sessionDuration: serviceSelected?.duration?.hours || "0",
+        serviceRate: serviceSelected?.serviceRate?.rate || "0",
+        serviceRateFrequency: serviceSelected?.serviceRate?.rateFrequency,
         sessionAmount: serviceSelected?.payableAmount?.value,
         totalSession: serviceSelected?.totalSessions?.value,
         totalSessionFrequency: serviceSelected?.totalSessions?.frequency,
@@ -449,50 +455,82 @@ const SurgerySessionFields = ({
               e.target.value >= 0 &&
               setMetadata({
                 ...metadata,
-                sessionDuration: e.target.value,
-                sessionAmount: "0",
+                sessionDuration: parseFloat(e.target.value),
+                sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? metadata?.serviceRate : (metadata?.serviceRate * (parseFloat(e.target.value) || 0)),
               })
             }
           />
         </div>
       </div>
       {metadata?.billableService && (
-        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-          <CommonLabel
-            value="Service Session payment Amount*"
-            className={dataCheck(metadata?.sessionAmount) ? style.redLable : ""}
-          />
-          <div className={`${style.displayInRow}`}>
-            <div className={`${style.threeFieldWidth}`}>
-              <CommonTextField
-                disabled={
-                  metadata?.sessionDuration === "" ||
-                  metadata?.sessionDuration === "0" ||
-                  metadata?.sessionDuration === undefined
-                }
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start" sx={{ fontSize: 10 }}>
-                      $
-                    </InputAdornment>
-                  ),
-                }}
-                value={metadata?.sessionAmount}
-                onChange={(e) =>
-                  handleValueChange("sessionAmount", e.target.value)
-                }
-              />
-            </div>
-            <div className={style.verticalAlignCenter}>
-              <CommonLabel
-                className={`${style.marginLeft20}`}
-                value={`$ ${(
-                  metadata?.sessionAmount / metadata?.sessionDuration || 0
-                ).toFixed(2)} per Hour (Pro Rata)`}
-              />
+        <>
+          <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+            <CommonLabel value='Service Rate' />
+            <div className={`${style.displayInRow}`}>
+              <div className={`${style.threeFieldWidth}`}>
+                <CommonTextField
+                  type="number"
+                  InputProps={{
+                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
+                  }}
+                  value={metadata?.serviceRate}
+                  onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, serviceRate: parseFloat(e.target.value), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? parseFloat(e.target.value || '0') : (parseFloat(e.target.value || '0') * metadata?.sessionDuration) })}
+                />
+              </div>
             </div>
           </div>
-        </div>
+          <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+            <CommonLabel value='Service Frequency' />
+            <div className={`${style.displayInRow}`}>
+              <div className={`${style.threeFieldWidth}`}>
+                <CommonSelectField
+                  value={metadata?.serviceRateFrequency || ''}
+                  onChange={(e) => setMetadata({ ...metadata, serviceRateFrequency: e.target.value, sessionAmount: (e.target.value === 'SESSION') ? metadata?.serviceRate : (metadata?.serviceRate * metadata?.sessionDuration) })}
+                  firstOptionLabel={'Select Frequency'} firstOptionValue={''}
+                  valueList={['SESSION', 'HOUR']}
+                  labelList={['Per Session', 'Per Hour']}
+                  disabledList={[false, false]} />
+              </div>
+            </div>
+          </div>
+          <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+            <CommonLabel
+              value="Service Session payment Amount*"
+              className={dataCheck(metadata?.sessionAmount) ? style.redLable : ""}
+            />
+            <div className={`${style.displayInRow}`}>
+              <div className={`${style.threeFieldWidth}`}>
+                <CommonTextField
+                  // disabled={
+                  //   metadata?.sessionDuration === "" ||
+                  //   metadata?.sessionDuration === "0" ||
+                  //   metadata?.sessionDuration === undefined
+                  // }
+                  disabled={true}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start" sx={{ fontSize: 10 }}>
+                        $
+                      </InputAdornment>
+                    ),
+                  }}
+                  value={metadata?.sessionAmount}
+                  onChange={(e) =>
+                    handleValueChange("sessionAmount", e.target.value)
+                  }
+                />
+              </div>
+              <div className={style.verticalAlignCenter}>
+                <CommonLabel
+                  className={`${style.marginLeft20}`}
+                  value={`$ ${(
+                    metadata?.sessionAmount / metadata?.sessionDuration || 0
+                  ).toFixed(2)} per Hour (Pro Rata)`}
+                />
+              </div>
+            </div>
+          </div>
+        </>
       )}
       <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
         <CommonLabel

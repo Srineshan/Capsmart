@@ -323,7 +323,7 @@ export const validateServices = (contract) => {
       })
       if (service?.customizedSchedule) {
         if (service?.customschedule?.weekdayDay?.activity?.activity !== '') {
-          fieldData.push(...[{ field: 'Custom Schedule Weekday Day Service days', value: Object.values(service?.customschedule?.weekdayDay?.serviceWeekDays)?.filter(data => data === true)?.map(data => data)?.length }]);
+          fieldData.push(...[{ field: 'Custom Schedule Weekday Day Service days', value: Object.values(service?.customschedule?.weekdayDay?.serviceWeekDays || {})?.filter(data => data === true)?.map(data => data)?.length }]);
           fieldData.push(...[{ field: 'Custom Schedule Weekday Day From', value: service?.customschedule?.weekdayDay?.from }]);
           fieldData.push(...[{ field: 'Custom Schedule Weekday Day To', value: service?.customschedule?.weekdayDay?.to }]);
           fieldData.push(...[{ field: 'Custom Schedule Weekday Day Duration', value: service?.customschedule?.weekdayDay?.duration?.hours }]);
@@ -334,7 +334,7 @@ export const validateServices = (contract) => {
           }
         }
         if (service?.customschedule?.weekdayNight?.activity?.activity !== '') {
-          fieldData.push(...[{ field: 'Custom Schedule Weekday Night Service days', value: Object.values(service?.customschedule?.weekdayNight?.serviceWeekDays)?.filter(data => data === true)?.map(data => data)?.length }]);
+          fieldData.push(...[{ field: 'Custom Schedule Weekday Night Service days', value: Object.values(service?.customschedule?.weekdayNight?.serviceWeekDays || {})?.filter(data => data === true)?.map(data => data)?.length }]);
           fieldData.push(...[{ field: 'Custom Schedule Weekday Night From', value: service?.customschedule?.weekdayNight?.from }]);
           fieldData.push(...[{ field: 'Custom Schedule Weekday Night To', value: service?.customschedule?.weekdayNight?.to }]);
           fieldData.push(...[{ field: 'Custom Schedule Weekday Night Duration', value: service?.customschedule?.weekdayNight?.duration?.hours }]);

@@ -7,6 +7,8 @@ import Tooltip from '@mui/material/Tooltip';
 import Pagination from './../Pagination';
 import AscendingSort from './../../images/ascendingSort.png';
 import DescendingSort from './../../images/descendingSort.png';
+import CheckboxChecked from './../../images/checkboxClicked.png';
+import Checkbox from './../../images/checkboxUnclicked.png';
 import Sort from './../../images/sort.png';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import NoDataBox from '../ReusableSmallComponents/noDataBox';
@@ -144,12 +146,16 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, hidePagination, 
                             ) : (
                                 <img src={DescendingSort} alt="" className={style.sortImgStyle} />
                             )} */}
-                            <div className={`${data === "" && style.marginLeft30} ${style.tableHeaderFontStyle}`}>{data}</div>
+                            {data === 'CHECKBOX' ? (
+                                <img src={Checkbox} alt="" className={`${style.CheckboxImgStyle} ${style.marginLeft30}`} />
+                            ) : (
+                                <div className={`${data === "" && style.marginLeft30} ${style.tableHeaderFontStyle}`}>{data}</div>
+                            )}
                         </div>
                     ))}
                 </div>
                 <div className={`${scrollStyle}`}>
-                    {tableData?.legth !== 0 ? tableData?.map((data, index) => (
+                    {tableData?.length !== 0 ? tableData?.map((data, index) => (
                         <>
                             <div className={`${style.tableData} ${gridStyle} ${index % 2 === 0 && style.alternativeBackgroundColor}`} key={index}>
                                 {tableDataValues?.map((tableData, tableDataIndex) => (
@@ -158,6 +164,14 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, hidePagination, 
                                             <Tooltip title={tableData?.tooltipValue?.[index]} arrow>
                                                 <div className={`${tableData?.value?.[index] === "green" ? style.green : tableData?.value?.[index] === "yellow" ? style.yellow : tableData?.value?.[index] === "grey" ? style.grey : ''} ${tableData?.value?.[index] === "green" ? style.greenDotStyle : tableData?.value?.[index] === "yellow" ? style.yellowDotStyle : tableData?.value?.[index] === "grey" ? style.greyDotStyle : tableData?.value?.[index] === 'purple' ? style.purpleDotStyle : ''}`}></div>
                                             </Tooltip>
+                                        </div>
+                                    ) : tableData?.type === "checkbox" ? (
+                                        <div className={`${style.displayInRow} ${style.marginLeft30} ${style.verticalAlignCenter}`}>
+                                            {tableData?.value?.[index] ? (
+                                                <img src={CheckboxChecked} alt="" className={`${style.CheckboxImgStyle}`} />
+                                            ) : (
+                                                <img src={Checkbox} alt="" className={`${style.CheckboxImgStyle}`} />
+                                            )}
                                         </div>
                                     ) : tableData?.type === "text" ? (
                                         <p className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.verticalAlignCenter}`} onClick={() => tableData?.onClickFunction(data, index)}>{tableData?.value?.[index]}</p>

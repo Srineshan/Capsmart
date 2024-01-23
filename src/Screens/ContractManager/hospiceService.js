@@ -80,6 +80,9 @@ const HospiceService = ({
     const [newServices, setNewServices] = useState({
         name: "",
         rate: "0",
+        sessionDuration: 1,
+        serviceRate: '0',
+        serviceRateFrequency: 'SESSION',
         duringNormalWorkingHours: false,
         afterWorkingHours: false,
         showLocation: true,
@@ -112,10 +115,13 @@ const HospiceService = ({
     }, [locationItems]);
 
     useEffect(() => {
-        console.log("metadata in useEffect", metadata);
         getMetaData(metadata);
         generateHospiceFields();
     }, [metadata]);
+
+    useEffect(() => {
+        generateHospiceFields();
+    }, [metadata?.serviceRate, metadata?.serviceRateFrequency])
 
     useEffect(() => {
         if (isReset) {
@@ -166,6 +172,8 @@ const HospiceService = ({
                 max: serviceSelected?.contractedSchedules?.[0]?.maximum?.value,
                 frequency: serviceSelected?.contractedSchedules?.[0]?.frequency,
                 sessionDuration: serviceSelected?.duration?.hours,
+                serviceRate: serviceSelected?.serviceRate?.rate,
+                serviceRateFrequency: serviceSelected?.serviceRate?.rateFrequency,
                 sessionAmount: serviceSelected?.payableAmount?.value,
                 hourlyRate: {
                     value: (
@@ -554,7 +562,13 @@ const HospiceService = ({
 
     const handleNewServiceChange = (name, value) => {
         if (name === "billableService" && !value) {
-            setNewServices({ ...newServices, billableService: value, rate: "0" });
+            setNewServices({ ...newServices, billableService: value, rate: 0 });
+        } else if (name === 'serviceRate') {
+            setNewServices({ ...newServices, serviceRate: parseFloat(value), rate: newServices?.serviceRateFrequency === 'SESSION' ? parseFloat(value) : (newServices?.serviceRate * (newServices?.sessionDuration || 0)) });
+        } else if (name === 'serviceRateFrequency') {
+            setNewServices({ ...newServices, serviceRateFrequency: value, rate: value === 'SESSION' ? parseFloat(newServices?.serviceRate) : (newServices?.serviceRate * (newServices?.sessionDuration || 0)) });
+        } else if (name === 'sessionDuration') {
+            setNewServices({ ...newServices, sessionDuration: parseFloat(value), rate: newServices?.serviceRateFrequency === 'SESSION' ? parseFloat(newServices?.serviceRate) : (newServices?.serviceRate * (parseFloat(value) || 0)) });
         } else {
             setNewServices({ ...newServices, [name]: value });
         }
@@ -642,6 +656,7 @@ const HospiceService = ({
             parentActivity: "Hospice Clinical Consult Services",
             sessionAmount: newServices?.rate,
             sessionDuration: 1,
+            serviceRate: newServices?.serviceRate,
             hourlyRate: {
                 value: newServices?.rate,
             },
@@ -735,37 +750,69 @@ const HospiceService = ({
                         />
                         <div className={`${style.addonBoxStyle} ${style.marginTop20}`}>
                             {data?.billableService && (
-                                <div
-                                    className={`${style.addManagerGrid} ${style.marginTop20}`}
-                                >
-                                    <CommonLabel value="Payment Rate*" />
-                                    <div className={`${style.displayInRow}`}>
-                                        <div className={`${style.threeFieldWidth}`}>
-                                            <CommonTextField
-                                                InputProps={{
-                                                    startAdornment: (
-                                                        <InputAdornment
-                                                            position="start"
-                                                            sx={{ fontSize: 10 }}
-                                                        >
-                                                            $
-                                                        </InputAdornment>
-                                                    ),
-                                                }}
-                                                defaultValue={data?.sessionAmount}
-                                                onChange={(e) =>
-                                                    updateRate(data?.performingActivity, e.target.value)
-                                                }
-                                            />
-                                        </div>
-                                        <div className={style.verticalAlignCenter}>
-                                            <CommonLabel
-                                                className={`${style.marginLeft20}`}
-                                                value={`Per Hour`}
-                                            />
+                                <>
+                                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                                        <CommonLabel value='Service Rate' />
+                                        <div className={`${style.displayInRow}`}>
+                                            <div className={`${style.threeFieldWidth}`}>
+                                                <CommonTextField
+                                                    type="number"
+                                                    InputProps={{
+                                                        startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
+                                                    }}
+                                                    value={data?.serviceRate}
+                                                    onChange={(e) => e.target.value >= 0 && updateServiceRate(data?.performingActivity, parseFloat(e.target.value))}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                                        <CommonLabel value='Service Frequency' />
+                                        <div className={`${style.displayInRow}`}>
+                                            <div className={`${style.threeFieldWidth}`}>
+                                                <CommonSelectField
+                                                    value={data?.serviceRateFrequency || ''}
+                                                    onChange={(e) => updateServiceRateFrequency(data?.performingActivity, e.target.value)}
+                                                    firstOptionLabel={'Select Frequency'} firstOptionValue={''}
+                                                    valueList={['SESSION', 'HOUR']}
+                                                    labelList={['Per Session', 'Per Hour']}
+                                                    disabledList={[false, false]} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div
+                                        className={`${style.addManagerGrid} ${style.marginTop20}`}
+                                    >
+                                        <CommonLabel value="Payment Rate*" />
+                                        <div className={`${style.displayInRow}`}>
+                                            <div className={`${style.threeFieldWidth}`}>
+                                                <CommonTextField
+                                                    InputProps={{
+                                                        startAdornment: (
+                                                            <InputAdornment
+                                                                position="start"
+                                                                sx={{ fontSize: 10 }}
+                                                            >
+                                                                $
+                                                            </InputAdornment>
+                                                        ),
+                                                    }}
+                                                    disabled={true}
+                                                    defaultValue={data?.sessionAmount || '0'}
+                                                    onChange={(e) =>
+                                                        updateRate(data?.performingActivity, e.target.value)
+                                                    }
+                                                />
+                                            </div>
+                                            {/* <div className={style.verticalAlignCenter}>
+                                                <CommonLabel
+                                                    className={`${style.marginLeft20}`}
+                                                    value={data?.serviceRateFrequency}
+                                                />
+                                            </div> */}
+                                        </div>
+                                    </div>
+                                </>
                             )}
 
                             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -1029,6 +1076,32 @@ const HospiceService = ({
         getFields();
     };
 
+    const updateServiceRate = (serviceName, value) => {
+        let temp = metadata;
+        temp
+            ?.filter((data) => data?.performingActivity === serviceName)
+            ?.map((data) => {
+                data.sessionAmount = data?.serviceRate === 'SESSION' ? parseFloat(value) : (data?.serviceRate * data?.sessionDuration);
+                data.serviceRate = parseFloat(value)
+            });
+        setMetadata(temp);
+        getFields();
+        generateHospiceFields();
+    };
+
+    const updateServiceRateFrequency = (serviceName, value) => {
+        let temp = metadata;
+        temp
+            ?.filter((data) => data?.performingActivity === serviceName)
+            ?.map((data) => {
+                data.sessionAmount = value === 'SESSION' ? parseFloat(data?.serviceRate) : (data?.serviceRate * data?.sessionDuration);
+                data.serviceRateFrequency = value
+            });
+        setMetadata(temp);
+        getFields();
+        generateHospiceFields();
+    };
+
     const updateSessionDuration = (serviceName, value) => {
         let temp = metadata;
         temp
@@ -1268,32 +1341,64 @@ const HospiceService = ({
                         />
                     </div>
                     {newServices?.billableService && (
-                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                            <CommonLabel value="Payment Rate*" />
-                            <div className={`${style.displayInRow}`}>
-                                <div className={`${style.threeFieldWidth}`}>
-                                    <CommonTextField
-                                        InputProps={{
-                                            startAdornment: (
-                                                <InputAdornment position="start" sx={{ fontSize: 10 }}>
-                                                    $
-                                                </InputAdornment>
-                                            ),
-                                        }}
-                                        value={newServices?.rate}
-                                        onChange={(e) => {
-                                            handleNewServiceChange("rate", e.target.value);
-                                        }}
-                                    />
-                                </div>
-                                <div className={style.verticalAlignCenter}>
-                                    <CommonLabel
-                                        className={`${style.marginLeft20}`}
-                                        value={`Per Hour`}
-                                    />
+                        <>
+                            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                                <CommonLabel value='ADD-ON Service Rate' />
+                                <div className={`${style.displayInRow}`}>
+                                    <div className={`${style.threeFieldWidth}`}>
+                                        <CommonTextField
+                                            type="number"
+                                            InputProps={{
+                                                startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
+                                            }}
+                                            value={newServices?.serviceRate}
+                                            onChange={(e) => e.target.value >= 0 && handleNewServiceChange('serviceRate', parseFloat(e.target.value))}
+                                        />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                                <CommonLabel value='ADD-ON Service Frequency' />
+                                <div className={`${style.displayInRow}`}>
+                                    <div className={`${style.threeFieldWidth}`}>
+                                        <CommonSelectField
+                                            value={newServices?.serviceRateFrequency}
+                                            onChange={(e) => handleNewServiceChange('serviceRateFrequency', e.target.value)}
+                                            firstOptionLabel={'Select Frequency'} firstOptionValue={''}
+                                            valueList={['SESSION', 'HOUR']}
+                                            labelList={['Per Session', 'Per Hour']}
+                                            disabledList={[false, false]} />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                                <CommonLabel value="Payment Rate*" />
+                                <div className={`${style.displayInRow}`}>
+                                    <div className={`${style.threeFieldWidth}`}>
+                                        <CommonTextField
+                                            InputProps={{
+                                                startAdornment: (
+                                                    <InputAdornment position="start" sx={{ fontSize: 10 }}>
+                                                        $
+                                                    </InputAdornment>
+                                                ),
+                                            }}
+                                            disabled={true}
+                                            value={newServices?.rate || '0'}
+                                            onChange={(e) => {
+                                                handleNewServiceChange("rate", e.target.value);
+                                            }}
+                                        />
+                                    </div>
+                                    {/* <div className={style.verticalAlignCenter}>
+                                        <CommonLabel
+                                            className={`${style.marginLeft20}`}
+                                            value={newServices?.serviceRateFrequency}
+                                        />
+                                    </div> */}
+                                </div>
+                            </div>
+                        </>
                     )}
 
 

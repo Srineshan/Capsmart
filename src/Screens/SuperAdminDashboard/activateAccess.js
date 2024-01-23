@@ -60,13 +60,6 @@ const ActivateAccess = () => {
     handlePasswordStrengthCheck();
   }, [password]);
 
-  useEffect(() => {
-    getUser();
-    getEntityLogo();
-    getEntity();
-  }, [tenantId])
-
-
   const handlePasswordStrengthCheck = () => {
     if (/^(?=.*[@$!%#?&^()*~`])/.test(password)) {
       setIsSpecialCharacterAvailable(true);
@@ -95,6 +88,12 @@ const ActivateAccess = () => {
     }
     setPasswordStrengthLength([isCapitalCharacterAvailable, isSmallCharacterAvailable, isMin8CharacterAvailable, isNumberAvailable, isSpecialCharacterAvailable]?.filter(data => data === true)?.length)
   }
+
+  useEffect(() => {
+    getUser();
+    getEntityLogo();
+    getEntity();
+  }, [tenantId])
 
   const getEntityId = async () => {
     await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/entity-service/entityID`, {
@@ -168,6 +167,9 @@ const ActivateAccess = () => {
     //         .catch(error => {
     //             console.log('Error', error);
     //             ErrorToaster(error?.response?.data);
+
+    //         })
+    // }
   }
 
   const EyeOpenElement = (index) => {

@@ -25,12 +25,10 @@ import CommonSwitch from "../../Components/CommonFields/CommonSwitch";
 import CommonTextField from "../../Components/CommonFields/CommonTextField";
 import CommonLabel from "../../Components/CommonFields/CommonLabel";
 import { valueCheck } from "../../utils/valueCheck";
-import { format } from "date-fns";
 
 import style from "./index.module.scss";
 import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
-
-const TEXTFIELDLEN = 50;
+import SliderValueLabel from "@mui/material/Slider/SliderValueLabel";
 
 const AddonClinicFields = ({
   getMetaData,
@@ -60,6 +58,9 @@ const AddonClinicFields = ({
   const [newServices, setNewServices] = useState({
     name: "",
     rate: "0",
+    sessionDuration: "0",
+    serviceRate: "0",
+    serviceRateFrequency: "SESSION",
     duringNormalWorkingHours: false,
     afterWorkingHours: false,
     showLocation: true,
@@ -105,6 +106,8 @@ const AddonClinicFields = ({
     setSelectedValues();
   }, [addOnWorkFlow, serviceSelected, users]);
 
+  const contractStatus = sessionStorage.getItem('Selected Contract Status');
+
   const resetMetadata = () => {
     setMetadata([]);
   };
@@ -130,6 +133,8 @@ const AddonClinicFields = ({
         max: serviceSelected?.contractedSchedules?.[0]?.maximum?.value,
         frequency: serviceSelected?.contractedSchedules?.[0]?.frequency,
         sessionDuration: serviceSelected?.duration?.hours,
+        serviceRate: serviceSelected?.serviceRate?.rate,
+        serviceRateFrequency: serviceSelected?.serviceRate?.rateFrequency,
         sessionAmount: serviceSelected?.payableAmount?.value,
         hourlyRate: {
           value: (
@@ -137,18 +142,18 @@ const AddonClinicFields = ({
             parseInt(serviceSelected?.duration?.hours)
           ).toFixed(2),
         },
-        serviceDays: {
-          friday: true,
-          isholidays: true,
-          monday: true,
-          tuesday: true,
-          wednesday: true,
-          thursday: true,
-          saturday: true,
-          sunday: true,
-          weekDays: true,
-          weekEnds: true,
-        },
+        // serviceDays: {
+        //   friday: true,
+        //   isholidays: true,
+        //   monday: true,
+        //   tuesday: true,
+        //   wednesday: true,
+        //   thursday: true,
+        //   saturday: true,
+        //   sunday: true,
+        //   weekDays: true,
+        //   weekEnds: true,
+        // },
         totalSession: serviceSelected?.totalSessions?.value,
         totalSessionFrequency: serviceSelected?.totalSessions?.frequency,
         workingTimeFrom: serviceSelected?.workingPeriod?.from,
@@ -360,6 +365,7 @@ const AddonClinicFields = ({
       });
     setMetadata(temp);
     getFields();
+    generateCustomAddOnFields();
   };
 
   const onApproverSelected = (value, serviceName, title) => {
@@ -382,6 +388,7 @@ const AddonClinicFields = ({
   };
 
   let serviceList = [];
+  let activityDetails = [];
   let temp = services;
   temp?.filter(data => [CLINIC, SURGERY, PROCEDUREREADING, ONCALL, SUPPLEMENTAL]?.includes(data?.activityTypeTemplate?.activityTypeTemplate))?.map(data => {
     let activityName = data?.activityType?.activityType;
@@ -390,8 +397,11 @@ const AddonClinicFields = ({
     let alreadyExist = services?.filter(data => data?.activityTypeTemplate?.activityTypeTemplate === ADDON && data?.performingActivity?.activity === (`${activities?.map(data => data)?.join('-')}`))?.map(data => data);
     if (alreadyExist?.length === 0 && !data?.baseServiceAvailable) {
       serviceList.push(result);
+      activityDetails.push({ 'type': activityName, 'customSchedule': data?.customizedSchedule });
     }
   });
+
+  console.log('custom schedule', activityDetails);
 
   const selectLocation = (location, name) => {
     let locationTemp =
@@ -504,6 +514,12 @@ const AddonClinicFields = ({
   const handleNewServiceChange = (name, value) => {
     if (name === "billableService" && !value) {
       setNewServices({ ...newServices, billableService: value, rate: "0" });
+    } else if (name === 'serviceRate') {
+      setNewServices({ ...newServices, serviceRate: parseFloat(value), rate: newServices?.serviceRateFrequency === 'SESSION' ? parseFloat(value) : (newServices?.serviceRate * (newServices?.sessionDuration || 0)) });
+    } else if (name === 'serviceRateFrequency') {
+      setNewServices({ ...newServices, serviceRateFrequency: value, rate: value === 'SESSION' ? parseFloat(newServices?.serviceRate) : (newServices?.serviceRate * (newServices?.sessionDuration || 0)) });
+    } else if (name === 'sessionDuration') {
+      setNewServices({ ...newServices, sessionDuration: parseFloat(value), rate: newServices?.serviceRateFrequency === 'SESSION' ? parseFloat(newServices?.serviceRate) : (newServices?.serviceRate * (parseFloat(value) || 0)) });
     } else {
       setNewServices({ ...newServices, [name]: value });
     }
@@ -575,6 +591,8 @@ const AddonClinicFields = ({
       parentActivity: "Add-On Service",
       sessionAmount: newServices?.rate,
       sessionDuration: newServices?.sessionDuration,
+      serviceRate: newServices?.serviceRate,
+      serviceRateFrequency: newServices?.serviceRateFrequency,
       hourlyRate: {
         value: (newServices?.rate / newServices?.sessionDuration).toFixed(2),
       },
@@ -648,7 +666,31 @@ const AddonClinicFields = ({
         };
       });
     setMetadata(temp);
-    generateCustomAddOnFields();
+    getFields();
+  };
+
+  const updateServiceRate = (serviceName, value) => {
+    let temp = metadata;
+    temp
+      ?.filter((data) => data?.performingActivity === serviceName)
+      ?.map((data) => {
+        data.sessionAmount = data?.serviceRate === 'SESSION' ? parseFloat(value) : (data?.serviceRate * data?.sessionDuration);
+        data.serviceRate = parseFloat(value)
+      });
+    setMetadata(temp);
+    getFields();
+  };
+
+  const updateServiceRateFrequency = (serviceName, value) => {
+    let temp = metadata;
+    temp
+      ?.filter((data) => data?.performingActivity === serviceName)
+      ?.map((data) => {
+        data.sessionAmount = value === 'SESSION' ? parseFloat(data?.serviceRate) : (data?.serviceRate * data?.sessionDuration);
+        data.serviceRateFrequency = value
+      });
+    setMetadata(temp);
+    getFields();
   };
 
   const updateSessionDuration = (serviceName, value) => {
@@ -662,7 +704,7 @@ const AddonClinicFields = ({
         };
       });
     setMetadata(temp);
-    generateCustomAddOnFields();
+    getFields();
   };
 
   const UpdateBillable = (serviceName, value) => {
@@ -678,7 +720,6 @@ const AddonClinicFields = ({
       });
     setMetadata(temp);
     getFields();
-    generateCustomAddOnFields();
   };
 
   const handleWorkingHoursChange = (serviceName, value, name) => {
@@ -705,6 +746,8 @@ const AddonClinicFields = ({
     getFields();
     generateCustomAddOnFields();
   };
+
+  console.log('New Services', newServices)
 
   const onAdditionalServicePaymentApproverChange = (name, value) => {
     let temp = metadata;
@@ -769,9 +812,7 @@ const AddonClinicFields = ({
               <CommonSwitch label={data?.billableService ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} checked={data?.billableService} onChange={() => UpdateBillable(data?.performingActivity, !data?.billableService)} />
             </div>
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-              <CommonLabel value='Service Session Duration'
-                className={dataCheck(data?.sessionDuration) ? style.redLable : ""}
-              />
+              <CommonLabel value='Service Session Duration' />
               <div className={`${style.threeFieldWidth}`}>
                 <CommonTextField
                   type="tel"
@@ -779,32 +820,62 @@ const AddonClinicFields = ({
                   InputProps={{
                     endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                   }}
-                  onChange={(e) => e.target.value > 0 && updateSessionDuration(data?.performingActivity, e.target.value)}
-                  defaultValue={data?.sessionDuration}
+                  onChange={(e) => e.target.value >= 0 && updateSessionDuration(data?.performingActivity, e.target.value)}
+                  value={data?.sessionDuration || '0'}
                 />
               </div>
             </div>
             {
-              data?.billableService &&
-              <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <CommonLabel value='ADD-ON Payment Rate*'
-                  className={dataCheck(data?.sessionAmount) ? style.redLable : ""}
-                />
-                <div className={`${style.displayInRow}`}>
-                  <div className={`${style.threeFieldWidth}`}>
-                    <CommonTextField
-                      InputProps={{
-                        startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
-                      }}
-                      defaultValue={data?.sessionAmount}
-                      onChange={(e) => updateRate(data?.performingActivity, e.target.value)}
-                    />
+              data?.billableService && (
+                <>
+                  <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                    <CommonLabel value='Service Rate' />
+                    <div className={`${style.displayInRow}`}>
+                      <div className={`${style.threeFieldWidth}`}>
+                        <CommonTextField
+                          type="number"
+                          InputProps={{
+                            startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
+                          }}
+                          value={data?.serviceRate}
+                          onChange={(e) => e.target.value >= 0 && updateServiceRate(data?.performingActivity, parseFloat(e.target.value))}
+                        />
+                      </div>
+                    </div>
                   </div>
-                  <div className={style.verticalAlignCenter}>
-                    <CommonLabel className={`${style.marginLeft20}`} value={`${(data?.sessionAmount / data?.sessionDuration)?.toFixed(2)} Per Hour`} />
+                  <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                    <CommonLabel value='Service Frequency' />
+                    <div className={`${style.displayInRow}`}>
+                      <div className={`${style.threeFieldWidth}`}>
+                        <CommonSelectField
+                          value={data?.serviceRateFrequency || ''}
+                          onChange={(e) => updateServiceRateFrequency(data?.performingActivity, e.target.value)}
+                          firstOptionLabel={'Select Frequency'} firstOptionValue={''}
+                          valueList={['SESSION', 'HOUR']}
+                          labelList={['Per Session', 'Per Hour']}
+                          disabledList={[false, false]} />
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
+                  <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                    <CommonLabel value='ADD-ON Payment Rate*' />
+                    <div className={`${style.displayInRow}`}>
+                      <div className={`${style.threeFieldWidth}`}>
+                        <CommonTextField
+                          InputProps={{
+                            startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
+                          }}
+                          disabled={true}
+                          defaultValue={data?.sessionAmount}
+                        // onChange={(e) => updateRate(data?.performingActivity, e.target.value)}
+                        />
+                      </div>
+                      <div className={style.verticalAlignCenter}>
+                        <CommonLabel className={`${style.marginLeft20}`} value={data?.sessionAmount !== '0' && data?.sessionDuration !== '0' ? `${(data?.sessionAmount / data?.sessionDuration)?.toFixed(2)} Per Hour` : ''} />
+                      </div>
+                    </div>
+                  </div>
+                </>)
             }
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -883,13 +954,7 @@ const AddonClinicFields = ({
               </div>
             </div>
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-              <CommonLabel value='Allowable Working Day Hours For Service*'
-                className={
-                  format(data?.workingTimeTo || new Date(), "H") === "0" &&
-                    format(data?.workingTimeFrom || new Date(), "H") === "0"
-                    ? style.redLable
-                    : ""
-                } />
+              <CommonLabel value='Allowable Working Day Hours For Service*' />
               <div className={style.displayInRow}>
                 <TimePicker
                   useAmPm={false}
@@ -911,6 +976,10 @@ const AddonClinicFields = ({
         </div>)
     })
     setCustomAddOnFields(temp);
+  }
+
+  const onCustomizeFieldChange = (value, name) => {
+
   }
 
   const dataCheck = (value) => {
@@ -1027,41 +1096,19 @@ const AddonClinicFields = ({
                       />
                     </div>
                   </div>
-                )}
-              {/* <div className={`${ style.addManagerGrid } ${ style.marginTop20 }`}>
-                <div className={style.extentionLableStyle}>Specify Service Facility / Location</div>
-                <div>
-                  <div className={`${ style.displayInRow } `}>
-                    <ThemeProvider theme={switchTheme}>
-                      <FormControlLabel
-                        control={
-                          <Switch className={`${ style.textAlignLeft }`} onChange={() => switchShowLocation(service)} checked={metadata?.filter(item => item?.performingActivity === service)?.map(item => item)[0]?.locationSpecified} />
-                        }
-                        color='primary'
-                        className={`${ style.switchFontStyle } ${ style.flexLeft } `}
-                        label={metadata?.filter(data => data?.performingActivity === service)?.map(item => item)[0]?.locationSpecified ? 'YES' : 'NO'}
-                      />
-                    </ThemeProvider>
-                    <div className={`${ style.addGrid } ${ style.fullWidth }`}>
-                      <DatalistInput items={locationItems} onSelect={(location) => selectLocation(location, service)} className={style.fullWidth} onChange={(e) => getNewLocation(e.target.value)} />
-                      <div className={`${ style.addStyle } ${ style.alignCenter } ${ style.cursorPointer }`}>
-                        <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={locationToAdd} />
-                      </div>
-                    </div>
-                  </div>
-                  {getSelectedLocation(service)?.length !== 0 &&
-                    <MultiSelectDisplay values={getSelectedLocation(service)} removeItem={removeLocation} />
-                  }
-                </div>
-              </div> */}
+                )
+              }
+
             </div>
           </div>
-        ))}
+        ))
+      }
 
       {customAddOnFields}
 
 
-      {editService &&
+      {
+        editService &&
         metadata
           ?.filter(
             (data) => data?.activityResponse?.dataMap?.selectedActivityId
@@ -1090,9 +1137,7 @@ const AddonClinicFields = ({
                   <div
                     className={`${style.addManagerGrid} ${style.marginTop20}`}
                   >
-                    <CommonLabel value={"Designate Request Approver*"}
-                      className={dataCheck(metadata?.[0]?.approver?.id) ? style.redLable : ""}
-                    />
+                    <CommonLabel value={"Designate Request Approver*"} />
                     <div className={style.fullWidth}>
                       <CommonSelectField
                         className={`${style.fullWidth} `}
@@ -1132,6 +1177,7 @@ const AddonClinicFields = ({
                     </div>
                   </div>
                 )}
+
                 {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Specify Service Facility / Location</div>
                 <div>
@@ -1161,373 +1207,411 @@ const AddonClinicFields = ({
               </div> */}
               </div>
             </div>
-          ))}
+          ))
+      }
 
-      {!editService && (
-        <div className={`${style.marginTop20} ${style.addAddonGrid}`}>
-          <CommonInputField
-            className={style.fullWidth}
-            placeholder="Enter Add-On Service"
-            value={newServices?.name}
-            onChange={(e) =>
-              setNewServices({ ...newServices, name: e.target.value })
-            }
-          />
-          <div
-            className={`${style.addAddonServiceButton} ${style.alignCenter}`}
-            onClick={handleNewServiceName}
-          >
-            ADD ADD-ON SERVICES
-          </div>
-        </div>
-      )}
-
-      {showNewService && (
-        <div className={`${style.addonAddBox} ${style.marginTop20}`}>
-          <div className={`${style.addManagerGrid}`}>
-            <CommonLabel value="Add-On Service Name*" />
+      {
+        !editService && (
+          <div className={`${style.marginTop20} ${style.addAddonGrid}`}>
             <CommonInputField
-              value={newServices?.name}
               className={style.fullWidth}
-              onChange={(e) => {
-                handleNewServiceChange("name", e.target.value);
-              }}
-            />
-          </div>
-
-          <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-            <CommonLabel value="Billable Service*" />
-            <CommonSwitch
-              label={newServices?.billableService ? "YES" : "NO"}
-              className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`}
-              checked={newServices?.billableService}
-              onChange={() =>
-                handleNewServiceChange(
-                  "billableService",
-                  !newServices?.billableService
-                )
+              placeholder="Enter Add-On Service"
+              value={newServices?.name}
+              onChange={(e) =>
+                setNewServices({ ...newServices, name: e.target.value })
               }
             />
+            <div
+              className={`${style.addAddonServiceButton} ${style.alignCenter}`}
+              onClick={handleNewServiceName}
+            >
+              ADD ADD-ON SERVICES
+            </div>
           </div>
-          <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-            <CommonLabel value="Service Session Duration" />
-            <div className={`${style.threeFieldWidth}`}>
-              <CommonTextField
-                type="tel"
-                maxLength="3"
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end" sx={{ fontSize: 10 }}>
-                      Hours
-                    </InputAdornment>
-                  ),
+        )
+      }
+
+      {
+        showNewService && (
+          <div className={`${style.addonAddBox} ${style.marginTop20}`}>
+            <div className={`${style.addManagerGrid}`}>
+              <CommonLabel value="Add-On Service Name*" />
+              <CommonInputField
+                value={newServices?.name}
+                className={style.fullWidth}
+                onChange={(e) => {
+                  handleNewServiceChange("name", e.target.value);
                 }}
-                onChange={(e) =>
-                  e.target.value >= 0 &&
-                  handleNewServiceChange("sessionDuration", e.target.value)
-                }
-                value={newServices?.sessionDuration}
               />
             </div>
-          </div>
-          {newServices?.billableService && (
+
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-              <CommonLabel value="ADD-ON Payment Rate*" />
-              <div className={`${style.displayInRow}`}>
-                <div className={`${style.threeFieldWidth}`}>
-                  <CommonTextField
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start" sx={{ fontSize: 10 }}>
-                          $
-                        </InputAdornment>
-                      ),
-                    }}
-                    value={newServices?.rate}
-                    onChange={(e) => {
-                      handleNewServiceChange("rate", e.target.value);
-                    }}
-                  />
-                </div>
-                <div className={style.verticalAlignCenter}>
-                  <CommonLabel
-                    className={`${style.marginLeft20}`}
-                    value={`${(
-                      newServices?.rate / newServices?.sessionDuration
-                    ).toFixed(2)} Per Hour`}
-                  />
-                </div>
-              </div>
+              <CommonLabel value="Billable Service*" />
+              <CommonSwitch
+                label={newServices?.billableService ? "YES" : "NO"}
+                className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`}
+                checked={newServices?.billableService}
+                onChange={() =>
+                  handleNewServiceChange(
+                    "billableService",
+                    !newServices?.billableService
+                  )
+                }
+              />
             </div>
-          )}
-
-          <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-            <CommonLabel value="Specify Service Facility / Location" />
-            <div>
-              <div className={`${style.displayInRow}`}>
-                <CommonSwitch
-                  className={`${style.textAlignLeft}`}
-                  checked={newServices?.showLocation}
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+              <CommonLabel value="Service Session Duration" />
+              <div className={`${style.threeFieldWidth}`}>
+                <CommonTextField
+                  type="tel"
+                  maxLength="3"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end" sx={{ fontSize: 10 }}>
+                        Hours
+                      </InputAdornment>
+                    ),
+                  }}
                   onChange={(e) =>
-                    handleNewServiceChange(
-                      "showLocation",
-                      !newServices?.showLocation
-                    )
+                    e.target.value >= 0 &&
+                    handleNewServiceChange("sessionDuration", parseFloat(e.target.value))
                   }
-                  label={newServices?.showLocation ? "YES" : "NO"}
+                  value={newServices?.sessionDuration || '0'}
                 />
-                {newServices?.showLocation && (
-                  <div className={` ${style.fullWidth}`}>
-                    <DatalistInput
-                      items={locationItems || []}
-                      setValue={setValue}
-                      onSelect={handleNewServiceLocation}
-                      className={style.fullWidth}
-                      onChange={(e) => getNewLocation(e.target.value)}
-                      clearInputOnSelect={true}
-                    />
-                    {/* <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
-                      <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={locationToAdd} />
-                    </div> */}
-                  </div>
-                )}
               </div>
-              {newServices?.locations?.length !== 0 &&
-                newServices?.showLocation && (
-                  <MultiSelectDisplay
-                    values={newServices?.locations?.map(
-                      (data) => data?.location
-                    )}
-                    removeItem={(index) =>
-                      setNewServices({
-                        ...newServices,
-                        locations: newServices?.locations
-                          ?.filter((data, indexValue) => index !== indexValue)
-                          ?.map((data) => data),
-                      })
-                    }
-                  />
-                )}
             </div>
-          </div>
-
-          <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-            <CommonLabel value="Additional Details*" />
-            <div>
-              {additionalDetails?.map((data, index) => (
-                <>
-                  <div
-                    className={`${style.additionalDetails} ${newServices?.additionalDetails?.includes(data)
-                      ? style.additionalDetailsSelected
-                      : ""
-                      } ${style.cursorPointer} ${index !== 0 ? style.marginTop10 : ""
-                      }`}
-                    onClick={() => handleAdditionalDetailSelection(data)}
-                  >
-                    <div className={style.alignCenter}>
-                      <TaskAltIcon
-                        sx={{
-                          color: newServices?.additionalDetails?.includes(data)
-                            ? "#7165E3"
-                            : "#E4E4E4",
+            {newServices?.billableService && (
+              <>
+                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                  <CommonLabel value='ADD-ON Service Rate' />
+                  <div className={`${style.displayInRow}`}>
+                    <div className={`${style.threeFieldWidth}`}>
+                      <CommonTextField
+                        type="number"
+                        InputProps={{
+                          startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
                         }}
+                        value={newServices?.serviceRate}
+                        onChange={(e) => e.target.value >= 0 && handleNewServiceChange('serviceRate', parseFloat(e.target.value))}
                       />
                     </div>
-                    <div
-                      className={`${style.additionalDetailsTextStyle} ${style.verticalAlignCenter}`}
-                    >
-                      {data}
+                  </div>
+                </div>
+                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                  <CommonLabel value='ADD-ON Service Frequency' />
+                  <div className={`${style.displayInRow}`}>
+                    <div className={`${style.threeFieldWidth}`}>
+                      <CommonSelectField
+                        value={newServices?.serviceRateFrequency}
+                        onChange={(e) => handleNewServiceChange('serviceRateFrequency', e.target.value)}
+                        firstOptionLabel={'Select Frequency'} firstOptionValue={''}
+                        valueList={['SESSION', 'HOUR']}
+                        labelList={['Per Session', 'Per Hour']}
+                        disabledList={[false, false]} />
                     </div>
                   </div>
-                  {newServices?.additionalDetails?.includes(
-                    "Prior Pre-Authorization Required"
-                  ) &&
-                    data === "Prior Pre-Authorization Required" && (
-                      // <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { setNewServices({ ...newServices, approver: users?.filter(data => data?.userId === value)?.map(data => data)[0] }) }} />
-                      <div
-                        className={`${style.addManagerGrid} ${style.marginTop20}`}
-                      >
-                        <CommonLabel value={"Designate Request Approver*"} />
-                        <div className={style.fullWidth} key={index}>
-                          <CommonSelectField
-                            className={`${style.fullWidth} `}
-                            defaultValue={newServices?.approver}
-                            value={
-                              newServices?.approver
-                                ? newServices?.approver?.id
-                                : "0"
-                            }
-                            onChange={(e) => {
-                              setNewServices({
-                                ...newServices,
-                                approver: users
-                                  ?.filter(
-                                    (data) => data?.id === e.target.value
-                                  )
-                                  ?.map((data) => data)[0],
-                                approverTitle: title
-                                  ?.filter(
-                                    (titleData) => titleData?.approver === true
-                                  )
-                                  ?.map((data) => data)[0],
-                              });
-                            }}
-                            firstOptionLabel={"Select Approver"}
-                            firstOptionValue={"0"}
-                            valueList={title
-                              ?.filter(
-                                (titleData) => titleData?.approver === true
-                              )
-                              ?.map((data) => data?.id)}
-                            labelList={title
-                              ?.filter(
-                                (titleData) => titleData?.approver === true
-                              )
-                              ?.map(
-                                (titleData) =>
-                                  `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`
-                              )}
-                            disabledList={title?.map((data) => false)}
-                            widthValue={370}
-                          />
-                        </div>
-                      </div>
-                    )}
-                  {newServices?.additionalDetails?.includes(
-                    "Administrative Approval For Payment Required"
-                  ) &&
-                    data === "Administrative Approval For Payment Required" && (
-                      // <ReviewerApproverField data={users} label="Designate Payment Approver*" selectLabel="Select Payment Approver" onValueChange={(value) => { setNewServices({ ...newServices, paymentApprover: users.filter(data => data?.userId === value)?.map(data => data)[0] }) }} />
-                      <div
-                        className={`${style.addManagerGrid} ${style.marginTop20}`}
-                      >
-                        <CommonLabel value={"Designate Payment Approver*"} />
-                        <div className={style.fullWidth} key={index}>
-                          <CommonSelectField
-                            className={`${style.fullWidth} `}
-                            defaultValue={newServices?.paymentApprover}
-                            value={
-                              newServices?.paymentApprover
-                                ? newServices?.paymentApprover?.id
-                                : "0"
-                            }
-                            onChange={(e) => {
-                              setNewServices({
-                                ...newServices,
-                                paymentApprover: users
-                                  .filter((data) => data?.id === e.target.value)
-                                  ?.map((data) => data)[0],
-                                approverTitle: title
-                                  ?.filter(
-                                    (titleData) => titleData?.approver === true
-                                  )
-                                  ?.map((data) => data)[0],
-                              });
-                            }}
-                            firstOptionLabel={"Select Payment Approver"}
-                            firstOptionValue={"0"}
-                            valueList={title
-                              ?.filter(
-                                (titleData) => titleData?.approver === true
-                              )
-                              ?.map((data) => data?.id)}
-                            labelList={title
-                              ?.filter(
-                                (titleData) => titleData?.approver === true
-                              )
-                              ?.map(
-                                (titleData) =>
-                                  `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`
-                              )}
-                            disabledList={title?.map((data) => false)}
-                            widthValue={370}
-                          />
-                        </div>
-                      </div>
-                    )}
-                </>
-              ))}
-            </div>
-          </div>
-          <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-            <CommonLabel value="Allowable Add-On Working Hours*" />
-            <div className={style.twoCol}>
-              <CommonCheckBox
-                checked={newServices?.duringNormalWorkingHours}
-                className={`${style.marginLeft10}`}
-                onChange={(e) => {
-                  handleNewServiceChange(
-                    "duringNormalWorkingHours",
-                    e.target.checked
-                  );
-                }}
-                label="During Normal Working Hours"
-              />
-              <CommonCheckBox
-                checked={newServices?.afterWorkingHours}
-                className={`${style.marginLeft10}`}
-                onChange={(e) =>
-                  handleNewServiceChange("afterWorkingHours", e.target.checked)
-                }
-                label="After Working Hours"
-              />
-            </div>
-          </div>
-          <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-            <CommonLabel value="Allowable Working Day Hours For Service*" />
-            <div className={style.displayInRow}>
-              <TimePicker
-                useAmPm={false}
-                onChange={(e) => {
-                  handleNewServiceChange("workingTimeFrom", e);
-                }}
-                value={
-                  newServices?.workingTimeTo === null
-                    ? null
-                    : new Date(newServices?.workingTimeFrom)
-                }
-              />
-              <p
-                className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}
-              >
-                To
-              </p>
-              <TimePicker
-                useAmPm={false}
-                onChange={(e) => handleNewServiceChange("workingTimeTo", e)}
-                value={
-                  newServices?.workingTimeTo === null
-                    ? null
-                    : new Date(newServices?.workingTimeTo)
-                }
-              // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
-              />
-            </div>
-          </div>
+                </div>
+                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                  <CommonLabel value="ADD-ON Payment Rate*" />
+                  <div className={`${style.displayInRow}`}>
+                    <div className={`${style.threeFieldWidth}`}>
+                      <CommonTextField
+                        type="number"
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start" sx={{ fontSize: 10 }}>
+                              $
+                            </InputAdornment>
+                          ),
+                        }}
+                        disabled={true}
+                        value={newServices?.rate}
+                      // onChange={(e) => {
+                      //   handleNewServiceChange("rate", parseFloat(e.target.value));
+                      // }}
+                      />
+                    </div>
+                    <div className={style.verticalAlignCenter}>
+                      <CommonLabel
+                        className={`${style.marginLeft20}`}
+                        value={parseInt(newServices?.rate) > 0 && parseInt(newServices?.sessionDuration) > 0 ? `${(
+                          newServices?.rate / newServices?.sessionDuration
+                        ).toFixed(2)} Per Hour` : ''}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
 
-          <div>
-            <div className={`${style.twoCol} ${style.marginTop20}`}>
-              <button
-                className={`${style.outlinedButton} ${style.fullWidth}`}
-                onClick={() => {
-                  resetNewServices();
-                  setShowNewService(false);
-                }}
-              >
-                CANCEL
-              </button>
-              <button
-                className={`${style.buttonStyle} ${style.fullWidth}`}
-                onClick={addToMetaData}
-              >
-                SAVE
-              </button>
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+              <CommonLabel value="Specify Service Facility / Location" />
+              <div>
+                <div className={`${style.displayInRow}`}>
+                  <CommonSwitch
+                    className={`${style.textAlignLeft}`}
+                    checked={newServices?.showLocation}
+                    onChange={(e) =>
+                      handleNewServiceChange(
+                        "showLocation",
+                        !newServices?.showLocation
+                      )
+                    }
+                    label={newServices?.showLocation ? "YES" : "NO"}
+                  />
+                  {newServices?.showLocation && (
+                    <div className={` ${style.fullWidth}`}>
+                      <DatalistInput
+                        items={locationItems || []}
+                        setValue={setValue}
+                        onSelect={handleNewServiceLocation}
+                        className={style.fullWidth}
+                        onChange={(e) => getNewLocation(e.target.value)}
+                        clearInputOnSelect={true}
+                      />
+                      {/* <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                      <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={locationToAdd} />
+                    </div> */}
+                    </div>
+                  )}
+                </div>
+                {newServices?.locations?.length !== 0 &&
+                  newServices?.showLocation && (
+                    <MultiSelectDisplay
+                      values={newServices?.locations?.map(
+                        (data) => data?.location
+                      )}
+                      removeItem={(index) =>
+                        setNewServices({
+                          ...newServices,
+                          locations: newServices?.locations
+                            ?.filter((data, indexValue) => index !== indexValue)
+                            ?.map((data) => data),
+                        })
+                      }
+                    />
+                  )}
+              </div>
             </div>
-            <br />
+
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+              <CommonLabel value="Additional Details*" />
+              <div>
+                {additionalDetails?.map((data, index) => (
+                  <>
+                    <div
+                      className={`${style.additionalDetails} ${newServices?.additionalDetails?.includes(data)
+                        ? style.additionalDetailsSelected
+                        : ""
+                        } ${style.cursorPointer} ${index !== 0 ? style.marginTop10 : ""
+                        }`}
+                      onClick={() => handleAdditionalDetailSelection(data)}
+                    >
+                      <div className={style.alignCenter}>
+                        <TaskAltIcon
+                          sx={{
+                            color: newServices?.additionalDetails?.includes(data)
+                              ? "#7165E3"
+                              : "#E4E4E4",
+                          }}
+                        />
+                      </div>
+                      <div
+                        className={`${style.additionalDetailsTextStyle} ${style.verticalAlignCenter}`}
+                      >
+                        {data}
+                      </div>
+                    </div>
+                    {newServices?.additionalDetails?.includes(
+                      "Prior Pre-Authorization Required"
+                    ) &&
+                      data === "Prior Pre-Authorization Required" && (
+                        // <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { setNewServices({ ...newServices, approver: users?.filter(data => data?.userId === value)?.map(data => data)[0] }) }} />
+                        <div
+                          className={`${style.addManagerGrid} ${style.marginTop20}`}
+                        >
+                          <CommonLabel value={"Designate Request Approver*"} />
+                          <div className={style.fullWidth} key={index}>
+                            <CommonSelectField
+                              className={`${style.fullWidth} `}
+                              defaultValue={newServices?.approver}
+                              value={
+                                newServices?.approver
+                                  ? newServices?.approver?.id
+                                  : "0"
+                              }
+                              onChange={(e) => {
+                                setNewServices({
+                                  ...newServices,
+                                  approver: users
+                                    ?.filter(
+                                      (data) => data?.id === e.target.value
+                                    )
+                                    ?.map((data) => data)[0],
+                                  approverTitle: title
+                                    ?.filter(
+                                      (titleData) => titleData?.approver === true
+                                    )
+                                    ?.map((data) => data)[0],
+                                });
+                              }}
+                              firstOptionLabel={"Select Approver"}
+                              firstOptionValue={"0"}
+                              valueList={title
+                                ?.filter(
+                                  (titleData) => titleData?.approver === true
+                                )
+                                ?.map((data) => data?.id)}
+                              labelList={title
+                                ?.filter(
+                                  (titleData) => titleData?.approver === true
+                                )
+                                ?.map(
+                                  (titleData) =>
+                                    `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`
+                                )}
+                              disabledList={title?.map((data) => false)}
+                              widthValue={370}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    {newServices?.additionalDetails?.includes(
+                      "Administrative Approval For Payment Required"
+                    ) &&
+                      data === "Administrative Approval For Payment Required" && (
+                        // <ReviewerApproverField data={users} label="Designate Payment Approver*" selectLabel="Select Payment Approver" onValueChange={(value) => { setNewServices({ ...newServices, paymentApprover: users.filter(data => data?.userId === value)?.map(data => data)[0] }) }} />
+                        <div
+                          className={`${style.addManagerGrid} ${style.marginTop20}`}
+                        >
+                          <CommonLabel value={"Designate Payment Approver*"} />
+                          <div className={style.fullWidth} key={index}>
+                            <CommonSelectField
+                              className={`${style.fullWidth} `}
+                              defaultValue={newServices?.paymentApprover}
+                              value={
+                                newServices?.paymentApprover
+                                  ? newServices?.paymentApprover?.id
+                                  : "0"
+                              }
+                              onChange={(e) => {
+                                setNewServices({
+                                  ...newServices,
+                                  paymentApprover: users
+                                    .filter((data) => data?.id === e.target.value)
+                                    ?.map((data) => data)[0],
+                                  approverTitle: title
+                                    ?.filter(
+                                      (titleData) => titleData?.approver === true
+                                    )
+                                    ?.map((data) => data)[0],
+                                });
+                              }}
+                              firstOptionLabel={"Select Payment Approver"}
+                              firstOptionValue={"0"}
+                              valueList={title
+                                ?.filter(
+                                  (titleData) => titleData?.approver === true
+                                )
+                                ?.map((data) => data?.id)}
+                              labelList={title
+                                ?.filter(
+                                  (titleData) => titleData?.approver === true
+                                )
+                                ?.map(
+                                  (titleData) =>
+                                    `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`
+                                )}
+                              disabledList={title?.map((data) => false)}
+                              widthValue={370}
+                            />
+                          </div>
+                        </div>
+                      )}
+                  </>
+                ))}
+              </div>
+            </div>
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+              <CommonLabel value="Allowable Add-On Working Hours*" />
+              <div className={style.twoCol}>
+                <CommonCheckBox
+                  checked={newServices?.duringNormalWorkingHours}
+                  className={`${style.marginLeft10}`}
+                  onChange={(e) => {
+                    handleNewServiceChange(
+                      "duringNormalWorkingHours",
+                      e.target.checked
+                    );
+                  }}
+                  label="During Normal Working Hours"
+                />
+                <CommonCheckBox
+                  checked={newServices?.afterWorkingHours}
+                  className={`${style.marginLeft10}`}
+                  onChange={(e) =>
+                    handleNewServiceChange("afterWorkingHours", e.target.checked)
+                  }
+                  label="After Working Hours"
+                />
+              </div>
+            </div>
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+              <CommonLabel value="Allowable Working Day Hours For Service*" />
+              <div className={style.displayInRow}>
+                <TimePicker
+                  useAmPm={false}
+                  onChange={(e) => {
+                    handleNewServiceChange("workingTimeFrom", e);
+                  }}
+                  value={
+                    newServices?.workingTimeTo === null
+                      ? null
+                      : new Date(newServices?.workingTimeFrom)
+                  }
+                />
+                <p
+                  className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}
+                >
+                  To
+                </p>
+                <TimePicker
+                  useAmPm={false}
+                  onChange={(e) => handleNewServiceChange("workingTimeTo", e)}
+                  value={
+                    newServices?.workingTimeTo === null
+                      ? null
+                      : new Date(newServices?.workingTimeTo)
+                  }
+                // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
+                />
+              </div>
+            </div>
+
+            <div>
+              <div className={`${style.twoCol} ${style.marginTop20}`}>
+                <button
+                  className={`${style.outlinedButton} ${style.fullWidth}`}
+                  onClick={() => {
+                    resetNewServices();
+                    setShowNewService(false);
+                  }}
+                >
+                  CANCEL
+                </button>
+                <button
+                  className={`${style.buttonStyle} ${style.fullWidth}`}
+                  onClick={addToMetaData}
+                >
+                  SAVE
+                </button>
+              </div>
+              <br />
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )
+      }
+    </div >
   );
 };
 
