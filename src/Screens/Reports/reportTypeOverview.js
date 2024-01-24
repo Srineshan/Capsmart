@@ -760,7 +760,7 @@ const ReportTypeOverview = () => {
 
     const getCurrentRemitToAddressForActiveContracts = async () => {
         if (dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
-            const { data: currentRemitToAddress } = await GET(`contract-managment-service/reports/currentRemitToAddress?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
+            const { data: currentRemitToAddress } = await GET(`timesheet-management-service/report/currentRemitToAddress?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
             if (currentRemitToAddress) {
                 setCurrentRemitToAddressValues(currentRemitToAddress);
             }
@@ -1295,10 +1295,10 @@ const ReportTypeOverview = () => {
         currentRemitToAddressValues?.map(data => {
             contractName.push(data?.contractName?.contractName);
             contractType.push(data?.contractType)
-            address.push(data?.contractorBusinessEntity?.mailingAddress?.addressLine)
-            city.push(data?.contractorBusinessEntity?.mailingAddress?.city);
-            state.push(data?.contractorBusinessEntity?.mailingAddress?.state);
-            zipcode.push(data?.contractorBusinessEntity?.mailingAddress?.zipcode)
+            address.push(data?.contractorBusinessEntity?.remitAddress !== null ? data?.contractorBusinessEntity?.remitAddress?.addressLine : data?.contractorBusinessEntity?.mailingAddress?.addressLine)
+            city.push(data?.contractorBusinessEntity?.remitAddress !== null ? data?.contractorBusinessEntity?.remitAddress?.city : data?.contractorBusinessEntity?.mailingAddress?.city);
+            state.push(data?.contractorBusinessEntity?.remitAddress !== null ? data?.contractorBusinessEntity?.remitAddress?.state : data?.contractorBusinessEntity?.mailingAddress?.state);
+            zipcode.push(data?.contractorBusinessEntity?.remitAddress !== null ? data?.contractorBusinessEntity?.remitAddress?.zipcode : data?.contractorBusinessEntity?.mailingAddress?.zipcode)
         })
 
         return [
