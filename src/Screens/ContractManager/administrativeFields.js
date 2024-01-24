@@ -16,8 +16,6 @@ import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
 import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
 import CommonTextField from '../../Components/CommonFields/CommonTextField';
 import CommonLabel from '../../Components/CommonFields/CommonLabel';
-import { valueCheck } from "../../utils/valueCheck";
-import { format } from "date-fns";
 
 import style from './index.module.scss';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
@@ -54,7 +52,9 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         totalSession: '0',
         totalSessionFrequency: 'NA',
         sessionAmount: '0',
-        sessionDuration: '0',
+        sessionDuration: '1',
+        serviceRate: '0',
+        serviceRateFrequency: 'SESSION',
         serviceDays: {
             tuesday: false,
             wednesday: false,
@@ -114,7 +114,9 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             totalSession: '0',
             totalSessionFrequency: 'NA',
             sessionAmount: '0',
-            sessionDuration: '0',
+            sessionDuration: '1',
+            serviceRate: '0',
+            serviceRateFrequency: 'SESSION',
             serviceDays: {
                 tuesday: false,
                 wednesday: false,
@@ -154,7 +156,9 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                 workingTimeTo: GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
                 serviceDays: serviceSelected?.serviceDays,
                 sessionAmount: serviceSelected?.payableAmount?.value,
-                sessionDuration: serviceSelected?.duration?.hours || '0',
+                sessionDuration: serviceSelected?.duration?.hours || '1',
+                serviceRate: serviceSelected?.serviceRate?.rate || '0',
+                serviceRateFrequency: serviceSelected?.serviceRate?.rateFrequency,
                 workflowId: serviceSelected?.workFlow?.id,
                 workflowName: serviceSelected?.workFlow?.workFlowName?.name,
                 activityApprovalWFRequired: serviceSelected?.activityApprovalWFRequired,
@@ -190,7 +194,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             if (value) {
                 setMetadata({ ...metadata, sessionDuration: '1', totalSession: '0', sessionAmount: '', totalSessionFrequency: 'NA', dedicatedHoursActivityType: '', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
             } else {
-                setMetadata({ ...metadata, sessionDuration: '0', dedicatedHoursActivityType: '', sessionAmount: '', totalSession: '0', totalSessionFrequency: 'NA', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
+                setMetadata({ ...metadata, sessionDuration: '1', dedicatedHoursActivityType: '', sessionAmount: '', totalSession: '0', totalSessionFrequency: 'NA', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
             }
         }
         if (name === 'totalSessionFrequency' && value === 'NA') {
@@ -248,6 +252,8 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                     dedicatedHoursActivityType: dedicatedHoursActivityType,
                     dedicatedHoursPerformingActivity: dedicatedHoursPerformingActivity,
                     sessionDuration: data?.duration?.hours,
+                    serviceRate: data?.serviceRate?.rate,
+                    serviceRateFrequency: data?.serviceRate?.rateFrequency,
                     totalSession: data?.totalSessions?.value,
                     totalSessionFrequency: data?.totalSessions?.frequency,
                     sessionAmount: data?.payableAmount?.value,
@@ -331,22 +337,11 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
 
     console.log('Metadata', metadata);
 
-    const dataCheck = (value) => {
-        if (editService) {
-            return valueCheck(value);
-        } else {
-            return false;
-        }
-    };
-
-    console.log(metadata?.selectedActivities)
 
     return (
         <div>
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <CommonLabel value='Dedicated Hours For Administrative Services*'
-                    className={!metadata?.dedicatedHoursSpecified && (dataCheck(metadata?.dedicatedHoursPerformingActivity) ? style.redLable : "")}
-                />
+                <CommonLabel value='Dedicated Hours For Administrative Services*' />
                 <div className={style.displayInRow}>
                     {/* <div className={`${style.threeFieldWidth}`} > */}
                     <CommonSwitch
@@ -386,9 +381,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                 metadata?.dedicatedHoursSpecified &&
                 <>
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        <CommonLabel value='Separate Administrative Hours Specified*'
-                            className={dataCheck(metadata?.totalSession) ? style.redLable : ""}
-                        />
+                        <CommonLabel value='Separate Administrative Hours Specified*' />
                         <div className={style.displayInRow}>
                             <div className={`${style.twoFieldWidth}`}>
                                 <CommonTextField
@@ -412,9 +405,37 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                     </div>
 
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        <CommonLabel value='Administrative Services Payment Amount*'
-                            className={dataCheck(metadata?.sessionAmount) ? style.redLable : ""}
-                        />
+                        <CommonLabel value='Service Rate' />
+                        <div className={`${style.displayInRow}`}>
+                            <div className={`${style.threeFieldWidth}`}>
+                                <CommonTextField
+                                    type="number"
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
+                                    }}
+                                    value={metadata?.serviceRate}
+                                    onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, serviceRate: parseFloat(e.target.value), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? parseFloat(e.target.value) : (parseFloat(e.target.value) * metadata?.totalSession) })}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <CommonLabel value='Service Frequency' />
+                        <div className={`${style.displayInRow}`}>
+                            <div className={`${style.threeFieldWidth}`}>
+                                <CommonSelectField
+                                    value={metadata?.serviceRateFrequency || ''}
+                                    onChange={(e) => setMetadata({ ...metadata, serviceRateFrequency: e.target.value, sessionAmount: (e.target.value === 'SESSION') ? metadata?.serviceRate : (metadata?.serviceRate * metadata?.totalSession) })}
+                                    firstOptionLabel={'Select Frequency'} firstOptionValue={''}
+                                    valueList={['SESSION', 'HOUR']}
+                                    labelList={['Per Session', 'Per Hour']}
+                                    disabledList={[false, false]} />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <CommonLabel value='Administrative Services Payment Amount*' />
                         <div className={`${style.displayInRow}`}>
                             <div className={`${style.threeFieldWidth}`}>
                                 <CommonTextField
@@ -422,6 +443,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                     InputProps={{
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                     }}
+                                    disabled={true}
                                     onChange={(e) => e.target.value >= 0 && handleValueChange('sessionAmount', (e.target.value).slice(0, 6))}
                                     value={metadata?.sessionAmount}
                                 />
@@ -435,9 +457,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             }
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <CommonLabel value='Allowable Administrative Duties & Function To Perform'
-                    className={editService && (!metadata?.selectedActivities || metadata?.selectedActivities.length === 0) || dataCheck(metadata?.selectedActivities) ? style.redLable : ""}
-                />
+                <CommonLabel value='Allowable Administrative Duties & Function To Perform' />
                 <div>
                     {
                         activity?.map((data, index) => (
@@ -594,27 +614,12 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
 
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <CommonLabel value='Service Days*'
-                    className={
-                        metadata?.serviceDays === null ||
-                            (metadata?.serviceDays !== undefined &&
-                                Object?.values(metadata?.serviceDays)?.filter(
-                                    (data) => data === true
-                                )?.length === 0)
-                            ? style.redLable
-                            : ""
-                    } />
+                <CommonLabel value='Service Days*' />
                 <ServiceDays setMetaData={getServiceDaysMetadata} selectedService={serviceSelected} isReset={isReset} setIsReset={getIsReset} />
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <CommonLabel value='Allowable Working Day Hours For Service*'
-                    className={
-                        format(metadata?.workingTimeTo || new Date(), "H") === "0" &&
-                            format(metadata?.workingTimeFrom || new Date(), "H") === "0"
-                            ? style.redLable
-                            : ""
-                    } />
+                <CommonLabel value='Allowable Working Day Hours For Service*' />
                 <div className={style.displayInRow}>
                     <TimePicker
                         useAmPm={false}
@@ -643,9 +648,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             </div>
             {metadata?.activityApprovalWFRequired &&
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                    <CommonLabel value='Designate Request Approver*'
-                        className={dataCheck(metadata?.approver) ? style.redLable : ""}
-                    />
+                    <CommonLabel value='Designate Request Approver*' />
                     <CommonSelectField className={`${style.fullWidth} `}
                         defaultValue={metadata?.approver}
                         value={metadata?.approver ? metadata?.approver?.id : '0'}

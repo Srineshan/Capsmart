@@ -4,17 +4,11 @@ import Chart from 'react-apexcharts';
 const ApexPieChart = ({ pieData }) => {
 
   const getLabel = (data) => {
-    if (data === "DONE")
-      return 'Done';
-    else if (data === "TODO")
-      return 'To Do';
-    else if (data === "NOTDONE")
-      return 'Not Done';
-    else if (data === "done")
+    if (data === "done")
       return 'Done';
     else if (data === "todo")
       return 'To Do';
-    else if (data === "notdone")
+    else if (data === "notDone")
       return 'Not Done';
     if (data === "paidOnTime")
       return 'Paid On Time';
@@ -22,36 +16,16 @@ const ApexPieChart = ({ pieData }) => {
       return 'Payments Delayed';
     else if (data === "rejected")
       return 'Rejected';
-    else if (data === "approved")
-      return 'Approved';
-    else if (data === "INPROGRESS")
-      return 'In-Progress';
-    else if (data === "inprogress")
-      return 'In-Progress';
     else if (data === "paidNotDone")
       return 'Payment Not Made';
     else if (data === "paidPastDue")
       return 'Payment Past Due';
-    else if (data === "ONHOLD")
-      return 'On Hold';
     else if (data === "onhold")
       return 'On Hold';
-    else if (data === "SUBMITTED")
-      return 'Submitted';
-    else if (data === "REJECTED")
-      return 'Rejected';
-    else if (data === "rejected")
-      return 'Rejected';
-    else if (data === "NA")
-      return 'NA';
     else if (data === "na")
       return 'NA';
-    else if (data === "SUBMITTED")
-      return 'Submitted';
-    else if (data === "APPROVED")
-      return 'Approved';
-    else if (data === "REVIEWED")
-      return 'Reviewed';
+    else if (data === "inprogress")
+      return 'In-Progress';
     else if (data === "submitted")
       return 'Submitted';
     else if (data === "approved")

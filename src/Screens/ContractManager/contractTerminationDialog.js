@@ -27,6 +27,7 @@ const ContractTermination = ({ getTerminationDialog, contracts, contractId, getC
   const [metadata, setMetadata] = useState();
   const [replace, setReplace] = useState({ replace: false, id: '' });
   const [writtenNoticeServed, setWrittenNoticeServed] = useState(false);
+  const [selectedContract, setSelectedContract] = useState(contracts?.filter(data => data?.id === contractId)?.map(data => data)[0])
 
   useEffect(() => {
     getUserData();
@@ -43,6 +44,8 @@ const ContractTermination = ({ getTerminationDialog, contracts, contractId, getC
       setUsers(userData);
     }
   }
+
+  console.log('terminate file contracts data', contracts)
 
   const submit = async () => {
     let status = 'TERMINATED';
@@ -112,7 +115,7 @@ const ContractTermination = ({ getTerminationDialog, contracts, contractId, getC
         <div className={`${style.dialogAdditionalDetailBoxStyle}`}>
           <div>
             <div className={`${style.dialogAdditionalDetailTextStyle}`}>New Contract with No Prior Contract(s) with Entity</div>
-            <div className={`${style.dialogAdditionalDetailTextStyle} ${style.marginTop10}`}>PAMF CONTRACT (0043245)</div>
+            <div className={`${style.dialogAdditionalDetailTextStyle} ${style.marginTop10}`}>PAMF CONTRACT ({selectedContract?.contractId?.id})</div>
             <div className={`${style.dialogAdditionalDetailTextStyle} ${style.marginTop10}`}>MULTIPLE CONTRACTORS (23)</div>
           </div>
           <div>

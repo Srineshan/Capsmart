@@ -22,7 +22,8 @@ const MenuProps = {
     PaperProps: {
         style: {
             maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-            width: 250,
+            // width: 250,
+            // width: 250,
         },
     },
 };
@@ -48,9 +49,17 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
     const [selectedContractedServiceProvider, setSelectedContractedServiceProvider] = useState([]);
     const [selectedContractedServiceProviderToSend, setSelectedContractedServiceProviderToSend] = useState([]);
     const [user, setUsers] = useState([]);
-    const [from, setFrom] = useState(startOfWeek(new Date()));
-    const [to, setTo] = useState(endOfWeek(new Date()));
+    const [from, setFrom] = useState(startOfMonth(new Date()));
+    const [to, setTo] = useState(endOfMonth(new Date()));
     let reportFilter = JSON.parse(sessionStorage.getItem('reportFilter'));
+    let reportCategory = {
+        activitiesOrServices: 'ACTIVITY',
+        addOnActivities: 'ACTIVITY',
+        timesheetProcessingSummary: 'TIMESHEET',
+        listingOfTimesheetsNotPaid: 'TIMESHEET',
+        submittedTimesheetsPaymentStatus: 'TIMESHEET',
+        paymentsProcessingSummary: 'TIMESHEET',
+    }
 
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
@@ -58,22 +67,6 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
     const [currentUserDetails, setCurrentUserDetails] = useState();
     const [userId, setUserId] = useState(userDetail?.id);
     const [contractedServiceProviders, setContractedServiceProviders] = useState([]);
-
-    useEffect(() => {
-        setUserId(userDetail?.id);
-        setUserDetails();
-        getActivityLogger();
-    }, [])
-
-    const setUserDetails = async () => {
-        const { data: user } = await GET(`user-management-service/user/${userId}`);
-        setCurrentUserDetails(user);
-    }
-
-    const getActivityLogger = async () => {
-        const { data: user } = await GET(`user-management-service/user?userType=CONTRACTED_SERVICE_PROVIDER_USER`);
-        setContractedServiceProviders(user);
-    }
 
     let dataToUseInReport = {
         renewalreportingTimePeriod: renewalreportingTimePeriod,
@@ -96,6 +89,53 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
         selectedContractedServiceProviderToSend: selectedContractedServiceProviderToSend,
     };
 
+    useEffect(() => {
+        setUserId(userDetail?.id);
+        setUserDetails();
+        getActivityLogger();
+        getContractAndUserList();
+        getAllDeptList();
+    }, [])
+
+    const setUserDetails = async () => {
+        const { data: user } = await GET(`user-management-service/user/${userId}`);
+        setCurrentUserDetails(user);
+    }
+
+    const getActivityLogger = async () => {
+        const { data: user } = await GET(`user-management-service/user?userType=CONTRACTED_SERVICE_PROVIDER_USER`);
+        setContractedServiceProviders(user);
+    }
+    console.log(currentUserDetails?.roles?.length >= 2, currentUserDetails?.roles?.length === 1, currentUserDetails?.roles?.filter(data => data?.roleName === "Activity Logger")?.length === 0)
+    const getContractAndUserList = async () => {
+        if (reportType !== "upcomingContractRenewals" && reportType !== "oneTimeContract") {
+            if (currentUserDetails?.roles?.length >= 2 || (currentUserDetails?.roles?.length === 1 && currentUserDetails?.roles?.filter(data => data?.roleName === "Activity Logger")?.length === 0)) {
+                const { data: contractAndUserList } = await GET(`contract-managment-service/reports/filter/usersAndContracts?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&reportCategory=${reportCategory[reportType]}`);
+                setContractedServiceProviders(contractAndUserList?.users);
+                setContracts(contractAndUserList?.contracts);
+                if (contractAndUserList?.contracts?.length === 1) {
+                    setSelectedContracts([contractAndUserList?.contracts?.[0]?.id]);
+                    setSelectedContractsToSend([contractAndUserList?.contracts?.[0]]);
+                }
+            } else {
+                if (currentUserDetails?.id !== undefined) {
+                    setSelectedContractedServiceProvider([currentUserDetails?.id]);
+                    setSelectedContractedServiceProviderToSend([currentUserDetails]);
+                }
+                setContracts(currentUserDetails?.contracts);
+                if (currentUserDetails?.contracts?.length === 1) {
+                    setSelectedContracts([currentUserDetails?.contracts?.[0]?.id]);
+                    setSelectedContractsToSend([currentUserDetails?.contracts?.[0]]);
+                }
+            }
+        }
+    }
+
+    const getAllDeptList = async () => {
+        const { data: deptList } = await GET(`entity-service/department/${dataToUseInReport?.selectedSites}`);
+        // setDepartments(deptList)
+    }
+
     const podTypes = ['Medical Staff Membership & Privileges',
         'Primary Speciality Board Certification',
         'Secondary Specialty Board Certification',
@@ -108,16 +148,17 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
 
     useEffect(() => {
         getSites();
-        getContracts();
+        // getContracts();
         if (currentUserDetails?.roles?.length === 1 && currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Activity Logger")) {
             setSelectedContractedServiceProvider([currentUserDetails?.id]);
             setSelectedContractedServiceProviderToSend([currentUserDetails]);
-        } else {
-            if (contractedServiceProviders?.length === 1 && contractedServiceProviders?.length !== 0) {
-                setSelectedContractedServiceProvider([contractedServiceProviders?.[0]?.id]);
-                setSelectedContractedServiceProviderToSend([contractedServiceProviders?.[0]]);
-            }
         }
+        // else {
+        //     if (contractedServiceProviders?.length === 1 && contractedServiceProviders?.length !== 0) {
+        //         setSelectedContractedServiceProvider([contractedServiceProviders?.[0]?.id]);
+        //         setSelectedContractedServiceProviderToSend([contractedServiceProviders?.[0]]);
+        //     }
+        // }
         if (reportFilter) {
             setFrom(new Date(reportFilter?.startDate));
             setTo(new Date(reportFilter?.endDate));
@@ -126,7 +167,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
             setSelectedDepartments(reportFilter?.departments);
             setReportingTimePeriod(reportFilter?.reportingTimePeriod);
         }
-    }, [currentUserDetails, contractedServiceProviders])
+    }, [currentUserDetails])
 
     useEffect(() => {
         getDataToUseInReport(dataToUseInReport);
@@ -139,16 +180,23 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
         setDepartments([]);
         selectedSitesToSend?.map(siteData => {
             siteData?.departmentList?.departments?.map(data => {
-                tempDept.push(data);
+                tempDept.push({ site: siteData, dept: data });
             })
         });
-        let uniqueDepartments = tempDept.filter((ele, ind) => ind === tempDept.findIndex(elem => elem.id === ele.id && elem.id === ele.id));
-        setDepartments(uniqueDepartments);
-        if (uniqueDepartments?.length === 1) {
-            setSelectedDepartments([uniqueDepartments?.[0]?.id]);
-            setSelectedDepartmentsToSend([uniqueDepartments?.[0]]);
+        // let uniqueDepartments = tempDept.filter((ele, ind) => ind === tempDept.findIndex(elem => elem.id === ele.id && elem.id === ele.id));
+        setDepartments(tempDept);
+        if (tempDept?.length === 1) {
+            setSelectedDepartments([tempDept?.[0]?.dept?.id]);
+            setSelectedDepartmentsToSend([tempDept?.[0]?.dept]);
         }
+        // if (currentUserDetails?.roles?.length >= 2 || (currentUserDetails?.roles?.length === 1 && !currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Activity Logger"))) {
+        //     getAllDeptList();
+        // }
     }, [selectedSitesToSend]);
+
+    useEffect(() => {
+        getContractAndUserList();
+    }, [selectedSitesToSend, selectedDepartmentsToSend, currentUserDetails]);
 
     useEffect(() => {
         if (reportType === "activitiesOrServices" || reportType === "paymentsProcessingSummary" || reportType === "addOnActivities" || reportType === "timesheetProcessingSummary" || reportType === "listingOfTimesheetsNotPaid" || reportType === "submittedTimesheetsPaymentStatus") {
@@ -223,13 +271,13 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
         }
     }
 
-    const getContracts = () => {
-        setContracts(currentUserDetails?.contracts);
-        if (currentUserDetails?.contracts?.length === 1) {
-            setSelectedContracts([currentUserDetails?.contracts?.[0]?.id]);
-            setSelectedContractsToSend([currentUserDetails?.contracts?.[0]]);
-        }
-    }
+    // const getContracts = () => {
+    //     setContracts(currentUserDetails?.contracts);
+    //     if (currentUserDetails?.contracts?.length === 1) {
+    //         setSelectedContracts([currentUserDetails?.contracts?.[0]?.id]);
+    //         setSelectedContractsToSend([currentUserDetails?.contracts?.[0]]);
+    //     }
+    // }
 
     const handleChangeSites = (event) => {
         const {
@@ -251,7 +299,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
             typeof value === 'string' ? value.split(',') : value
         );
         setSelectedDepartmentsToSend(
-            typeof value === 'string' ? departments?.filter(data => value.split(',')?.includes(data?.id))?.map(data => data) : departments?.filter(data => value?.includes(data?.id))?.map(data => data),
+            typeof value === 'string' ? departments?.filter(data => value.split(',')?.includes(data?.dept?.id))?.map(data => data?.dept) : departments?.filter(data => value?.includes(data?.dept?.id))?.map(data => data?.dept),
         );
     };
 
@@ -286,7 +334,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                 {(reportType === "upcomingContractRenewals" || reportType === "oneTimeContract") ? (
                     <>
                         <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                            <InputLabel id="demo-simple-select-standard-label1">Renewal Time Frame</InputLabel>
+                            <InputLabel id="demo-simple-select-standard-label1">{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Time Frame</InputLabel>
                             <Select
                                 labelId="demo-simple-select-standard-label1"
                                 id="demo-simple-select-standard1"
@@ -294,9 +342,9 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 onChange={(e) => { setRenewalreportingTimePeriod(e.target.value) }}
                                 label="Renewal Time Frame"
                             >
-                                <MenuItem value={30}>Renewal Within Next 30 days</MenuItem>
-                                <MenuItem value={60}>Renewal Within Next 60 days</MenuItem>
-                                <MenuItem value={90}>Renewal Within Next 90 days</MenuItem>
+                                <MenuItem value={30}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 30 days</MenuItem>
+                                <MenuItem value={60}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 60 days</MenuItem>
+                                <MenuItem value={90}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 90 days</MenuItem>
                             </Select>
                         </FormControl>
                         <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
@@ -320,10 +368,10 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                             </Select>
                         </FormControl>
                         <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                            <InputLabel id="demo-multiple-name-label3">Departments</InputLabel>
+                            <InputLabel id="demo-multiple-name-label2">Departments</InputLabel>
                             <Select
-                                labelId="demo-multiple-name-label3"
-                                id="demo-multiple-name3"
+                                labelId="demo-multiple-name-label2"
+                                id="demo-multiple-name2"
                                 multiple
                                 value={selectedDepartments}
                                 onChange={handleChangeDepartments}
@@ -331,10 +379,10 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                             >
                                 {departments?.map((data) => (
                                     <MenuItem
-                                        key={data?.id}
-                                        value={data?.id}
+                                        key={data?.dept?.id}
+                                        value={data?.dept?.id}
                                     >
-                                        {data?.departmentName?.name}
+                                        {`${data?.site?.siteName?.siteName} - ${data?.dept?.departmentName?.name}`}
                                     </MenuItem>
                                 ))}
                             </Select>
@@ -480,10 +528,10 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                             >
                                 {departments?.map((data) => (
                                     <MenuItem
-                                        key={data?.id}
-                                        value={data?.id}
+                                        key={data?.dept?.id}
+                                        value={data?.dept?.id}
                                     >
-                                        {data?.departmentName?.name}
+                                        {`${data?.site?.siteName?.siteName} - ${data?.dept?.departmentName?.name}`}
                                     </MenuItem>
                                 ))}
                             </Select>
@@ -497,7 +545,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 multiple
                                 value={selectedContracts}
                                 onChange={handleChangeContracts}
-                                MenuProps={MenuProps}
+                            // MenuProps={MenuProps}
                             >
                                 {contracts?.map((data) => (
                                     <MenuItem
@@ -604,10 +652,10 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                             >
                                 {departments?.map((data) => (
                                     <MenuItem
-                                        key={data?.id}
-                                        value={data?.id}
+                                        key={data?.dept?.id}
+                                        value={data?.dept?.id}
                                     >
-                                        {data?.departmentName?.name}
+                                        {data?.site?.siteName?.siteName - data?.dept?.departmentName?.name}
                                     </MenuItem>
                                 ))}
                             </Select>

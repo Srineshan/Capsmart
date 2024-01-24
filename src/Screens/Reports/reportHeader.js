@@ -14,7 +14,8 @@ const ReportHeader = () => {
     const [logo, setLogo] = useState({ logo: sessionStorage?.getItem('logo'), title: sessionStorage.getItem('title') });
     const [corsedLogo, setCorsedLogo] = useState('');
     const [currentTime, setCurrentTime] = useState(formatInTimeZone(new Date(), 'America/New_York', 'MMM d yyyy, H:mm zzz'));
-    const [address, setAddress] = useState('');
+    const [addressLine1, setAddressLine1] = useState('');
+    const [addressLine2, setAddressLine2] = useState('');
 
     useEffect(() => {
         getLogo();
@@ -23,10 +24,11 @@ const ReportHeader = () => {
     const getLogo = async () => {
         const { data: data } = await GET(`entity-service/entity/${TenantID}`);
         setLogo({ logo: data?.logo?.file?.fileURL, title: data?.entityName?.entityName });
-        setCorsedLogo(`https://app.timesmartai.com/cors/${data?.logo?.file?.fileURL}`);
-        // setCorsedLogo(`https://app.mytimesmart.com/cors/${data?.logo?.file?.fileURL}`);
+        // setCorsedLogo(`https://app.timesmartai.com/cors/${data?.logo?.file?.fileURL}`);
+        setCorsedLogo(`https://app.mytimesmart.com/cors/${data?.logo?.file?.fileURL}`);
         // setCorsedLogo(`${data?.logo?.file?.fileURL}`);
-        setAddress(`${data?.sites?.[0]?.address?.addressLine}, ${data?.sites?.[0]?.address?.city}, ${data?.sites?.[0]?.address?.state}, ${data?.sites?.[0]?.address?.zipcode}.`)
+        setAddressLine1(`${data?.sites?.[0]?.address?.addressLine},`)
+        setAddressLine2(`${data?.sites?.[0]?.address?.city}, ${data?.sites?.[0]?.address?.state}, ${data?.sites?.[0]?.address?.zipcode}.`)
     }
 
     return (
@@ -47,7 +49,8 @@ const ReportHeader = () => {
                             )}
                         </div>
                         <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter}`}>{logo.title}</div>
-                        <div className={`${style.entityNameHeaderStyle} ${style.textAlignCenter}`}>{address}</div>
+                        <div className={`${style.entityNameHeaderStyle} ${style.textAlignCenter}`}>{addressLine1}</div>
+                        <div className={`${style.entityNameHeaderStyle} ${style.textAlignCenter}`}>{addressLine2}</div>
                     </div>
                 </div>
                 <div>

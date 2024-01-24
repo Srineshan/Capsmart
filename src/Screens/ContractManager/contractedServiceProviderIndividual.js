@@ -611,21 +611,21 @@ const ContractedServicesProviderIndividual = ({
       contracts: getContractsData(),
       title: {},
       email: {
-        officialEmail: contractorEmail,
+        officialEmail: contractorEmail.trim(),
       },
-      ssoId: isUserPresent ? ssoId : { id: contractorEmail },
+      ssoId: isUserPresent ? ssoId : { id: contractorEmail?.trim() },
       ...(!isUserPresent && {
         password: {
           password: "string",
         },
       }),
       communication: {
-        personalEmail: contractorEmail,
+        personalEmail: contractorEmail.trim(),
         mobileNumber: contractorPhone,
         landlineNumber: "string",
         mobileNumberNotApplicable: mobileNA,
       },
-      roles: roles,
+      roles: selectedRoles,
       address: address,
       tenant: {
         tenantId: TenantID,
@@ -696,7 +696,7 @@ const ContractedServicesProviderIndividual = ({
       return (
         <Tag
           key={index}
-          onRemove={contractStatus === "ACTIVE" ? () => {} : onRemove}
+          onRemove={contractStatus === "ACTIVE" ? () => { } : onRemove}
           large={true}
           className={style.tagStyle}
         >
@@ -1255,7 +1255,7 @@ const ContractedServicesProviderIndividual = ({
                   values={siteTitleValues}
                   className={`${style.marginTop20}`}
                   onRemove={
-                    contractStatus === "ACTIVE" ? () => {} : handleSiteRemove
+                    contractStatus === "ACTIVE" ? () => { } : handleSiteRemove
                   }
                   separator={/[\s,]/}
                   addOnBlur={true}
@@ -1366,7 +1366,7 @@ const ContractedServicesProviderIndividual = ({
                     values={departmentTitleValues}
                     className={`${style.marginTop20}`}
                     onRemove={
-                      contractStatus === "ACTIVE" ? () => {} : handleDeptRemove
+                      contractStatus === "ACTIVE" ? () => { } : handleDeptRemove
                     }
                     separator={/[\s,]/}
                     addOnBlur={true}
@@ -1420,9 +1420,8 @@ const ContractedServicesProviderIndividual = ({
           </button>
           <div>
             <button
-              className={`${style.newContractOutlinedButton}  ${
-                style.cursorPointer
-              } ${continueLoading ? style.disabled : ""}`}
+              className={`${style.newContractOutlinedButton}  ${style.cursorPointer
+                } ${continueLoading ? style.disabled : ""}`}
               onClick={() =>
                 !continueLoading && mandatoryFieldCheck("SaveInProgress")
               }
@@ -1430,11 +1429,9 @@ const ContractedServicesProviderIndividual = ({
               SAVE IN-PROGRESS
             </button>
             <button
-              className={`${style.newContractButtonStyle} ${
-                style.marginLeft20
-              }  ${style.cursorPointer} ${
-                continueLoading ? style.disabled : ""
-              }`}
+              className={`${style.newContractButtonStyle} ${style.marginLeft20
+                }  ${style.cursorPointer} ${continueLoading ? style.disabled : ""
+                }`}
               onClick={() => {
                 !continueLoading && mandatoryFieldCheck("Continue");
               }}

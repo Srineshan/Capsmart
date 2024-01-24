@@ -124,6 +124,7 @@ const ContractIdTermLimitIndividual = ({
   const [unassignedKeys, setUnassignedKeys] = useState([]);
   const [showSaveInProgress, setShowSaveInProgress] = useState(false);
   const [fileItems, setFileItems] = useState([]);
+  const [isAggregationNeeded, setIsAggregationNeeded] = useState(true);
   const contractStatus = sessionStorage.getItem("Selected Contract Status");
   const [buttonName, setButtonName] = useState("");
 
@@ -234,6 +235,7 @@ const ContractIdTermLimitIndividual = ({
       `contract-managment-service/contracts/${createdContractId}/contractDetail`
     );
     if (contractData) {
+      console.log('contractData', contractData)
       let validateTab = validateContractIDTermLimit(contractData);
       setValidationData(validateTab);
       console.log("validation Data", validationData);
@@ -292,7 +294,8 @@ const ContractIdTermLimitIndividual = ({
       setFullyExecutedContractData(contractDetail?.contractFiles);
       setFileFields(contractDetail?.contractFiles);
       setSelectedSites(contractDetail?.site?.sites || []);
-      onSelectDepartment(contractDetail?.site?.sites || []);
+      setIsAggregationNeeded(contractDetail?.aggregationNeeded);
+      setSelectedDepartmentSites(contractDetail?.site?.sites || []);
       if (contractDetail?.site?.sites?.length === 0) {
         getSites();
       }
@@ -353,7 +356,8 @@ const ContractIdTermLimitIndividual = ({
       setFullyExecutedContractData(contractDetail?.contractFiles);
       setFileFields(contractDetail?.contractFiles);
       setSelectedSites(contractDetail?.site?.sites || []);
-      onSelectDepartment(contractDetail?.site?.sites || []);
+      setSelectedDepartmentSites(contractDetail?.site?.sites || []);
+      setIsAggregationNeeded(contractDetail?.aggregationNeeded);
       if (contractDetail?.site?.sites?.length === 0) {
         getSites();
       }
@@ -512,6 +516,8 @@ const ContractIdTermLimitIndividual = ({
     setContinueLoading(value)
   };
 
+  console.log('selectedContractType', selectedContractType)
+
   const addContract = async (buttonText) => {
     let sites = getSiteData();
     // let conflictedData = checkSiteAndDepartment(contracts, sites, contractIdFromActive);
@@ -644,6 +650,7 @@ const ContractIdTermLimitIndividual = ({
         fullyExecutedContract: fullyExecutedContract,
         siteSpecificContract: siteSpecific,
         departmentSpecificContract: departmentSpecific,
+        aggregationNeeded: isAggregationNeeded,
       },
       newContract: selectedContractType === "New Contract" ? true : false,
     };
@@ -696,14 +703,12 @@ const ContractIdTermLimitIndividual = ({
           }
         });
         data.sites = { sites: sites };
-      });
-      console.log("modifiedContractUser", modifiedContractUser);
-      await PUT(
-        "user-management-service/user/bulk",
-        JSON.stringify(modifiedContractUser)
-      )
-        .then((response) => {
-          SuccessToaster("User Updated Successfully");
+        console.log('modified sites', sites)
+      })
+      console.log('modifiedContractUser', modifiedContractUser);
+      await PUT('user-management-service/user/bulk', JSON.stringify(modifiedContractUser))
+        .then(response => {
+          SuccessToaster('User Updated Successfully');
         })
         .catch((error) => {
           ErrorToaster("Unexpected Error");
@@ -1187,37 +1192,37 @@ const ContractIdTermLimitIndividual = ({
         }
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <CommonLabel value="Contract Documents On File*" 
-          className={fullyExecutedContract === true && fullyExecutedContractData?.length === 0 ? style.redLable : ""}
+          <CommonLabel value="Contract Documents On File*"           
+            className={fullyExecutedContract === true && fullyExecutedContractData?.length === 0 ? style.redLable : ""}
           />
-          {contractStatus === "ACTIVE" ? (
-            <div>{fileItems}</div>
-          ) : (
-            <div
-              onFocus={() => {
-                checkFieldAndPopAlert(
-                  fullyExecutedContractData?.length,
-                  "Fully Executed Contract on File"
-                );
-              }}
-            >
-              <div className={`${style.spaceBetween}`}>
-                <CommonSwitch
-                  checked={fullyExecutedContract}
-                  className={`${style.switchFontStyle} ${style.flexLeft}`}
-                  label={fullyExecutedContract ? "YES" : "NO"}
-                  onChange={() => changeContractFile(!fullyExecutedContract)}
-                />
-                <div>
-                  <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${(!fullyExecutedContract) && style.disabledUploadButton}`} disabled={!fullyExecutedContract}>
-                    <label for="file-upload" className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer}  ${contractStatus === "ACTIVE" || !fullyExecutedContract ? style.disabledUploadButton : ''}  ${continueLoading ? style.disabledUploadButton : ''}`}>
-                      Upload File
-                    </label>
-                  </button>
-                  <input id="file-upload" type="file" accept="*/*" onChange={(e) => { handleFileUpload(e); }} disabled={(contractStatus === "ACTIVE" || !fullyExecutedContract) ? true : false} />
+          {contractStatus === "ACTIVE" && fileItems?.length !== 0 ?
+            <div> {fileItems}</div>
+            : (
+              <div
+                onFocus={() => {
+                  checkFieldAndPopAlert(
+                    fullyExecutedContractData?.length,
+                    "Fully Executed Contract on File"
+                  );
+                }}
+              >
+                <div className={`${style.spaceBetween}`}>
+                  <CommonSwitch
+                    checked={fullyExecutedContract}
+                    className={`${style.switchFontStyle} ${style.flexLeft}`}
+                    label={fullyExecutedContract ? "YES" : "NO"}
+                    onChange={() => changeContractFile(!fullyExecutedContract)}
+                  />
+                  <div>
+                    <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${(!fullyExecutedContract) && style.disabledUploadButton}`} disabled={!fullyExecutedContract}>
+                      <label for="file-upload" className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer}  ${contractStatus === "ACTIVE" || !fullyExecutedContract ? style.disabledUploadButton : ''}  ${continueLoading ? style.disabledUploadButton : ''}`}>
+                        Upload File
+                      </label>
+                    </button>
+                    <input id="file-upload" type="file" accept="*/*" onChange={(e) => { handleFileUpload(e); }} disabled={(contractStatus === "ACTIVE" || !fullyExecutedContract) ? true : false} />
+                  </div>
                 </div>
-              </div>
-              {/* {fullyExecutedContract && (
+                {/* {fullyExecutedContract && (
               <div>
                 <div>
                   <CommonSelectField value={fileFieldData?.type || 'Select...'} onChange={(e) => handleFileChange(e, 'type')}
@@ -1247,8 +1252,8 @@ const ContractIdTermLimitIndividual = ({
                   <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} `} disabled={false} onClick={() => { addNewDocumentField() }}>UPLOAD</button>
               )}
             </div> */}
-            </div>
-          )}
+              </div>
+            )}
         </div>
         {isMultiSiteEntity && (
           <div
@@ -1355,6 +1360,7 @@ const ContractIdTermLimitIndividual = ({
                   "Contract Term Period Start Date"
                 );
               }}
+              className={style.leftAlign}
             >
               <CommonDateField
                 open={calendarStart}
@@ -1402,6 +1408,7 @@ const ContractIdTermLimitIndividual = ({
                   "Contract Term Period End Date"
                 );
               }}
+              className={style.rightAlign}
             >
               <CommonDateField
                 open={calendarEnd}
@@ -1492,6 +1499,24 @@ const ContractIdTermLimitIndividual = ({
             />
           </div>
         </div>
+        {contractType === 'MULTIPLE' &&
+          <div
+            className={`${style.extentionGrid} ${style.marginTop20}`}
+            onFocus={() => {
+              deptFieldCheck(departmentSpecific);
+            }}
+          >
+            <CommonLabel value="Are Individual Timesheets Needed*" />
+            <CommonSwitch
+              checked={isAggregationNeeded}
+              className={` ${style.textAlignLeft} ${style.switchFontStyle}`}
+              label={isAggregationNeeded ? "YES" : "NO"}
+              onChange={() => {
+                setIsAggregationNeeded(!isAggregationNeeded);
+              }}
+            />
+          </div>
+        }
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <CommonLabel

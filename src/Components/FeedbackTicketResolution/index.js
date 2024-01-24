@@ -322,7 +322,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
         formData.append('ticketDetail', new Blob([JSON.stringify(data)], {
             type: "application/json"
         }));
-        if (screenCaptured && !isEdit && screenCapture !== null && screenCapture !== '') {
+        if (screenCapture !== null && screenCapture !== '') {
             const file = new File([blobFormat], fileName);
             formData.append('ticketFile', file);
         }
@@ -527,7 +527,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                             </div>
                             <div className={style.dashedBorder}>
                                 <div className={`${style.imageDisplayStyle} ${style.alignCenter}`}>
-                                    {!screenCaptured ? (
+                                    {(!screenCaptured && screenCapture === null) ? (
                                         <>
                                             <label htmlFor="file-upload-help" className={`${style.uploadButton} ${style.alignCenter}`}>
                                                 UPLOAD

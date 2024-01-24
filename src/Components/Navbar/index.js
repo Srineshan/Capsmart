@@ -67,6 +67,7 @@ const Navbar = () => {
   const [isSystemAdministrationAvailable, setIsSystemAdministrationAvailable] =
     useState(false);
   const [isSupportAvailable, setIsSupportAvailable] = useState(false);
+  let selectedWorkingMode = sessionStorage.getItem('SelectedWorkingMode');
 
   useEffect(() => {
     if (currentUserRoles?.includes("Activity Logger")) {
@@ -80,7 +81,7 @@ const Navbar = () => {
       currentUserRoles?.includes("Reviewer") ||
       currentUserRoles?.includes("Approver")
     ) {
-      setIsActivityServiceLogAvailable(true);
+      // setIsActivityServiceLogAvailable(true);
       setIsContractComplianceAvailable(true);
       setIsContractPerformanceAvailable(true);
       setIsPaymentsAvailable(true);
@@ -93,7 +94,7 @@ const Navbar = () => {
       setIsReviewsAndApprovalsAvailable(true);
     } else if (currentUserRoles?.includes("Contract Manager")) {
       setIsContractManagementAvailable(true);
-      setIsPaymentsAvailable(true);
+      // setIsPaymentsAvailable(true);
     } else if (
       currentUserRoles?.includes("Super Sys Admin") ||
       currentUserRoles?.includes("Entity Sys Admin") ||
@@ -294,6 +295,8 @@ const Navbar = () => {
     }
   };
 
+  console.log(selectedWorkingMode)
+
   return (
     <div className={style.navbarStyle}>
       <div className={style.spaceBetween}>
@@ -308,7 +311,7 @@ const Navbar = () => {
               }`}
             onClick={homeRoute}
           >
-            <p>HOME - {currentUserRoles?.[0]?.toUpperCase()}</p>
+            <p>HOME - {(selectedWorkingMode !== null && selectedWorkingMode !== '' && selectedWorkingMode !== undefined) ? selectedWorkingMode : currentUserRoles?.[0]?.toUpperCase()}</p>
           </div>
 
           {
@@ -386,7 +389,7 @@ const Navbar = () => {
                       <div className={style.options}>Payments</div>
                     </Link>
                   )}
-                  {/* {isContractManagementAvailable && (
+                  {isContractManagementAvailable && (
                     <Link
                       to={"/reports/contractManagement"}
                       className={style.noFontStyle}
@@ -394,6 +397,7 @@ const Navbar = () => {
                       <div className={style.options}>Contract Management</div>
                     </Link>
                   )}
+                  {/*
                   {isContractComplianceAvailable && (
                     <Link
                       to={"/reports/contractCompliance"}
@@ -468,7 +472,7 @@ const Navbar = () => {
               </div>
             </div>
           )}
-          {/* <div>
+          <div>
             <div
               className={`${style.menuStyle} ${window.location.pathname === "/help" && style.activeMenuColor
                 }`}
@@ -506,7 +510,7 @@ const Navbar = () => {
                 </div>
               </Popover>
             </div>
-          </div> */}
+          </div>
         </div>
         <div className={style.displayInRow}>
           {/* {!window.location.pathname.includes('reportTypeOverview') && (

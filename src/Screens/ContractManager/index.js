@@ -42,8 +42,7 @@ const Contracts = () => {
 
     useEffect(() => {
         getContracts();
-        setIsEditable(sessionStorage.getItem('isEditable') === 'true' ? true : false);
-    }, [selectedContract, searchKey, page, newContractFromClone,totalCount])
+    }, [selectedContract, searchKey, page, newContractFromClone, totalCount])
 
     useEffect(() => {
         sessionStorage.setItem('isEditable', selectedContract !== 'draft' ? false : true)
@@ -54,7 +53,7 @@ const Contracts = () => {
     }, [sessionStorage?.getItem('isEditable')])
 
     const getSelectedContract = (value) => {
-        setSearchKey("")
+        setSearchKey("");
         setSelectedContract(value);
         setPage(1);
     }
