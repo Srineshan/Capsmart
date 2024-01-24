@@ -87,14 +87,16 @@ const Navbar = () => {
       setIsPaymentsAvailable(true);
       setIsTimesheetsAvailable(true);
       setIsReviewsAndApprovalsAvailable(true);
+      setIsContractManagementAvailable(true);
     } else if (currentUserRoles?.includes("Accounts Payable")) {
       setIsContractComplianceAvailable(true);
       setIsContractPerformanceAvailable(true);
       setIsPaymentsAvailable(true);
       setIsReviewsAndApprovalsAvailable(true);
+      setIsContractManagementAvailable(true);
     } else if (currentUserRoles?.includes("Contract Manager")) {
       setIsContractManagementAvailable(true);
-      // setIsPaymentsAvailable(true);
+      setIsPaymentsAvailable(true);
     } else if (
       currentUserRoles?.includes("Super Sys Admin") ||
       currentUserRoles?.includes("Entity Sys Admin") ||
