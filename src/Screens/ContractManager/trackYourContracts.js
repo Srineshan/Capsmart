@@ -11,7 +11,7 @@ import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import { format } from 'date-fns';
 import Select from '@mui/material/Select';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridToolbarContainer, GridToolbarExport } from '@mui/x-data-grid';
 
 import 'react-data-grid/lib/styles.css';
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
@@ -43,6 +43,7 @@ const TrackYourContracts = () => {
     const [selectedContracts, setSelectedContracts] = useState([]);
     const [activityTrackServices, setActivityTrackServices] = useState([]);
     const [contractTrackCompensationValues, setContractTrackCompensationValues] = useState([]);
+    let months = { 1: 'Jan', 2: 'Feb', 3: 'March', 4: 'April', 5: 'May', 6: 'June', 7: 'July', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec' };
     // const columns = [
     //     { key: 'id', name: 'ID' },
     //     { key: 'title', name: 'Title' }
@@ -93,68 +94,86 @@ const TrackYourContracts = () => {
             { field: 'hourlyRate', headerName: 'Pro-Rata Hourly Rate', width: 140 },
             { field: 'cyExpectedHours', headerName: 'Expected (Hours)', width: 140 },
             { field: 'cyExpectedAmount', headerName: 'Expected (Amount)', width: 140 },
-            { field: 'cym1ExpectedHours', headerName: 'Expected (Hours)', width: 140 },
-            { field: 'cym1ExpectedAmount', headerName: 'Expected (Amount)', width: 140 },
+            { field: 'cy1m1ExpectedHours', headerName: 'Expected (Hours)', width: 140 },
+            { field: 'cy1m1ExpectedAmount', headerName: 'Expected (Amount)', width: 140 },
         ];
 
-        tempCol = contractTrackCompensationValues?.map((data, index) => {
+        contractTrackCompensationValues?.map((data, index) => {
             data?.timesheetActivitiesWithActualValuesList?.map((actualValue, actualIndex) => {
-                tempCol.push({ field: `cy${index + 1}m${actualIndex + 2}ActualHours`, headerName: `CY${index + 1} M${actualIndex + 2} Actual Hours`, width: 140 },
-                    tempCol.push({ field: `cy${index + 1}m${actualIndex + 2}ActualAmount`, headerName: `CY${index + 1} M${actualIndex + 2} Actual Amount`, width: 140 })
-                )
+                tempCol.push({ field: `cy${index + 1}m${actualIndex + 2}ActualHours`, headerName: `Actual (Hours)`, width: 140 })
+                tempCol.push({ field: `cy${index + 1}m${actualIndex + 2}ActualAmount`, headerName: `Actual (Amount)`, width: 140 })
             })
-        }) || []
+        })
 
         return tempCol;
     }
 
     const getRows = () => {
-        let tempRow = contractTrackCompensationValues?.map((data, index) => {
+        let tempRow = [];
+
+        contractTrackCompensationValues?.map((data, index) => {
+            console.log(data)
             data?.activityWithExpectedValuesList?.map((expectedValue, expectedIndex) => {
                 tempRow.push({
                     id: `${expectedIndex}`,
-                    service: `${data?.activityType} - ${data?.performingActivity}`,
-                    hourlyRate: `${data?.hourlyRate}`,
-                    cyExpectedHours: data?.expectedHoursInYear,
-                    cyExpectedAmount: data?.expectedAmountInYear,
-                    cym1ExpectedHours: data?.expectedHoursInMonth,
-                    cym1ExpectedAmount: data?.expectedAmountInMonth
+                    service: `${expectedValue?.activityType} - ${expectedValue?.performingActivity}`,
+                    hourlyRate: `${expectedValue?.hourlyRate}`,
+                    cyExpectedHours: expectedValue?.expectedHoursInYear,
+                    cyExpectedAmount: expectedValue?.expectedAmountInYear,
+                    cy1m1ExpectedHours: expectedValue?.expectedHoursInMonth,
+                    cy1m1ExpectedAmount: expectedValue?.expectedAmountInMonth
                 })
-                // if (data?.timesheetActivitiesWithActualValuesList?.length !== 0) {
-                //     data?.timesheetActivitiesWithActualValuesList?.map((actualValue, actualIndex) => {
-                //         actualValue?.activityWithActualValuesList?.map(value => {
-                //             let key1 = `cy${index + 1}m${expectedIndex + 2 + actualIndex}ActualHours`;
-                //             let key2 = `cy${index + 1}m${expectedIndex + 2 + actualIndex}ActualAmount`;
-                //             tempRow[expectedIndex]?.[key1] = value?.actualHours;
-                //             tempRow[expectedIndex]?.[key2] = value?.actualAmount;
-                //         })
-                //     })
-                // }
             })
-        }) || [];
+            data?.timesheetActivitiesWithActualValuesList?.map((timesheetData, timesheetIndex) => {
+                timesheetData?.activityWithActualValuesList?.map((actualValue, actualIndex) => {
+                    tempRow[actualIndex][`cy${index + 1}m${timesheetIndex + 2}ActualHours`] = actualValue?.actualHours
+                    tempRow[actualIndex][`cy${index + 1}m${timesheetIndex + 2}ActualAmount`] = `$ ${actualValue?.actualAmount?.toLocaleString()}`
+                })
+            })
+        });
 
         return tempRow;
     }
 
-    const columnGroupingModel = [
-        {
-            groupId: 'CY 2021',
-            description: '',
-            children: [{ field: 'cyExpectedHours' }, { field: 'cyExpectedAmount' }],
-        },
-        {
-            groupId: 'CY1 M1 2021',
-            description: '',
-            children: [{ field: 'cym1ExpectedHours' }, { field: 'cym1ExpectedAmount' }],
-        },
-    ];
+    const getColumnGroupingModel = () => {
+        if (contractTrackCompensationValues?.length !== 0) {
+            console.log(contractTrackCompensationValues?.[0]?.contractYearInterval?.startDate)
+            let columnGroupingModel = [
+                {
+                    groupId: `CY ${format(new Date(contractTrackCompensationValues?.[0]?.contractYearInterval?.startDate), 'yyyy')}`,
+                    description: '',
+                    children: [{ field: 'cyExpectedHours' }, { field: 'cyExpectedAmount' }],
+                },
+                {
+                    groupId: `CY1 M1 (${format(new Date(contractTrackCompensationValues?.[0]?.contractYearInterval?.startDate), 'yyyy')})`,
+                    description: '',
+                    children: [{ field: 'cy1m1ExpectedHours' }, { field: 'cy1m1ExpectedAmount' }],
+                },
+            ];
+            contractTrackCompensationValues?.map((data, index) => {
+                data?.timesheetActivitiesWithActualValuesList?.length !== 0 &&
+                    data?.timesheetActivitiesWithActualValuesList?.map((actualValue, actualIndex) => {
+                        columnGroupingModel?.push({
+                            groupId: `CY${index + 1} M${actualIndex + 2} (${months[actualValue?.month]} ${actualValue?.year})`,
+                            description: '',
+                            children: [{ field: `cy${index + 1}m${actualIndex + 2}ActualHours` }, { field: `cy${index + 1}m${actualIndex + 2}ActualAmount` }],
+                        })
+                    })
+            })
+            return columnGroupingModel;
+        }
+    }
 
-    const rows = [
-        { service: 1, hourlyRate: 'Snow', cyExpectedHours: 'Jon', cyExpectedAmount: 14, cym1ExpectedHours: 'Jon', cym1ExpectedAmount: 14 },
-        { service: 2, hourlyRate: 'Lannister', cyExpectedHours: 'Cersei', cyExpectedAmount: 31, cym1ExpectedHours: 'Jon', cym1ExpectedAmount: 14 },
-        { service: 3, hourlyRate: 'Lannister', cyExpectedHours: 'Jaime', cyExpectedAmount: 31, cym1ExpectedHours: 'Jon', cym1ExpectedAmount: 14 },
-        { service: 4, hourlyRate: 'Stark', cyExpectedHours: 'Arya', cyExpectedAmount: 11, cym1ExpectedHours: 'Jon', cym1ExpectedAmount: 14 },
-    ];
+    const customToolbar = () => {
+        return (
+            <GridToolbarContainer>
+                <GridToolbarExport />
+            </GridToolbarContainer>
+        );
+    }
+
+    console.log(getColumns(), getRows(), getColumnGroupingModel())
+
 
     const compensationPolicy = {
         ACTIVITY_BASED: 'Activity Based',
@@ -340,21 +359,26 @@ const TrackYourContracts = () => {
                                 </div>
                                 <div className={`${style.trackTableBackgroudcard} ${style.marginTop20}`}>
                                     {/* <DataGrid columns={columns} rows={rows} className='rdg-light' />; */}
-                                    <DataGrid
-                                        rows={getRows()}
-                                        columns={getColumns()}
-                                        initialState={{
-                                            pagination: {
-                                                paginationModel: {
-                                                    pageSize: 5,
+                                    {contractTrackCompensationValues?.length !== 0 && (
+                                        <DataGrid
+                                            rows={getRows()}
+                                            columns={getColumns()}
+                                            initialState={{
+                                                pagination: {
+                                                    paginationModel: {
+                                                        pageSize: 5,
+                                                    },
                                                 },
-                                            },
-                                        }}
-                                        pageSizeOptions={[5]}
-                                        experimentalFeatures={{ columnGrouping: true }}
-                                        className={style.whiteBackground}
-                                        columnGroupingModel={columnGroupingModel}
-                                    />
+                                            }}
+                                            pageSizeOptions={[5]}
+                                            experimentalFeatures={{ columnGrouping: true }}
+                                            className={style.whiteBackground}
+                                            columnGroupingModel={getColumnGroupingModel()}
+                                            slots={{
+                                                toolbar: customToolbar,
+                                            }}
+                                        />
+                                    )}
                                 </div>
                                 <div>
 
