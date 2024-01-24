@@ -9,6 +9,7 @@ import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
 import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
 import IndividualSvg from "../../images/Individual.svg";
 import MultipleSvg from "../../images/Multiple.svg";
+import EmployeeSvg from "../../images/Multiple.svg";
 
 const AddContract = ({
   getAddContract,
@@ -20,7 +21,9 @@ const AddContract = ({
   const [selectedContract, setSelectedContract] = useState("0");
   const [selectedContractOnClick, setSelectedContractOnClick] = useState("");
   const [contractType, setContractType] = useState("");
+  const [isEmployeeContractNeeded, setIsEmployeeContractNeeded] = useState(sessionStorage?.getItem('isEmployeeContractNeeded'))
 
+  console.log('isEmployeeContractNeeded', isEmployeeContractNeeded)
   const handleNext = () => {
     if (selectedContract === "0" || contractType === "") {
       ErrorToaster("Select a contract type to add");
@@ -99,9 +102,8 @@ const AddContract = ({
           <div className={`${style.positionCenter} ${style.marginLeft20} `}>
             <div className={`${style.positionCenter} ${style.marginLeft20}`}>
               <div
-                className={`${style.contractCards} ${
-                  contractType === "INDIVIDUAL" && style.selectedContractCard
-                }`}
+                className={`${style.contractCards} ${contractType === "INDIVIDUAL" && style.selectedContractCard
+                  }`}
                 onClick={() => {
                   setSelectedContractOnClick(true);
                   setContractType("INDIVIDUAL");
@@ -116,16 +118,13 @@ const AddContract = ({
                           : Doctor
                       }
                       alt="doctor"
-                      className={`${style.contractCardImage} ${
-                        style.alignCenter
-                      } ${
-                        selectedContract !== "0" ? "" : style.reducedOpacity
-                      }`}
+                      className={`${style.contractCardImage} ${style.alignCenter
+                        } ${selectedContract !== "0" ? "" : style.reducedOpacity
+                        }`}
                     />
                     <div
-                      className={`${style.contractCardData} ${
-                        selectedContract !== "0" ? style.activeContractText : ""
-                      }`}
+                      className={`${style.contractCardData} ${selectedContract !== "0" ? style.activeContractText : ""
+                        }`}
                     >
                       Individual Contractor Contract
                     </div>
@@ -133,9 +132,8 @@ const AddContract = ({
                 </div>
               </div>
               <div
-                className={`${style.contractCards} ${
-                  contractType === "MULTIPLE" && style.selectedContractCard
-                }`}
+                className={`${style.contractCards} ${contractType === "MULTIPLE" && style.selectedContractCard
+                  }`}
                 onClick={() => {
                   setSelectedContractOnClick(true);
                   setContractType("MULTIPLE");
@@ -150,22 +148,49 @@ const AddContract = ({
                           : DoctorTeam
                       }
                       alt="doctor"
-                      className={`${style.contractCardImage} ${
-                        style.alignCenter
-                      } ${
-                        selectedContract !== "0" ? "" : style.reducedOpacity
-                      }`}
+                      className={`${style.contractCardImage} ${style.alignCenter
+                        } ${selectedContract !== "0" ? "" : style.reducedOpacity
+                        }`}
                     />
                     <div
-                      className={`${style.contractCardData} ${
-                        selectedContract !== "0" ? style.activeContractText : ""
-                      }`}
+                      className={`${style.contractCardData} ${selectedContract !== "0" ? style.activeContractText : ""
+                        }`}
                     >
                       Multiple Contractors Contract
                     </div>
                   </div>
                 </div>
               </div>
+              {isEmployeeContractNeeded && <div
+                className={`${style.contractCards} ${contractType === "EMPLOYEE" && style.selectedContractCard
+                  }`}
+                onClick={() => {
+                  setSelectedContractOnClick(true);
+                  setContractType("EMPLOYEE");
+                }}
+              >
+                <div className={style.alignCenter}>
+                  <div>
+                    <img
+                      src={
+                        selectedContractOnClick && contractType === "EMPLOYEE"
+                          ? HighlightedDoctor
+                          : Doctor
+                      }
+                      alt="doctor"
+                      className={`${style.contractCardImage} ${style.alignCenter
+                        } ${selectedContract !== "0" ? "" : style.reducedOpacity
+                        }`}
+                    />
+                    <div
+                      className={`${style.contractCardData} ${selectedContract !== "0" ? style.activeContractText : ""
+                        }`}
+                    >
+                      Employed Staff Agreement
+                    </div>
+                  </div>
+                </div>
+              </div>}
             </div>
           </div>
 
@@ -173,9 +198,8 @@ const AddContract = ({
             <div
               className={style.descriptionBoxStyle}
               style={{
-                backgroundImage: `url(${
-                  contractType === "MULTIPLE" ? MultipleSvg : IndividualSvg
-                })`,
+                backgroundImage: `url(${contractType === "MULTIPLE" ? MultipleSvg : contractType === "EMPLOYEE" ? EmployeeSvg : IndividualSvg
+                  })`,
                 backgroundRepeat: "no-repeat",
                 backgroundSize: "contain",
               }}
