@@ -104,6 +104,9 @@ const AbsenseReasonsByIndustries = React.lazy(() =>
 const SuffixByIndustries = React.lazy(() =>
   import("./Screens/ReferenceList/suffixByIndustries")
 );
+const ContractByIndustries = React.lazy(() =>
+  import("./Screens/ReferenceList/contractByIndustries")
+);
 const TerminationReasons = React.lazy(() =>
   import("./Screens/ReferenceList/terminationReasons")
 );
@@ -149,6 +152,9 @@ const ContractDocumentUploadForCustomer = React.lazy(() =>
 );
 const ContractServicesByEntityType = React.lazy(() =>
   import("./Screens/ReferenceList/contractedServicesByEntityType")
+);
+const ContractTypeByEntityType = React.lazy(() =>
+  import("./Screens/ReferenceList/contractTypeByEntityType")
 );
 const ContractServiceProviderBySiteType = React.lazy(() =>
   import("./Screens/ReferenceList/contractServiceProviderBySiteType")
@@ -552,6 +558,10 @@ const App = ({ props }) => {
                 element={<SuffixByIndustries />}
               />
               <Route
+                path="/referenceList/contractByIndustries"
+                element={<ContractByIndustries />}
+              />
+              <Route
                 path="/referenceList/contractedServiceProviderByIndustries"
                 element={<ContractedServiceProvidedByIndustries />}
               />
@@ -594,6 +604,10 @@ const App = ({ props }) => {
               <Route
                 path="/referenceList/contractedServicesByEntityType"
                 element={<ContractServicesByEntityType />}
+              />
+              <Route
+                path="/referenceList/contractTypeByEntityType"
+                element={<ContractTypeByEntityType />}
               />
               <Route
                 path="/referenceList/contractServiceProviderBySiteType"

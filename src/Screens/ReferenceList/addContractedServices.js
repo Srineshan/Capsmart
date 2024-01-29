@@ -67,8 +67,27 @@ const AddContractedServices = ({ getAddContractedServicesDialog, selectedContrac
                     <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.dialogCrossStyle} onClick={() => getAddContractedServicesDialog(false)} />
                 </div>
                 <div className={style.ReferenceListEntityBorder}></div>
+
                 <div className={`${style.addIndustryBoxStyle} ${style.marginTop20}`}>
-                    <div className={`${style.extentionGrid}`}>
+                    <div className={`${style.extentionGrid} `}>
+                        <div className={style.entityLableStyle}>Contract Type*</div>
+                        <div className={style.displayInRow}>
+                            <select
+                                value={serviceType}
+                                className={style.fullWidth}
+                                // rightElement={arrowDown()}
+                                onChange={(e) => {
+                                    setServiceType(e.target.value);
+                                }}
+                            >
+                                <option value="">Select Contract Type</option>
+                                {serviceTypes.map((type) => (
+                                    <option value={type.serviceTypeTemplate}>{type.serviceTypeTemplate}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+                    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                         <div className={style.entityLableStyle}>Service Name*</div>
                         <div>
                             <InputGroup value={serviceName} className={style.fullWidth} onChange={(e) => setServiceName(e.target.value)} placeholder="Enter Service Name" />

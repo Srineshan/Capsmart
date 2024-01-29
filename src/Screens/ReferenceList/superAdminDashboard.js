@@ -99,7 +99,7 @@ const SuperAdminDashboard = () => {
                           </span>
                           <span className={style.dashboardCardColorOption2}>
                             LAST UPDATED ON{" "}
-                            {new Date(lastUpdatedDate.industries?.lastModified)
+                            {new Date(lastUpdatedDate?.industries?.lastModified)
                               .toLocaleString("en-US", {
                                 timeZone: "America/New_York",
                                 year: "numeric",
@@ -263,6 +263,34 @@ const SuperAdminDashboard = () => {
                       <div className={style.dashboardCardStyle}>
                         <h5 className={`${style.headingForReferenceList}`}>
                           NAME SUFFIX BY INDUSTRY TYPE
+                        </h5>
+                        <div
+                          className={`${style.optionsStyle} ${style.displayInCol}  `}
+                        >
+                          <span className={style.dashboardCardColorOption1}>
+                            DEFAULT LIST IS CREATED
+                          </span>
+                          <span className={style.dashboardCardColorOption2}>
+                            LAST UPDATED ON{" "}
+                            {new Date(lastUpdatedDate.nameSuffix?.lastModified)
+                              .toLocaleString("en-US", {
+                                timeZone: "America/New_York",
+                                year: "numeric",
+                                month: "long",
+                              })
+                              .toUpperCase()}
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+
+                    <Link
+                      to={"/referenceList/contractByIndustries"}
+                      className={style.linkStyle}
+                    >
+                      <div className={style.dashboardCardStyle}>
+                        <h5 className={`${style.headingForReferenceList}`}>
+                          CONTRACT TYPE BY INDUSTRY TYPE
                         </h5>
                         <div
                           className={`${style.optionsStyle} ${style.displayInCol}  `}
