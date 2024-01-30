@@ -1,5 +1,5 @@
 /* eslint-disable array-callback-return */
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
   Dialog,
   Classes,
@@ -18,11 +18,23 @@ const MissedMandatoryFieldAlert = ({
   getSaveInProgressAlert,
   fieldData,
   saveInProgressFunction,
+  setContinueLoading,
+  buttonName,
 }) => {
+
+  const handleContinueClick = () => {
+    saveInProgressFunction(buttonName)
+  };
+
+  const handleClose = () => {
+    setContinueLoading(false);
+    getSaveInProgressAlert(false);
+  };
+  
   return (
     <Dialog
       isOpen={alert}
-      onClose={() => getSaveInProgressAlert(false)}
+      onClose={handleClose}
       className={`${style.cloneDialog} ${style.dialogPaddingBottom}`}
     >
       <div
@@ -44,7 +56,7 @@ const MissedMandatoryFieldAlert = ({
             size={20}
             intent={Intent.DANGER}
             className={style.crossStyle}
-            onClick={() => getSaveInProgressAlert(false)}
+            onClick={handleClose}
           />
         </div>
         <div className={style.extensionBorder}></div>
@@ -64,13 +76,13 @@ const MissedMandatoryFieldAlert = ({
         <div className={`${style.positionCenter} ${style.marginTop20}`}>
           <button
             className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`}
-            onClick={() => getSaveInProgressAlert(false)}
+            onClick={handleClose}
           >
             BACK
           </button>
           <button
             className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`}
-            onClick={saveInProgressFunction}
+            onClick={handleContinueClick}
           >
             CONTINUE
           </button>

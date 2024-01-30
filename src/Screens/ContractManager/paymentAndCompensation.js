@@ -15,9 +15,11 @@ import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
 import CommonRadio from '../../Components/CommonFields/CommonRadio';
 import CommonTextField from '../../Components/CommonFields/CommonTextField';
 import CommonLabel from '../../Components/CommonFields/CommonLabel';
+import { valueCheck } from "./../../utils/valueCheck";
 
 import style from './index.module.scss';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
+import MissedMandatoryFieldAlert from "./missedMandatoryFieldAlert";
 
 const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPage, contractId, checkFieldAndPopAlert, getShowAlert, isEditable, getTabDataStatus }) => {
     const [compensation, setCompensation] = useState('RVUBASED');
@@ -62,7 +64,9 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
     const limit5 = 5;
     const limit7 = 7;
     const limit9 = 9;
-
+    const [unassignedKeys, setUnassignedKeys] = useState([]);
+    const [showSaveInProgress, setShowSaveInProgress] = useState(false);
+    const [buttonName, setButtonName] = useState("");
 
     const getContractDetail = async () => {
         const { data: contractData } = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
@@ -70,6 +74,55 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         setCompensationPolicy(contractData?.contractDetail?.compensationPolicy);
     }
 
+    const mandatoryFieldCheck = (buttonType) => {
+      setContinueLoading(true);
+      if (buttonType === "SaveInProgress" || buttonType === "Continue") {
+        saveInProgresscheck(buttonType);
+        setButtonName(buttonType)
+      }
+    };
+  
+    const saveInProgresscheck = (buttonType) => {
+      var keys = [];
+  
+      if (compensation === "RVUBASED" && valueCheck(rvuQuantity?.quantity)) {
+        keys.push("RVU Quantity");
+      }
+      if (compensation === "RVUBASED" && valueCheck(fteEquivalent?.value)) {
+        keys.push("FTE Equivalent");
+      }
+      if (compensation === "RVUBASED" && valueCheck(rvuReferenceUsed?.value)) {
+        keys.push("RVU Reference Used");
+      }
+      if (compensation === "RVUBASED" && valueCheck(rvuQuantityVariance?.value)) {
+        keys.push("RVU Quantity Variance (+/-)");
+      }
+      if (compensation === "RVUBASED" && valueCheck(rvuQuantityPeriod?.days)) {
+        keys.push("RVU Quantity Period");
+      }
+      if (!dollarRate?.notApplicable && valueCheck(dollarRate?.hour)) {
+        keys.push("Dollar Hourly Rate");
+      }
+    
+      setUnassignedKeys(keys);
+      if (keys?.length !== 0) {
+        setShowSaveInProgress(true);
+        setContinueLoading(true)
+      } else {
+        handleContinue(buttonType);
+      }
+    };
+  
+    const saveInProgressFunction = (type) => {
+      handleContinue(type);
+      setShowSaveInProgress(false)
+    };
+  
+    const getSaveInProgressAlert = (value) => {
+      setShowSaveInProgress(value);
+      setContinueLoading(value)
+    };
+    
     const handleContinue = async (buttonType) => {
         if (!continueLoading) {
             setContinueLoading(true);
@@ -207,6 +260,13 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         setTimesheetPayments(temp);
         getPaymentFields();
     }
+    const dataCheck = (value) => {
+      if (paymentAndCompensation) {
+        return valueCheck(value);
+      } else {
+        return false;
+      }
+    };
 
     const getPaymentFields = () => {
         let temp = [];
@@ -218,6 +278,24 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                         <CommonInputField className={style.fullWidth} value={timeSheetTabs?.[i]?.timesheetLabel?.label || ''} readOnly={true} />
                     </div>
                     {/* <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+  };
+  
+  const getPaymentFields = () => {
+    let temp = [];
+    for (let i = 0; i < timesheetPayments?.length; i++) {
+      temp[i] = (
+        <div className={`${style.contractedBorderStyle} ${style.marginTop20}`}>
+          <div className={`${style.extentionGrid}`}>
+            <CommonLabel value="Timesheet Name*" 
+              className={dataCheck(timeSheetTabs?.[i]?.timesheetLabel?.label) ? style.redLable : ""}
+            />
+            <CommonInputField
+              className={style.fullWidth}
+              value={timeSheetTabs?.[i]?.timesheetLabel?.label || ""}
+              readOnly={true}
+            />
+          </div>
+          {/* <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                         <CommonLabel value='Payment Processing Criteria*' /> */}
                     {/* <FormControl size="small">
                             <Select
@@ -445,7 +523,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                             {compensation === "RVUBASED" && (
                                 <div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { checkFieldAndPopAlert(rvuQuantity?.quantity, 'RVU Quantity') }}>
-                                        <CommonLabel value='RVU Quantity*' />
+                                        <CommonLabel value='RVU Quantity*'  className={dataCheck(rvuQuantity?.quantity) ? style.redLable : ""}/>
                                         <div className={style.displayInRow}>
                                             <CommonInputField className={style.fourFieldWidth} value={rvuQuantity?.quantity} placeholder="0"
                                                 type='number'
@@ -465,7 +543,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                         </div>
                                     </div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { checkFieldAndPopAlert(fteEquivalent?.value, 'FTE Equivalent') }} >
-                                        <CommonLabel value='FTE Equivalent' />
+                                        <CommonLabel value='FTE Equivalent' className={dataCheck(fteEquivalent?.value) ? style.redLable : ""} />
                                         <CommonInputField className={style.twoFieldWidth} value={fteEquivalent?.value} placeholder="0" type="number"
                                             min="0"
                                             onChange={(e) => setFteEquivalent({
@@ -473,7 +551,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                             })} />
                                     </div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { checkFieldAndPopAlert(rvuReferenceUsed?.value, 'RVU Reference Used') }}>
-                                        <CommonLabel value='RVU Reference Used' />
+                                        <CommonLabel value='RVU Reference Used' className={dataCheck(rvuReferenceUsed?.value) ? style.redLable : ""} />
                                         <CommonInputField className={style.fullWidth} value={rvuReferenceUsed?.value} placeholder="Enter RVU Reference Used"
                                             min="0"
                                             onChange={(e) => setRvuReferenceUsed({
@@ -481,14 +559,14 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                             })} />
                                     </div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { checkFieldAndPopAlert(rvuQuantityVariance?.value, 'RVU Quantity Variance (+/-)') }}>
-                                        <CommonLabel value='RVU Quantity Variance (+/-)' />
+                                        <CommonLabel value='RVU Quantity Variance (+/-)' className={dataCheck(rvuQuantityVariance?.value) ? style.redLable : ""} />
                                         <CommonInputField className={style.twoFieldWidth} value={rvuQuantityVariance?.value} placeholder="0" type='number'
                                             min="0" onChange={(e) => setRvuQuantityVariance({
                                                 ...rvuQuantityVariance, value: e.target.value.slice(0, limit3)
                                             })} />
                                     </div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                        <CommonLabel value='RVU Quantity Period' />
+                                        <CommonLabel value='RVU Quantity Period' className={dataCheck(rvuQuantityPeriod?.days) ? style.redLable : ""} />
                                         <CommonTextField
                                             InputProps={{
                                                 endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Days</InputAdornment>,
@@ -503,7 +581,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                 </div>
                             )}
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                <CommonLabel value='Dollar Hourly Rate*' />
+                                <CommonLabel value='Dollar Hourly Rate*' className={!dollarRate?.notApplicable && dataCheck(dollarRate?.hour) ? style.redLable : ""} />
                                 <div className={style.twoCol}>
                                     <CommonTextField
                                         // type="text"
@@ -541,6 +619,14 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                             </div>
                         }
 
+                      <MissedMandatoryFieldAlert
+                        alert={showSaveInProgress}
+                        getSaveInProgressAlert={getSaveInProgressAlert}
+                        fieldData={unassignedKeys}
+                        saveInProgressFunction={saveInProgressFunction}
+                        setContinueLoading={setContinueLoading}
+                        buttonName={buttonName}
+                      />
                     </div> :
                     <RedirectingPopUp getCurrentPage={getCurrentPage} tabName={'Timesheet Submission Terms'} title={'NO TIMESHEET FOUND'} description={'No Timesheet Is Found.'} buttonText={'ADD TIMESHEET'} />
             }

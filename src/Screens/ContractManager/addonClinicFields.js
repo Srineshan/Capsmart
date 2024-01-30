@@ -28,7 +28,9 @@ import { valueCheck } from "../../utils/valueCheck";
 
 import style from "./index.module.scss";
 import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
-import SliderValueLabel from "@mui/material/Slider/SliderValueLabel";
+
+const TEXTFIELDLEN50 = 50;
+// import SliderValueLabel from "@mui/material/Slider/SliderValueLabel";
 
 const AddonClinicFields = ({
   getMetaData,
@@ -1220,6 +1222,7 @@ const AddonClinicFields = ({
               onChange={(e) =>
                 setNewServices({ ...newServices, name: e.target.value })
               }
+              maxLength={TEXTFIELDLEN50}
             />
             <div
               className={`${style.addAddonServiceButton} ${style.alignCenter}`}

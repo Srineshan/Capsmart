@@ -1171,7 +1171,9 @@ const ClinicBlocksFields = ({
               e.target.value >= 0 &&
               setMetadata({
                 ...metadata,
-                sessionDuration: e.target.value,
+                sessionDuration: (e.target.value = Math.max(0, Number(e.target.value))
+                .toString()
+                .slice(0, 9)),
                 sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? metadata?.serviceRate : metadata?.serviceRate * metadata?.sessionDuration,
               })
             }
