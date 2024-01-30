@@ -306,7 +306,7 @@ const Navbar = () => {
           }
           <img src={logo} alt="Hospital Logo" className={style.sanmateoLogo} />
           <div
-            className={`${style.menuStyle} ${window.location.pathname.includes(homeLink) &&
+            className={`${style.menuStyle} ${window.location.pathname.includes(homeLink) && !window.location.pathname.includes('contractsWithABusinessEntity') &&
               style.activeMenuColor
               }`}
             onClick={homeRoute}
