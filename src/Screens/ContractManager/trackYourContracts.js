@@ -15,7 +15,7 @@ import { DataGrid, GridToolbarContainer, GridToolbarExport } from '@mui/x-data-g
 
 import 'react-data-grid/lib/styles.css';
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
-
+import DownloadIcon from '@mui/icons-material/Download';
 import style from './index.module.scss';
 import TrackTable from '../../Components/TrackTable';
 
@@ -108,6 +108,19 @@ const TrackYourContracts = () => {
         if (contractTrackCompensationValues?.length !== 0) {
             console.log(contractTrackCompensationValues?.[0]?.contractYearInterval?.startDate)
             let columnGroupingModel = [
+                {
+                    groupId: `Service Name`,
+                    headerName: '',
+                    headerClassName: style.groupBorderTop,
+                    description: '',
+                    children: [{ field: 'service' }],
+                },
+                {
+                    groupId: `Hourly Rate`,
+                    headerName: '',
+                    description: '',
+                    children: [{ field: 'hourlyRate' }],
+                },
                 {
                     groupId: `CY ${format(new Date(contractTrackCompensationValues?.[0]?.contractYearInterval?.startDate), 'yyyy')}`,
                     description: '',
@@ -325,6 +338,8 @@ const TrackYourContracts = () => {
                                             ))}
                                         </Select>
                                     </FormControl>
+                                    <PrintOutlinedIcon sx={{ color: '#857AEF' }} />
+                                    <DownloadIcon sx={{ color: '#857AEF' }} />
                                 </div>
                                 <div className={`${style.trackTableBackgroudcard} ${style.marginTop20}`}>
                                     {/* <DataGrid columns={columns} rows={rows} className='rdg-light' />; */}
@@ -332,20 +347,25 @@ const TrackYourContracts = () => {
                                         <DataGrid
                                             rows={getRows()}
                                             columns={getColumns()}
-                                            initialState={{
-                                                pagination: {
-                                                    paginationModel: {
-                                                        pageSize: 5,
-                                                    },
-                                                },
-                                            }}
-                                            pageSizeOptions={[5]}
-                                            experimentalFeatures={{ columnGrouping: true }}
-                                            className={style.whiteBackground}
-                                            columnGroupingModel={getColumnGroupingModel()}
-                                            // slots={{
-                                            //     toolbar: customToolbar,
+                                            // initialState={{
+                                            //     pagination: {
+                                            //         paginationModel: {
+                                            //             pageSize: 5,
+                                            //         },
+                                            //     },
                                             // }}
+                                            // pageSizeOptions={[5]}
+                                            sx={{
+                                                "& .MuiDataGrid-withBorderColor": {
+                                                    borderColor: '#646D82'
+                                                }
+                                            }}
+                                            experimentalFeatures={{ columnGrouping: true }}
+                                            className={`${style.whiteBackground} ${style.muiDataGridWithBorderColor}`}
+                                            columnGroupingModel={getColumnGroupingModel()}
+                                            slots={{
+                                                toolbar: customToolbar,
+                                            }}
                                             showCellVerticalBorder={true}
                                             showColumnVerticalBorder={true}
                                             rowHeight={35}
