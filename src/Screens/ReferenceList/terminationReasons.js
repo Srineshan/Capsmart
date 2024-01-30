@@ -15,6 +15,7 @@ import { format } from "date-fns";
 import Navbar from "../../Components/Navbar";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import SideBar from "../../Components/Sidebar";
+import { formatInTimeZone } from "date-fns-tz";
 
 const BoardCertification = () => {
   const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
@@ -68,7 +69,9 @@ const BoardCertification = () => {
     );
 
     const date = new Date(lastModifiedDate.terminationReason?.lastModified);
-    setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
+    setLastUpdatedDate(
+      formatInTimeZone(date, "America/New_York", "MMM d, yyyy HH:mm zzz")
+    );
   };
 
   const handleToggle = (index, data) => {

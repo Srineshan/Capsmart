@@ -1,5 +1,5 @@
 /* eslint-disable array-callback-return */
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   Classes,
@@ -30,7 +30,7 @@ const MissedMandatoryFieldAlert = ({
     setContinueLoading(false);
     getSaveInProgressAlert(false);
   };
-  
+
   return (
     <Dialog
       isOpen={alert}

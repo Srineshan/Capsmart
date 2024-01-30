@@ -28,6 +28,7 @@ import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import CommonCheckBox from "../../Components/CommonFields/CommonCheckBox";
 import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
 import SearchBar from "../../Components/SearchBar";
+import { formatInTimeZone } from "date-fns-tz";
 
 const DepartmentsForCustomers = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -81,7 +82,9 @@ const DepartmentsForCustomers = () => {
       `entity-service/referenceList/entity/${entityId}`
     );
     const date = new Date(lastModifiedDate.departments?.lastModified);
-    setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
+    setLastUpdatedDate(
+      formatInTimeZone(date, "America/New_York", "MMM d, yyyy HH:mm zzz")
+    );
   };
 
   const getEntityTypes = async () => {

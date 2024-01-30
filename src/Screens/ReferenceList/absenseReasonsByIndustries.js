@@ -12,6 +12,7 @@ import format from "date-fns/format";
 import Navbar from "../../Components/Navbar";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import SideBar from "../../Components/Sidebar";
+import { formatInTimeZone } from "date-fns-tz";
 
 const AbsenseReasonsByIndustries = () => {
   const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
@@ -56,7 +57,9 @@ const AbsenseReasonsByIndustries = () => {
     );
 
     const date = new Date(lastModifiedDate.absenceResons?.lastModified);
-    setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
+    setLastUpdatedDate(
+      formatInTimeZone(date, "America/New_York", "MMM d, yyyy HH:mm zzz")
+    );
   };
 
   const getEntityData = async () => {
@@ -219,8 +222,9 @@ const AbsenseReasonsByIndustries = () => {
                                   {/* {`${data.notificationPeriod.numberOfDays}`} Days Prior */}
                                 </p>
                                 <p className={style.tableDataFontStyle}>
-                                  {format(
+                                  {formatInTimeZone(
                                     new Date(`${data.lastModifiedDate}`),
+                                    "America/New_York",
                                     "MM-dd-yyyy"
                                   )}
                                 </p>
@@ -289,8 +293,9 @@ const AbsenseReasonsByIndustries = () => {
                                   {/* {`${data.notificationPeriod.numberOfDays}`} Days Prior */}
                                 </p>
                                 <p className={style.tableDataFontStyle}>
-                                  {format(
+                                  {formatInTimeZone(
                                     new Date(`${data.lastModifiedDate}`),
+                                    "America/New_York",
                                     "MM-dd-yyyy"
                                   )}
                                 </p>

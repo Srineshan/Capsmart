@@ -27,7 +27,7 @@ const SaveInProgressDialog = ({
   };
 
   const [contractData, setContractData] = useState([]);
-  const [multipleContractCount,setMultipleContractCount] = useState("")
+  const [multipleContractCount, setMultipleContractCount] = useState("")
 
   useEffect(() => {
     if (contractId !== "") {
@@ -36,7 +36,7 @@ const SaveInProgressDialog = ({
   }, [contractId]);
 
   useEffect(() => {
-      getContractDetailCount();
+    getContractDetailCount();
   }, []);
 
   const getContractDetail = async () => {
@@ -82,11 +82,10 @@ const SaveInProgressDialog = ({
             <p className={style.extentionLableStyle}>{contractType} CONTRACT</p>
             <p className={style.extentionLableStyle}>
               CONTRACT ID - (
-              {`${
-                contractData?.contractDetail?.contractId?.id
+              {`${contractData?.contractDetail?.contractId?.id
                   ? contractData?.contractDetail?.contractId?.id
                   : " - "
-              }`}
+                }`}
               )
             </p>
             <p className={style.extentionLableStyle}>
@@ -96,22 +95,20 @@ const SaveInProgressDialog = ({
           </div>
           <div>
             <p className={style.extentionLableStyle}>
-              {`${
-                contractData?.contractDetail?.contractManager?.name
+              {`${contractData?.contractDetail?.contractManager?.name
                   ?.firstName || ""
-              } ${
-                contractData?.contractDetail?.contractManager?.name?.lastName ||
+                } ${contractData?.contractDetail?.contractManager?.name?.lastName ||
                 ""
-              }  `}
+                }  `}
               (Contract Manager)
             </p>
             <p className={style.extentionLableStyle}>
-            {`${contractType === "MULTIPLE" ? " SITE NAME - ( " + contractData?.contractDetail?.site?.sites?.[0]?.siteName?.siteName + " ) " : ""}`}
+              {`${contractType === "MULTIPLE" ? " SITE NAME - ( " + contractData?.contractDetail?.site?.sites?.[0]?.siteName?.siteName + " ) " : ""}`}
             </p>
             <p className={style.extentionLableStyle}>
               {/* LAST UPDATED ON 10-23-2023 11:23 AM EST */}
               LAST UPDATED ON {contractData.lastModifiedDate && formatInTimeZone(new Date(contractData.lastModifiedDate) || new Date(), 'America/New_York', 'MM-dd-yyyy HH:mm a zzz')}
-         </p>
+            </p>
           </div>
         </div>
         <div className={`${style.marginTop}`}></div>
