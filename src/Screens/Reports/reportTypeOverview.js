@@ -2154,7 +2154,7 @@ const ReportTypeOverview = () => {
                                                     //     <>
                                                     <ReportsTable
                                                         tableType={'Current Remit To Address For Active Contracts'}
-                                                        tableHeader={['Contract Name', 'Contract Type', 'Remit To Address', 'City', 'State', 'Zipcode']}
+                                                        tableHeader={['Contract Name', 'Contract Type', 'Remit To Address', 'City', 'State', 'ZIP Code']}
                                                         tableValue={currentRemitToAddressValues}
                                                         activitiesServicesValues={getCurrentRemitToAddressForActiveContractsValues()}
                                                         styleName={style.grid6}
