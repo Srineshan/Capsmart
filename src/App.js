@@ -153,8 +153,8 @@ const ContractDocumentUploadForCustomer = React.lazy(() =>
 const ContractServicesByEntityType = React.lazy(() =>
   import("./Screens/ReferenceList/contractedServicesByEntityType")
 );
-const ContractTypeByEntityType = React.lazy(() =>
-  import("./Screens/ReferenceList/contractTypeByEntityType")
+const ContractTypeForCustomer = React.lazy(() =>
+  import("./Screens/ReferenceList/contractTypeForCustomer")
 );
 const ContractServiceProviderBySiteType = React.lazy(() =>
   import("./Screens/ReferenceList/contractServiceProviderBySiteType")
@@ -606,8 +606,8 @@ const App = ({ props }) => {
                 element={<ContractServicesByEntityType />}
               />
               <Route
-                path="/referenceList/contractTypeByEntityType"
-                element={<ContractTypeByEntityType />}
+                path="/referenceList/contractTypeForCustomer"
+                element={<ContractTypeForCustomer />}
               />
               <Route
                 path="/referenceList/contractServiceProviderBySiteType"

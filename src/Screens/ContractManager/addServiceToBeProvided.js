@@ -2248,38 +2248,41 @@ const AddServiceProvided = ({
                             className={editService && (!selectedActivity || selectedActivity?.length === 0) ? style.redLable : ""}
                           />
                           <div>
-                            <div className={style.addGrid}>
-                              <DatalistInput
-                                value={value}
-                                setValue={setValue}
-                                items={activityItems || []}
-                                onSelect={onActivitySelect}
-                                className={style.fullWidth}
-                                onChange={(e) => setNewActivity(e.target.value)}
-                                inputProps={{ disabled: contractStatus === "ACTIVE" ? true : false }}
-                              />
-                              <div
-                                className={`${style.addStyle} ${style.alignCenter
-                                  } ${style.cursorPointer} ${newActivity === "" ||
-                                    activity?.some((data) =>
-                                      data?.activity?.activity
-                                        ?.replace(" ", "")
-                                        ?.toLowerCase()
-                                        ?.includes(
-                                          newActivity
-                                            ?.replace(" ", "")
-                                            ?.toLowerCase()
-                                        )
-                                    )
-                                    ? style.disabledUploadButton
-                                    : ""
-                                  }`}
-                              >
-                                <AddIcon
-                                  sx={{ fontSize: 25, color: "white" }}
-                                  onClick={contractStatus === "ACTIVE" ? {} : activityToAdd}
+                            <div>
+                              <div className={style.addGrid}>
+                                <DatalistInput
+                                  value={value}
+                                  setValue={setValue}
+                                  items={activityItems || []}
+                                  onSelect={onActivitySelect}
+                                  className={style.fullWidth}
+                                  onChange={(e) => setNewActivity(e.target.value)}
+                                  inputProps={{ disabled: contractStatus === "ACTIVE" ? true : false }}
                                 />
+                                <div
+                                  className={`${style.addStyle} ${style.alignCenter
+                                    } ${style.cursorPointer} ${newActivity === "" ||
+                                      activity?.some((data) =>
+                                        data?.activity?.activity
+                                          ?.replace(" ", "")
+                                          ?.toLowerCase()
+                                          ?.includes(
+                                            newActivity
+                                              ?.replace(" ", "")
+                                              ?.toLowerCase()
+                                          )
+                                      )
+                                      ? style.disabledUploadButton
+                                      : ""
+                                    }`}
+                                >
+                                  <AddIcon
+                                    sx={{ fontSize: 25, color: "white" }}
+                                    onClick={contractStatus === "ACTIVE" ? {} : activityToAdd}
+                                  />
+                                </div>
                               </div>
+
                             </div>
                             {selectedActivity?.length !== 0 && (
                               <MultiSelectDisplay

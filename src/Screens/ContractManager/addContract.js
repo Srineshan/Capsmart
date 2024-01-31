@@ -6,6 +6,7 @@ import HighlightedDoctor from "./../../images/highlightedDoctor.png";
 import HighlightedDoctorTeam from "./../../images/highlightedDoctorTeam.png";
 import style from "./index.module.scss";
 import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
+import { GET } from "./../dataSaver";
 import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
 import IndividualSvg from "../../images/Individual.svg";
 import MultipleSvg from "../../images/Multiple.svg";
@@ -22,6 +23,7 @@ const AddContract = ({
   const [selectedContractOnClick, setSelectedContractOnClick] = useState("");
   const [contractType, setContractType] = useState("");
   const [isEmployeeContractNeeded, setIsEmployeeContractNeeded] = useState(sessionStorage?.getItem('isEmployeeContractNeeded'))
+  const [contractTypeList, setContractTypeList] = useState([]);
 
   console.log('isEmployeeContractNeeded', isEmployeeContractNeeded)
   const handleNext = () => {
@@ -34,6 +36,17 @@ const AddContract = ({
       getContractType(contractType);
       getSelectedContractType(selectedContract);
     }
+  };
+
+  useEffect(() => {
+    getContractTypeList();
+  }, [])
+
+  const getContractTypeList = async () => {
+    const { data: contractType } = await GET(
+      `entity-service/contractType`
+    );
+    setContractTypeList(contractType);
   };
 
   console.log("type", contractType, selectedContract);
@@ -101,37 +114,40 @@ const AddContract = ({
           </div>
           <div className={`${style.positionCenter} ${style.marginLeft20} `}>
             <div className={`${style.positionCenter} ${style.marginLeft20}`}>
-              <div
-                className={`${style.contractCards} ${contractType === "INDIVIDUAL" && style.selectedContractCard
-                  }`}
-                onClick={() => {
-                  setSelectedContractOnClick(true);
-                  setContractType("INDIVIDUAL");
-                }}
-              >
-                <div className={style.alignCenter}>
-                  <div>
-                    <img
-                      src={
-                        selectedContractOnClick && contractType === "INDIVIDUAL"
-                          ? HighlightedDoctor
-                          : Doctor
-                      }
-                      alt="doctor"
-                      className={`${style.contractCardImage} ${style.alignCenter
-                        } ${selectedContract !== "0" ? "" : style.reducedOpacity
-                        }`}
-                    />
-                    <div
-                      className={`${style.contractCardData} ${selectedContract !== "0" ? style.activeContractText : ""
-                        }`}
-                    >
-                      Individual Contractor Contract
+              {contractTypeList?.map(data => (
+                <div
+                  className={`${style.contractCards} ${contractType === data?.contractTypeTemplate && style.selectedContractCard
+                    }`}
+                  onClick={() => {
+                    setSelectedContractOnClick(true);
+                    setContractType(data?.contractTypeTemplate);
+                  }}
+                >
+                  <div className={style.alignCenter}>
+                    <div>
+                      <img
+                        src={
+                          selectedContractOnClick && contractType === data?.contractTypeTemplate
+                            ? HighlightedDoctor
+                            : Doctor
+                        }
+                        alt="doctor"
+                        className={`${style.contractCardImage} ${style.alignCenter
+                          } ${selectedContract !== "0" ? "" : style.reducedOpacity
+                          }`}
+                      />
+                      <div
+                        className={`${style.contractCardData} ${selectedContract !== "0" ? style.activeContractText : ""
+                          }`}
+                      >
+                        {data?.contractType}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <div
+              ))}
+
+              {/* <div
                 className={`${style.contractCards} ${contractType === "MULTIPLE" && style.selectedContractCard
                   }`}
                 onClick={() => {
@@ -190,7 +206,7 @@ const AddContract = ({
                     </div>
                   </div>
                 </div>
-              </div>}
+              </div>} */}
             </div>
           </div>
 

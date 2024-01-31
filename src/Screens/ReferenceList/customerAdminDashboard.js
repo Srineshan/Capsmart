@@ -872,18 +872,17 @@ const ClientAdminDashboard = () => {
                       </div>
                     </Link>
                     <Link
-                      to="/referenceList/contractTypeBySiteType"
+                      to={"/referenceList/contractTypeForCustomer"}
                       className={style.linkStyle}
                     >
-                      {" "}
                       <div className={style.dashboardCardStyle}>
                         <h5 className={`${style.headingForReferenceList}`}>
-                          CONTRACT TYPE BY ENTITY / SITE TYPES
+                          CONTRACT TYPE BY ENTITY / SITE TYPE
                         </h5>
-                        {lastUpdatedDate?.contractedServiceProviders
-                          ?.standardList === true &&
-                          lastUpdatedDate?.contractedServiceProviders
-                            ?.lastModified !== null ? (
+                        {lastUpdatedDate?.contractedService?.standardList ===
+                          true &&
+                          lastUpdatedDate?.contractedService?.lastModified !==
+                          null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol}`}
                           >
@@ -892,7 +891,7 @@ const ClientAdminDashboard = () => {
                             </span>
                             <span className={style.dashboardCardColorOption2}>
                               {`LAST UPDATED ON ${new Date(
-                                lastUpdatedDate.contractedServiceProviders?.lastModified
+                                lastUpdatedDate.contractedService?.lastModified
                               )
                                 .toLocaleString("en-US", {
                                   timeZone: "America/New_York",
@@ -906,10 +905,10 @@ const ClientAdminDashboard = () => {
                           <></>
                         )}
 
-                        {lastUpdatedDate?.contractedServiceProviders
-                          ?.standardList === false &&
-                          lastUpdatedDate?.contractedServiceProviders
-                            ?.lastModified !== null ? (
+                        {lastUpdatedDate?.contractedService?.standardList ===
+                          false &&
+                          lastUpdatedDate?.contractedService?.lastModified !==
+                          null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
                           >
@@ -920,7 +919,7 @@ const ClientAdminDashboard = () => {
                             </span>
                             <span className={style.dashboardCardColorOption2}>
                               {`LAST UPDATED ON ${new Date(
-                                lastUpdatedDate.contractedServiceProviders?.lastModified
+                                lastUpdatedDate.contractedService?.lastModified
                               )
                                 .toLocaleString("en-US", {
                                   timeZone: "America/New_York",
@@ -934,8 +933,8 @@ const ClientAdminDashboard = () => {
                           <></>
                         )}
 
-                        {lastUpdatedDate?.contractedServiceProviders
-                          ?.lastModified === null ? (
+                        {lastUpdatedDate?.contractedService?.lastModified ===
+                          null ? (
                           <div
                             className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
                           >
