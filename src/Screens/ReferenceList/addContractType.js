@@ -5,7 +5,7 @@ import { POST, PUT, TenantID, GET } from '../dataSaver'
 import { SuccessToaster, ErrorToaster } from '../../utils/toaster';
 
 const AddContractType = ({ getContractTypeDialog, selectedContractType, getContractType, isEdit }) => {
-    const [contractType, setContractType] = useState(isEdit ? selectedContractType?.contractTypeTemplate : '')
+    const [contractType, setContractType] = useState(isEdit ? selectedContractType?.contractType : '')
     const [contractTypeTemplate, setContractTypeTemplate] = useState(isEdit ? selectedContractType?.contractTypeTemplate : '');
 
     const handlePostContractedServiceType = async () => {

@@ -21,12 +21,12 @@ const AddContractedServices = ({ getAddContractedServicesDialog, selectedContrac
         const { data: types } = await GET(`entity-service/contractType`);
         if (isEdit) {
             let temp = [];
-            types?.filter(data => selectedContractedService?.contractTypeId.includes(data?.id))?.map(data => {
+            types?.filter(data => selectedContractedService?.contractTypeId?.includes(data?.id))?.map(data => {
                 temp.push({ id: data?.id, value: data?.contractType })
             })
             setSelectedContractTypes(temp);
             let typesTemp = [];
-            types?.filter(data => !selectedContractedService?.contractTypeId.includes(data?.id))?.map(data => {
+            types?.filter(data => !selectedContractedService?.contractTypeId?.includes(data?.id))?.map(data => {
                 typesTemp.push(data);
             })
             setContractTypes(typesTemp);
@@ -117,10 +117,9 @@ const AddContractedServices = ({ getAddContractedServicesDialog, selectedContrac
                             <select
                                 value={contractTypes}
                                 className={style.fullWidth}
-                            // rightElement={arrowDown()}
-                            // onChange={(e) => {
-                            //     handleContractTypeSelection(e.target.value);
-                            // }}
+                                onChange={(e) => {
+                                    handleContractTypeSelection(e.target.value);
+                                }}
                             >
                                 <option value="">Select Contract Type</option>
                                 {contractTypes.map((type) => (
@@ -129,7 +128,6 @@ const AddContractedServices = ({ getAddContractedServicesDialog, selectedContrac
                             </select>
                         </div>
                         {selectedContractTypes?.length !== 0 && (<MultiSelectDisplay
-                            // values={selectedContractTypes?.map(data => data)}
                             values={selectedContractTypes?.map(data => data?.value)}
                             removeItem={removeContractType}
                         />)}
