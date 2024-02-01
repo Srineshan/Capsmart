@@ -337,11 +337,11 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
       temp[i] = (
         <div key={`${i}temp${timeSheetCount + 1}`} className={`${timeSheetCount > 1 && style.contractedBorderStyle} ${style.marginTop20}`}>
           <div className={`${style.extentionGrid}`}>
-            <CommonLabel value={`Timesheets label ${i + 1} for processing*`} 
-            className={
-              dataCheck(timeSheetLabelData?.[i]?.label)
-                ? style.redLable
-                : ""}
+            <CommonLabel value={`Timesheets label ${i + 1} for processing*`}
+              className={
+                dataCheck(timeSheetLabelData?.[i]?.label)
+                  ? style.redLable
+                  : ""}
             />
             <CommonInputField className={style.fullWidth} value={timeSheetLabelData?.[i]?.label}
               onChange={(e) => { handleTimesheetValue(i, 'label', e.target.value); setIsNameEdited(true); }}
@@ -350,10 +350,10 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
           {timeSheetCount > 1 && (
             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
               <CommonLabel value={`Contracted Activity to include for timesheet ${i + 1}*`} className={
-              dataCheck(timeSheetLabelData?.[i]?.activities)
-                ? style.redLable
-                : ""}
-                />
+                dataCheck(timeSheetLabelData?.[i]?.activities)
+                  ? style.redLable
+                  : ""}
+              />
               <div>
                 {
                   // <select
@@ -426,19 +426,19 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
           )}
           <div>
             <div className={`${style.extentionGrid} ${style.marginTop20}`} key={`sites${i}`}>
-              <CommonLabel value='Payment Source*' 
-              className={
-                dataCheck(paymentSource?.[i]) ? style.redLable : ""
-              }/>
+              <CommonLabel value='Payment Source*'
+                className={
+                  dataCheck(paymentSource?.[i]) ? style.redLable : ""
+                } />
               <SiteDepartmentField sites={sites} getSelectedSites={(value) => onSelectSite(value, i)} selectedSites={Array.isArray(paymentSource?.[i]) ? paymentSource?.[i] : paymentSource?.[i] ? new Array(1).fill(paymentSource?.[i]) : []} isMultiSiteEntity={isMultiSiteEntity} />
             </div>
           </div>
 
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <CommonLabel value='Service log Period for timesheet submission*' 
-             className={
-              dataCheck(timeSheetLabelData?.[i]?.value) ? style.redLable : ""
-            }/>
+            <CommonLabel value='Service log Period for timesheet submission*'
+              className={
+                dataCheck(timeSheetLabelData?.[i]?.value) ? style.redLable : ""
+              } />
             <CommonSelectField
               value={timeSheetLabelData?.[i]?.value ? timeSheetLabelData?.[i]?.value : ''}
               onChange={(e) => handleTimesheetValue(i, 'value', e.target.value)}
@@ -599,18 +599,18 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     if (valueCheck(timeSheetCount)) {
       keys.push("Number Of Timesheet");
     }
-    
-    if (timeSheetCount >= 1 ) {
+
+    if (timeSheetCount >= 1) {
       timesheetValues?.forEach((value, index) => {
         if (valueCheck(value?.timesheetLabel)) {
-            keys.push(`Timesheet Label ${index + 1} value`);
-          }
+          keys.push(`Timesheet Label ${index + 1} value`);
+        }
         if (valueCheck(value?.servicePeriod)) {
-            keys.push(`Service Log Period For Timesheet Submission ${index + 1}`);
-          }
+          keys.push(`Service Log Period For Timesheet Submission ${index + 1}`);
+        }
         if (valueCheck(value?.activities)) {
-            keys.push(`Contracted Activity To Include For Timesheet  ${index + 1}`);
-          }
+          keys.push(`Contracted Activity To Include For Timesheet  ${index + 1}`);
+        }
       });
     }
 
@@ -643,7 +643,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
         "Day Limit For Submission Of Timesheet Based On Contract End Date"
       );
     }
-    
+
     setUnassignedKeys(keys);
     if (keys?.length !== 0) {
       setShowSaveInProgress(true);
@@ -662,7 +662,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     setShowSaveInProgress(value);
     setContinueLoading(value)
   };
-  
+
   const handleContinue = async (buttonType) => {
     setContinueLoading(true);
     // if (absence?.reviewer === null || absence?.reviewer === '0') {
@@ -693,7 +693,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
 
     let absenceData = handleTimeSheetWorkFlow(`Absence-${contractName}`, absence.reviewer, absence.approver, 'requests');
     await updateTimeSheetWorkflow(absenceData, `Absence-${contractName}`, 'Absence');
-    
+
     const data = {
       "timesheetSubmissionServicesCount": {
         "count": timeSheetCount
@@ -777,17 +777,13 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
   }, [timesheetSubmissionTerms]);
 
   console.log('goal', invoiceProcessingDayGoal);
-  
+
   return (
     <div className={style.cloneBlockStyle}>
       <div className={`${style.newContractFromCloneBoxStyle}`}>
         <div className={`${style.extentionGrid}`}>
-          <CommonLabel value='Number of Timesheets to Submit for Services Performed' 
-            className={timeSheetCount <= contractedServices?.length && timeSheetCount >= (HITService?.length + 1)
-                ? "" : style.redLable
-              }
-          />
-          <CommonInputField className={style.fourFieldWidth} readOnly={timeSheetCount <= contractedServices?.length && timeSheetCount >= (HITService?.length + 1) ? false : true} type="number" min="1" value={timeSheetCount} onChange={(e) => e.target.value <= contractedServices?.length && e.target.value >= (HITService?.length + 1) && setTimeSheetCount(parseInt(e.target.value))} />
+          <CommonLabel value='Number of Timesheets to Submit for Services Performed' />
+          <CommonInputField className={style.fourFieldWidth} type="number" min="1" value={timeSheetCount} onChange={(e) => e.target.value <= contractedServices?.length && e.target.value >= (HITService?.length + 1) && setTimeSheetCount(parseInt(e.target.value))} />
         </div>
         <div>
           {timesheetFields}
@@ -802,16 +798,16 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
         {/* <hr classname={`${style.marginTop20}`} /> */}
 
         <div className={`${style.extentionGrid} ${style.marginTop20} ${style.verticalAlignCenter}`}>
-          <CommonLabel value='Invoice Processing Day Range Goal*' 
-          className={
-            dataCheck(
-              invoiceProcessingDay &&
+          <CommonLabel value='Invoice Processing Day Range Goal*'
+            className={
+              dataCheck(
+                invoiceProcessingDay &&
                 invoiceProcessingDayThreshold &&
                 invoiceProcessingDayGoal
-            )
-              ? style.redLable
-              : ""
-          }/>
+              )
+                ? style.redLable
+                : ""
+            } />
           <div className={style.displayInRow}>
             {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
               <EditableText value={invoiceProcessingDay} placeholder="0" type='number' onChange={(e) => setInvoiceProcessingDay(e.slice(0, limit))} className={style.editableTextStyleDays} />
@@ -845,12 +841,12 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
             PLANNED ABSENCE REQUESTS
           </div>
           <div className={`${style.addManagerGrid}  ${style.marginTop20}`}>
-            <CommonLabel value='Only Allow Upon Request / Notification Approval' 
-             className={
-              addApprover && dataCheck(absence?.reviewer)
-                ? style.redLable
-                : ""
-            }/>
+            <CommonLabel value='Only Allow Upon Request / Notification Approval'
+              className={
+                addApprover && dataCheck(absence?.reviewer)
+                  ? style.redLable
+                  : ""
+              } />
             <CommonSwitch onChange={() => {
               setAddApprover(!addApprover);
               setAbsence({ ...absence, reviewer: '', reviewerTitle: '', id: '' })
@@ -867,11 +863,11 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
 
         < div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <CommonLabel value='Planned Absence Notification Days limit*'
-          className={
-            dataCheck(plannedAbsence)
-              ? style.redLable
-              : ""
-          }/>
+            className={
+              dataCheck(plannedAbsence)
+                ? style.redLable
+                : ""
+            } />
           {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
             <EditableText value={plannedAbsence} placeholder="0" type='number' onChange={(e) => setPlannedAbsence(e.slice(0, limit))} className={style.editableTextStyleDays} />
             <div className={style.textElementWithoutBackgroundDays}>Days</div>
@@ -888,12 +884,12 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
           </div>
         </div>
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <CommonLabel value='Maximum Unplanned Absence Days Allowed *' 
-          className={
-            dataCheck(maxUnplannedAbsence)
-              ? style.redLable
-              : ""
-          } />
+          <CommonLabel value='Maximum Unplanned Absence Days Allowed *'
+            className={
+              dataCheck(maxUnplannedAbsence)
+                ? style.redLable
+                : ""
+            } />
           {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
             <EditableText value={maxUnplannedAbsence} placeholder="0" type='number' onChange={(e) => setMaxUnplannedAbsence(e.slice(0, limit))} className={style.editableTextStyleDays} />
             <div className={style.textElementWithoutBackgroundDays}>Days</div>
@@ -911,12 +907,12 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
         </div>
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <CommonLabel value='Maximum Absence Period*'
-          className={
-            !maxPlannedAbsence?.notApplicable &&
-            dataCheck(maxPlannedAbsence?.days)
-              ? style.redLable
-              : ""
-          }/>
+            className={
+              !maxPlannedAbsence?.notApplicable &&
+                dataCheck(maxPlannedAbsence?.days)
+                ? style.redLable
+                : ""
+            } />
           <div className={style.displayInRow}>
             {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
               <EditableText value={maxPlannedAbsence?.days} placeholder="0" type='number' onChange={(e) => setMaxPlannedAbsence({ ...maxPlannedAbsence, days: e.slice(0, limit) })} className={style.editableTextStyleDays} disabled={maxPlannedAbsence?.notApplicable} />
@@ -942,12 +938,12 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
         </div>
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <CommonLabel value='Day limit for submission of timesheet based on activity service date *' 
-          className={
-            dataCheck(dayLimitForSubmissionBasedOnActivityServiceDate)
-              ? style.redLable
-              : ""
-          }/>
+          <CommonLabel value='Day limit for submission of timesheet based on activity service date *'
+            className={
+              dataCheck(dayLimitForSubmissionBasedOnActivityServiceDate)
+                ? style.redLable
+                : ""
+            } />
           {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
             <EditableText value={dayLimitForSubmissionBasedOnActivityServiceDate} placeholder="0" type='number' min="0" onChange={(e) => setDayLimitForSubmissionBasedOnActivityServiceDate(e.slice(0, limit))} className={style.editableTextStyleDays} />
             <div className={style.textElementWithoutBackgroundDays}>Days</div>
@@ -964,12 +960,12 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
           </div>
         </div>
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <CommonLabel value='Day limit for submission of timesheet based on contract end date *' 
-          className={
-            dataCheck(dayLimitForSubmissionBasedOnContractEndDate)
-              ? style.redLable
-              : ""
-          }/>
+          <CommonLabel value='Day limit for submission of timesheet based on contract end date *'
+            className={
+              dataCheck(dayLimitForSubmissionBasedOnContractEndDate)
+                ? style.redLable
+                : ""
+            } />
           {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
             <EditableText value={dayLimitForSubmissionBasedOnContractEndDate} placeholder="0" type='number' min="0" onChange={(e) => setDayLimitForSubmissionBasedOnContractEndDate(e.slice(0, limit))} className={style.editableTextStyleDays} />
             <div className={style.textElementWithoutBackgroundDays}>Days</div>
