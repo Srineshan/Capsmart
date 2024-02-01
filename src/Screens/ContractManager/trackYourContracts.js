@@ -1,7 +1,6 @@
 import React, { Fragment, useState, useEffect, cloneElement } from 'react';
 import Navbar from './../../Components/Navbar';
 import SideBar from '../../Components/Sidebar';
-// import DataGrid from 'react-data-grid';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 import { GET } from '../dataSaver';
 import { useParams } from 'react-router-dom';
@@ -57,54 +56,57 @@ const TrackYourContracts = () => {
     console.log(trackType)
 
 
-    const getColumns = () => {
+    const getColumns = (data, index) => {
         let tempCol = [
             { field: 'service', headerName: '', width: 280 },
             { field: 'hourlyRate', headerName: 'Pro-Rata Hourly Rate', width: 140 },
             { field: 'cyExpectedHours', headerName: 'Expected (Hours)', width: 140 },
             { field: 'cyExpectedAmount', headerName: 'Expected (Amount)', width: 140 },
-            { field: 'cy1m1ExpectedHours', headerName: 'Expected (Hours)', width: 140 },
-            { field: 'cy1m1ExpectedAmount', headerName: 'Expected (Amount)', width: 140 },
+            { field: 'cymExpectedHours', headerName: 'Expected (Hours)', width: 140 },
+            { field: 'cymExpectedAmount', headerName: 'Expected (Amount)', width: 140 },
         ];
 
-        contractTrackCompensationValues?.map((data, index) => {
-            data?.timesheetActivitiesWithActualValuesList?.map((actualValue, actualIndex) => {
-                tempCol.push({ field: `cy${index + 1}m${actualIndex + 2}ActualHours`, headerName: `Actual (Hours)`, width: 140 })
-                tempCol.push({ field: `cy${index + 1}m${actualIndex + 2}ActualAmount`, headerName: `Actual (Amount)`, width: 140 })
-            })
+        // contractTrackCompensationValues?.map((data, index) => {
+        data?.timesheetActivitiesWithActualValuesList?.map((actualValue, actualIndex) => {
+            tempCol.push({ field: `cy${index + 1}m${actualIndex + 1}ActualHours`, headerName: `Actual (Hours)`, width: 140 })
+            tempCol.push({ field: `cy${index + 1}m${actualIndex + 1}ActualAmount`, headerName: `Actual (Amount)`, width: 140 })
         })
+        // })
 
         return tempCol;
     }
 
-    const getRows = () => {
+    const getRows = (data, index) => {
         let tempRow = [];
 
-        contractTrackCompensationValues?.map((data, index) => {
-            console.log(data)
-            data?.activityWithExpectedValuesList?.map((expectedValue, expectedIndex) => {
-                tempRow.push({
-                    id: `${expectedIndex}`,
-                    service: `${expectedValue?.activityType} - ${expectedValue?.performingActivity}`,
-                    hourlyRate: `${expectedValue?.hourlyRate}`,
-                    cyExpectedHours: expectedValue?.expectedHoursInYear,
-                    cyExpectedAmount: expectedValue?.expectedAmountInYear,
-                    cy1m1ExpectedHours: expectedValue?.expectedHoursInMonth,
-                    cy1m1ExpectedAmount: expectedValue?.expectedAmountInMonth
-                })
+        // contractTrackCompensationValues?.map((data, index) => {
+        console.log(data)
+        data?.activityWithExpectedValuesList?.map((expectedValue, expectedIndex) => {
+            tempRow.push({
+                id: `${index}${expectedIndex}`,
+                service: `${expectedValue?.activityType} - ${expectedValue?.performingActivity}`,
+                hourlyRate: `${expectedValue?.hourlyRate}`,
+                cyExpectedHours: expectedValue?.expectedHoursInYear,
+                cyExpectedAmount: expectedValue?.expectedAmountInYear,
+                cymExpectedHours: expectedValue?.expectedHoursInMonth,
+                cymExpectedAmount: expectedValue?.expectedAmountInMonth
             })
-            data?.timesheetActivitiesWithActualValuesList?.map((timesheetData, timesheetIndex) => {
-                timesheetData?.activityWithActualValuesList?.map((actualValue, actualIndex) => {
-                    tempRow[actualIndex][`cy${index + 1}m${timesheetIndex + 2}ActualHours`] = actualValue?.actualHours
-                    tempRow[actualIndex][`cy${index + 1}m${timesheetIndex + 2}ActualAmount`] = `$ ${actualValue?.actualAmount?.toLocaleString()}`
-                })
+        })
+        data?.timesheetActivitiesWithActualValuesList?.map((timesheetData, timesheetIndex) => {
+            timesheetData?.activityWithActualValuesList?.map((actualValue, actualIndex) => {
+                let tempIndex = tempRow.findIndex(obj => obj['service'] === `${actualValue?.activityType} - ${actualValue?.performingActivity}`)
+                tempRow[tempIndex][`cy${index + 1}m${timesheetIndex + 1}ActualHours`] = actualValue?.actualHours
+                tempRow[tempIndex][`cy${index + 1}m${timesheetIndex + 1}ActualAmount`] = `$ ${actualValue?.actualAmount?.toLocaleString()}`
             })
-        });
+        })
+        // });
+
+        console.log(tempRow)
 
         return tempRow;
     }
 
-    const getColumnGroupingModel = () => {
+    const getColumnGroupingModel = (data, index) => {
         if (contractTrackCompensationValues?.length !== 0) {
             console.log(contractTrackCompensationValues?.[0]?.contractYearInterval?.startDate)
             let columnGroupingModel = [
@@ -127,21 +129,21 @@ const TrackYourContracts = () => {
                     children: [{ field: 'cyExpectedHours' }, { field: 'cyExpectedAmount' }],
                 },
                 {
-                    groupId: `CY1 M1 (${format(new Date(contractTrackCompensationValues?.[0]?.contractYearInterval?.startDate), 'yyyy')})`,
+                    groupId: `CY Monthly (${format(new Date(contractTrackCompensationValues?.[0]?.contractYearInterval?.startDate), 'yyyy')})`,
                     description: '',
-                    children: [{ field: 'cy1m1ExpectedHours' }, { field: 'cy1m1ExpectedAmount' }],
+                    children: [{ field: 'cymExpectedHours' }, { field: 'cymExpectedAmount' }],
                 },
             ];
-            contractTrackCompensationValues?.map((data, index) => {
-                data?.timesheetActivitiesWithActualValuesList?.length !== 0 &&
-                    data?.timesheetActivitiesWithActualValuesList?.map((actualValue, actualIndex) => {
-                        columnGroupingModel?.push({
-                            groupId: `CY${index + 1} M${actualIndex + 2} (${months[actualValue?.month]} ${actualValue?.year})`,
-                            description: '',
-                            children: [{ field: `cy${index + 1}m${actualIndex + 2}ActualHours` }, { field: `cy${index + 1}m${actualIndex + 2}ActualAmount` }],
-                        })
+            // contractTrackCompensationValues?.map((data, index) => {
+            data?.timesheetActivitiesWithActualValuesList?.length !== 0 &&
+                data?.timesheetActivitiesWithActualValuesList?.map((actualValue, actualIndex) => {
+                    columnGroupingModel?.push({
+                        groupId: `CY M${actualIndex + 1} (${months[actualValue?.month]} ${actualValue?.year})`,
+                        description: '',
+                        children: [{ field: `cy${index + 1}m${actualIndex + 1}ActualHours` }, { field: `cy${index + 1}m${actualIndex + 1}ActualAmount` }],
                     })
-            })
+                })
+            // })
             return columnGroupingModel;
         }
     }
@@ -167,14 +169,15 @@ const TrackYourContracts = () => {
     useEffect(() => {
         setUserId(userDetail?.id);
         setUserDetails();
-        getActivityLogger();
+        // getActivityLogger();
         getContractAndUserList();
     }, [])
 
     const getContractAndUserList = async () => {
         const { data: contractAndUserList } = await GET(`contract-managment-service/reports/filter/usersAndContracts?reportCategory=TIMESHEET`);
         console.log(contractAndUserList)
-        setContracts(contractAndUserList?.contracts);
+        // setContracts(contractAndUserList?.contracts);
+        setContractedServiceProviders(contractAndUserList?.users);
     }
 
     // useEffect(() => {
@@ -182,8 +185,17 @@ const TrackYourContracts = () => {
     // }, [currentUserDetails])
 
     useEffect(() => {
-        getContractTrackValues();
+        let tempContracts = contractedServiceProviders?.filter(data => data?.id === selectedContractedServiceProvider)?.map(data => data)[0];
+        setContracts(tempContracts?.contractDetails);
+        if (tempContracts?.contractDetails?.length === 1) {
+            setSelectedContracts([tempContracts?.contractDetails?.[0]?.id])
+        }
+        if (trackType === 'activityStatusTracker') {
+            getContractTrackValues()
+        }
     }, [selectedContractedServiceProvider])
+
+    console.log(selectedContractedServiceProvider, contracts, selectedContracts)
 
     useEffect(() => {
         if (selectedContracts?.length !== 0) {
@@ -195,10 +207,10 @@ const TrackYourContracts = () => {
         setIsExpanded(value);
     }
 
-    const getActivityLogger = async () => {
-        const { data: user } = await GET(`user-management-service/user?userType=CONTRACTED_SERVICE_PROVIDER_USER`);
-        setContractedServiceProviders(user);
-    }
+    // const getActivityLogger = async () => {
+    //     const { data: user } = await GET(`user-management-service/user?userType=CONTRACTED_SERVICE_PROVIDER_USER`);
+    //     setContractedServiceProviders(user);
+    // }
 
     const getContractTrackValues = async () => {
         const { data: data } = await GET(`timesheet-management-service/activity/track/services?userIds=${[selectedContractedServiceProvider]}`);
@@ -309,7 +321,7 @@ const TrackYourContracts = () => {
                             </div>
                         </SideBar>
                     </div>
-                    <div className={`${style.bigCardFullHeightStyle} ${style.excelTable} ${style.padding20}`}>
+                    <div className={` ${style.padding20}`}>
                         {trackType === 'compensationTracker' ? (
                             <>
                                 <div className={style.displayInRow}>
@@ -317,61 +329,60 @@ const TrackYourContracts = () => {
                                     <div className={`${style.trackTableContractCountHeading} ${style.marginLeft20}`}>Contracts</div>
                                     <div className={`${style.trackTableContractCount} ${style.verticalAlignCenter} ${style.alignCenter} ${style.marginLeft20}`}>{selectedContracts?.length}</div>
                                 </div>
-                                <div className={style.displayInRow}>
-                                    <div className={style.trackTableContractLabel}>Services Compensation Tracking & Monitoring For</div>
-                                    <FormControl sx={{ m: 1, width: '250px' }}>
-                                        <Select
-                                            labelId="demo-multiple-name-label5"
-                                            id="demo-multiple-name5"
-                                            multiple
-                                            value={selectedContracts}
-                                            onChange={handleChangeContracts}
-                                            SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                                        >
-                                            {contracts?.map((data) => (
-                                                <MenuItem
-                                                    key={data?.id}
-                                                    value={data?.id}
-                                                >
-                                                    {data?.contractName?.contractName}
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-                                    <PrintOutlinedIcon sx={{ color: '#857AEF' }} />
-                                    <DownloadIcon sx={{ color: '#857AEF' }} />
+                                <div>
+                                    <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
+                                        <div className={style.trackTableContractLabel}>Services Compensation Tracking & Monitoring For</div>
+                                        <FormControl sx={{ m: 1, width: '50%' }}>
+                                            <Select
+                                                labelId="demo-multiple-name-label5"
+                                                id="demo-multiple-name5"
+                                                multiple
+                                                value={selectedContracts}
+                                                onChange={handleChangeContracts}
+                                                SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                            >
+                                                {contracts?.map((data) => (
+                                                    <MenuItem
+                                                        key={data?.id}
+                                                        value={data?.id}
+                                                    >
+                                                        {data?.contractName?.contractName}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                        {/* <PrintOutlinedIcon sx={{ color: '#857AEF' }} />
+                                    <DownloadIcon sx={{ color: '#857AEF' }} /> */}
+                                    </div>
                                 </div>
                                 <div className={`${style.trackTableBackgroudcard} ${style.marginTop20}`}>
-                                    {/* <DataGrid columns={columns} rows={rows} className='rdg-light' />; */}
-                                    {contractTrackCompensationValues?.length !== 0 && (
-                                        <DataGrid
-                                            rows={getRows()}
-                                            columns={getColumns()}
-                                            // initialState={{
-                                            //     pagination: {
-                                            //         paginationModel: {
-                                            //             pageSize: 5,
-                                            //         },
-                                            //     },
-                                            // }}
-                                            // pageSizeOptions={[5]}
-                                            sx={{
-                                                "& .MuiDataGrid-withBorderColor": {
-                                                    borderColor: '#646D82'
-                                                }
-                                            }}
-                                            experimentalFeatures={{ columnGrouping: true }}
-                                            className={`${style.whiteBackground} ${style.muiDataGridWithBorderColor}`}
-                                            columnGroupingModel={getColumnGroupingModel()}
-                                            slots={{
-                                                toolbar: customToolbar,
-                                            }}
-                                            showCellVerticalBorder={true}
-                                            showColumnVerticalBorder={true}
-                                            rowHeight={35}
-                                            columnHeaderHeight={35}
-                                        />
-                                    )}
+                                    {selectedContracts?.length !== 0 && contractTrackCompensationValues?.map((data, index) => (
+                                        <div key={index}>
+                                            <DataGrid
+                                                rows={getRows(data, index)}
+                                                columns={getColumns(data, index)}
+                                                hideFooterPagination={true}
+                                                sx={{
+                                                    "& .MuiDataGrid-withBorderColor": {
+                                                        borderColor: '#646D82'
+                                                    },
+                                                    "& .MuiDataGrid-toolbarContainer": {
+                                                        borderBottom: "1px solid #646D82"
+                                                    }
+                                                }}
+                                                experimentalFeatures={{ columnGrouping: true }}
+                                                className={`${style.whiteBackground} ${style.muiDataGridWithBorderColor}`}
+                                                columnGroupingModel={getColumnGroupingModel(data, index)}
+                                                slots={{
+                                                    toolbar: customToolbar,
+                                                }}
+                                                showCellVerticalBorder={true}
+                                                showColumnVerticalBorder={true}
+                                                rowHeight={35}
+                                                columnHeaderHeight={35}
+                                            />
+                                        </div>
+                                    ))}
                                 </div>
                                 <div>
 
