@@ -694,7 +694,7 @@ const OnCallService = ({
                                                     startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
                                                 }}
                                                 value={metadata?.serviceRate}
-                                                onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, serviceRate: parseFloat(e.target.value), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? parseFloat(e.target.value || '0') : (parseFloat(e.target.value || '0') * (metadata?.totalSession || 1)) })}
+                                                onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, serviceRate: parseFloat(e.target.value.slice(0, 9)), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? parseFloat(e.target.value || '0') : (parseFloat(e.target.value || '0') * (metadata?.totalSession || 1)) })}
                                             />
                                         </div>
                                     </div>

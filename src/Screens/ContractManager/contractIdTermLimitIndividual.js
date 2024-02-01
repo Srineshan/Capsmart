@@ -463,7 +463,7 @@ const ContractIdTermLimitIndividual = ({
     if (buttonType === "SaveInProgress" || buttonType === "Continue") {
       saveInProgresscheck(buttonType);
       setButtonName(buttonType)
-    } 
+    }
   };
 
   const saveInProgresscheck = (buttonType) => {
@@ -490,10 +490,10 @@ const ContractIdTermLimitIndividual = ({
     if (valueCheck(compensationPolicy)) {
       keys.push("Compensation Policy To Apply");
     }
-    if (fullyExecutedContract === true && fullyExecutedContractData?.length === 0 ) {
+    if (fullyExecutedContract === true && fullyExecutedContractData?.length === 0) {
       keys.push("Contract Documents On File");
     }
-    if (departmentSpecific === true && selectedDepartmentSites?.[0]?.departmentList.departments?.length === 0 ) {
+    if (departmentSpecific === true && selectedDepartmentSites?.[0]?.departmentList.departments?.length === 0) {
       keys.push("Department Specific Contract");
     }
 
@@ -1192,7 +1192,7 @@ const ContractIdTermLimitIndividual = ({
         }
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <CommonLabel value="Contract Documents On File*"           
+          <CommonLabel value="Contract Documents On File*"
             className={fullyExecutedContract === true && fullyExecutedContractData?.length === 0 ? style.redLable : ""}
           />
           {contractStatus === "ACTIVE" && fileItems?.length !== 0 ?
@@ -1219,7 +1219,7 @@ const ContractIdTermLimitIndividual = ({
                         Upload File
                       </label>
                     </button>
-                    <input id="file-upload" type="file" accept="*/*" onChange={(e) => { handleFileUpload(e); }} disabled={(contractStatus === "ACTIVE" || !fullyExecutedContract) ? true : false} />
+                    <input id="file-upload" type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx" onChange={(e) => { handleFileUpload(e); }} disabled={(contractStatus === "ACTIVE" || !fullyExecutedContract) ? true : false} />
                   </div>
                 </div>
                 {/* {fullyExecutedContract && (
@@ -1315,7 +1315,7 @@ const ContractIdTermLimitIndividual = ({
             deptFieldCheck(departmentSpecific);
           }}
         >
-          <CommonLabel value="Department Specific Contract*" 
+          <CommonLabel value="Department Specific Contract*"
             className={departmentSpecific === true && selectedDepartmentSites?.[0]?.departmentList.departments?.length === 0
               ? style.redLable : ""}
           />
@@ -1522,7 +1522,7 @@ const ContractIdTermLimitIndividual = ({
           <CommonLabel
             value="Contract Time Commitment*"
             className={
-              dataCheck(contractedTimeCommitment?.value) || contractedTimeCommitment?.frequency === "NA" ||  contractedTimeCommitment?.frequency === "Select..." ? style.redLable : ""
+              dataCheck(contractedTimeCommitment?.value) || contractedTimeCommitment?.frequency === "NA" || contractedTimeCommitment?.frequency === "Select..." ? style.redLable : ""
             }
           />
           <div className={style.contractedTime}>
@@ -1819,6 +1819,9 @@ const ContractIdTermLimitIndividual = ({
             {/* <div>
               <CommonInputField value={fileFieldData?.fileName !== '' ? fileFieldData?.fileName : ''} leftElement={leftElement()} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileUpload(e)} />
             </div> */}
+          </div>
+          <div className={`${style.spaceBetween} ${style.marginTop}`}>
+            <p className={`${style.marginTop10} ${style.fileFormatStyle}`}>Accepted File Formats : PDF, DOC, PNG, Excel, JPEG, GIF, DOCX.</p>
           </div>
           {/* )} */}
           <div className={`${style.spaceBetween} ${style.marginTop}`}>

@@ -258,30 +258,30 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         workingTimeFrom: null,
         workingTimeTo: null,
         serviceDays: {
-            tuesday: false,
-            wednesday: false,
-            thursday: false,
-            friday: false,
-            saturday: false,
-            sunday: false,
-            weekDays: false,
-            weekEnds: false,
-            monday: false,
-            isholidays: false,
+          tuesday: false,
+          wednesday: false,
+          thursday: false,
+          friday: false,
+          saturday: false,
+          sunday: false,
+          weekDays: false,
+          weekEnds: false,
+          monday: false,
+          isholidays: false,
         },
         serviceWeekDaysDay: {
-            monday: false,
-            tuesday: false,
-            wednesday: false,
-            thursday: false,
-            friday: false,
+          monday: false,
+          tuesday: false,
+          wednesday: false,
+          thursday: false,
+          friday: false,
         },
         serviceWeekDaysNight: {
-            monday: false,
-            tuesday: false,
-            wednesday: false,
-            thursday: false,
-            friday: false,
+          monday: false,
+          tuesday: false,
+          wednesday: false,
+          thursday: false,
+          friday: false,
         },
         serviceDaysArray: [],
         weekdaysCount: '0',
@@ -1499,7 +1499,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                     endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                   }}
                   value={metadata?.sessionDuration}
-                  onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, sessionDuration: parseFloat(e.target.value.slice(0, 3)), sessionAmount: metadata?.serviceRateFrequency === 'SESSION' ? metadata?.serviceRate : (metadata?.serviceRate * e.target.value) })}
+                  onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, sessionDuration: parseFloat(e.target.value.slice(0, 9)), sessionAmount: metadata?.serviceRateFrequency === 'SESSION' ? metadata?.serviceRate : (metadata?.serviceRate * e.target.value) })}
                 />
               </div>
             </div>
@@ -1535,7 +1535,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                       startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
                     }}
                     value={metadata?.serviceRate}
-                    onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, serviceRate: parseFloat(e.target.value), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? parseFloat(e.target.value) : (parseFloat(e.target.value) * metadata?.sessionDuration) })}
+                    onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, serviceRate: parseFloat(e.target.value.slice(0, 9)), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? parseFloat(e.target.value) : (parseFloat(e.target.value) * metadata?.sessionDuration) })}
                   />
                 </div>
               </div>
