@@ -1512,6 +1512,9 @@ const AddServiceProvided = ({
                       dataValues?.holidayPayment / dataValues?.holidayDuration
                     )?.toFixed(2),
                   },
+                  serviceDays: {
+                    isholidays: dataValues?.holidayActivity === "" ? false : true,
+                  },
                   paymentNotApplicable: dataValues?.holidayPaymentNa,
                 },
               },
