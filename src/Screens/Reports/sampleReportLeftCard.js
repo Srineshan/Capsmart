@@ -94,7 +94,6 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
         setUserDetails();
         getActivityLogger();
         getContractAndUserList();
-        getAllDeptList();
     }, [])
 
     const setUserDetails = async () => {
@@ -135,7 +134,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
 
     const getAllDeptList = async () => {
         const { data: deptList } = await GET(`entity-service/department/${dataToUseInReport?.selectedSites}`);
-        // setDepartments(deptList)
+        setDepartments(deptList)
     }
 
     const podTypes = ['Medical Staff Membership & Privileges',
@@ -168,6 +167,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
             setSelectedSites(reportFilter?.sites);
             setSelectedDepartments(reportFilter?.departments);
             setReportingTimePeriod(reportFilter?.reportingTimePeriod);
+            setSelectedContractedServiceProvider(reportFilter?.users)
         }
     }, [currentUserDetails])
 
@@ -182,14 +182,21 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
         setDepartments([]);
         selectedSitesToSend?.map(siteData => {
             siteData?.departmentList?.departments?.map(data => {
-                tempDept.push({ site: siteData, dept: data });
+                // tempDept.push({ site: siteData, dept: data });
+                tempDept.push(data);
             })
         });
         // let uniqueDepartments = tempDept.filter((ele, ind) => ind === tempDept.findIndex(elem => elem.id === ele.id && elem.id === ele.id));
-        setDepartments(tempDept);
-        if (tempDept?.length === 1) {
-            setSelectedDepartments([tempDept?.[0]?.dept?.id]);
-            setSelectedDepartmentsToSend([tempDept?.[0]?.dept]);
+        if (currentUserDetails?.roles?.length === 1 && currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Activity Logger")) {
+            setDepartments(tempDept);
+            if (tempDept?.length === 1) {
+                // setSelectedDepartments([tempDept?.[0]?.dept?.id]);
+                // setSelectedDepartmentsToSend([tempDept?.[0]?.dept]);
+                setSelectedDepartments([tempDept?.[0]?.id]);
+                setSelectedDepartmentsToSend([tempDept?.[0]]);
+            }
+        } else {
+            getAllDeptList();
         }
         // if (currentUserDetails?.roles?.length >= 2 || (currentUserDetails?.roles?.length === 1 && !currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Activity Logger"))) {
         //     getAllDeptList();
@@ -384,11 +391,17 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 MenuProps={MenuProps}
                             >
                                 {departments?.map((data) => (
+                                    // <MenuItem
+                                    //     key={data?.dept?.id}
+                                    //     value={data?.dept?.id}
+                                    // >
+                                    //     {`${data?.site?.siteName?.siteName} - ${data?.dept?.departmentName?.name}`}
+                                    // </MenuItem>
                                     <MenuItem
-                                        key={data?.dept?.id}
-                                        value={data?.dept?.id}
+                                        key={data?.id}
+                                        value={data?.id}
                                     >
-                                        {`${data?.site?.siteName?.siteName} - ${data?.dept?.departmentName?.name}`}
+                                        {data?.departmentName?.name}
                                     </MenuItem>
                                 ))}
                             </Select>
@@ -552,11 +565,17 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 MenuProps={MenuProps}
                             >
                                 {departments?.map((data) => (
+                                    // <MenuItem
+                                    //     key={data?.dept?.id}
+                                    //     value={data?.dept?.id}
+                                    // >
+                                    //     {`${data?.site?.siteName?.siteName} - ${data?.dept?.departmentName?.name}`}
+                                    // </MenuItem>
                                     <MenuItem
-                                        key={data?.dept?.id}
-                                        value={data?.dept?.id}
+                                        key={data?.id}
+                                        value={data?.id}
                                     >
-                                        {`${data?.site?.siteName?.siteName} - ${data?.dept?.departmentName?.name}`}
+                                        {data?.departmentName?.name}
                                     </MenuItem>
                                 ))}
                             </Select>
@@ -676,11 +695,17 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 MenuProps={MenuProps}
                             >
                                 {departments?.map((data) => (
+                                    // <MenuItem
+                                    //     key={data?.dept?.id}
+                                    //     value={data?.dept?.id}
+                                    // >
+                                    //     {data?.site?.siteName?.siteName - data?.dept?.departmentName?.name}
+                                    // </MenuItem>
                                     <MenuItem
-                                        key={data?.dept?.id}
-                                        value={data?.dept?.id}
+                                        key={data?.id}
+                                        value={data?.id}
                                     >
-                                        {data?.site?.siteName?.siteName - data?.dept?.departmentName?.name}
+                                        {data?.departmentName?.name}
                                     </MenuItem>
                                 ))}
                             </Select>

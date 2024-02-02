@@ -72,13 +72,13 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     const routeList = {
         ACTIVITES_SERVICES_LOG_SUMMARY: 'activitiesOrServices',
         ADDON_ACTIVITES_SERVICES_LOG_SUMMARY: 'addOnActivities',
-        key: 'scheduledActivity',
+        // key: 'scheduledActivity',
         UPCOMING_CONTRACT_RENEWALS: 'upcomingContractRenewals',
         ONE_TIME_CONTRACT: 'oneTimeContract',
-        key: 'complianceStatus',
-        key: 'nonCompliant',
+        // key: 'complianceStatus',
+        // key: 'nonCompliant',
         PAID_CONSULTING_HOURS_BILLING_PRODUCTIVITY_INDEX_BY_CONTRACTOR: 'paidConsultingHours',
-        key: 'scheduledActivityByContract',
+        // key: 'scheduledActivityByContract',
         PAYMENT_PROCESSING_SUMMARY: 'paymentsProcessingSummary',
         COST_REPORT_FOR_CONTRACTED_SERVICES_PERFORMED: 'compensationCostAnalysis',
         TIME_AND_PAYEMENT_LOG_FOR_CONTRACTED_SERVICES: 'timeAndPaymentLog',
@@ -94,13 +94,13 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     const descriptionList = {
         ACTIVITES_SERVICES_LOG_SUMMARY: 'Activities/ Services Log Status Summary',
         ADDON_ACTIVITES_SERVICES_LOG_SUMMARY: 'Add On Activities/ Services Requests Status Summary',
-        key: 'Scheduled Activity/ Services - forcasted to actual',
+        // key: 'Scheduled Activity/ Services - forcasted to actual',
         UPCOMING_CONTRACT_RENEWALS: 'Upcoming Contract Renewals',
         ONE_TIME_CONTRACT: 'List of One Time Contracts that will Terminate on Expiration',
-        key: 'Contract Based Proof of Documentation Compliance Status Summary',
-        key: 'List Of Contracts That Are Non Compliant With Proof Of Documentation Requirement',
+        // key: 'Contract Based Proof of Documentation Compliance Status Summary',
+        // key: 'List Of Contracts That Are Non Compliant With Proof Of Documentation Requirement',
         PAID_CONSULTING_HOURS_BILLING_PRODUCTIVITY_INDEX_BY_CONTRACTOR: 'Paid Consulting Hours & Billing Productivity Index by Contractor',
-        key: 'Scheduled Activity/ Services - forecasted to actual by contract',
+        // key: 'Scheduled Activity/ Services - forecasted to actual by contract',
         PAYMENT_PROCESSING_SUMMARY: 'Payments Processing Summary',
         COST_REPORT_FOR_CONTRACTED_SERVICES_PERFORMED: 'Cost Report for Contracted Services Performed',
         TIME_AND_PAYEMENT_LOG_FOR_CONTRACTED_SERVICES: 'Time and Payment Log for Contracted Services',
@@ -117,13 +117,13 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     const titleList = {
         ACTIVITES_SERVICES_LOG_SUMMARY: 'Activities/ Services Log Status Summary',
         ADDON_ACTIVITES_SERVICES_LOG_SUMMARY: 'Add On Activities/ Services Requests Status Summary',
-        key: 'Scheduled Activity/ Services - forcasted to actual',
+        // key: 'Scheduled Activity/ Services - forcasted to actual',
         UPCOMING_CONTRACT_RENEWALS: 'Upcoming Contract Renewals',
         ONE_TIME_CONTRACT: 'List of One Time Contracts that will Terminate on Expiration',
-        key: 'Contract Based Proof of Documentation Compliance Status Summary',
-        key: 'List Of Contracts That Are Non Compliant With Proof Of Documentation Requirement',
-        key: 'Paid Consulting Hours & Billing Productivity Index by Contractor',
-        key: 'Scheduled Activity/ Services - forecasted to actual by contract',
+        // key: 'Contract Based Proof of Documentation Compliance Status Summary',
+        // key: 'List Of Contracts That Are Non Compliant With Proof Of Documentation Requirement',
+        // key: 'Paid Consulting Hours & Billing Productivity Index by Contractor',
+        // key: 'Scheduled Activity/ Services - forecasted to actual by contract',
         PAYMENT_PROCESSING_SUMMARY: 'Payments Processing Summary',
         COST_REPORT_FOR_CONTRACTED_SERVICES_PERFORMED: 'Cost Report for Contracted Services Performed',
         TIME_AND_PAYEMENT_LOG_FOR_CONTRACTED_SERVICES: 'Time and Payment Log for Contracted Services',
@@ -307,6 +307,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                         <div className={style.tableDataReportsFontStyle}>{index + 1}</div>
                                         <Link to={`/reportTypeOverview/${routeList[data?.subCategory]}`} className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>{titleList[data?.title]}</div></Link>
                                         <div className={style.tableDataReportsFontStyle}>{descriptionList[data?.description]}</div>
+                                        {/* <div className={style.tableDataReportsFontStyle}>{data?.lastRun !== null ? formatInTimeZone(new Date(data?.lastRun), 'd MMM yyyy HH:mm zzz', { timeZone: 'Asia/Kolkata' }) : '-'} </div> */}
                                         <div className={style.tableDataReportsFontStyle}>{data?.lastRun !== null ? formatInTimeZone(new Date(data?.lastRun), userTimeZone, 'd MMM yyyy HH:mm') : '-'} </div>
                                         {/* <div className={style.tableDataReportsFontStyle}>{currentUserDetails?.fullName}</div> */}
                                         <div className={style.tableDataReportsFontStyle}>{data?.lastUpdate !== null ? format(new Date(data?.lastUpdate), 'd MMM yyyy') : '-'}</div>
