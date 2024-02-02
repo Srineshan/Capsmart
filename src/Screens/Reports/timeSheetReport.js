@@ -57,6 +57,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     const [standardTemplates, setStandardTemplates] = useState([]);
     const currentUserDetails = currentUser();
     const [isExpanded, setIsExpanded] = useState(true);
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const availableCategories = {
         servicesOrActivities: 'SERVICES_ACTIVITIES',
         contractManagement: 'CONTRACT_MANAGEMENT',
@@ -71,57 +72,69 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     const routeList = {
         ACTIVITES_SERVICES_LOG_SUMMARY: 'activitiesOrServices',
         ADDON_ACTIVITES_SERVICES_LOG_SUMMARY: 'addOnActivities',
-        key: 'scheduledActivity',
+        // key: 'scheduledActivity',
         UPCOMING_CONTRACT_RENEWALS: 'upcomingContractRenewals',
-        key: 'oneTimeContract',
-        key: 'complianceStatus',
-        key: 'nonCompliant',
+        ONE_TIME_CONTRACT: 'oneTimeContract',
+        // key: 'complianceStatus',
+        // key: 'nonCompliant',
         PAID_CONSULTING_HOURS_BILLING_PRODUCTIVITY_INDEX_BY_CONTRACTOR: 'paidConsultingHours',
-        key: 'scheduledActivityByContract',
+        // key: 'scheduledActivityByContract',
         PAYMENT_PROCESSING_SUMMARY: 'paymentsProcessingSummary',
         COST_REPORT_FOR_CONTRACTED_SERVICES_PERFORMED: 'compensationCostAnalysis',
         TIME_AND_PAYEMENT_LOG_FOR_CONTRACTED_SERVICES: 'timeAndPaymentLog',
         SITE_DEPARTMENT_SPECIFIC_CONTRACTOR_SUMMARY: 'siteDepartmentSpecificContractorSummary',
         TIMESHEET_PROCESSING_SUMMARY: 'timesheetProcessingSummary',
         LISTING_OF_TIMESHEETS_NOTPAID: 'listingOfTimesheetsNotPaid',
-        SUBMITTED_TIMESHEETS_PAYMENT_STATUS: 'submittedTimesheetsPaymentStatus'
+        SUBMITTED_TIMESHEETS_PAYMENT_STATUS: 'submittedTimesheetsPaymentStatus',
+        CURRENT_REMIT_TO_ADDRESS: 'currentRemitToAddressForActiveContracts',
+        CONTRACT_DOCUMENT_ON_FILE: 'contractDocumentsOnFile',
+        CONTRACT_WITH_BUSINESS_ENTITY: 'contractsWithABusinessEntity',
+        MULTI_PROVIDER_CONTRACT: 'multiProviderContractsList'
     }
     const descriptionList = {
         ACTIVITES_SERVICES_LOG_SUMMARY: 'Activities/ Services Log Status Summary',
         ADDON_ACTIVITES_SERVICES_LOG_SUMMARY: 'Add On Activities/ Services Requests Status Summary',
-        key: 'Scheduled Activity/ Services - forcasted to actual',
+        // key: 'Scheduled Activity/ Services - forcasted to actual',
         UPCOMING_CONTRACT_RENEWALS: 'Upcoming Contract Renewals',
-        key: 'List of One Time Contracts that will Terminate on Expiration',
-        key: 'Contract Based Proof of Documentation Compliance Status Summary',
-        key: 'List Of Contracts That Are Non Compliant With Proof Of Documentation Requirement',
+        ONE_TIME_CONTRACT: 'List of One Time Contracts that will Terminate on Expiration',
+        // key: 'Contract Based Proof of Documentation Compliance Status Summary',
+        // key: 'List Of Contracts That Are Non Compliant With Proof Of Documentation Requirement',
         PAID_CONSULTING_HOURS_BILLING_PRODUCTIVITY_INDEX_BY_CONTRACTOR: 'Paid Consulting Hours & Billing Productivity Index by Contractor',
-        key: 'Scheduled Activity/ Services - forecasted to actual by contract',
+        // key: 'Scheduled Activity/ Services - forecasted to actual by contract',
         PAYMENT_PROCESSING_SUMMARY: 'Payments Processing Summary',
         COST_REPORT_FOR_CONTRACTED_SERVICES_PERFORMED: 'Cost Report for Contracted Services Performed',
         TIME_AND_PAYEMENT_LOG_FOR_CONTRACTED_SERVICES: 'Time and Payment Log for Contracted Services',
         SITE_DEPARTMENT_SPECIFIC_CONTRACTOR_SUMMARY: 'Site/ Department Specific Contractor Summary Statistics',
         TIMESHEET_PROCESSING_SUMMARY: 'Timesheet Processing Summary',
         LISTING_OF_TIMESHEETS_NOTPAID: 'Listing Of Timesheets Not Paid',
-        SUBMITTED_TIMESHEETS_PAYMENT_STATUS: 'Submitted Timesheets Payment Status'
+        SUBMITTED_TIMESHEETS_PAYMENT_STATUS: 'Submitted Timesheets Payment Status',
+        CURRENT_REMIT_TO_ADDRESS: 'Current Remit To Address For Active Contracts',
+        CONTRACT_DOCUMENT_ON_FILE: 'Contract Documents On File',
+        CONTRACT_WITH_BUSINESS_ENTITY: 'Contracts With A Business Entity',
+        MULTI_PROVIDER_CONTRACT: 'Multi Provider Contracts List'
     }
 
     const titleList = {
         ACTIVITES_SERVICES_LOG_SUMMARY: 'Activities/ Services Log Status Summary',
         ADDON_ACTIVITES_SERVICES_LOG_SUMMARY: 'Add On Activities/ Services Requests Status Summary',
-        key: 'Scheduled Activity/ Services - forcasted to actual',
+        // key: 'Scheduled Activity/ Services - forcasted to actual',
         UPCOMING_CONTRACT_RENEWALS: 'Upcoming Contract Renewals',
-        key: 'List of One Time Contracts that will Terminate on Expiration',
-        key: 'Contract Based Proof of Documentation Compliance Status Summary',
-        key: 'List Of Contracts That Are Non Compliant With Proof Of Documentation Requirement',
-        key: 'Paid Consulting Hours & Billing Productivity Index by Contractor',
-        key: 'Scheduled Activity/ Services - forecasted to actual by contract',
+        ONE_TIME_CONTRACT: 'List of One Time Contracts that will Terminate on Expiration',
+        // key: 'Contract Based Proof of Documentation Compliance Status Summary',
+        // key: 'List Of Contracts That Are Non Compliant With Proof Of Documentation Requirement',
+        // key: 'Paid Consulting Hours & Billing Productivity Index by Contractor',
+        // key: 'Scheduled Activity/ Services - forecasted to actual by contract',
         PAYMENT_PROCESSING_SUMMARY: 'Payments Processing Summary',
         COST_REPORT_FOR_CONTRACTED_SERVICES_PERFORMED: 'Cost Report for Contracted Services Performed',
         TIME_AND_PAYEMENT_LOG_FOR_CONTRACTED_SERVICES: 'Time and Payment Log for Contracted Services',
         SITE_DEPARTMENT_SPECIFIC_CONTRACTOR_SUMMARY: 'Site/ Department Specific Contractor Summary Statistics',
         TIMESHEET_PROCESSING_SUMMARY: 'Timesheet Processing Summary',
         LISTING_OF_TIMESHEETS_NOTPAID: 'Listing Of Timesheets Not Paid',
-        SUBMITTED_TIMESHEETS_PAYMENT_STATUS: 'Submitted Timesheets Payment Status'
+        SUBMITTED_TIMESHEETS_PAYMENT_STATUS: 'Submitted Timesheets Payment Status',
+        CURRENT_REMIT_TO_ADDRESS: 'Current Remit To Address For Active Contracts',
+        CONTRACT_DOCUMENT_ON_FILE: 'Contract Documents On File',
+        CONTRACT_WITH_BUSINESS_ENTITY: 'Contracts With A Business Entity',
+        MULTI_PROVIDER_CONTRACT: 'Multi Provider Contracts List'
     }
 
     useEffect(() => {
@@ -169,8 +182,19 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     }
 
     const getStandardTemplates = async () => {
-        const { data: standardTemplates } = await GET(`timesheet-management-service/report/standardTemplates?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
-        setStandardTemplates(standardTemplates);
+        if (reportType === 'contractManagement') {
+            const { data: standardTemplates } = await GET(`timesheet-management-service/report/standardTemplates?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+            const { data: standardTemplatesContract } = await GET(`contract-managment-service/reports/standardTemplates?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+            let temp = standardTemplates || [];
+            standardTemplatesContract?.map(data => {
+                temp.push(data)
+            })
+            console.log(temp)
+            setStandardTemplates(temp);
+        } else {
+            const { data: standardTemplates } = await GET(`timesheet-management-service/report/standardTemplates?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+            setStandardTemplates(standardTemplates);
+        }
     }
 
     const getIsExpanded = (value) => {
@@ -283,23 +307,23 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                         <div className={style.tableDataReportsFontStyle}>{index + 1}</div>
                                         <Link to={`/reportTypeOverview/${routeList[data?.subCategory]}`} className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>{titleList[data?.title]}</div></Link>
                                         <div className={style.tableDataReportsFontStyle}>{descriptionList[data?.description]}</div>
-                                        <div className={style.tableDataReportsFontStyle}>{data?.lastRun !== null ? formatInTimeZone(new Date(data?.lastRun), 'America/New_York', 'd MMM yyyy H:m') : '-'} </div>
+                                        {/* <div className={style.tableDataReportsFontStyle}>{data?.lastRun !== null ? formatInTimeZone(new Date(data?.lastRun), 'd MMM yyyy HH:mm zzz', { timeZone: 'Asia/Kolkata' }) : '-'} </div> */}
+                                        <div className={style.tableDataReportsFontStyle}>{data?.lastRun !== null ? formatInTimeZone(new Date(data?.lastRun), userTimeZone, 'd MMM yyyy HH:mm') : '-'} </div>
                                         {/* <div className={style.tableDataReportsFontStyle}>{currentUserDetails?.fullName}</div> */}
-                                        <div className={style.tableDataReportsFontStyle}>{data?.lastUpdate !== null ? formatInTimeZone(new Date(data?.lastUpdate), 'America/New_York', 'd MMM yyyy') : '-'}</div>
+                                        <div className={style.tableDataReportsFontStyle}>{data?.lastUpdate !== null ? format(new Date(data?.lastUpdate), 'd MMM yyyy') : '-'}</div>
                                         <Link to={`/reportTypeOverview/${routeList[data?.subCategory]}`} className={style.linkStyle}>
                                             <Run />
                                         </Link>
                                     </div>
                                 ))}
-                                {reportType === 'contractManagement' && (
+                                {/* {reportType === 'contractManagement' && (
                                     <div className={style.scrollStyle}>
                                         <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
                                             <div className={style.tableDataReportsFontStyle}>1</div>
                                             <Link to="/reportTypeOverview/upcomingContractRenewals" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Upcoming Contract Renewals</div></Link>
                                             <div className={style.tableDataReportsFontStyle}>Upcoming Contract Renewals</div>
-                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy H:m')} </div>
-                                            {/* <div className={style.tableDataReportsFontStyle}>Carlos C</div> */}
-                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy H:m')}</div>
+                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy HH:mm')} </div>
+                                            <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'd MMM yyyy')}</div>
                                             <Link to={"/reportTypeOverview/upcomingContractRenewals"} className={style.linkStyle}>
                                                 <Run />
                                             </Link>
@@ -308,15 +332,54 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                             <div className={style.tableDataReportsFontStyle}>2</div>
                                             <Link to="/reportTypeOverview/oneTimeContract" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>List of One Time Contracts that will Terminate on Expiration</div></Link>
                                             <div className={style.tableDataReportsFontStyle}>List of One Time Contracts that will Terminate on Expiration</div>
-                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy H:m')} </div>
-                                            {/* <div className={style.tableDataReportsFontStyle}>Carlos C</div> */}
-                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy H:m')}</div>
+                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy HH:mm')} </div>
+                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy')}</div>
                                             <Link to={"/reportTypeOverview/oneTimeContract"} className={style.linkStyle}>
                                                 <Run />
                                             </Link>
                                         </div>
+                                        <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                            <div className={style.tableDataReportsFontStyle}>3</div>
+                                            <Link to="/reportTypeOverview/contractDocumentsOnFile" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Contract Documents On File</div></Link>
+                                            <div className={style.tableDataReportsFontStyle}>Contract Documents On File</div>
+                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy HH:mm')} </div>
+                                            <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'd MMM yyyy')}</div>
+                                            <Link to={"/reportTypeOverview/contractDocumentsOnFile"} className={style.linkStyle}>
+                                                <Run />
+                                            </Link>
+                                        </div>
+                                        <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                            <div className={style.tableDataReportsFontStyle}>4</div>
+                                            <Link to="/reportTypeOverview/multiProviderContractsList" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Multi Provider Contracts List</div></Link>
+                                            <div className={style.tableDataReportsFontStyle}>Multi Provider Contracts List</div>
+                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy HH:mm')} </div>
+                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy')}</div>
+                                            <Link to={"/reportTypeOverview/multiProviderContractsList"} className={style.linkStyle}>
+                                                <Run />
+                                            </Link>
+                                        </div>
+                                        <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                            <div className={style.tableDataReportsFontStyle}>5</div>
+                                            <Link to="/reportTypeOverview/contractsWithABusinessEntity" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Contracts With A Business Entity</div></Link>
+                                            <div className={style.tableDataReportsFontStyle}>Contracts With A Business Entity</div>
+                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy HH:mm')} </div>
+                                            <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'd MMM yyyy')}</div>
+                                            <Link to={"/reportTypeOverview/contractsWithABusinessEntity"} className={style.linkStyle}>
+                                                <Run />
+                                            </Link>
+                                        </div>
+                                        <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                            <div className={style.tableDataReportsFontStyle}>6</div>
+                                            <Link to="/reportTypeOverview/currentRemitToAddressForActiveContracts" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Current Remit To Address For Active Contracts</div></Link>
+                                            <div className={style.tableDataReportsFontStyle}>Current Remit To Address For Active Contracts</div>
+                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy HH:mm')} </div>
+                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy')}</div>
+                                            <Link to={"/reportTypeOverview/currentRemitToAddressForActiveContracts"} className={style.linkStyle}>
+                                                <Run />
+                                            </Link>
+                                        </div>
                                     </div>
-                                )}
+                                )} */}
                             </div>
                             {/* {reportType === 'servicesOrActivities' ? (
                                 <div className={style.scrollStyle}>

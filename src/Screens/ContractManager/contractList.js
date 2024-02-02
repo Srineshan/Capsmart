@@ -45,7 +45,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
   const draftHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "ACTIVATION STATUS", "LAST UPDATED", "REF DOCS", "LAST UPDATED BY", "MANAGER", "ACTION"];
   const activationPendingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "REVIEWS", "APPROVALS", "REF DOCS", "GO LIVE DATE", "EFFECTIVE DATE", "MANAGER", "ACTION"];
   const upcomingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "EXPIRATION DATE", "EXPIRING IN", "LAST UPDATE", "MANAGER", "ACTION"];
-  const expiredHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "TERMINATION DATE", "NEW CONTRACT ID", "LAST UPDATE", "MANAGER"];
+  const expiredHeaderValues = ["CHECKBOX", "CONTRACT TYPE", "ID", "NAME", "TERMINATION DATE", "NEW CONTRACT ID", "LAST UPDATE", "MANAGER"];
   const activeColSortValues = [false, false, false, false, true, true, false, false, false, false];
   const draftColSortValues = [false, false, true, true, false, false, false, false, false];
   const upcomingColSortValues = [false, false, true, true, false, false, false, false, false];
@@ -305,8 +305,8 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
       approvals.push('3/3');
       goLiveDate.push('07/19/2019');
       activationStatus.push(data?.contractStatus === 'ACTIVATION_READY' ? 'Activation pending' : 'Not Activated');
-      icon.push(<TextSnippetOutlinedIcon style={{ color: data?.contractDetail?.contractFiles?.length === 0 ? '#F94848' : '#14B15A' }} />);
-      iconHoverText.push(data?.contractDetail?.contractFiles?.length === 0 ? 'No Document Uploaded' : 'Document Uploaded');
+      icon.push(<TextSnippetOutlinedIcon style={{ color: (data?.contractDetail?.contractFiles?.length === 0 || data?.contractDetail?.contractFiles === null) ? '#F94848' : '#14B15A' }} />);
+      iconHoverText.push((data?.contractDetail?.contractFiles?.length === 0 || data?.contractDetail?.contractFiles === null) ? 'No Document Uploaded' : 'Document Uploaded');
       effectiveDate.push(format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy'));
       manager.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
       lastUpdated.push(format(new Date(data?.lastModifiedDate), 'MM-dd-yyyy'))
@@ -391,8 +391,8 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     lastUpdated = [];
 
     contracts?.map(data => {
-      dot.push('yellow');
-      dotTooltipValues.push('In-Progress');
+      dot.push(true);
+      dotTooltipValues.push('Selected');
       contractType.push(data?.contractType === 'MULTIPLE' ? 'MULTI - PROVIDER' : data?.contractType);
       contractId.push(data?.contractDetail?.contractId?.id);
       name.push(data?.contractName?.contractName);
@@ -403,7 +403,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     })
 
     return [
-      { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
+      { "type": "checkbox", "value": dot, 'tooltipValue': dotTooltipValues },
       { "type": "text", "value": contractType, "onClickFunction": onClickFunction },
       { "type": "text", "value": contractId, "onClickFunction": onClickFunction },
       { "type": "text", "value": name, "onClickFunction": onClickFunction },

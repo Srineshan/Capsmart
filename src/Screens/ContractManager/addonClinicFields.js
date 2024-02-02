@@ -28,7 +28,9 @@ import { valueCheck } from "../../utils/valueCheck";
 
 import style from "./index.module.scss";
 import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
-import SliderValueLabel from "@mui/material/Slider/SliderValueLabel";
+
+const TEXTFIELDLEN50 = 50;
+// import SliderValueLabel from "@mui/material/Slider/SliderValueLabel";
 
 const AddonClinicFields = ({
   getMetaData,
@@ -365,6 +367,7 @@ const AddonClinicFields = ({
       });
     setMetadata(temp);
     getFields();
+    generateCustomAddOnFields();
   };
 
   const onApproverSelected = (value, serviceName, title) => {
@@ -590,8 +593,7 @@ const AddonClinicFields = ({
       parentActivity: "Add-On Service",
       sessionAmount: newServices?.rate,
       sessionDuration: newServices?.sessionDuration,
-      serviceRate: newServices?.serviceRate,
-      serviceRateFrequency: newServices?.serviceRateFrequency,
+      serviceRate: { rate: newServices?.serviceRate, rateFrequency: newServices?.serviceRateFrequency },
       hourlyRate: {
         value: (newServices?.rate / newServices?.sessionDuration).toFixed(2),
       },
@@ -673,11 +675,11 @@ const AddonClinicFields = ({
     temp
       ?.filter((data) => data?.performingActivity === serviceName)
       ?.map((data) => {
-        data.sessionAmount = data?.serviceRate === 'SESSION' ? parseFloat(value) : (data?.serviceRate * data?.sessionDuration);
-        data.serviceRate = parseFloat(value)
+        data.sessionAmount = data?.serviceRate === 'SESSION' ? value : (data?.serviceRate * data?.sessionDuration);
+        data.serviceRate = value;
       });
     setMetadata(temp);
-    getFields();
+    generateCustomAddOnFields();
   };
 
   const updateServiceRateFrequency = (serviceName, value) => {
@@ -689,7 +691,7 @@ const AddonClinicFields = ({
         data.serviceRateFrequency = value
       });
     setMetadata(temp);
-    getFields();
+    generateCustomAddOnFields();
   };
 
   const updateSessionDuration = (serviceName, value) => {
@@ -703,11 +705,10 @@ const AddonClinicFields = ({
         };
       });
     setMetadata(temp);
-    getFields();
+    generateCustomAddOnFields();
   };
 
   const UpdateBillable = (serviceName, value) => {
-    console.log("inside func", value, serviceName);
     let temp = metadata;
     temp
       ?.filter((data) => data?.performingActivity === serviceName)
@@ -718,7 +719,7 @@ const AddonClinicFields = ({
         }
       });
     setMetadata(temp);
-    getFields();
+    generateCustomAddOnFields();
   };
 
   const handleWorkingHoursChange = (serviceName, value, name) => {
@@ -1219,6 +1220,7 @@ const AddonClinicFields = ({
               onChange={(e) =>
                 setNewServices({ ...newServices, name: e.target.value })
               }
+              maxLength={TEXTFIELDLEN50}
             />
             <div
               className={`${style.addAddonServiceButton} ${style.alignCenter}`}

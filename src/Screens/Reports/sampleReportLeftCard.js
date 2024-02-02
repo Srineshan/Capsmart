@@ -94,7 +94,6 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
         setUserDetails();
         getActivityLogger();
         getContractAndUserList();
-        getAllDeptList();
     }, [])
 
     const setUserDetails = async () => {
@@ -108,7 +107,9 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
     }
     console.log(currentUserDetails?.roles?.length >= 2, currentUserDetails?.roles?.length === 1, currentUserDetails?.roles?.filter(data => data?.roleName === "Activity Logger")?.length === 0)
     const getContractAndUserList = async () => {
-        if (reportType !== "upcomingContractRenewals" && reportType !== "oneTimeContract") {
+        if (reportType !== "upcomingContractRenewals" && reportType !== "oneTimeContract" &&
+            reportType !== "contractDocumentsOnFile" && reportType !== "multiProviderContractsList" &&
+            reportType !== "contractsWithABusinessEntity" && reportType !== "currentRemitToAddressForActiveContracts") {
             if (currentUserDetails?.roles?.length >= 2 || (currentUserDetails?.roles?.length === 1 && currentUserDetails?.roles?.filter(data => data?.roleName === "Activity Logger")?.length === 0)) {
                 const { data: contractAndUserList } = await GET(`contract-managment-service/reports/filter/usersAndContracts?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&reportCategory=${reportCategory[reportType]}`);
                 setContractedServiceProviders(contractAndUserList?.users);
@@ -133,7 +134,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
 
     const getAllDeptList = async () => {
         const { data: deptList } = await GET(`entity-service/department/${dataToUseInReport?.selectedSites}`);
-        // setDepartments(deptList)
+        setDepartments(deptList)
     }
 
     const podTypes = ['Medical Staff Membership & Privileges',
@@ -166,6 +167,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
             setSelectedSites(reportFilter?.sites);
             setSelectedDepartments(reportFilter?.departments);
             setReportingTimePeriod(reportFilter?.reportingTimePeriod);
+            setSelectedContractedServiceProvider(reportFilter?.users)
         }
     }, [currentUserDetails])
 
@@ -180,14 +182,21 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
         setDepartments([]);
         selectedSitesToSend?.map(siteData => {
             siteData?.departmentList?.departments?.map(data => {
-                tempDept.push({ site: siteData, dept: data });
+                // tempDept.push({ site: siteData, dept: data });
+                tempDept.push(data);
             })
         });
         // let uniqueDepartments = tempDept.filter((ele, ind) => ind === tempDept.findIndex(elem => elem.id === ele.id && elem.id === ele.id));
-        setDepartments(tempDept);
-        if (tempDept?.length === 1) {
-            setSelectedDepartments([tempDept?.[0]?.dept?.id]);
-            setSelectedDepartmentsToSend([tempDept?.[0]?.dept]);
+        if (currentUserDetails?.roles?.length === 1 && currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Activity Logger")) {
+            setDepartments(tempDept);
+            if (tempDept?.length === 1) {
+                // setSelectedDepartments([tempDept?.[0]?.dept?.id]);
+                // setSelectedDepartmentsToSend([tempDept?.[0]?.dept]);
+                setSelectedDepartments([tempDept?.[0]?.id]);
+                setSelectedDepartmentsToSend([tempDept?.[0]]);
+            }
+        } else {
+            getAllDeptList();
         }
         // if (currentUserDetails?.roles?.length >= 2 || (currentUserDetails?.roles?.length === 1 && !currentUserDetails?.roles?.map(data => data?.roleName)?.includes("Activity Logger"))) {
         //     getAllDeptList();
@@ -331,22 +340,26 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
         <div>
             <div className={`${style.leftCard} ${style.marginTop20} ${style.bigCalendarLeftCardWidth}`}>
                 <div className={style.reportTypeTextStyle}>Reporting Parameter Selection For This Report</div>
-                {(reportType === "upcomingContractRenewals" || reportType === "oneTimeContract") ? (
+                {(reportType === "upcomingContractRenewals" || reportType === "oneTimeContract" ||
+                    reportType === "contractDocumentsOnFile" || reportType === "multiProviderContractsList" ||
+                    reportType === "contractsWithABusinessEntity" || reportType === "currentRemitToAddressForActiveContracts") ? (
                     <>
-                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                            <InputLabel id="demo-simple-select-standard-label1">{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Time Frame</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-standard-label1"
-                                id="demo-simple-select-standard1"
-                                value={renewalreportingTimePeriod}
-                                onChange={(e) => { setRenewalreportingTimePeriod(e.target.value) }}
-                                label="Renewal Time Frame"
-                            >
-                                <MenuItem value={30}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 30 days</MenuItem>
-                                <MenuItem value={60}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 60 days</MenuItem>
-                                <MenuItem value={90}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 90 days</MenuItem>
-                            </Select>
-                        </FormControl>
+                        {reportType === "upcomingContractRenewals" && (
+                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                <InputLabel id="demo-simple-select-standard-label1">{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Time Frame</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-standard-label1"
+                                    id="demo-simple-select-standard1"
+                                    value={renewalreportingTimePeriod}
+                                    onChange={(e) => { setRenewalreportingTimePeriod(e.target.value) }}
+                                    label="Renewal Time Frame"
+                                >
+                                    <MenuItem value={30}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 30 days</MenuItem>
+                                    <MenuItem value={60}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 60 days</MenuItem>
+                                    <MenuItem value={90}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 90 days</MenuItem>
+                                </Select>
+                            </FormControl>
+                        )}
                         <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                             <InputLabel id="demo-multiple-name-label2">Site</InputLabel>
                             <Select
@@ -378,16 +391,41 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 MenuProps={MenuProps}
                             >
                                 {departments?.map((data) => (
+                                    // <MenuItem
+                                    //     key={data?.dept?.id}
+                                    //     value={data?.dept?.id}
+                                    // >
+                                    //     {`${data?.site?.siteName?.siteName} - ${data?.dept?.departmentName?.name}`}
+                                    // </MenuItem>
                                     <MenuItem
-                                        key={data?.dept?.id}
-                                        value={data?.dept?.id}
+                                        key={data?.id}
+                                        value={data?.id}
                                     >
-                                        {`${data?.site?.siteName?.siteName} - ${data?.dept?.departmentName?.name}`}
+                                        {data?.departmentName?.name}
                                     </MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
-                        {reportType !== "oneTimeContract" && (
+                        {(reportType === "contractDocumentsOnFile" || reportType === "multiProviderContractsList" ||
+                            reportType === "contractsWithABusinessEntity") && (
+                                <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                    <InputLabel id="demo-simple-select-standard-label3">Contract Status</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-standard-label3"
+                                        id="demo-simple-select-standard3"
+                                        value={contractStatus}
+                                        onChange={(e) => { setContractStatus(e.target.value) }}
+                                        MenuProps={MenuProps}
+                                    >
+                                        <MenuItem value={'ACTIVE'}>Active</MenuItem>
+                                        <MenuItem value={'DRAFT'}>Draft</MenuItem>
+                                        <MenuItem value={'EXPIRED'}>Expired</MenuItem>
+                                        <MenuItem value={'TERMINATED'}>Terminated</MenuItem>
+                                        <MenuItem value={'ACTIVATION_READY'}>Activation Ready</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            )}
+                        {reportType === "upcomingContractRenewals" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-simple-select-standard-label4">Contract Continuation Policy</InputLabel>
                                 <Select
@@ -527,11 +565,17 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 MenuProps={MenuProps}
                             >
                                 {departments?.map((data) => (
+                                    // <MenuItem
+                                    //     key={data?.dept?.id}
+                                    //     value={data?.dept?.id}
+                                    // >
+                                    //     {`${data?.site?.siteName?.siteName} - ${data?.dept?.departmentName?.name}`}
+                                    // </MenuItem>
                                     <MenuItem
-                                        key={data?.dept?.id}
-                                        value={data?.dept?.id}
+                                        key={data?.id}
+                                        value={data?.id}
                                     >
-                                        {`${data?.site?.siteName?.siteName} - ${data?.dept?.departmentName?.name}`}
+                                        {data?.departmentName?.name}
                                     </MenuItem>
                                 ))}
                             </Select>
@@ -651,11 +695,17 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 MenuProps={MenuProps}
                             >
                                 {departments?.map((data) => (
+                                    // <MenuItem
+                                    //     key={data?.dept?.id}
+                                    //     value={data?.dept?.id}
+                                    // >
+                                    //     {data?.site?.siteName?.siteName - data?.dept?.departmentName?.name}
+                                    // </MenuItem>
                                     <MenuItem
-                                        key={data?.dept?.id}
-                                        value={data?.dept?.id}
+                                        key={data?.id}
+                                        value={data?.id}
                                     >
-                                        {data?.site?.siteName?.siteName - data?.dept?.departmentName?.name}
+                                        {data?.departmentName?.name}
                                     </MenuItem>
                                 ))}
                             </Select>

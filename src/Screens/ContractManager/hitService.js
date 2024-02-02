@@ -62,7 +62,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
     services?.filter(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => {
         let activityName = data?.activityType?.activityType;
         let activities = data?.activities?.map(data => data?.activity);
-        let result = `${activityName} (${activities?.map(data => data)?.join(', ')})`
+        let result = `${activityName} (${activities?.map(data => data)?.join('-')})`
         specificDedicatedHoursList.push(result);
     });
 
@@ -78,15 +78,15 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         serviceRate: '0',
         serviceRateFrequency: 'SESSION',
         serviceDays: {
-            tuesday: false,
-            wednesday: false,
-            thursday: false,
-            friday: false,
-            saturday: false,
-            sunday: false,
-            weekDays: false,
-            weekEnds: false,
-            monday: false
+            tuesday: true,
+            wednesday: true,
+            thursday: true,
+            friday: true,
+            saturday: true,
+            sunday: true,
+            weekDays: true,
+            weekEnds: true,
+            monday: true
         },
         selectedActivities: [],
         weekdaysCount: '0',
@@ -249,15 +249,15 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
             serviceRate: '0',
             serviceRateFrequency: 'SESSION',
             serviceDays: {
-                tuesday: false,
-                wednesday: false,
-                thursday: false,
-                friday: false,
-                saturday: false,
-                sunday: false,
-                weekDays: false,
-                weekEnds: false,
-                monday: false
+                tuesday: true,
+                wednesday: true,
+                thursday: true,
+                friday: true,
+                saturday: true,
+                sunday: true,
+                weekDays: true,
+                weekEnds: true,
+                monday: true
             },
             selectedActivities: [],
             weekdaysCount: '0',
@@ -386,9 +386,9 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         services?.filter(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => {
             let activityName = data?.activityType?.activityType;
             let activities = data?.activities?.map(data => data?.activity);
-            if (`${activityName} (${activities?.map(data => data)?.join(', ')})` === index) {
+            if (`${activityName} (${activities?.map(data => data)?.join('-')})` === index) {
                 let dedicatedHoursActivityType = data?.activityType?.activityType;
-                let dedicatedHoursPerformingActivity = data?.activities?.map(data => data?.activity)?.join(', ');
+                let dedicatedHoursPerformingActivity = data?.activities?.map(data => data?.activity)?.join('-');
                 console.log('data', data);
                 setMetadata({
                     ...metadata,
@@ -637,7 +637,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                                     {data?.podRequired && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
                                 </>)}
 
-                                {metadata?.selectedActivities?.map(selectedActivity => selectedActivity?.activity)?.includes(data?.activity) && <EditOutlinedIcon style={{ color: '#7165E3' }} className={`${style.cursorPointer}`} onClick={() => {
+                                {metadata?.selectedActivities?.map(selectedActivity => selectedActivity?.activity)?.includes(data?.activity) && <EditOutlinedIcon style={{ color: '#7165E3', cursor: 'pointer' }} className={`${style.cursorPointer}`} onClick={() => {
                                     setEditAdminActivitySelected(true);
                                     let adminActivity = metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities)[0];
                                     setAdminActivity({
@@ -711,8 +711,8 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
 
                     <div>
                         <div className={` ${style.floatRight}`}>
-                            <button className={`${style.outlinedButton} ${style.cursorPointer}`} onClick={(e) => { setShowAdminActivity(false); setEditAdminActivitySelected(false); }}>CANCEL</button>
-                            <button className={`${style.buttonStyle}  ${style.marginLeft20} ${style.cursorPointer} ${isLoading ? style.disabled : ''}`} onClick={(e) => { submit() }}>SAVE</button>
+                            <button className={`${style.outlinedButton} ${style.cursorPointer} ${style.cursorPointer}`} onClick={(e) => { setShowAdminActivity(false); setEditAdminActivitySelected(false); }}>CANCEL</button>
+                            <button className={`${style.buttonStyle}  ${style.marginLeft20} ${style.cursorPointer} ${isLoading ? style.disabled : ''} ${style.cursorPointer}`} onClick={(e) => { submit() }}>SAVE</button>
                         </div>
                         <br /><br />
                     </div>

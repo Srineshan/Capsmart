@@ -19,6 +19,7 @@ import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import { format } from "date-fns";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
+import { formatInTimeZone } from "date-fns-tz";
 
 const FunctionalTitleForCustomer = () => {
   const [showFunctionalTitlesDialog, setShowFunctionalTitleDialog] =
@@ -107,7 +108,9 @@ const FunctionalTitleForCustomer = () => {
       `entity-service/referenceList/entity/${entityId}`
     );
     const date = new Date(lastModifiedDate.functionalTitles?.lastModified);
-    setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
+    setLastUpdatedDate(
+      formatInTimeZone(date, "America/New_York", "MMM d, yyyy HH:mm zzz")
+    );
   };
 
   const getEntityTypes = async () => {

@@ -188,7 +188,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
                     'startDate': dataToUseInReport?.from,
                     'endDate': dataToUseInReport?.to,
                     'contracts': dataToUseInReport?.selectedContracts,
-                    'users': [dataToUseInReport?.selectedContractedServiceProvider],
+                    'users': dataToUseInReport?.selectedContractedServiceProvider,
                     'sites': dataToUseInReport?.selectedSites,
                     'departments': dataToUseInReport?.selectedDepartments
                 },

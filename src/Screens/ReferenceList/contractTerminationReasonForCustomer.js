@@ -20,6 +20,7 @@ import AddTerminationReasonsForCustomer from "./addTerminationReasonForCustomer"
 import { format } from "date-fns";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
+import { formatInTimeZone } from "date-fns-tz";
 
 const TerminationReasonForCustomer = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -77,7 +78,9 @@ const TerminationReasonForCustomer = () => {
       `entity-service/referenceList/entity/${entityId}`
     );
     const date = new Date(lastModifiedDate.terminationReason?.lastModified);
-    setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
+    setLastUpdatedDate(
+      formatInTimeZone(date, "America/New_York", "MMM d, yyyy HH:mm zzz")
+    );
   };
 
   const getEntityTypes = async () => {
