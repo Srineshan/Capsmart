@@ -241,9 +241,8 @@ const HolidayScheduleForCustomers = () => {
         <Navbar />
         <div className={style.margin20}>
           <div
-            className={`${
-              isExpanded ? style.bigCardGrid : style.smallCardGrid
-            }`}
+            className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid
+              }`}
           >
             <div>
               <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
@@ -374,11 +373,7 @@ const HolidayScheduleForCustomers = () => {
                                       <p
                                         className={`${style.TextStyle4} ${style.marginLeft5}`}
                                       >
-                                        {formatInTimeZone(
-                                          new Date(data?.eventDate),
-                                          "America/New_York",
-                                          "MMMM d, yyyy"
-                                        )}
+                                        {format(new Date(data?.eventDate), "MMMM d, yyyy")}
                                       </p>
                                     </div>
                                   ))}
@@ -467,14 +462,8 @@ const HolidayScheduleForCustomers = () => {
                                           className={`${style.holidayScheduleTableData1} ${style.healthCareTableDataColor1} ${style.spaceBetween}`}
                                           key={index}
                                         >
-                                          <p
-                                            className={style.tableDataFontStyle}
-                                          >
-                                            {formatInTimeZone(
-                                              new Date(data?.eventDate),
-                                              "America/New_York",
-                                              "MMMM d"
-                                            )}{" "}
+                                          <p className={style.tableDataFontStyle}>
+                                            {format(new Date(data?.eventDate), "MMMM d")}
                                           </p>
                                           <p
                                             className={style.tableDataFontStyle}
