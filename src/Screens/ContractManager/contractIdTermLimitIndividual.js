@@ -126,6 +126,7 @@ const ContractIdTermLimitIndividual = ({
   const [fileItems, setFileItems] = useState([]);
   const [isAggregationNeeded, setIsAggregationNeeded] = useState(true);
   const contractStatus = sessionStorage.getItem("Selected Contract Status");
+  const [buttonName, setButtonName] = useState("");
 
   useEffect(() => {
     if (method === "PUT" && createdContractId !== "") {
@@ -459,18 +460,17 @@ const ContractIdTermLimitIndividual = ({
       }
     }
 
-    if (buttonType === "SaveInProgress") {
-      saveInProgresscheck();
-    } else {
-      addContract("Continue");
-    }
+    if (buttonType === "SaveInProgress" || buttonType === "Continue") {
+      saveInProgresscheck(buttonType);
+      setButtonName(buttonType)
+    } 
   };
 
-  const saveInProgresscheck = () => {
+  const saveInProgresscheck = (buttonType) => {
     var keys = [];
 
-    if (contractId?.id === "") {
-      keys.push("Contract ID / Resolution No");
+    if (contractId?.id === "" && contractId.missing === false) {
+      keys.push("Enter Contract ID / Resolution No");
     }
     if (contractData?.contractManager?.name?.firstName === "") {
       keys.push("Assigned Contract Manager");
@@ -481,27 +481,39 @@ const ContractIdTermLimitIndividual = ({
     if (contractedTimeCommitment?.value === "") {
       keys.push("Contract Time Commitment");
     }
+    if (contractedTimeCommitment?.frequency === "NA" || contractedTimeCommitment?.frequency === "Select...") {
+      keys.push("Contract Time Frequency");
+    }
     if (valueCheck(selectedContractContinuationPolicy)) {
       keys.push("Contract Continuation Policy");
     }
     if (valueCheck(compensationPolicy)) {
       keys.push("Compensation Policy To Apply");
     }
+    if (fullyExecutedContract === true && fullyExecutedContractData?.length === 0 ) {
+      keys.push("Contract Documents On File");
+    }
+    if (departmentSpecific === true && selectedDepartmentSites?.[0]?.departmentList.departments?.length === 0 ) {
+      keys.push("Department Specific Contract");
+    }
 
     setUnassignedKeys(keys);
     if (keys?.length !== 0) {
       setShowSaveInProgress(true);
+      setContinueLoading(true)
     } else {
-      addContract("SaveInProgress");
+      addContract(buttonType);
     }
   };
 
-  const saveInProgressFunction = () => {
-    addContract("SaveInProgress");
+  const saveInProgressFunction = (type) => {
+    addContract(type);
+    setShowSaveInProgress(false)
   };
 
   const getSaveInProgressAlert = (value) => {
     setShowSaveInProgress(value);
+    setContinueLoading(value)
   };
 
   console.log('selectedContractType', selectedContractType)
@@ -516,6 +528,11 @@ const ContractIdTermLimitIndividual = ({
     setContinueLoading(true);
     if (contractName === "") {
       ErrorToaster("Enter Contract Name to proceed");
+      setContinueLoading(false);
+      return;
+    }
+    if (contractId?.id === "" && contractId.missing === false) {
+      ErrorToaster("Enter Contract ID / Resolution No");
       setContinueLoading(false);
       return;
     }
@@ -908,8 +925,6 @@ const ContractIdTermLimitIndividual = ({
       })
   }
 
-  console.log(fullyExecutedContractData)
-
   const onSelectDepartment = (data) => {
     setSelectedDepartmentSites(data);
     setIsSiteDeptUpdated(true);
@@ -996,6 +1011,7 @@ const ContractIdTermLimitIndividual = ({
   };
 
   console.log("Conflict", conflict);
+  console.log(selectedSites)
 
   return (
     <div className={style.cloneBlockStyle}>
@@ -1022,7 +1038,7 @@ const ContractIdTermLimitIndividual = ({
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <CommonLabel
             value="Contract ID / Resolution No*"
-            className={dataCheck(contractId?.id) ? style.redLable : ""}
+            className={dataCheck(contractId?.id) && contractId.missing === false ? style.redLable : ""}
           />
           <div className={style.displayInRow}>
             <CommonInputField
@@ -1176,7 +1192,9 @@ const ContractIdTermLimitIndividual = ({
         }
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <CommonLabel value="Contract Documents On File*" />
+          <CommonLabel value="Contract Documents On File*"           
+            className={fullyExecutedContract === true && fullyExecutedContractData?.length === 0 ? style.redLable : ""}
+          />
           {contractStatus === "ACTIVE" && fileItems?.length !== 0 ?
             <div> {fileItems}</div>
             : (
@@ -1201,7 +1219,7 @@ const ContractIdTermLimitIndividual = ({
                         Upload File
                       </label>
                     </button>
-                    <input id="file-upload" type="file" accept="image/*, .pdf" onChange={(e) => { handleFileUpload(e); }} disabled={(contractStatus === "ACTIVE" || !fullyExecutedContract) ? true : false} />
+                    <input id="file-upload" type="file" accept="*/*" onChange={(e) => { handleFileUpload(e); }} disabled={(contractStatus === "ACTIVE" || !fullyExecutedContract) ? true : false} />
                   </div>
                 </div>
                 {/* {fullyExecutedContract && (
@@ -1297,7 +1315,10 @@ const ContractIdTermLimitIndividual = ({
             deptFieldCheck(departmentSpecific);
           }}
         >
-          <CommonLabel value="Department Specific Contract*" />
+          <CommonLabel value="Department Specific Contract*" 
+            className={departmentSpecific === true && selectedDepartmentSites?.[0]?.departmentList.departments?.length === 0
+              ? style.redLable : ""}
+          />
           <CommonSwitch
             checked={departmentSpecific}
             className={` ${style.textAlignLeft} ${style.switchFontStyle}`}
@@ -1501,7 +1522,7 @@ const ContractIdTermLimitIndividual = ({
           <CommonLabel
             value="Contract Time Commitment*"
             className={
-              dataCheck(contractedTimeCommitment?.value) ? style.redLable : ""
+              dataCheck(contractedTimeCommitment?.value) || contractedTimeCommitment?.frequency === "NA" ||  contractedTimeCommitment?.frequency === "Select..." ? style.redLable : ""
             }
           />
           <div className={style.contractedTime}>
@@ -1789,11 +1810,11 @@ const ContractIdTermLimitIndividual = ({
                 labelList={['Agreement Draft', 'Executed Agreement', 'Contract Amendment', 'Exhibit', 'Appendix Addendum', 'Schedule', 'Attachment']}
                 disabledList={[false, false]} />
             </div>
-            <CommonInputField className={`${style.fullWidth} ${style.marginTop10}`} placeholder="Document Name"
+            <CommonInputField className={`${style.fullWidth} ${style.marginTop10}`} placeholder="Document Name *"
               value={fileFieldData?.documentName}
               maxLength={TEXTFIELDLEN}
               onChange={(e) => handleFileChange(e, 'documentName')} />
-            <TextArea rows={4} placeholder="Document Description" value={fileFieldData?.documentDescription}
+            <TextArea rows={4} placeholder="Document Description *" value={fileFieldData?.documentDescription}
               maxLength={DESCLEN} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileChange(e, 'documentDescription')} />
             {/* <div>
               <CommonInputField value={fileFieldData?.fileName !== '' ? fileFieldData?.fileName : ''} leftElement={leftElement()} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileUpload(e)} />
@@ -1818,6 +1839,8 @@ const ContractIdTermLimitIndividual = ({
         getSaveInProgressAlert={getSaveInProgressAlert}
         fieldData={unassignedKeys}
         saveInProgressFunction={saveInProgressFunction}
+        setContinueLoading={setContinueLoading}
+        buttonName={buttonName}
       />
     </div>
   );

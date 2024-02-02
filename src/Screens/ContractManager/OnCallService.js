@@ -608,7 +608,7 @@ const OnCallService = ({
                             <CommonLabel
                                 value="Separate Service Hours Specified*"
                                 className={
-                                    dataCheck(metadata?.totalSession) ? style.redLable : ""
+                                    dataCheck(metadata?.totalSession) && metadata?.sessionsAsNeeded === false ? style.redLable : ""
                                 }
                             />
                             <div className={style.grid3WithoutGap}>

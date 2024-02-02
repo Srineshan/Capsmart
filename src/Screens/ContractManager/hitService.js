@@ -62,7 +62,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
     services?.filter(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => {
         let activityName = data?.activityType?.activityType;
         let activities = data?.activities?.map(data => data?.activity);
-        let result = `${activityName} (${activities?.map(data => data)?.join(', ')})`
+        let result = `${activityName} (${activities?.map(data => data)?.join('-')})`
         specificDedicatedHoursList.push(result);
     });
 
@@ -78,15 +78,15 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         serviceRate: '0',
         serviceRateFrequency: 'SESSION',
         serviceDays: {
-            tuesday: false,
-            wednesday: false,
-            thursday: false,
-            friday: false,
-            saturday: false,
-            sunday: false,
-            weekDays: false,
-            weekEnds: false,
-            monday: false
+            tuesday: true,
+            wednesday: true,
+            thursday: true,
+            friday: true,
+            saturday: true,
+            sunday: true,
+            weekDays: true,
+            weekEnds: true,
+            monday: true
         },
         selectedActivities: [],
         weekdaysCount: '0',
@@ -249,15 +249,15 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
             serviceRate: '0',
             serviceRateFrequency: 'SESSION',
             serviceDays: {
-                tuesday: false,
-                wednesday: false,
-                thursday: false,
-                friday: false,
-                saturday: false,
-                sunday: false,
-                weekDays: false,
-                weekEnds: false,
-                monday: false
+                tuesday: true,
+                wednesday: true,
+                thursday: true,
+                friday: true,
+                saturday: true,
+                sunday: true,
+                weekDays: true,
+                weekEnds: true,
+                monday: true
             },
             selectedActivities: [],
             weekdaysCount: '0',
@@ -386,9 +386,9 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         services?.filter(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => {
             let activityName = data?.activityType?.activityType;
             let activities = data?.activities?.map(data => data?.activity);
-            if (`${activityName} (${activities?.map(data => data)?.join(', ')})` === index) {
+            if (`${activityName} (${activities?.map(data => data)?.join('-')})` === index) {
                 let dedicatedHoursActivityType = data?.activityType?.activityType;
-                let dedicatedHoursPerformingActivity = data?.activities?.map(data => data?.activity)?.join(', ');
+                let dedicatedHoursPerformingActivity = data?.activities?.map(data => data?.activity)?.join('-');
                 console.log('data', data);
                 setMetadata({
                     ...metadata,

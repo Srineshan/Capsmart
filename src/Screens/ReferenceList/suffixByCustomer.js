@@ -19,6 +19,7 @@ import AddSuffixEntity from "./addSuffixEntity";
 import { format } from "date-fns";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
+import { formatInTimeZone } from "date-fns-tz";
 
 const SuffixByCustomer = () => {
   const [addEditDialog, setAddEditDialog] = useState(false);
@@ -66,7 +67,9 @@ const SuffixByCustomer = () => {
       `entity-service/referenceList/entity/${entityId}`
     );
     const date = new Date(lastModifiedDate.nameSuffix?.lastModified);
-    setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
+    setLastUpdatedDate(
+      formatInTimeZone(date, "America/New_York", "MMM d, yyyy HH:mm zzz")
+    );
   };
 
   const getSuffixData = async () => {

@@ -17,6 +17,7 @@ import { format } from "date-fns";
 import Navbar from "../../Components/Navbar";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import SideBar from "../../Components/Sidebar";
+import { formatInTimeZone } from "date-fns-tz";
 
 const DepartmentsByEntityTypes = () => {
   const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
@@ -66,7 +67,9 @@ const DepartmentsByEntityTypes = () => {
     );
 
     const date = new Date(lastModifiedDate.departments?.lastModified);
-    setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
+    setLastUpdatedDate(
+      formatInTimeZone(date, "America/New_York", "MMM d, yyyy HH:mm zzz")
+    );
   };
 
   const getDepartmentData = async () => {
@@ -322,8 +325,9 @@ const DepartmentsByEntityTypes = () => {
                           .join("-")} */}
                                   </p>
                                   <p className={style.tableDataFontStyle}>
-                                    {format(
+                                    {formatInTimeZone(
                                       new Date(`${data.lastModifiedDate}`),
+                                      "America/New_York",
                                       "MM-dd-yyyy"
                                     )}
                                   </p>
@@ -342,9 +346,9 @@ const DepartmentsByEntityTypes = () => {
                                     src={DeleteHcFolder}
                                     className={style.colorFileStyle}
                                     alt=""
-                                  // onClick={() => {
-                                  //   deleteHandler(data);
-                                  // }}
+                                    // onClick={() => {
+                                    //   deleteHandler(data);
+                                    // }}
                                   />
                                 </div>
                                 {data?.serviceAreas.map((service, idx) => {
@@ -368,8 +372,9 @@ const DepartmentsByEntityTypes = () => {
                               .join("-")} */}
                                       </p>
                                       <p className={style.tableDataFontStyle}>
-                                        {format(
+                                        {formatInTimeZone(
                                           new Date(`${data.lastModifiedDate}`),
+                                          "America/New_York",
                                           "MM-dd-yyyy"
                                         )}
                                       </p>
@@ -388,12 +393,12 @@ const DepartmentsByEntityTypes = () => {
                                         src={DeleteHcRow}
                                         className={style.colorFileStyle}
                                         alt=""
-                                      // onClick={() => {
-                                      //   DeleteSecondaryBoardHandler(
-                                      //     data?.id,
-                                      //     secondary?.name
-                                      //   );
-                                      // }}
+                                        // onClick={() => {
+                                        //   DeleteSecondaryBoardHandler(
+                                        //     data?.id,
+                                        //     secondary?.name
+                                        //   );
+                                        // }}
                                       />
                                     </div>
                                   );
@@ -422,8 +427,9 @@ const DepartmentsByEntityTypes = () => {
                           .join("-")} */}
                                   </p>
                                   <p className={style.tableDataFontStyle}>
-                                    {format(
+                                    {formatInTimeZone(
                                       new Date(`${data.lastModifiedDate}`),
+                                      "America/New_York",
                                       "MM-dd-yyyy"
                                     )}
                                   </p>

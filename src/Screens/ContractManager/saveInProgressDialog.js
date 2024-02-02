@@ -11,6 +11,7 @@ import {
 } from "@blueprintjs/core";
 import { GET } from "../dataSaver";
 import style from "./index.module.scss";
+import { formatInTimeZone } from 'date-fns-tz'
 
 const SaveInProgressDialog = ({
   getSaveInProgressDialog,
@@ -26,20 +27,35 @@ const SaveInProgressDialog = ({
   };
 
   const [contractData, setContractData] = useState([]);
+  const [multipleContractCount, setMultipleContractCount] = useState("")
 
   useEffect(() => {
-    if (contractId !== "" || contractId === undefined) {
+    if (contractId !== "") {
       getContractDetail();
     }
   }, [contractId]);
 
+  useEffect(() => {
+    getContractDetailCount();
+  }, []);
+
   const getContractDetail = async () => {
     const { data: contractData } = await GET(
-      `contract-managment-service/contracts/${contractId}/contractDetail`
+      `contract-managment-service/contracts/${contractId}`
     );
-
     setContractData(contractData);
   };
+
+  const getContractDetailCount = async () => {
+    if (contractId !== "" && contractId !== undefined) {
+      const { data: contractDataCount } = await GET(
+        `user-management-service/user?contractID=${contractId}`
+      );
+      setMultipleContractCount(contractDataCount?.length);
+    }
+  };
+
+  // console.log(multipleContractCount)
 
   return (
     <Dialog
@@ -63,40 +79,35 @@ const SaveInProgressDialog = ({
         <div className={style.extensionBorder}></div>
         <div className={`${style.popUpHeaderBlock} ${style.marginTop}`}>
           <div>
-            <p className={style.extentionLableStyle}>{contractType}</p>
+            <p className={style.extentionLableStyle}>{contractType} CONTRACT</p>
             <p className={style.extentionLableStyle}>
-              PAMF CONTRACT (
-              {`${
-                contractData?.contractDetail?.contractId?.id
+              CONTRACT ID - (
+              {`${contractData?.contractDetail?.contractId?.id
                   ? contractData?.contractDetail?.contractId?.id
                   : " - "
-              }`}
+                }`}
               )
             </p>
             <p className={style.extentionLableStyle}>
-              {contractData?.contractName?.contractName}
+              CONTRACT NAME - {contractData?.contractName?.contractName}
+              {`${contractType === "MULTIPLE" ? " - ( " + multipleContractCount + " ) " : ""}`}
             </p>
           </div>
           <div>
             <p className={style.extentionLableStyle}>
-              {`${
-                contractData?.contractDetail?.contractManager?.name
+              {`${contractData?.contractDetail?.contractManager?.name
                   ?.firstName || ""
-              } ${
-                contractData?.contractDetail?.contractManager?.name?.lastName ||
+                } ${contractData?.contractDetail?.contractManager?.name?.lastName ||
                 ""
-              }  `}
+                }  `}
               (Contract Manager)
             </p>
             <p className={style.extentionLableStyle}>
-              ({" "}
-              {contractData?.contractType === "MULTIPLE"
-                ? contractData?.contractDetail?.site?.sites.length
-                : " - "}
-              {"  "}){`${" "}`} SITE NAME ONLY IF MULTISITE
+              {`${contractType === "MULTIPLE" ? " SITE NAME - ( " + contractData?.contractDetail?.site?.sites?.[0]?.siteName?.siteName + " ) " : ""}`}
             </p>
             <p className={style.extentionLableStyle}>
-              LAST UPDATED ON 09-23-2022
+              {/* LAST UPDATED ON 10-23-2023 11:23 AM EST */}
+              LAST UPDATED ON {contractData.lastModifiedDate && formatInTimeZone(new Date(contractData.lastModifiedDate) || new Date(), 'America/New_York', 'MM-dd-yyyy HH:mm a zzz')}
             </p>
           </div>
         </div>
