@@ -1072,7 +1072,6 @@ const AddServiceProvided = ({
     let data = [];
     if ((serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE) && !editService) {
       data = metadata;
-
       data.map((item, index) => {
         item.workingPeriod = metadata?.[index]?.workingPeriod;
         item.serviceLocations = metadata?.[index]?.serviceLocations

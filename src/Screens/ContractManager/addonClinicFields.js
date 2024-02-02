@@ -591,8 +591,7 @@ const AddonClinicFields = ({
       parentActivity: "Add-On Service",
       sessionAmount: newServices?.rate,
       sessionDuration: newServices?.sessionDuration,
-      serviceRate: newServices?.serviceRate,
-      serviceRateFrequency: newServices?.serviceRateFrequency,
+      serviceRate: { rate: newServices?.serviceRate, rateFrequency: newServices?.serviceRateFrequency },
       hourlyRate: {
         value: (newServices?.rate / newServices?.sessionDuration).toFixed(2),
       },
@@ -674,11 +673,11 @@ const AddonClinicFields = ({
     temp
       ?.filter((data) => data?.performingActivity === serviceName)
       ?.map((data) => {
-        data.sessionAmount = data?.serviceRate === 'SESSION' ? parseFloat(value) : (data?.serviceRate * data?.sessionDuration);
-        data.serviceRate = parseFloat(value)
+        data.sessionAmount = data?.serviceRate === 'SESSION' ? value : (data?.serviceRate * data?.sessionDuration);
+        data.serviceRate = value
       });
     setMetadata(temp);
-    getFields();
+    generateCustomAddOnFields();
   };
 
   const updateServiceRateFrequency = (serviceName, value) => {
@@ -690,7 +689,7 @@ const AddonClinicFields = ({
         data.serviceRateFrequency = value
       });
     setMetadata(temp);
-    getFields();
+    generateCustomAddOnFields();
   };
 
   const updateSessionDuration = (serviceName, value) => {
@@ -704,7 +703,7 @@ const AddonClinicFields = ({
         };
       });
     setMetadata(temp);
-    getFields();
+    generateCustomAddOnFields();
   };
 
   const UpdateBillable = (serviceName, value) => {
