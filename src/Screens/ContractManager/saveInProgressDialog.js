@@ -83,20 +83,20 @@ const SaveInProgressDialog = ({
             <p className={style.extentionLableStyle}>
               CONTRACT ID - (
               {`${contractData?.contractDetail?.contractId?.id
-                  ? contractData?.contractDetail?.contractId?.id
-                  : " - "
+                ? contractData?.contractDetail?.contractId?.id
+                : " - "
                 }`}
               )
             </p>
             <p className={style.extentionLableStyle}>
               CONTRACT NAME - {contractData?.contractName?.contractName}
-              {`${contractType === "MULTIPLE" ? " - ( " + multipleContractCount + " ) " : ""}`}
+              {contractType === "MULTIPLE" && multipleContractCount.length > 0 ? ` - ( ${multipleContractCount} ) ` : ""}
             </p>
           </div>
           <div>
             <p className={style.extentionLableStyle}>
               {`${contractData?.contractDetail?.contractManager?.name
-                  ?.firstName || ""
+                ?.firstName || ""
                 } ${contractData?.contractDetail?.contractManager?.name?.lastName ||
                 ""
                 }  `}

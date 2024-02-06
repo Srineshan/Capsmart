@@ -24,6 +24,10 @@ import CommonLabel from "../../Components/CommonFields/CommonLabel";
 import style from "./index.module.scss";
 import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
 
+const TEXTFIELDLEN50 = 50;
+const TEXTFIELDLEN100 = 100;
+const MAXZIPCODELEN = 10;
+
 const NewServiceProvider = ({
   getNewServiceProviderDialog,
   contractId,
@@ -815,6 +819,7 @@ const NewServiceProvider = ({
                 className={style.fullWidth}
                 placeholder="Street"
                 value={address?.addressLine}
+                maxLength={TEXTFIELDLEN100}
                 onChange={(e) =>
                   setAddress({ ...address, addressLine: e.target.value })
                 }
@@ -824,18 +829,21 @@ const NewServiceProvider = ({
                   className={style.fullWidth}
                   placeholder="City"
                   value={address.city}
+                  maxLength={TEXTFIELDLEN50}
                   onChange={(e) => handleAddress("city", e.target.value)}
                 />
                 <CommonInputField
                   className={style.fullWidth}
                   placeholder="State"
                   value={address.state}
+                  maxLength={TEXTFIELDLEN50}
                   onChange={(e) => handleAddress("state", e.target.value)}
                 />
                 <CommonInputField
                   className={style.fullWidth}
                   placeholder="Zipcode"
                   value={address.zipcode}
+                  maxLength={MAXZIPCODELEN}
                   onChange={(e) => handleAddress("zipcode", e.target.value)}
                 />
               </div>

@@ -855,6 +855,7 @@ const ContractorBusinessEntity = ({
                 className={style.fullWidth}
                 value={businessEntityUser?.email?.officialEmail}
                 placeholder="Enter Email"
+                maxLength={TEXTFIELDLEN50}
                 onFocus={() => {
                   checkFieldAndPopAlert(
                     businessEntityUser?.email?.officialEmail,
@@ -927,7 +928,7 @@ const ContractorBusinessEntity = ({
               <CommonLabel
                 value="Mailing Address*"
                 className={
-                  dataCheck(mailingAddress?.addressLine && mailingAddress?.city && mailingAddress?.state && mailingAddress?.zipcode ) ? style.redLable : ""
+                  dataCheck(mailingAddress?.addressLine && mailingAddress?.city && mailingAddress?.state && mailingAddress?.zipcode) ? style.redLable : ""
                 }
               />
               <div>

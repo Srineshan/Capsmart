@@ -20,7 +20,7 @@ body::-webkit-scrollbar {
 }
 
 .marginAuto {
-    margin: auto;
+  margin: auto;
 }
 
 .marginLeftRight20 {
@@ -32,7 +32,7 @@ body::-webkit-scrollbar {
 }
 
 .marginLeft5 {
-    margin-left: 5px !important;
+  margin-left: 5px !important;
 }
 
 .marginTop20 {
@@ -40,7 +40,7 @@ body::-webkit-scrollbar {
 }
 
 .marginTop30 {
-    margin-top: 30px !important;
+  margin-top: 30px !important;
 }
 
 .removeUnderline {
@@ -63,90 +63,92 @@ body::-webkit-scrollbar {
   margin-bottom: 10px !important;
 }
 
-.grid{
-    display: grid;
+.grid {
+  display: grid;
 }
 
-.toolTipWidth{
-    width: 50% !important;
+.toolTipWidth {
+  width: 50% !important;
 }
 
-.textUnderline{
-    text-decoration: underline;
+.textUnderline {
+  text-decoration: underline;
 }
 
-.contentTextAlign{
-    text-align: center !important;
-    padding: 20px;
-    font-size: 18px;
-    font-weight: 400;
+.contentTextAlign {
+  text-align: center !important;
+  padding: 20px;
+  font-size: 18px;
+  font-weight: 400;
 }
 
 /* The container */
 .container {
-    display: block;
-    position: relative;
-    padding-left: 35px;
-    margin-bottom: 12px;
-    cursor: pointer;
-    font-size: 22px;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 22px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
+
 /* Hide the browser's default radio button */
 .container input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
 }
+
 /* Create a custom radio button */
 .checkmark {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 20px;
-    width: 20px;
-    background-color: #eee;
-    border-radius: 50%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 20px;
+  width: 20px;
+  background-color: #eee;
+  border-radius: 50%;
 }
 
 /* On mouse-over, add a grey background color */
-.container:hover input ~ .checkmark {
-    background-color: #ccc;
+.container:hover input~.checkmark {
+  background-color: #ccc;
 }
 
 /* When the radio button is checked, add a blue background */
-.container input:checked ~ .checkmark {
-    background-color: #7165E3;
+.container input:checked~.checkmark {
+  background-color: #7165E3;
 }
 
 /* Create the indicator (the dot/circle - hidden when not checked) */
 .checkmark:after {
-    content: "";
-    position: absolute;
-    display: none;
+  content: "";
+  position: absolute;
+  display: none;
 }
 
 /* Show the indicator (dot/circle) when checked */
-.container input:checked ~ .checkmark:after {
-    display: block;
+.container input:checked~.checkmark:after {
+  display: block;
 }
 
 /* Style the indicator (dot/circle) */
 .container .checkmark:after {
- 	top: 5px;
-	left: 5px;
-	width: 10px;
-	height: 10px;
-	border-radius: 50%;
-	background: white;
+  top: 5px;
+  left: 5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: white;
 }
 
-.gridAlignTextEnd{
-    display: grid;
-    justify-items: end;
+.gridAlignTextEnd {
+  display: grid;
+  justify-items: end;
 }
 
 .cardStyle {
@@ -269,7 +271,7 @@ body::-webkit-scrollbar {
 }
 
 .marginLeft40 {
-    margin-left: 40px !important;
+  margin-left: 40px !important;
 }
 
 .reduce10Left {
@@ -294,15 +296,15 @@ body::-webkit-scrollbar {
   justify-content: space-between;
 }
 
-.warningTextAlign{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.warningTextAlign {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .spaceAround {
-    display: flex;
-    justify-content: space-around;
+  display: flex;
+  justify-content: space-around;
 }
 
 .green {
@@ -339,9 +341,9 @@ body::-webkit-scrollbar {
 }
 
 .displayInGrid {
-    display: grid;
-    justify-items: center;
-    align-items: center;
+  display: grid;
+  justify-items: center;
+  align-items: center;
 }
 
 .smallIcons {
@@ -719,11 +721,11 @@ body::-webkit-scrollbar {
 
 
 .textAlignEnd {
-    text-align: end !important;
+  text-align: end !important;
 }
 
 .textAlignJustify {
-    text-align: justify !important;
+  text-align: justify !important;
 }
 
 .justifyCenter {
@@ -1158,9 +1160,9 @@ select {
 }
 
 .warningIconStyle {
-    height: 25px;
-    width: 25px;
-    object-fit: contain;
+  height: 25px;
+  width: 25px;
+  object-fit: contain;
 }
 
 .completedIconTableStyle {
@@ -1791,7 +1793,7 @@ input[type="file"] {
 }
 
 .marginTop80 {
-    margin-top: 80px;
+  margin-top: 80px;
 }
 
 .popUpHeading {
@@ -1813,16 +1815,16 @@ input[type="file"] {
 }
 
 .popUpHeaderBlockActive {
-    display: grid;
-    width: 100%;
-    height: auto;
-    grid-template-columns: 1fr 3fr;
-    grid-gap: 20px;
-    background-color: #DBD8FA;
-    border: 3px solid #EBF2F7;
-    border-radius: 2px;
-    opacity: 1;
-    padding: 10px;
+  display: grid;
+  width: 100%;
+  height: auto;
+  grid-template-columns: 1fr 3fr;
+  grid-gap: 20px;
+  background-color: #DBD8FA;
+  border: 3px solid #EBF2F7;
+  border-radius: 2px;
+  opacity: 1;
+  padding: 10px;
 }
 
 .addServiceDialog {
@@ -2604,4 +2606,10 @@ input[type="number"] {
 
 .muiDataGridWithBorderColor {
   border-color: #646D82;
+}
+
+.fileFormatStyle {
+  font-size: 12px;
+  font-style: italic;
+  color: #f14040;
 }

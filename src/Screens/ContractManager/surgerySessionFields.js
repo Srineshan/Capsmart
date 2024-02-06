@@ -455,7 +455,7 @@ const SurgerySessionFields = ({
               e.target.value >= 0 &&
               setMetadata({
                 ...metadata,
-                sessionDuration: parseFloat(e.target.value),
+                sessionDuration: parseFloat(e.target.value.slice(0, 9)),
                 sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? metadata?.serviceRate : (metadata?.serviceRate * (parseFloat(e.target.value) || 0)),
               })
             }
@@ -474,7 +474,7 @@ const SurgerySessionFields = ({
                     startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
                   }}
                   value={metadata?.serviceRate}
-                  onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, serviceRate: parseFloat(e.target.value), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? parseFloat(e.target.value || '0') : (parseFloat(e.target.value || '0') * metadata?.sessionDuration) })}
+                  onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, serviceRate: parseFloat(e.target.value.slice(0, 9)), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? parseFloat(e.target.value || '0') : (parseFloat(e.target.value || '0') * metadata?.sessionDuration) })}
                 />
               </div>
             </div>
@@ -554,20 +554,18 @@ const SurgerySessionFields = ({
               disabled={contractStatus === "ACTIVE" ? true : false}
             />
             <div
-              className={`${style.textElement} ${
-                parseFloat(metadata?.totalSession) === parseFloat(specified)
-                  ? style.greenBase
-                  : style.redBase
-              }`}
+              className={`${style.textElement} ${parseFloat(metadata?.totalSession) === parseFloat(specified)
+                ? style.greenBase
+                : style.redBase
+                }`}
             >
               {specified} Minimum Specified
             </div>
           </div>
           <div className={style.verticalAlignCenter}>
             <CommonLabel
-              value={`For ${timeCommitment?.value} ${
-                timeCommitment?.frequency === "WEEK" ? "Weeks" : "Months"
-              } Per Contract Year`}
+              value={`For ${timeCommitment?.value} ${timeCommitment?.frequency === "WEEK" ? "Weeks" : "Months"
+                } Per Contract Year`}
             />
           </div>
         </div>
@@ -578,10 +576,10 @@ const SurgerySessionFields = ({
           value="Service Days*"
           className={
             metadata?.serviceDays === null ||
-            (metadata?.serviceDays !== undefined &&
-              Object?.values(metadata?.serviceDays)?.filter(
-                (data) => data === true
-              )?.length === 0)
+              (metadata?.serviceDays !== undefined &&
+                Object?.values(metadata?.serviceDays)?.filter(
+                  (data) => data === true
+                )?.length === 0)
               ? style.redLable
               : ""
           }
@@ -599,7 +597,7 @@ const SurgerySessionFields = ({
           value="Allowable Working Day Hours For Service*"
           className={
             format(metadata?.workingTimeTo || new Date(), "H") === "0" &&
-            format(metadata?.workingTimeFrom || new Date(), "H") === "0"
+              format(metadata?.workingTimeFrom || new Date(), "H") === "0"
               ? style.redLable
               : ""
           }
@@ -631,7 +629,7 @@ const SurgerySessionFields = ({
                 : new Date(metadata?.workingTimeTo)
             }
             disabled={contractStatus === "ACTIVE" ? true : false}
-            // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
+          // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
           />
         </div>
       </div>
