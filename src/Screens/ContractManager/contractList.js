@@ -305,8 +305,8 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
       approvals.push('3/3');
       goLiveDate.push('07/19/2019');
       activationStatus.push(data?.contractStatus === 'ACTIVATION_READY' ? 'Activation pending' : 'Not Activated');
-      icon.push(<TextSnippetOutlinedIcon style={{ color: data?.contractDetail?.contractFiles?.length === 0 ? '#F94848' : '#14B15A' }} />);
-      iconHoverText.push(data?.contractDetail?.contractFiles?.length === 0 ? 'No Document Uploaded' : 'Document Uploaded');
+      icon.push(<TextSnippetOutlinedIcon style={{ color: (data?.contractDetail?.contractFiles?.length === 0 || data?.contractDetail?.contractFiles === null) ? '#F94848' : '#14B15A' }} />);
+      iconHoverText.push((data?.contractDetail?.contractFiles?.length === 0 || data?.contractDetail?.contractFiles === null) ? 'No Document Uploaded' : 'Document Uploaded');
       effectiveDate.push(format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy'));
       manager.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
       lastUpdated.push(format(new Date(data?.lastModifiedDate), 'MM-dd-yyyy'))

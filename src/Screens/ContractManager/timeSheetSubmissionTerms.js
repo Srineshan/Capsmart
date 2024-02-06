@@ -155,7 +155,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
       if (absenceWorkFlow) {
         let workflowData = timesheetWorkFlow?.filter(data => data?.id === absenceWorkFlow?.workFlow?.id)?.map(data => data?.workFlowMap?.workflow)[0] || {};
         let workFlowValues = Object.values(workflowData);
-        setAddApprover(absenceWorkFlow?.workFlowRequired);
+        setAddApprover(absenceWorkFlow?.workFlowRequired || false);
         let reviewer = workFlowValues?.[0]?.workFlowUser?.id;
         let approver = workFlowValues?.[1]?.workFlowUser?.id;
         setAbsence({ ...absence, id: absenceWorkFlow?.workFlow?.id, reviewer: reviewer, reviewerTitle: workFlowValues?.[0]?.workFlowUser?.title, approver: approver, approverTitle: workFlowValues?.[1]?.workFlowUser?.title });
@@ -782,8 +782,14 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     <div className={style.cloneBlockStyle}>
       <div className={`${style.newContractFromCloneBoxStyle}`}>
         <div className={`${style.extentionGrid}`}>
-          <CommonLabel value='Number of Timesheets to Submit for Services Performed' />
-          <CommonInputField className={style.fourFieldWidth} type="number" min="1" value={timeSheetCount} onChange={(e) => e.target.value <= contractedServices?.length && e.target.value >= (HITService?.length + 1) && setTimeSheetCount(parseInt(e.target.value))} />
+          <CommonLabel value='Number of Timesheets to Submit for Services Performed'
+            className={timeSheetCount <= contractedServices?.length && timeSheetCount >= (HITService?.length + 1)
+              ? "" : style.redLable
+            }
+          />
+          <CommonInputField className={style.fourFieldWidth}
+            // readOnly={timeSheetCount <= contractedServices?.length && timeSheetCount >= (HITService?.length + 1) ? false : true}
+            type="number" min="1" value={timeSheetCount} onChange={(e) => e.target.value <= contractedServices?.length && e.target.value >= (HITService?.length + 1) && setTimeSheetCount(parseInt(e.target.value))} />
         </div>
         <div>
           {timesheetFields}

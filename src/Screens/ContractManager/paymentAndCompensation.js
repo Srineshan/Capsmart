@@ -64,6 +64,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
     const limit5 = 5;
     const limit7 = 7;
     const limit9 = 9;
+    const limit10 = 10;
     const [unassignedKeys, setUnassignedKeys] = useState([]);
     const [showSaveInProgress, setShowSaveInProgress] = useState(false);
     const [buttonName, setButtonName] = useState("");
@@ -75,54 +76,54 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
     }
 
     const mandatoryFieldCheck = (buttonType) => {
-      setContinueLoading(true);
-      if (buttonType === "SaveInProgress" || buttonType === "Continue") {
-        saveInProgresscheck(buttonType);
-        setButtonName(buttonType)
-      }
+        setContinueLoading(true);
+        if (buttonType === "SaveInProgress" || buttonType === "Continue") {
+            saveInProgresscheck(buttonType);
+            setButtonName(buttonType)
+        }
     };
-  
+
     const saveInProgresscheck = (buttonType) => {
-      var keys = [];
-  
-      if (compensation === "RVUBASED" && valueCheck(rvuQuantity?.quantity)) {
-        keys.push("RVU Quantity");
-      }
-      if (compensation === "RVUBASED" && valueCheck(fteEquivalent?.value)) {
-        keys.push("FTE Equivalent");
-      }
-      if (compensation === "RVUBASED" && valueCheck(rvuReferenceUsed?.value)) {
-        keys.push("RVU Reference Used");
-      }
-      if (compensation === "RVUBASED" && valueCheck(rvuQuantityVariance?.value)) {
-        keys.push("RVU Quantity Variance (+/-)");
-      }
-      if (compensation === "RVUBASED" && valueCheck(rvuQuantityPeriod?.days)) {
-        keys.push("RVU Quantity Period");
-      }
-      if (!dollarRate?.notApplicable && valueCheck(dollarRate?.hour)) {
-        keys.push("Dollar Hourly Rate");
-      }
-    
-      setUnassignedKeys(keys);
-      if (keys?.length !== 0) {
-        setShowSaveInProgress(true);
-        setContinueLoading(true)
-      } else {
-        handleContinue(buttonType);
-      }
+        var keys = [];
+
+        if (compensation === "RVUBASED" && valueCheck(rvuQuantity?.quantity)) {
+            keys.push("RVU Quantity");
+        }
+        if (compensation === "RVUBASED" && valueCheck(fteEquivalent?.value)) {
+            keys.push("FTE Equivalent");
+        }
+        if (compensation === "RVUBASED" && valueCheck(rvuReferenceUsed?.value)) {
+            keys.push("RVU Reference Used");
+        }
+        if (compensation === "RVUBASED" && valueCheck(rvuQuantityVariance?.value)) {
+            keys.push("RVU Quantity Variance (+/-)");
+        }
+        if (compensation === "RVUBASED" && valueCheck(rvuQuantityPeriod?.days)) {
+            keys.push("RVU Quantity Period");
+        }
+        if (!dollarRate?.notApplicable && valueCheck(dollarRate?.hour)) {
+            keys.push("Dollar Hourly Rate");
+        }
+
+        setUnassignedKeys(keys);
+        if (keys?.length !== 0) {
+            setShowSaveInProgress(true);
+            setContinueLoading(true)
+        } else {
+            handleContinue(buttonType);
+        }
     };
-  
+
     const saveInProgressFunction = (type) => {
-      handleContinue(type);
-      setShowSaveInProgress(false)
+        handleContinue(type);
+        setShowSaveInProgress(false)
     };
-  
+
     const getSaveInProgressAlert = (value) => {
-      setShowSaveInProgress(value);
-      setContinueLoading(value)
+        setShowSaveInProgress(value);
+        setContinueLoading(value)
     };
-    
+
     const handleContinue = async (buttonType) => {
         if (!continueLoading) {
             setContinueLoading(true);
@@ -261,11 +262,11 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         getPaymentFields();
     }
     const dataCheck = (value) => {
-      if (paymentAndCompensation) {
-        return valueCheck(value);
-      } else {
-        return false;
-      }
+        if (paymentAndCompensation) {
+            return valueCheck(value);
+        } else {
+            return false;
+        }
     };
 
     const getPaymentFields = () => {
@@ -358,7 +359,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                 <>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                         <CommonLabel value='Fixed Compensation Value Per Timesheet Submission*' />
-                                        {/* <CommonTextField
+                                        <CommonTextField
                                             className={style.twoFieldWidth}
                                             // type="number"
                                             min="0"
@@ -367,11 +368,11 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                             }}
                                             onChange={(e) => fixedCompensationValue(e.target.value.slice(0, limit9).replace(/,/g, ""), 'maxPaymentPerTimesheetSubmission', i)}
                                             value={Number(timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission || 0)?.toLocaleString()}
-                                        /> */}
-                                        <div>
+                                        />
+                                        {/* <div>
                                             <CurrencyFormat thousandSeparator={true} prefix={'$'} value={timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission || 0} maxLength={13}
                                                 decimalScale={2} fixedDecimalScale={true} className={`${style.currencyFormatInput} ${style.twoFieldWidth}`} inputmode="numeric" onValueChange={(values) => fixedCompensationValue(values?.floatValue, 'maxPaymentPerTimesheetSubmission', i)} />
-                                        </div>
+                                        </div> */}
                                     </div>
                                     {compensationPolicy !== 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET' &&
                                         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -388,19 +389,19 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <CommonLabel value='Max. Compensation Value for Contract Period*' />
                                 <div className={style.displayInRow}>
-                                    {/* <CommonTextField
+                                    <CommonTextField
                                         className={style.twoFieldWidth}
                                         // type="number"
                                         min="0"
                                         InputProps={{
                                             startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                         }}
-                                        onChange={(e) => updateTimesheetPayment(e.target.value.slice(0, limit9).replace(/,/g, ""), 'maxPaymentPerContract', i)}
+                                        onChange={(e) => updateTimesheetPayment(e.target.value.slice(0, limit10).replace(/,/g, ""), 'maxPaymentPerContract', i)}
                                         value={(timesheetPayments?.[i]?.maxPaymentPerContract || 0)?.toLocaleString()}
                                     // onChange={(e) => updateTimesheetPayment(e.target.value.slice(0, limit9).replace(/,/g, ""), 'maxPaymentPerContract', i)}
                                     // value={Number(timesheetPayments?.[i]?.maxPaymentPerContract)?.toLocaleString()}
 
-                                    /> */}
+                                    />
                                     {/* <CurrencyInput
                                         key={i}
                                         name="input-name"
@@ -412,10 +413,10 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                         maxLength={12}
                                         onValueChange={(value, name, values) => { updateTimesheetPayment(value, 'maxPaymentPerContract', i); console.log(value, name, values) }}
                                     /> */}
-                                    <div>
+                                    {/* <div>
                                         <CurrencyFormat thousandSeparator={true} prefix={'$'} value={timesheetPayments?.[i]?.maxPaymentPerContract || 0} maxLength={13}
                                             decimalScale={2} fixedDecimalScale={true} className={`${style.currencyFormatInput} ${style.twoFieldWidth}`} inputmode="numeric" onValueChange={(values) => updateTimesheetPayment(values?.floatValue, 'maxPaymentPerContract', i)} />
-                                    </div>
+                                    </div> */}
                                     <CommonLabel className={`${style.marginLeft20} ${style.twoFieldWidth}`} value={`$ ${(timesheetPayments?.[i]?.maxPaymentPerContract / ((monthDiff(new Date(contractPeriod?.start), new Date(contractPeriod?.end))) / 12) || 0)?.toLocaleString(undefined, {
                                         minimumFractionDigits: 2,
                                         maximumFractionDigits: 2
@@ -523,7 +524,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                             {compensation === "RVUBASED" && (
                                 <div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { checkFieldAndPopAlert(rvuQuantity?.quantity, 'RVU Quantity') }}>
-                                        <CommonLabel value='RVU Quantity*'  className={dataCheck(rvuQuantity?.quantity) ? style.redLable : ""}/>
+                                        <CommonLabel value='RVU Quantity*' className={dataCheck(rvuQuantity?.quantity) ? style.redLable : ""} />
                                         <div className={style.displayInRow}>
                                             <CommonInputField className={style.fourFieldWidth} value={rvuQuantity?.quantity} placeholder="0"
                                                 type='number'
@@ -619,14 +620,14 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                             </div>
                         }
 
-                      <MissedMandatoryFieldAlert
-                        alert={showSaveInProgress}
-                        getSaveInProgressAlert={getSaveInProgressAlert}
-                        fieldData={unassignedKeys}
-                        saveInProgressFunction={saveInProgressFunction}
-                        setContinueLoading={setContinueLoading}
-                        buttonName={buttonName}
-                      />
+                        <MissedMandatoryFieldAlert
+                            alert={showSaveInProgress}
+                            getSaveInProgressAlert={getSaveInProgressAlert}
+                            fieldData={unassignedKeys}
+                            saveInProgressFunction={saveInProgressFunction}
+                            setContinueLoading={setContinueLoading}
+                            buttonName={buttonName}
+                        />
                     </div> :
                     <RedirectingPopUp getCurrentPage={getCurrentPage} tabName={'Timesheet Submission Terms'} title={'NO TIMESHEET FOUND'} description={'No Timesheet Is Found.'} buttonText={'ADD TIMESHEET'} />
             }

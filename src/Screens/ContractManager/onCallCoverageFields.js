@@ -294,7 +294,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         dependencyFrequency: 'PER_DAY',
         patientMRNRequired: false,
         attendingDocRequired: false,
-        customizedSchedule: false,
+        customizedSchedule: value,
         weekdayFrom: null,
         weekdayTo: null,
         weekdayDuration: 0,
