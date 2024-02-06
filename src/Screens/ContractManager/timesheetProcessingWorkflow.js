@@ -93,9 +93,6 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     setSites(contractData?.contractDetail?.site?.sites);
   }
 
-  console.log('aggregationNeeded', isAggregationNeeded, provider)
-
-
   const getProviderData = async () => {
     if (contractId !== '' && (selectContractInfo === 'MULTIPLE' && isAggregationNeeded)) {
       const { data: providerData } = await GET(`user-management-service/user?contractID=${contractId}`);
@@ -151,8 +148,6 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     let user = users?.filter(user => user?.id === id)?.map(data => data)[0];
     return user;
   }
-
-  console.log('selectContractInfo', selectContractInfo)
 
   const handleTimeSheetWorkFlow = (name, reviewer, approver, aggregator, activeTab) => {
     let data;
@@ -368,7 +363,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     if (buttonType === "SaveInProgress" || buttonType === "Continue") {
       saveInProgresscheck(buttonType);
       setButtonName(buttonType)
-    } else{
+    } else {
       handleSubmit('Next')
     }
   };
@@ -381,10 +376,10 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     if (valueCheck(timesheet?.approver)) {
       keys.push("Select Approver");
     }
-    
-    if (selectContractInfo === 'MULTIPLE' && valueCheck(timesheet?.aggregator)) {
-      keys.push("Select Aggregator");
-    }
+
+    // if (selectContractInfo === 'MULTIPLE' && valueCheck(timesheet?.aggregator)) {
+    //   keys.push("Select Aggregator");
+    // }
 
     setUnassignedKeys(keys);
     if (keys?.length !== 0) {
@@ -408,16 +403,16 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
   const handleSubmit = async (buttontext) => {
     setContinueLoading(true);
 
-    if (valueCheck(timesheet?.reviewer) || valueCheck( timesheet?.approver)) {
+    if (valueCheck(timesheet?.reviewer) || valueCheck(timesheet?.approver)) {
       ErrorToaster('Select both Approver and Reviewer to save');
       setContinueLoading(false);
       return;
     }
-    if (selectContractInfo === 'MULTIPLE' && valueCheck(timesheet?.aggregator)) {
-      ErrorToaster('Select Aggregator to save');
-      setContinueLoading(false);
-      return;
-    }
+    // if (selectContractInfo === 'MULTIPLE' && valueCheck(timesheet?.aggregator)) {
+    //   ErrorToaster('Select Aggregator to save');
+    //   setContinueLoading(false);
+    //   return;
+    // }
 
     let data = handleTimeSheetWorkFlow(activeTab, timesheet?.reviewer, timesheet?.approver, timesheet?.aggregator, activeTab);
     await updateTimeSheetWorkflow(data, activeTab, 'Timesheet');
@@ -556,9 +551,9 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
               {
                 tabIndex < timeSheetTabs?.length - 1 && isEditable &&
                 <div>
-                  <button className={`${style.timesheetNextButtonStyle}  ${style.cursorPointer} ${style.floatRight}`} 
-                  // onClick={() => { submit('Next') }}
-                  onClick={!continueLoading ? () => { mandatoryFieldCheck('Next') } : {}}
+                  <button className={`${style.timesheetNextButtonStyle}  ${style.cursorPointer} ${style.floatRight}`}
+                    // onClick={() => { submit('Next') }}
+                    onClick={!continueLoading ? () => { mandatoryFieldCheck('Next') } : {}}
                   >NEXT</button>
                 </div>
               }

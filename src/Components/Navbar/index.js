@@ -43,6 +43,9 @@ const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const popoverAnchor = useRef(null);
+  const [anchorElTracker, setAnchorElTracker] = useState(null);
+  const openTracker = Boolean(anchorElTracker);
+  const popoverAnchorTracker = useRef(null);
   const [anchorElHelp, setAnchorElHelp] = useState(null);
   const openHelp = Boolean(anchorElHelp);
   const popoverAnchorHelp = useRef(null);
@@ -144,6 +147,14 @@ const Navbar = () => {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleClickTracker = (event) => {
+    setAnchorElTracker(event.currentTarget);
+  };
+
+  const handleCloseTracker = () => {
+    setAnchorElTracker(null);
   };
 
   const id = open ? "mouse-over-popover" : undefined;
@@ -323,6 +334,66 @@ const Navbar = () => {
             //             <p>CONTRACT MANAGER</p>
             //         </div>
             //     </Link>
+            // )
+          }
+          {
+            // isContractManager && (
+            // <div>
+            //   <div
+            //     className={`${style.menuStyle} ${window.location.pathname.includes("/trackContracts") ?
+            //       style.activeMenuColor : ''}`}
+            //     ref={popoverAnchorTracker}
+            //     onMouseEnter={(e) => handleClickTracker(e)}
+            //     onMouseLeave={() => handleCloseTracker()}
+            //     aria-owns={openTracker ? "mouse-over-popover" : undefined}
+            //     aria-haspopup="true"
+            //   >
+            //     <p>TRACK YOUR CONTRACTS</p>
+            //     <Popover
+            //       id={"mouse-over-popover"}
+            //       open={openTracker}
+            //       anchorEl={popoverAnchorTracker.current}
+            //       onClose={handleCloseTracker}
+            //       anchorOrigin={{
+            //         vertical: "bottom",
+            //         horizontal: "left",
+            //       }}
+            //       classes={{
+            //         paper: classes.popoverContent,
+            //       }}
+            //       PaperProps={{
+            //         onMouseEnter: handleClickTracker,
+            //         onMouseLeave: handleCloseTracker,
+            //       }}
+            //     >
+            //       <div
+            //         className={style.optionsCardStyle}
+            //         onClick={() => handleCloseTracker()}
+            //       >
+            //         <Link
+            //           to={"/trackContracts/compensationTracker"}
+            //           className={style.noFontStyle}
+            //         >
+            //           <div className={style.options}>
+            //             Compensation Tracker
+            //           </div>
+            //         </Link>
+            //         <Link
+            //           to={"/trackContracts/activityStatusTracker"}
+            //           className={style.noFontStyle}
+            //         >
+            //           <div className={style.options}>Activity Status Tracker</div>
+            //         </Link>
+            //         <Link
+            //           to={"/trackContracts/timesheetAndInvoiceApprovalsStatusTracker"}
+            //           className={style.noFontStyle}
+            //         >
+            //           <div className={style.options}>Timesheet And Invoice Approvals Status Tracker</div>
+            //         </Link>
+            //       </div>
+            //     </Popover>
+            //   </div>
+            // </div>
             // )
           }
           <div>

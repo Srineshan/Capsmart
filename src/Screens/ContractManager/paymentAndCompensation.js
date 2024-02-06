@@ -64,6 +64,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
     const limit5 = 5;
     const limit7 = 7;
     const limit9 = 9;
+    const limit10 = 10;
     const [unassignedKeys, setUnassignedKeys] = useState([]);
     const [showSaveInProgress, setShowSaveInProgress] = useState(false);
     const [buttonName, setButtonName] = useState("");
@@ -395,7 +396,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                         InputProps={{
                                             startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                         }}
-                                        onChange={(e) => updateTimesheetPayment(e.target.value.slice(0, limit9).replace(/,/g, ""), 'maxPaymentPerContract', i)}
+                                        onChange={(e) => updateTimesheetPayment(e.target.value.slice(0, limit10).replace(/,/g, ""), 'maxPaymentPerContract', i)}
                                         value={(timesheetPayments?.[i]?.maxPaymentPerContract || 0)?.toLocaleString()}
                                     // onChange={(e) => updateTimesheetPayment(e.target.value.slice(0, limit9).replace(/,/g, ""), 'maxPaymentPerContract', i)}
                                     // value={Number(timesheetPayments?.[i]?.maxPaymentPerContract)?.toLocaleString()}
