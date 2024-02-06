@@ -29,7 +29,7 @@ const ReportHeader = () => {
         setCorsedLogo(`https://app.mytimesmart.com/cors/${data?.logo?.file?.fileURL}`);
         // setCorsedLogo(`${data?.logo?.file?.fileURL}`);
         setAddressLine1(`${data?.sites?.[0]?.address?.addressLine},`)
-        setAddressLine2(`${data?.sites?.[0]?.address?.city}, ${data?.sites?.[0]?.address?.state}, ${data?.sites?.[0]?.address?.zipcode}.`)
+        setAddressLine2(`${data?.sites?.[0]?.address?.city}, ${data?.sites?.[0]?.address?.state} ${data?.sites?.[0]?.address?.zipcode}`)
     }
 
     return (

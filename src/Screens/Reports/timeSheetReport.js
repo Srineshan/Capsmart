@@ -172,9 +172,20 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     }, [tabName, reportType])
 
     const getMyReports = async () => {
-        const { data: myReport } = await GET(`timesheet-management-service/report/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
-        setMyReports(myReport);
+        if (reportType === 'contractManagement') {
+            const { data: myReport } = await GET(`timesheet-management-service/report/myReport?userId=${currentUserDetails?.id}&category=TIMESHEET`);
+            setMyReports(myReport);
+            let temp = [...myReport] || [];
+            const { data: myReportContract } = await GET(`contract-managment-service/reports/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+            myReportContract?.map(data => { temp.push(data) })
+            setMyReports(temp);
+        } else {
+            const { data: myReport } = await GET(`timesheet-management-service/report/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+            setMyReports(myReport);
+        }
     }
+
+    console.log(myReports)
 
     const getSavedReports = async () => {
         const { data: savedReport } = await GET(`timesheet-management-service/report/savedReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);

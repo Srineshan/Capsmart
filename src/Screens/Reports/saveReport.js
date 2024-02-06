@@ -4,7 +4,6 @@ import { TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Switch from '@mui/material/Switch';
 import Stack from '@mui/material/Stack';
-import { DateInput } from "@blueprintjs/datetime";
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -115,7 +114,11 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
         'siteDepartmentSpecificContractorSummary': 'PAYMENT',
         'timesheetProcessingSummary': 'TIMESHEET',
         'listingOfTimesheetsNotPaid': 'TIMESHEET',
-        'submittedTimesheetsPaymentStatus': 'TIMESHEET'
+        'submittedTimesheetsPaymentStatus': 'TIMESHEET',
+        'contractDocumentsOnFile': 'CONTRACT_MANAGEMENT',
+        'contractsWithABusinessEntity': 'CONTRACT_MANAGEMENT',
+        'multiProviderContractsList': 'CONTRACT_MANAGEMENT',
+        'currentRemitToAddressForActiveContracts': 'TIMESHEET'
     }
 
     // const type = (reportType === 'activitiesOrServices' ?
@@ -129,7 +132,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
         'addOnActivities': 'ADDON_ACTIVITES_SERVICES_LOG_SUMMARY',
         'scheduledActivity': '',
         'upcomingContractRenewals': 'UPCOMING_CONTRACT_RENEWALS',
-        'oneTimeContract': '',
+        'oneTimeContract': 'ONE_TIME_CONTRACT',
         'complianceStatus': '',
         'nonCompliant': '',
         'paidConsultingHours': '',
@@ -140,7 +143,11 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
         'siteDepartmentSpecificContractorSummary': 'SITE_DEPARTMENT_SPECIFIC_CONTRACTOR_SUMMARY',
         'timesheetProcessingSummary': 'TIMESHEET_PROCESSING_SUMMARY',
         'listingOfTimesheetsNotPaid': 'LISTING_OF_TIMESHEETS_NOTPAID',
-        'submittedTimesheetsPaymentStatus': 'SUBMITTED_TIMESHEETS_PAYMENT_STATUS'
+        'submittedTimesheetsPaymentStatus': 'SUBMITTED_TIMESHEETS_PAYMENT_STATUS',
+        'contractDocumentsOnFile': 'CONTRACT_DOCUMENT_ON_FILE',
+        'contractsWithABusinessEntity': 'CONTRACT_WITH_BUSINESS_ENTITY',
+        'multiProviderContractsList': 'MULTI_PROVIDER_CONTRACT',
+        'currentRemitToAddressForActiveContracts': 'CURRENT_REMIT_TO_ADDRESS'
     }
 
     const filters = {
@@ -161,6 +168,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
         const { data: user } = await GET(`user-management-service/user/${currentUserData?.id}`);
         setUserDetails(user);
     }
+
     const handleSave = async () => {
         let data = {
             "tenant": {
@@ -190,13 +198,18 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
                     'contracts': dataToUseInReport?.selectedContracts,
                     'users': dataToUseInReport?.selectedContractedServiceProvider,
                     'sites': dataToUseInReport?.selectedSites,
-                    'departments': dataToUseInReport?.selectedDepartments
+                    'departments': dataToUseInReport?.selectedDepartments,
+                    'contractPolicyType': dataToUseInReport?.contractContinuationPolicy,
+                    'contractStatus': dataToUseInReport?.contractStatus
                 },
                 "private": isPrivate
             }
         }
         if (reportName !== '' && reportDescription !== '' && deliverySchedule !== '') {
-            await POST('timesheet-management-service/report/myReport/', JSON.stringify(data))
+            await POST((reportType !== "upcomingContractRenewals" && reportType !== "oneTimeContract" &&
+                reportType !== "contractDocumentsOnFile" && reportType !== "multiProviderContractsList" &&
+                reportType !== "contractsWithABusinessEntity") ?
+                'timesheet-management-service/report/myReport/' : 'contract-managment-service/reports/myReport/', JSON.stringify(data))
                 .then(response => {
                     SuccessToaster('Report Saved Successfully');
                 })

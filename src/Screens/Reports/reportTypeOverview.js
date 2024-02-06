@@ -705,9 +705,16 @@ const ReportTypeOverview = () => {
     }
 
     const getContractRenewalReportWithParameters = async () => {
-        const { data: contractRenewalReport } = await GET(`contract-managment-service/reports/contractRenewalReport?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&renewalDays=${dataToUseInReport?.renewalreportingTimePeriod}&contractPolicyType=${dataToUseInReport?.contractContinuationPolicy}`);
-        if (contractRenewalReport) {
-            setContractRenewalReport(contractRenewalReport);
+        if (dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined && dataToUseInReport?.renewalreportingTimePeriod !== undefined && dataToUseInReport?.contractContinuationPolicy !== undefined) {
+            if (!isMyReport) {
+                const { data: contractRenewalReport } = await GET(`contract-managment-service/reports/contractRenewalReport?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&contracts=${dataToUseInReport?.selectedContracts}&renewalDays=${dataToUseInReport?.renewalreportingTimePeriod}&contractPolicyType=${dataToUseInReport?.contractContinuationPolicy}`);
+                if (contractRenewalReport) {
+                    setContractRenewalReport(contractRenewalReport);
+                }
+            } else {
+                const { data: contractRenewalReport } = await GET(`contract-managment-service/reports/myReport/contractRenewalReport?id=${myReportId}`);
+                setContractRenewalReport(contractRenewalReport);
+            }
         }
         setIsLoading(false);
     }
@@ -721,17 +728,29 @@ const ReportTypeOverview = () => {
     }
 
     const getOneTimeContractWithParameters = async () => {
-        const { data: oneTimeContract } = await GET(`contract-managment-service/reports/oneTimeContractReport?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
-        if (oneTimeContract) {
-            setOneTimeContract(oneTimeContract);
+        if (dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
+            if (!isMyReport) {
+                const { data: oneTimeContract } = await GET(`contract-managment-service/reports/oneTimeContractReport?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&contracts=${dataToUseInReport?.selectedContracts}`);
+                if (oneTimeContract) {
+                    setOneTimeContract(oneTimeContract);
+                }
+            } else {
+                const { data: oneTimeContract } = await GET(`contract-managment-service/reports/myReport/oneTimeContractReport?id=${myReportId}`);
+                setOneTimeContract(oneTimeContract);
+            }
         }
         setIsLoading(false);
     }
 
     const getContractDocumentsOnFile = async () => {
         if (dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
-            const { data: contractDocumentsOnFile } = await GET(`contract-managment-service/reports/contractDocumentsOnFile?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&contractStatus=${dataToUseInReport?.contractStatus}`);
-            if (contractDocumentsOnFile) {
+            if (!isMyReport) {
+                const { data: contractDocumentsOnFile } = await GET(`contract-managment-service/reports/contractDocumentsOnFile?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&contractStatus=${dataToUseInReport?.contractStatus}`);
+                if (contractDocumentsOnFile) {
+                    setContractDocumentsOnFileValues(contractDocumentsOnFile);
+                }
+            } else {
+                const { data: contractDocumentsOnFile } = await GET(`contract-managment-service/reports/myReport/contractDocumentsOnFile?id=${myReportId}`);
                 setContractDocumentsOnFileValues(contractDocumentsOnFile);
             }
         }
@@ -740,8 +759,13 @@ const ReportTypeOverview = () => {
 
     const getMultiProviderContractsList = async () => {
         if (dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
-            const { data: multiProviderContract } = await GET(`contract-managment-service/reports/multiProviderContract?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&contractStatus=${dataToUseInReport?.contractStatus}`);
-            if (multiProviderContract) {
+            if (!isMyReport) {
+                const { data: multiProviderContract } = await GET(`contract-managment-service/reports/multiProviderContract?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&contracts=${dataToUseInReport?.selectedContracts}&contractStatus=${dataToUseInReport?.contractStatus}`);
+                if (multiProviderContract) {
+                    setMultiProviderContractValues(multiProviderContract);
+                }
+            } else {
+                const { data: multiProviderContract } = await GET(`contract-managment-service/reports/myReport/multiProviderContract?id=${myReportId}`);
                 setMultiProviderContractValues(multiProviderContract);
             }
         }
@@ -750,8 +774,13 @@ const ReportTypeOverview = () => {
 
     const getContractsWithABusinessEntity = async () => {
         if (dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
-            const { data: contractsWithBusinessEntity } = await GET(`contract-managment-service/reports/contractsWithBusinessEntity?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&contractStatus=${dataToUseInReport?.contractStatus}`);
-            if (contractsWithBusinessEntity) {
+            if (!isMyReport) {
+                const { data: contractsWithBusinessEntity } = await GET(`contract-managment-service/reports/contractsWithBusinessEntity?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&contracts=${dataToUseInReport?.selectedContracts}&contractStatus=${dataToUseInReport?.contractStatus}`);
+                if (contractsWithBusinessEntity) {
+                    setContractsWithBusinessEntityValues(contractsWithBusinessEntity);
+                }
+            } else {
+                const { data: contractsWithBusinessEntity } = await GET(`contract-managment-service/reports/myReport/contractsWithBusinessEntity?id=${myReportId}`);
                 setContractsWithBusinessEntityValues(contractsWithBusinessEntity);
             }
         }
@@ -760,8 +789,13 @@ const ReportTypeOverview = () => {
 
     const getCurrentRemitToAddressForActiveContracts = async () => {
         if (dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
-            const { data: currentRemitToAddress } = await GET(`timesheet-management-service/report/currentRemitToAddress?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
-            if (currentRemitToAddress) {
+            if (!isMyReport) {
+                const { data: currentRemitToAddress } = await GET(`timesheet-management-service/report/currentRemitToAddress?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
+                if (currentRemitToAddress) {
+                    setCurrentRemitToAddressValues(currentRemitToAddress);
+                }
+            } else {
+                const { data: currentRemitToAddress } = await GET(`timesheet-management-service/report/myReport/currentRemitToAddress?id=${myReportId}`);
                 setCurrentRemitToAddressValues(currentRemitToAddress);
             }
         }
@@ -1452,6 +1486,10 @@ const ReportTypeOverview = () => {
                                                         <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Departments</div>
                                                         <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
                                                     </div>
+                                                    <div>
+                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Contract </div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedContractsToSend?.map(data => data?.contractName?.contractName).join(', ') || 'All Contracts'}</div>
+                                                    </div>
                                                     {(reportType === "contractDocumentsOnFile" || reportType === "multiProviderContractsList" ||
                                                         reportType === "contractsWithABusinessEntity") && (
                                                             <div>
@@ -1459,6 +1497,12 @@ const ReportTypeOverview = () => {
                                                                 <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.contractStatus}</div>
                                                             </div>
                                                         )}
+                                                    {(reportType === "contractDocumentsOnFile" || reportType === "currentRemitToAddressForActiveContracts") && (
+                                                        <div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Contracted Service Provider </div>
+                                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedContractedServiceProviderToSend?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`).join(', ') || 'All Contracted Service Providers'}</div>
+                                                        </div>
+                                                    )}
                                                     {reportType === "upcomingContractRenewals" && (
                                                         <div>
                                                             <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Contract Continuation Policy</div>
@@ -2132,7 +2176,7 @@ const ReportTypeOverview = () => {
                                                                         tableHeader={['Service Provider Name', 'Service Provider Type', 'Cell Phone', 'Email', 'City', 'State']}
                                                                         tableValue={data?.users}
                                                                         activitiesServicesValues={getMultipleContractsListValues(data)}
-                                                                        styleName={style.grid6}
+                                                                        styleName={style.multiProviderGrid}
                                                                     />
                                                                 ))}
                                                             </>
