@@ -126,11 +126,12 @@ const AddContract = ({
                   <div className={style.alignCenter}>
                     <div>
                       <img
-                        src={
-                          selectedContractOnClick && contractType === data?.contractTypeTemplate
-                            ? HighlightedDoctor
-                            : Doctor
-                        }
+                        // src={
+                        //   selectedContractOnClick && contractType === data?.contractTypeTemplate
+                        //     ? HighlightedDoctor
+                        //     : Doctor
+                        // }
+                        src={`https://app.timesmartai.com/cors/${data?.icon?.fileURL}`}
                         alt="doctor"
                         className={`${style.contractCardImage} ${style.alignCenter
                           } ${selectedContract !== "0" ? "" : style.reducedOpacity
