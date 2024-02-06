@@ -194,7 +194,7 @@ const NewServiceProvider = ({
       return (
         <Tag
           key={index}
-          onRemove={tag?.roleName !== "Activity Logger" && onRemove}
+          onRemove={tag?.roleName !== "Activity Logger" && tag?.roleName !== "Passive Activity Logger" && onRemove}
           large={true}
           className={style.tagStyle}
         >

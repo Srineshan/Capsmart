@@ -25,6 +25,10 @@ import { valueCheck } from "./../../utils/valueCheck";
 import style from "./index.module.scss";
 import MissedMandatoryFieldAlert from "./missedMandatoryFieldAlert";
 
+const TEXTFIELDLEN50 = 50;
+const TEXTFIELDLEN100 = 100;
+const MAXZIPCODELEN = 10;
+
 const ContractedServicesProviderIndividual = ({
   getViewPage3,
   getCurrentPage,
@@ -100,6 +104,7 @@ const ContractedServicesProviderIndividual = ({
   const [unassignedKeys, setUnassignedKeys] = useState([]);
   const [showSaveInProgress, setShowSaveInProgress] = useState(false);
   const contractStatus = sessionStorage.getItem("Selected Contract Status");
+  const [buttonName, setButtonName] = useState("");
 
   useEffect(() => {
     getRoles();
@@ -452,22 +457,55 @@ const ContractedServicesProviderIndividual = ({
     return value;
   };
 
-  const mandatoryFieldCheck = (buttonType) => {
-    if (buttonType === "SaveInProgress") {
-      saveInProgresscheck();
-    } else {
-      handleSave("Continue");
+  const mandatoryFieldCheck = async (buttonType) => {
+    setContinueLoading(true);
+    if (buttonType === "SaveInProgress" || buttonType === "Continue") {
+      saveInProgresscheck(buttonType);
+      setButtonName(buttonType)
     }
   };
 
-  const saveInProgresscheck = () => {
+  const saveInProgresscheck = (buttonType) => {
     var keys = [];
 
     if (serviceProviderType?.id === "") {
       keys.push("Service Provider Type");
     }
+    if (!npinMissing && !npinNotApplicable && npin === "") {
+      keys.push("NPIN is Mandatory if not Missing/NA");
+    }
+    if (contractorFirstName === "") {
+      keys.push("First Name");
+    }
+    if (contractorLastName === "") {
+      keys.push("Last Name");
+    }
+    if (
+      (!allowPersonalMail && !contractorEmail?.includes(`@${CSPSubDomain}`)) ||
+      (!allowPersonalMail && !contractorEmail?.includes("."))
+    ) {
+      keys.push("Valid Email Domain");
+    } else if (
+      (allowPersonalMail && !contractorEmail?.includes("@")) ||
+      (allowPersonalMail && contractorEmail?.includes(`@${CSPSubDomain}`)) ||
+      (allowPersonalMail && !contractorEmail?.includes("."))
+    ) {
+      keys.push("Valid Personal Email");
+    }
+    if (!mobileNA && contractorPhone?.length !== 14) {
+      keys.push("Valid Phone Number");
+    }
     if (address?.addressLine === "") {
-      keys.push("Address");
+      keys.push("Address Street Name");
+    }
+    if (address?.city === "") {
+      keys.push("City");
+    }
+    if (address?.state === "") {
+      keys.push("State");
+    }
+    if (address?.zipcode === "") {
+      keys.push("Zipcode");
     }
     if (siteLevel && siteTitleValues.length === 0) {
       keys.push("Site Level Responsibility");
@@ -482,17 +520,20 @@ const ContractedServicesProviderIndividual = ({
     setUnassignedKeys(keys);
     if (keys?.length !== 0) {
       setShowSaveInProgress(true);
+      setContinueLoading(true)
     } else {
-      handleSave("SaveInProgress");
+      handleSave(buttonType);
     }
   };
 
-  const saveInProgressFunction = () => {
-    handleSave("SaveInProgress");
+  const saveInProgressFunction = (type) => {
+    handleSave(type);
+    setShowSaveInProgress(false)
   };
 
   const getSaveInProgressAlert = (value) => {
     setShowSaveInProgress(value);
+    setContinueLoading(value)
   };
 
   const handleSave = async (buttonText) => {
@@ -546,6 +587,18 @@ const ContractedServicesProviderIndividual = ({
       setContinueLoading(false);
       return;
     }
+    if (siteLevel && siteTitleValues?.length === 0) {
+      ErrorToaster("Select Sites for all the Fields");
+      setContinueLoading(false);
+      return;
+    }
+
+    if (departmentLevel && departmentTitleValues?.length === 0) {
+      ErrorToaster("Select Departments for all the Fields");
+      setContinueLoading(false);
+      return;
+    }
+
     const data = {
       ...(isUserPresent && { id: userProviderData?.id }),
       name: {
@@ -657,7 +710,7 @@ const ContractedServicesProviderIndividual = ({
     const { data: roles } = await GET(
       `user-management-service/roles?roleType=${role}`
     );
-    setRoles(roles);
+    setRoles(roles?.filter((data) => data?.roleName !== "Passive Activity Logger")?.map(data => data));
     let temp = selectedRoles;
     if (
       !selectedRoles?.map((data) => data?.roleName)?.includes("Activity Logger")
@@ -762,6 +815,12 @@ const ContractedServicesProviderIndividual = ({
     }
   };
 
+  useEffect(() => {
+    if (serviceProviderType?.id === "") {
+      setNpinNotApplicable(true)
+    }
+  }, [serviceProviderType])
+
   return (
     <div className={style.cloneBlockStyle}>
       <div className={`${style.newContractFromCloneBoxStyle}`}>
@@ -782,7 +841,7 @@ const ContractedServicesProviderIndividual = ({
               }
             />
             {/* <div className={style.grid2}> */}
-            <ProviderTypeList
+            {/* <ProviderTypeList
               value={serviceProviderType?.id}
               onChangeFunc={(id, value) =>
                 setServiceProviderType({
@@ -790,6 +849,26 @@ const ContractedServicesProviderIndividual = ({
                   contractedServiceProviderType: value,
                 })
               }
+              className={[style.fullWidth]}
+            /> */}
+            <ProviderTypeList
+              value={serviceProviderType?.id}
+              onChangeFunc={(id, value) => {
+                // Add more conditional checks if needed
+                if (id && value) {
+                  setNpinNotApplicable(false)
+                  setServiceProviderType({
+                    id: id,
+                    contractedServiceProviderType: value,
+                  });
+                } else {
+                  setNpinNotApplicable(true)
+                  setServiceProviderType({
+                    id: id,
+                    contractedServiceProviderType: value,
+                  });
+                }
+              }}
               className={[style.fullWidth]}
             />
             {/* </div> */}
@@ -1030,13 +1109,14 @@ const ContractedServicesProviderIndividual = ({
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <CommonLabel
               value="Address"
-              className={dataCheck(address?.addressLine) ? style.redLable : ""}
+              className={dataCheck(address?.addressLine && address?.city && address?.state && address?.zipcode) ? style.redLable : ""}
             />
             <div>
               <CommonInputField
                 className={style.fullWidth}
                 placeholder="Street"
                 value={address?.addressLine}
+                maxLength={TEXTFIELDLEN100}
                 onChange={(e) =>
                   setAddress({ ...address, addressLine: e.target.value })
                 }
@@ -1049,7 +1129,7 @@ const ContractedServicesProviderIndividual = ({
                   className={style.fullWidth}
                   placeholder="City"
                   value={address?.city}
-                  maxLength={50}
+                  maxLength={TEXTFIELDLEN50}
                   onFocus={() => {
                     checkFieldAndPopAlert(address?.city, "Address City");
                   }}
@@ -1061,7 +1141,8 @@ const ContractedServicesProviderIndividual = ({
                   className={style.fullWidth}
                   placeholder="State"
                   value={address?.state}
-                  maxLength={20}
+                  maxLength={TEXTFIELDLEN50}
+                  // maxLength={20}
                   onFocus={() => {
                     checkFieldAndPopAlert(address?.state, "Address State");
                   }}
@@ -1073,7 +1154,8 @@ const ContractedServicesProviderIndividual = ({
                   className={style.fullWidth}
                   placeholder="Zipcode"
                   value={address?.zipcode}
-                  maxLength={5}
+                  maxLength={MAXZIPCODELEN}
+                  // maxLength={5}
                   onFocus={() => {
                     checkFieldAndPopAlert(address?.zipcode, "Address Zip Code");
                   }}
@@ -1365,6 +1447,8 @@ const ContractedServicesProviderIndividual = ({
         getSaveInProgressAlert={getSaveInProgressAlert}
         fieldData={unassignedKeys}
         saveInProgressFunction={saveInProgressFunction}
+        setContinueLoading={setContinueLoading}
+        buttonName={buttonName}
       />
     </div>
   );

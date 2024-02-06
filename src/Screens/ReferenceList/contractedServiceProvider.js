@@ -14,6 +14,7 @@ import format from "date-fns/format";
 import Navbar from "../../Components/Navbar";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import SideBar from "../../Components/Sidebar";
+import { formatInTimeZone } from "date-fns-tz";
 
 const ContractedServiceProvidedByIndustries = () => {
   const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
@@ -78,7 +79,9 @@ const ContractedServiceProvidedByIndustries = () => {
     const date = new Date(
       lastModifiedDate.contractedServiceProviders?.lastModified
     );
-    setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
+    setLastUpdatedDate(
+      formatInTimeZone(date, "America/New_York", "MMM d, yyyy HH:mm zzz")
+    );
   };
 
   const getEntityData = async () => {
@@ -269,8 +272,9 @@ const ContractedServiceProvidedByIndustries = () => {
                           .join("-")} */}
                                 </p>
                                 <p className={style.tableDataFontStyle}>
-                                  {format(
+                                  {formatInTimeZone(
                                     new Date(`${i.lastModifiedDate}`),
+                                    "America/New_York",
                                     "MM-dd-yyyy"
                                   )}
                                 </p>

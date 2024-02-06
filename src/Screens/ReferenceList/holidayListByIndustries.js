@@ -19,6 +19,7 @@ import { index } from "d3";
 import Navbar from "../../Components/Navbar";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import SideBar from "../../Components/Sidebar";
+import { formatInTimeZone } from "date-fns-tz";
 
 const BoardCertification = () => {
   const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
@@ -79,7 +80,9 @@ const BoardCertification = () => {
     );
 
     const date = new Date(lastModifiedDate.holidayList?.lastModified);
-    setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
+    setLastUpdatedDate(
+      formatInTimeZone(date, "America/New_York", "MMM d, yyyy HH:mm zzz")
+    );
   };
 
   const handleToggle = (index, data) => {
@@ -329,11 +332,15 @@ const BoardCertification = () => {
                             {data?.eventName}
                           </p>
                           <p className={style.tableDataFontStyle}>
-                            {format(new Date(data?.eventDate), "MMMM d, yyyy")}
+                            {formatInTimeZone(
+                              new Date(data?.eventDate),
+                              "America/New_York",
+                              "MMMM d, yyyy"
+                            )}
                           </p>
-                          <p className={style.tableDataFontStyle}>
+                          {/* <p className={style.tableDataFontStyle}>
                             {format(new Date(data?.eventDate), "EEEE")}
-                          </p>
+                          </p> */}
                           <p
                             className={`${style.tableDataFontStyle} ${style.textCapitalize}`}
                           >

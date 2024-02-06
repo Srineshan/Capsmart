@@ -1511,6 +1511,9 @@ const AddServiceProvided = ({
                       dataValues?.holidayPayment / dataValues?.holidayDuration
                     )?.toFixed(2),
                   },
+                  serviceDays: {
+                    isholidays: dataValues?.holidayActivity === "" ? false : true,
+                  },
                   paymentNotApplicable: dataValues?.holidayPaymentNa,
                 },
               },
@@ -1519,10 +1522,10 @@ const AddServiceProvided = ({
           workingPeriod: {
             from: dataValues?.workingTimeFrom
               ?.toLocaleTimeString("it-IT")
-              .toString(),
+              .toString() || "00:00:00",
             to: dataValues?.workingTimeTo
               ?.toLocaleTimeString("it-IT")
-              .toString(),
+              .toString() || "23:59:00",
           },
           ...((serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE ||
             serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === HIT) && {

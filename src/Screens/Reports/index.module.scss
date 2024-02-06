@@ -167,7 +167,7 @@
 }
 
 .scrollStyle {
-    height: calc(100vh - 400px);
+    height: calc(100vh - 330px);
     overflow: scroll;
 }
 
@@ -1556,4 +1556,10 @@
 
 .floatRight {
     float: right;
+}
+
+.multiProviderGrid {
+    display: grid;
+    grid-template-columns: 20% 15% 15% 23% 15% 7%;
+    grid-gap: 1%;
 }

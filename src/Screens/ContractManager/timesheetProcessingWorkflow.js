@@ -10,6 +10,7 @@ import CommonLabel from '../../Components/CommonFields/CommonLabel';
 import { valueCheck } from "./../../utils/valueCheck";
 
 import style from './index.module.scss';
+import MissedMandatoryFieldAlert from './missedMandatoryFieldAlert';
 
 const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContractInfo, contractId, contractName, isEditable, getTabDataStatus, contract, getShowAlert }) => {
   const [timesheet, setTimesheet] = useState({ id: '', aggregator: '', aggregatorTitle: {}, reviewer: '', reviewerTitle: {}, approver: '', approverTitle: {} });
@@ -31,6 +32,9 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
   const [isAggregationNeeded, setIsAggregationNeeded] = useState(true);
 
   const [selectedTimeSheet, setSelectedTimeSheet] = useState({ id: '', reviewer: '', reviewerTitle: {}, approver: '', approverTitle: {} });
+  const [unassignedKeys, setUnassignedKeys] = useState([]);
+  const [showSaveInProgress, setShowSaveInProgress] = useState(false);
+  const [buttonName, setButtonName] = useState("");
 
   useEffect(() => {
     setSelectTimesheetToDefineProcess(timesheetProcessingWorkflow[0]?.timesheetLabel?.label);
@@ -89,9 +93,6 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     setSites(contractData?.contractDetail?.site?.sites);
   }
 
-  console.log('aggregationNeeded', isAggregationNeeded, provider)
-
-
   const getProviderData = async () => {
     if (contractId !== '' && (selectContractInfo === 'MULTIPLE' && isAggregationNeeded)) {
       const { data: providerData } = await GET(`user-management-service/user?contractID=${contractId}`);
@@ -147,8 +148,6 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     let user = users?.filter(user => user?.id === id)?.map(data => data)[0];
     return user;
   }
-
-  console.log('selectContractInfo', selectContractInfo)
 
   const handleTimeSheetWorkFlow = (name, reviewer, approver, aggregator, activeTab) => {
     let data;
@@ -359,32 +358,75 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     return data;
   }
 
-  const submit = async (buttontext) => {
-    if (timesheet.reviewer !== '' || timesheet.approver !== '') {
-      setContinueLoading(true);
-      // if (timesheet?.reviewer === '' || timesheet?.approver === '') {
-      //   ErrorToaster('Select both Approver and Reviewer to save');
-      //   setContinueLoading(false);
-      //   return;
-      // }
-      // if (selectContractInfo === 'MULTIPLE' && timesheet?.aggregator === '') {
-      //   ErrorToaster('Select Aggregator to save');
-      //   setContinueLoading(false);
-      //   return;
-      // }
-      let data = handleTimeSheetWorkFlow(activeTab, timesheet?.reviewer, timesheet?.approver, timesheet?.aggregator, activeTab);
-      updateTimeSheetWorkflow(data, activeTab, 'Timesheet');
-      setContinueLoading(false);
-      if (buttontext === 'Continue') {
-        getViewPage9(true);
-        // getCurrentPage('Request Processing Workflow')
-      } else if (buttontext === 'Save In Progress') {
-        getShowAlert(true);
-      } else {
-        getNextTab();
-      }
-      setIsShowValidationCheck(true);
+  const mandatoryFieldCheck = (buttonType) => {
+    setContinueLoading(true);
+    if (buttonType === "SaveInProgress" || buttonType === "Continue") {
+      saveInProgresscheck(buttonType);
+      setButtonName(buttonType)
+    } else {
+      handleSubmit('Next')
     }
+  };
+
+  const saveInProgresscheck = (buttonType) => {
+    var keys = [];
+    if (valueCheck(timesheet?.reviewer)) {
+      keys.push("Select Reviewer");
+    }
+    if (valueCheck(timesheet?.approver)) {
+      keys.push("Select Approver");
+    }
+
+    // if (selectContractInfo === 'MULTIPLE' && valueCheck(timesheet?.aggregator)) {
+    //   keys.push("Select Aggregator");
+    // }
+
+    setUnassignedKeys(keys);
+    if (keys?.length !== 0) {
+      setShowSaveInProgress(true);
+      setContinueLoading(true)
+    } else {
+      handleSubmit(buttonType);
+    }
+  };
+
+  const saveInProgressFunction = (type) => {
+    handleSubmit(type);
+    setShowSaveInProgress(false)
+  };
+
+  const getSaveInProgressAlert = (value) => {
+    setShowSaveInProgress(value);
+    setContinueLoading(value)
+  };
+
+  const handleSubmit = async (buttontext) => {
+    setContinueLoading(true);
+
+    if (valueCheck(timesheet?.reviewer) || valueCheck(timesheet?.approver)) {
+      ErrorToaster('Select both Approver and Reviewer to save');
+      setContinueLoading(false);
+      return;
+    }
+    // if (selectContractInfo === 'MULTIPLE' && valueCheck(timesheet?.aggregator)) {
+    //   ErrorToaster('Select Aggregator to save');
+    //   setContinueLoading(false);
+    //   return;
+    // }
+
+    let data = handleTimeSheetWorkFlow(activeTab, timesheet?.reviewer, timesheet?.approver, timesheet?.aggregator, activeTab);
+    await updateTimeSheetWorkflow(data, activeTab, 'Timesheet');
+
+    setContinueLoading(false);
+    if (buttontext === 'Continue') {
+      getViewPage9(true);
+      // getCurrentPage('Request Processing Workflow')
+    } else if (buttontext === 'SaveInProgress') {
+      getShowAlert(true);
+    } else {
+      getNextTab();
+    }
+    setIsShowValidationCheck(true);
   }
 
   const handleContinue = async (workflowId, workFlowMap, method) => {
@@ -509,7 +551,10 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
               {
                 tabIndex < timeSheetTabs?.length - 1 && isEditable &&
                 <div>
-                  <button className={`${style.timesheetNextButtonStyle}  ${style.cursorPointer} ${style.floatRight}`} onClick={() => { submit('Next') }}>NEXT</button>
+                  <button className={`${style.timesheetNextButtonStyle}  ${style.cursorPointer} ${style.floatRight}`}
+                    // onClick={() => { submit('Next') }}
+                    onClick={!continueLoading ? () => { mandatoryFieldCheck('Next') } : {}}
+                  >NEXT</button>
                 </div>
               }
             </div>
@@ -518,14 +563,10 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 <button className={`${style.newContractButtonStyle} ${style.cursorPointer} `} onClick={() => { getCurrentPage('Payment & Compensation') }}>BACK</button>
                 <div>
                   <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`}
-                    onClick={() => {
-                      submit('Save In Progress')
-                    }}
+                    onClick={!continueLoading ? () => mandatoryFieldCheck('SaveInProgress') : {}}
                   >SAVE IN PROGRESS</button>
                   <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`}
-                    onClick={() => {
-                      submit('Continue')
-                    }}
+                    onClick={!continueLoading ? () => { mandatoryFieldCheck('Continue') } : {}}
                   >CONTINUE</button>
                 </div>
               </div>
@@ -547,6 +588,15 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
               //     </div>
               // </Dialog>
             }
+
+            <MissedMandatoryFieldAlert
+              alert={showSaveInProgress}
+              getSaveInProgressAlert={getSaveInProgressAlert}
+              fieldData={unassignedKeys}
+              saveInProgressFunction={saveInProgressFunction}
+              setContinueLoading={setContinueLoading}
+              buttonName={buttonName}
+            />
 
           </div>
           :

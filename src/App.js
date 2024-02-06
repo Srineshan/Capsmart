@@ -32,6 +32,7 @@ const Login = React.lazy(() => import("./Screens/SuperAdminDashboard/login"));
 const Notify = React.lazy(() => import("./Screens/SuperAdminDashboard/notify"));
 const MoveToDraft = React.lazy(() => import("./Screens/ContractManager/moveToDraft"));
 const RemindContractors = React.lazy(() => import("./Screens/SuperAdminDashboard/remindContractors"));
+const TrackYourContracts = React.lazy(() => import("./Screens/ContractManager/trackYourContracts"));
 const NotifyEntityUser = React.lazy(() => import("./Screens/SuperAdminDashboard/notifyEntityUser"));
 const SetPassword = React.lazy(() =>
   import("./Screens/SuperAdminDashboard/setPassword")
@@ -341,7 +342,7 @@ const App = ({ props }) => {
 
 
   const getEntityId = async () => {
-    await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/entity-service/entityID`, {
+    await axios(`http://ec2-35-175-13-4.compute-1.amazonaws.com:8010/entity-service/entityID`, {
       method: "GET",
       // headers: { "X-subdomain": "hopkins" },
     })
@@ -364,7 +365,7 @@ const App = ({ props }) => {
       }
     };
     fetch(
-      `http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/user-management-service/auth/login`,
+      `http://ec2-35-175-13-4.compute-1.amazonaws.com:8010/user-management-service/auth/login`,
       requestOptions
     )
       .then((response) => response.json())
@@ -472,6 +473,7 @@ const App = ({ props }) => {
               <Route path="/contracts" element={<ActiveContracts />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/notifyUser" element={<Notify />} />
+              <Route path="/trackContracts/:trackType" element={<TrackYourContracts />} />
               <Route path="/contracts/moveToDraft" element={<MoveToDraft />} />
               <Route path="/remindContractors" element={<RemindContractors />} />
               <Route path="notifyEntityUser" element={<NotifyEntityUser />} />
