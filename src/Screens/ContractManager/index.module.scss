@@ -169,6 +169,16 @@ body::-webkit-scrollbar {
   padding-top: 5px;
 }
 
+.bigCardFullHeightStyle {
+  height: calc(100vh - 125px);
+  overflow: scroll;
+  background: #ffffff 0% 0% no-repeat padding-box;
+  box-shadow: 0px 10px 20px #c4c8d066;
+  border-radius: 16px;
+  opacity: 1;
+  padding-top: 5px;
+}
+
 .grid5 {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
@@ -2504,4 +2514,94 @@ input[type="number"] {
   box-sizing: content-box;
   height: 15px;
   width: 100%;
+}
+
+.trackTableBackgroudcard {
+  background: #F6F6F6 0% 0% no-repeat padding-box;
+  padding: 60px 0 60px 0;
+  width: calc(80vw - 65px);
+}
+
+.trackServiceProviderName {
+  text-align: left;
+  font: normal normal 600 15px/23px Montserrat;
+  letter-spacing: 0px;
+  color: #7165E3;
+  text-transform: uppercase;
+}
+
+.trackTableContractCountHeading {
+  text-align: left;
+  font: normal normal normal 12px/23px Montserrat;
+  letter-spacing: 0px;
+  color: #7165E3;
+  text-transform: capitalize;
+  opacity: 0.88;
+}
+
+.trackTableContractCount {
+  background-color: #e6fff6;
+  border-radius: 10px;
+  height: 25px;
+  width: 35px;
+  color: #00C07E;
+}
+
+.trackTableContractLabel {
+  text-align: left;
+  font: normal normal 600 12px/19px Montserrat;
+  letter-spacing: 0px;
+  color: #616161;
+  text-transform: capitalize;
+}
+
+.trackPeriodCard {
+  background: #F1EFFC 0% 0% no-repeat padding-box;
+  border: 1px solid #7165E3;
+  border-radius: 8px;
+  height: 60px;
+}
+
+.trackContractOrAgreementCount {
+  font: normal normal medium 14px/14px Montserrat;
+  letter-spacing: 0px;
+  color: #94979A;
+}
+
+.trackContractUserAndPeriod {
+  font: normal normal bold 18px/20px Montserrat;
+  color: #52575D;
+}
+
+.trackTableHeaderGrid {
+  display: grid;
+  grid-template-columns: 1fr .5fr .5fr;
+}
+
+.trackTableHeaderMiddleGrid {
+  display: grid;
+  grid-template-columns: 25% 15% 15% 15% 15% 15%;
+}
+
+.trackTableHeaderTopGrid {
+  display: grid;
+  grid-template-columns: 25% 75%;
+}
+
+.trackTableHeaderBottomGrid {
+  display: grid;
+  grid-template-columns: 25% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 15%;
+}
+
+.trackTableDataGrid {
+  display: grid;
+  grid-template-columns: 25% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 15%;
+}
+
+.whiteBackground {
+  background-color: white;
+}
+
+.muiDataGridWithBorderColor {
+  border-color: #646D82;
 }

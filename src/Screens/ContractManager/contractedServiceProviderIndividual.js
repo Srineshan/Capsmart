@@ -462,7 +462,7 @@ const ContractedServicesProviderIndividual = ({
     if (buttonType === "SaveInProgress" || buttonType === "Continue") {
       saveInProgresscheck(buttonType);
       setButtonName(buttonType)
-    } 
+    }
   };
 
   const saveInProgresscheck = (buttonType) => {
@@ -598,7 +598,7 @@ const ContractedServicesProviderIndividual = ({
       setContinueLoading(false);
       return;
     }
-   
+
     const data = {
       ...(isUserPresent && { id: userProviderData?.id }),
       name: {
@@ -710,7 +710,7 @@ const ContractedServicesProviderIndividual = ({
     const { data: roles } = await GET(
       `user-management-service/roles?roleType=${role}`
     );
-    setRoles(roles);
+    setRoles(roles?.filter((data) => data?.roleName !== "Passive Activity Logger")?.map(data => data));
     let temp = selectedRoles;
     if (
       !selectedRoles?.map((data) => data?.roleName)?.includes("Activity Logger")
@@ -815,11 +815,11 @@ const ContractedServicesProviderIndividual = ({
     }
   };
 
-  useEffect(()=>{
-    if(serviceProviderType?.id === ""){
+  useEffect(() => {
+    if (serviceProviderType?.id === "") {
       setNpinNotApplicable(true)
     }
-  },[serviceProviderType])
+  }, [serviceProviderType])
 
   return (
     <div className={style.cloneBlockStyle}>
@@ -861,7 +861,7 @@ const ContractedServicesProviderIndividual = ({
                     id: id,
                     contractedServiceProviderType: value,
                   });
-                }else{
+                } else {
                   setNpinNotApplicable(true)
                   setServiceProviderType({
                     id: id,
