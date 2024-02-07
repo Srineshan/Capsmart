@@ -25,7 +25,6 @@ const AddContract = ({
   const [isEmployeeContractNeeded, setIsEmployeeContractNeeded] = useState(sessionStorage?.getItem('isEmployeeContractNeeded'))
   const [contractTypeList, setContractTypeList] = useState([]);
 
-  console.log('isEmployeeContractNeeded', isEmployeeContractNeeded)
   const handleNext = () => {
     if (selectedContract === "0" || contractType === "") {
       ErrorToaster("Select a contract type to add");
@@ -48,8 +47,6 @@ const AddContract = ({
     );
     setContractTypeList(contractType);
   };
-
-  console.log("type", contractType, selectedContract);
 
   return (
     <div className={`${style.welcomePadding} ${style.addContractBody}`}>
@@ -211,7 +208,7 @@ const AddContract = ({
             </div>
           </div>
 
-          {selectedContractOnClick && (
+          {/* {selectedContractOnClick && (
             <div
               className={style.descriptionBoxStyle}
               style={{
@@ -230,7 +227,7 @@ const AddContract = ({
                 </span>
               </p>
             </div>
-          )}
+          )} */}
         </div>
       </div>
       <div className={`${style.nextButtonPosition} ${style.marginTop20}`}>
