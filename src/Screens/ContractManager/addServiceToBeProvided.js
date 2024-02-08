@@ -887,10 +887,6 @@ const AddServiceProvided = ({
       ErrorToaster("Activity Type Selection is Mandatory");
       return;
     }
-    // if ((serviceTypeTemplate === ADDON && metadata?.[0]?.locationSpecified && metadata?.[0]?.locations?.length === 0)) {
-    //   ErrorToaster('Atleast one location has to be selected if yes');
-    //   return;
-    // }
     if (
       (serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE) &&
       showLocation &&
