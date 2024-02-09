@@ -2111,7 +2111,7 @@ const ReportTypeOverview = () => {
                                                             {contractDocumentsOnFileValues?.map((data, index) => (
                                                                 <ReportsTable
                                                                     tableType={`${data?.contractName?.contractName} - ${format(new Date(data?.contractDetail?.contractTerm?.startDate), 'MMM d, yyyy')} - ${format(new Date(data?.contractDetail?.contractTerm?.endDate), 'MMM d, yyyy')} (${dataToUseInReport?.contractStatus})`}
-                                                                    tableHeader={['Document Name', 'Document Type', 'Description', 'Last Uploaded By', 'Last Updated Date']}
+                                                                    tableHeader={['Document Name', 'Document Type', 'Description', 'Uploaded By', 'Uploaded Date']}
                                                                     tableValue={data?.contractDetail?.contractFiles}
                                                                     activitiesServicesValues={getContractDocumentsOnFileValues(data)}
                                                                     styleName={style.grid5}

@@ -41,6 +41,11 @@ const TrackYourContracts = () => {
     const [userId, setUserId] = useState(userDetail?.id);
     const [selectedContracts, setSelectedContracts] = useState([]);
     const [activityTrackServices, setActivityTrackServices] = useState([]);
+    const [timesheetTrackValues, setTimesheetTrackValues] = useState([]);
+    const [timesheetIntervals, setTimesheetIntervals] = useState([]);
+    const [timesheetIntervalsStartDate, setTimesheetIntervalsStartDate] = useState('');
+    const [timesheetIntervalsEndDate, setTimesheetIntervalsEndDate] = useState('');
+    const [showTimesheetInterval, setShowTimesheetInterval] = useState(false);
     const [contractTrackCompensationValues, setContractTrackCompensationValues] = useState([]);
     let months = { 1: 'Jan', 2: 'Feb', 3: 'March', 4: 'April', 5: 'May', 6: 'June', 7: 'July', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec' };
     // const columns = [
@@ -156,9 +161,6 @@ const TrackYourContracts = () => {
         );
     }
 
-    console.log(getColumns(), getRows(), getColumnGroupingModel())
-
-
     const compensationPolicy = {
         ACTIVITY_BASED: 'Activity Based',
         SHIFT_OR_PER_DAY_BASED: 'Shift Or Per Day Based',
@@ -203,6 +205,18 @@ const TrackYourContracts = () => {
         }
     }, [selectedContracts])
 
+    useEffect(() => {
+        setSelectedContractedServiceProvider('')
+        setSelectedContracts([])
+        if (trackType === 'timesheetAndInvoiceApprovalsStatusTracker') {
+            getTimesheetIntervals()
+        }
+    }, [trackType])
+
+    useEffect(() => {
+        getTimesheetTrackValues()
+    }, [timesheetIntervalsStartDate, timesheetIntervalsEndDate])
+
     const getIsExpanded = (value) => {
         setIsExpanded(value);
     }
@@ -215,13 +229,27 @@ const TrackYourContracts = () => {
     const getContractTrackValues = async () => {
         const { data: data } = await GET(`timesheet-management-service/activity/track/services?userIds=${[selectedContractedServiceProvider]}`);
         setActivityTrackServices(data);
-        console.log(data)
     }
 
     const getContractTrackCompensation = async () => {
         const { data: data } = await GET(`timesheet-management-service/timesheet/track/compensation?contractId=${selectedContracts}`);
         setContractTrackCompensationValues(data);
-        console.log(data)
+    }
+
+    const getTimesheetTrackValues = async () => {
+        if (timesheetIntervalsStartDate !== '' && timesheetIntervalsEndDate !== '') {
+            const { data: data } = await GET(`timesheet-management-service/timesheet/track/workflow?startDate=${timesheetIntervalsStartDate}&endDate=${timesheetIntervalsEndDate}`);
+            setTimesheetTrackValues(data);
+        }
+    }
+
+    const getTimesheetIntervals = async () => {
+        const { data: data } = await GET(`timesheet-management-service/timesheet/timesheetIntervals`);
+        setTimesheetIntervals(data);
+        if (data?.length !== 0) {
+            setTimesheetIntervalsStartDate(data?.[0]?.startDate)
+            setTimesheetIntervalsEndDate(data?.[0]?.endDate)
+        }
     }
 
     const setUserDetails = async () => {
@@ -261,10 +289,10 @@ const TrackYourContracts = () => {
         balanceUnits = [];
         balanceHours = [];
         nteValues = [];
-        serviceValues?.activityStatsByContract?.map((data, index) => {
+        serviceValues?.activityStatsByContract?.map((activityData, index) => {
             let typesToFilter = ['array']
             let filteredServiceValues = Object.fromEntries(
-                Object.entries(data?.activityStatsMeta).filter(([key, value]) => {
+                Object.entries(activityData?.activityStatsMeta).filter(([key, value]) => {
                     const valueType = Array.isArray(value) ? 'array' : typeof value;
                     return typesToFilter.includes(valueType);
                 })
@@ -272,15 +300,17 @@ const TrackYourContracts = () => {
             console.log(filteredServiceValues)
             Object.keys(filteredServiceValues)?.map(data => {
                 if (filteredServiceValues?.[data]?.length !== 0) {
-                    service?.push({ type: 'parentChildService', name: data, values: filteredServiceValues?.[data]?.map(data => `${data?.activityType} (${data?.timeBlock})`) })
-                    expectedUnits?.push({ type: 'text', values: filteredServiceValues?.[data]?.map(data => data?.contractYearExpected?.units) })
-                    expectedHours?.push({ type: 'text', values: filteredServiceValues?.[data]?.map(data => data?.contractYearExpected?.hours) })
-                    completedUnits?.push({ type: 'text', values: filteredServiceValues?.[data]?.map(data => data?.complated?.units) })
-                    completedHours?.push({ type: 'text', values: filteredServiceValues?.[data]?.map(data => data?.complated?.hours) })
-                    toBeProposedUnits?.push({ type: 'text', values: filteredServiceValues?.[data]?.map(data => data?.inprogress?.units) })
-                    toBeProposedHours?.push({ type: 'text', values: filteredServiceValues?.[data]?.map(data => data?.inprogress?.hours) })
-                    balanceUnits?.push({ type: 'text', values: filteredServiceValues?.[data]?.map(data => data?.balance?.units), color: filteredServiceValues?.[data]?.map(data => data?.balanceUnitsStatus === 'SUFFICIENT' ? style.greenBigNumber : data?.balanceUnitsStatus === 'DEFICIT' ? style.yellowBigNumber : style.redBigNumber) })
-                    balanceHours?.push({ type: 'text', values: filteredServiceValues?.[data]?.map(data => data?.balance?.hours), color: filteredServiceValues?.[data]?.map(data => data?.balanceUnitsStatus === 'SUFFICIENT' ? style.greenBigNumber : data?.balanceUnitsStatus === 'DEFICIT' ? style.yellowBigNumber : style.redBigNumber) })
+                    service?.push({ type: 'parentChildService', name: data, values: filteredServiceValues?.[data]?.map(data => `${(data?.activityType.length > 25 && activityData?.contract?.compensationPolicy !== 'ACTIVITY_BASED') ? data?.activityType.slice(0, 25) + '...' : data?.activityType} (${data?.timeBlock})`) })
+                    completedUnits?.push({ type: 'number', values: filteredServiceValues?.[data]?.map(data => data?.complated?.units) })
+                    completedHours?.push({ type: 'number', values: filteredServiceValues?.[data]?.map(data => data?.complated?.hours) })
+                    toBeProposedUnits?.push({ type: 'number', values: filteredServiceValues?.[data]?.map(data => data?.inprogress?.units) })
+                    toBeProposedHours?.push({ type: 'number', values: filteredServiceValues?.[data]?.map(data => data?.inprogress?.hours) })
+                    if (activityData?.contract?.compensationPolicy !== 'ACTIVITY_BASED') {
+                        expectedUnits?.push({ type: 'number', values: filteredServiceValues?.[data]?.map(data => data?.contractYearExpected?.units) })
+                        // expectedHours?.push({ type: 'text', values: filteredServiceValues?.[data]?.map(data => data?.contractYearExpected?.hours) })
+                        balanceUnits?.push({ type: 'number', values: filteredServiceValues?.[data]?.map(data => data?.balance?.units), color: filteredServiceValues?.[data]?.map(data => data?.balanceUnitsStatus === 'SUFFICIENT' ? style.greenBigNumber : data?.balanceUnitsStatus === 'DEFICIT' ? style.yellowBigNumber : style.redBigNumber) })
+                        balanceHours?.push({ type: 'number', values: filteredServiceValues?.[data]?.map(data => data?.balance?.hours), color: filteredServiceValues?.[data]?.map(data => data?.balanceUnitsStatus === 'SUFFICIENT' ? style.greenBigNumber : data?.balanceUnitsStatus === 'DEFICIT' ? style.yellowBigNumber : style.redBigNumber) })
+                    }
                 }
             })
 
@@ -288,17 +318,71 @@ const TrackYourContracts = () => {
         nteValues?.push({ type: 'nteAmount', values: serviceValues?.activityStatsByContract?.[0]?.activityStatsMeta?.contractBalancePaymentSummary })
 
 
-        return [service,
-            expectedUnits,
-            expectedHours,
-            completedUnits,
-            completedHours,
-            toBeProposedUnits,
-            toBeProposedHours,
-            balanceUnits,
-            balanceHours,
-            nteValues]
+        return serviceValues?.activityStatsByContract?.[0]?.contract?.compensationPolicy !== 'ACTIVITY_BASED' ?
+            [
+                service,
+                expectedUnits,
+                // expectedHours,
+                completedUnits,
+                completedHours,
+                toBeProposedUnits,
+                toBeProposedHours,
+                balanceUnits,
+                balanceHours,
+                nteValues
+            ] : [
+                service,
+                completedUnits,
+                completedHours,
+                toBeProposedUnits,
+                toBeProposedHours,
+                nteValues
+            ]
 
+    }
+
+    let timesheetServiceProvider = [];
+    let timesheetName = [];
+    let timesheetCompensationPolicy = [];
+    let submissionStatusAndDate = [];
+    let reviewAndApprovalStatusAndDate = [];
+    let reviewAndApprovalApprovalDays = [];
+    let paymentProcessingStatusAndDate = [];
+    let paymentProcessingApprovalDays = [];
+    let remainingTerm = [];
+
+    const getTimesheetTableValue = () => {
+        timesheetServiceProvider = [];
+        timesheetName = [];
+        timesheetCompensationPolicy = [];
+        submissionStatusAndDate = [];
+        reviewAndApprovalStatusAndDate = [];
+        reviewAndApprovalApprovalDays = [];
+        paymentProcessingStatusAndDate = [];
+        paymentProcessingApprovalDays = [];
+        remainingTerm = [];
+        timesheetTrackValues?.map(data => {
+            timesheetServiceProvider.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => `${data?.user?.name?.firstName} ${data?.user?.name?.lastName}, ${data?.user?.name?.suffix?.suffix}`) : [''] });
+            timesheetName.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.timesheetLabel?.label) : [''] })
+            submissionStatusAndDate.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.submissionStausLog !== null ? format(new Date(timesheetData?.submissionStausLog?.date), 'MMM dd, yyyy') : []) : [''] })
+            reviewAndApprovalStatusAndDate.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.reviewApprovalStausLog !== null ? format(new Date(timesheetData?.reviewApprovalStausLog?.dueDate), 'MMM dd, yyyy') : []) : [''] })
+            reviewAndApprovalApprovalDays.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.reviewApprovalStausLog !== null ? timesheetData?.reviewApprovalStausLog?.daysToApprove : []) : [''] })
+            paymentProcessingStatusAndDate.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.paymentProcessingStausLog !== null ? format(new Date(timesheetData?.paymentProcessingStausLog?.date), 'MMM dd, yyyy') : []) : [''] })
+            paymentProcessingApprovalDays.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.paymentProcessingStausLog !== null ? timesheetData?.paymentProcessingStausLog?.daysToApprove : []) : [''] })
+            timesheetCompensationPolicy.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => compensationPolicy[data?.contract?.compensationPolicy]) : [''] });
+            remainingTerm.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => data?.remainingTerm) : [''] })
+        })
+        return [
+            // timesheetServiceProvider,
+            // timesheetName,
+            // timesheetCompensationPolicy,
+            // submissionStatusAndDate,
+            // reviewAndApprovalStatusAndDate,
+            // reviewAndApprovalApprovalDays,
+            // paymentProcessingStatusAndDate,
+            // paymentProcessingApprovalDays,
+            // remainingTerm
+        ]
     }
 
     return (
@@ -321,7 +405,7 @@ const TrackYourContracts = () => {
                             </div>
                         </SideBar>
                     </div>
-                    <div className={` ${style.padding20}`}>
+                    <div className={` ${style.padding20} ${style.whiteBackground}`}>
                         {trackType === 'compensationTracker' ? (
                             <>
                                 <div className={style.displayInRow}>
@@ -388,6 +472,45 @@ const TrackYourContracts = () => {
 
                                 </div>
                             </>
+                        ) : trackType === 'timesheetAndInvoiceApprovalsStatusTracker' ? (
+                            <>
+                                <div className={style.spaceBetween}>
+                                    <div className={style.trackServiceProviderName}>{`TIMESHEET SUBMITTED PROCESSING STATUS BY SERVICE PROVIDER`}</div>
+                                    <PrintOutlinedIcon className={`${style.headerPrintIcon} ${style.cursorPointer}`} style={{ color: "#7165E3" }} />
+                                </div>
+                                {timesheetIntervals?.length !== 0 && (
+                                    <>
+                                        <div className={`${style.trackPeriodCard} ${style.marginTop20} ${style.spaceBetween} ${style.padding20} ${style.cursorPointer}`} onClick={() => setShowTimesheetInterval(!showTimesheetInterval)}>
+                                            <div className={style.trackContractUserAndPeriod}>{`Timesheets for ${format(new Date(timesheetIntervalsStartDate || timesheetIntervals?.[0]?.startDate), 'MMMM yyyy')}`}</div>
+                                            {!showTimesheetInterval ? (
+                                                <div className={style.arrowDown}></div>
+                                            ) : (
+                                                <div className={style.arrowUp}></div>
+                                            )}
+                                        </div>
+                                        {showTimesheetInterval && (
+                                            <div className={style.intervalPeriodBorder}>
+                                                {timesheetIntervals?.map((data, index) => (
+                                                    <div className={`${style.trackPeriodOptionsCard} ${style.verticalAlignCenter} ${style.cursorPointer}`} onClick={() => { setTimesheetIntervalsStartDate(data?.startDate); setTimesheetIntervalsEndDate(data?.endDate); setShowTimesheetInterval(false) }} key={index}>
+                                                        <div className={style.timesheetIntervalListText}>{`Timesheets for ${format(new Date(data?.startDate), 'MMMM yyyy')}`}</div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </>
+                                )}
+                                {timesheetTrackValues?.length !== 0 && (
+                                    <TrackTable
+                                        tableHead={['SERVICE PROVIDER', 'TIMESHEET NAME', 'COMPENSATION POLICY', 'SUBMISSION', 'REVIEW & APPROVAL', 'PAYMENT PROCESSING', 'REMAINING TERM']}
+                                        tableHeadBottom={['', '', '', 'STATUS & DATE', 'STATUS & DATE', 'APPROVAL DAYS', 'STATUS & DATE', 'APPROVAL DAYS', '', '']}
+                                        tableData={getTimesheetTableValue()}
+                                        dataGrid={style.timesheetTableDataGrid}
+                                        tableHeadGrid={style.timesheetTableHeaderMiddleGrid}
+                                        tableHeadBottomGrid={style.timesheetTableHeaderBottomGrid}
+                                        header={false}
+                                    />
+                                )}
+                            </>
                         ) : (
                             <>
                                 <div className={style.spaceBetween}>
@@ -400,23 +523,26 @@ const TrackYourContracts = () => {
                                         <div className={style.trackContractOrAgreementCount}>{activityTrackServices?.length} Contracts/ Service Agreements</div>
                                     </div>
                                 )}
-                                {activityTrackServices?.map(data => (
+                                {activityTrackServices?.map((data, index) => (
                                     <TrackTable
-                                        heading={`${data?.activityStatsByContract?.[0]?.contract?.contractName?.contractName} - ${data?.activityStatsByContract?.[0]?.contract?.contractId?.id}`}
+                                        heading={`${data?.activityStatsByContract?.[index]?.contract?.contractName?.contractName} - ${data?.activityStatsByContract?.[index]?.contract?.contractId?.id}`}
                                         columnHeading={[
-                                            `Compensation Policy: ${compensationPolicy[data?.activityStatsByContract?.[0]?.contract?.compensationPolicy]}`,
-                                            `Contract Period: ${format(new Date(data?.activityStatsByContract?.[0]?.contract?.contractTerm?.startDate), 'MMM d, yyyy')} - ${format(new Date(data?.activityStatsByContract?.[0]?.contract?.contractTerm?.endDate), 'MMM d, yyyy')}`,
+                                            `Compensation Policy: ${compensationPolicy[data?.activityStatsByContract?.[index]?.contract?.compensationPolicy]}`,
+                                            `Contract Period: ${format(new Date(data?.activityStatsByContract?.[index]?.contract?.contractTerm?.startDate), 'MMM d, yyyy')} - ${format(new Date(data?.activityStatsByContract?.[index]?.contract?.contractTerm?.endDate), 'MMM d, yyyy')}`,
                                             'San Mateo Medical Center'
                                         ]}
-                                        tableHead={['CONTRACTED ACTIVITY / SERVICES', 'EXPECTED', 'COMPLETED', 'TO BE PROCESSED', 'BALANCE', '']}
-                                        tableHeadTop={['', `Contract Year: ${format(new Date(data?.activityStatsByContract?.[0]?.activityStatsMeta?.contractYearInterval?.startDate), 'MMM d, yyyy')} - ${format(new Date(data?.activityStatsByContract?.[0]?.activityStatsMeta?.contractYearInterval?.endDate), 'MMM d, yyyy')}`]}
-                                        tableHeadBottom={['', 'UNITS', 'HOURS', 'UNITS', 'HOURS', 'UNITS', 'HOURS', 'UNITS', 'HOURS', '']}
+                                        tableHead={data?.activityStatsByContract?.[index]?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? ['CONTRACTED ACTIVITY / SERVICES', 'COMPLETED', 'TO BE PROCESSED', ''] : ['CONTRACTED ACTIVITY / SERVICES', 'EXPECTED', 'COMPLETED', 'TO BE PROCESSED', 'BALANCE', '']}
+                                        // tableHead={['CONTRACTED ACTIVITY / SERVICES', 'COMPLETED', 'TO BE PROCESSED', 'BALANCE', '']}
+                                        tableHeadTop={['', `Contract Year: ${format(new Date(data?.activityStatsByContract?.[index]?.activityStatsMeta?.contractYearInterval?.startDate), 'MMM d, yyyy')} - ${format(new Date(data?.activityStatsByContract?.[index]?.activityStatsMeta?.contractYearInterval?.endDate), 'MMM d, yyyy')}`]}
+                                        tableHeadBottom={data?.activityStatsByContract?.[index]?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? ['', 'UNITS', 'HOURS', 'UNITS', 'HOURS', ''] : ['', 'UNITS', 'UNITS', 'HOURS', 'UNITS', 'HOURS', 'UNITS', 'HOURS', '']}
+                                        // tableHeadBottom={['', 'UNITS', 'HOURS', 'UNITS', 'HOURS', 'UNITS', 'HOURS', '']}
                                         tableData={getTrackTableValue(data)}
                                         headerGrid={style.trackTableHeaderGrid}
-                                        dataGrid={style.trackTableDataGrid}
-                                        tableHeadGrid={style.trackTableHeaderMiddleGrid}
-                                        tableHeadTopGrid={style.trackTableHeaderTopGrid}
-                                        tableHeadBottomGrid={style.trackTableHeaderBottomGrid}
+                                        dataGrid={data?.activityStatsByContract?.[index]?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableDataGridForActivityBased : style.trackTableDataGrid}
+                                        tableHeadGrid={data?.activityStatsByContract?.[index]?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableHeaderMiddleGridForActivityBased : style.trackTableHeaderMiddleGrid}
+                                        tableHeadTopGrid={data?.activityStatsByContract?.[index]?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableHeaderTopGridForActivityBased : style.trackTableHeaderTopGrid}
+                                        tableHeadBottomGrid={data?.activityStatsByContract?.[index]?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableHeaderBottomGridForActivityBased : style.trackTableHeaderBottomGrid}
+                                        header={true}
                                     />
                                 ))}
                             </>
