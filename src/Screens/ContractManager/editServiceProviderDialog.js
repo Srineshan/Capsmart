@@ -229,12 +229,22 @@ const EditServiceProvider = ({
 
   const handleRoles = (value) => {
     if (value !== "0") {
-      const selectedValue = roles
-        .filter((data) => data?.roleName === value)
-        .map((data) => data)[0];
+      let selectedValue = [];
+      if (value === "Aggregator" || value === "Activity Logger") {
+        selectedValue = selectedRoles?.filter(data => data?.roleName !== "Passive Activity Logger")?.map(data => data);
+        roles?.filter((data) => data?.roleName === "Aggregator" || data?.roleName === "Activity Logger")?.map(data => selectedValue.push(data))
+      } else if (value === "Passive Activity Logger") {
+        selectedValue = selectedRoles?.filter(data => data?.roleName !== "Activity Logger" && data?.roleName !== "Aggregator")?.map(data => data);;
+        roles?.filter((data) => data?.roleName === "Passive Activity Logger")?.map(data => selectedValue.push(data))
+      } else {
+        selectedValue = [...selectedRoles];
+        selectedValue.push(roles
+          .filter((data) => data?.roleName === value)
+          .map((data) => data)[0])
+      }
+      if (!selectedRoles?.map((data) => data?.roleName).includes(value)) {
+        setSelectedRoles(selectedValue)
 
-      if (!selectedRoles.map((data) => data?.roleName).includes(value)) {
-        setSelectedRoles([...selectedRoles, selectedValue]);
       }
     }
   };
@@ -249,8 +259,8 @@ const EditServiceProvider = ({
       };
       return (
         <Tag
-          key={index}
-          onRemove={tag?.roleName !== "Activity Logger" && tag?.roleName !== "Passive Activity Logger" && onRemove}
+          key={`${tag?.roleName} - ${index}`}
+          onRemove={tag?.roleName !== "Activity Logger" && tag?.roleName !== "Passive Activity Logger" && tag?.roleName !== "Aggregator" && onRemove}
           large={true}
           className={style.tagStyle}
         >
