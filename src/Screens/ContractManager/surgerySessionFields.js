@@ -29,6 +29,7 @@ const SurgerySessionFields = ({
   const [metadata, setMetadata] = useState({
     min: 0,
     max: 99999999,
+    minimumSessionDuration:0,
     frequency: "NA",
     withNurse: "0",
     withoutNurse: "0",
@@ -102,6 +103,7 @@ const SurgerySessionFields = ({
     setMetadata({
       min: 0,
       max: 99999999,
+      minimumSessionDuration:0,
       frequency: "NA",
       withNurse: "0",
       withoutNurse: "0",
@@ -144,6 +146,7 @@ const SurgerySessionFields = ({
         refId: serviceSelected?.refId,
         min: serviceSelected?.contractedSchedules?.[0]?.minimum?.value,
         max: serviceSelected?.contractedSchedules?.[0]?.maximum?.value,
+        minimumSessionDuration: serviceSelected?.minSessionDuration?.hours,
         frequency: serviceSelected?.contractedSchedules?.[0]?.frequency,
         withNurse: serviceSelected?.patientsSeenTargets?.[0]?.withNurse?.value,
         withoutNurse:
@@ -330,6 +333,32 @@ const SurgerySessionFields = ({
                 withoutNurse: 0,
               });
             }}
+          />
+        </div>
+      </div>
+
+      <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+        <CommonLabel
+          value="Minimum Session Duration"
+          className={dataCheck(metadata?.minimumSessionDuration) ? style.redLable : ""}
+        />
+        <div className={`${style.threeFieldWidth}`}>
+          <CommonTextField
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end" sx={{ fontSize: 10 }}>
+                  Hours
+                </InputAdornment>
+              ),
+            }}
+            value={metadata?.minimumSessionDuration}
+            onChange={(e) =>
+              e.target.value >= 0 &&
+              setMetadata({
+                ...metadata,
+                minimumSessionDuration: parseFloat(e.target.value),
+              })
+            }
           />
         </div>
       </div>

@@ -85,6 +85,7 @@ const ClinicBlocksFields = ({
         noTargetApplicable: false,
       },
     ],
+    minimumSessionDuration: "0",
     min: "0",
     max: "0",
     frequency: "WEEK",
@@ -171,6 +172,7 @@ const ClinicBlocksFields = ({
           noTargetApplicable: false,
         },
       ],
+      minimumSessionDuration: "0",
       min: "0",
       max: "0",
       frequency: "WEEK",
@@ -325,6 +327,7 @@ const ClinicBlocksFields = ({
         scheduledPatientsTargets: tempScheduledPatientsTargets,
         scheduleAndTargetSame:
           serviceSelected?.contractedSchedules?.length <= 1 ? true : false,
+        minimumSessionDuration: serviceSelected?.minSessionDuration?.hours,
         min: serviceSelected?.contractedSchedule?.minimum?.value,
         max: serviceSelected?.contractedSchedule?.maximum?.value,
         frequency: serviceSelected?.contractedSchedule?.frequency,
@@ -491,14 +494,6 @@ const ClinicBlocksFields = ({
     setMetadata({ ...metadata, [targetName]: temp });
   };
 
-  const limit5 = 5;
-
-  console.log(
-    "selected",
-    format(new Date(contractTermPeriod?.start), "MMMM d, yyyy"),
-    GetDateFromHours(serviceSelected?.workingPeriod?.from?.toString() || "")
-  );
-
   const deleteRow = (index) => {
     let contractSchedule = metadata?.contractedSchedules
       ?.filter((data, indexVal) => indexVal !== index)
@@ -524,8 +519,6 @@ const ClinicBlocksFields = ({
       return false;
     }
   };
-
-  console.log(metadata)
 
   return (
     <div>
@@ -1055,6 +1048,34 @@ const ClinicBlocksFields = ({
           ))}
         </div>
       )}
+
+      <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+        <CommonLabel
+          value="Minimum Session Duration"
+          className={dataCheck(metadata?.minimumSessionDuration) ? style.redLable : ""}
+        />
+        <div className={`${style.threeFieldWidth}`}>
+          <CommonTextField
+            type="tel"
+            maxLength="2"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end" sx={{ fontSize: 10 }}>
+                  Hours
+                </InputAdornment>
+              ),
+            }}
+            onChange={(e) =>
+              e.target.value >= 0 &&
+              setMetadata({
+                ...metadata,
+                minimumSessionDuration: e.target.value,
+              })
+            }
+            value={metadata?.minimumSessionDuration}
+          />
+        </div>
+      </div>
 
       <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
         <CommonLabel

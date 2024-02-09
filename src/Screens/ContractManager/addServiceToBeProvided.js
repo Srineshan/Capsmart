@@ -1280,6 +1280,9 @@ const AddServiceProvided = ({
           payableAmount: {
             value: parseFloat(dataValues?.sessionAmount),
           },
+          minSessionDuration: {
+            hours: parseInt(dataValues?.minimumSessionDuration || 1),
+          },
           patientConsultRequired: dataValues?.patientConsultRequired || false,
           professionalServiceRequired: dataValues?.professionalServiceRequired || false,
           ...((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ONCALLSERVICE ||
