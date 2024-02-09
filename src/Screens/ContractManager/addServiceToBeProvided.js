@@ -1288,7 +1288,7 @@ const AddServiceProvided = ({
                   ? Number(dataValues?.sessionAmount)?.toFixed(2) !== 'NaN' ? Number(dataValues?.sessionAmount)?.toFixed(2) : 0
                   : Number(
                     dataValues?.sessionAmount / dataValues?.totalSession
-                  )?.toFixed(2) !== "NaN" ? Number(
+                  )?.toFixed(2) !== "NaN" ? dataValues?.serviceRateFrequency === "SESSION" ? Number(dataValues?.serviceRate / dataValues?.serviceRateDuration) : Number(
                     dataValues?.sessionAmount / dataValues?.totalSession
                   )?.toFixed(2) : 0,
             },
@@ -1551,7 +1551,7 @@ const AddServiceProvided = ({
             serviceRate: {
               rate: dataValues?.serviceRate,
               rateFrequency: dataValues?.serviceRateFrequency,
-              duration: !serviceTypeTemplate.includes([ADMINISTRATIVE, SUPPLEMENTAL, HIT]) && dataValues?.dedicatedHoursSpecified ? parseFloat(dataValues?.totalSession) : parseFloat(dataValues?.sessionDuration),
+              duration: !serviceTypeTemplate.includes([ADMINISTRATIVE, SUPPLEMENTAL, HIT, ONCALLSERVICE]) && dataValues?.dedicatedHoursSpecified ? dataValues?.serviceRateFrequency === 'SESSION' ? dataValues?.serviceRateDuration : dataValues?.totalSession : parseFloat(dataValues?.sessionDuration),
             },
           })),
           dependantServiceIncluded:

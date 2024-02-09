@@ -145,6 +145,7 @@ const SupplementalFields = ({
         sessionAmount: '',
         sessionDuration: '1',
         serviceRate: '0',
+        serviceRateDuration: '0',
         serviceRateFrequency: 'SESSION',
         sessionsAsNeeded: false,
         workingTimeFrom: null,
@@ -181,6 +182,7 @@ const SupplementalFields = ({
             sessionDuration: '1',
             serviceRate: '0',
             serviceRateFrequency: 'SESSION',
+            serviceRateDuration: '0',
             sessionsAsNeeded: false,
             workingTimeFrom: null,
             workingTimeTo: null,
@@ -272,6 +274,7 @@ const SupplementalFields = ({
             sessionDuration: serviceSelected?.duration?.hours || "1",
             serviceRate: serviceSelected?.serviceRate?.rate || '0',
             serviceRateFrequency: serviceSelected?.serviceRate?.rateFrequency,
+            serviceRateDuration: serviceSelected?.serviceRate?.duration,
             totalSession: serviceSelected?.totalSessions?.value,
             sessionsAsNeeded: serviceSelected?.sessionsAsNeeded,
             totalSessionFrequency: serviceSelected?.totalSessions?.frequency,
@@ -611,7 +614,7 @@ const SupplementalFields = ({
                                         }}
                                         onChange={(e) =>
                                             e.target.value >= 0 &&
-                                            setMetadata({ ...metadata, totalSession: parseFloat(e.target.value || '0'), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? metadata?.serviceRate : (metadata?.serviceRate * parseFloat(e.target.value || '1')) })
+                                            setMetadata({ ...metadata, totalSession: parseFloat(e.target.value || '0'), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? (metadata?.serviceRate * (metadata?.totalSession / metadata?.serviceRateDuration)) : (metadata?.serviceRate * parseFloat(e.target.value || '1')) })
                                         }
                                         value={metadata?.totalSession}
                                     />
@@ -672,6 +675,50 @@ const SupplementalFields = ({
                         {metadata?.billableService && (
                             <>
                                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                                    <CommonLabel value='Service Frequency' />
+                                    <div className={`${style.displayInRow}`}>
+                                        <div className={`${style.threeFieldWidth}`}>
+                                            <CommonSelectField
+                                                value={metadata?.serviceRateFrequency || ''}
+                                                onChange={(e) => setMetadata({ ...metadata, serviceRateDuration: '1', serviceRateFrequency: e.target.value, sessionAmount: (e.target.value === 'SESSION') ? (metadata?.serviceRate * (metadata?.totalSession / metadata?.serviceRateDuration)) : (metadata?.serviceRate * (metadata?.totalSession || 1)) })}
+                                                firstOptionLabel={'Select Frequency'} firstOptionValue={''}
+                                                valueList={['SESSION', 'HOUR']}
+                                                labelList={['Per Session', 'Per Hour']}
+                                                disabledList={[false, false]} />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {metadata?.serviceRateFrequency === 'SESSION' && <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                                    <CommonLabel
+                                        value="Service Rate Duration*"
+                                        className={
+                                            dataCheck(metadata?.serviceRateDuration) ? style.redLable : ""
+                                        }
+                                    />
+                                    <div className={style.grid3WithoutGap}>
+                                        <div className={`${style.threeFieldWidth}`}>
+                                            <CommonTextField
+                                                type="tel"
+                                                maxLength="3"
+                                                InputProps={{
+                                                    endAdornment: (
+                                                        <InputAdornment position="end" sx={{ fontSize: 10 }}>
+                                                            Hours
+                                                        </InputAdornment>
+                                                    ),
+                                                }}
+                                                onChange={(e) =>
+                                                    e.target.value >= 0 &&
+                                                    setMetadata({ ...metadata, serviceRateDuration: parseFloat(e.target.value || '0'), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? (metadata?.serviceRate * (metadata?.totalSession / parseFloat(e.target.value))) : (metadata?.serviceRate * parseFloat(e.target.value || '1')) })
+                                                }
+                                                value={metadata?.serviceRateDuration}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>}
+
+                                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                                     <CommonLabel value='Service Rate' />
                                     <div className={`${style.displayInRow}`}>
                                         <div className={`${style.threeFieldWidth}`}>
@@ -681,25 +728,12 @@ const SupplementalFields = ({
                                                     startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
                                                 }}
                                                 value={metadata?.serviceRate}
-                                                onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, serviceRate: parseFloat(e.target.value.slice(0, 9)), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? parseFloat(e.target.value || '0') : (parseFloat(e.target.value || '0') * (metadata?.totalSession || 1)) })}
+                                                onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, serviceRate: parseFloat(e.target.value.slice(0, 9)), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? (parseFloat(e.target.value.slice(0, 9)) * (metadata?.totalSession / metadata?.serviceRateDuration)) : (parseFloat(e.target.value || '0') * (metadata?.totalSession || 1)) })}
                                             />
                                         </div>
                                     </div>
                                 </div>
-                                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                    <CommonLabel value='Service Frequency' />
-                                    <div className={`${style.displayInRow}`}>
-                                        <div className={`${style.threeFieldWidth}`}>
-                                            <CommonSelectField
-                                                value={metadata?.serviceRateFrequency || ''}
-                                                onChange={(e) => setMetadata({ ...metadata, serviceRateFrequency: e.target.value, sessionAmount: (e.target.value === 'SESSION') ? metadata?.serviceRate : (metadata?.serviceRate * (metadata?.totalSession || 1)) })}
-                                                firstOptionLabel={'Select Frequency'} firstOptionValue={''}
-                                                valueList={['SESSION', 'HOUR']}
-                                                labelList={['Per Session', 'Per Hour']}
-                                                disabledList={[false, false]} />
-                                        </div>
-                                    </div>
-                                </div>
+
                                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                                     <CommonLabel
                                         value="Supplemental Service Payment Amount*"
@@ -735,7 +769,6 @@ const SupplementalFields = ({
                                                 }
                                             />
                                         </div>
-
                                         <div className={style.verticalAlignCenter}>
                                             {metadata?.sessionAmount !== "" &&
                                                 metadata?.sessionAmount !== "0" && (
@@ -745,7 +778,10 @@ const SupplementalFields = ({
                                                             metadata?.sessionsAsNeeded
                                                                 ? `${parseInt(metadata?.sessionAmount
                                                                     || '0')?.toFixed(2)} per Hour (Pro Rata)`
-                                                                : metadata?.totalSession === 0 ? '' : `${(
+                                                                // : metadata?.totalSession === 0 ? '' : metadata?.serviceRateFrequency === 'SESSION' ?
+                                                                //     `${(parseFloat(metadata?.sessionAmount) / metadata?.totalSession?.toFixed(2)} per Hour (Pro Rata)`
+                                                                :
+                                                                `${(
                                                                     parseFloat(metadata?.sessionAmount || '0') /
                                                                     parseFloat(metadata?.totalSession || '0')
                                                                 )?.toFixed(2)} per Hour (Pro Rata)`
