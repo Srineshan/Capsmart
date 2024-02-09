@@ -118,6 +118,7 @@ const AddContract = ({
                   onClick={() => {
                     setSelectedContractOnClick(true);
                     setContractType(data?.contractTypeTemplate);
+                    sessionStorage.setItem('contractType', data?.contractTypeTemplate)
                   }}
                 >
                   <div className={style.alignCenter}>

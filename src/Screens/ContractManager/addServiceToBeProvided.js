@@ -127,6 +127,7 @@ const AddServiceProvided = ({
   const [reducedOffsetApplicable, setReducedOffsetApplicable] = useState(false);
   const [compensationPolicy, setCompensationPolicy] = useState("");
   const contractStatus = sessionStorage.getItem('Selected Contract Status');
+  const contractType = sessionStorage.getItem('contractType');
 
   useEffect(() => {
     getContractedServices();
@@ -174,9 +175,6 @@ const AddServiceProvided = ({
       );
     }
   }, [selectedService, serviceTypeList]);
-
-
-  console.log('selected Service', selectedService);
 
   useEffect(() => {
     if (siteData?.length !== 0) {
@@ -2381,6 +2379,7 @@ const AddServiceProvided = ({
                     />
                   ) : serviceTypeTemplate === ONCALL ? (
                     <OnCallCoverageFields
+                      servicesList={contractedServices}
                       getMetaData={getMetaData}
                       serviceSelected={selectedService}
                       timeCommitment={timeCommitment}
