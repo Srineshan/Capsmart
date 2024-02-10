@@ -136,6 +136,7 @@ const OnCallService = ({
         supplementalActivityType: [],
         supplementServiceName: [],
         baseServiceAvailable: false,
+        minimumSessionDuration: 0,
         baseServices: [],
         billableService: true,
         rateType: 'HOURLY',
@@ -178,6 +179,7 @@ const OnCallService = ({
             totalSessionFrequency: 'NA',
             sessionAmount: '',
             sessionDuration: '0',
+            minimumSessionDuration: 0,
             serviceRate: '0',
             serviceRateFrequency: 'SESSION',
             sessionsAsNeeded: false,
@@ -281,6 +283,7 @@ const OnCallService = ({
             serviceRate: serviceSelected?.serviceRate?.rate,
             serviceRateFrequency: serviceSelected?.serviceRate?.rateFrequency,
             totalSession: serviceSelected?.totalSessions?.value,
+            minimumSessionDuration: serviceSelected?.minSessionDuration?.hours,
             sessionsAsNeeded: serviceSelected?.sessionsAsNeeded,
             totalSessionFrequency: serviceSelected?.totalSessions?.frequency,
             workingTimeFrom: GetDateFromHours(
@@ -601,6 +604,34 @@ const OnCallService = ({
                                     //       <MenuItem value={'HOURLY'}>Hourly</MenuItem>
                                     //   </Select>
                                 }
+                            </div>
+                        </div>
+
+                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                            <CommonLabel
+                                value="Minimum Session Duration"
+                                className={dataCheck(metadata?.minimumSessionDuration) ? style.redLable : ""}
+                            />
+                            <div className={`${style.threeFieldWidth}`}>
+                                <CommonTextField
+                                    type="tel"
+                                    maxLength="2"
+                                    InputProps={{
+                                        endAdornment: (
+                                            <InputAdornment position="end" sx={{ fontSize: 10 }}>
+                                                Hours
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                    onChange={(e) =>
+                                        e.target.value >= 0 &&
+                                        setMetadata({
+                                            ...metadata,
+                                            minimumSessionDuration: e.target.value,
+                                        })
+                                    }
+                                    value={metadata?.minimumSessionDuration}
+                                />
                             </div>
                         </div>
 
