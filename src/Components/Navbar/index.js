@@ -383,12 +383,12 @@ const Navbar = () => {
                     >
                       <div className={style.options}>Activity Status Tracker</div>
                     </Link>
-                    {/* <Link
+                    <Link
                       to={"/trackContracts/timesheetAndInvoiceApprovalsStatusTracker"}
                       className={style.noFontStyle}
                     >
                       <div className={style.options}>Timesheet And Invoice Approvals Status Tracker</div>
-                    </Link> */}
+                    </Link>
                   </div>
                 </Popover>
               </div>

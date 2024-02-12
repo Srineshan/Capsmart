@@ -8,12 +8,13 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
-import { format } from 'date-fns';
+import { differenceInCalendarDays, format } from 'date-fns';
 import Select from '@mui/material/Select';
 import { DataGrid, GridToolbarContainer, GridToolbarExport } from '@mui/x-data-grid';
 
 import 'react-data-grid/lib/styles.css';
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
+import SquareIcon from '@mui/icons-material/Square';
 import DownloadIcon from '@mui/icons-material/Download';
 import style from './index.module.scss';
 import TrackTable from '../../Components/TrackTable';
@@ -195,6 +196,9 @@ const TrackYourContracts = () => {
         if (trackType === 'activityStatusTracker') {
             getContractTrackValues()
         }
+        if (trackType === 'timesheetAndInvoiceApprovalsStatusTracker') {
+            getTimesheetTrackValues()
+        }
     }, [selectedContractedServiceProvider])
 
     console.log(selectedContractedServiceProvider, contracts, selectedContracts)
@@ -238,7 +242,7 @@ const TrackYourContracts = () => {
 
     const getTimesheetTrackValues = async () => {
         if (timesheetIntervalsStartDate !== '' && timesheetIntervalsEndDate !== '') {
-            const { data: data } = await GET(`timesheet-management-service/timesheet/track/workflow?startDate=${timesheetIntervalsStartDate}&endDate=${timesheetIntervalsEndDate}`);
+            const { data: data } = await GET(`timesheet-management-service/timesheet/track/workflow?startDate=${timesheetIntervalsStartDate}&endDate=${timesheetIntervalsEndDate}&userIds=${[selectedContractedServiceProvider]}`);
             setTimesheetTrackValues(data);
         }
     }
@@ -341,7 +345,7 @@ const TrackYourContracts = () => {
 
     }
 
-    let timesheetServiceProvider = [];
+    let timesheetTrackerTableValues = [];
     let timesheetName = [];
     let timesheetCompensationPolicy = [];
     let submissionStatusAndDate = [];
@@ -352,7 +356,7 @@ const TrackYourContracts = () => {
     let remainingTerm = [];
 
     const getTimesheetTableValue = () => {
-        timesheetServiceProvider = [];
+        timesheetTrackerTableValues = [];
         timesheetName = [];
         timesheetCompensationPolicy = [];
         submissionStatusAndDate = [];
@@ -362,27 +366,52 @@ const TrackYourContracts = () => {
         paymentProcessingApprovalDays = [];
         remainingTerm = [];
         timesheetTrackValues?.map(data => {
-            timesheetServiceProvider.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => `${data?.user?.name?.firstName} ${data?.user?.name?.lastName}, ${data?.user?.name?.suffix?.suffix}`) : [''] });
-            timesheetName.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.timesheetLabel?.label) : [''] })
-            submissionStatusAndDate.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.submissionStausLog !== null ? format(new Date(timesheetData?.submissionStausLog?.date), 'MMM dd, yyyy') : []) : [''] })
-            reviewAndApprovalStatusAndDate.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.reviewApprovalStausLog !== null ? format(new Date(timesheetData?.reviewApprovalStausLog?.dueDate), 'MMM dd, yyyy') : []) : [''] })
-            reviewAndApprovalApprovalDays.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.reviewApprovalStausLog !== null ? timesheetData?.reviewApprovalStausLog?.daysToApprove : []) : [''] })
-            paymentProcessingStatusAndDate.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.paymentProcessingStausLog !== null ? format(new Date(timesheetData?.paymentProcessingStausLog?.date), 'MMM dd, yyyy') : []) : [''] })
-            paymentProcessingApprovalDays.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.paymentProcessingStausLog !== null ? timesheetData?.paymentProcessingStausLog?.daysToApprove : []) : [''] })
-            timesheetCompensationPolicy.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => compensationPolicy[data?.contract?.compensationPolicy]) : [''] });
-            remainingTerm.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => data?.remainingTerm) : [''] })
+            timesheetTrackerTableValues.push({
+                timesheetName: data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.timesheetLabel?.label),
+                submissionStatusAndDate: data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.submissionStausLog !== null ? {
+                    value: format(new Date(timesheetData?.submissionStausLog?.status === "PENDING" ? timesheetData?.submissionStausLog?.dueDate : timesheetData?.submissionStausLog?.date), 'MMM dd, yyyy'),
+                    status: timesheetData?.submissionStausLog?.status === "PENDING" ? `Pending Approval by ${format(new Date(timesheetData?.submissionStausLog?.dueDate), 'MMM dd, yyyy')}`
+                        : timesheetData?.submissionStausLog?.status === "PAST_DUE " ? `Past Due by ${differenceInCalendarDays(new Date(timesheetData?.submissionStausLog?.dueDate), new Date())} days` : '',
+                    icon: <SquareIcon className={` ${style.cursorPointer}`} sx={{ color: timesheetData?.submissionStausLog?.status === "PENDING" ? "#FEC106" : timesheetData?.submissionStausLog?.status === "PAST_DUE " ? "#F94848" : "#14B15A", fontSize: 14 }} />
+                } : []),
+                reviewAndApprovalStatusAndDate: data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.reviewApprovalStausLog !== null ? {
+                    value: format(new Date(timesheetData?.reviewApprovalStausLog?.status === "PENDING" ? timesheetData?.reviewApprovalStausLog?.dueDate : timesheetData?.reviewApprovalStausLog?.date), 'MMM dd, yyyy'),
+                    status: timesheetData?.reviewApprovalStausLog?.status === "PENDING" ? `Pending Approval by ${format(new Date(timesheetData?.reviewApprovalStausLog?.dueDate), 'MMM dd, yyyy')}`
+                        : timesheetData?.reviewApprovalStausLog?.status === "PAST_DUE " ? `Past Due by ${differenceInCalendarDays(new Date(timesheetData?.reviewApprovalStausLog?.dueDate), new Date())} days` : '',
+                    icon: <SquareIcon className={` ${style.cursorPointer}`} sx={{ color: timesheetData?.reviewApprovalStausLog?.status === "PENDING" ? "#FEC106" : timesheetData?.reviewApprovalStausLog?.status === "PAST_DUE " ? "#F94848" : "#14B15A", fontSize: 14 }} />
+                } : []),
+                reviewAndApprovalApprovalDays: data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.reviewApprovalStausLog !== null ? timesheetData?.reviewApprovalStausLog?.daysToApprove : []),
+                paymentProcessingStatusAndDate: data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.paymentProcessingStausLog !== null ? {
+                    value: format(new Date(timesheetData?.paymentProcessingStausLog?.status === "PENDING" ? timesheetData?.paymentProcessingStausLog?.dueDate : timesheetData?.submissionStausLog?.date), 'MMM dd, yyyy'),
+                    status: timesheetData?.paymentProcessingStausLog?.status === "PENDING" ? `Pending Approval by ${format(new Date(timesheetData?.paymentProcessingStausLog?.dueDate), 'MMM dd, yyyy')}`
+                        : timesheetData?.paymentProcessingStausLog?.status === "PAST_DUE " ? `Past Due by ${differenceInCalendarDays(new Date(timesheetData?.paymentProcessingStausLog?.dueDate), new Date())} days` : '',
+                    icon: <SquareIcon className={` ${style.cursorPointer}`} sx={{ color: timesheetData?.paymentProcessingStausLog?.status === "PENDING" ? "#FEC106" : timesheetData?.paymentProcessingStausLog?.status === "PAST_DUE " ? "#F94848" : "#14B15A", fontSize: 14 }} />
+                } : []),
+                paymentProcessingApprovalDays: data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.paymentProcessingStausLog !== null ? timesheetData?.paymentProcessingStausLog?.daysToApprove : ['']),
+                timesheetCompensationPolicy: data?.timesheetsWithLogs?.map(timesheetData => compensationPolicy[data?.contract?.compensationPolicy]),
+                remainingTerm: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => data?.remainingTerm) : ['']
+            });
+            // timesheetName.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.timesheetLabel?.label) : [''] })
+            // submissionStatusAndDate.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.submissionStausLog !== null ? format(new Date(timesheetData?.submissionStausLog?.date), 'MMM dd, yyyy') : []) : [''] })
+            // reviewAndApprovalStatusAndDate.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.reviewApprovalStausLog !== null ? format(new Date(timesheetData?.reviewApprovalStausLog?.dueDate), 'MMM dd, yyyy') : []) : [''] })
+            // reviewAndApprovalApprovalDays.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.reviewApprovalStausLog !== null ? timesheetData?.reviewApprovalStausLog?.daysToApprove : []) : [''] })
+            // paymentProcessingStatusAndDate.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.paymentProcessingStausLog !== null ? format(new Date(timesheetData?.paymentProcessingStausLog?.date), 'MMM dd, yyyy') : ['']) : [''] })
+            // paymentProcessingApprovalDays.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.paymentProcessingStausLog !== null ? timesheetData?.paymentProcessingStausLog?.daysToApprove : ['']) : [''] })
+            // timesheetCompensationPolicy.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => compensationPolicy[data?.contract?.compensationPolicy]) : [''] });
+            // remainingTerm.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => data?.remainingTerm) : [''] })
         })
-        return [
-            // timesheetServiceProvider,
-            // timesheetName,
-            // timesheetCompensationPolicy,
-            // submissionStatusAndDate,
-            // reviewAndApprovalStatusAndDate,
-            // reviewAndApprovalApprovalDays,
-            // paymentProcessingStatusAndDate,
-            // paymentProcessingApprovalDays,
-            // remainingTerm
-        ]
+        return timesheetTrackerTableValues
+        // [
+        //     // timesheetServiceProvider,
+        //     timesheetName,
+        //     timesheetCompensationPolicy,
+        //     submissionStatusAndDate,
+        //     reviewAndApprovalStatusAndDate,
+        //     reviewAndApprovalApprovalDays,
+        //     paymentProcessingStatusAndDate,
+        //     paymentProcessingApprovalDays,
+        //     remainingTerm
+        // ]
     }
 
     return (
@@ -396,7 +425,7 @@ const TrackYourContracts = () => {
                                 <CommonSelectField
                                     value={selectedContractedServiceProvider || ""}
                                     onChange={(e) => setSelectedContractedServiceProvider(e.target.value)}
-                                    firstOptionLabel={"Select a service provider"}
+                                    firstOptionLabel={trackType === 'timesheetAndInvoiceApprovalsStatusTracker' ? "All Service Providers" : "Select Service Provider"}
                                     firstOptionValue={""}
                                     valueList={contractedServiceProviders?.map(data => data?.id)}
                                     labelList={contractedServiceProviders?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`)}
@@ -501,13 +530,14 @@ const TrackYourContracts = () => {
                                 )}
                                 {timesheetTrackValues?.length !== 0 && (
                                     <TrackTable
-                                        tableHead={['SERVICE PROVIDER', 'TIMESHEET NAME', 'COMPENSATION POLICY', 'SUBMISSION', 'REVIEW & APPROVAL', 'PAYMENT PROCESSING', 'REMAINING TERM']}
-                                        tableHeadBottom={['', '', '', 'STATUS & DATE', 'STATUS & DATE', 'APPROVAL DAYS', 'STATUS & DATE', 'APPROVAL DAYS', '', '']}
+                                        tableHead={['TIMESHEET NAME', 'COMPENSATION POLICY', 'SUBMISSION', 'REVIEW & APPROVAL', 'PAYMENT PROCESSING', 'REMAINING TERM']}
+                                        tableHeadBottom={['', '', 'STATUS & DATE', 'STATUS & DATE', 'APPROVAL DAYS', 'STATUS & DATE', 'APPROVAL DAYS', '', '']}
                                         tableData={getTimesheetTableValue()}
                                         dataGrid={style.timesheetTableDataGrid}
                                         tableHeadGrid={style.timesheetTableHeaderMiddleGrid}
                                         tableHeadBottomGrid={style.timesheetTableHeaderBottomGrid}
                                         header={false}
+                                        directionRow={true}
                                     />
                                 )}
                             </>
@@ -543,6 +573,7 @@ const TrackYourContracts = () => {
                                         tableHeadTopGrid={data?.activityStatsByContract?.[index]?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableHeaderTopGridForActivityBased : style.trackTableHeaderTopGrid}
                                         tableHeadBottomGrid={data?.activityStatsByContract?.[index]?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableHeaderBottomGridForActivityBased : style.trackTableHeaderBottomGrid}
                                         header={true}
+                                        directionRow={false}
                                     />
                                 ))}
                             </>
