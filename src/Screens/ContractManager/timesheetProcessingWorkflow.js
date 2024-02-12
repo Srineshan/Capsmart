@@ -10,6 +10,7 @@ import CommonLabel from '../../Components/CommonFields/CommonLabel';
 import { valueCheck } from "./../../utils/valueCheck";
 
 import style from './index.module.scss';
+import MissedMandatoryFieldAlert from './missedMandatoryFieldAlert';
 
 const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContractInfo, contractId, contractName, isEditable, getTabDataStatus, contract, getShowAlert }) => {
   const [timesheet, setTimesheet] = useState({ id: '', aggregator: '', aggregatorTitle: {}, reviewer: '', reviewerTitle: {}, approver: '', approverTitle: {} });
@@ -28,9 +29,12 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
   const [tabIndex, setTabIndex] = useState(0);
   const [isShowValidationCheck, setIsShowValidationCheck] = useState(false);
   const [continueLoading, setContinueLoading] = useState(false);
-  const [isAggregationNeeded, setIsAggregationNeeded] = useState(false);
+  const [isAggregationNeeded, setIsAggregationNeeded] = useState(true);
 
   const [selectedTimeSheet, setSelectedTimeSheet] = useState({ id: '', reviewer: '', reviewerTitle: {}, approver: '', approverTitle: {} });
+  const [unassignedKeys, setUnassignedKeys] = useState([]);
+  const [showSaveInProgress, setShowSaveInProgress] = useState(false);
+  const [buttonName, setButtonName] = useState("");
 
   useEffect(() => {
     setSelectTimesheetToDefineProcess(timesheetProcessingWorkflow[0]?.timesheetLabel?.label);
@@ -89,9 +93,6 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     setSites(contractData?.contractDetail?.site?.sites);
   }
 
-  console.log('aggregationNeeded', isAggregationNeeded, provider)
-
-
   const getProviderData = async () => {
     if (contractId !== '' && (selectContractInfo === 'MULTIPLE' && isAggregationNeeded)) {
       const { data: providerData } = await GET(`user-management-service/user?contractID=${contractId}`);
@@ -124,7 +125,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     if (id === '' || id === undefined) {
       await POST(`timesheet-management-service/workflow`, JSON.stringify(data))
         .then(response => {
-          handleContinue(response?.data, data?.workFlowMap);
+          handleContinue(response?.data, data?.workFlowMap, 'post');
         })
         .catch(error => {
           ErrorToaster('Unexpected Error');
@@ -133,7 +134,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     else {
       await PUT(`timesheet-management-service/workflow/${id}`, data)
         .then(response => {
-          SuccessToaster('Workflow Updated Successfully');
+          handleContinue(id, data?.workFlowMap, 'put');
         })
         .catch(error => {
           ErrorToaster('Unexpected Error');
@@ -153,9 +154,12 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     let aggregatorFirstName = provider?.filter(data => data?.id === aggregator)?.map(data => data)?.[0]?.name?.firstName + " ";
     let aggregatorMiddleName = provider?.filter(data => data?.id === aggregator)?.map(data => data)?.[0]?.name?.middleName + " ";
     let aggregatorLastName = provider?.filter(data => data?.id === aggregator)?.map(data => data)?.[0]?.name?.lastName || '';
-    let firstName = getSelectedUserDetails(reviewer)?.name?.firstName + " ";
-    let lastName = getSelectedUserDetails(reviewer)?.name?.lastName;
-    let middleName = getSelectedUserDetails(reviewer)?.name?.middleName + " ";
+    let approverFirstName = getSelectedUserDetails(approver)?.name?.firstName + " ";
+    let approverLastName = getSelectedUserDetails(approver)?.name?.lastName;
+    let approverMiddleName = getSelectedUserDetails(approver)?.name?.middleName + " ";
+    let reviewerFirstName = getSelectedUserDetails(reviewer)?.name?.firstName + " ";
+    let reviewerLastName = getSelectedUserDetails(reviewer)?.name?.lastName;
+    let reviewerMiddleName = getSelectedUserDetails(reviewer)?.name?.middleName + " ";
     if ((selectContractInfo === 'MULTIPLE' && isAggregationNeeded) && reviewer === approver) {
       data = {
         "name": {
@@ -169,6 +173,9 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 "title": { id: timesheet?.aggregatorTitle?.id, title: timesheet?.aggregatorTitle?.title },
                 "name": {
                   "name": aggregatorFirstName + aggregatorMiddleName + aggregatorLastName,
+                  "firstName": aggregatorFirstName,
+                  "middleName": aggregatorMiddleName,
+                  "lastName": aggregatorLastName,
                 },
                 "suffix": {
                   "id": provider?.filter(data => data?.id === aggregator)?.map(data => data)?.[0]?.name?.suffix?.id || '',
@@ -184,7 +191,10 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 "id": reviewer,
                 "title": { id: timesheet?.reviewerTitle?.id, title: timesheet?.reviewerTitle?.title },
                 "name": {
-                  "name": firstName + middleName + lastName,
+                  "name": reviewerFirstName + reviewerMiddleName + reviewerLastName,
+                  "firstName": reviewerFirstName,
+                  "middleName": reviewerMiddleName,
+                  "lastName": reviewerLastName,
                 },
                 "suffix": {
                   "id": getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
@@ -212,6 +222,9 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 "title": { id: timesheet?.aggregatorTitle?.id, title: timesheet?.aggregator?.title },
                 "name": {
                   "name": aggregatorFirstName + aggregatorMiddleName + aggregatorLastName,
+                  "firstName": aggregatorFirstName,
+                  "middleName": aggregatorMiddleName,
+                  "lastName": aggregatorLastName,
                 },
                 "suffix": {
                   "id": provider?.filter(data => data?.id === aggregator)?.map(data => data)?.[0]?.name?.suffix?.id || '',
@@ -227,7 +240,10 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 "id": reviewer,
                 "title": { id: timesheet?.reviewerTitle?.id, title: timesheet?.reviewerTitle?.title },
                 "name": {
-                  "name": firstName + middleName + lastName,
+                  "name": reviewerFirstName + reviewerMiddleName + reviewerLastName,
+                  "firstName": reviewerFirstName,
+                  "middleName": reviewerMiddleName,
+                  "lastName": reviewerLastName,
                 },
                 "suffix": {
                   "id": getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
@@ -243,7 +259,10 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 "id": approver,
                 "title": { id: timesheet?.approverTitle?.id, title: timesheet?.approverTitle?.title },
                 "name": {
-                  "name": firstName + middleName + lastName,
+                  "name": approverFirstName + approverMiddleName + approverLastName,
+                  "firstName": approverFirstName,
+                  "middleName": approverMiddleName,
+                  "lastName": approverLastName,
                 },
                 "suffix": {
                   "id": getSelectedUserDetails(approver)?.name?.suffix?.id || '',
@@ -258,7 +277,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
         }
       }
     }
-    else if ((selectContractInfo !== 'MULTIPLE' && isAggregationNeeded) && reviewer === approver) {
+    else if ((!isAggregationNeeded) && reviewer === approver) {
       data = {
         "name": {
           "name": name
@@ -270,7 +289,10 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 "id": reviewer,
                 "title": { id: timesheet?.reviewerTitle?.id, title: timesheet?.reviewerTitle?.title },
                 "name": {
-                  "name": firstName + middleName + lastName,
+                  "name": reviewerFirstName + reviewerMiddleName + reviewerLastName,
+                  "firstName": reviewerFirstName,
+                  "middleName": reviewerMiddleName,
+                  "lastName": reviewerLastName,
                 },
                 "suffix": {
                   "id": getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
@@ -296,7 +318,10 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 "id": reviewer,
                 "title": { id: timesheet?.reviewerTitle?.id, title: timesheet?.reviewerTitle?.title },
                 "name": {
-                  "name": firstName + middleName + lastName,
+                  "name": reviewerFirstName + reviewerMiddleName + reviewerLastName,
+                  "firstName": reviewerFirstName,
+                  "middleName": reviewerMiddleName,
+                  "lastName": reviewerLastName,
                 },
                 "suffix": {
                   "id": getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
@@ -312,7 +337,10 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 "id": approver,
                 "title": { id: timesheet?.approverTitle?.id, title: timesheet?.approverTitle?.title },
                 "name": {
-                  "name": firstName + middleName + lastName,
+                  "name": approverFirstName + approverMiddleName + approverLastName,
+                  "firstName": approverFirstName,
+                  "middleName": approverMiddleName,
+                  "lastName": approverLastName,
                 },
                 "suffix": {
                   "id": getSelectedUserDetails(approver)?.name?.suffix?.id || '',
@@ -330,49 +358,110 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     return data;
   }
 
-  const submit = async (buttontext) => {
-    if (timesheet.reviewer !== '' || timesheet.approver !== '') {
-      setContinueLoading(true);
-      // if (timesheet?.reviewer === '' || timesheet?.approver === '') {
-      //   ErrorToaster('Select both Approver and Reviewer to save');
-      //   setContinueLoading(false);
-      //   return;
-      // }
-      // if (selectContractInfo === 'MULTIPLE' && timesheet?.aggregator === '') {
-      //   ErrorToaster('Select Aggregator to save');
-      //   setContinueLoading(false);
-      //   return;
-      // }
-      let data = handleTimeSheetWorkFlow(activeTab, timesheet?.reviewer, timesheet?.approver, timesheet?.aggregator, activeTab);
-      updateTimeSheetWorkflow(data, activeTab, 'Timesheet');
-      setContinueLoading(false);
-      if (buttontext === 'Continue') {
-        getViewPage9(true);
-        // getCurrentPage('Request Processing Workflow')
-      } else if (buttontext === 'Save In Progress') {
-        getShowAlert(true);
-      } else {
-        getNextTab();
-      }
-      setIsShowValidationCheck(true);
+  const mandatoryFieldCheck = (buttonType) => {
+    setContinueLoading(true);
+    if (buttonType === "SaveInProgress" || buttonType === "Continue") {
+      saveInProgresscheck(buttonType);
+      setButtonName(buttonType)
+    } else {
+      handleSubmit('Next')
     }
+  };
+
+  const saveInProgresscheck = (buttonType) => {
+    var keys = [];
+    if (valueCheck(timesheet?.reviewer)) {
+      keys.push("Select Reviewer");
+    }
+    if (valueCheck(timesheet?.approver)) {
+      keys.push("Select Approver");
+    }
+
+    // if (selectContractInfo === 'MULTIPLE' && valueCheck(timesheet?.aggregator)) {
+    //   keys.push("Select Aggregator");
+    // }
+
+    setUnassignedKeys(keys);
+    if (keys?.length !== 0) {
+      setShowSaveInProgress(true);
+      setContinueLoading(true)
+    } else {
+      handleSubmit(buttonType);
+    }
+  };
+
+  const saveInProgressFunction = (type) => {
+    handleSubmit(type);
+    setShowSaveInProgress(false)
+  };
+
+  const getSaveInProgressAlert = (value) => {
+    setShowSaveInProgress(value);
+    setContinueLoading(value)
+  };
+
+  const handleSubmit = async (buttontext) => {
+    setContinueLoading(true);
+
+    if (valueCheck(timesheet?.reviewer) || valueCheck(timesheet?.approver)) {
+      ErrorToaster('Select both Approver and Reviewer to save');
+      setContinueLoading(false);
+      return;
+    }
+    // if (selectContractInfo === 'MULTIPLE' && valueCheck(timesheet?.aggregator)) {
+    //   ErrorToaster('Select Aggregator to save');
+    //   setContinueLoading(false);
+    //   return;
+    // }
+
+    let data = handleTimeSheetWorkFlow(activeTab, timesheet?.reviewer, timesheet?.approver, timesheet?.aggregator, activeTab);
+    await updateTimeSheetWorkflow(data, activeTab, 'Timesheet');
+
+    setContinueLoading(false);
+    if (buttontext === 'Continue') {
+      getViewPage9(true);
+      // getCurrentPage('Request Processing Workflow')
+    } else if (buttontext === 'SaveInProgress') {
+      getShowAlert(true);
+    } else {
+      getNextTab();
+    }
+    setIsShowValidationCheck(true);
   }
 
-  const handleContinue = async (workflowId, workFlowMap) => {
+  const handleContinue = async (workflowId, workFlowMap, method) => {
     let temp = timesheetProcessingWorkflow;
-    temp?.push({
-      "timesheetLabel": {
-        "label": activeTab
-      },
-      "workFlowTemplate": {},
-      "workFlowDescription": {},
-      "workFlow": {
-        "id": workflowId,
-        "name": { 'name': activeTab },
-        "workFlowMap": workFlowMap,
-      },
-      "customWorkFlow": false
-    })
+    if (method === 'post') {
+      temp?.push({
+        "timesheetLabel": {
+          "label": activeTab
+        },
+        "workFlowTemplate": {},
+        "workFlowDescription": {},
+        "workFlow": {
+          "id": workflowId,
+          "name": { 'name': activeTab },
+          "workFlowMap": workFlowMap,
+        },
+        "customWorkFlow": false
+      })
+    } else {
+      let index = temp.findIndex(data => data.workFlow.id === workflowId);
+      console.log('index value', index)
+      temp[index] = {
+        "timesheetLabel": {
+          "label": activeTab
+        },
+        "workFlowTemplate": {},
+        "workFlowDescription": {},
+        "workFlow": {
+          "id": workflowId,
+          "name": { 'name': activeTab },
+          "workFlowMap": workFlowMap,
+        },
+        "customWorkFlow": false
+      }
+    }
     let data = { "workFlowDetails": temp }
     await PUT(`contract-managment-service/contracts/${contractId}/timesheetProcessingWorkFlow`, data)
       .then(response => {
@@ -462,7 +551,10 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
               {
                 tabIndex < timeSheetTabs?.length - 1 && isEditable &&
                 <div>
-                  <button className={`${style.timesheetNextButtonStyle}  ${style.cursorPointer} ${style.floatRight}`} onClick={() => { submit('Next') }}>NEXT</button>
+                  <button className={`${style.timesheetNextButtonStyle}  ${style.cursorPointer} ${style.floatRight}`}
+                    // onClick={() => { submit('Next') }}
+                    onClick={!continueLoading ? () => { mandatoryFieldCheck('Next') } : {}}
+                  >NEXT</button>
                 </div>
               }
             </div>
@@ -471,14 +563,10 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 <button className={`${style.newContractButtonStyle} ${style.cursorPointer} `} onClick={() => { getCurrentPage('Payment & Compensation') }}>BACK</button>
                 <div>
                   <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`}
-                    onClick={() => {
-                      submit('Save In Progress')
-                    }}
+                    onClick={!continueLoading ? () => mandatoryFieldCheck('SaveInProgress') : {}}
                   >SAVE IN PROGRESS</button>
                   <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`}
-                    onClick={() => {
-                      submit('Continue')
-                    }}
+                    onClick={!continueLoading ? () => { mandatoryFieldCheck('Continue') } : {}}
                   >CONTINUE</button>
                 </div>
               </div>
@@ -500,6 +588,15 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
               //     </div>
               // </Dialog>
             }
+
+            <MissedMandatoryFieldAlert
+              alert={showSaveInProgress}
+              getSaveInProgressAlert={getSaveInProgressAlert}
+              fieldData={unassignedKeys}
+              saveInProgressFunction={saveInProgressFunction}
+              setContinueLoading={setContinueLoading}
+              buttonName={buttonName}
+            />
 
           </div>
           :

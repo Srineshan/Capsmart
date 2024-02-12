@@ -251,11 +251,11 @@ const Profile = () => {
                             </div>
                         </div>
                         <div className={`${style.headingStyle} ${style.marginTop50}`}>Personal Information</div>
-                        <div className={`${style.infoBox} ${style.marginTop}`}>
+                        {/* <div className={`${style.infoBox} ${style.marginTop}`}>
                             <div className={style.infoTextStyle}>
                                 Lorem Ipsum Dolor Sit Amet, Consetetur Sadipscing Elitr, Sed Diam Nonumy Eirmod Tempor Invidunt Ut Labore Et Dolore Magna Aliquyam Erat, Sed Diam Voluptua.
                             </div>
-                        </div>
+                        </div> */}
                         <div className={`${style.personalInformationGrid} ${style.marginTop}`}>
                             <div>
                                 <div className={style.extentionLableStyle}>First Name</div>
@@ -316,10 +316,10 @@ const Profile = () => {
                             <div className={`${style.headingStyle}`}>Password</div>
                             <BorderColorOutlinedIcon style={{ color: '#7165E3', fontSize: 14 }} className={style.cursorPointer} />
                         </div>
-                        <div className={`${style.infoBox} ${style.marginTop}`}>
+                        {/* <div className={`${style.infoBox} ${style.marginTop}`}>
                             <div className={style.infoTextStyle}>
                                 Lorem Ipsum Dolor Sit Amet, (@ $ , ) Consetetur Sadipscing Elitr, Sed Diam Nonumy Eirmod Tempor Invidunt Ut Labore Et Dolore Magna Aliquyam Erat, Sed Diam Voluptua. At Vero Eos Et Accusam.                            </div>
-                        </div>
+                        </div> */}
                         <div className={`${style.personalInformationGrid} ${style.marginTop}`}>
                             <div>
                                 <div className={style.extentionLableStyle}>Current Password</div>

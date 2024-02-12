@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import NewPodTypeForHealthcare from "./newPodTypeForHealthCare";
 import { GET } from "../dataSaver";
 // import { format } from "date-fns";
-import { format } from "date-fns-tz";
+import { format, formatInTimeZone } from "date-fns-tz";
 
 const SuperAdminDashboard = () => {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -40,7 +40,9 @@ const SuperAdminDashboard = () => {
     const date = new Date(latestParentModifiedDate?.lastModified);
     console.log(date.toLocaleString());
     // console.log(format(date, "MMM d, yyyy HH:mm zzzz"));
-    setLatestParentDate(format(date, "MMM d, yyyy HH:mm"));
+    setLatestParentDate(
+      formatInTimeZone(date, "America/New_York", "MMM d, yyyy HH:mm zzz")
+    );
   };
 
   useEffect(() => {

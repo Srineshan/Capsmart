@@ -3,9 +3,10 @@ import { GET } from './../dataSaver';
 import { CLINIC, SURGERY, SUPPLEMENTAL, ADDON, ADMINISTRATIVE, PROCEDUREREADING, ONCALL, HIT, ONCALLSERVICE } from '../../Constants';
 
 export const validateContractIDTermLimit = (contract) => {
+  console.log("contract", contract)
   let fieldData = [
     { field: "Contract Name", value: contract?.contractName?.contractName },
-    { field: "Contract Id", value: contract?.contractDetail?.contractId?.id },
+    { field: "Contract Id", value: contract?.contractDetail?.contractId?.id !== '' && contract?.contractDetail?.contractIdMissing === false ? contract?.contractDetail?.contractId?.id : " " },
     {
       field: "Contract Manager",
       value: contract?.contractDetail?.contractManager?.userID,
@@ -29,17 +30,18 @@ export const validateContractIDTermLimit = (contract) => {
     },
     {
       field: "Time Commitment - frequency",
-      value: contract?.contractDetail?.timeCommitment?.frequency,
+      value: contract?.contractDetail?.timeCommitment?.frequency === 'NA' ? '' : contract?.contractDetail?.timeCommitment?.frequency,
     },
     {
       field: "Contract Continuation Policy",
       value: contract?.contractDetail?.continuationPolicy?.contractPolicyType,
     },
     {
-      field: "Contract Compensation Policy",
-      value: contract?.contractDetail?.compensationPolicy,
+      field: "Contract Documents On File",
+      value: contract?.contractDetail?.fullyExecutedContract === true && contract?.contractDetail?.contractFiles.length === 0 ? '' : contract?.contractDetail?.continuationPolicy?.contractPolicyType,
     },
   ];
+
   let temp = fieldData;
   temp
     ?.filter((data) => data?.field === "Contract Continuation Policy")
@@ -67,6 +69,7 @@ export const validateContractIDTermLimit = (contract) => {
         });
       }
     });
+
   const emptyFields = fieldData
     ?.filter(
       (data) =>
@@ -87,6 +90,7 @@ export const validateContractProvider = async (contract) => {
     const { data: userData } = await GET(
       `user-management-service/user?contractID=${contractId}`
     );
+    console.log("userData", userData)
     providers = userData
       ?.filter((data) =>
         data?.contracts?.map((contract) =>
@@ -115,13 +119,16 @@ export const validateContractProvider = async (contract) => {
   providers?.map((user, index) => {
     let fieldData = [
       { field: "Service Provider", value: user?.serviceProviderType?.id },
-      { field: "NPIN", value: user?.npin?.npin },
+      { field: "NPIN", value: user?.npin?.npin !== '' && user?.npin?.missing === false && user?.npin?.notApplicable === false ? user?.npin?.npin : " " },
       { field: "Contract Provider First Name", value: user?.name?.firstName },
       { field: "Contract Provider Last Name", value: user?.name?.lastName },
       { field: "Suffix", value: user?.name?.suffix?.id },
       { field: "Contract Provider Email", value: user?.email?.officialEmail },
       { field: "Mobile Number", value: user?.communication?.mobileNumber },
       { field: "Address", value: user?.address?.addressLine },
+      { field: "City", value: user?.address?.city },
+      { field: "State", value: user?.address?.state },
+      { field: "Zipcode", value: user?.address?.zipcode },
     ];
     let temp = [];
     temp.push(user?.name?.firstName);
@@ -323,7 +330,7 @@ export const validateServices = (contract) => {
       })
       if (service?.customizedSchedule) {
         if (service?.customschedule?.weekdayDay?.activity?.activity !== '') {
-          fieldData.push(...[{ field: 'Custom Schedule Weekday Day Service days', value: Object.values(service?.customschedule?.weekdayDay?.serviceWeekDays)?.filter(data => data === true)?.map(data => data)?.length }]);
+          fieldData.push(...[{ field: 'Custom Schedule Weekday Day Service days', value: Object.values(service?.customschedule?.weekdayDay?.serviceWeekDays || {})?.filter(data => data === true)?.map(data => data)?.length }]);
           fieldData.push(...[{ field: 'Custom Schedule Weekday Day From', value: service?.customschedule?.weekdayDay?.from }]);
           fieldData.push(...[{ field: 'Custom Schedule Weekday Day To', value: service?.customschedule?.weekdayDay?.to }]);
           fieldData.push(...[{ field: 'Custom Schedule Weekday Day Duration', value: service?.customschedule?.weekdayDay?.duration?.hours }]);
@@ -334,7 +341,7 @@ export const validateServices = (contract) => {
           }
         }
         if (service?.customschedule?.weekdayNight?.activity?.activity !== '') {
-          fieldData.push(...[{ field: 'Custom Schedule Weekday Night Service days', value: Object.values(service?.customschedule?.weekdayNight?.serviceWeekDays)?.filter(data => data === true)?.map(data => data)?.length }]);
+          fieldData.push(...[{ field: 'Custom Schedule Weekday Night Service days', value: Object.values(service?.customschedule?.weekdayNight?.serviceWeekDays || {})?.filter(data => data === true)?.map(data => data)?.length }]);
           fieldData.push(...[{ field: 'Custom Schedule Weekday Night From', value: service?.customschedule?.weekdayNight?.from }]);
           fieldData.push(...[{ field: 'Custom Schedule Weekday Night To', value: service?.customschedule?.weekdayNight?.to }]);
           fieldData.push(...[{ field: 'Custom Schedule Weekday Night Duration', value: service?.customschedule?.weekdayNight?.duration?.hours }]);
@@ -465,9 +472,9 @@ export const validatePaymentsAndCompensation = (contract) => {
       contract?.contractDetail?.continuationPolicy?.contractPolicyType !==
       "FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET" &&
       contract?.contractDetail?.continuationPolicy?.contractPolicyType !==
-      "ACTIVITY_BASED" &&
+      "AUTORENEWAL" &&
       contract?.contractDetail?.continuationPolicy?.contractPolicyType !==
-      "AUTORENEWAL"
+      "NEWCONTRACTONEXPIRATION"
     ) {
       fieldData.push(
         ...[
@@ -494,7 +501,8 @@ export const validatePaymentsAndCompensation = (contract) => {
           },
         ]
       );
-    } else {
+    }
+    else {
     }
   });
 
@@ -515,10 +523,7 @@ export const validateTimesheetSubmission = (contract) => {
   let timesheets = contract?.timesheetSubmissionTerms;
   let isEmptyField = [];
   let fieldData = [];
-  if (
-    timesheets === null ||
-    timesheets?.timesheetSubmissionServicesCount?.count === 0
-  ) {
+  if (timesheets === null || timesheets?.timesheetSubmissionServicesCount?.count === 0) {
     isEmptyField = [
       "Number Of Timesheet",
       "Timesheet Label",
@@ -529,81 +534,88 @@ export const validateTimesheetSubmission = (contract) => {
       "Day Limit For Submission Of Timesheet Based On Contract End Date",
       "Invoice Processing Days",
       "Planned Absence Limit",
+      "Maximum Unplanned Absence Days",
       "Maximum Absence Allowed",
       "Invoice Processing Goal",
       "Invoice Processing Threshold",
     ];
   }
-  timesheets?.timesheetActivitiesPeriods?.map((data, index) => {
-    let fieldData = [
-      {
-        field: "Number Of Timesheet",
-        value: timesheets?.timesheetSubmissionServicesCount?.count,
-      },
-      {
-        field: `Timesheet Label ${index + 1}`,
-        value: data?.timesheetLabel?.label,
-      },
-      { field: `Payment Source ${index + 1}`, value: data?.paymentSource },
-      {
-        field: `Service Log Period For Timesheet Submission ${index + 1}`,
-        value: data?.servicePeriod?.value,
-      },
-      {
-        field: `Contracted Activity To Include ${index + 1}`,
-        value: data?.activities?.length,
-      },
-      {
-        field:
-          "Day Limit For Submission Of Timesheet Based On Activity Service Date",
-        value: timesheets?.dayLimit?.activityServiceDate?.days,
-      },
-      {
-        field:
-          "Day Limit For Submission Of Timesheet Based On Contract End Date",
-        value: timesheets?.dayLimit?.contractEndDate?.days,
-      },
-      {
-        field: "Maximum Absence Allowed",
-        value: timesheets?.maximumAbsenceAllowed?.days,
-      },
-      {
-        field: "Planned Absence Limit",
-        value: timesheets?.plannedAbsenceLimit?.days,
-      },
-      {
-        field: "Invoice Processing Days",
-        value: timesheets?.invoiceProcessing?.days,
-      },
-      {
-        field: "Invoice Processing Goal",
-        value: timesheets?.invoiceProcessing?.goal,
-      },
-      {
-        field: "Invoice Processing Threshold",
-        value: timesheets?.invoiceProcessing?.threshold,
-      },
-    ];
-    let temp = fieldData
-      ?.filter(
-        (data) =>
-          data?.value === null ||
-          data?.value === "" ||
-          data?.value === undefined ||
-          data?.value === 0
-      )
-      ?.map((data) => data?.field);
-    isEmptyField.push(...temp);
-  });
+
+  fieldData = [
+    { field: "Number Of Timesheet", value: timesheets?.timesheetSubmissionServicesCount?.count !== 0 ? timesheets?.timesheetSubmissionServicesCount?.count : '' },
+  ];
+
+  timesheets && timesheets?.timesheetActivitiesPeriods?.map((data, index) => {
+    fieldData?.push(
+      ...[
+        {
+          field: `Timesheet Label ${index + 1}`,
+          value: data?.timesheetLabel?.label,
+        },
+        { field: `Payment Source ${index + 1}`, value: data?.paymentSource },
+        {
+          field: `Service Log Period For Timesheet Submission ${index + 1}`,
+          value: data?.servicePeriod?.value,
+        },
+        {
+          field: `Contracted Activity To Include ${index + 1}`,
+          value: data?.activities?.length,
+        },
+        {
+          field:
+            "Day Limit For Submission Of Timesheet Based On Activity Service Date",
+          value: timesheets?.dayLimit?.activityServiceDate?.days,
+        },
+        {
+          field:
+            "Day Limit For Submission Of Timesheet Based On Contract End Date",
+          value: timesheets?.dayLimit?.contractEndDate?.days,
+        },
+        {
+          field: "Maximum Absence Allowed",
+          value: timesheets?.maximumAbsenceAllowed?.days,
+        },
+        {
+          field: "Planned Absence Limit",
+          value: timesheets?.plannedAbsenceLimit?.days,
+        },
+        {
+          field: "Maximum Unplanned Absence Days",
+          value: timesheets?.maximumAbsenceAllowed?.days,
+        },
+        {
+          field: "Invoice Processing Days",
+          value: timesheets?.invoiceProcessing?.days,
+        },
+        {
+          field: "Invoice Processing Goal",
+          value: timesheets?.invoiceProcessing?.goal,
+        },
+        {
+          field: "Invoice Processing Threshold",
+          value: timesheets?.invoiceProcessing?.threshold,
+        }
+      ]);
+  })
+
+  const temp = fieldData
+    ?.filter(
+      (data) =>
+        data?.value === null ||
+        data?.value === "" ||
+        data?.value === undefined ||
+        data?.value === 0
+    )
+    ?.map((data) => data?.field);
+  isEmptyField = temp;
   return isEmptyField;
 };
 
 export const validateTimesheetProcessingWorkflow = (contract) => {
   let isValid = false;
-  if (
-    contract?.workFlowDetails?.length ===
-    contract?.timesheetSubmissionTerms?.timesheetActivitiesPeriods?.length
-  ) {
+  if (contract?.workFlowDetails?.length > 0 &&
+    contract?.timesheetSubmissionTerms?.timesheetActivitiesPeriods?.length > 0 &&
+    contract?.workFlowDetails?.length === contract?.timesheetSubmissionTerms?.timesheetActivitiesPeriods?.length) {
     isValid = true;
   }
   return isValid;

@@ -41,7 +41,7 @@
   margin: auto;
 }
 
-.marginTopZero{
+.marginTopZero {
   margin-top: 0px;
 }
 
@@ -267,11 +267,11 @@
   margin-top: 2px !important;
 }
 
-.textUppercase{
+.textUppercase {
   text-transform: uppercase;
 }
 
-.textCapitalize{
+.textCapitalize {
   text-transform: capitalize;
 }
 
@@ -620,10 +620,10 @@
   align-items: center;
   display: grid;
   grid-template-columns: 60% 20% 10% 5% 5%;
-  
+
 }
 
-.tableHeaderDepartment{
+.tableHeaderDepartment {
   background: #afa9ef 0% 0% no-repeat padding-box;
   font-weight: medium;
   //margin-left: 50px;
@@ -819,7 +819,8 @@
   display: grid;
   align-items: center;
   margin-top: 5px;
-  grid-template-columns: 60% 15% 12% 6% 5%;;
+  grid-template-columns: 60% 15% 12% 6% 5%;
+  ;
 }
 
 .departmentTableData {
@@ -995,7 +996,8 @@
   display: grid;
   align-items: center;
   margin-top: 5px;
-  grid-template-columns: 4% 55% 8% 20% 6% 6%;;
+  grid-template-columns: 4% 55% 8% 20% 6% 6%;
+  ;
 }
 
 .terminationInnerFolderData {
@@ -1574,12 +1576,12 @@
 
 .holidayHeaderTextStyle {
   font: normal normal 600 16px/18px Montserrat;
-    letter-spacing: 0.05px;
-    color: #6d6d6d;
-    text-align: left;
-    margin-top: 10px;
-    margin-left: 10px;
-    text-transform: uppercase;
+  letter-spacing: 0.05px;
+  color: #6d6d6d;
+  text-align: left;
+  margin-top: 10px;
+  margin-left: 10px;
+  text-transform: uppercase;
 }
 
 
@@ -1710,14 +1712,14 @@
 
 .terminationReasonSideRows {
   background: #928AE1 0% 0% no-repeat padding-box;
-    font-weight: normal;
-    height: 50px;
-    width: 98%;
-    border-radius: 6px;
-    margin-top: 1%;
-    align-items: center;
-    display: grid;
-    grid-template-columns: 10% 78% 5%;
+  font-weight: normal;
+  height: 50px;
+  width: 98%;
+  border-radius: 6px;
+  margin-top: 1%;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 10% 78% 5%;
 }
 
 .costCenterLeftCard {
@@ -1745,7 +1747,7 @@
   align-items: center;
 }
 
-.terminationInnerFolderRows{
+.terminationInnerFolderRows {
   font-weight: normal;
   min-height: 50px;
   height: 50px;
@@ -1931,7 +1933,8 @@
   align-items: center;
   margin-top: 4px;
   // grid-template-columns: 3% 30% 15% 10% 15% 18% 5% 5%;
-  grid-template-columns: 1% 27% 24% 15% 10% 13% 5% 5%;;
+  grid-template-columns: 1% 27% 24% 15% 10% 13% 5% 5%;
+  ;
 }
 
 .holidayScheduleTableData1 {
@@ -2065,7 +2068,7 @@
   background: #cecaf5 0% 0% no-repeat padding-box;
   font-weight: normal;
   min-height: 50px;
-  height: 50px;
+  // height: 50px;
   width: 90%;
   border: 0.4000000059604645px solid #887ee7af;
   border-radius: 6px;
@@ -2081,7 +2084,7 @@
 .customersAdminInnerRowsStyle1 {
   font-weight: normal;
   min-height: 50px;
-  height: 50px;
+  // height: 50px;
   width: 87%;
   border: 0.4000000059604645px solid #887ee7af;
   border-radius: 6px;
@@ -2098,7 +2101,7 @@
 .customersAdminInnerRowsStyle2 {
   font-weight: normal;
   min-height: 50px;
-  height: 50px;
+  // height: 50px;
   width: 95%;
   border: 0.4000000059604645px solid #887ee7af;
   border-radius: 6px;
@@ -2114,7 +2117,7 @@
 .customersAdminInnerRowsStyle3 {
   font-weight: normal;
   min-height: 50px;
-  height: 50px;
+  // height: 50px;
   width: 87%;
   border: 0.4000000059604645px solid #887ee7af;
   border-radius: 6px;
@@ -2132,7 +2135,7 @@
 .customersAdminInnerRowsStyle4 {
   font-weight: normal;
   min-height: 50px;
-  height: 50px;
+  // height: 50px;
   width: 87%;
   border: 0.4000000059604645px solid #887ee7af;
   border-radius: 6px;
@@ -2149,7 +2152,7 @@
 .customersAdminInnerRowsStyle5 {
   font-weight: normal;
   min-height: 50px;
-  height: 50px;
+  // height: 50px;
   width: 87%;
   border: 0.4000000059604645px solid #887ee7af;
   border-radius: 6px;
@@ -2166,7 +2169,7 @@
 .customersAdminInnerRowsStyle6 {
   font-weight: normal;
   min-height: 50px;
-  height: 50px;
+  // height: 50px;
   width: 90%;
   border: 0.4000000059604645px solid #887ee7af;
   border-radius: 6px;
@@ -2183,7 +2186,7 @@
 .holidayInnerRowsStyle1 {
   font-weight: normal;
   min-height: 50px;
-  height: 50px;
+  // height: 50px;
   width: 87%;
   border: 0.4000000059604645px solid #887ee7af;
   border-radius: 6px;
@@ -2200,7 +2203,7 @@
 .customersAdminInnerRowsStyleLightColor {
   font-weight: normal;
   min-height: 50px;
-  height: 50px;
+  // height: 50px;
   width: 87%;
   border: 0.4000000059604645px solid #887ee7af;
   border-radius: 6px;
@@ -2715,7 +2718,7 @@
   background-color: #EFEEFC;
 }
 
-.headerStyle{
+.headerStyle {
   align-items: center;
 }
 
@@ -2742,6 +2745,3 @@
   opacity: 1;
   margin-top: -2px;
 }
-
-
-

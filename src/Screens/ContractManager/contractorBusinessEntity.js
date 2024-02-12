@@ -21,6 +21,7 @@ import MissedMandatoryFieldAlert from "./missedMandatoryFieldAlert";
 
 const TEXTFIELDLEN50 = 50;
 const TEXTFIELDLEN100 = 100;
+const MAXZIPCODELEN = 10;
 
 const ContractorBusinessEntity = ({
   getViewPage5,
@@ -86,6 +87,7 @@ const ContractorBusinessEntity = ({
   const [unassignedKeys, setUnassignedKeys] = useState([]);
   const [showSaveInProgress, setShowSaveInProgress] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+  const [buttonName, setButtonName] = useState("");
 
   useEffect(() => {
     getUserData();
@@ -166,37 +168,73 @@ const ContractorBusinessEntity = ({
   console.log(selectedRoles);
 
   const mandatoryFieldCheck = (buttonType) => {
-    if (buttonType === "SaveInProgress") {
-      saveInProgresscheck();
-    } else {
-      handleContinue("Continue");
+    setContinueLoading(true);
+    if (buttonType === "SaveInProgress" || buttonType === "Continue") {
+      saveInProgresscheck(buttonType);
+      setButtonName(buttonType)
     }
   };
 
-  const saveInProgresscheck = () => {
+  const saveInProgresscheck = (buttonType) => {
     var keys = [];
 
+    if (!contractorNPIN?.notApplicable &&
+      !contractorNPIN?.missing && contractorNPIN?.npin === "") {
+      keys.push("NPIN");
+    }
+    if (!contractorEntityTaxId?.missing &&
+      !contractorEntityTaxId?.notApplicable && contractorEntityTaxId?.taxId === "") {
+      keys.push("Tax Id");
+    }
+    if (!businessEntity?.notApplicable && businessEntity?.name === "") {
+      keys.push("Business Entity Name");
+    }
+    if (EmailValidator(businessEntityUser?.email?.officialEmail)) {
+      keys.push("Business Contact Email Address");
+    }
+    if (businessEntityUser?.name?.firstName === "") {
+      keys.push("Contractor Business Contact First Name");
+    }
+    if (businessEntityUser?.name?.lastName === "") {
+      keys.push("Contractor Business Contact Last Name");
+    }
+    if (!businessEntityUser?.contactNumber?.missing && PhoneValidator(businessEntityUser?.contactNumber?.number)) {
+      keys.push("Cell Phone");
+    }
     if (mailingAddress?.addressLine === "") {
-      keys.push("Mailing Address");
+      keys.push("Mailing Address Line");
+    }
+    if (mailingAddress?.city === "") {
+      keys.push("City");
+    }
+    if (mailingAddress?.state === "") {
+      keys.push("State");
+    }
+    if (mailingAddress?.zipcode === "") {
+      keys.push("Zipcode");
     }
 
     setUnassignedKeys(keys);
     if (keys?.length !== 0) {
       setShowSaveInProgress(true);
+      setContinueLoading(true)
     } else {
-      handleContinue("SaveInProgress");
+      handleContinue(buttonType);
     }
   };
 
-  const saveInProgressFunction = () => {
-    handleContinue("SaveInProgress");
+  const saveInProgressFunction = (type) => {
+    handleContinue(type);
+    setShowSaveInProgress(false)
   };
 
   const getSaveInProgressAlert = (value) => {
     setShowSaveInProgress(value);
+    setContinueLoading(value)
   };
 
   const handleContinue = async (buttonText) => {
+    setContinueLoading(true);
     if (
       (!businessEntity?.notApplicable &&
         EmptyStringCheck(
@@ -707,7 +745,6 @@ const ContractorBusinessEntity = ({
             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
               <CommonLabel
                 value="Business Entity Name*"
-                maxLength={TEXTFIELDLEN100}
                 className={
                   !businessEntity?.notApplicable &&
                   (dataCheck(businessEntity?.name) ? style.redLable : "")
@@ -717,6 +754,7 @@ const ContractorBusinessEntity = ({
                 <CommonInputField
                   className={style.fullWidth}
                   value={businessEntity?.name}
+                  maxLength={TEXTFIELDLEN100}
                   disabled={businessEntity?.notApplicable}
                   onFocus={() => {
                     checkFieldAndPopAlert(
@@ -750,7 +788,7 @@ const ContractorBusinessEntity = ({
               <CommonLabel
                 value="Business Point of Contact*"
                 className={
-                  dataCheck(businessEntityUser?.name?.firstName)
+                  dataCheck(businessEntityUser?.name?.firstName && businessEntityUser?.name?.lastName)
                     ? style.redLable
                     : ""
                 }
@@ -817,6 +855,7 @@ const ContractorBusinessEntity = ({
                 className={style.fullWidth}
                 value={businessEntityUser?.email?.officialEmail}
                 placeholder="Enter Email"
+                maxLength={TEXTFIELDLEN50}
                 onFocus={() => {
                   checkFieldAndPopAlert(
                     businessEntityUser?.email?.officialEmail,
@@ -889,7 +928,7 @@ const ContractorBusinessEntity = ({
               <CommonLabel
                 value="Mailing Address*"
                 className={
-                  dataCheck(mailingAddress?.addressLine) ? style.redLable : ""
+                  dataCheck(mailingAddress?.addressLine && mailingAddress?.city && mailingAddress?.state && mailingAddress?.zipcode) ? style.redLable : ""
                 }
               />
               <div>
@@ -951,6 +990,7 @@ const ContractorBusinessEntity = ({
                   <CommonInputField
                     className={style.fullWidth}
                     value={mailingAddress?.zipcode}
+                    maxLength={MAXZIPCODELEN}
                     placeholder="Enter Zipcode"
                     onFocus={() => {
                       checkFieldAndPopAlert(
@@ -1070,6 +1110,8 @@ const ContractorBusinessEntity = ({
         getSaveInProgressAlert={getSaveInProgressAlert}
         fieldData={unassignedKeys}
         saveInProgressFunction={saveInProgressFunction}
+        setContinueLoading={setContinueLoading}
+        buttonName={buttonName}
       />
     </>
   );

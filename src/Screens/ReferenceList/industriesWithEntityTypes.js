@@ -11,7 +11,7 @@ import { GET, DELETE } from "./../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import DeleteConfirmation from "../../Components/DeleteConfirmation";
 // import { format } from "date-fns";
-import { format } from "date-fns-tz";
+import { format, formatInTimeZone } from "date-fns-tz";
 import Navbar from "../../Components/Navbar";
 import SideBar from "../../Components/Sidebar";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
@@ -71,7 +71,9 @@ const IndustriesWithEntityTypes = () => {
     );
 
     const date = new Date(lastModifiedDate.industries?.lastModified);
-    setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
+    setLastUpdatedDate(
+      formatInTimeZone(date, "America/New_York", "MMM d, yyyy HH:mm zzz")
+    );
   };
 
   const getEntityData = async () => {
@@ -234,8 +236,9 @@ const IndustriesWithEntityTypes = () => {
                                 </p>
                                 <p className={style.tableDataFontStyle}></p>
                                 <p className={style.tableDataFontStyle}>
-                                  {format(
+                                  {formatInTimeZone(
                                     new Date(`${data.lastModifiedDate}`),
+                                    "America/New_York",
                                     "MM-dd-yyyy"
                                   )}
                                 </p>

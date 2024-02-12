@@ -25,7 +25,7 @@ const GetSSOId = () => {
   }, [tenantId]);
 
   const getEntityId = async () => {
-    await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/entity-service/entityID`, {
+    await axios(`http://ec2-35-175-13-4.compute-1.amazonaws.com:8010/entity-service/entityID`, {
       method: 'GET',
     }).then(response => {
       setTenantId(response?.data?.id);
@@ -58,14 +58,14 @@ const GetSSOId = () => {
     await POST("user-management-service/user/ssoid", JSON.stringify(user))
       .then((response) => {
         SuccessToaster("SSO ID Added Successfully");
-        window.location.href = `http://ec2-34-230-167-131.compute-1.amazonaws.com:8010`;
+        window.location.href = `http://ec2-35-175-13-4.compute-1.amazonaws.com:8010`;
       })
       .catch((error) => {
         ErrorToaster(error);
       });
   };
 
-  console.log(window.location.href);
+  console.log(window.location.href)
 
   return (
     <div className={style.fullHeight}>

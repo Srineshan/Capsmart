@@ -10,10 +10,11 @@ const ReportHeader = () => {
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const userDetail = jwt(userDetails);
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
     const [logo, setLogo] = useState({ logo: sessionStorage?.getItem('logo'), title: sessionStorage.getItem('title') });
     const [corsedLogo, setCorsedLogo] = useState('');
-    const [currentTime, setCurrentTime] = useState(formatInTimeZone(new Date(), 'America/New_York', 'MMM d yyyy, H:mm zzz'));
+    const [currentTime, setCurrentTime] = useState(formatInTimeZone(new Date(), userTimeZone, 'MMM d yyyy, H:mm '));
     const [addressLine1, setAddressLine1] = useState('');
     const [addressLine2, setAddressLine2] = useState('');
 
@@ -28,7 +29,7 @@ const ReportHeader = () => {
         setCorsedLogo(`https://app.mytimesmart.com/cors/${data?.logo?.file?.fileURL}`);
         // setCorsedLogo(`${data?.logo?.file?.fileURL}`);
         setAddressLine1(`${data?.sites?.[0]?.address?.addressLine},`)
-        setAddressLine2(`${data?.sites?.[0]?.address?.city}, ${data?.sites?.[0]?.address?.state}, ${data?.sites?.[0]?.address?.zipcode}.`)
+        setAddressLine2(`${data?.sites?.[0]?.address?.city}, ${data?.sites?.[0]?.address?.state} ${data?.sites?.[0]?.address?.zipcode}`)
     }
 
     return (
