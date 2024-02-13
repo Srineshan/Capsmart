@@ -49,8 +49,9 @@ const NewContractFromClone = ({
   method,
   isEditable,
 }) => {
+  console.log('contract Type', contractType)
   const contractStatus = sessionStorage.getItem("Selected Contract Status");
-  const [selectContractInfo, setSelectContractInfo] = useState(contractType);
+  const [selectContractInfo, setSelectContractInfo] = useState(contractType?.value);
   const [deleteExecutedContractDialog, setDeleteExecutedContractDialog] =
     useState(false);
   const [newServiceProviderDialog, setNewServiceProviderDialog] =
@@ -283,8 +284,6 @@ const NewContractFromClone = ({
     );
   };
 
-  console.log('type', contractSelected?.contractDetail?.contractType, selectContractInfo);
-
   return (
     <div className={`${style.welcomePadding} ${style.addContractBody}`}>
       <div className={style.spaceBetween}>
@@ -363,7 +362,7 @@ const NewContractFromClone = ({
               setSelectedField({ ...selectedField, fieldName: "" });
             }}
           >
-            {!(selectContractInfo === "EMPLOYEE" || contractSelected?.contractDetail?.contractType === "EMPLOYEE") ? 'Contracted Services Provider(s)' : 'Service Provider'}
+            {!(selectContractInfo === "EMPLOYEE" || contractSelected?.contractDetail?.contractType?.value === "EMPLOYEE") ? 'Contracted Services Provider(s)' : 'Service Provider'}
             {contractId !== "" && (
               <img
                 src={
@@ -378,7 +377,7 @@ const NewContractFromClone = ({
               />
             )}
           </div>
-          {!(selectContractInfo === "EMPLOYEE" || contractSelected?.contractDetail?.contractType === "EMPLOYEE") && < div
+          {!(selectContractInfo === "EMPLOYEE" || contractSelected?.contractDetail?.contractType?.value === "EMPLOYEE") && < div
             className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle
               } ${style.marginTop10} ${contractId !== "" ? style.completedEntityCardStyle : ""
               } ${currentPage === "Contractor Business Entity" &&
@@ -418,7 +417,7 @@ const NewContractFromClone = ({
               setSelectedField({ ...selectedField, fieldName: "" });
             }}
           >
-            {!(selectContractInfo === "EMPLOYEE" || contractSelected?.contractDetail?.contractType === "EMPLOYEE") ? 'Contracted Services Specification' : 'Services Specified'}
+            {!(selectContractInfo === "EMPLOYEE" || contractSelected?.contractDetail?.contractType?.value === "EMPLOYEE") ? 'Contracted Services Specification' : 'Services Specified'}
             {contractId !== "" && (
               <img
                 src={isTabsValid?.tab4 ? CompletedIcon : RedWarning}
@@ -435,7 +434,7 @@ const NewContractFromClone = ({
                         )}
                     </div> */}
 
-          {(!(selectContractInfo === "EMPLOYEE" || contractSelected?.contractDetail?.contractType === "EMPLOYEE") || (contractSelected?.contractedServices?.length || 0 !== 0)) && (<> < div
+          {(!(selectContractInfo === "EMPLOYEE" || contractSelected?.contractDetail?.contractType?.value === "EMPLOYEE") || (contractSelected?.contractedServices?.length || 0 !== 0)) && (<> < div
             className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle
               } ${style.marginTop10} ${contractId !== "" ? style.completedEntityCardStyle : ""
               } ${currentPage === "Timesheet Submission Terms" &&
@@ -511,7 +510,7 @@ const NewContractFromClone = ({
         </div>
 
 
-        {(currentPage === "Request Processing Workflow" && (contractSelected?.contractedServices?.length !== 0 && contractSelected?.contractDetail?.contractType !== "EMPLOYEE")) ? (
+        {(currentPage === "Request Processing Workflow" && (contractSelected?.contractedServices?.length !== 0 && contractSelected?.contractDetail?.contractType?.value !== "EMPLOYEE")) ? (
           <RequestProcessingWorkflow
             getViewPage10={getViewPage10}
             getCurrentPage={getCurrentPage}
@@ -522,7 +521,7 @@ const NewContractFromClone = ({
             contract={contractSelected}
             getTabDataStatus={getTabDataStatus}
           />
-        ) : (currentPage === "Timesheet Processing Workflow" && (contractSelected?.contractedServices?.length !== 0 && contractSelected?.contractDetail?.contractType !== "EMPLOYEE")) ? (
+        ) : (currentPage === "Timesheet Processing Workflow" && (contractSelected?.contractedServices?.length !== 0 && contractSelected?.contractDetail?.contractType?.value !== "EMPLOYEE")) ? (
           <TimesheetProcessingWorkflow
             getViewPage9={getViewPage9}
             getCurrentPage={getCurrentPage}
@@ -534,7 +533,7 @@ const NewContractFromClone = ({
             getTabDataStatus={getTabDataStatus}
             getShowAlert={getShowAlert}
           />
-        ) : (currentPage === "Timesheet Submission Terms" && (contractSelected?.contractedServices?.length !== 0 || contractSelected?.contractDetail?.contractType !== "EMPLOYEE")) ? (
+        ) : (currentPage === "Timesheet Submission Terms" && (contractSelected?.contractedServices?.length !== 0 || contractSelected?.contractDetail?.contractType?.value !== "EMPLOYEE")) ? (
           <TimeSheetSubmissionTerms
             getViewPage7={getViewPage7}
             getCurrentPage={getCurrentPage}
@@ -544,7 +543,7 @@ const NewContractFromClone = ({
             isEditable={isEditable}
             getTabDataStatus={getTabDataStatus}
           />
-        ) : (currentPage === "Payment & Compensation" && (contractSelected?.contractedServices?.length !== 0 || contractSelected?.contractDetail?.contractType !== "EMPLOYEE")) ? (
+        ) : (currentPage === "Payment & Compensation" && (contractSelected?.contractedServices?.length !== 0 || contractSelected?.contractDetail?.contractType?.value !== "EMPLOYEE")) ? (
           <PaymentAndCompensation
             selectContractInfo={selectContractInfo}
             getViewPage8={getViewPage8}
@@ -594,7 +593,6 @@ const NewContractFromClone = ({
           <ContractedServicesProviderIndividual
             getViewPage3={getViewPage3}
             getCurrentPage={getCurrentPage}
-            contractType={contractType}
             contractId={contractId}
             contracts={contracts}
             contractName={contractName}
@@ -643,7 +641,6 @@ const NewContractFromClone = ({
             <ContractedServicesProviderIndividual
               getViewPage3={getViewPage3}
               getCurrentPage={getCurrentPage}
-              contractType={contractType}
               contractId={contractId}
               contracts={contracts}
               contractName={contractName}
@@ -790,7 +787,6 @@ const NewContractFromClone = ({
           <NewServiceProvider
             getNewServiceProviderDialog={getNewServiceProviderDialog}
             contractId={contractId}
-            contractType={contractType}
             contractName={contractName}
           />
         )

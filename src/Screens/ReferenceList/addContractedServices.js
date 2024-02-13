@@ -113,7 +113,8 @@ const AddContractedServices = ({ getAddContractedServicesDialog, selectedContrac
                 <div className={`${style.addIndustryBoxStyle} ${style.marginTop20}`}>
                     <div className={`${style.extentionGrid}`}>
                         <div className={style.entityLableStyle}>Contract Type*</div>
-                        <div className={style.displayInRow}>
+                        {/* <div className={style.displayInRow}> */}
+                        <div>
                             <select
                                 value={contractTypes}
                                 className={style.fullWidth}
@@ -126,11 +127,12 @@ const AddContractedServices = ({ getAddContractedServicesDialog, selectedContrac
                                     <option value={type.id}>{type.contractType}</option>
                                 ))}
                             </select>
+                            {/* </div> */}
+                            {selectedContractTypes?.length !== 0 && (<MultiSelectDisplay
+                                values={selectedContractTypes?.map(data => data?.value)}
+                                removeItem={removeContractType}
+                            />)}
                         </div>
-                        {selectedContractTypes?.length !== 0 && (<MultiSelectDisplay
-                            values={selectedContractTypes?.map(data => data?.value)}
-                            removeItem={removeContractType}
-                        />)}
                     </div>
 
                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>

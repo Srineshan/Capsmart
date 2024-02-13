@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, Classes, Icon, Intent, InputGroup, RadioGroup, Radio } from '@blueprintjs/core';
+import { Dialog, Classes, Icon, Intent, InputGroup, TextArea, RadioGroup, Radio } from '@blueprintjs/core';
 import style from './index.module.scss';
 import { POST, PUT, TenantID, GET } from '../dataSaver'
 import { SuccessToaster, ErrorToaster } from '../../utils/toaster';
@@ -7,7 +7,7 @@ import { SuccessToaster, ErrorToaster } from '../../utils/toaster';
 const AddContractType = ({ getContractTypeDialog, selectedContractType, getContractType, isEdit }) => {
     const [contractType, setContractType] = useState(isEdit ? selectedContractType?.contractType : '')
     const [contractTypeTemplate, setContractTypeTemplate] = useState(isEdit ? selectedContractType?.contractTypeTemplate : '');
-
+    const [helpText, setHelpText] = useState(isEdit ? selectedContractType?.helpText : '');
     const handlePostContractedServiceType = async () => {
         if (contractTypeTemplate === '' || contractType === '') {
             ErrorToaster('Enter Madatory Data');
@@ -18,7 +18,8 @@ const AddContractType = ({ getContractTypeDialog, selectedContractType, getContr
             contractTypeTemplate: contractTypeTemplate,
             entityId: {
                 id: TenantID
-            }
+            },
+            helpText: helpText,
         };
         if (contractType !== '') {
             if (!isEdit) {
@@ -64,6 +65,19 @@ const AddContractType = ({ getContractTypeDialog, selectedContractType, getContr
                             <InputGroup value={contractType} className={style.fullWidth} onChange={(e) => setContractType(e.target.value)} placeholder="Enter Contract Type" />
                         </div>
                     </div>
+                    <div className={`${style.extentionGrid}  ${style.marginTop20}`}>
+                        <div className={style.entityLableStyle}>Contract Type Help text*</div>
+                        <div>
+                            <TextArea
+                                placeholder="Enter Help Text..."
+                                className={style.fullWidth}
+                                value={selectedContractType?.helpText}
+                                onChange={(e) => setHelpText(e.target.value)}
+                            />
+                        </div>
+                    </div>
+
+
                 </div>
                 <div>
                     <div className={`${style.floatRight} ${style.marginTop20}`}>

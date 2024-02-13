@@ -21,7 +21,7 @@ const AddContract = ({
 }) => {
   const [selectedContract, setSelectedContract] = useState("0");
   const [selectedContractOnClick, setSelectedContractOnClick] = useState("");
-  const [contractType, setContractType] = useState("");
+  const [contractType, setContractType] = useState({ id: '', value: '' });
   const [isEmployeeContractNeeded, setIsEmployeeContractNeeded] = useState(sessionStorage?.getItem('isEmployeeContractNeeded'))
   const [contractTypeList, setContractTypeList] = useState([]);
 
@@ -32,7 +32,7 @@ const AddContract = ({
       getMethod("POST");
       getNewContract(true);
       getAddContract(false, true);
-      getContractType(contractType);
+      getContractType(contractType?.id, contractType?.value);
       getSelectedContractType(selectedContract);
     }
   };
@@ -47,6 +47,8 @@ const AddContract = ({
     );
     setContractTypeList(contractType);
   };
+
+  console.log('contract type', contractType)
 
   return (
     <div className={`${style.welcomePadding} ${style.addContractBody}`}>
@@ -117,7 +119,7 @@ const AddContract = ({
                     }`}
                   onClick={() => {
                     setSelectedContractOnClick(true);
-                    setContractType(data?.contractTypeTemplate);
+                    setContractType({ id: data?.id, value: data?.contractTypeTemplate });
                     sessionStorage.setItem('contractType', data?.contractTypeTemplate)
                   }}
                 >

@@ -31,8 +31,6 @@ const SupplementalFields = ({
     const [newServiceName, setNewServiceName] = useState("");
     const contractStatus = sessionStorage.getItem('Selected Contract Status');
 
-    console.log("selected Service", serviceSelected);
-
     let specificDedicatedHoursList = [];
     services
         ?.filter((data) =>
@@ -94,8 +92,6 @@ const SupplementalFields = ({
         setAvailableActivities(temp);
     };
 
-    console.log("available activities", availableActivities);
-
     const getSelectedActivity = () => {
         let activityName = metadata?.dedicatedHoursActivityType;
         let activities = metadata?.dedicatedHoursPerformingActivity;
@@ -104,8 +100,6 @@ const SupplementalFields = ({
     };
 
     const selectedHours = (index) => {
-        // let temp = services?.findIndexOf(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType));
-        // let temp;
         services?.filter(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => {
             let activityName = data?.activityType?.activityType;
             let activities = data?.activities?.map(data => data?.activity);
@@ -413,7 +407,6 @@ const SupplementalFields = ({
         }
     }
 
-    console.log('metadata', metadata);
     return (
         <div>
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>

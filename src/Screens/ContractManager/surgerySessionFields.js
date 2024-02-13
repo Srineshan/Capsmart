@@ -29,7 +29,6 @@ const SurgerySessionFields = ({
   const [metadata, setMetadata] = useState({
     min: 0,
     max: 99999999,
-    minimumSessionDuration:0,
     frequency: "NA",
     withNurse: "0",
     withoutNurse: "0",
@@ -103,7 +102,6 @@ const SurgerySessionFields = ({
     setMetadata({
       min: 0,
       max: 99999999,
-      minimumSessionDuration:0,
       frequency: "NA",
       withNurse: "0",
       withoutNurse: "0",
@@ -146,7 +144,6 @@ const SurgerySessionFields = ({
         refId: serviceSelected?.refId,
         min: serviceSelected?.contractedSchedules?.[0]?.minimum?.value,
         max: serviceSelected?.contractedSchedules?.[0]?.maximum?.value,
-        minimumSessionDuration: serviceSelected?.minSessionDuration?.hours,
         frequency: serviceSelected?.contractedSchedules?.[0]?.frequency,
         withNurse: serviceSelected?.patientsSeenTargets?.[0]?.withNurse?.value,
         withoutNurse:
@@ -333,32 +330,6 @@ const SurgerySessionFields = ({
                 withoutNurse: 0,
               });
             }}
-          />
-        </div>
-      </div>
-
-      <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-        <CommonLabel
-          value="Minimum Session Duration"
-          className={dataCheck(metadata?.minimumSessionDuration) ? style.redLable : ""}
-        />
-        <div className={`${style.threeFieldWidth}`}>
-          <CommonTextField
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end" sx={{ fontSize: 10 }}>
-                  Hours
-                </InputAdornment>
-              ),
-            }}
-            value={metadata?.minimumSessionDuration}
-            onChange={(e) =>
-              e.target.value >= 0 &&
-              setMetadata({
-                ...metadata,
-                minimumSessionDuration: parseFloat(e.target.value),
-              })
-            }
           />
         </div>
       </div>
@@ -583,20 +554,18 @@ const SurgerySessionFields = ({
               disabled={contractStatus === "ACTIVE" ? true : false}
             />
             <div
-              className={`${style.textElement} ${
-                parseFloat(metadata?.totalSession) === parseFloat(specified)
+              className={`${style.textElement} ${parseFloat(metadata?.totalSession) === parseFloat(specified)
                   ? style.greenBase
                   : style.redBase
-              }`}
+                }`}
             >
               {specified} Minimum Specified
             </div>
           </div>
           <div className={style.verticalAlignCenter}>
             <CommonLabel
-              value={`For ${timeCommitment?.value} ${
-                timeCommitment?.frequency === "WEEK" ? "Weeks" : "Months"
-              } Per Contract Year`}
+              value={`For ${timeCommitment?.value} ${timeCommitment?.frequency === "WEEK" ? "Weeks" : "Months"
+                } Per Contract Year`}
             />
           </div>
         </div>
@@ -607,10 +576,10 @@ const SurgerySessionFields = ({
           value="Service Days*"
           className={
             metadata?.serviceDays === null ||
-            (metadata?.serviceDays !== undefined &&
-              Object?.values(metadata?.serviceDays)?.filter(
-                (data) => data === true
-              )?.length === 0)
+              (metadata?.serviceDays !== undefined &&
+                Object?.values(metadata?.serviceDays)?.filter(
+                  (data) => data === true
+                )?.length === 0)
               ? style.redLable
               : ""
           }
@@ -628,7 +597,7 @@ const SurgerySessionFields = ({
           value="Allowable Working Day Hours For Service*"
           className={
             format(metadata?.workingTimeTo || new Date(), "H") === "0" &&
-            format(metadata?.workingTimeFrom || new Date(), "H") === "0"
+              format(metadata?.workingTimeFrom || new Date(), "H") === "0"
               ? style.redLable
               : ""
           }
@@ -660,7 +629,7 @@ const SurgerySessionFields = ({
                 : new Date(metadata?.workingTimeTo)
             }
             disabled={contractStatus === "ACTIVE" ? true : false}
-            // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
+          // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
           />
         </div>
       </div>

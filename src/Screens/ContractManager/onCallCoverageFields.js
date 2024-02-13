@@ -14,7 +14,7 @@ import CommonLabel from '../../Components/CommonFields/CommonLabel';
 import { SpecifiedCountCalculator } from './specifiedCountCalculator';
 import FormControl from "@mui/material/FormControl";
 import { ONCALLSERVICE } from "../../Constants";
-
+import MultiSelectDisplay from "../../Components/ReusableSmallComponents/multiSelectDisplay";
 
 import style from './index.module.scss';
 import EditableTable from './editableTable';
@@ -407,7 +407,7 @@ const OnCallCoverageFields = ({ servicesList, getMetaData, serviceSelected, time
         billableService: serviceSelected?.billableService,
         rateType: serviceSelected?.rateType,
         overlap: serviceSelected?.splitActivityTimeOnOverlap,
-        overlappingActivities: serviceSelected?.overlappingActivitiesForSplit || [],
+        overlappingActivities: serviceSelected?.overlappingActivitiesForSplit?.map(data => data?.activityTypeTemplate) || [],
         sessionDuration: serviceSelected?.duration?.hours || '0',
         serviceRate: serviceSelected?.serviceRate?.rate || '0',
         serviceRateFrequency: serviceSelected?.serviceRate?.rateFrequency,
@@ -629,6 +629,21 @@ const OnCallCoverageFields = ({ servicesList, getMetaData, serviceSelected, time
     }
   }
 
+  const handleOverLapActivitySelection = (value) => {
+    console.log('inside function', value);
+    let temp = metadata?.overlappingActivities;
+    if (!temp?.includes(value)) {
+      console.log('inside if condition')
+      temp.push(value)
+      console.log('temp value', temp)
+      setMetadata({ ...metadata, overlappingActivities: temp });
+    }
+  }
+
+  const removeOverlappingActivity = (index) => {
+    setMetadata({ ...metadata, overlappingActivities: metadata?.overlappingActivities?.filter((data, indexValue) => index !== indexValue)?.map(data => data) })
+  }
+
   return (
     <div>
       <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -655,23 +670,35 @@ const OnCallCoverageFields = ({ servicesList, getMetaData, serviceSelected, time
       </div>
 
       <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-        <CommonLabel value='Allow Overlap with other Activities*' />
-        <div className={`${style.displayInRow} `}>
-          <CommonSwitch className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} label={metadata?.overlap ? 'YES' : 'NO'} checked={metadata?.overlap} onChange={(e) => handleValueChange('overlap', !metadata?.overlap)} />
-          {metadata?.overlap && (
-            <FormControl sx={{ width: 480 }}>
-              <CommonSelectField className={`${style.fullWidth}`}
-                // value=''
-                // onChange={}
-                firstOptionLabel={servicesList?.filter(data => data?.activityTypeTemplate?.activityTypeTemplate === ONCALLSERVICE)?.map(data => data)?.length !== 0 ? 'Select Service to Overlap' : 'Possible Overlapping Service Not Found'} firstOptionValue={''}
-                valueList={servicesList?.filter(data => data?.activityTypeTemplate?.activityTypeTemplate === ONCALLSERVICE)?.map(data => data?.activityTypeTemplate?.activityTypeTemplate)}
-                labelList={servicesList?.filter(data => data?.activityTypeTemplate?.activityTypeTemplate === ONCALLSERVICE)?.map(data => data?.activityType?.activityType)}
-                disabledList={servicesList?.filter(data => data?.activityTypeTemplate?.activityTypeTemplate === ONCALLSERVICE)?.map(data => false)}
-              />
-            </FormControl>
-          )}
+        <CommonLabel value='Exclude Payment for On Call Coverage with Overlapping Activity*' />
+        <div>
+          <div className={`${style.displayInRow} `}>
+            <CommonSwitch className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} label={metadata?.overlap ? 'YES' : 'NO'} checked={metadata?.overlap} onChange={(e) => handleValueChange('overlap', !metadata?.overlap)} />
+            {metadata?.overlap && (
+              <FormControl sx={{ width: 480 }}>
+                <CommonSelectField className={`${style.fullWidth}`}
+                  // value={metadata?.overlappingActivities}
+                  onChange={(e) => { handleOverLapActivitySelection(e.target.value) }}
+                  firstOptionLabel={servicesList?.map(data => data)?.length !== 0 ? 'Select Service to Overlap' : 'Possible Overlapping Service Not Found'} firstOptionValue={''}
+                  valueList={servicesList?.map(data => data?.activityTypeTemplate?.activityTypeTemplate)}
+                  labelList={servicesList?.map(data => data?.activityType?.activityType)}
+                  disabledList={servicesList?.map(data => false)}
+                />
+              </FormControl>
+            )}
+          </div>
+          {
+            metadata?.overlappingActivities?.length !== 0 && <MultiSelectDisplay
+              values={metadata?.overlappingActivities?.map(
+                (data) => data
+              )}
+              removeItem={removeOverlappingActivity}
+            />
+          }
+
         </div>
       </div>
+
 
 
       <div className={`${style.addManagerGrid} ${style.marginTop20}`}>

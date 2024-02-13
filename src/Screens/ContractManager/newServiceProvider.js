@@ -27,7 +27,6 @@ import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
 const NewServiceProvider = ({
   getNewServiceProviderDialog,
   contractId,
-  contractType,
 }) => {
   const [selectedContract, setSelectedContract] = useState(
     "Written Contract Extension For Fixed Term"

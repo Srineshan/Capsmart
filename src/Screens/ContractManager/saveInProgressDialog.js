@@ -63,14 +63,13 @@ const SaveInProgressDialog = ({
         <div className={style.extensionBorder}></div>
         <div className={`${style.popUpHeaderBlock} ${style.marginTop}`}>
           <div>
-            <p className={style.extentionLableStyle}>{contractType}</p>
+            <p className={style.extentionLableStyle}>{contractType?.value}</p>
             <p className={style.extentionLableStyle}>
               PAMF CONTRACT (
-              {`${
-                contractData?.contractDetail?.contractId?.id
-                  ? contractData?.contractDetail?.contractId?.id
-                  : " - "
-              }`}
+              {`${contractData?.contractDetail?.contractId?.id
+                ? contractData?.contractDetail?.contractId?.id
+                : " - "
+                }`}
               )
             </p>
             <p className={style.extentionLableStyle}>
@@ -79,13 +78,11 @@ const SaveInProgressDialog = ({
           </div>
           <div>
             <p className={style.extentionLableStyle}>
-              {`${
-                contractData?.contractDetail?.contractManager?.name
-                  ?.firstName || ""
-              } ${
-                contractData?.contractDetail?.contractManager?.name?.lastName ||
+              {`${contractData?.contractDetail?.contractManager?.name
+                ?.firstName || ""
+                } ${contractData?.contractDetail?.contractManager?.name?.lastName ||
                 ""
-              }  `}
+                }  `}
               (Contract Manager)
             </p>
             <p className={style.extentionLableStyle}>
