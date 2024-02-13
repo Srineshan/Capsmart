@@ -105,6 +105,12 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
             keys.push("Dollar Hourly Rate");
         }
 
+        timesheetPayments?.forEach((value, index) => {
+            if (valueCheck(value?.maxPaymentPerContract)) {
+                keys.push(`Max. Compensation Value For Contract Period ${index + 1}`);
+            }
+        });
+
         setUnassignedKeys(keys);
         if (keys?.length !== 0) {
             setShowSaveInProgress(true);
@@ -125,37 +131,36 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
     };
 
     const handleContinue = async (buttonType) => {
-        if (!continueLoading) {
-            setContinueLoading(true);
-            const data = {
-                compensationBasis: compensation,
-                rvuQuantity: rvuQuantity,
-                frequency: frequency,
-                fteEquivalent: fteEquivalent,
-                rvuReferenceUsed: rvuReferenceUsed,
-                rvuQuantityVariance: rvuQuantityVariance,
-                rvuQuantityPeriod: rvuQuantityPeriod,
-                compensationOffsetCriteria: compensationOffsetCriteria,
-                dollarRate: dollarRate,
-                dollarValue: dollarValue,
-                timesheetPayments: timesheetPayments,
-            }
-            const response = await PUT(`contract-managment-service/contracts/${contractId}/paymentAndCompensation`, JSON.stringify(data));
-            if (response) {
-                SuccessToaster('Payment And Compensation Updated Successfully');
-            }
-            else {
-                ErrorToaster('Unexpected Error');
-            }
-            setContinueLoading(false);
-            if (buttonType !== 'Continue') {
-                getShowAlert(true);
-            } else {
-                getViewPage8(true);
-                getCurrentPage('Timesheet Processing Workflow')
-            }
-            getTabDataStatus();
+        setContinueLoading(true);
+        const data = {
+            compensationBasis: compensation,
+            rvuQuantity: rvuQuantity,
+            frequency: frequency,
+            fteEquivalent: fteEquivalent,
+            rvuReferenceUsed: rvuReferenceUsed,
+            rvuQuantityVariance: rvuQuantityVariance,
+            rvuQuantityPeriod: rvuQuantityPeriod,
+            compensationOffsetCriteria: compensationOffsetCriteria,
+            dollarRate: dollarRate,
+            dollarValue: dollarValue,
+            timesheetPayments: timesheetPayments,
         }
+        const response = await PUT(`contract-managment-service/contracts/${contractId}/paymentAndCompensation`, JSON.stringify(data));
+        if (response) {
+            SuccessToaster('Payment And Compensation Updated Successfully');
+        }
+        else {
+            ErrorToaster('Unexpected Error');
+        }
+        setContinueLoading(false);
+        if (buttonType !== 'Continue') {
+            getShowAlert(true);
+        } else {
+            getViewPage8(true);
+            getCurrentPage('Timesheet Processing Workflow')
+        }
+        getTabDataStatus();
+
     }
 
     const getPaymentAndCompensation = async () => {
@@ -387,7 +392,10 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                         </div>}
                                 </>)}
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                <CommonLabel value='Max. Compensation Value for Contract Period*' />
+                                <CommonLabel value='Max. Compensation Value for Contract Period*'
+                                    className={dataCheck(timesheetPayments?.[i]?.maxPaymentPerContract)
+                                        ? style.redLable
+                                        : ""} />
                                 <div className={style.displayInRow}>
                                     <CommonTextField
                                         className={style.twoFieldWidth}
@@ -612,9 +620,11 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                             <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                                 <button className={`${style.newContractButtonStyle}  ${style.cursorPointer}`} onClick={() => { getCurrentPage('Timesheet Submission Terms') }}>BACK</button>
                                 <div>
-                                    <button className={`${style.newContractOutlinedButton}  ${style.cursorPointer} ${continueLoading ? style.disabled : ''}`} onClick={() => handleContinue('Save In Progress')}>SAVE IN-PROGRESS</button>
                                     <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`}
-                                        onClick={() => handleContinue('Continue')}
+                                        onClick={!continueLoading ? () => mandatoryFieldCheck('SaveInProgress') : {}}
+                                    >SAVE IN PROGRESS</button>
+                                    <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`}
+                                        onClick={!continueLoading ? () => { mandatoryFieldCheck('Continue') } : {}}
                                     >CONTINUE</button>
                                 </div>
                             </div>
