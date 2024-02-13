@@ -776,12 +776,12 @@ const SupplementalFields = ({
                                                         className={`${style.marginLeft20}`}
                                                         value={
                                                             metadata?.sessionsAsNeeded
-                                                                ? `${parseInt(metadata?.sessionAmount
+                                                                ? `$ ${parseInt(metadata?.sessionAmount
                                                                     || '0')?.toFixed(2)} per Hour (Pro Rata)`
                                                                 // : metadata?.totalSession === 0 ? '' : metadata?.serviceRateFrequency === 'SESSION' ?
                                                                 //     `${(parseFloat(metadata?.sessionAmount) / metadata?.totalSession?.toFixed(2)} per Hour (Pro Rata)`
                                                                 :
-                                                                `${(
+                                                                `$ ${(
                                                                     parseFloat(metadata?.sessionAmount || '0') /
                                                                     parseFloat(metadata?.totalSession || '0')
                                                                 )?.toFixed(2)} per Hour (Pro Rata)`
