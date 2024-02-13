@@ -571,7 +571,8 @@ const ContractIdTermLimitIndividual = ({
       contractName: {
         contractName: contractName,
       },
-      contractType: contractType,
+      contractType: contractType?.value,
+      contractTypeId: contractType?.id,
       contractStatus: "DRAFT",
       contractDetail: {
         contractId: {
@@ -1499,7 +1500,7 @@ const ContractIdTermLimitIndividual = ({
             />
           </div>
         </div>
-        {contractType === 'MULTIPLE' &&
+        {contractType?.value === 'MULTIPLE' &&
           <div
             className={`${style.extentionGrid} ${style.marginTop20}`}
             onFocus={() => {
@@ -1775,7 +1776,6 @@ const ContractIdTermLimitIndividual = ({
       {addNewManagerDialog && (
         <AddNewContractManager
           getAddNewManagerDialog={getAddNewManagerDialog}
-          contractType={contractType}
           getUserData={getUserData}
           contractId={contractIdFromActive}
         />

@@ -126,14 +126,16 @@ const AddServiceProvided = ({
   const [activityItems, setActivityItems] = useState([]);
   const [reducedOffsetApplicable, setReducedOffsetApplicable] = useState(false);
   const [compensationPolicy, setCompensationPolicy] = useState("");
+  const [contractTypeId, setContractTypeId] = useState("");
   const contractStatus = sessionStorage.getItem('Selected Contract Status');
+
 
   useEffect(() => {
     getContractedServices();
     getUserData();
     getSites();
-    getServiceList();
-    // getActivityList();
+    // getContractType();
+    getActivityList();
     getLocations();
     getContractNotes();
   }, []);
@@ -174,9 +176,6 @@ const AddServiceProvided = ({
       );
     }
   }, [selectedService, serviceTypeList]);
-
-
-  console.log('selected Service', selectedService);
 
   useEffect(() => {
     if (siteData?.length !== 0) {
@@ -229,9 +228,21 @@ const AddServiceProvided = ({
     }
   }, [metadata, isWorkFlowUpdated]);
 
-  const getServiceList = async () => {
+  // const getContractType = async () => {
+  //   const { data: contactType } = await GET(
+  //     `entity-service/contractType`
+  //   );
+  //   if (contractType) {
+  //     let contractTypeId = contractType?.filter((data) => data?.contractTypeTemplate === selectContractInfo)?.map(data => data?.id)[0];
+  //     console.log('cotractTypeId', contractTypeId);
+  //     console.log('contactType', contactType, selectContractInfo)
+  //     getServiceList(contractTypeId);
+  //   }
+  // }
+
+  const getServiceList = async (contractTypeId) => {
     const { data: serviceList } = await GET(
-      `entity-service/contractedServiceType`
+      `entity-service/contractedServiceType?contractTypeId=${contractTypeId}`
     );
     setServiceTypeList(serviceList);
     if (!editService) {
@@ -482,11 +493,13 @@ const AddServiceProvided = ({
     contractDetail?.contractFiles?.map((data) => {
       temp.push({ name: data?.documentName, url: data?.fileURL });
     });
+    setContractTypeId(contractData?.contractTypeId?.id);
     setContractDocumentList(temp);
     let sites = contractDetail?.site?.sites;
     if (sites && siteList?.length === 0) {
       setSiteList(sites);
     }
+    getServiceList(contractData?.contractTypeId?.id)
   };
 
   console.log("metadata", metadata);
@@ -951,6 +964,7 @@ const AddServiceProvided = ({
     var parentActivity = "";
     let activities = [];
     let dependentActivities = [];
+    let overlappingActivitiesForSplit = [];
     if (
       serviceTypeTemplate !== SUPPLEMENTAL &&
       serviceTypeTemplate !== ADDON &&
@@ -1029,9 +1043,13 @@ const AddServiceProvided = ({
           }
         }
         // }
-
         //   );
       }
+      let overlappingActivityTemp = [];
+      metadata?.overlappingActivities?.map(data => {
+        overlappingActivityTemp.push({ activityTypeTemplate: data })
+      });
+      overlappingActivitiesForSplit = overlappingActivityTemp;
       performingActivity = activities?.map(data => data?.activity)?.join("-");
       console.log('Performing Actiity', performingActivity, activities)
         ?.map((activity) => activity?.activity)
@@ -1165,6 +1183,8 @@ const AddServiceProvided = ({
               },
             },
           }),
+          overlappingActivitiesForSplit: overlappingActivitiesForSplit || [],
+          splitActivityTimeOnOverlap: metadata?.overlap || false,
           contractedServiceFiles: dataValues?.contractedServiceFiles || [],
           baseServiceAvailable: serviceTypeTemplate === SUPPLEMENTAL ? dataValues?.baseServiceAvailable : false,
           baseServices:
@@ -1275,6 +1295,9 @@ const AddServiceProvided = ({
           },
           payableAmount: {
             value: parseFloat(dataValues?.sessionAmount),
+          },
+          minSessionDuration: {
+            hours: parseInt(dataValues?.minimumSessionDuration || 0),
           },
           patientConsultRequired: dataValues?.patientConsultRequired || false,
           professionalServiceRequired: dataValues?.professionalServiceRequired || false,
@@ -2247,38 +2270,41 @@ const AddServiceProvided = ({
                             className={editService && (!selectedActivity || selectedActivity?.length === 0) ? style.redLable : ""}
                           />
                           <div>
-                            <div className={style.addGrid}>
-                              <DatalistInput
-                                value={value}
-                                setValue={setValue}
-                                items={activityItems || []}
-                                onSelect={onActivitySelect}
-                                className={style.fullWidth}
-                                onChange={(e) => setNewActivity(e.target.value)}
-                                inputProps={{ disabled: contractStatus === "ACTIVE" ? true : false }}
-                              />
-                              <div
-                                className={`${style.addStyle} ${style.alignCenter
-                                  } ${style.cursorPointer} ${newActivity === "" ||
-                                    activity?.some((data) =>
-                                      data?.activity?.activity
-                                        ?.replace(" ", "")
-                                        ?.toLowerCase()
-                                        ?.includes(
-                                          newActivity
-                                            ?.replace(" ", "")
-                                            ?.toLowerCase()
-                                        )
-                                    )
-                                    ? style.disabledUploadButton
-                                    : ""
-                                  }`}
-                              >
-                                <AddIcon
-                                  sx={{ fontSize: 25, color: "white" }}
-                                  onClick={contractStatus === "ACTIVE" ? {} : activityToAdd}
+                            <div>
+                              <div className={style.addGrid}>
+                                <DatalistInput
+                                  value={value}
+                                  setValue={setValue}
+                                  items={activityItems || []}
+                                  onSelect={onActivitySelect}
+                                  className={style.fullWidth}
+                                  onChange={(e) => setNewActivity(e.target.value)}
+                                  inputProps={{ disabled: contractStatus === "ACTIVE" ? true : false }}
                                 />
+                                <div
+                                  className={`${style.addStyle} ${style.alignCenter
+                                    } ${style.cursorPointer} ${newActivity === "" ||
+                                      activity?.some((data) =>
+                                        data?.activity?.activity
+                                          ?.replace(" ", "")
+                                          ?.toLowerCase()
+                                          ?.includes(
+                                            newActivity
+                                              ?.replace(" ", "")
+                                              ?.toLowerCase()
+                                          )
+                                      )
+                                      ? style.disabledUploadButton
+                                      : ""
+                                    }`}
+                                >
+                                  <AddIcon
+                                    sx={{ fontSize: 25, color: "white" }}
+                                    onClick={contractStatus === "ACTIVE" ? {} : activityToAdd}
+                                  />
+                                </div>
                               </div>
+
                             </div>
                             {selectedActivity?.length !== 0 && (
                               <MultiSelectDisplay
@@ -2374,6 +2400,7 @@ const AddServiceProvided = ({
                     />
                   ) : serviceTypeTemplate === ONCALL ? (
                     <OnCallCoverageFields
+                      servicesList={contractedServices}
                       getMetaData={getMetaData}
                       serviceSelected={selectedService}
                       timeCommitment={timeCommitment}

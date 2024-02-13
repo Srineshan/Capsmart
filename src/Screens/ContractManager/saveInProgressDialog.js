@@ -79,9 +79,9 @@ const SaveInProgressDialog = ({
         <div className={style.extensionBorder}></div>
         <div className={`${style.popUpHeaderBlock} ${style.marginTop}`}>
           <div>
-            <p className={style.extentionLableStyle}>{contractType} CONTRACT</p>
+            <p className={style.extentionLableStyle}>{contractType?.value}</p>
             <p className={style.extentionLableStyle}>
-              CONTRACT ID - (
+              PAMF CONTRACT (
               {`${contractData?.contractDetail?.contractId?.id
                 ? contractData?.contractDetail?.contractId?.id
                 : " - "

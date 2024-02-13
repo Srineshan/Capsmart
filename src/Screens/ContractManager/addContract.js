@@ -6,9 +6,11 @@ import HighlightedDoctor from "./../../images/highlightedDoctor.png";
 import HighlightedDoctorTeam from "./../../images/highlightedDoctorTeam.png";
 import style from "./index.module.scss";
 import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
+import { GET } from "./../dataSaver";
 import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
 import IndividualSvg from "../../images/Individual.svg";
 import MultipleSvg from "../../images/Multiple.svg";
+import EmployeeSvg from "../../images/Multiple.svg";
 
 const AddContract = ({
   getAddContract,
@@ -19,7 +21,9 @@ const AddContract = ({
 }) => {
   const [selectedContract, setSelectedContract] = useState("0");
   const [selectedContractOnClick, setSelectedContractOnClick] = useState("");
-  const [contractType, setContractType] = useState("");
+  const [contractType, setContractType] = useState({ id: '', value: '' });
+  const [isEmployeeContractNeeded, setIsEmployeeContractNeeded] = useState(sessionStorage?.getItem('isEmployeeContractNeeded'))
+  const [contractTypeList, setContractTypeList] = useState([]);
 
   const handleNext = () => {
     if (selectedContract === "0" || contractType === "") {
@@ -28,12 +32,23 @@ const AddContract = ({
       getMethod("POST");
       getNewContract(true);
       getAddContract(false, true);
-      getContractType(contractType);
+      getContractType(contractType?.id, contractType?.value);
       getSelectedContractType(selectedContract);
     }
   };
 
-  console.log("type", contractType, selectedContract);
+  useEffect(() => {
+    getContractTypeList();
+  }, [])
+
+  const getContractTypeList = async () => {
+    const { data: contractType } = await GET(
+      `entity-service/contractType`
+    );
+    setContractTypeList(contractType);
+  };
+
+  console.log('contract type', contractType)
 
   return (
     <div className={`${style.welcomePadding} ${style.addContractBody}`}>
@@ -98,44 +113,44 @@ const AddContract = ({
           </div>
           <div className={`${style.positionCenter} ${style.marginLeft20} `}>
             <div className={`${style.positionCenter} ${style.marginLeft20}`}>
-              <div
-                className={`${style.contractCards} ${
-                  contractType === "INDIVIDUAL" && style.selectedContractCard
-                }`}
-                onClick={() => {
-                  setSelectedContractOnClick(true);
-                  setContractType("INDIVIDUAL");
-                }}
-              >
-                <div className={style.alignCenter}>
-                  <div>
-                    <img
-                      src={
-                        selectedContractOnClick && contractType === "INDIVIDUAL"
-                          ? HighlightedDoctor
-                          : Doctor
-                      }
-                      alt="doctor"
-                      className={`${style.contractCardImage} ${
-                        style.alignCenter
-                      } ${
-                        selectedContract !== "0" ? "" : style.reducedOpacity
-                      }`}
-                    />
-                    <div
-                      className={`${style.contractCardData} ${
-                        selectedContract !== "0" ? style.activeContractText : ""
-                      }`}
-                    >
-                      Individual Contractor Contract
+              {contractTypeList?.map(data => (
+                <div
+                  className={`${style.contractCards} ${contractType === data?.contractTypeTemplate && style.selectedContractCard
+                    }`}
+                  onClick={() => {
+                    setSelectedContractOnClick(true);
+                    setContractType({ id: data?.id, value: data?.contractTypeTemplate });
+                    sessionStorage.setItem('contractType', data?.contractTypeTemplate)
+                  }}
+                >
+                  <div className={style.alignCenter}>
+                    <div>
+                      <img
+                        // src={
+                        //   selectedContractOnClick && contractType === data?.contractTypeTemplate
+                        //     ? HighlightedDoctor
+                        //     : Doctor
+                        // }
+                        src={`https://app.timesmartai.com/cors/${data?.icon?.fileURL}`}
+                        alt="doctor"
+                        className={`${style.contractCardImage} ${style.alignCenter
+                          } ${selectedContract !== "0" ? "" : style.reducedOpacity
+                          }`}
+                      />
+                      <div
+                        className={`${style.contractCardData} ${selectedContract !== "0" ? style.activeContractText : ""
+                          }`}
+                      >
+                        {data?.contractType}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <div
-                className={`${style.contractCards} ${
-                  contractType === "MULTIPLE" && style.selectedContractCard
-                }`}
+              ))}
+
+              {/* <div
+                className={`${style.contractCards} ${contractType === "MULTIPLE" && style.selectedContractCard
+                  }`}
                 onClick={() => {
                   setSelectedContractOnClick(true);
                   setContractType("MULTIPLE");
@@ -150,32 +165,58 @@ const AddContract = ({
                           : DoctorTeam
                       }
                       alt="doctor"
-                      className={`${style.contractCardImage} ${
-                        style.alignCenter
-                      } ${
-                        selectedContract !== "0" ? "" : style.reducedOpacity
-                      }`}
+                      className={`${style.contractCardImage} ${style.alignCenter
+                        } ${selectedContract !== "0" ? "" : style.reducedOpacity
+                        }`}
                     />
                     <div
-                      className={`${style.contractCardData} ${
-                        selectedContract !== "0" ? style.activeContractText : ""
-                      }`}
+                      className={`${style.contractCardData} ${selectedContract !== "0" ? style.activeContractText : ""
+                        }`}
                     >
                       Multiple Contractors Contract
                     </div>
                   </div>
                 </div>
               </div>
+              {isEmployeeContractNeeded && <div
+                className={`${style.contractCards} ${contractType === "EMPLOYEE" && style.selectedContractCard
+                  }`}
+                onClick={() => {
+                  setSelectedContractOnClick(true);
+                  setContractType("EMPLOYEE");
+                }}
+              >
+                <div className={style.alignCenter}>
+                  <div>
+                    <img
+                      src={
+                        selectedContractOnClick && contractType === "EMPLOYEE"
+                          ? HighlightedDoctor
+                          : Doctor
+                      }
+                      alt="doctor"
+                      className={`${style.contractCardImage} ${style.alignCenter
+                        } ${selectedContract !== "0" ? "" : style.reducedOpacity
+                        }`}
+                    />
+                    <div
+                      className={`${style.contractCardData} ${selectedContract !== "0" ? style.activeContractText : ""
+                        }`}
+                    >
+                      Employed Staff Agreement
+                    </div>
+                  </div>
+                </div>
+              </div>} */}
             </div>
           </div>
 
-          {selectedContractOnClick && (
+          {/* {selectedContractOnClick && (
             <div
               className={style.descriptionBoxStyle}
               style={{
-                backgroundImage: `url(${
-                  contractType === "MULTIPLE" ? MultipleSvg : IndividualSvg
-                })`,
+                backgroundImage: `url(${contractType === "MULTIPLE" ? MultipleSvg : contractType === "EMPLOYEE" ? EmployeeSvg : IndividualSvg
+                  })`,
                 backgroundRepeat: "no-repeat",
                 backgroundSize: "contain",
               }}
@@ -189,7 +230,7 @@ const AddContract = ({
                 </span>
               </p>
             </div>
-          )}
+          )} */}
         </div>
       </div>
       <div className={`${style.nextButtonPosition} ${style.marginTop20}`}>

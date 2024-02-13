@@ -12,12 +12,15 @@ import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
 import CommonTextField from '../../Components/CommonFields/CommonTextField';
 import CommonLabel from '../../Components/CommonFields/CommonLabel';
 import { SpecifiedCountCalculator } from './specifiedCountCalculator';
+import FormControl from "@mui/material/FormControl";
+import { ONCALLSERVICE } from "../../Constants";
+import MultiSelectDisplay from "../../Components/ReusableSmallComponents/multiSelectDisplay";
 
 import style from './index.module.scss';
 import EditableTable from './editableTable';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
-const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, isReset, getIsReset, sites, contractId }) => {
+const OnCallCoverageFields = ({ servicesList, getMetaData, serviceSelected, timeCommitment, isReset, getIsReset, sites, contractId }) => {
   const [timesheetWorkFlow, setTimesheetWorkflow] = useState([]);
   const contractStatus = sessionStorage.getItem('Selected Contract Status');
   const [metadata, setMetadata] = useState({
@@ -63,6 +66,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
       friday: false,
     },
     serviceDaysArray: [],
+    overlap: false,
+    overlappingActivities: [],
     weekdaysCount: '0',
     weekendsCount: '0',
     dependantServiceIncluded: false,
@@ -140,6 +145,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
     }
   }, [isReset])
 
+  console.log('servicesList', servicesList)
+
   const resetMetadata = () => {
     setMetadata({
       min: 0,
@@ -184,6 +191,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         friday: false,
       },
       serviceDaysArray: [],
+      overlap: false,
+      overlappingActivities: [],
       weekdaysCount: '0',
       weekendsCount: '0',
       dependantServiceIncluded: false,
@@ -441,6 +450,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         additionalScheduleRequired: serviceSelected?.additionalSchedule?.scheduleRequired,
         billableService: serviceSelected?.billableService,
         rateType: serviceSelected?.rateType,
+        overlap: serviceSelected?.splitActivityTimeOnOverlap,
+        overlappingActivities: serviceSelected?.overlappingActivitiesForSplit?.map(data => data?.activityTypeTemplate) || [],
         sessionDuration: serviceSelected?.duration?.hours || '0',
         serviceRate: serviceSelected?.serviceRate?.rate || '0',
         serviceRateFrequency: serviceSelected?.serviceRate?.rateFrequency,
@@ -662,6 +673,21 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
     }
   }
 
+  const handleOverLapActivitySelection = (value) => {
+    console.log('inside function', value);
+    let temp = metadata?.overlappingActivities;
+    if (!temp?.includes(value)) {
+      console.log('inside if condition')
+      temp.push(value)
+      console.log('temp value', temp)
+      setMetadata({ ...metadata, overlappingActivities: temp });
+    }
+  }
+
+  const removeOverlappingActivity = (index) => {
+    setMetadata({ ...metadata, overlappingActivities: metadata?.overlappingActivities?.filter((data, indexValue) => index !== indexValue)?.map(data => data) })
+  }
+
   return (
     <div>
       <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -687,6 +713,35 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         </div>
       </div>
 
+      <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+        <CommonLabel value='Exclude Payment for On Call Coverage with Overlapping Activity*' />
+        <div>
+          <div className={`${style.displayInRow} `}>
+            <CommonSwitch className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} label={metadata?.overlap ? 'YES' : 'NO'} checked={metadata?.overlap} onChange={(e) => handleValueChange('overlap', !metadata?.overlap)} />
+            {metadata?.overlap && (
+              <FormControl sx={{ width: 480 }}>
+                <CommonSelectField className={`${style.fullWidth}`}
+                  // value={metadata?.overlappingActivities}
+                  onChange={(e) => { handleOverLapActivitySelection(e.target.value) }}
+                  firstOptionLabel={servicesList?.map(data => data)?.length !== 0 ? 'Select Service to Overlap' : 'Possible Overlapping Service Not Found'} firstOptionValue={''}
+                  valueList={servicesList?.map(data => data?.activityTypeTemplate?.activityTypeTemplate)}
+                  labelList={servicesList?.map(data => data?.activityType?.activityType)}
+                  disabledList={servicesList?.map(data => false)}
+                />
+              </FormControl>
+            )}
+          </div>
+          {
+            metadata?.overlappingActivities?.length !== 0 && <MultiSelectDisplay
+              values={metadata?.overlappingActivities?.map(
+                (data) => data
+              )}
+              removeItem={removeOverlappingActivity}
+            />
+          }
+
+        </div>
+      </div>
 
 
 

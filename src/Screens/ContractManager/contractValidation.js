@@ -474,7 +474,9 @@ export const validatePaymentsAndCompensation = (contract) => {
       contract?.contractDetail?.continuationPolicy?.contractPolicyType !==
       "AUTORENEWAL" &&
       contract?.contractDetail?.continuationPolicy?.contractPolicyType !==
-      "NEWCONTRACTONEXPIRATION"
+      "NEWCONTRACTONEXPIRATION" &&
+      contract?.contractDetail?.continuationPolicy?.contractPolicyType !==
+      "ONETIMECONTRACTTERMINATEONEXPIRATION"
     ) {
       fieldData.push(
         ...[

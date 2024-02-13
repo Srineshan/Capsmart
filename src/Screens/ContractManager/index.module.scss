@@ -2564,6 +2564,27 @@ input[type="number"] {
   height: 60px;
 }
 
+.trackPeriodOptionsCard {
+  background: #F1EFFC 0% 0% no-repeat padding-box;
+  height: 40px;
+  border: 1px solid #7165E3;
+  border-top: 0;
+  padding-left: 20px;
+}
+
+.trackPeriodOptionsCard:hover {
+  background: #F1EFFC 0% 0% no-repeat padding-box;
+  border: 1px solid #7165E3;
+}
+
+// .intervalPeriodBorder {
+//   border: 1px solid #7165E3;
+//   border-top: 0px;
+//   border-bottom: 0px;
+//   border-radius: 8px;
+// }
+
+
 .trackContractOrAgreementCount {
   font: normal normal medium 14px/14px Montserrat;
   letter-spacing: 0px;
@@ -2575,29 +2596,69 @@ input[type="number"] {
   color: #52575D;
 }
 
+.timesheetIntervalListText {
+  font: normal normal 600 14px/20px Montserrat;
+  color: #52575D;
+}
+
 .trackTableHeaderGrid {
   display: grid;
   grid-template-columns: 1fr .5fr .5fr;
 }
 
+.timesheetTableHeaderMiddleGrid {
+  display: grid;
+  grid-template-columns: 20% 15% 15% 21% 21% 8%;
+}
+
+.timesheetTableHeaderBottomGrid {
+  display: grid;
+  grid-template-columns: 20% 15% 15% 14% 7% 14% 7% 8%;
+}
+
+.timesheetTableDataGrid {
+  display: grid;
+  grid-template-columns: 20% 15% 15% 14% 7% 14% 7% 8%;
+}
+
 .trackTableHeaderMiddleGrid {
   display: grid;
-  grid-template-columns: 25% 15% 15% 15% 15% 15%;
+  grid-template-columns: 32.5% 7.5% 15% 15% 15% 15%;
+}
+
+.trackTableHeaderMiddleGridForActivityBased {
+  display: grid;
+  grid-template-columns: 40% 20% 20% 20%;
 }
 
 .trackTableHeaderTopGrid {
   display: grid;
-  grid-template-columns: 25% 75%;
+  grid-template-columns: 32.5% 67.5%;
+}
+
+.trackTableHeaderTopGridForActivityBased {
+  display: grid;
+  grid-template-columns: 40% 60%;
 }
 
 .trackTableHeaderBottomGrid {
   display: grid;
-  grid-template-columns: 25% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 15%;
+  grid-template-columns: 32.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 15%;
+}
+
+.trackTableHeaderBottomGridForActivityBased {
+  display: grid;
+  grid-template-columns: 40% 10% 10% 10% 10% 20%;
 }
 
 .trackTableDataGrid {
   display: grid;
-  grid-template-columns: 25% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 15%;
+  grid-template-columns: 32.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 15%;
+}
+
+.trackTableDataGridForActivityBased {
+  display: grid;
+  grid-template-columns: 40% 10% 10% 10% 10% 20%;
 }
 
 .whiteBackground {
@@ -2606,6 +2667,20 @@ input[type="number"] {
 
 .muiDataGridWithBorderColor {
   border-color: #646D82;
+}
+
+.arrowDown {
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 15px solid #52575D;
+  transform: matrix(1, 0, 0, 1, 0, 0);
+}
+
+.arrowUp {
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 15px solid #52575D;
+  transform: matrix(-1, 0, 0, -1, 0, 0);
 }
 
 .fileFormatStyle {
