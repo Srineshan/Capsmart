@@ -46,3 +46,9 @@ export const GetDateFromHours = (time) => {
 }
 
 export const preventNegativeValues = (e) => ["e", "E", "+", "-"].includes(e.key) && e.preventDefault()
+
+export const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+export const corsUrl = 'https://app.mytimesmart.com/cors/'
+
+// export const corsUrl = 'https://app.timesmartai.com/cors/'
