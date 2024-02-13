@@ -11,7 +11,7 @@ const AddContractedServices = ({ getAddContractedServicesDialog, selectedContrac
     const [serviceTypes, setServiceTypes] = useState([]);
     const [contractTypes, setContractTypes] = useState([]);
     const [selectedContractTypes, setSelectedContractTypes] = useState([]);
-
+    console.log('selectedContractType', selectedContractTypes);
     useEffect(() => {
         getServiceTypes();
         getContractTypes();
@@ -21,7 +21,7 @@ const AddContractedServices = ({ getAddContractedServicesDialog, selectedContrac
         const { data: types } = await GET(`entity-service/contractType`);
         if (isEdit) {
             let temp = [];
-            types?.filter(data => selectedContractedService?.contractTypeId?.includes(data?.id))?.map(data => {
+            types?.filter(data => selectedContractedService?.contractTypeIds?.map(ids => ids?.id)?.includes(data?.id))?.map(data => {
                 temp.push({ id: data?.id, value: data?.contractType })
             })
             setSelectedContractTypes(temp);
@@ -61,7 +61,7 @@ const AddContractedServices = ({ getAddContractedServicesDialog, selectedContrac
             entityId: {
                 id: TenantID
             },
-            contractTypeId: selectedContractTypes?.map(data => data?.id),
+            contractTypeIds: selectedContractTypes?.map(data => data?.id),
         };
         if (serviceName !== '') {
             if (!isEdit) {
