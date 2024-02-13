@@ -105,6 +105,9 @@ const AbsenseReasonsByIndustries = React.lazy(() =>
 const SuffixByIndustries = React.lazy(() =>
   import("./Screens/ReferenceList/suffixByIndustries")
 );
+const ContractByIndustries = React.lazy(() =>
+  import("./Screens/ReferenceList/contractByIndustries")
+);
 const TerminationReasons = React.lazy(() =>
   import("./Screens/ReferenceList/terminationReasons")
 );
@@ -150,6 +153,9 @@ const ContractDocumentUploadForCustomer = React.lazy(() =>
 );
 const ContractServicesByEntityType = React.lazy(() =>
   import("./Screens/ReferenceList/contractedServicesByEntityType")
+);
+const ContractTypeForCustomer = React.lazy(() =>
+  import("./Screens/ReferenceList/contractTypeForCustomer")
 );
 const ContractServiceProviderBySiteType = React.lazy(() =>
   import("./Screens/ReferenceList/contractServiceProviderBySiteType")
@@ -409,6 +415,7 @@ const App = ({ props }) => {
     sessionStorage.setItem("logo", data?.logo?.file?.fileURL);
     sessionStorage.setItem("thumbnail", data?.logoThumbnail?.file?.fileURL);
     sessionStorage.setItem("title", data?.entityName?.entityName);
+    sessionStorage.setItem("isEmployeeContractNeeded", data?.isEmployeeContractIncluded);
   };
 
   const changeFavicon = () => {
@@ -553,6 +560,10 @@ const App = ({ props }) => {
                 element={<SuffixByIndustries />}
               />
               <Route
+                path="/referenceList/contractByIndustries"
+                element={<ContractByIndustries />}
+              />
+              <Route
                 path="/referenceList/contractedServiceProviderByIndustries"
                 element={<ContractedServiceProvidedByIndustries />}
               />
@@ -595,6 +606,10 @@ const App = ({ props }) => {
               <Route
                 path="/referenceList/contractedServicesByEntityType"
                 element={<ContractServicesByEntityType />}
+              />
+              <Route
+                path="/referenceList/contractTypeForCustomer"
+                element={<ContractTypeForCustomer />}
               />
               <Route
                 path="/referenceList/contractServiceProviderBySiteType"

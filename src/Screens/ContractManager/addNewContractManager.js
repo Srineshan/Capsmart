@@ -5,7 +5,7 @@ import { GET, PUT, POST, role, TenantID } from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import { FormatPhoneNumber } from './../../utils/formatting';
 
-const AddNewContractManager = ({ getAddNewManagerDialog, contractType, getUserData, contractId }) => {
+const AddNewContractManager = ({ getAddNewManagerDialog, getUserData, contractId }) => {
   const [selectedRole, setSelectedRole] = useState('Contract Manager');
   const [selectedRoles, setSelectedRoles] = useState([]);
   const [userData, setUserData] = useState({ firstName: '', lastName: '', email: '', phone: '', ssoId: { id: '' } });
@@ -53,12 +53,6 @@ const AddNewContractManager = ({ getAddNewManagerDialog, contractType, getUserDa
         "lastName": userData.lastName,
         "suffix": {}
       },
-      // "contractType": {
-      //   "contractType": contractType
-      // },
-      // "contractID": {
-      //   "contractID": id
-      // },
       "email": {
         "officialEmail": userData.email
       },

@@ -181,7 +181,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     //   getActiveContractView(true);
     // } else {
     getNewContract(true);
-    getContractType(data?.contractType);
+    getContractType(data?.contractTypeId?.id, data?.contractType);
     getSelectedContractType('New Contract');
     // }
     getContractIdFromActive(data?.id);

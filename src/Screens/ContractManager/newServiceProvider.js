@@ -31,7 +31,6 @@ const MAXZIPCODELEN = 10;
 const NewServiceProvider = ({
   getNewServiceProviderDialog,
   contractId,
-  contractType,
 }) => {
   const [selectedContract, setSelectedContract] = useState(
     "Written Contract Extension For Fixed Term"

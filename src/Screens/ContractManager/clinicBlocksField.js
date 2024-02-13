@@ -491,14 +491,6 @@ const ClinicBlocksFields = ({
     setMetadata({ ...metadata, [targetName]: temp });
   };
 
-  const limit5 = 5;
-
-  console.log(
-    "selected",
-    format(new Date(contractTermPeriod?.start), "MMMM d, yyyy"),
-    GetDateFromHours(serviceSelected?.workingPeriod?.from?.toString() || "")
-  );
-
   const deleteRow = (index) => {
     let contractSchedule = metadata?.contractedSchedules
       ?.filter((data, indexVal) => indexVal !== index)
@@ -524,8 +516,6 @@ const ClinicBlocksFields = ({
       return false;
     }
   };
-
-  console.log(metadata)
 
   return (
     <div>

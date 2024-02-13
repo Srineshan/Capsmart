@@ -101,7 +101,7 @@ const SuperAdminDashboard = () => {
                           </span>
                           <span className={style.dashboardCardColorOption2}>
                             LAST UPDATED ON{" "}
-                            {new Date(lastUpdatedDate.industries?.lastModified)
+                            {new Date(lastUpdatedDate?.industries?.lastModified)
                               .toLocaleString("en-US", {
                                 timeZone: "America/New_York",
                                 year: "numeric",
@@ -285,7 +285,6 @@ const SuperAdminDashboard = () => {
                         </div>
                       </div>
                     </Link>
-
                     <Link
                       to={"/referenceList/terminationReasons"}
                       className={style.linkStyle}

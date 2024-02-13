@@ -33,7 +33,6 @@ const ContractedServicesProviderIndividual = ({
   getViewPage3,
   getCurrentPage,
   contractId,
-  contractType,
   contractName,
   checkFieldAndPopAlert,
   getShowAlert,
