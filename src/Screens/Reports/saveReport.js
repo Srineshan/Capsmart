@@ -65,6 +65,7 @@ const AntSwitch = styled(Switch)(({ theme }) => ({
 
 const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
     const currentUserData = currentUser();
+    let myReportContent = JSON.parse(sessionStorage.getItem('myReportContent'))
     const [isPrivate, setIsPrivate] = useState(false);
     const [isDeliveryScheduled, setIsDeliveryScheduled] = useState(false);
     const [reportName, setReportName] = useState('');
@@ -75,6 +76,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
     const [scheduledFor, setScheduledFor] = useState('MYSELF');
     const [showDeliveryDialog, setShowDeliveryDialog] = useState(false);
     const [isAddRecipients, setIsAddRecipients] = useState(false);
+    const [isReadOnly, setIsReadOnly] = useState(false);
     const [userDetails, setUserDetails] = useState({});
     // const category = (reportType === 'activitiesOrServices' || reportType === 'addOnActivities' || reportType === 'scheduledActivity') ?
     //     'SERVICES_ACTIVITIES' :
@@ -103,7 +105,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
         'addOnActivities': 'SERVICES_ACTIVITIES',
         'scheduledActivity': 'SERVICES_ACTIVITIES',
         'upcomingContractRenewals': 'CONTRACT_MANAGEMENT',
-        'oneTimeContract': 'CONTRACT_COMPLIANCE',
+        'oneTimeContract': 'CONTRACT_MANAGEMENT',
         'complianceStatus': 'CONTRACT_COMPLIANCE',
         'nonCompliant': 'CONTRACT_COMPLIANCE',
         'paidConsultingHours': 'CONTRACT_PERFORMANCE',
@@ -164,12 +166,30 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
         getUserDetail()
     }, [currentUserData?.id])
 
+    useEffect(() => {
+        if (myReportContent) {
+            setIsReadOnly(true)
+            setReportName(myReportContent?.title)
+            setIsPrivate(myReportContent?.private)
+            setIsDeliveryScheduled(myReportContent?.schedule?.isdeliveryScheduled)
+            setReportDescription(myReportContent?.description)
+            setDeliverySchedule(myReportContent?.schedule?.schedule)
+            setStartDate(myReportContent?.schedule?.startDate)
+            setDeliveryTime(`${myReportContent?.schedule?.startDate}T${myReportContent?.schedule?.deliveryTime}`)
+            setScheduledFor(myReportContent?.schedule?.scheduledFor)
+            // setShowDeliveryDialog(myReportContent?.)
+        }
+    }, [myReportContent])
+
+    console.log(reportName, reportDescription, myReportContent, deliveryTime, new Date(myReportContent?.schedule?.deliveryTime))
+
     const getUserDetail = async () => {
         const { data: user } = await GET(`user-management-service/user/${currentUserData?.id}`);
         setUserDetails(user);
     }
 
     const handleSave = async () => {
+        setIsReadOnly(true)
         let data = {
             "tenant": {
                 "id": TenantID
@@ -351,12 +371,14 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
                             </Stack>
                         </div>
                     </div>
-                    <div className={`${style.justifyCenter} ${style.marginTop20}`}>
-                        <button className={`${style.saveStyle} ${style.cursorPointer}`}
-                            onClick={() => { handleSave() }}
-                        // onClick={() => { scheduledFor !== "MYSELF" && setShowDeliveryDialog(true); handleSave() }}
-                        >{"SAVE"}</button>
-                    </div>
+                    {!isReadOnly && (
+                        <div className={`${style.justifyCenter} ${style.marginTop20}`}>
+                            <button className={`${style.saveStyle} ${style.cursorPointer}`}
+                                onClick={() => { handleSave() }}
+                            // onClick={() => { scheduledFor !== "MYSELF" && setShowDeliveryDialog(true); handleSave() }}
+                            >{"SAVE"}</button>
+                        </div>
+                    )}
                 </div>
             </Dialog>
             <Dialog isOpen={showDeliveryDialog} onClose={() => setShowDeliveryDialog(false)} className={`${style.sendMailUserDialog} ${style.dialogPaddingBottom}`}>
