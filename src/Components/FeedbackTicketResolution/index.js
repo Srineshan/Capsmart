@@ -21,6 +21,7 @@ import { getDaysAgo } from '../../utils/getDaysAgo';
 import { currentUser } from './../../utils/auth';
 import FeedbackTicketResolutionLog from './feedbackTicketResolutionLog';
 import { formatInTimeZone } from 'date-fns-tz';
+import { corsUrl, userTimeZone } from '../../utils/formatting';
 
 const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, isEdit }) => {
 
@@ -41,8 +42,8 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     const [workflowActions, setWorkflowActions] = useState();
     const [ticketName, setTicketName] = useState('');
     const [fileName, setFileName] = useState(`${currentUserData?.[0]?.id}${new Date().getTime().toString()}.png`);
-    const [dateAndTime, setDateAndTime] = useState(formatInTimeZone(new Date(), 'America/New_York', 'MM-dd-yyyy HH:mm zzz'));
-    const [modifiedDateAndTime, setModifiedDateAndTime] = useState(formatInTimeZone(new Date(), 'America/New_York', 'MM-dd-yyyy HH:mm zzz'));
+    const [dateAndTime, setDateAndTime] = useState(formatInTimeZone(new Date(), userTimeZone, 'MM-dd-yyyy HH:mm'));
+    const [modifiedDateAndTime, setModifiedDateAndTime] = useState(formatInTimeZone(new Date(), userTimeZone, 'MM-dd-yyyy HH:mm'));
     const [showFeedbackTicketResolutionLog, setShowFeedbackTicketResolutionLog] = useState(false);
     const [blobFormat, setBlobFormat] = useState();
     const [comment, setComment] = useState('');
@@ -192,7 +193,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     }
     console.log('Messages', allMessages);
     const getImgBlob = async () => {
-        setBlobFormat(await fetch(screenCapture).then((res) => res.blob()));
+        setBlobFormat(await fetch(`${corsUrl}${screenCapture}`).then((res) => res.blob()));
     };
 
     const getShowFeedbackTicketResolutionLog = (value) => {

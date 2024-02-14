@@ -3,6 +3,7 @@ import { formatInTimeZone } from 'date-fns-tz'
 import Cookie from 'universal-cookie';
 import { TenantID, GET } from './../../Screens/dataSaver';
 import jwt from 'jwt-decode';
+import { corsUrl } from '../../utils/formatting';
 
 import style from './index.module.scss';
 
@@ -26,7 +27,7 @@ const ReportHeader = () => {
         const { data: data } = await GET(`entity-service/entity/${TenantID}`);
         setLogo({ logo: data?.logo?.file?.fileURL, title: data?.entityName?.entityName });
         // setCorsedLogo(`https://app.timesmartai.com/cors/${data?.logo?.file?.fileURL}`);
-        setCorsedLogo(`https://app.mytimesmart.com/cors/${data?.logo?.file?.fileURL}`);
+        setCorsedLogo(`${corsUrl}${data?.logo?.file?.fileURL}`);
         // setCorsedLogo(`${data?.logo?.file?.fileURL}`);
         setAddressLine1(`${data?.sites?.[0]?.address?.addressLine},`)
         setAddressLine2(`${data?.sites?.[0]?.address?.city}, ${data?.sites?.[0]?.address?.state} ${data?.sites?.[0]?.address?.zipcode}`)

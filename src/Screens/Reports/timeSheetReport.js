@@ -10,6 +10,7 @@ import { GET } from '../dataSaver';
 import { format } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
 import { currentUser } from '../../utils/auth';
+import { userTimeZone } from '../../utils/formatting';
 import ReportNoDataBox from '../../Components/ReusableSmallComponents/reportNoDataBox';
 
 export const Run = ({ link }) => {
@@ -57,7 +58,6 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     const [standardTemplates, setStandardTemplates] = useState([]);
     const currentUserDetails = currentUser();
     const [isExpanded, setIsExpanded] = useState(true);
-    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const availableCategories = {
         servicesOrActivities: 'SERVICES_ACTIVITIES',
         contractManagement: 'CONTRACT_MANAGEMENT',
@@ -320,7 +320,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                         <div className={style.tableDataReportsFontStyle}>{index + 1}</div>
                                         <Link to={`/reportTypeOverview/${routeList[data?.subCategory]}`} className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>{titleList[data?.title]}</div></Link>
                                         <div className={style.tableDataReportsFontStyle}>{descriptionList[data?.description]}</div>
-                                        {/* <div className={style.tableDataReportsFontStyle}>{data?.lastRun !== null ? formatInTimeZone(new Date(data?.lastRun), 'd MMM yyyy HH:mm zzz', { timeZone: 'Asia/Kolkata' }) : '-'} </div> */}
+                                        {/* <div className={style.tableDataReportsFontStyle}>{data?.lastRun !== null ? format(getZonedTime(new Date(data?.lastRun)), 'd MMM yyyy HH:mm z') : '-'} </div> */}
                                         <div className={style.tableDataReportsFontStyle}>{data?.lastRun !== null ? formatInTimeZone(new Date(data?.lastRun), userTimeZone, 'd MMM yyyy HH:mm') : '-'} </div>
                                         {/* <div className={style.tableDataReportsFontStyle}>{currentUserDetails?.fullName}</div> */}
                                         <div className={style.tableDataReportsFontStyle}>{data?.lastUpdate !== null ? format(new Date(data?.lastUpdate), 'd MMM yyyy') : '-'}</div>
