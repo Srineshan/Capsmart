@@ -1194,7 +1194,7 @@ const ContractIdTermLimitIndividual = ({
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <CommonLabel value="Contract Documents On File*"
-            className={fullyExecutedContract === true && fullyExecutedContractData?.length === 0 ? style.redLable : ""}
+            className={dataCheck(fullyExecutedContractData?.length) && fullyExecutedContract === true ? style.redLable : ""}
           />
           {contractStatus === "ACTIVE" && fileItems?.length !== 0 ?
             <div> {fileItems}</div>
