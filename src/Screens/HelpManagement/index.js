@@ -28,6 +28,7 @@ import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import style from './index.module.scss';
 import ReleaseNotes from './releaseNotes';
 import SearchBar from '../../Components/SearchBar';
+import { userTimeZone } from '../../utils/formatting';
 
 const HelpHome = () => {
     const [myTicket, setMyTicket] = useState([]);
@@ -324,7 +325,7 @@ const HelpHome = () => {
                     </SideBar>
                 </div>
                 <div>
-                    <LevelTwoHeader heading={'HELP MANAGEMENT'} updatedTime={`UPDATED ON ${formatInTimeZone(new Date(), 'America/New_York', 'MMM d, yy h:mm zzz')}`} hideClose={true} />
+                    <LevelTwoHeader heading={'HELP MANAGEMENT'} updatedTime={`UPDATED ON ${formatInTimeZone(new Date(), userTimeZone, 'MMM d, yyyy H:mm')}`} hideClose={true} />
                     <div className={`${style.grid4} ${style.marginTop20}`}>
                         <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="TICKETS" bigNumber={totalCountTickets} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="TICKETS" topText='' bottomText='LAST 30 DAYS' />
                         <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="TUTORIALS & VIDEOS" bigNumber={0} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="TUTORIALS & VIDEOS" topText='' bottomText='LAST 30 DAYS' />
@@ -334,7 +335,7 @@ const HelpHome = () => {
                     {selectedOption !== "FAQS" ? (
                         <div className={`${style.bigCardStyle} ${style.marginTop20}`}>
                             <div className={style.spaceBetween}>
-                                <p className={`${style.activeContractsWidth}`}>{formatInTimeZone(new Date(), 'America/New_York', 'MMM d, yy h:mm zzz')}</p>
+                                <p className={`${style.activeContractsWidth}`}>{formatInTimeZone(new Date(), userTimeZone, 'MMM d, yyyy H:mm')}</p>
                                 <div className={`${style.displayInRow} ${style.marginTop20}`}>
                                     <SearchBar getSearchKey={getSearchKey} />
                                     <button className={style.contractButton} onClick={() => { setIsEdit(false); setShowFeedbackTicketResolution(true); handleFromUpload() }}>ADD TICKET</button>
