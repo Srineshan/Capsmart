@@ -33,14 +33,20 @@ export const validateContractIDTermLimit = (contract) => {
       value: contract?.contractDetail?.timeCommitment?.frequency === 'NA' ? '' : contract?.contractDetail?.timeCommitment?.frequency,
     },
     {
+      field: "Compensation Policy",
+      value: contract?.contractDetail?.compensationPolicy,
+    },
+    {
       field: "Contract Continuation Policy",
       value: contract?.contractDetail?.continuationPolicy?.contractPolicyType,
     },
     {
       field: "Contract Documents On File",
-      value: contract?.contractDetail?.fullyExecutedContract === true && contract?.contractDetail?.contractFiles.length === 0 ? '' : contract?.contractDetail?.continuationPolicy?.contractPolicyType,
+      value: (contract?.contractDetail?.contractFiles?.length !== 0 && contract?.contractDetail?.fullyExecutedContract === true) || (contract?.contractDetail?.contractFiles?.length === 0 && contract?.contractDetail?.fullyExecutedContract === false) ? contract?.contractDetail?.contractFiles : "",
     },
   ];
+
+
 
   let temp = fieldData;
   temp
@@ -124,7 +130,7 @@ export const validateContractProvider = async (contract) => {
       { field: "Contract Provider Last Name", value: user?.name?.lastName },
       { field: "Suffix", value: user?.name?.suffix?.id },
       { field: "Contract Provider Email", value: user?.email?.officialEmail },
-      { field: "Mobile Number", value: user?.communication?.mobileNumber },
+      { field: "Mobile Number", value: user?.communication?.mobileNumber !== '' && user?.communication?.mobileNumberNotApplicable === false ? user?.communication?.mobileNumber : " " },
       { field: "Address", value: user?.address?.addressLine },
       { field: "City", value: user?.address?.city },
       { field: "State", value: user?.address?.state },
@@ -151,12 +157,9 @@ export const validateContractProvider = async (contract) => {
 export const validateBusinessEntity = (contract) => {
   let businessEntity = contract?.contractorBusinessEntity;
   let fieldData = [
-    { field: "NPIN", value: businessEntity?.contractorNPIN?.npin },
-    { field: "Tax Id", value: businessEntity?.contractorEntityTaxId?.taxId },
-    {
-      field: "Business Entity Name",
-      value: businessEntity?.businessEntity?.name,
-    },
+    { field: "NPIN", value: businessEntity?.contractorNPIN?.npin !== '' && businessEntity?.contractorNPIN?.missing === false && businessEntity?.contractorNPIN?.notApplicable === false ? businessEntity?.contractorNPIN?.npin : " " },
+    { field: "Tax Id", value: businessEntity?.contractorEntityTaxId?.taxId !== '' && businessEntity?.contractorEntityTaxId?.missing === false && businessEntity?.contractorEntityTaxId?.notApplicable === false ? businessEntity?.contractorEntityTaxId?.taxId : " " },
+    { field: "Business Entity Name", value: businessEntity?.businessEntity?.name !== '' && businessEntity?.businessEntity?.notApplicable === false ? businessEntity?.businessEntity?.name : " " },
     {
       field: "Point Of Contact - First Name",
       value: businessEntity?.businessEntityUser?.name?.firstName,
@@ -169,10 +172,7 @@ export const validateBusinessEntity = (contract) => {
       field: "Business Contact Email Address",
       value: businessEntity?.businessEntityUser?.email?.officialEmail,
     },
-    {
-      field: "Mobile Number",
-      value: businessEntity?.businessEntityUser?.contactNumber?.number,
-    },
+    { field: "Mobile Number", value: businessEntity?.businessEntityUser?.contactNumber?.number !== '' && businessEntity?.businessEntityUser?.contactNumber?.missing === false ? businessEntity?.businessEntityUser?.contactNumber?.number : " " },
     {
       field: "Address Line",
       value: businessEntity?.mailingAddress?.addressLine,
@@ -403,6 +403,7 @@ export const validateServices = (contract) => {
 };
 
 export const validatePaymentsAndCompensation = (contract) => {
+  console.log(contract)
   let payments = contract?.paymentAndCompensation;
   let isEmptyField = [];
   let fieldData = [];
@@ -457,10 +458,10 @@ export const validatePaymentsAndCompensation = (contract) => {
           field: `Max Payment Per Contract ${index + 1}`,
           value: data?.maxPaymentPerContract,
         },
-        {
-          field: `Providing Additional Services ${index + 1}`,
-          value: data?.providingAdditionalServices,
-        },
+        // {
+        //   field: `Reduced Number Of Services Services ${index + 1}`,
+        //   value: data?.reducedNumberOfServices,
+        // },
         // { field: `OverUnderPayment ${index + 1}`, value: data?.overUnderPayment },
         {
           field: `Payment Based on Fixed Hours Vs Actual ${index + 1}`,
@@ -468,44 +469,26 @@ export const validatePaymentsAndCompensation = (contract) => {
         },
       ]
     );
-    if (
-      contract?.contractDetail?.continuationPolicy?.contractPolicyType !==
-      "FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET" &&
-      contract?.contractDetail?.continuationPolicy?.contractPolicyType !==
-      "AUTORENEWAL" &&
-      contract?.contractDetail?.continuationPolicy?.contractPolicyType !==
-      "NEWCONTRACTONEXPIRATION" &&
-      contract?.contractDetail?.continuationPolicy?.contractPolicyType !==
-      "ONETIMECONTRACTTERMINATEONEXPIRATION"
-    ) {
+
+    if (contract?.contractDetail?.compensationPolicy !== 'ACTIVITY_BASED' && contract?.contractDetail?.compensationPolicy !== 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET') {
       fieldData.push(
         ...[
           {
-            field: `Max Payment Per Timesheet Submission ${index + 1}`,
+            field: `Fixed Compensation Value Per Timesheet Submission ${index + 1}`,
             value: data?.maxPaymentPerTimesheetSubmission,
           },
           {
-            field: `Reduced Number Of Services ${index + 1}`,
-            value: data?.reducedNumberOfServices,
+            field: `Providing Additional Services ${index + 1}`,
+            value: data?.providingAdditionalServices !== 'NA' ? data?.providingAdditionalServices : "",
+          },
+          {
+            field: `Reduced Number Of Services Services ${index + 1}`,
+            value: data?.reducedNumberOfServices !== 'NA' ? data?.reducedNumberOfServices : "",
           },
         ]
       );
     }
-    else if (
-      contract?.contractDetail?.continuationPolicy?.contractPolicyType ===
-      "FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET"
-    ) {
-      fieldData.push(
-        ...[
-          {
-            field: `Max Payment Per Timesheet Submission ${index + 1}`,
-            value: data?.maxPaymentPerTimesheetSubmission,
-          },
-        ]
-      );
-    }
-    else {
-    }
+
   });
 
   let temp = fieldData

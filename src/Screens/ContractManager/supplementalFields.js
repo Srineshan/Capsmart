@@ -607,7 +607,7 @@ const SupplementalFields = ({
                                         }}
                                         onChange={(e) =>
                                             e.target.value >= 0 &&
-                                            setMetadata({ ...metadata, totalSession: parseFloat(e.target.value || '0'), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? (metadata?.serviceRate * (metadata?.totalSession / metadata?.serviceRateDuration)) : (metadata?.serviceRate * parseFloat(e.target.value || '1')) })
+                                            setMetadata({ ...metadata, totalSession: parseFloat(e.target.value.slice(0, 4) || '0'), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? (metadata?.serviceRate * (metadata?.totalSession / metadata?.serviceRateDuration)) : (metadata?.serviceRate * parseFloat(e.target.value || '1')) })
                                         }
                                         value={metadata?.totalSession}
                                     />
@@ -703,7 +703,7 @@ const SupplementalFields = ({
                                                 }}
                                                 onChange={(e) =>
                                                     e.target.value >= 0 &&
-                                                    setMetadata({ ...metadata, serviceRateDuration: parseFloat(e.target.value || '0'), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? (metadata?.serviceRate * (metadata?.totalSession / parseFloat(e.target.value))) : (metadata?.serviceRate * parseFloat(e.target.value || '1')) })
+                                                    setMetadata({ ...metadata, serviceRateDuration: parseFloat(e.target.value.slice(0, 9) || '0'), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? (metadata?.serviceRate * (metadata?.totalSession / parseFloat(e.target.value))) : (metadata?.serviceRate * parseFloat(e.target.value || '1')) })
                                                 }
                                                 value={metadata?.serviceRateDuration}
                                             />
