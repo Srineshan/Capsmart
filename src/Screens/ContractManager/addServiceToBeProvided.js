@@ -1098,7 +1098,7 @@ const AddServiceProvided = ({
         item.serviceRate = {
           rate: metadata?.[index]?.serviceRate?.rate,
           rateFrequency: metadata?.[index]?.serviceRate?.rateFrequency,
-          duration: item?.sessionDuration,
+          duration: metadata?.[index]?.serviceRate?.rateFrequency === "SESSION" ? item?.sessionDuration : 1,
         }
         console.log("performing Activity", metadata?.[index]?.parentActivity);
         item.addOnActivityType = {
@@ -1328,7 +1328,7 @@ const AddServiceProvided = ({
             serviceRate: {
               rate: dataValues?.serviceRate,
               rateFrequency: dataValues?.serviceRateFrequency,
-              duration: dataValues?.sessionDuration,
+              duration: dataValues?.serviceRateFrequency === "SESSION" ? dataValues?.sessionDuration : 1,
             },
           }),
           ...([CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(
@@ -1388,7 +1388,7 @@ const AddServiceProvided = ({
                   serviceRate: {
                     rate: parseFloat(dataValues?.weekdayDayServiceRate),
                     rateFrequency: dataValues?.weekdayDayServiceFrequency,
-                    duration: dataValues?.weekdayDuration,
+                    duration: dataValues?.weekdayDayServiceFrequency === "SESSION" ? dataValues?.weekdayDuration : 1,
                   },
                   activity: {
                     activity: dataValues?.weekdayActivity
@@ -1434,7 +1434,7 @@ const AddServiceProvided = ({
                   serviceRate: {
                     rate: parseFloat(dataValues?.weekdayNightServiceRate),
                     rateFrequency: dataValues?.weekdayNightServiceFrequency,
-                    duration: dataValues?.weekdayNightsDuration,
+                    duration: dataValues?.weekdayNightServiceFrequency === "SESSION" ? dataValues?.weekdayNightsDuration : 1,
                   },
                   hourlyRate: {
                     value: isNaN(
@@ -1482,7 +1482,7 @@ const AddServiceProvided = ({
                   serviceRate: {
                     rate: parseFloat(dataValues?.weekendServiceRate),
                     rateFrequency: dataValues?.weekendServiceFrequency,
-                    duration: dataValues?.weekendDuration,
+                    duration: dataValues?.weekendServiceFrequency === "SESSION" ? dataValues?.weekendDuration : 1,
                   },
                   hourlyRate: {
                     value: isNaN(
@@ -1516,7 +1516,7 @@ const AddServiceProvided = ({
                   serviceRate: {
                     rate: parseFloat(dataValues?.holidayServiceRate),
                     rateFrequency: dataValues?.holidayServiceFrequency,
-                    duration: dataValues?.holidayDuration,
+                    duration: dataValues?.holidayServiceFrequency === "SESSION" ? dataValues?.holidayDuration : 1,
                   },
                   activity: {
                     activity: dataValues?.holidayActivity
@@ -1574,7 +1574,7 @@ const AddServiceProvided = ({
             serviceRate: {
               rate: dataValues?.serviceRate,
               rateFrequency: dataValues?.serviceRateFrequency,
-              duration: !serviceTypeTemplate.includes([ADMINISTRATIVE, SUPPLEMENTAL, HIT, ONCALLSERVICE]) && dataValues?.dedicatedHoursSpecified ? dataValues?.serviceRateFrequency === 'SESSION' ? dataValues?.serviceRateDuration : dataValues?.totalSession : parseFloat(dataValues?.sessionDuration),
+              duration: !serviceTypeTemplate.includes([ADMINISTRATIVE, SUPPLEMENTAL, HIT, ONCALLSERVICE]) && dataValues?.dedicatedHoursSpecified ? dataValues?.serviceRateFrequency === 'SESSION' ? dataValues?.serviceRateDuration : dataValues?.totalSession : dataValues?.serviceRateFrequency === 'SESSION' ? parseFloat(dataValues?.sessionDuration) : 1,
             },
           })),
           dependantServiceIncluded:
