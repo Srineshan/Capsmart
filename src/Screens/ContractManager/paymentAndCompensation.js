@@ -84,7 +84,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
     };
 
     const saveInProgresscheck = (buttonType) => {
-        var keys = [];
+        const keys = [];
 
         if (compensation === "RVUBASED" && valueCheck(rvuQuantity?.quantity)) {
             keys.push("RVU Quantity");
@@ -106,8 +106,11 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         }
 
         timesheetPayments?.forEach((value, index) => {
-            if (valueCheck(value?.maxPaymentPerContract)) {
+            if (valueCheck(value?.maxPaymentPerContract) || isNaN(value?.maxPaymentPerContract)) {
                 keys.push(`Max. Compensation Value For Contract Period ${index + 1}`);
+            }
+            if (valueCheck(value?.maxPaymentPerTimesheetSubmission) || isNaN(value?.maxPaymentPerTimesheetSubmission)) {
+                keys.push(`Fixed Compensation Value Per Timesheet Submission ${index + 1}`);
             }
         });
 
@@ -115,6 +118,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         if (keys?.length !== 0) {
             setShowSaveInProgress(true);
             setContinueLoading(true)
+            setIsLoading(false)
         } else {
             handleContinue(buttonType);
         }
@@ -363,7 +367,9 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                             {compensationPolicy !== 'ACTIVITY_BASED' && (
                                 <>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                        <CommonLabel value='Fixed Compensation Value Per Timesheet Submission*' />
+                                        <CommonLabel value='Fixed Compensation Value Per Timesheet Submission*'
+                                            className={(isNaN(timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission) && paymentAndCompensation) || dataCheck(timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission)
+                                                ? style.redLable : ""} />
                                         <CommonTextField
                                             className={style.twoFieldWidth}
                                             // type="number"
@@ -393,13 +399,12 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                 </>)}
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <CommonLabel value='Max. Compensation Value for Contract Period*'
-                                    className={dataCheck(timesheetPayments?.[i]?.maxPaymentPerContract)
-                                        ? style.redLable
-                                        : ""} />
+                                    className={(isNaN(timesheetPayments?.[i]?.maxPaymentPerContract) && paymentAndCompensation) || dataCheck(timesheetPayments?.[i]?.maxPaymentPerContract) ? style.redLable : ""}
+                                />
                                 <div className={style.displayInRow}>
                                     <CommonTextField
                                         className={style.twoFieldWidth}
-                                        // type="number"
+                                        type="text"
                                         min="0"
                                         InputProps={{
                                             startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
@@ -621,10 +626,10 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                 <button className={`${style.newContractButtonStyle}  ${style.cursorPointer}`} onClick={() => { getCurrentPage('Timesheet Submission Terms') }}>BACK</button>
                                 <div>
                                     <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`}
-                                        onClick={!continueLoading ? () => mandatoryFieldCheck('SaveInProgress') : {}}
+                                        onClick={!continueLoading ? () => mandatoryFieldCheck('SaveInProgress') : null}
                                     >SAVE IN PROGRESS</button>
                                     <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`}
-                                        onClick={!continueLoading ? () => { mandatoryFieldCheck('Continue') } : {}}
+                                        onClick={!continueLoading ? () => mandatoryFieldCheck('Continue') : null}
                                     >CONTINUE</button>
                                 </div>
                             </div>

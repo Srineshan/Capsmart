@@ -10,6 +10,7 @@ import TextField from '@mui/material/TextField';
 import { FormatPhoneNumber } from '../../utils/formatting';
 import CommonLabel from '../../Components/CommonFields/CommonLabel';
 import SuffixList from './../../Components/SuffixList';
+import CommonSwitch from "../../Components/CommonFields/CommonSwitch";
 
 import style from './index.module.scss';
 
@@ -20,12 +21,15 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
     const [userDataById, setUserDataById] = useState([]);
     const [roles, setRoles] = useState([]);
     const [selectedRolesToShow, setSelectedRolesToShow] = useState([]);
+    const [selectedAccessLevelToShow, setSelectedAccessLevelToShow] = useState("");
     const [sites, setSites] = useState([]);
     const [siteTitle, setSiteTitle] = useState();
     const [deptTitle, setDeptTitle] = useState();
     const [suffix, setSuffix] = useState();
     const [functionalTitle, setFunctionalTitle] = useState([]);
+    const [accessLevelNeeded, setAccessLevelNeeded] = useState(false);
     const [workFlowUser, setWorkFlowUser] = useState([]);
+    const accessLevel = [{ label: 'User Level', value: 'USER' }, { label: 'Entity Level', value: 'ENTITY' }, { label: 'Site Level', value: 'SITE' }, { label: 'Department Level', value: 'DEPARTMENT' }]
     const defaultProviderId = "6335e77dbb13e2088b208bb0";
     const selectedProvider = defaultProviderId;
 
@@ -153,6 +157,8 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                 userType: user?.userType,
                 ssoId: user?.ssoId
             });
+            setAccessLevelNeeded(user?.executiveAccessLevelNeeded);
+            setSelectedAccessLevelToShow(user?.accessLevel);
             setSiteTitle(user?.sites?.sites?.[0]?.siteResponsibility);
             setDeptTitle(user?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.departmentResponsibility)
             setSuffix(user?.name?.suffix);
@@ -170,6 +176,10 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
     }
 
     console.log('site title', siteTitle, deptTitle, addUser);
+
+    const handleAccessLevelChange = (value) => {
+        setSelectedAccessLevelToShow(value)
+    }
 
     const handleRolesChange = (value) => {
         setSelectedRolesToShow(typeof value === 'string' ? value.split(',') : value,)
@@ -246,6 +256,8 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                 "landlineNumber": "string",
                 "mobileNumberNotApplicable": true
             },
+            "accessLevel": selectedAccessLevelToShow,
+            "executiveAccessLevelNeeded": accessLevelNeeded,
             "roles": addUser?.roles,
             ...(isEdit && { "address": userDataById?.address }),
             "tenant": {
@@ -259,7 +271,6 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             ...(isEdit && { "serviceProviderType": userDataById?.serviceProviderType }),
             ...(isEdit && { "npin": userDataById?.npin }),
         }
-        console.log('user role details', user);
         if (isEdit) {
             await PUT('user-management-service/user', JSON.stringify(user))
                 .then(response => {
@@ -348,6 +359,34 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                             />
                         </div>
                     </div>
+
+                    <div className={`${style.marginTop20} ${style.twoCol}`}>
+                        <div>
+                            <div className={style.extentionLableStyle}>Is Executive Access Level Needed*</div>
+                            <CommonSwitch label={accessLevelNeeded ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} checked={accessLevelNeeded}
+                                onChange={(e) => setAccessLevelNeeded(e.target.checked)} />
+                        </div>
+                        <div>
+                            <div className={style.extentionLableStyle}>Type of Access*</div>
+                            <FormControl sx={{ maxWidth: '300px' }} className={style.fullWidth} size="small">
+                                <Select
+                                    labelId="demo-multiple-checkbox-label"
+                                    id="demo-multiple-checkbox"
+                                    value={selectedAccessLevelToShow}
+                                    disabled={!accessLevelNeeded}
+                                    onChange={(e) => handleAccessLevelChange(e.target.value)}
+                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                >
+                                    {accessLevel?.map((data, index) =>
+                                        <MenuItem value={data?.value} key={index}>{data?.label}</MenuItem>
+                                    )}
+                                </Select>
+                            </FormControl>
+                        </div>
+                    </div>
+
+
+
                     <div className={`${style.twoCol} ${style.marginTop20}`}>
                         <div>
                             <div className={style.extentionLableStyle}>ROLE*</div>
@@ -461,7 +500,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                     <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => submitUserDetails()} >SAVE & EXIT</button>
                 </div>
             </div>
-        </Dialog>
+        </Dialog >
     )
 }
 
