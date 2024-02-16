@@ -66,6 +66,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
         multiProviderContractsList: 'CONTRACT',
         currentRemitToAddressForActiveContracts: 'CONTRACT'
     }
+    const defaultOption = ''
 
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
@@ -123,6 +124,10 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
             if (contractAndUserList?.contracts?.length === 1) {
                 setSelectedContracts([contractAndUserList?.contracts?.[0]?.id]);
                 setSelectedContractsToSend([contractAndUserList?.contracts?.[0]]);
+            }
+            if (contractAndUserList?.users?.length === 1) {
+                setSelectedContractedServiceProvider([contractAndUserList?.users?.[0]?.id]);
+                setSelectedContractedServiceProviderToSend([contractAndUserList?.users?.[0]]);
             }
         } else {
             if (currentUserDetails?.id !== undefined) {
@@ -249,6 +254,32 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
         }
     }, [reportingTimePeriod])
 
+    useEffect(() => {
+        if (selectedDepartments?.length === 0) {
+            if (departments?.length !== 1) {
+                setSelectedDepartments([defaultOption]);
+            }
+        } else if (selectedDepartments?.length >= 2 && selectedDepartments.includes(defaultOption)) {
+            setSelectedDepartments(selectedDepartments.filter(value => value !== defaultOption))
+        }
+
+        if (selectedContractedServiceProvider?.length === 0) {
+            if (contractedServiceProviders?.length !== 1) {
+                setSelectedContractedServiceProvider([defaultOption]);
+            }
+        } else if (selectedContractedServiceProvider?.length >= 2 && selectedContractedServiceProvider.includes(defaultOption)) {
+            setSelectedContractedServiceProvider(selectedContractedServiceProvider.filter(value => value !== defaultOption))
+        }
+
+        if (selectedContracts?.length === 0) {
+            if (contracts?.length !== 1) {
+                setSelectedContracts([defaultOption]);
+            }
+        } else if (selectedContracts?.length >= 2 && selectedContracts.includes(defaultOption)) {
+            setSelectedContracts(selectedContracts.filter(value => value !== defaultOption))
+        }
+    }, [defaultOption, selectedDepartments, selectedContractedServiceProvider, selectedContracts]);
+
     const handleChange = (event) => {
         setActivityType(event.target.value);
     };
@@ -316,15 +347,21 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
         const {
             target: { value },
         } = event;
-        setSelectedDepartments(
-            typeof value === 'string' ? value.split(',') : value
-        );
-        setSelectedDepartmentsToSend(
-            typeof value === 'string' ? departments?.filter(data => value.split(',')?.includes(data?.id))?.map(data => data) : departments?.filter(data => value?.includes(data?.id))?.map(data => data),
-        );
-        setSelectedContracts([]);
+        console.log(value[value?.length - 1], value)
+        if (value?.length >= 2 && value[value?.length - 1] === defaultOption) {
+            setSelectedDepartments([defaultOption]);
+            setSelectedDepartmentsToSend([]);
+        } else {
+            setSelectedDepartments(
+                typeof value === 'string' ? value.split(',') : value
+            );
+            setSelectedDepartmentsToSend(
+                typeof value === 'string' ? departments?.filter(data => value.split(',')?.includes(data?.id))?.map(data => data) : departments?.filter(data => value?.includes(data?.id))?.map(data => data),
+            );
+        }
+        setSelectedContracts([defaultOption]);
         setSelectedContractsToSend([]);
-        setSelectedContractedServiceProvider([]);
+        setSelectedContractedServiceProvider([defaultOption]);
         setSelectedContractedServiceProviderToSend([]);
     };
 
@@ -332,24 +369,35 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
         const {
             target: { value },
         } = event;
-        setSelectedContracts(
-            typeof value === 'string' ? value.split(',') : value
-        );
-        setSelectedContractsToSend(
-            typeof value === 'string' ? contracts?.filter(data => value.split(',')?.includes(data?.id))?.map(data => data) : contracts?.filter(data => value?.includes(data?.id))?.map(data => data),
-        );
+
+        if (value?.length >= 2 && value[value?.length - 1] === defaultOption) {
+            setSelectedContracts([defaultOption]);
+            setSelectedContractsToSend([]);
+        } else {
+            setSelectedContracts(
+                typeof value === 'string' ? value.split(',') : value
+            );
+            setSelectedContractsToSend(
+                typeof value === 'string' ? contracts?.filter(data => value.split(',')?.includes(data?.id))?.map(data => data) : contracts?.filter(data => value?.includes(data?.id))?.map(data => data),
+            );
+        }
     };
 
     const handleChangeContractedServiceProviders = (event) => {
         const {
             target: { value },
         } = event;
-        setSelectedContractedServiceProvider(
-            typeof value === 'string' ? value.split(',') : value
-        );
-        setSelectedContractedServiceProviderToSend(
-            typeof value === 'string' ? contractedServiceProviders?.filter(data => value.split(',')?.includes(data?.id))?.map(data => data) : contractedServiceProviders?.filter(data => value?.includes(data?.id))?.map(data => data),
-        );
+        if (value?.length >= 2 && value[value?.length - 1] === defaultOption) {
+            setSelectedContractedServiceProvider([defaultOption]);
+            setSelectedContractedServiceProviderToSend([]);
+        } else {
+            setSelectedContractedServiceProvider(
+                typeof value === 'string' ? value.split(',') : value
+            );
+            setSelectedContractedServiceProviderToSend(
+                typeof value === 'string' ? contractedServiceProviders?.filter(data => value.split(',')?.includes(data?.id))?.map(data => data) : contractedServiceProviders?.filter(data => value?.includes(data?.id))?.map(data => data),
+            );
+        }
     };
 
     return (
@@ -406,6 +454,9 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 onChange={handleChangeDepartments}
                                 MenuProps={MenuProps}
                             >
+                                {departments?.length >= 2 && (
+                                    <MenuItem value={defaultOption}>All Departments</MenuItem>
+                                )}
                                 {departments?.map((data) => (
                                     // <MenuItem
                                     //     key={data?.dept?.id}
@@ -432,6 +483,9 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 onChange={handleChangeContracts}
                             // MenuProps={MenuProps}
                             >
+                                {contracts?.length >= 2 && (
+                                    <MenuItem value={defaultOption}>All Contracts</MenuItem>
+                                )}
                                 {contracts?.map((data) => (
                                     <MenuItem
                                         key={data?.id}
@@ -453,6 +507,9 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                     onChange={handleChangeContractedServiceProviders}
                                     MenuProps={MenuProps}
                                 >
+                                    {contractedServiceProviders?.length >= 2 && (
+                                        <MenuItem value={defaultOption}>All Contracted Service Providers</MenuItem>
+                                    )}
                                     {contractedServiceProviders?.map((data, index) => (
                                         <MenuItem
                                             key={index}
@@ -622,6 +679,9 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 onChange={handleChangeDepartments}
                                 MenuProps={MenuProps}
                             >
+                                {departments?.length >= 2 && (
+                                    <MenuItem value={defaultOption}>All Departments</MenuItem>
+                                )}
                                 {departments?.map((data) => (
                                     // <MenuItem
                                     //     key={data?.dept?.id}
@@ -649,6 +709,9 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 onChange={handleChangeContracts}
                             // MenuProps={MenuProps}
                             >
+                                {contracts?.length >= 2 && (
+                                    <MenuItem value={defaultOption}>All Contracts</MenuItem>
+                                )}
                                 {contracts?.map((data) => (
                                     <MenuItem
                                         key={data?.id}
@@ -688,6 +751,9 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                     onChange={handleChangeContractedServiceProviders}
                                     MenuProps={MenuProps}
                                 >
+                                    {contractedServiceProviders?.length >= 2 && (
+                                        <MenuItem value={defaultOption}>All Contracted Service Providers</MenuItem>
+                                    )}
                                     {contractedServiceProviders?.map((data, index) => (
                                         <MenuItem
                                             key={index}
@@ -752,6 +818,9 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 onChange={handleChangeDepartments}
                                 MenuProps={MenuProps}
                             >
+                                {departments?.length >= 2 && (
+                                    <MenuItem value={defaultOption}>All Departments</MenuItem>
+                                )}
                                 {departments?.map((data) => (
                                     // <MenuItem
                                     //     key={data?.dept?.id}
@@ -778,6 +847,9 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 onChange={handleChangeContracts}
                                 MenuProps={MenuProps}
                             >
+                                {contracts?.length >= 2 && (
+                                    <MenuItem value={defaultOption}>All Contracts</MenuItem>
+                                )}
                                 {contracts?.map((data) => (
                                     <MenuItem
                                         key={data?.id}
@@ -832,6 +904,9 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 onChange={handleChangeContracts}
                                 MenuProps={MenuProps}
                             >
+                                {contracts?.length >= 2 && (
+                                    <MenuItem value={defaultOption}>All Contracts</MenuItem>
+                                )}
                                 {contracts?.map((data) => (
                                     <MenuItem
                                         key={data?.id}
