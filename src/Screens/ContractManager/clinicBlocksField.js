@@ -465,7 +465,7 @@ const ClinicBlocksFields = ({
       name === "withoutNurse"
     ) {
       temp[0][name] = {
-        value: value || 0,
+        value: name === "maximum" ? value || 99999999 : value || 0,
       };
       console.log("data", temp);
     } else if (name === "frequency" && value === "NA") {
