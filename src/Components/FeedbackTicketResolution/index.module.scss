@@ -12,6 +12,19 @@
     border-radius: 8px !important;
 }
 
+/* Hide scrollbar for Chrome, Safari and Opera */
+.feedbackDialog::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.feedbackDialog {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
 .spaceBetween {
     display: flex;
     justify-content: space-between;
@@ -24,9 +37,17 @@
     color: #7165E3;
 }
 
-.crossStyle {
+.printStyle {
     color: linear-gradient(#7165E3, #FF6562) !important;
     margin-bottom: 15px;
+    cursor: pointer;
+}
+
+.crossStyle {
+    color: linear-gradient(#7165E3, #FF6562) !important;
+    margin-bottom: 5px;
+    margin-top: -5px;
+    margin-right: -30px !important;
     cursor: pointer;
 }
 
@@ -34,12 +55,16 @@
     margin-left: 10px;
 }
 
-.selectFontStyle{
+.marginLeft {
+    margin-left: 20px;
+}
+
+.selectFontStyle {
     color: #52575D !important;
     font-size: 15px;
 }
 
-.switchFontStyle{
+.switchFontStyle {
     color: #52575D;
     font-size: 15px;
 }
@@ -58,10 +83,10 @@
 .feedbackContentGrid {
     display: grid;
     grid-template-columns: 40% 60%;
-    grid-gap: 20px;
+    // grid-gap: 20px;
 }
 
-.marginTop5{
+.marginTop5 {
     margin-top: 5px !important;
 }
 
@@ -69,7 +94,7 @@
     margin-top: 10px !important;
 }
 
-.marginTop15{
+.marginTop15 {
     margin-top: 15px !important;
 }
 
@@ -77,7 +102,7 @@
     margin-top: 20px !important;
 }
 
-.reduceTop10{
+.reduceTop10 {
     margin-top: -10px;
 }
 
@@ -230,6 +255,19 @@
     cursor: pointer;
 }
 
+.uploadButton {
+    width: 120px;
+    min-height: 40px;
+    background: #7165E3 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 5px #7165E3;
+    border-radius: 8px;
+    opacity: 1;
+    border: none;
+    color: white;
+    font: normal normal 400 16px/15px Montserrat;
+    cursor: pointer;
+}
+
 .displayInRow {
     display: flex;
     flex-direction: row;
@@ -258,40 +296,40 @@
     margin-right: 20px !important;
 }
 
-.statusResolvedTextarea{
+.statusResolvedTextarea {
     box-shadow: 0px 3px 6px #0000003D !important;
     border: 1px solid #DFDFDF;
     border-radius: 4px;
     background-color: transparent !important;
 }
 
-.userLogo{
+.userLogo {
     width: 45px;
     height: 45px;
     border-radius: 50%;
     margin-top: 10px;
 }
 
-.blue{
+.blue {
     color: #7165E3;
 }
 
-.fullWidth{
+.fullWidth {
     width: 100%;
 }
 
-.floatRight{
+.floatRight {
     float: right !important;
 }
 
-.alignCenter{
+.alignCenter {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100%;
 }
 
-.spaceBetweenColumn{
+.spaceBetweenColumn {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -299,29 +337,29 @@
     width: 100%;
 }
 
-.alignRight{
+.alignRight {
     display: flex;
     justify-content: flex-end;
 }
 
-.alignLeft{
+.alignLeft {
     display: flex;
     justify-content: flex-start;
 }
 
-.justifyCenter{
+.justifyCenter {
     display: flex;
     justify-content: center;
 }
 
-.resolutionProgressCard{
+.resolutionProgressCard {
     background-color: #c8ead7;
     border-radius: 9px;
     min-height: 40px;
     width: 100%;
 }
 
-.resolutionProgressTextStyle{
+.resolutionProgressTextStyle {
     text-align: left;
     font: normal normal bold 16px/13px Montserrat;
     letter-spacing: 0px;
@@ -329,30 +367,30 @@
     text-transform: capitalize;
 }
 
-.verticalAlignCenter{
+.verticalAlignCenter {
     display: flex;
     align-items: center;
     height: 100%;
 }
 
-.screenCaptureImgStyle{
+.screenCaptureImgStyle {
     height: 100%;
     width: 100%;
     object-fit: contain;
 }
 
-.commentGrid{
+.commentGrid {
     display: grid;
     grid-template-columns: 50px 1fr;
 }
 
-.commentTextStyle{
+.commentTextStyle {
     font: normal normal normal 14px/16px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
 }
 
-.marginLeft55{
+.marginLeft55 {
     margin-left: 55px;
 }
 
@@ -361,58 +399,58 @@
     border-radius: 8px !important;
 }
 
-.feedbackLogHeaderGrid{
+.feedbackLogHeaderGrid {
     display: grid;
     grid-template-columns: 160px 1fr 160px;
     grid-gap: 10px;
 }
 
-.logoStyle{
+.logoStyle {
     width: 160px;
     height: 50px;
     object-fit: contain;
 }
 
-.headerTitle{
+.headerTitle {
     text-align: center;
     font: normal normal bold 18px/21px Montserrat;
     letter-spacing: 0px;
     color: #7165E3;
 }
 
-.subHeading{
+.subHeading {
     text-align: center;
     font: normal normal normal 15px/21px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
 }
 
-.warningStyle{
+.warningStyle {
     height: 18px;
     width: 18px;
     object-fit: contain;
 }
 
-.logMainGrid{
+.logMainGrid {
     display: grid;
     grid-template-columns: 60% 40%;
 }
 
-.logMainBoxStyle{
+.logMainBoxStyle {
     border-top: 3px solid #EBF2F7;
 }
 
-.rightCardStyle{
+.rightCardStyle {
     border-left: 3px solid #EBF2F7;
     padding: 10px 0 40px 20px;
     height: 100%;
 }
 
-.leftCardStyle{
+.leftCardStyle {
     padding: 10px 20px 40px 20px;
 }
 
-.miniHeading{
+.miniHeading {
     text-align: left;
     font: normal normal 600 15px/21px Montserrat;
     letter-spacing: 0px;
@@ -422,20 +460,20 @@
     border-bottom: 2px solid #EBF2F7;
 }
 
-.miniHeadingTitles{
+.miniHeadingTitles {
     text-align: left;
     font: normal normal 600 13px/17px Montserrat;
     letter-spacing: 0px;
     text-transform: capitalize;
 }
 
-.feedBackLogFooterStyle{
+.feedBackLogFooterStyle {
     margin: -15px -40px -20px -40px;
     background: #7165E3 0% 0% no-repeat padding-box;
     border-radius: 0 0 6px 6px !important;
 }
 
-.copyrightText{
+.copyrightText {
     text-align: center;
     font: normal normal normal 15px/21px Montserrat;
     letter-spacing: 0px;
@@ -443,57 +481,57 @@
     padding: 10px;
 }
 
-.footerLogoStyle{
+.footerLogoStyle {
     padding: 20px 0 10px 0;
 }
 
-.headerPrintIcon{
+.headerPrintIcon {
     color: #7165E3;
     float: right;
 }
 
-.red{
+.red {
     color: #ED6F68;
 }
 
-.green{
+.green {
     color: #5EC08A;
 }
 
-.blue{
+.blue {
     color: #7165E3;
 }
 
-.yellow{
+.yellow {
     color: #FEC106;
 }
 
-.orange{
+.orange {
     color: #ED784A;
 }
 
-.userProfileStyle{
+.userProfileStyle {
     height: 30px;
     width: 30px;
     background: #B3B8BD 0% 0% no-repeat padding-box;
     border-radius: 50%;
 }
 
-.userNameStyle{
+.userNameStyle {
     text-align: left;
     font: normal normal normal 14px/20px Montserrat;
     letter-spacing: 0px;
     color: #B3B8BD;
 }
 
-.smallTextStyle{
+.smallTextStyle {
     text-align: left;
     font: normal normal normal 12px/15px Montserrat;
     letter-spacing: 0px;
     color: #B3B8BD;
 }
 
-.descriptionStyle{
+.descriptionStyle {
     text-align: left;
     font: normal normal normal 14px/20px Montserrat;
     letter-spacing: 0px;
@@ -502,39 +540,52 @@
     margin-left: 40px;
 }
 
-.feedbackTicketClosedGrid{
+.feedbackTicketClosedGrid {
     display: grid;
     grid-template-columns: 1fr 5px 55px 1fr;
 }
 
-.stepperStyle{
-    border-top: 2px solid #E9E9F0; 
+.stepperStyle {
+    border-top: 2px solid #E9E9F0;
 }
 
 .feedbackVerticalStepper {
-    background-color: #E9E9F0 ;
+    background-color: #E9E9F0;
     height: 100%;
     width: 2px;
     margin-left: 30px;
 }
 
-.stepperLeftContent{
+.stepperLeftContent {
     padding-right: 25px;
 }
 
-.stepperRightContent{
+.stepperRightContent {
     padding-left: 25px;
 }
 
-.stepperImgStyle{
+.stepperImgStyle {
     background: #7165E3 0% 0% no-repeat padding-box;
     height: 55px;
     width: 55px;
     border-radius: 50%;
 }
 
-.feedbackStepperImgStyle{
+.feedbackStepperImgStyle {
     width: 25px;
     height: 100%;
     object-fit: contain;
+}
+
+.cursorPointer {
+    cursor: pointer;
+}
+
+.disabledView {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.transparentNotesBorder {
+    border: 1px solid #bbbfc3 !important;
 }

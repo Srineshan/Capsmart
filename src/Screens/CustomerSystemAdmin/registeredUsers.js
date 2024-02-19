@@ -95,7 +95,7 @@ const RegisteredUsers = ({ getSelectedOption }) => {
 
     const getManageUserDialog = (value) => {
         setShowAddUserDialog(value);
-        if(!value){
+        if (!value) {
             setIsEdit(value);
             setUserId('');
         }
@@ -197,11 +197,11 @@ const RegisteredUsers = ({ getSelectedOption }) => {
     }
 
     const getUserAffiliation = (data) => {
-        if(data?.roles?.map(data => data?.roleName)?.includes('Entity Sys User') || 
-        data?.roles?.map(data => data?.roleName)?.includes('Entity Sys Admin')) {
+        if (data?.roles?.map(data => data?.roleName)?.includes('Entity Sys User') ||
+            data?.roles?.map(data => data?.roleName)?.includes('Entity Sys Admin')) {
             return 'Entity Level';
-        } else if(data?.roles?.map(data => data?.roleName)?.includes('Site Sys User') || 
-        data?.roles?.map(data => data?.roleName)?.includes('Site Sys Admin')) {
+        } else if (data?.roles?.map(data => data?.roleName)?.includes('Site Sys User') ||
+            data?.roles?.map(data => data?.roleName)?.includes('Site Sys Admin')) {
             return 'Site Level';
         } else {
             return 'Contract';
@@ -319,10 +319,10 @@ const RegisteredUsers = ({ getSelectedOption }) => {
         <div>
             <LevelTwoHeader heading={'REGISTERED USER MANAGEMENT'} updatedTime={''} onCloseLevel2={onCloseLevel2} needDateFilter={true} getFrom={getFrom} getTo={getTo} />
             <div className={`${style.grid4} ${style.marginTop20}`}>
-                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="ENTITY REGISTERED USERS" bigNumber={userMetadata?.registeredUsers?.registeredUsersCount} smallNum1={userMetadata?.registeredUsers?.newRegisteredUsersCount} smallNum2={userMetadata?.registeredUsers?.blockedRegisteredUserCount} smallText1="NEW" smallText2="BLOCKED" currentTile="ENTITY REGISTERED USERS" topText='' />
-                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="CONTRACTED SERVICE PROVIDER USERS" bigNumber={userMetadata?.contractedServiceProviderUsers?.contractedServiceProviderUsersCount} smallNum1={userMetadata?.contractedServiceProviderUsers?.newContractedServiceProviderUsersCount} smallNum2={userMetadata?.contractedServiceProviderUsers?.blockedContractedServiceProviderUsersCount} smallText1="NEW" smallText2="BLOCKED" currentTile="CONTRACTED SERVICE PROVIDER USERS" topText='' />
+                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="ENTITY REGISTERED USERS" bigNumber={userMetadata?.registeredUsers?.registeredUsersCount} smallNum1={userMetadata?.registeredUsers?.newRegisteredUsersCount} smallNum2={userMetadata?.registeredUsers?.blockedRegisteredUserCount} smallText1="NEW" smallText2="BLOCKED" currentTile="ENTITY REGISTERED USERS" topText='' smallNum1Color={style.greenSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.greenSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
+                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="CONTRACTED SERVICE PROVIDER USERS" bigNumber={userMetadata?.contractedServiceProviderUsers?.contractedServiceProviderUsersCount} smallNum1={userMetadata?.contractedServiceProviderUsers?.newContractedServiceProviderUsersCount} smallNum2={userMetadata?.contractedServiceProviderUsers?.blockedContractedServiceProviderUsersCount} smallText1="NEW" smallText2="BLOCKED" currentTile="CONTRACTED SERVICE PROVIDER USERS" topText='' smallNum1Color={style.greenSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.greenSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="DEACTIVATED USERS" bigNumber={userMetadata?.deactivatedUsers?.usersDeactivatedInSpecifiedTimePeriod} smallNum1="" smallNum2="" currentTile="DEACTIVATED USERS" topText='' />
-                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="INVITED USERS" bigNumber={userMetadata?.invitedUsers?.invitedUsers} smallNum1="" smallNum2={userMetadata?.invitedUsers?.pastDueUsers} smallText2="PAST DUE" currentTile="INVITED USERS" topText='' />
+                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="INVITED USERS" bigNumber={userMetadata?.invitedUsers?.invitedUsers} smallNum1="" smallNum2={userMetadata?.invitedUsers?.pastDueUsers} smallText2="PAST DUE" currentTile="INVITED USERS" topText='' smallNum2Color={style.redSmallNumber} smallNum2SelectedColor={style.redSmallNumberSelected} />
             </div>
             <div className={`${style.bigCardStyle} ${style.marginTop20}`}>
                 <div className={style.spaceBetween}>
@@ -347,13 +347,13 @@ const RegisteredUsers = ({ getSelectedOption }) => {
                             </div>
                         )}
                     </div>
-                    {(selectedOption === 'ENTITY REGISTERED USERS' || selectedOption === 'CONTRACTED SERVICE PROVIDER USERS') && (
-                        <div className={`${style.displayInRow} ${style.marginTop20} ${style.marginRight30}`}>
+                    {selectedOption === 'ENTITY REGISTERED USERS' && (
+                        <div className={`${style.displayInRow} ${style.marginTop20} ${style.marginRight30} ${style.cursorPointer}`}>
                             <AddCircleOutlineIcon sx={{ fontSize: 30, color: '#7165E3' }} onClick={() => setShowAddUserDialog(true)} />
                         </div>
                     )}
                 </div>
-                <div className={style.reduceMarginTop20}>
+                <div className={style.reduceMarginTop10}>
                     <Table
                         tableHeaderValues={tableHeaderValues}
                         tableDataValues={getValues()}
@@ -364,7 +364,7 @@ const RegisteredUsers = ({ getSelectedOption }) => {
                 </div>
             </div>
             {showDeleteConfirmation && <DeleteConfirmation getShowDeleteConfirmation={getShowDeleteConfirmation} getDeleteConfirmation={getDeleteConfirmation} confirmationText="Do you want to delete this User?" />}
-            {showAddUserDialog && <AddUserInCustomerAdmin getManageUserDialog={getManageUserDialog} isEdit={isEdit} userId={userId} userType={selectedOption === 'ENTITY REGISTERED USERS' ? 'REGISTERED_USER' : 'CONTRACTED_SERVICE_PROVIDER_USER'} />}
+            {showAddUserDialog && <AddUserInCustomerAdmin getManageUserDialog={getManageUserDialog} isEdit={isEdit} userId={userId} />}
         </div>
     )
 }

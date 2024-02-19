@@ -1,8 +1,9 @@
-import React, {useState, useEffect} from 'react';
-import {format} from 'date-fns';
+import React, { useState, useEffect } from 'react';
+import { formatInTimeZone } from 'date-fns-tz'
 import Cookie from 'universal-cookie';
-import {TenantID, GET} from './../../Screens/dataSaver';
+import { TenantID, GET } from './../../Screens/dataSaver';
 import jwt from 'jwt-decode';
+import { corsUrl } from '../../utils/formatting';
 
 import style from './index.module.scss';
 
@@ -10,39 +11,55 @@ const ReportHeader = () => {
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const userDetail = jwt(userDetails);
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-    const [logo,setLogo] = useState({logo:sessionStorage?.getItem('logo'),title:sessionStorage.getItem('title')});
-    const [currentTime] = useState(format(new Date(), 'MMM d yyyy, H:mm'));
+    const [logo, setLogo] = useState({ logo: sessionStorage?.getItem('logo'), title: sessionStorage.getItem('title') });
+    const [corsedLogo, setCorsedLogo] = useState('');
+    const [currentTime, setCurrentTime] = useState(formatInTimeZone(new Date(), userTimeZone, 'MMM d yyyy, H:mm '));
+    const [addressLine1, setAddressLine1] = useState('');
+    const [addressLine2, setAddressLine2] = useState('');
 
-    useEffect(()=>{
-      getLogo();
+    useEffect(() => {
+        getLogo();
     }, [])
 
-    const getLogo = async() => {
-      const {data: data} = await GET(`entity-service/entity/${TenantID}`);
-      setLogo({logo:data?.logo?.file?.fileURL, title:data?.entityName?.entityName});
+    const getLogo = async () => {
+        const { data: data } = await GET(`entity-service/entity/${TenantID}`);
+        setLogo({ logo: data?.logo?.file?.fileURL, title: data?.entityName?.entityName });
+        // setCorsedLogo(`https://app.timesmartai.com/cors/${data?.logo?.file?.fileURL}`);
+        setCorsedLogo(`${corsUrl}${data?.logo?.file?.fileURL}`);
+        // setCorsedLogo(`${data?.logo?.file?.fileURL}`);
+        setAddressLine1(`${data?.sites?.[0]?.address?.addressLine},`)
+        setAddressLine2(`${data?.sites?.[0]?.address?.city}, ${data?.sites?.[0]?.address?.state} ${data?.sites?.[0]?.address?.zipcode}`)
     }
 
-    console.log(logo)
-
-    return(
-        <div>
-            <div className={style.spaceBetween}>
+    return (
+        <div className={style.headerBackground}>
+            <div className={`${style.grid3WithoutGap} ${style.alignCenter}`}>
                 <div>
                     <div className={style.confidentialBoxStyle}>
-                        <div className={style.confidentialTextStyle}>CONFIDENTIAL</div>
-                        <div className={style.doNotDisturbTextStyle}>Do Not Distribute</div>
+                        <div className={`${style.confidentialTextStyle} ${style.textAlignCenter}`}>CONFIDENTIAL</div>
+                        <div className={`${style.doNotDisturbTextStyle} ${style.textAlignCenter}`}>Do Not Distribute</div>
+                        <div className={`${style.doNotDisturbTextStyle} ${style.textAlignCenter}`}>Without Permission</div>
                     </div>
                 </div>
                 <div>
-                    {logo.logo && (
-                        <img src={logo.logo} alt="" className={style.headerLogo} />
-                    )}
-                    <div className={style.entityNameBolderStyle}>{logo.title}</div>
+                    <div className={`${style.centerAlignUsingBlock} ${style.textAlignCenter}`}>
+                        <div className={`${style.centerAlignUsingBlock}`}>
+                            {logo.logo && (
+                                <img src={corsedLogo || logo?.logo} alt="" className={`${style.headerLogo} ${style.textAlignCenter}`} />
+                            )}
+                        </div>
+                        <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter}`}>{logo.title}</div>
+                        <div className={`${style.entityNameHeaderStyle} ${style.textAlignCenter}`}>{addressLine1}</div>
+                        <div className={`${style.entityNameHeaderStyle} ${style.textAlignCenter}`}>{addressLine2}</div>
+                    </div>
                 </div>
                 <div>
-                    <div className={style.reportRunByTextStyle}>Report Run By : </div>
-                    <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{userDetail?.userName} at {currentTime}</div>
+                    <div className={style.floatRight}>
+                        <div className={style.reportRunByTextStyle}>Report Run By : </div>
+                        <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{userDetail?.userName} at {currentTime}</div>
+                    </div>
                 </div>
             </div>
             <div className={`${style.headerBorderStyle} ${style.marginTop40}`}></div>

@@ -4,8 +4,7 @@ import SelectField from './../SelectField';
 
 const ProviderTypeList = ({onChangeFunc, value, className}) => {
   const [provider, setProvider] = useState([]);
-  // const siteTypeId = sessionStorage.getItem('entityTypeId');
-  const siteTypeId = '6335e452bb13e2088b208b99';
+  const siteTypeId = sessionStorage.getItem('entityTypeId') || '63ab2c90bc9089d77c9232ac';
 
   useEffect(()=>{
     getProvidertypeList();

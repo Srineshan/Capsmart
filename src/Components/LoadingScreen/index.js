@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from '../../images/timeSmartAI-logo.png';
+import logo from '../../images/timeSmartAILogo.png';
 
 import styles from './index.module.scss';
 

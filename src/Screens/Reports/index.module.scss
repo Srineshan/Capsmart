@@ -1,55 +1,62 @@
-.margin20{
+.margin20 {
     margin: 20px;
 }
 
-.margin20WithoutTop{
+.margin20WithoutTop {
     margin: 0 20px 20px 20px !important;
 }
 
-.marginTop3{
+.marginTop3 {
     margin-top: 3px;
 }
 
-.marginTop5{
+.marginTop5 {
     margin-top: 5px !important;
 }
 
-.marginLeft{
+.marginLeft {
     margin-left: 5px;
 }
 
-.marginTop20{
+.marginTop20 {
     margin-top: 20px !important;
 }
 
-.marginBottom20{
+.marginBottom20 {
     margin-bottom: 20px !important;
 }
 
-.marginTop70{
+.marginTop70 {
     margin-top: 70px !important;
 }
 
-.marginTop10{
+.marginTop10 {
     margin-top: 10px !important;
 }
 
-.marginTop40{
+.marginTop40 {
     margin-top: 40px !important;
 }
 
-.marginRight20{
+.marginRight20 {
     margin-right: 20px !important;
 }
 
-.bigCardGrid{
+.bigCardGrid {
     display: grid;
     grid-template-columns: 1fr 4fr;
+    grid-gap: 10px;
+    margin-top: 20px;
+}
+
+.smallCardGrid {
+    display: grid;
+    grid-template-columns: 80px 1fr;
     grid-gap: 20px;
     margin-top: 20px;
 }
 
-.bigCardStyle{
+.bigCardStyle {
     height: calc(100vh - 120px);
     overflow: scroll;
     background: #FFFFFF 0% 0% no-repeat padding-box;
@@ -59,7 +66,7 @@
     padding-top: 5px;
 }
 
-.taskCardStyle{
+.taskCardStyle {
     max-height: 500px;
     overflow: scroll;
     background: #FFFFFF 0% 0% no-repeat padding-box;
@@ -70,11 +77,11 @@
     text-align: left;
 }
 
-.bigCalendarLeftCardWidth{
+.bigCalendarLeftCardWidth {
     margin-right: 15px;
 }
 
-.cardStyle{
+.cardStyle {
     height: 85px;
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 10px 20px #C4C8D066;
@@ -84,7 +91,7 @@
     padding: 10px;
 }
 
-.leftCard{
+.leftCard {
     min-height: calc(100vh - 215px);
     overflow: scroll;
     background: #FFFFFF 0% 0% no-repeat padding-box;
@@ -95,53 +102,53 @@
     padding: 10px;
 }
 
-.displayInRow{
+.displayInRow {
     display: flex;
     flex-direction: row;
 }
 
-.displayInCol{
+.displayInCol {
     display: flex;
     flex-direction: column;
 }
 
-.alignCenter{
+.alignCenter {
     display: flex;
     align-items: center;
     height: 100%;
 }
 
-.userLogo{
+.userLogo {
     width: 53px;
     height: 53px;
     border-radius: 50%;
 
 }
 
-.marginLeft10{
+.marginLeft10 {
     margin-left: 10px;
 }
 
-.marginLeft20{
+.marginLeft20 {
     margin-left: 20px !important;
 }
 
-.marginLeft40{
+.marginLeft40 {
     margin-left: 40px !important;
 }
 
-.marginTop{
+.marginTop {
     margin-top: 10px;
 }
 
-.userNameStyle{
+.userNameStyle {
     text-align: left;
     font: normal normal 600 13px/13px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
 }
 
-.loginStatus{
+.loginStatus {
     text-align: left;
     font: italic normal normal 10px/15px Roboto;
     letter-spacing: 0px;
@@ -150,38 +157,38 @@
     opacity: 1;
 }
 
-.statisticsHeading{
-    border-bottom:2px solid #EBF2F7;
-    padding-bottom:20px;
+.statisticsHeading {
+    border-bottom: 2px solid #EBF2F7;
+    padding-bottom: 20px;
     text-align: left;
     font: normal normal 600 16px/15px Montserrat;
     letter-spacing: 0px;
     color: #7165E3;
 }
 
-.scrollStyle{
-    height: calc(100vh - 400px);
+.scrollStyle {
+    height: calc(100vh - 330px);
     overflow: scroll;
 }
 
-.footerIconStyle{
+.footerIconStyle {
     height: 40px;
     width: 40px;
     object-fit: contain;
     margin-top: 5px;
 }
 
-.spaceBetween{
+.spaceBetween {
     display: flex;
     justify-content: space-between;
 }
 
-.paginationCol{
+.paginationCol {
     display: grid;
     grid-template-columns: 1fr 2fr;
 }
 
-.accountActivityStyle{
+.accountActivityStyle {
     font: normal normal normal 15px/22px Montserrat;
     letter-spacing: 0.66px;
     color: #52575D;
@@ -190,7 +197,7 @@
     margin-top: 7px;
 }
 
-.paginationStyle{
+.paginationStyle {
     font: normal normal 600 12px/15px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
@@ -198,11 +205,11 @@
     margin-top: 10px;
 }
 
-.leftChevronColor{
+.leftChevronColor {
     color: #52575D;
 }
 
-.roundChevron{
+.roundChevron {
     width: 15px;
     height: 15px;
     margin-left: 10px;
@@ -210,28 +217,28 @@
     margin-top: 11px;
 }
 
-.roundChevronForUser{
+.roundChevronForUser {
     width: 15px;
     height: 15px;
 }
 
-.iconStyle{
+.iconStyle {
     height: 20px;
     width: 20px;
 }
 
-.iconRequestStyle{
+.iconRequestStyle {
     height: 20px;
     width: 100px;
 }
 
-.taskFontStyle{
+.taskFontStyle {
     font: normal normal 500 15px/17px Montserrat;
     margin-left: 10px;
     text-align: left;
 }
 
-.taskCountStyle{
+.taskCountStyle {
     height: 20px;
     padding: 0 15px;
     font: normal normal medium 18px/23px Montserrat;
@@ -244,7 +251,7 @@
     align-items: center;
 }
 
-.deliveryCountStyle{
+.deliveryCountStyle {
     height: 25px;
     padding: 0 15px;
     margin-top: 17px;
@@ -260,11 +267,11 @@
     opacity: 0.5;
 }
 
-.selectedStyle{
+.selectedStyle {
     color: #7165E3;
 }
 
-.statusStyle{
+.statusStyle {
     height: 20px;
     padding: 0 15px;
     font: normal normal medium 18px/23px Montserrat;
@@ -275,7 +282,7 @@
     align-items: center;
 }
 
-.reviewStyle{
+.reviewStyle {
     height: 30px;
     padding: 0 15px;
     font: normal normal medium 18px/23px Montserrat;
@@ -287,7 +294,7 @@
     margin-top: -7px;
 }
 
-.expertStyle{
+.expertStyle {
     height: 20px;
     padding: 0 15px;
     font: normal normal medium 18px/23px Montserrat;
@@ -300,7 +307,7 @@
     margin-left: 40px;
 }
 
-.reportStyle{
+.reportStyle {
     height: 30px;
     padding: 0 15px;
     font: normal normal medium 18px/23px Montserrat;
@@ -312,153 +319,152 @@
     margin-top: -7px;
 }
 
-.yellowCard{
+.yellowCard {
     color: #F57411;
     background-color: #fde2ce;
 }
 
-.blueCard{
+.blueCard {
     color: #7165E3;
     background-color: #d7d4f7;
 }
 
-.redCard{
+.redCard {
     color: #FF5555;
     background-color: #ffcccc;
 }
 
-.taskTabWidth{
+.taskTabWidth {
     width: 240px;
     padding: 25px 20px 10px 20px;
 }
 
-.blueText{
+.blueText {
     color: #7165E3 !important;
 }
 
-.externalRecipientsMarginLeft{
+.externalRecipientsMarginLeft {
     margin-left: 100px;
 }
 
-.reportsTabWidth{
+.reportsTabWidth {
     width: 300px;
     padding: 25px 20px 10px 20px;
 }
 
-.selectedTab{
+.selectedTab {
     background: #7165E30D 0% 0% no-repeat padding-box;
     border: 1px solid #7165E3;
     border-radius: 16px 16px 0px 0px;
 }
 
-.selectedReportsTab{
+.selectedReportsTab {
     border-bottom: 1px solid #7165E3;
     padding-bottom: 15px;
 }
 
-.selectFieldWidth{
+.selectFieldWidth {
     width: 150px;
 }
 
-.borderBottomStyle{
+.borderBottomStyle {
     border-bottom: 1px solid #7165E3;
 }
 
-.borderBottomReportsStyle{
+.borderBottomReportsStyle {
     border-bottom: 2px solid #EBF2F7;
 }
 
-.borderStyle{
+.borderStyle {
     height: 2px;
     background: #EBF2F7 0% 0% no-repeat padding-box;
     margin: 20px;
 }
 
-.reportsMargin20{
+.reportsMargin20 {
     margin: 0 20px;
 }
 
-.reportsBorderStyle{
+.reportsBorderStyle {
     height: 2px;
     background: #EBF2F7 0% 0% no-repeat padding-box;
     margin: 0 20px;
 }
 
-.blueBorderStyle{
+.blueBorderStyle {
     height: 1px;
     background: #d7d4f7 0% 0% no-repeat padding-box;
     margin: 0 20px;
 }
 
-.borderStyleWithOutMargin{
+.borderStyleWithOutMargin {
     height: 2px;
     background: #EBF2F7 0% 0% no-repeat padding-box;
     margin-right: 20px;
 }
 
-.headerBorderStyle{
+.headerBorderStyle {
     height: 1px;
     background: #d7d4f7 0% 0% no-repeat padding-box;
 }
 
-.mildBorderStyle{
+.mildBorderStyle {
     height: 1px;
     background: #ebe9fb 0% 0% no-repeat padding-box;
 }
 
-.taskTableGrid{
+.taskTableGrid {
     display: grid;
     grid-template-columns: 10% 15% 15% 15% 15% 5% 10% 5%;
     grid-gap: 10px;
 }
 
-.timeSheetTableGrid{
+.timeSheetTableGrid {
     display: grid;
     grid-template-columns: 25px 15% 15% 10% 10% 15% 13% 10%;
     grid-gap: 10px;
 }
 
-.savedReportTableGrid{
+.savedReportTableGrid {
     display: grid;
     grid-template-columns: 25px 30% 30% 18% 10%;
     grid-gap: 10px;
 }
 
-.reportsTableGrid{
+.reportsTableGrid {
     display: grid;
-    grid-template-columns: 25px 20% 20% 15% 13% 10% 10%;
-    grid-gap: 10px;
+    grid-template-columns: 5% 18% 29% 14% 14% 14%;
+    grid-gap: 1%;
 }
 
-.headingStyle{
+.headingStyle {
     text-align: left;
     font: normal normal normal 13px/17px Montserrat;
     letter-spacing: 0px;
     color: #8A8C8D;
 }
 
-.tableDataFontStyle{
+.tableDataFontStyle {
     text-align: left;
     font: normal normal 600 13px/18px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
 }
 
-.tableDataReportsFontStyle{
-    width: 80%;
+.tableDataReportsFontStyle {
     text-align: left;
     font: normal normal 600 13px/18px Montserrat;
     letter-spacing: 0px;
     color: #8A8C8D;
 }
 
-.icons{
+.icons {
     width: 20px;
     height: 20px;
     cursor: pointer;
 }
 
-.notificationIcon{
+.notificationIcon {
     width: 15px;
     height: 15px;
     background-color: #1DD174;
@@ -468,7 +474,7 @@
     right: -27px;
 }
 
-.notificationCount{
+.notificationCount {
     position: relative;
     top: -47px;
     right: -30px;
@@ -479,11 +485,11 @@
     color: white;
 }
 
-.cursorPointer{
+.cursorPointer {
     cursor: pointer;
 }
 
-.reportTypeTextStyle{
+.reportTypeTextStyle {
     text-align: left;
     font: normal normal 600 17px/20px Montserrat;
     letter-spacing: 0px;
@@ -492,24 +498,24 @@
     align-items: center;
 }
 
-.cardPadding{
+.cardPadding {
     padding: 20px 20px;
 }
 
-.infoStyle{
+.infoStyle {
     height: 15px;
     width: 15px;
 }
 
-.reduceMarginTop{
+.reduceMarginTop {
     margin-top: -5px;
 }
 
-.reduceMarginTop10{
+.reduceMarginTop10 {
     margin-top: -10px !important;
 }
 
-.primaryButtonStyle{
+.primaryButtonStyle {
     background: #7165E3 0% 0% no-repeat padding-box !important;
     border-radius: 6px;
     border: none;
@@ -519,112 +525,112 @@
     width: 250px;
 }
 
-.darkLabel{
+.darkLabel {
     text-align: left;
     font: normal normal normal 13px/17px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
 }
 
-.iconPadding{
+.iconPadding {
     padding: 0 10px;
 }
 
-.fullWidth{
+.fullWidth {
     width: 100%;
 }
 
-.dialogStyle{
+.dialogStyle {
     height: 80%;
     width: 60% !important;
     border-radius: 20px;
 }
 
-.dialogPaddingBottom{
+.dialogPaddingBottom {
     padding-bottom: 0 !important;
 }
 
-.extensionDialogBackground{
+.extensionDialogBackground {
     background-color: white;
     margin: -20px !important;
     padding: 40px;
     border-radius: 10px;
 }
 
-.extensionStyle{
+.extensionStyle {
     text-align: left;
     font: normal normal bold 15px/13px Montserrat;
     letter-spacing: 0px;
     color: #7165E3;
 }
 
-.crossStyle{
+.crossStyle {
     color: linear-gradient(#7165E3, #FF6562) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
 
-.extensionBorder{
+.extensionBorder {
     background-color: #EBF2F7;
     height: 3px;
 }
 
-.saveReportDialogGrid{
+.saveReportDialogGrid {
     display: grid;
     grid-template-columns: 45% 55%;
 }
 
-.privateGrid{
+.privateGrid {
     display: grid;
     grid-template-columns: 35% 65%;
 }
 
-.saveLeftPart{
+.saveLeftPart {
     border-right: 4px solid #EBF2F7;
     padding: 20px 0;
     padding-right: 20px;
 }
 
-.saveReportLabelStyle{
+.saveReportLabelStyle {
     text-align: left;
     font: normal normal normal 13px/8px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
 }
 
-.saveReportFieldStyle{
+.saveReportFieldStyle {
     font: normal normal medium 13px/20px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
 }
 
-.privateLabelStyle{
+.privateLabelStyle {
     font: normal normal medium 15px/20px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
 }
 
-.typographyStyle{
+.typographyStyle {
     font: normal normal 600 15px/13px Montserrat;
     letter-spacing: 0px;
     color: #7165E3;
 }
 
-.smallHeading{
+.smallHeading {
     text-align: left;
     font: normal normal 600 15px/13px Montserrat;
     letter-spacing: 0px;
     color: #7165E3;
 }
 
-.radioTextStyle{
+.radioTextStyle {
     text-align: left;
     font: normal normal 600 10px/13px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
 }
 
-.saveStyle{
+.saveStyle {
     background: #7165E3 0% 0% no-repeat padding-box;
     border-radius: 6px;
     height: 30px;
@@ -633,38 +639,38 @@
     border: none;
 }
 
-.justifyCenter{
+.justifyCenter {
     display: flex;
     justify-content: center;
 }
 
-.deleteEcecutedContractDialogBackground{
+.deleteEcecutedContractDialogBackground {
     background-color: white;
     margin: -20px !important;
     padding: 20px;
     border-radius: 10px;
 }
 
-.sendMailUserDialog{
+.sendMailUserDialog {
     height: 40%;
     width: 70% !important;
 }
 
-.reportSavedDialog{
+.reportSavedDialog {
     height: 40vh;
     width: 45% !important;
 }
 
-.padding10{
+.padding10 {
     padding: 10px 0;
 }
 
 
-.blackText{
+.blackText {
     color: black !important;
 }
 
-.searchBarStyle{
+.searchBarStyle {
     background: #E3E5F1 0% 0% no-repeat padding-box;
     border: 1px solid #A7A7A7;
     height: 35px;
@@ -672,13 +678,14 @@
     border-radius: 15px;
     opacity: 0.3;
     margin-top: 12px;
-    p{
+
+    p {
         margin-top: 8px;
         margin-left: 10px;
     }
 }
 
-.searchIcon{
+.searchIcon {
     max-height: 20px;
     max-width: 20px;
     margin-right: 10px;
@@ -686,19 +693,19 @@
 }
 
 
-.userMailListGrid{
+.userMailListGrid {
     display: grid;
     grid-template-columns: 50px 1fr 20px;
 }
 
-.userLogoMailStyle{
+.userLogoMailStyle {
     width: 35px;
     height: 35px;
     border-radius: 50%;
     object-fit: contain;
 }
 
-.cloneOutlinedButton{
+.cloneOutlinedButton {
     background-color: white;
     color: #7165E3;
     border: 1px solid #7165E3;
@@ -708,197 +715,227 @@
     margin-top: 15px;
 }
 
-.cloneButtonStyle{
+.cloneButtonStyle {
     background-color: #7165E3;
     color: white;
     border: 1px solid #7165E3;
     height: 30px;
     width: 200px;
     border-radius: 6px;
-  }
+}
 
-  .saveButtonStyle{
+.saveButtonStyle {
     background-color: #7165E3;
     color: white;
     border: 1px solid #7165E3;
     height: 30px;
     width: 100px;
     border-radius: 6px;
-  }
+}
 
-  .mailBoldText{
+.mailBoldText {
     font: normal normal 600 15px/20px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
-  }
+}
 
-  .descriptionText{
+.descriptionText {
     text-align: left;
     font: normal normal normal 12px/17px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
-  }
+}
 
-  .chevronImgLeft{
-      height: 20px;
-      width: 20px;
-      margin-top: 7px;
-  }
+.chevronImgLeft {
+    height: 20px;
+    width: 20px;
+    margin-top: 7px;
+}
 
-  .recipientsGrid{
-      display: grid;
-      grid-template-columns: 27% 27% 38%;
-      grid-gap: 20px;
-  }
+.recipientsGrid {
+    display: grid;
+    grid-template-columns: 27% 27% 38%;
+    grid-gap: 20px;
+}
 
-  .companyFieldWidth{
-      width: 56%;
-  }
+.companyFieldWidth {
+    width: 56%;
+}
 
-  .recipientsDataHeight{
-      height: 40vh;
-  }
+.recipientsDataHeight {
+    height: 40vh;
+}
 
-  .threeColWidth{
-      width: 33%;
-  }
+.threeColWidth {
+    width: 33%;
+}
 
-  .reportSavedStyle{
+.reportSavedStyle {
     text-align: center;
     font: normal normal 600 32px/42px Montserrat;
     letter-spacing: 0px;
     color: #7165E3;
-  }
+}
 
-  .reportIconStyle{
-      height: 55px;
-      width: 55px;
-      margin-top: 60px;
-      margin-bottom: 30px;
-  }
+.reportIconStyle {
+    height: 55px;
+    width: 55px;
+    margin-top: 60px;
+    margin-bottom: 30px;
+}
 
-  .titleStyle{
+.titleStyle {
     text-align: left;
     font: normal normal 600 16px/13px Montserrat;
     letter-spacing: 0px;
     margin-top: 30px;
     color: #333333;
-  }
+}
 
-  .chartGrid{
-      display: grid;
-      grid-template-columns: 52% 35%;
-      grid-gap: 80px;
-      margin: 20px;
-  }
+.chartGrid {
+    display: grid;
+    grid-template-columns: 52% 35%;
+    grid-gap: 80px;
+    margin: 20px;
+}
 
-  .graphBox{
-      height: 70vh;
-      overflow: scroll;
-      border: 1px solid #707070;
-      margin: 20px;
-  }
+.graphBox {
+    height: 70vh;
+    overflow: scroll;
+    border: 1px solid #707070;
+    margin: 20px;
+}
 
-  .individualBox{
+.individualBox {
     height: 45vh;
     border: 2px solid #D3D3D3;
     padding: 20px;
-  }
+}
 
-  .performanceTextStyle{
-      color: #8A8C8D;
-      text-align: left;
+.performanceTextStyle {
+    color: #8A8C8D;
+    text-align: left;
     font: normal normal 600 18px/13px Montserrat;
     letter-spacing: 0px;
-  }
+}
 
-  .settingBackground{
-      height: 30px;
-      width: 40px;
-      background-color: #D3D3D3;
-  }
+.settingBackground {
+    height: 30px;
+    width: 40px;
+    background-color: #D3D3D3;
+}
 
-  .chartBackground{
+.chartBackground {
     background: #F7F7F7 0% 0% no-repeat padding-box;
     padding: 80px;
-  }
+}
 
-  .individualServiceReportGrid{
+.individualServiceReportGrid {
     display: grid;
-    grid-template-columns: 11% 11% 11% 11% 11% 11% 11% 11%;
-    grid-gap: 20px;
-  }
+    grid-template-columns: 14% 14% 14% 14% 14% 13% 13%;
+    grid-gap: 0.5%;
+}
 
-  .grid8{
+.multipleServiceReportGrid {
+    display: grid;
+    grid-template-columns: 12% 12% 12% 12% 12% 12% 12% 12%;
+    grid-gap: 0.5%;
+}
+
+.grid12 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-gap: 20px;
+}
+
+.grid8 {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
     grid-gap: 20px;
-  }
+}
 
-  .grid7{
+.grid7 {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
     grid-gap: 20px;
-  }
+}
 
-  .grid6{
+.grid6 {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
     grid-gap: 20px;
-  }
+}
 
-  .grid5{
+.grid5 {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
     grid-gap: 20px;
-  }
+}
 
-  .grid4{
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr;
-      grid-gap: 20px;
-  }
+.gridAuto {
+    display: grid;
+    grid-auto-columns: 1fr;
+    grid-auto-flow: column;
+    grid-gap: 20px;
+}
 
-  .grid3{
+.grid4 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 20px;
+}
+
+.grid3 {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-gap: 20px;
-  }
+}
 
-  .grid2{
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-gap: 20px;
-  }
+.grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
+}
 
-  .chartCardStyle1{
+.grid3WithoutGap {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.timeSheetProcessingSummaryCalendarGrid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    grid-gap: 20px;
+}
+
+.chartCardStyle1 {
     height: 100px;
     width: 100%;
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 25px 30px #0000001A;
     border-radius: 10px;
     padding: 20px;
-  }
+}
 
-  .chartCardStyle2{
+.chartCardStyle2 {
     height: 140px;
     width: 100%;
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 25px 30px #0000001A;
     border-radius: 10px;
     padding: 20px;
-  }
+}
 
-  .chartCardStyle3{
+.chartCardStyle3 {
     height: 240px;
     width: 100%;
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 25px 30px #0000001A;
     border-radius: 10px;
     padding: 20px;
-  }
+}
 
-  .chartCardStyle4{
+.chartCardStyle4 {
     height: 400px;
     overflow: scroll;
     width: 100%;
@@ -906,116 +943,116 @@
     box-shadow: 0px 25px 30px #0000001A;
     border-radius: 10px;
     padding: 20px;
-  }
+}
 
-  .iconBackgroundBlue{
+.iconBackgroundBlue {
     background: #cce0ff 0% 0% no-repeat padding-box;
     border-radius: 6px;
     height: 50px;
     width: 50px;
-  }
+}
 
-  .iconBackgroundGreen{
+.iconBackgroundGreen {
     background: #b3fee3 0% 0% no-repeat padding-box;
     border-radius: 10px;
     height: 50px;
     width: 50px;
-  }
+}
 
-  .iconBackgroundYellow{
+.iconBackgroundYellow {
     background: #fff4cc 0% 0% no-repeat padding-box;
     border-radius: 10px;
     height: 50px;
     width: 50px;
-  }
+}
 
-  .iconBackgroundRed{
+.iconBackgroundRed {
     background: #ffb3c9 0% 0% no-repeat padding-box;
     border-radius: 10px;
     height: 50px;
     width: 50px;
-  }
+}
 
-  .chartTitleStyle{
+.chartTitleStyle {
     text-align: left;
     font: normal normal normal 12px/15px Montserrat;
     letter-spacing: 0.24px;
     color: #707070;
-  }
+}
 
-  .chartValueStyle{
+.chartValueStyle {
     text-align: left;
     font: normal normal medium 24px/29px Montserrat;
     color: #000000;
     margin: 0px;
-  }
+}
 
-  .percentageStyleRed{
+.percentageStyleRed {
     text-align: left;
     font: normal normal 300 12px/15px Montserrat;
     letter-spacing: 0.24px;
     color: #FF2366;
     opacity: 1;
-  }
+}
 
-  .percentageStyleGreen{
+.percentageStyleGreen {
     text-align: left;
     font: normal normal 300 12px/15px Montserrat;
     letter-spacing: 0.24px;
     color: #02BC77;
     opacity: 1;
-  }
+}
 
-  .chartTitleBorder{
+.chartTitleBorder {
     border: 1px solid #EFEFEF;
     width: calc(100% + 40px);
     margin: 0 -20px;
-  }
+}
 
-  .performanceBorder{
+.performanceBorder {
     border: 1px solid #B3B8BD;
     width: 20%;
     margin: 0 -20px;
-  }
+}
 
-  .chartTitleStyle2{
+.chartTitleStyle2 {
     text-align: left;
     font: normal normal normal 12px/15px Montserrat;
     letter-spacing: 0.24px;
     color: #707070;
     margin-top: -5px;
     margin-bottom: 10px;
-  }
+}
 
-  .chartTitleStyle3{
+.chartTitleStyle3 {
     text-align: left;
     font: normal normal normal 14px/20px Montserrat;
     letter-spacing: 0.24px;
     color: #707070;
     margin-bottom: 10px;
-  }
+}
 
-  .chartTitleStyleMedium{
+.chartTitleStyleMedium {
     text-align: left;
     font: normal normal medium 12px/15px Montserrat !important;
     letter-spacing: 0.24px;
     color: #707070;
     margin-top: -5px;
     margin-bottom: 10px;
-  }
+}
 
-  .chartMargin{
-      margin: -20px;
-  }
+.chartMargin {
+    margin: -20px;
+}
 
-  .bestSellerImgStyle{
-      width: 75px;
-      height: 50px;
-      object-fit: cover;
-      border-radius: 8px;
-  }
+.bestSellerImgStyle {
+    width: 75px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 8px;
+}
 
-  .productImgStyle{
+.productImgStyle {
     width: 45px;
     height: 45px;
     object-fit: cover;
@@ -1023,57 +1060,57 @@
     margin-top: -10px;
 }
 
-  .bestSellerTitle{
+.bestSellerTitle {
     text-align: left;
     font: normal normal 600 14px/18px Montserrat;
     letter-spacing: 0px;
     color: #000000;
     opacity: 1;
-  }
+}
 
-  .sellerProgress1{
-    background: linear-gradient(to right,#4791FF 45%, #E9E9F0 45%) !important;
+.sellerProgress1 {
+    background: linear-gradient(to right, #4791FF 45%, #E9E9F0 45%) !important;
     height: 3px;
     width: 100%;
     border-radius: 4px 0px 0px 4px;
     margin: 8px 0 10px 0;
 }
 
-.sellerProgress2{
-    background: linear-gradient(to right,#4791FF 40%, #E9E9F0 40%) !important;
+.sellerProgress2 {
+    background: linear-gradient(to right, #4791FF 40%, #E9E9F0 40%) !important;
     height: 3px;
     width: 100%;
     border-radius: 4px 0px 0px 4px;
     margin: 8px 0 10px 0;
 }
 
-.sellerProgress3{
-    background: linear-gradient(to right,#4791FF 30%, #E9E9F0 30%) !important;
+.sellerProgress3 {
+    background: linear-gradient(to right, #4791FF 30%, #E9E9F0 30%) !important;
     height: 3px;
     width: 100%;
     border-radius: 4px 0px 0px 4px;
     margin: 8px 0 10px 0;
 }
 
-.sellerProgress4{
-    background: linear-gradient(to right,#4791FF 20%, #E9E9F0 20%) !important;
+.sellerProgress4 {
+    background: linear-gradient(to right, #4791FF 20%, #E9E9F0 20%) !important;
     height: 3px;
     width: 100%;
     border-radius: 4px 0px 0px 4px;
     margin: 8px 0 10px 0;
 }
 
-.sellerContent{
+.sellerContent {
     width: 100%;
     margin-left: 20px;
 }
 
-.productGrid{
+.productGrid {
     display: grid;
     grid-template-columns: 15% 35% 10% 10% 10% 10% 10%;
 }
 
-.viewOutline{
+.viewOutline {
     border: 1px solid #EBEBEB;
     border-radius: 3px;
     width: 60px;
@@ -1083,43 +1120,46 @@
     margin-top: 5px;
 }
 
-.textAlignLeft{
+.textAlignLeft {
     text-align: left;
 }
 
-.textAlignCenter{
+.textAlignCenter {
     text-align: center !important;
 }
 
-.taskStyle1{
+.taskStyle1 {
     border-left: 5px solid #4791FF;
     height: 55px;
 }
 
-.taskStyle2{
+.taskStyle2 {
     border-left: 5px solid #FFD950;
     height: 55px;
 }
-.taskStyle3{
+
+.taskStyle3 {
     border-left: 5px solid #707070;
     height: 55px;
 }
-.taskStyle4{
+
+.taskStyle4 {
     border-left: 5px solid #02BC77;
     height: 55px;
 }
-.taskStyle5{
+
+.taskStyle5 {
     border-left: 5px solid #FF2366;
     height: 55px;
 }
 
-.recentCustomerGrid{
+.recentCustomerGrid {
     display: grid;
     grid-template-columns: 18% 18% 18% 18% 12% 12%;
     grid-gap: 10px;
 }
 
-.optionsButton{
+.optionsButton {
     padding: 10px 15px;
     background-color: #D3D3D3;
     color: #8A8C8D;
@@ -1127,7 +1167,7 @@
     margin-top: 10px;
 }
 
-.detailsButton{
+.detailsButton {
     padding: 10px 15px;
     max-height: 40px;
     background-color: #52575D;
@@ -1135,12 +1175,12 @@
     margin-top: 10px;
 }
 
-.reportTypeBackground{
+.reportTypeBackground {
     background: #F8FCFF 0% 0% no-repeat padding-box;
     padding: 100px;
 }
 
-.reportTypeCardStyle{
+.reportTypeCardStyle {
     background: #FEC106 0% 0% no-repeat padding-box;
     border-radius: 65px;
     height: 60px;
@@ -1153,11 +1193,11 @@
     align-items: center;
 }
 
-.linkStyle{
+.linkStyle {
     text-decoration: none !important;
 }
 
-.reportBackgroundCard{
+.reportBackgroundCard {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 10px 20px #C4C8D066;
     border-radius: 8px;
@@ -1165,64 +1205,71 @@
     padding: 30px 40px;
 }
 
-.doNotDisturbTextStyle{
-    font: normal normal 600 12px/20px Montserrat;
+.doNotDisturbTextStyle {
+    font: normal normal 600 12px/15px Montserrat;
     letter-spacing: 2.24px;
     color: #F46044;
     text-transform: capitalize;
 }
 
-.confidentialTextStyle{
+.confidentialTextStyle {
     font: normal normal bold 17px/20px Montserrat;
     letter-spacing: 1.05px;
     color: #F46044;
 }
 
-.confidentialBoxStyle{
+.confidentialBoxStyle {
     border: 2px solid #F46044;
     border-radius: 7px;
     padding: 10px;
+    width: 190px;
 }
 
-.headerLogo{
+.headerLogo {
     width: 130px;
     height: 55px;
     object-fit: contain;
 }
 
-.entityNameHeaderStyle{
+.centerAlignUsingBlock {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.entityNameHeaderStyle {
     font: normal normal bold 14px/15px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
 }
 
-.entityNameBolderStyle{
-    font: normal normal bolder 19px/23px Montserrat;
+.entityNameBolderStyle {
+    font: normal normal bold 18px/23px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
 }
 
-.reportRunByTextStyle{
+.reportRunByTextStyle {
     text-align: left;
     font: normal normal bold 13px/17px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
 }
 
-.reportFooterLogo{
+.reportFooterLogo {
     width: 130px;
     height: 70px;
     object-fit: contain;
 }
 
-.reportFooterTextStyle{
+.reportFooterTextStyle {
     text-align: left;
     font: normal normal 600 13px/24px Montserrat;
     letter-spacing: 0px;
     color: #000;
 }
 
-.poweredByTextStyle{
+.poweredByTextStyle {
     text-align: left;
     font: normal normal 600 13px/14px Montserrat;
     letter-spacing: 0px;
@@ -1230,14 +1277,14 @@
     margin: 20px 0 -20px 0px;
 }
 
-.reportTypeValueTextStyle{
+.reportTypeValueTextStyle {
     font: normal normal medium 12px/24px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
     text-transform: capitalize;
 }
 
-.reportTypeValueBoldTextStyle{
+.reportTypeValueBoldTextStyle {
     font: normal normal bold 12px/24px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
@@ -1246,19 +1293,19 @@
     word-wrap: break-word;
 }
 
-.complianceGrid2{
+.complianceGrid2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-gap: 40px;
 }
 
-.complianceCardStyle{
+.complianceCardStyle {
     width: 100%;
     display: grid;
     grid-template-columns: 40% 60%;
 }
 
-.complianceRightCardStyle{
+.complianceRightCardStyle {
     background-color: #ebe9fb;
     padding: 20px;
     display: flex;
@@ -1266,7 +1313,7 @@
     height: 100%;
 }
 
-.complianceLeftCardStyle{
+.complianceLeftCardStyle {
     background-color: #c4bef3;
     display: flex;
     align-items: center;
@@ -1274,7 +1321,7 @@
     height: 100%;
 }
 
-.complianPercentageStyle{
+.complianPercentageStyle {
     text-align: center;
     font: normal normal bold 42px/53px Montserrat;
     letter-spacing: 0px;
@@ -1289,7 +1336,7 @@
     justify-content: center;
 }
 
-.complianceHeadingStyle{
+.complianceHeadingStyle {
     text-align: left;
     font: normal normal bold 17px/23px Montserrat;
     letter-spacing: 0px;
@@ -1297,7 +1344,7 @@
     text-transform: capitalize;
 }
 
-.greenDotStyle{
+.greenDotStyle {
     height: 6px;
     width: 6px;
     border-radius: 50%;
@@ -1305,7 +1352,7 @@
     margin-top: 8px;
 }
 
-.yellowDotStyle{
+.yellowDotStyle {
     height: 6px;
     width: 6px;
     border-radius: 50%;
@@ -1314,7 +1361,7 @@
 }
 
 
-.redDotStyle{
+.redDotStyle {
     height: 6px;
     width: 6px;
     border-radius: 50%;
@@ -1322,7 +1369,7 @@
     margin-top: 8px;
 }
 
-.blueDotStyle{
+.blueDotStyle {
     height: 6px;
     width: 6px;
     border-radius: 50%;
@@ -1330,12 +1377,12 @@
     margin-top: 8px;
 }
 
-.complianceListGrid{
+.complianceListGrid {
     display: grid;
     grid-template-columns: 15px 1fr 30px;
 }
 
-.contractNameCardStyle{
+.contractNameCardStyle {
     text-align: left;
     font: normal normal bold 16px/24px Montserrat;
     letter-spacing: 0px;
@@ -1350,13 +1397,169 @@
     margin-top: 20px;
 }
 
-.popoverStyle{
+.popoverStyle {
     font: normal normal bold 13px/20px Montserrat;
     color: #52575D;
     padding: 10px;
 }
 
-.scroll{
+.scroll {
     height: 100vh;
     overflow: scroll;
+}
+
+.headerBackground {
+    background: #fff 0% 0% no-repeat padding-box;
+    padding: 30px 40px;
+    margin: -30px -40px;
+}
+
+.reportWidthToFitFullScreen {
+    width: 85%;
+    // height: 500px;
+}
+
+.addOnReportWidthToFitFullScreen {
+    width: 70%;
+    // height: 500px;
+}
+
+// @page {
+//     size: auto;
+//     margin: 3mm 0mm 10mm 0mm;
+// }
+
+// @media print {
+//     a[href]:after {
+//         content: none !important;
+//     }
+
+//     img[src]:after {
+//         content: none !important;
+//     }
+// }
+
+.summaryGrid {
+    display: grid;
+    grid-template-columns: 1fr 150px;
+    grid-gap: 20px;
+}
+
+.summaryTextStyle {
+    font: normal normal bold 15px/20px Montserrat;
+    color: #858c93;
+}
+
+.disabledCursor {
+    cursor: not-allowed;
+}
+
+// #pageFooter {
+//     page-break-before: always;
+//     counter-increment: page;
+// }
+
+// #pageFooter:after {
+//     display: block;
+//     text-align: right;
+//     // counter-increment: page;
+//     content: "Page " counter(page);
+// }
+
+.calendarBoxBottomStyle {
+    height: 100px;
+    width: 150px;
+    border-top: 4px solid #B3B8BD;
+    border-bottom: 8px solid #B3B8BD;
+    border-left: 8px solid #B3B8BD;
+    border-right: 8px solid #B3B8BD;
+    border-radius: 0 0 40px 40px;
+}
+
+.calendarBoxTopStyle {
+    height: 50px;
+    width: 150px;
+    border-top: 8px solid #B3B8BD;
+    border-bottom: 4px solid #B3B8BD;
+    border-left: 8px solid #B3B8BD;
+    border-right: 8px solid #B3B8BD;
+    border-radius: 40px 40px 0 0;
+}
+
+.calendarBoxBorderStyle {
+    height: 35px;
+    width: 70px;
+    border-left: 8px solid #B3B8BD;
+    border-right: 8px solid #B3B8BD;
+    margin-left: 40px;
+    position: relative;
+    top: 20px;
+}
+
+.calendarDateStyle {
+    text-align: center;
+    font: normal normal bolder 37px/38px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+}
+
+.calendarMonthYearStyle {
+    text-align: center;
+    font: normal normal bold 15px/28px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+}
+
+.progressbarStyle {
+    width: 80%;
+    margin-left: 10%;
+}
+
+.statisticsProgress {
+    text-align: left;
+    font: normal normal medium 10px/12px Montserrat;
+    letter-spacing: 0px;
+    color: #000000;
+    margin-bottom: 1px !important;
+}
+
+.progressCountStyle {
+    text-align: right;
+    font: normal normal normal 9px/12px Montserrat;
+    letter-spacing: 0.12px;
+    color: #707070;
+}
+
+.progressMargin {
+    margin: 5px 0 20px 0;
+}
+
+.timesheetsNotPaidCountContainer {
+    background-color: #c4bef3;
+    height: 150px;
+    border-radius: 10px 10px 0 0;
+    text-align: center;
+    font: normal normal bolder 35px/53px Montserrat;
+    letter-spacing: 0px;
+    color: #7165E3;
+}
+
+.timesheetsNotPaidTitleContainer {
+    background: #7165E3 0% 0% no-repeat padding-box;
+    border-radius: 0px 0px 10px 10px;
+    height: 40px;
+    text-align: center;
+    font: normal normal 600 14px/20px Montserrat;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+}
+
+.floatRight {
+    float: right;
+}
+
+.multiProviderGrid {
+    display: grid;
+    grid-template-columns: 20% 15% 15% 23% 15% 7%;
+    grid-gap: 1%;
 }

@@ -1,324 +1,1120 @@
-import React, { useState, useEffect } from 'react';
-import { InputGroup, Checkbox, Tag } from '@blueprintjs/core';
-import Switch from '@mui/material/Switch';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import {POST, GET, PUT, TenantID} from './../dataSaver';
-import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+import React, { useState, useEffect } from "react";
+import { Dialog, Classes, Icon, Intent } from "@blueprintjs/core";
+import { POST, GET, PUT, TenantID } from "./../dataSaver";
+import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
+import LoadingScreen from "../../Components/LoadingScreen";
+import RedirectingPopUp from "./redirectingPopUp";
+import {
+  EmailValidator,
+  FormatPhoneNumber,
+  EmptyStringCheck,
+  PhoneValidator,
+} from "./../../utils/formatting";
+import CommonInputField from "../../Components/CommonFields/CommonInputField";
+import CommonCheckBox from "../../Components/CommonFields/CommonCheckBox";
+import CommonSwitch from "../../Components/CommonFields/CommonSwitch";
+import CommonLabel from "../../Components/CommonFields/CommonLabel";
+import { valueCheck } from "./../../utils/valueCheck";
 
-import style from './index.module.scss';
+import style from "./index.module.scss";
+import MissedMandatoryFieldAlert from "./missedMandatoryFieldAlert";
 
-const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractInfo, contractId, contractName}) => {
-    const [isUserUpdated, setIsUserUpdated] = useState(false);
-    const [sameAsContractor, setSameAsContractor] = useState(false);
-    const [contractorNPIN, setContractorNPIN] = useState({
-        notApplicable: false,
-        npin: "",
-        missing: true
-    });
-    const [contractorEntityTaxId, setContractorEntityTaxId] = useState({
-        taxId: "",
-        missing: true
-    });
-    const [businessEntity, setBusinessEntity] = useState({
-        name: ''
-    });
-    const [businessEntityUser, setBusinessEntityUser] = useState({
-        name: {
-            firstName: "",
-            lastName: "",
-            suffix: {}
+const TEXTFIELDLEN50 = 50;
+const TEXTFIELDLEN100 = 100;
+const MAXZIPCODELEN = 10;
+
+const ContractorBusinessEntity = ({
+  getViewPage5,
+  getCurrentPage,
+  selectContractInfo,
+  contractId,
+  contractName,
+  checkFieldAndPopAlert,
+  getShowAlert,
+  isEditable,
+  getTabDataStatus,
+}) => {
+  const [isUserUpdated, setIsUserUpdated] = useState(false);
+  const [userCount, setUserCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [sameAsContractor, setSameAsContractor] = useState(false);
+  const [contractUser, setContractUser] = useState();
+  const [allowBEM, setAllowBEM] = useState(false);
+  const [keepConfidential, setKeepConfidential] = useState(false);
+  const [contractorNPIN, setContractorNPIN] = useState({
+    notApplicable: false,
+    npin: "",
+    missing: false,
+  });
+  const [ssoId, setSsoId] = useState("");
+  const [contractorEntityTaxId, setContractorEntityTaxId] = useState({
+    taxId: "",
+    missing: false,
+    notApplicable: false,
+  });
+  const [businessEntity, setBusinessEntity] = useState({
+    name: "",
+    notApplicable: false,
+  });
+  const [businessEntityUser, setBusinessEntityUser] = useState({
+    name: {
+      firstName: "",
+      lastName: "",
+      suffix: {},
+    },
+    email: {
+      officialEmail: "",
+    },
+    contactNumber: {
+      number: 0,
+      missing: false,
+    },
+  });
+  const [roles, setRoles] = useState([]);
+  const [mailingAddress, setMailingAddress] = useState({
+    addressLine: "",
+    city: "",
+    state: "",
+    zipcode: "",
+  });
+  const [appRoleRequired, setAppRoleRequired] = useState(true);
+  const [contractorBusinessEntity, setContractorBusinessEntity] = useState({});
+  const [userId, setUserId] = useState("0");
+  const [showAlert, setShowAlert] = useState(false);
+  const [allowAggregator, setAllowAggregator] = useState(false);
+  const [selectedRoles, setSelectedRoles] = useState([]);
+  const [continueLoading, setContinueLoading] = useState(false);
+  const [unassignedKeys, setUnassignedKeys] = useState([]);
+  const [showSaveInProgress, setShowSaveInProgress] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const [buttonName, setButtonName] = useState("");
+
+  useEffect(() => {
+    getUserData();
+  }, []);
+
+  // useEffect(() => {
+  //   getContractorData();
+  // }, [sameAsContractor])
+
+  const getUserData = async () => {
+    setIsLoading(true);
+    if (contractId !== "" && contractId !== undefined) {
+      const { data: userData } = await GET(
+        `user-management-service/user?contractID=${contractId}`
+      );
+      setUserCount(userData?.length || 0);
+      if (selectContractInfo === "INDIVIDUAL") {
+        setContractUser(
+          userData
+            ?.filter(
+              (data) =>
+                !data?.roles
+                  ?.map((role) => role?.roleName)
+                  ?.includes("Contract Business Entity Manager")
+            )
+            ?.map((data) => data)[0]
+        );
+      }
+      let entityManager = userData
+        ?.filter((data) =>
+          data?.roles
+            ?.map((role) => role?.roleName)
+            ?.includes("Contract Business Entity Manager")
+        )
+        ?.map((data) => data);
+      if (entityManager?.length !== 0) {
+        setUserId(entityManager?.[0]?.id);
+      }
+    }
+    setIsLoading(false);
+  };
+
+  const onAllowBEMChange = (value) => {
+    let temp = selectedRoles;
+    if (value) {
+      temp.push(
+        roles
+          ?.filter(
+            (role) => role?.roleName === "Contract Business Entity Manager"
+          )
+          ?.map((data) => data)[0]
+      );
+      setAllowBEM(value);
+    } else {
+      setAllowBEM([]);
+    }
+    setSelectedRoles(temp);
+  };
+
+  const onAllowAggregatorChange = (value) => {
+    let temp = selectedRoles;
+    if (value) {
+      temp.push(
+        roles
+          ?.filter((role) => role?.roleName === "Aggregator")
+          ?.map((data) => data)[0]
+      );
+      setAllowAggregator(value);
+    } else {
+      temp = selectedRoles
+        ?.filter((role) => role?.roleName !== "Aggregator")
+        ?.map((data) => data);
+      setAllowAggregator(value);
+    }
+    setSelectedRoles(temp);
+  };
+
+  console.log(selectedRoles);
+
+  const mandatoryFieldCheck = (buttonType) => {
+    setContinueLoading(true);
+    if (buttonType === "SaveInProgress" || buttonType === "Continue") {
+      saveInProgresscheck(buttonType);
+      setButtonName(buttonType)
+    }
+  };
+
+  const saveInProgresscheck = (buttonType) => {
+    var keys = [];
+
+    if (!contractorNPIN?.notApplicable &&
+      !contractorNPIN?.missing && contractorNPIN?.npin === "") {
+      keys.push("NPIN");
+    }
+    if (!contractorEntityTaxId?.missing &&
+      !contractorEntityTaxId?.notApplicable && contractorEntityTaxId?.taxId === "") {
+      keys.push("Tax Id");
+    }
+    if (!businessEntity?.notApplicable && businessEntity?.name === "") {
+      keys.push("Business Entity Name");
+    }
+    if (EmailValidator(businessEntityUser?.email?.officialEmail)) {
+      keys.push("Business Contact Email Address");
+    }
+    if (businessEntityUser?.name?.firstName === "") {
+      keys.push("Contractor Business Contact First Name");
+    }
+    if (businessEntityUser?.name?.lastName === "") {
+      keys.push("Contractor Business Contact Last Name");
+    }
+    if (!businessEntityUser?.contactNumber?.missing && PhoneValidator(businessEntityUser?.contactNumber?.number)) {
+      keys.push("Cell Phone");
+    }
+    if (mailingAddress?.addressLine === "") {
+      keys.push("Mailing Address Line");
+    }
+    if (mailingAddress?.city === "") {
+      keys.push("City");
+    }
+    if (mailingAddress?.state === "") {
+      keys.push("State");
+    }
+    if (mailingAddress?.zipcode === "") {
+      keys.push("Zipcode");
+    }
+
+    setUnassignedKeys(keys);
+    if (keys?.length !== 0) {
+      setShowSaveInProgress(true);
+      setContinueLoading(true)
+    } else {
+      handleContinue(buttonType);
+    }
+  };
+
+  const saveInProgressFunction = (type) => {
+    handleContinue(type);
+    setShowSaveInProgress(false)
+  };
+
+  const getSaveInProgressAlert = (value) => {
+    setShowSaveInProgress(value);
+    setContinueLoading(value)
+  };
+
+  const handleContinue = async (buttonText) => {
+    setContinueLoading(true);
+    if (
+      (!businessEntity?.notApplicable &&
+        EmptyStringCheck(
+          businessEntity?.name,
+          "Business Entity Name is Mandatory"
+        )) ||
+      (!contractorNPIN?.notApplicable &&
+        !contractorNPIN?.missing &&
+        EmptyStringCheck(contractorNPIN?.npin, "NPIN is Mandatory")) ||
+      (!contractorEntityTaxId?.missing &&
+        !contractorEntityTaxId?.notApplicable &&
+        EmptyStringCheck(
+          contractorEntityTaxId?.taxId,
+          "Tax Id is Mandatory"
+        )) ||
+      EmptyStringCheck(
+        businessEntityUser?.name?.firstName,
+        "First Name is Mandatory"
+      ) ||
+      EmptyStringCheck(
+        businessEntityUser?.name?.lastName,
+        "Last Name is Mandatory"
+      ) ||
+      EmailValidator(businessEntityUser?.email?.officialEmail) ||
+      (!businessEntityUser?.contactNumber?.missing &&
+        PhoneValidator(businessEntityUser?.contactNumber?.number))
+    ) {
+      return;
+    }
+    if (!continueLoading) {
+      setContinueLoading(true);
+
+      if (allowBEM || allowAggregator) {
+        if (
+          businessEntityUser?.email?.officialEmail ===
+          contractUser?.email?.officialEmail
+        ) {
+          ErrorToaster("Enter Different Email to register with App User Role");
+          return;
+        }
+        const userData = {
+          ...(userId !== "0" && { id: userId }),
+          name: {
+            firstName: businessEntityUser?.name?.firstName,
+            lastName: businessEntityUser?.name?.lastName,
+            suffix: {},
           },
+          userType: "REGISTERED_USER",
+          contracts: [
+            {
+              id: contractId,
+              contractName: {
+                contractName: contractName,
+              },
+              roles: selectedRoles,
+              sites: {
+                sites: [],
+              },
+              siteLevelResponsible: true,
+              departmentLevelResponsible: true,
+            },
+          ],
           email: {
-            officialEmail: ""
+            officialEmail: businessEntityUser?.email?.officialEmail,
           },
-          contactNumber: {
-            number: 0,
-            missing: true
-          }
+          ...((userId === undefined || userId === "0") && {
+            password: {
+              password: "admin123",
+            },
+          }),
+          communication: {
+            personalEmail: businessEntityUser?.email?.officialEmail,
+            mobileNumber: businessEntityUser?.contactNumber?.number,
+            landlineNumber: "",
+          },
+          roles: selectedRoles,
+          tenant: {
+            tenantId: TenantID,
+          },
+          ssoId: { id: businessEntityUser?.email?.officialEmail },
+        };
+
+        if (userId === "0") {
+          await POST(
+            "user-management-service/user/register",
+            JSON.stringify(userData)
+          )
+            .then((response) => {
+              SuccessToaster("Business Entity Manager Added Successfully");
+            })
+            .catch((error) => {
+              ErrorToaster("Unexpected Error");
+            });
+        } else {
+          await PUT("user-management-service/user", JSON.stringify(userData))
+            .then((response) => {
+              SuccessToaster("Business Entity Manager Updated Successfully");
+            })
+            .catch((error) => {
+              ErrorToaster("Unexpected Error");
+            });
+        }
+      }
+
+      const data = {
+        contractorNPIN: contractorNPIN,
+        contractorEntityTaxId: contractorEntityTaxId,
+        businessEntity: businessEntity,
+        businessEntityUser: businessEntityUser,
+        roles: roles
+          ?.filter(
+            (data) => data?.roleName === "Contract Business Entity Manager"
+          )
+          ?.map((data) => data),
+        mailingAddress: mailingAddress,
+        contractorContact: sameAsContractor,
+        appRoleRequired: appRoleRequired,
+        accessAllowedForBusinessEntityUser: allowBEM,
+        paymentDataConfidential: keepConfidential,
+      };
+      const response = await PUT(
+        `contract-managment-service/contracts/${contractId}/contractorBusinessEntity`,
+        JSON.stringify(data)
+      );
+      if (response) {
+        SuccessToaster("Business Entity Updated Successfully");
+      } else {
+        ErrorToaster("Unexpected Error");
+      }
+      setContinueLoading(false);
+
+      if (buttonText === "Continue") {
+        getViewPage5(true);
+        getCurrentPage("Contracted Services Specification");
+      } else {
+        getShowAlert(true);
+      }
+      setUnassignedKeys([]);
+
+      getTabDataStatus();
+    }
+  };
+
+  const getRoles = async () => {
+    const { data: roles } = await GET("user-management-service/roles");
+    setRoles(roles);
+  };
+
+  const getContractorBusinessEntity = async () => {
+    const { data: contractorBusinessEntity } = await GET(
+      `contract-managment-service/contracts/${contractId}/contractorBusinessEntity`
+    );
+    setContractorBusinessEntity(contractorBusinessEntity);
+  };
+
+  const setBusinessEntityData = () => {
+    setSameAsContractor(contractorBusinessEntity?.contractorContact);
+    setBusinessEntity(contractorBusinessEntity?.businessEntity || {});
+    setContractorNPIN(contractorBusinessEntity?.contractorNPIN || {});
+    setContractorEntityTaxId(
+      contractorBusinessEntity?.contractorEntityTaxId || {}
+    );
+    setBusinessEntityUser(contractorBusinessEntity?.businessEntityUser || {});
+    setAppRoleRequired(contractorBusinessEntity?.appRoleRequired);
+    setSelectedRoles(contractorBusinessEntity?.roles || []);
+    setMailingAddress(contractorBusinessEntity?.mailingAddress || {});
+    setAllowBEM(contractorBusinessEntity?.accessAllowedForBusinessEntityUser);
+    setKeepConfidential(contractorBusinessEntity?.paymentDataConfidential);
+  };
+
+  useEffect(() => {
+    getRoles();
+    getContractorBusinessEntity();
+    setBusinessEntityData();
+  }, [contractId]);
+
+  useEffect(() => {
+    setBusinessEntityData();
+  }, [contractorBusinessEntity]);
+
+  // useEffect(() => {
+  //   setSsoId(contractUser?.ssoId?.id);
+  // }, [contractUser])
+
+  const handleInput = (e) => {
+    const formattedPhoneNumber = FormatPhoneNumber(e.target.value);
+    setBusinessEntityUser({
+      ...businessEntityUser,
+      contactNumber: {
+        number: formattedPhoneNumber,
+        missing: businessEntityUser?.contactNumber?.missing,
+      },
     });
-    const [roles, setRoles] = useState([])
-    const [selectedRoles, setSelectedRoles] = useState([])
-    const [mailingAddress, setMailingAddress] = useState({
+  };
+
+  const maskValue = (value) => {
+    if (value !== '' && value !== null && value !== undefined) {
+      return value.replace(/[0-9]/g, '*');
+    } else {
+      return ''
+    }
+  };
+
+  console.log(isFocused)
+
+  const handleFocus = () => {
+    setIsFocused(true);
+  };
+
+  const handleBlur = () => {
+    setIsFocused(false);
+  };
+
+  const getContractorData = (value) => {
+    if (value && selectContractInfo === "INDIVIDUAL") {
+      setBusinessEntityUser({
+        name: contractUser?.name,
+        email: contractUser?.email,
+        contactNumber: {
+          number: contractUser?.communication?.mobileNumber,
+          missing: contractUser?.communication?.mobileNumberNotApplicable,
+        },
+      });
+      setSsoId(contractUser?.ssoId?.id);
+      setMailingAddress({
+        addressLine: contractUser?.address?.addressLine,
+        city: contractUser?.address?.city,
+        state: contractUser?.address?.state,
+        zipcode: contractUser?.address?.zipcode,
+      });
+      setContractorNPIN({
+        notApplicable: contractUser?.npin?.notApplicable,
+        npin: contractUser?.npin?.npin || "",
+        missing: contractUser?.npin?.missing,
+      });
+    } else {
+      setBusinessEntityUser({
+        name: {
+          firstName: "",
+          lastName: "",
+          middleName: "",
+          suffix: {},
+        },
+        email: { officialEmail: "" },
+        contactNumber: {
+          number: "",
+          missing: false,
+        },
+      });
+      setMailingAddress({
         addressLine: "",
         city: "",
         state: "",
-        zipcode: ""
-    });
-    const [appRoleRequired, setAppRoleRequired] = useState(true);
-    const [contractorBusinessEntity, setContractorBusinessEntity] = useState({});
-    const [userId, setUserId] = useState('0');
-
-    useEffect(()=>{
-      getUserData();
-    },[])
-
-    const getUserData = async() => {
-      if(contractId !== '' && contractId !== undefined){
-        const {data: userData} = await GET(`user-management-service/user?contractID=${contractId}`);
-        let entityManager = userData?.filter(data=>data?.roles?.map(role=>role?.id)?.includes('6344d59a45ca246bd12dd77b'))?.map(data=>data)
-        console.log('userData Entity',userData);
-        if(entityManager?.length !== 0){
-          setUserId(entityManager?.[0]?.id);
-        }
-      }
+        zipcode: "",
+      });
+      setContractorNPIN({
+        notApplicable: "",
+        npin: "",
+        missing: false,
+      });
     }
+  };
 
-    const handleContinue = async() => {
-      if(!sameAsContractor && (businessEntityUser?.email?.officialEmail === '' || businessEntityUser?.email?.officialEmail === undefined)){
-        ErrorToaster('Enter a valid Email-ID');
-        return;
-      }
-      console.log('businessEntity',businessEntityUser);
-        const data = {
-            contractorNPIN: contractorNPIN,
-            contractorEntityTaxId: contractorEntityTaxId,
-            businessEntity: businessEntity,
-            businessEntityUser: businessEntityUser,
-            roles: roles?.filter(data=>data?.id === '6344d59a45ca246bd12dd77b')?.map(data=>data),
-            mailingAddress: mailingAddress,
-            contractorContact: sameAsContractor,
-            appRoleRequired: appRoleRequired
-          }
-          const response = await PUT(`contract-managment-service/contracts/${contractId}/contractorBusinessEntity`, JSON.stringify(data));
-            if(response){
-                SuccessToaster('Business Entity Updated Successfully');
-            }
-            else {
-                ErrorToaster('Unexpected Error');
-            }
-
-        console.log('userId', userId);
-
-        if(!sameAsContractor){
-          const userData = {
-            ...(userId !== '0' && {'id': userId}),
-            "name": {
-              "firstName": businessEntityUser?.name?.firstName,
-              "lastName": businessEntityUser?.name?.lastName,
-              "suffix": {}
-            },
-            "userType": "REGISTERED_USER",
-            "contracts": [{
-              "id": contractId,
-              "contractName": {
-                "contractName": contractName
-              },
-              "roles":roles?.filter(data=>data?.id === '6344d59a45ca246bd12dd77b')?.map(data=>data),
-              "sites":{
-                "sites":[]
-              },
-              "siteLevelResponsible":true,
-              "departmentLevelResponsible":true,
-            }],
-            "email": {
-              "officialEmail": businessEntityUser?.email?.officialEmail
-            },
-            ...((userId === undefined || userId === '0') && "password": {
-              "password": "admin123"
-            }),
-            "communication": {
-              "personalEmail": businessEntityUser?.email?.officialEmail,
-              "mobileNumber": businessEntityUser?.contactNumber?.number,
-              "landlineNumber": ""
-            },
-            "roles": roles?.filter(data=>data?.id === '6344d59a45ca246bd12dd77b')?.map(data=>data),
-            "tenant": {
-              "tenantId": TenantID
-            },
-        }
-
-      if(userId === '0'){
-        await POST('user-management-service/user/register', JSON.stringify(userData))
-        .then(response=>{
-          SuccessToaster('Business Entity Manager Added Successfully');
-        })
-        .catch(error=>{
-            ErrorToaster('Unexpected Error');
-        })
-      }
-      else{
-        await PUT('user-management-service/user', JSON.stringify(userData))
-        .then(response=>{
-          SuccessToaster('Business Entity Manager Updated Successfully');
-        })
-        .catch(error=>{
-            ErrorToaster('Unexpected Error');
-        });
-      }
-        }
-
+  const updatePhone = (e) => {
+    if (e.target.value?.length < 15) {
+      let number = FormatPhoneNumber(e.target.value);
+      setBusinessEntityUser({
+        ...businessEntityUser,
+        contactNumber: { number: number, missing: false },
+      });
+      setIsUserUpdated(true);
     }
+  };
 
-    const handleRoles = (value) => {
-        if (value !== '0') {
-          const selectedValue = roles?.filter(data => data?.roleName === value)?.map(data => data)[0];
-
-          if (!selectedRoles?.map(data => data?.roleName)?.includes(value)) {
-            setSelectedRoles([...selectedRoles, selectedValue]);
-          }
-        }
-      }
-
-    const rolesTags = selectedRoles
-    ?.filter(data => roles?.map(role => role.id === data?.id))
-    .map((tag, index) => {
-      const onRemove = () => {
-        setSelectedRoles(selectedRoles.filter((t) => t?.roleName !== tag?.roleName)?.map(data=>data));
-      };
-      return (
-        <Tag key={index} onRemove={onRemove} large={true} className={style.tagStyle}>
-          {tag?.roleName}
-        </Tag>
-      );
+  const handleNumberMissing = (value) => {
+    setBusinessEntityUser({
+      ...businessEntityUser,
+      contactNumber: { number: "", missing: value },
     });
+  };
 
-    const getRoles = async() => {
-        const {data: roles} = await GET('user-management-service/roles');
-        setRoles(roles);
-    };
+  const handleSameContact = (value) => {
+    setContractorNPIN({
+      ...contractorNPIN,
+      missing: false,
+      notApplicable: false,
+    });
+    setContractorEntityTaxId({
+      ...contractorEntityTaxId,
+      missing: false,
+      notApplicable: false,
+    });
+    setSameAsContractor(value);
+    getContractorData(value);
+  };
 
-    const getContractorBusinessEntity = async() => {
-        const {data: contractorBusinessEntity} = await GET(`contract-managment-service/contracts/${contractId}/contractorBusinessEntity`);
-        setContractorBusinessEntity(contractorBusinessEntity);
-    };
+  console.log(ssoId, contractUser?.ssoId?.id);
 
-    useEffect(()=>{
-        setSameAsContractor(contractorBusinessEntity?.contractorContact);
-        setBusinessEntity(contractorBusinessEntity?.businessEntity);
-        setContractorNPIN(contractorBusinessEntity?.contractorNPIN);
-        setContractorEntityTaxId(contractorBusinessEntity?.contractorEntityTaxId);
-        setBusinessEntityUser(contractorBusinessEntity?.businessEntityUser);
-        setAppRoleRequired(contractorBusinessEntity?.appRoleRequired);
-        setSelectedRoles(contractorBusinessEntity?.roles || []);
-        setMailingAddress(contractorBusinessEntity?.mailingAddress);
-    },[contractorBusinessEntity])
+  const dataCheck = (value) => {
+    if (contractorBusinessEntity) {
+      return valueCheck(value);
+    } else {
+      return false;
+    }
+  };
 
-      useEffect(()=>{
-        getRoles();
-        getContractorBusinessEntity();
-    },[])
-
-    console.log('roles',selectedRoles);
-
+  if (isLoading) {
     return (
-        <div className={style.cloneBlockStyle}>
-            <div className={`${style.newContractFromCloneBoxStyle}`}>
-                {selectContractInfo === "INDIVIDUAL" && (
-                    <div className={`${style.extentionGrid}`}>
-                        <div className={style.extentionLableStyle}>Contractor Business Contact Same As Contractor*</div>
-                        <FormControlLabel
-                            control={
-                                <Switch checked={sameAsContractor} className={`${style.textAlignLeft}`} onChange={() => setSameAsContractor(!sameAsContractor)} />
-                            }
-                            className={`${style.switchFontStyle} ${style.marginTop}`}
-                            label={sameAsContractor ? 'YES' : 'NO'}
-                        />
-                    </div>
-                )}
-                {!sameAsContractor && (
-                    <>
-                        <div className={`${style.extentionGrid} ${selectContractInfo === "INDIVIDUAL" && style.marginTop20}`}>
-                            <div className={style.extentionLableStyle}>Business Entity Name*</div>
-                            <InputGroup className={style.fullWidth}
-                            value={businessEntity?.name}
-                            placeholder="Enter Business Entity Name"
-                            onChange={(e) => setBusinessEntity({...businessEntity, name: e.target.value})} />
-                        </div>
-                        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                            <div className={style.extentionLableStyle}>Contractor NPIN*</div>
-                            <div className={style.twoCol}>
-                                <InputGroup className={style.fullWidth} value={contractorNPIN?.npin} placeholder="Enter Contractor NPIN"
-                                onChange={(e) => setContractorNPIN({...contractorNPIN, npin: e.target.value})}  />
-                                <div className={`${style.displayInRow} ${style.marginTop10}`}>
-                                    <Checkbox label="Missing" checked={contractorNPIN?.missing} onChange={(e) => setContractorNPIN({...contractorNPIN, missing: e.target.checked})} />
-                                    <Checkbox label="NA" checked={contractorNPIN?.notApplicable}  className={style.marginLeft20}
-                                    onChange={(e) => setContractorNPIN({...contractorNPIN, notApplicable: e.target.checked})}  />
-                                </div>
-                            </div>
-                        </div>
-                        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                            <div className={style.extentionLableStyle}>Contractor Entity Tax ID*</div>
-                            <div className={style.twoCol}>
-                                <InputGroup className={style.fullWidth} value={contractorEntityTaxId?.taxId} placeholder="Enter Contractor Entity Tax ID"
-                                onChange={(e) => setContractorEntityTaxId({...contractorEntityTaxId, taxId: e.target.value})} />
-                                <Checkbox label="Missing" checked={contractorEntityTaxId?.missing} className={`${style.marginTop10}`}
-                                onChange={(e) => setContractorEntityTaxId({...contractorEntityTaxId, missing: e.target.checked})}  />
-                            </div>
-                        </div>
-                        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                            <div className={style.extentionLableStyle}>Contractor Business Contact*</div>
-                            <div className={style.twoCol}>
-                                <InputGroup className={style.fullWidth} value={businessEntityUser?.name?.firstName}  placeholder="Enter First Name"
-                                onChange={(e) =>
-                                  {
-                                  setBusinessEntityUser({...businessEntityUser, name: {firstName: e.target.value, lastName: businessEntityUser?.name?.lastName, suffix: {}}});
-                                  setIsUserUpdated(true);
-                                }} />
-                                <InputGroup className={style.fullWidth} value={businessEntityUser?.name?.lastName}  placeholder="Enter Last Name"
-                                onChange={(e) =>
-                                  {
-                                    setBusinessEntityUser({...businessEntityUser, name: {lastName: e.target.value, firstName: businessEntityUser?.name?.firstName, suffix: {}}});
-                                    setIsUserUpdated(true);
-                                  }} />
-                            </div>
-                        </div>
-                        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                            <div className={style.extentionLableStyle}>Business Contact Email Address*</div>
-                            <InputGroup className={style.fullWidth}  value={businessEntityUser?.email?.officialEmail} placeholder="Enter Email"
-                                onChange={(e) =>
-                                  {
-                                    setBusinessEntityUser({...businessEntityUser, email: {officialEmail: e.target.value}});
-                                    setIsUserUpdated(true);
-                                  }}
-                            />
-                        </div>
-                        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                            <div className={style.extentionLableStyle}>Cell Phone*</div>
-                            <div className={style.twoCol}>
-                                <InputGroup className={style.fullWidth} value={businessEntityUser?.contactNumber?.number} placeholder="Enter Phone Number" type='number'
-                                onChange={(e) =>
-                                  {
-                                    setBusinessEntityUser({...businessEntityUser, contactNumber: {number: e.target.value, missing: businessEntityUser?.contactNumber?.missing}});
-                                    setIsUserUpdated(true);
-                                  }}
-                                />
-                                <Checkbox label="Missing" checked={businessEntityUser?.contactNumber?.missing} className={`${style.marginTop10}`}
-                                onChange={(e) =>
-                                  {
-                                    setBusinessEntityUser({...businessEntityUser, contactNumber: {missing: e.target.checked, number: businessEntityUser?.contactNumber?.number}});
-                                    setIsUserUpdated(true);
-                                  }}  />
-                            </div>
-                        </div>
-                        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                            <div className={style.extentionLableStyle}>Mailing Address*</div>
-                            <div>
-                                <InputGroup className={style.fullWidth} value={mailingAddress?.addressLine} placeholder="Enter Address Line 1"
-                                onChange={(e) => setMailingAddress({...mailingAddress, addressLine: e.target.value})} />
-                                <div className={`${style.grid3} ${style.marginTop10}`}>
-                                    <InputGroup className={style.fullWidth} value={mailingAddress?.city} placeholder="Enter City"
-                                onChange={(e) => setMailingAddress({...mailingAddress, city: e.target.value})} />
-                                    <InputGroup className={style.fullWidth}  value={mailingAddress?.state} placeholder="Enter State"
-                                onChange={(e) => setMailingAddress({...mailingAddress, state: e.target.value})} />
-                                    <InputGroup className={style.fullWidth}  value={mailingAddress?.zipcode} placeholder="Enter Zipcode"
-                                onChange={(e) => setMailingAddress({...mailingAddress, zipcode: e.target.value})} />
-                                </div>
-                            </div>
-                        </div>
-                    </>
-                )}
-            </div>
-            <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-                <button className={`${style.newContractButtonStyle}`} onClick={()=> {getCurrentPage('Contracted Services Provider(s)')}}>BACK</button>
-                <div>
-                    <button className={style.newContractOutlinedButton} onClick={() => handleContinue()}>SAVE IN-PROGRESS</button>
-                    <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
-                    onClick={() => { handleContinue();getViewPage4(true); getCurrentPage('Documentation Proof Required') }}
-                    >CONTINUE</button>
-                </div>
-            </div>
+      <LoadingScreen text={["Sit Back And Relax", "Loading Your Details"]} />
+    );
+  }
+
+  return (
+    <>
+      <Dialog
+        isOpen={showAlert}
+        className={`${style.cloneDialog}`}
+        canOutsideClickClose={false}
+      >
+        <div
+          className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}
+        >
+          <div className={style.spaceBetween}>
+            <p className={style.extensionStyle}>Data Entry Alert</p>
+            <Icon
+              icon="cross"
+              size={20}
+              intent={Intent.DANGER}
+              className={style.crossStyle}
+              onClick={() => setShowAlert(false)}
+            />
+          </div>
+          <div className={style.extensionBorder}></div>
+          <p className={`${style.deleteDescriptionStyle} ${style.marginTop20}`}>
+            {sameAsContractor
+              ? "The data entry within the form will be reset if you continue"
+              : "The contractor Service Provider data from previous tab will automatically entered in the below field. Review and enter additional detail required."}
+          </p>
+          <div className={`${style.positionCenter} ${style.marginTop20}`}>
+            <button
+              className={`${style.newContractButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`}
+              onClick={() => {
+                setShowAlert(false);
+                handleSameContact(!sameAsContractor);
+              }}
+            >
+              OK
+            </button>
+          </div>
+          <br />
         </div>
-    )
-}
+      </Dialog>
+      {userCount !== 0 ? (
+        <div className={style.cloneBlockStyle}>
+          <div className={`${style.newContractFromCloneBoxStyle}`}>
+            {selectContractInfo === "INDIVIDUAL" && (
+              <div
+                className={`${style.extentionGrid}`}
+                onFocus={() => {
+                  checkFieldAndPopAlert(
+                    true,
+                    "Contractor Business Contact Same As Contractor"
+                  );
+                }}
+              >
+                <CommonLabel value="Contractor Business Contact Same As Contractor*" />
+                <CommonSwitch
+                  checked={sameAsContractor}
+                  className={`${style.textAlignLeft} ${style.switchFontStyle}`}
+                  onChange={() => setShowAlert(true)}
+                  label={sameAsContractor ? "YES" : "NO"}
+                />
+              </div>
+            )}
+            <div
+              className={`${style.extentionGrid} ${selectContractInfo === "INDIVIDUAL" && style.marginTop20
+                }`}
+              onFocus={() => {
+                checkFieldAndPopAlert(contractorNPIN?.npin, "Contractor NPIN");
+              }}
+            >
+              <CommonLabel
+                value="Vendor NPIN*"
+                className={
+                  !contractorNPIN?.missing &&
+                  !contractorNPIN?.notApplicable &&
+                  (dataCheck(contractorNPIN?.npin) ? style.redLable : "")
+                }
+              />
+              <div className={style.twoCol}>
+                <CommonInputField
+                  className={style.fullWidth}
+                  placeholder="Enter Vendor NPIN"
+                  type="number"
+                  disabled={
+                    contractorNPIN?.missing || contractorNPIN?.notApplicable
+                  }
+                  value={contractorNPIN?.npin}
+                  onChange={(e) =>
+                    e.target.value >= 0 &&
+                    setContractorNPIN({
+                      ...contractorNPIN,
+                      npin: e.target.value?.slice(0, 10),
+                      missing: false,
+                      notApplicable: false,
+                    })
+                  }
+                />
+                <div className={`${style.displayInRow}`}>
+                  <CommonCheckBox
+                    value="Missing"
+                    checked={contractorNPIN?.missing}
+                    onChange={(e) =>
+                      setContractorNPIN({
+                        ...contractorNPIN,
+                        missing: e.target.checked,
+                        notApplicable: false,
+                        npin: "",
+                      })
+                    }
+                    label="Missing"
+                  />
+                  <CommonCheckBox
+                    value="NA"
+                    checked={contractorNPIN?.notApplicable}
+                    onChange={(e) =>
+                      setContractorNPIN({
+                        ...contractorNPIN,
+                        notApplicable: e.target.checked,
+                        missing: false,
+                        npin: "",
+                      })
+                    }
+                    label="NA"
+                  />
+                </div>
+              </div>
+            </div>
+            <div
+              className={`${style.extentionGrid} ${style.marginTop20}`}
+              onFocus={() => {
+                checkFieldAndPopAlert(
+                  contractorEntityTaxId?.taxId,
+                  "Contractor Entity Tax ID"
+                );
+              }}
+            >
+              <CommonLabel
+                value="Vendor Tax ID*"
+                className={
+                  !contractorEntityTaxId?.missing &&
+                  !contractorEntityTaxId?.notApplicable &&
+                  (dataCheck(contractorEntityTaxId?.taxId)
+                    ? style.redLable
+                    : "")
+                }
+              />
+              <div className={style.twoCol}>
+                <CommonInputField
+                  className={style.fullWidth}
+                  disabled={
+                    contractorEntityTaxId?.missing ||
+                    contractorEntityTaxId?.notApplicable
+                  }
+                  value={isFocused ? contractorEntityTaxId?.taxId : maskValue(contractorEntityTaxId?.taxId)}
+                  placeholder="Enter Vendor Tax ID"
+                  onChange={(e) =>
+                    setContractorEntityTaxId({
+                      ...contractorEntityTaxId,
+                      taxId: e.target.value,
+                      missing: false,
+                      notApplicable: false,
+                    })
+                  }
+                  onFocus={handleFocus}
+                  onBlur={handleBlur}
+                />
+                <div className={`${style.displayInRow}`}>
+                  <CommonCheckBox
+                    value="Missing"
+                    checked={contractorEntityTaxId?.missing}
+                    onChange={(e) =>
+                      setContractorEntityTaxId({
+                        ...contractorEntityTaxId,
+                        missing: e.target.checked,
+                        notApplicable: false,
+                        taxId: "",
+                      })
+                    }
+                    label="Missing"
+                  />
+                  <CommonCheckBox
+                    value="NA"
+                    checked={contractorEntityTaxId?.notApplicable}
+                    onChange={(e) =>
+                      setContractorEntityTaxId({
+                        ...contractorEntityTaxId,
+                        notApplicable: e.target.checked,
+                        missing: false,
+                        taxId: "",
+                      })
+                    }
+                    label="NA"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+              <CommonLabel
+                value="Business Entity Name*"
+                className={
+                  !businessEntity?.notApplicable &&
+                  (dataCheck(businessEntity?.name) ? style.redLable : "")
+                }
+              />
+              <div className={style.twoCol}>
+                <CommonInputField
+                  className={style.fullWidth}
+                  value={businessEntity?.name}
+                  maxLength={TEXTFIELDLEN100}
+                  disabled={businessEntity?.notApplicable}
+                  onFocus={() => {
+                    checkFieldAndPopAlert(
+                      businessEntity?.name,
+                      "Business Entity Name"
+                    );
+                  }}
+                  placeholder="Enter Business Entity Name"
+                  onChange={(e) =>
+                    setBusinessEntity({
+                      ...businessEntity,
+                      name: e.target.value,
+                    })
+                  }
+                />
+                <CommonCheckBox
+                  value="NA"
+                  checked={businessEntity?.notApplicable}
+                  onChange={(e) =>
+                    setBusinessEntity({
+                      ...businessEntity,
+                      notApplicable: e.target.checked,
+                      name: "",
+                    })
+                  }
+                  label="Not Applicable"
+                />
+              </div>
+            </div>
+            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+              <CommonLabel
+                value="Business Point of Contact*"
+                className={
+                  dataCheck(businessEntityUser?.name?.firstName && businessEntityUser?.name?.lastName)
+                    ? style.redLable
+                    : ""
+                }
+              />
+              <div className={style.twoCol}>
+                <CommonInputField
+                  className={style.fullWidth}
+                  onFocus={() => {
+                    checkFieldAndPopAlert(
+                      businessEntityUser?.name?.firstName,
+                      "Contractor Business Contact First Name"
+                    );
+                  }}
+                  value={businessEntityUser?.name?.firstName}
+                  maxLength={TEXTFIELDLEN50}
+                  placeholder="Enter First Name"
+                  onChange={(e) => {
+                    setBusinessEntityUser({
+                      ...businessEntityUser,
+                      name: {
+                        firstName: e.target.value,
+                        lastName: businessEntityUser?.name?.lastName,
+                        suffix: {},
+                      },
+                    });
+                    setIsUserUpdated(true);
+                  }}
+                />
+                <CommonInputField
+                  className={style.fullWidth}
+                  onFocus={() => {
+                    checkFieldAndPopAlert(
+                      businessEntityUser?.name?.lastName,
+                      "Contractor Business Contact Last Name"
+                    );
+                  }}
+                  value={businessEntityUser?.name?.lastName}
+                  maxLength={TEXTFIELDLEN50}
+                  placeholder="Enter Last Name"
+                  onChange={(e) => {
+                    setBusinessEntityUser({
+                      ...businessEntityUser,
+                      name: {
+                        lastName: e.target.value,
+                        firstName: businessEntityUser?.name?.firstName,
+                        suffix: {},
+                      },
+                    });
+                    setIsUserUpdated(true);
+                  }}
+                />
+              </div>
+            </div>
+            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+              <CommonLabel
+                value="Business Contact Email Address*"
+                className={
+                  dataCheck(businessEntityUser?.email?.officialEmail)
+                    ? style.redLable
+                    : ""
+                }
+              />
+              <CommonInputField
+                className={style.fullWidth}
+                value={businessEntityUser?.email?.officialEmail}
+                placeholder="Enter Email"
+                maxLength={TEXTFIELDLEN50}
+                onFocus={() => {
+                  checkFieldAndPopAlert(
+                    businessEntityUser?.email?.officialEmail,
+                    "Business Contact Email Address"
+                  );
+                }}
+                onChange={(e) => {
+                  setBusinessEntityUser({
+                    ...businessEntityUser,
+                    email: { officialEmail: e.target.value },
+                  });
+                  setIsUserUpdated(true);
+                }}
+              />
+            </div>
+            {/* <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                <CommonLabel value='SSO ID*' />
+                <CommonInputField className={style.fullWidth} value={ssoId} placeholder="Enter SSO ID"
+                  onChange={(e) => {
+                    setSsoId(e.target.value);
+                    setIsUserUpdated(true);
+                  }}
+                />
+              </div> */}
+            <div
+              className={`${style.extentionGrid} ${style.marginTop20}`}
+              onFocus={() => {
+                checkFieldAndPopAlert(
+                  businessEntityUser?.contactNumber?.number,
+                  "Cell Phone"
+                );
+              }}
+            >
+              <CommonLabel
+                value="Cell Phone*"
+                className={
+                  !businessEntityUser?.contactNumber?.missing &&
+                  (dataCheck(businessEntityUser?.contactNumber?.number)
+                    ? style.redLable
+                    : "")
+                }
+              />
+              <div className={style.twoCol}>
+                <div
+                  className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                >
+                  <div className={`${style.plusOneText} ${style.marginRight}`}>
+                    +1
+                  </div>
+                  <CommonInputField
+                    placeholder="Numeric"
+                    value={businessEntityUser?.contactNumber?.number}
+                    disabled={businessEntityUser?.contactNumber?.missing}
+                    onChange={(e) => {
+                      handleInput(e);
+                      setIsUserUpdated(true);
+                    }}
+                    className={`${style.fullWidth}`}
+                  />
+                </div>
+                <CommonCheckBox
+                  value="NA"
+                  checked={businessEntityUser?.contactNumber?.missing}
+                  onChange={(e) => handleNumberMissing(e.target.checked)}
+                  label="Not Available"
+                />
+              </div>
+            </div>
+            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+              <CommonLabel
+                value="Mailing Address*"
+                className={
+                  dataCheck(mailingAddress?.addressLine && mailingAddress?.city && mailingAddress?.state && mailingAddress?.zipcode) ? style.redLable : ""
+                }
+              />
+              <div>
+                <CommonInputField
+                  className={style.fullWidth}
+                  value={mailingAddress?.addressLine}
+                  maxLength={TEXTFIELDLEN100}
+                  placeholder="Enter Street"
+                  onFocus={() => {
+                    checkFieldAndPopAlert(
+                      mailingAddress?.addressLine,
+                      "Mailing Address Street"
+                    );
+                  }}
+                  onChange={(e) =>
+                    setMailingAddress({
+                      ...mailingAddress,
+                      addressLine: e.target.value,
+                    })
+                  }
+                />
+                <div className={`${style.grid3} ${style.marginTop10}`}>
+                  <CommonInputField
+                    className={style.fullWidth}
+                    value={mailingAddress?.city}
+                    maxLength={TEXTFIELDLEN50}
+                    placeholder="Enter City"
+                    onFocus={() => {
+                      checkFieldAndPopAlert(
+                        mailingAddress?.city,
+                        "Address City"
+                      );
+                    }}
+                    onChange={(e) =>
+                      setMailingAddress({
+                        ...mailingAddress,
+                        city: e.target.value,
+                      })
+                    }
+                  />
+                  <CommonInputField
+                    className={style.fullWidth}
+                    value={mailingAddress?.state}
+                    maxLength={TEXTFIELDLEN50}
+                    placeholder="Enter State"
+                    onFocus={() => {
+                      checkFieldAndPopAlert(
+                        mailingAddress?.state,
+                        "Address State"
+                      );
+                    }}
+                    onChange={(e) =>
+                      setMailingAddress({
+                        ...mailingAddress,
+                        state: e.target.value,
+                      })
+                    }
+                  />
+                  <CommonInputField
+                    className={style.fullWidth}
+                    value={mailingAddress?.zipcode}
+                    maxLength={MAXZIPCODELEN}
+                    placeholder="Enter Zipcode"
+                    onFocus={() => {
+                      checkFieldAndPopAlert(
+                        mailingAddress?.zipcode,
+                        "Address Zip Code"
+                      );
+                    }}
+                    onChange={(e) =>
+                      setMailingAddress({
+                        ...mailingAddress,
+                        zipcode: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+              <CommonLabel value="Register Business POC with App User Role*" />
+              <div className={style.displayInRow}>
+                <div>
+                  <CommonSwitch
+                    className={`${style.switchFontStyle} ${style.textAlignLeft}`}
+                    checked={allowBEM}
+                    onChange={(e) => onAllowBEMChange(!allowBEM)}
+                    label={allowBEM ? "YES" : "NO"}
+                  />
+                </div>
+                {allowBEM && (
+                  <div>
+                    <CommonInputField
+                      value="Business Contract Manager"
+                      className={style.fullWidth}
+                      readOnly={true}
+                    />
+                    <div
+                      className={`${style.businessContractManagerRoleInfo} ${style.marginTop10}`}
+                    >
+                      The Business Contract Manager role allows the registered
+                      user to access contract related information and reports
+                      only for the contract associated with their business
+                      entity.
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {selectContractInfo !== "INDIVIDUAL" && allowBEM && (
+              <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                <CommonLabel value="Allow user as Aggregator*" />
+                <CommonSwitch
+                  checked={allowAggregator}
+                  className={`${style.switchFontStyle} ${style.textAlignLeft}`}
+                  onChange={() => onAllowAggregatorChange(!allowAggregator)}
+                  label={allowAggregator ? "YES" : "NO"}
+                />
+              </div>
+            )}
+
+            {selectContractInfo !== "INDIVIDUAL" && allowBEM && (
+              <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                <CommonLabel value="Keep Contract Payment Data Confidential*" />
+                <CommonSwitch
+                  checked={keepConfidential}
+                  className={`${style.switchFontStyle} ${style.textAlignLeft}`}
+                  onChange={() => setKeepConfidential(!keepConfidential)}
+                  label={keepConfidential ? "YES" : "NO"}
+                />
+              </div>
+            )}
+          </div>
+          {isEditable && (
+            <div className={`${style.spaceBetween} ${style.marginTop20}`}>
+              <button
+                className={`${style.newContractButtonStyle}  ${style.cursorPointer}`}
+                onClick={() => {
+                  getCurrentPage("Contracted Services Provider(s)");
+                }}
+              >
+                BACK
+              </button>
+              <div>
+                <button
+                  className={`${style.newContractOutlinedButton}  ${style.cursorPointer
+                    } ${continueLoading ? style.disabled : ""}`}
+                  onClick={() => mandatoryFieldCheck("SaveInProgress")}
+                >
+                  SAVE IN-PROGRESS
+                </button>
+                <button
+                  className={`${style.newContractButtonStyle} ${style.cursorPointer
+                    }  ${style.marginLeft20} ${continueLoading ? style.disabled : ""
+                    }`}
+                  onClick={() => {
+                    mandatoryFieldCheck("Continue");
+                  }}
+                >
+                  CONTINUE
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        <RedirectingPopUp
+          getCurrentPage={getCurrentPage}
+          tabName={"Contracted Services Provider(s)"}
+          title={"NO USERS FOUND"}
+          description={"No Contracted Service Provider Is Found."}
+          buttonText={"ADD CONTRACTOR"}
+        />
+      )}
+
+      <MissedMandatoryFieldAlert
+        alert={showSaveInProgress}
+        getSaveInProgressAlert={getSaveInProgressAlert}
+        fieldData={unassignedKeys}
+        saveInProgressFunction={saveInProgressFunction}
+        setContinueLoading={setContinueLoading}
+        buttonName={buttonName}
+      />
+    </>
+  );
+};
 
 export default ContractorBusinessEntity;

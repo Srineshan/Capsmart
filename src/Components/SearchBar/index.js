@@ -2,25 +2,26 @@ import React from 'react';
 import { InputGroup, Button, Intent } from "@blueprintjs/core";
 import style from './index.module.scss';
 
-const SearchBar = ({getSearchKey}) => {
+const SearchBar = ({ getSearchKey, searchKey, className }) => {
   const searchButton = (
-     <Button
-         icon={"search"}
-         intent={Intent.PRIMARY}
-         minimal={true}
-     />
- );
+    <Button
+      icon={"search"}
+      intent={Intent.PRIMARY}
+      minimal={true}
+    />
+  );
 
-  return(
+  return (
     <InputGroup
-          large={true}
-          round={true}
-          type="search"
-          placeholder="Search here"
-          rightElement={searchButton}
-          onChange={(e)=>getSearchKey(e.target.value)}
-          className={`${style.searchBarStyle} .bp4-round`}
-      />
+      large={true}
+      round={true}
+      type="search"
+      placeholder="Search here"
+      value={searchKey}
+      rightElement={searchButton}
+      onChange={(e) => getSearchKey(e.target.value)}
+      className={`${className} ${style.searchBarStyle} .bp4-round`}
+    />
   )
 }
 

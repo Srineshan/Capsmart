@@ -1,20 +1,16 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import Navbar from './../../Components/Navbar';
-import ActiveContracts from './activeContracts';
 import AddContract from './addContract';
 import ContractExtension from './contractExtensionDialog';
 import ContractTermination from './contractTerminationDialog';
-import Draft from './draft';
 import CloneAlert from './cloneAlert';
-import ExpiredOrTerminated from './expiredOrTerminated';
-import UpcomingRenewals from './upcomingRenewals';
 import './../../index.scss';
 import NewContractFromClone from './newContractFromClone';
 import DeleteDraftContract from './deleteDraftContract';
 import ContractActivationRequest from './contractActivationRequest';
-import {GET, PUT, POST, TenantID} from './../dataSaver';
-import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+import { GET, PUT, POST, TenantID } from './../dataSaver';
 import ContractList from './contractList';
+import ActiveContract from './activeContract';
 
 const Contracts = () => {
     const [selectedContract, setSelectedContract] = useState('activecontracts');
@@ -25,31 +21,39 @@ const Contracts = () => {
     const [contractActivationDialog, setContractActivationDialog] = useState(false);
     const [cloneDialog, setCloneDialog] = useState(false);
     const [newContractFromClone, setNewContractFromClone] = useState(false);
-    const [contractType, setContractType] = useState('');
-    const [selectedContractType,setSelectedContractType] = useState('');
+    const [contractType, setContractType] = useState({ id: '', value: '' });
+    const [selectedContractType, setSelectedContractType] = useState('');
     const [contracts, setContracts] = useState([]);
-    const [draftContracts, setDraftContracts] = useState([]);
-    const [activeContracts, setActiveContracts] = useState([]);
-    const [upcomingContracts, setUpcomingContracts] = useState([]);
-    const [expiredContracts, setExpiredContracts] = useState([]);
     const [contractId, setContractId] = useState('');
-    const [method,setMethod] = useState('');
+    const [method, setMethod] = useState('');
     const [users, setUsers] = useState([]);
     const [searchKey, setSearchKey] = useState('');
     const [page, setPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
+    const [isEditable, setIsEditable] = useState(false);
+    const [activeContractView, setActiveContractView] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
-    useEffect(()=>{
-      getContracts();
-      getUserData();
-    },[])
+    useEffect(() => {
+        getContracts();
+        getUserData();
+        setIsEditable(sessionStorage.getItem('isEditable') === 'true' ? true : false);
+    }, [])
 
-    useEffect(()=>{
-      getContracts();
-    },[selectedContract, searchKey, page])
+    useEffect(() => {
+        getContracts();
+    }, [selectedContract, searchKey, page, newContractFromClone, totalCount])
 
+    useEffect(() => {
+        sessionStorage.setItem('isEditable', selectedContract !== 'draft' ? false : true)
+    }, [selectedContract])
+
+    useEffect(() => {
+        setIsEditable(sessionStorage.getItem('isEditable') === 'true' ? true : false);
+    }, [sessionStorage?.getItem('isEditable')])
 
     const getSelectedContract = (value) => {
+        setSearchKey("");
         setSelectedContract(value);
         setPage(1);
     }
@@ -58,8 +62,14 @@ const Contracts = () => {
         setContractId(value);
     }
 
-    const getAddContract = (value) => {
+    const getAddContract = (value, isNext = false) => {
         setAddContract(value);
+        sessionStorage.removeItem('Selected Contract Status');
+        console.log('next', isNext, typeof isNext);
+        if (!isNext) {
+            console.log('inside', isNext);
+            sessionStorage.setItem('isEditable', value);
+        }
     }
 
     const getExtensionDialog = (value) => {
@@ -78,6 +88,10 @@ const Contracts = () => {
         setNewContractFromClone(value);
     }
 
+    const getActiveContractView = (value) => {
+        setActiveContractView(value);
+    }
+
     const getDeleteDraftDialog = (value) => {
         setDeleteDraftDialog(value);
     }
@@ -86,48 +100,55 @@ const Contracts = () => {
         setContractActivationDialog(value);
     }
 
-    const getContractType = (value) => {
-        setContractType(value);
+    const getContractType = (id, value) => {
+        setContractType({ id: id, value: value });
     }
 
     const getSelectedContractType = (value) => {
-      setSelectedContractType(value);
+        setSelectedContractType(value);
     }
 
     const getSearchKey = (value) => {
-      setSearchKey(value);
+        setSearchKey(value);
     }
 
-    const getContracts = async() => {
-       const {data: contracts} = await GET(`contract-managment-service/contracts?limit=${10}&offset=${page-1}&searchText=${searchKey}&tab=${selectedContract}`);
-       setContracts(contracts?.contractList);
-       setTotalCount(contracts?.numberOfElements);
+    const getContracts = async () => {
+        setIsLoading(true);
+        const { data: contracts } = await GET(`contract-managment-service/contracts?limit=${10}&offset=${page - 1}&searchText=${searchKey}&tab=${selectedContract}`);
+        setContracts(contracts?.contractList);
+        setTotalCount(contracts?.numberOfElements);
+        setIsLoading(false);
     };
 
     const getUserData = async () => {
         const { data: userData } = await GET(`user-management-service/user`);
         if (userData) {
-          setUsers(userData);
+            setUsers(userData);
         }
     }
 
     const getMethod = (value) => {
-      setMethod(value);
+        setMethod(value);
     }
 
     const getSelectedPage = (value) => {
-      setPage(value);
+        setPage(value);
     }
 
-    return(
+    // if (isLoading) {
+    //     return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />;
+    // }
+
+    return (
         addContract ? (
-            <AddContract getAddContract={getAddContract} getNewContract={getNewContract} getContractType={getContractType} getSelectedContractType={getSelectedContractType} getMethod={getMethod}/>
-        ) : newContractFromClone ? (
-            <NewContractFromClone getNewContract={getNewContract} contractType={contractType} selectedContractType={selectedContractType} contractIdFromActive={contractId} getContractIdFromActive={getContractIdFromActive} method={method} contracts={contracts}/>
+            <AddContract getAddContract={getAddContract} getNewContract={getNewContract} getContractType={getContractType} getSelectedContractType={getSelectedContractType} getMethod={getMethod} />
+        ) : activeContractView ? (<ActiveContract contractId={contractId} activeContractView={activeContractView} getActiveContractView={getActiveContractView} />) : newContractFromClone ? (
+            <NewContractFromClone getNewContract={getNewContract} contractType={contractType} selectedContractType={selectedContractType} contractIdFromActive={contractId} getContractIdFromActive={getContractIdFromActive} method={method} contracts={contracts} isEditable={isEditable} selectedContract={selectedContract} />
         ) : (
             <Fragment>
                 <Navbar />
-                    <ContractList
+                <ContractList
+                    isLoading={isLoading}
                     getDeleteDraftDialog={getDeleteDraftDialog}
                     getContractActivationDialog={getContractActivationDialog}
                     getSelectedContract={getSelectedContract}
@@ -147,13 +168,15 @@ const Contracts = () => {
                     getSelectedPage={getSelectedPage}
                     totalCount={totalCount}
                     page={page}
-                     />
+                    getActiveContractView={getActiveContractView}
+                    searchKey={searchKey}
+                />
 
                 {extensionDialog && (
-                    <ContractExtension getExtensionDialog={getExtensionDialog} contractId={contractId} contracts={contracts}/>
+                    <ContractExtension getExtensionDialog={getExtensionDialog} contractId={contractId} contracts={contracts} />
                 )}
                 {terminationDialog && (
-                    <ContractTermination getTerminationDialog={getTerminationDialog} contractId={contractId} contracts={contracts} getContracts={getContracts}/>
+                    <ContractTermination getTerminationDialog={getTerminationDialog} contractId={contractId} contracts={contracts} getContracts={getContracts} />
                 )}
                 {cloneDialog && (
                     <CloneAlert getCloneDialog={getCloneDialog} getNewContract={getNewContract} />

@@ -1,0 +1,40 @@
+.CommonCheckBoxStyle{
+    display: grid;
+    place-content: center;
+  }
+  
+.CheckedBefore{
+    appearance: none;
+    background: #E9E9F0 0% 0% no-repeat padding-box;
+    color: currentColor;
+    width: 22px;
+    height: 22px;
+    box-shadow: 0px 3px 6px #00000059;
+    border-radius: 2px;
+    transform: translateY(-0.075em);
+    border: 1px solid #E9E9F0;
+    opacity: 1;
+    display: grid;
+    place-content: center;
+  }
+  
+  .CheckedBefore::before{
+    content: "";
+    width: 13px;
+    height: 13px;
+    transform: scale(0);
+    transition: 120ms transform ease-in-out;
+    box-shadow: inset 1em 1em #9A90F8;
+  }
+  
+  .CheckedBefore:checked::before {
+    transform: scale(1);
+  }
+  
+  .CheckedBefore:focus {
+    outline: none;
+  }
+
+  .marginBottom10{
+    margin-bottom: 10px;
+  }

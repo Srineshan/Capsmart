@@ -1,37 +1,50 @@
-.backgroundColor{
+.backgroundColor {
     background: #F8FCFF 0% 0% no-repeat padding-box;
     height: 100vh;
     overflow: scroll;
 }
 
-.alignCenter{
+/* Hide scrollbar for Chrome, Safari and Opera */
+.backgroundColor::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.backgroundColor {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.alignCenter {
     display: flex;
     align-items: center;
     justify-content: center;
     height: 100vh;
 }
 
-.spaceBetween{
+.spaceBetween {
     display: flex;
     justify-content: space-between;
 }
 
-.roundedBackgrounds{
+.roundedBackgrounds {
     background-color: #B3B8BD;
     height: 150px;
     width: 150px;
     border-radius: 50%;
 }
 
-.padding{
+.padding {
     padding: 0 50px 0 0;
 }
 
-.cursorPointer{
+.cursorPointer {
     cursor: pointer;
 }
 
-.headingStyle{
+.headingStyle {
     font: normal normal bold 17px/15px Montserrat;
     letter-spacing: 2px;
     text-align: center;
@@ -47,4 +60,5 @@
     width: 0 !important;
     height: 0 !important;
     display: none !important;
-  }
+    background: transparent !important;
+}

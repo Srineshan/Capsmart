@@ -1,619 +1,2556 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Dialog, Classes, Icon, Intent, InputGroup, EditableText, RadioGroup, Radio, Checkbox, Tag, TextArea } from '@blueprintjs/core';
-import Switch from '@mui/material/Switch';
-import AddIcon from '@mui/icons-material/Add';
-import DatalistInput from 'react-datalist-input';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
-import Select from '@mui/material/Select';
-import {PUT, GET, TenantID, POST} from './../dataSaver';
-import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
-import Calculator from './../../Components/Calculator';
-import ReactStickyNotes from '@react-latest-ui/react-sticky-notes';
-import style from './index.module.scss';
-import SendEmailUserList from './mailUser';
-import SiteDepartmentField from '../../Components/ReusableSmallComponents/siteDepartmentField';
-import MultiSelectDisplay from '../../Components/ReusableSmallComponents/multiSelectDisplay';
-import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
-import ClinicBlocksFields from './clinicBlocksField';
-import OnCallCoverageFields from './onCallCoverageFields';
-import SupplementalFields from './supplementalFields';
-import AddonClinicFields from './addonClinicFields';
-import AdministrativeFields from './administrativeFields';
-import SurgerySessionFields from './surgerySessionFields';
+import React, { useState, useEffect, useMemo } from "react";
+import { Dialog, Classes, Icon, Intent, Tag } from "@blueprintjs/core";
+import cloneDeep from "lodash.clonedeep";
 
-const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectContractInfo, selectedService, editService, getEditServiceDialog, isMultiSiteEntity }) => {
-    const serviceTypeList = ['Clinic Blocks','Surgery Session','On Call Coverage Duty Days','Supplemental Services','Add-On Services','Administrative / Miscellaneous Services'];
-    const siteTypeId = sessionStorage.getItem('entityTypeId');
-    const [serviceType, setServiceType] = useState('Clinic Blocks');
-    const [siteList, setSiteList] = useState([]);
-    const [siteData, setSiteData] = useState([]);
-    const [activity, setActivity] = useState([]);
-    const [newActivity, setNewActivity] = useState('');
-    const [selectedActivity, setSelectedActivity] = useState([]);
-    const [item, setItem] = useState();
-    const [locationList, setLocationList] = useState([]);
-    const [newLocation,setNewLocation] = useState('');
-    const [showLocation, setShowLocation] = useState(false);
-    const [selectedLocation, setSelectedLocation] = useState([]);
-    const [metadata, setMetadata] = useState();
-    const [existingServices, setExistingServices] = useState([]);
-    //old useStates
-    const [activityType, setActivityType] = useState('OutPatient Surgery Clinic Session');
-    const [activityContractedFor, setActivityContractedFor] = useState('');
-    const [isDesignatedSpecificContractor, setIsDesignatedSpecificContractor] = useState(true);
-    const [addOnService, setAddOnService] = useState('');
-    const [sessionRate, setSessionRate] = useState(0);
-    const [sessionDuration, setSessionDuration] = useState(0);
-    const [fractureClinicalSessionRate, setFractureClinicalSessionRate] = useState(0);
-    const [fractureClinicalSessionDuration, setFractureClinicalSessionDuration] = useState(0);
-    const [sessionExtension, setSessionExtension] = useState(0);
-    const [workingPeriodFrom, setWorkingPeriodFrom] = useState('');
-    const [workingPeriodTo, setWorkingPeriodTo] = useState('');
-    const [contractedServiceProvider, setContractedServiceProvider] = useState('');
-    const [activityOrServiceType, setActivityOrServiceType] = useState('Medical / Surgical Care Contracted Services');
-    const [regularClinicSchedule, setRegularClinicSchedule] = useState(0);
-    const [additionalClinicSchedule, setAdditionalClinicSchedule] = useState(0);
-    const [regularClinicScheduleFrequency, setRegularClinicScheduleFrequency] = useState('WEEK');
-    const [allActivities, setAllActivities] = useState(false);
-    const [additionalCompensationTitle, setAdditionalCompensationTitle] = useState('');
-    const [additionalCompensationPerMonth, setAdditionalCompensationPerMonth] = useState(0);
-    const [min, setMin] = useState(0);
-    const [max, setMax] = useState(0);
-    const [frequency, setFrequency] = useState('WEEK');
-    const [duration, setDuration] = useState(0);
-    const [payment, setPayment] = useState(0);
-    const [withNurse, setWithNurse] = useState(0);
-    const [withoutNurse, setWithoutNurse] = useState(0);
-    const [noTargetApplicable, setNoTargetApplicable] = useState(false);
-    const [additionalSchedule, setAdditionalSchedule] = useState(false);
-    const [totalContractedService, setTotalContractedService] = useState(0);
-    const [totalContractedServiceFrequency, setTotalContractedServiceFrequency] = useState('WEEK');
-    const [dutyDays, setDutyDays] = useState([]);
-    const [coverageCallDutyType, setCoverageCallDutyType] = useState('All On Call Service Duty');
-    const [contractedServices, setContractedServices] = useState([]);
-    const [users,setUsers] = useState([]);
-    const [usedActivity, setUsedActivity] = useState([]);
-    const [selectedUser, setSelectedUser] = useState([]);
-    const [helpTool, setHelpTool] = useState({calculator:false,textArea:false});
-    const [selectedUsers, setSelectedUsers] = useState([]);
-    const limit = 3;
-    const limit5 = 5;
+import AddIcon from "@mui/icons-material/Add";
+import DatalistInput, { useComboboxControls } from "react-datalist-input";
+import { PUT, GET, TenantID, POST } from "./../dataSaver";
+import { format } from 'date-fns';
+import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
+import Calculator from "./../../Components/Calculator";
+import NotesNotOpen from "./../../images/notesNotOpen.png";
+import DocumentNotOpen from "./../../images/documentNotOpen.png";
+import CalculatorNotOpen from "./../../images/calculatorNotOpen.png";
+import NotesOpen from "./../../images/notesOpen.png";
+import DocumentOpen from "./../../images/documentOpen.png";
+import CalculatorOpen from "./../../images/calculatorOpen.png";
+import Popover from "@mui/material/Popover";
+import SiteDepartmentField from "../../Components/ReusableSmallComponents/siteDepartmentField";
+import MultiSelectDisplay from "../../Components/ReusableSmallComponents/multiSelectDisplay";
+import ClinicBlocksFields from "./clinicBlocksField";
+import ProcedureReading from "./procedureReading";
+import OnCallCoverageFields from "./onCallCoverageFields";
+import SupplementalFields from "./supplementalFields";
+import AddonClinicFields from "./addonClinicFields";
+import HospiceService from "./hospiceService";
+import AdministrativeFields from "./administrativeFields";
+import HITService from "./hitService";
+import SurgerySessionFields from "./surgerySessionFields";
+import { workFlowDataGenerator } from "./workflowDataGenerator";
+import {
+  CLINIC,
+  SURGERY,
+  ONCALL,
+  SUPPLEMENTAL,
+  ADDON,
+  ADMINISTRATIVE,
+  PROCEDUREREADING,
+  HOSPICE,
+  ONCALLSERVICE,
+  HIT,
+} from "../../Constants";
+import Notes from "../../Components/Notes";
+import CommonSwitch from "../../Components/CommonFields/CommonSwitch";
+import CommonLabel from "../../Components/CommonFields/CommonLabel";
+import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
+import ServiceConflict from "./serviceConflict";
+import { checkActivityChange } from "./checkDependentData";
+import OnCallService from './OnCallService';
+import style from "./index.module.scss";
+import { weekdays } from "moment";
+import { valueCheck } from "../../utils/valueCheck";
 
-    useEffect(()=>{
-      if(editService){
-        getSelectedSites(selectedService?.sites);
-        getNewLocation(selectedService?.locations);
-        setServiceType(selectedService?.activityType?.activityType);
-        let temp = [];
-        selectedService?.activities?.map(data=>{
-          temp.push({activity:data})
-        });
-        setSelectedActivity(temp);
-        setShowLocation(selectedService?.locations?.length !== 0 ? true : false);
-        setSelectedLocation(selectedService?.locations?.map(data=>data));
-      }
-    },[selectedService])
+const AddServiceProvided = ({
+  getAddServiceDialog,
+  getAddOn,
+  contractId,
+  selectContractInfo,
+  selectedService,
+  editService,
+  getEditServiceDialog,
+  isMultiSiteEntity,
+  selectedIndex,
+  isEditable,
+  getTabDataStatus,
+}) => {
+  const [serviceTypeList, setServiceTypeList] = useState([]);
+  const [serviceTypeId, setServiceTypeId] = useState("");
+  const siteTypeId = sessionStorage.getItem("entityTypeId");
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedDeptId, setSelectedDeptId] = useState([]);
+  const [serviceType, setServiceType] = useState(CLINIC);
+  const [serviceTypeTemplate, setServiceTypeTemplate] = useState(CLINIC);
+  const [addOnButton, setAddOnButton] = useState("");
+  const [siteList, setSiteList] = useState([]);
+  const [allLocation, setAllLocation] = useState([]);
+  const [siteData, setSiteData] = useState([]);
+  const [activity, setActivity] = useState([]);
+  const [isReset, setIsReset] = useState(false);
+  const [newActivity, setNewActivity] = useState("");
+  const [selectedActivity, setSelectedActivity] = useState([]);
+  const [item, setItem] = useState();
+  const [locationList, setLocationList] = useState([]);
+  const [newLocation, setNewLocation] = useState("");
+  const [showLocation, setShowLocation] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState([]);
+  const [metadata, setMetadata] = useState();
+  const [existingServices, setExistingServices] = useState([]);
+  const [isDesignatedSpecificContractor, setIsDesignatedSpecificContractor] =
+    useState(true);
+  const [contractedServiceProvider, setContractedServiceProvider] =
+    useState("");
+  const [contractedServices, setContractedServices] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [usedActivity, setUsedActivity] = useState([]);
+  const [selectedUser, setSelectedUser] = useState([]);
+  const [helpTool, setHelpTool] = useState({
+    calculator: false,
+    textArea: false,
+  });
+  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [isWorkFlowUpdated, setIsWorkFlowUpdated] = useState(false);
+  const [timeCommitment, setTimeCommitment] = useState({
+    value: 0,
+    frequency: "",
+  });
+  const [contractTermPeriod, setContractTermPeriod] = useState({
+    start: null,
+    end: null,
+  });
+  const [isShowPDF, setIsShowPDF] = useState(false);
+  const [pdfToOpen, setPdfToOpen] = useState("");
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const id = open ? "simple-popover" : undefined;
+  const [anchorElDoc, setAnchorElDoc] = useState(null);
+  const openDoc = Boolean(anchorElDoc);
+  const idDoc = openDoc ? "simple-popover" : undefined;
+  const [isShowNotesList, setIsShowNotesList] = useState(false);
+  const [isShowDocumentsList, setIsShowDocumentsList] = useState(false);
+  const [contractDocumentList, setContractDocumentList] = useState([]);
+  const [continueLoading, setContinueLoading] = useState(false);
+  const { setValue, value } = useComboboxControls({ initialValue: "" });
+  const [location, setLocation] = useState("");
+  const [conflict, setConflict] = useState({ isPresent: false, data: [] });
+  const [activityUpdated, setActivityUpdated] = useState(false);
+  const [activityItems, setActivityItems] = useState([]);
+  const [reducedOffsetApplicable, setReducedOffsetApplicable] = useState(false);
+  const [compensationPolicy, setCompensationPolicy] = useState("");
+  const [contractTypeId, setContractTypeId] = useState("");
+  const contractStatus = sessionStorage.getItem('Selected Contract Status');
 
-    let rightHelpArea = helpTool?.calculator || helpTool?.textArea;
 
-    const getSelectedSites = (value) => {
-      setSiteData(value);
-    }
+  useEffect(() => {
+    getContractedServices();
+    getUserData();
+    getSites();
+    // getContractType();
+    getActivityList();
+    getLocations();
+    getContractNotes();
+  }, []);
 
-    const getNewLocation = (value) => {
-      setNewLocation(value);
-    }
-
-    const leftElementButton = (text) => {
-        return (
-            <button className={`${style.minMaxLeftElement}`} >{text}</button>
-        )
-    }
-
-    const removeFriendlyName = (index) => {
-      setSelectedActivity(selectedActivity?.filter((data,indexValue)=>index !== indexValue)?.map(data=>data));
-    }
-
-    const removeLocation = (index) => {
-      setSelectedLocation(selectedLocation?.filter((data, indexValue)=> index !== indexValue)?.map(data=>data));
-    }
-
-    useEffect(()=>{
-      getLocations();
-    }, [siteData])
-
-    useEffect(()=> {
-        getContractedServices();
-        getUserData();
-        getSites();
-        getActivityList();
-        getLocations();
-    }, [])
-
-    useEffect(()=> {
-        if(selectContractInfo === "INDIVIDUAL"){
-            setSelectedUser(users);
-            setContractedServiceProvider(users[0]?.id);
-        }
-    }, [selectContractInfo, users])
-
-    useEffect(()=>{
+  useEffect(() => {
+    if (editService) {
+      setSiteData(selectedService?.sites);
+      getSelectedSites(selectedService?.sites);
+      getNewLocation(selectedService?.locations);
+      setServiceType(selectedService?.activityType?.activityType);
+      setServiceTypeTemplate(
+        selectedService?.activityTypeTemplate?.activityTypeTemplate
+      );
+      setIsDesignatedSpecificContractor(
+        selectedService?.designateSpecificContractor
+      );
+      setSelectedUsers(selectedService?.users || []);
       let temp = [];
-      contractedServices?.filter(data=>data?.activityType?.activityType === serviceType)?.map(data=>data?.activities?.map(activity=>{
-        temp.push(activity?.activity);
-      }));
-      setUsedActivity(temp);
-    }, [serviceType, contractedServices])
-
-    const getMetaData = (value) => {
-      setMetadata(value);
+      selectedService?.activities?.map((data) => {
+        temp.push({ activity: data });
+      });
+      setSelectedActivity(temp);
+      setShowLocation(selectedService?.locationSpecified);
+      setReducedOffsetApplicable(
+        selectedService?.compensationReductionApplicable
+      );
+      setSelectedLocation(
+        selectedService?.serviceLocations?.map((data) => data)
+      );
+      removeSelectedLocationFromList();
+      setServiceTypeId(
+        serviceTypeList
+          ?.filter(
+            (type) =>
+              type?.serviceType === selectedService?.activityType?.activityType
+          )
+          ?.map((data) => data?.id)[0]
+      );
     }
+  }, [selectedService, serviceTypeList]);
 
-    const getActivityList = async() => {
-      const {data: activityList} = await GET(`contract-managment-service/contracts/siteType/${siteTypeId}/activity`);
-      setActivity(activityList);
+  useEffect(() => {
+    if (siteData?.length !== 0) {
+      let temp = [];
+      siteData?.map((data) =>
+        data?.departmentList?.departments?.map((dept) => {
+          temp.push(dept?.id);
+        })
+      );
+      setSelectedDeptId(temp);
     }
+  }, [siteData]);
 
-    const getLocations = async() => {
-      const {data: location} = await GET(`contract-managment-service/contracts/site/${siteData?.map(data=>data?.id)[0]}/location`);
-      setLocationList(location);
+  useEffect(() => {
+    getActivityItems();
+  }, [activity, usedActivity?.length]);
+
+  const removeSelectedLocationFromList = () => {
+    setLocationList(
+      allLocation
+        ?.filter(
+          (data) =>
+            !selectedLocation
+              ?.map((location) => location?.location)
+              .includes(data?.location)
+        )
+        ?.map((data) => data)
+    );
+  };
+
+  useEffect(() => {
+    removeSelectedLocationFromList();
+  }, [selectedLocation]);
+
+  useEffect(() => {
+    if (newActivity !== "") {
+      setActivityUpdated(true);
+      onActivitySelect(
+        activity
+          ?.filter((data) => data?.activity?.activity === newActivity)
+          ?.map((data) => data)[0]
+      );
     }
+  }, [activity]);
 
-    const getContractedServices = async() => {
-        const {data: contractedServices} = await GET(`contract-managment-service/contracts/${contractId}/ContractedService`);
-        setContractedServices(contractedServices?.contractedServices);
-        setExistingServices(contractedServices?.contractedServices);
+  useEffect(() => {
+    if (isWorkFlowUpdated) {
+      setIsWorkFlowUpdated(false);
+      handleSave(addOnButton);
     }
+  }, [metadata, isWorkFlowUpdated]);
 
-    const getUserData = async() => {
-        const {data: userData} = await GET(`user-management-service/user?contractID=${contractId}`);
-        if(userData){
-          setUsers(userData);
-        }
+  // const getContractType = async () => {
+  //   const { data: contactType } = await GET(
+  //     `entity-service/contractType`
+  //   );
+  //   if (contractType) {
+  //     let contractTypeId = contractType?.filter((data) => data?.contractTypeTemplate === selectContractInfo)?.map(data => data?.id)[0];
+  //     console.log('cotractTypeId', contractTypeId);
+  //     console.log('contactType', contactType, selectContractInfo)
+  //     getServiceList(contractTypeId);
+  //   }
+  // }
+
+  const getServiceList = async (contractTypeId) => {
+    const { data: serviceList } = await GET(
+      `entity-service/contractedServiceType?contractTypeId=${contractTypeId}`
+    );
+    setServiceTypeList(serviceList);
+    if (!editService) {
+      setServiceType(
+        serviceList
+          ?.filter((data) => data?.serviceTypeTemplate === CLINIC)
+          ?.map((data) => data?.serviceType)[0]
+      );
+      setServiceTypeId(
+        serviceList
+          ?.filter((data) => data?.serviceTypeTemplate === CLINIC)
+          ?.map((data) => data?.id)[0]
+      );
     }
+  };
 
-    const activityToAdd = async() => {
-      let data = {
-          "activity": {
-            "activity": newActivity
-          },
-          "siteTypeId": siteTypeId,
-          "tenant": {
-            "id": TenantID
-          }
-        }
-      await POST(`contract-managment-service/contracts/siteType/${siteTypeId}/activity`, data)
-      .then(response=>{
+  let rightHelpArea = helpTool?.calculator || helpTool?.textArea;
+
+  const getSelectedSites = (value) => {
+    setSiteData(value);
+  };
+
+  const getNewLocation = (value) => {
+    setNewLocation(value);
+  };
+
+  const removeFriendlyName = (index) => {
+    setActivityUpdated(true);
+    setSelectedActivity(
+      selectedActivity
+        ?.filter((data, indexValue) => index !== indexValue)
+        ?.map((data) => data)
+    );
+    setUsedActivity(
+      usedActivity
+        ?.filter((data, indexValue) => indexValue !== index)
+        ?.map((data) => data)
+    );
+  };
+
+  const removeLocation = (index) => {
+    setSelectedLocation(
+      selectedLocation
+        ?.filter((data, indexValue) => index !== indexValue)
+        ?.map((data) => data)
+    );
+  };
+
+  useEffect(() => {
+    getLocations();
+  }, [selectedDeptId]);
+
+  useEffect(() => {
+    if (serviceTypeId !== "") {
+      setNewActivity("");
+      getActivityList();
+    }
+  }, [serviceTypeId, siteData]);
+
+  useEffect(() => {
+    if (selectContractInfo === "INDIVIDUAL") {
+      setSelectedUser(users);
+      setContractedServiceProvider(users[0]?.id);
+    }
+  }, [selectContractInfo, users]);
+
+  useEffect(() => {
+    let temp = [];
+    contractedServices
+      ?.filter((data) => data?.activityType?.activityType === serviceType)
+      ?.map((data) =>
+        data?.activities?.map((activity) => {
+          temp.push(activity?.activity);
+        })
+      );
+    setUsedActivity(temp);
+  }, [serviceType, contractedServices]);
+
+  const getMetaData = (value) => {
+    setMetadata(value);
+  };
+
+  const getActivityList = async () => {
+    let dept = [];
+    siteData?.map((data) =>
+      data?.departmentList?.departments?.map((deptData) => {
+        dept.push(deptData?.id);
+      })
+    );
+    const { data: activityList } = await GET(
+      `contract-managment-service/contracts/activities?siteTypeId=${siteTypeId}&&contractedServiceTypeId=${serviceTypeId}&&departments=${dept}`
+    );
+    setActivity(activityList);
+  };
+
+  const getLocations = async () => {
+    let deptId = "";
+    selectedDeptId?.map((data, index) => {
+      if (index === 0) {
+        deptId = deptId + `departments=${data}`;
+      } else {
+        deptId = deptId + `&departments=${data}`;
+      }
+    });
+
+    const { data: location } = await GET(
+      `entity-service/servicelocation?${deptId}&isContractView=true`
+    );
+    setAllLocation(location);
+    setLocationList(
+      location
+        ?.filter(
+          (data) =>
+            !selectedLocation
+              ?.map((location) => location?.location)
+              .includes(data?.location)
+        )
+        ?.map((data) => data)
+    );
+  };
+
+  const getContractedServices = async () => {
+    if (contractedServices?.length === 0) {
+      const { data: contractedServices } = await GET(
+        `contract-managment-service/contracts/${contractId}/ContractedService`
+      );
+      setContractedServices(contractedServices?.contractedServices);
+      setExistingServices(contractedServices?.contractedServices);
+    }
+  };
+
+  const getContractNotes = async () => {
+    const { data: contractNotes } = await GET(
+      `contract-managment-service/contracts/notes?contractId=${contractId}&&referenceId=${selectedService?.refId}`
+    );
+  };
+
+  const getUserData = async () => {
+    const { data: userData } = await GET(
+      `user-management-service/user?contractID=${contractId}`
+    );
+    if (userData) {
+      let user = userData
+        ?.filter(
+          (user) => !user?.contracts?.map((data) => data?.id)?.includes("")
+        )
+        ?.map((data) => data);
+      setUsers(
+        user
+          ?.filter((userData) =>
+            userData?.roles
+              ?.map((role) => role?.roleName)
+              ?.includes("Activity Logger")
+          )
+          ?.map((data) => data)
+      );
+    }
+  };
+
+  console.log("conflict Data testing", conflict);
+  const activityToAdd = async () => {
+    setActivityUpdated(true);
+    let dept = [];
+    siteData?.map((site) =>
+      site?.departmentList?.departments?.map((deptData) => {
+        dept.push(deptData.id);
+      })
+    );
+    if (
+      activity?.some((data) =>
+        data?.activity?.activity
+          ?.replace(" ", "")
+          ?.toLowerCase()
+          ?.includes(newActivity?.replace(" ", "")?.toLowerCase())
+      )
+    ) {
+      return;
+    }
+    if (newActivity === "") {
+      ErrorToaster("Enter valid Acitivty name");
+      return;
+    }
+    if (
+      activity?.map((data) => data?.activity?.activity)?.includes(newActivity)
+    ) {
+      ErrorToaster("Activity Already Exists");
+      return;
+    }
+    let data = {
+      activity: {
+        activity: newActivity,
+      },
+      contractedServiceTypeId: serviceTypeId,
+      siteTypeId: siteTypeId,
+      tenant: {
+        id: TenantID,
+      },
+      departments: dept,
+    };
+    await POST(`contract-managment-service/contracts/activities`, data)
+      .then((response) => {
         getActivityList();
       })
-      .catch(error=>{
-        console.log('Error');
-      })
-    }
+      .catch((error) => {
+        console.log("Error");
+      });
+  };
 
-    const locationToAdd = async() => {
-      let siteId = siteData?.map(data=>data?.id)[0];
+  const locationToAdd = async () => {
+    if (allLocation?.some((data) => data?.location === newLocation)) {
+      ErrorToaster("Location already exists");
+      return;
+    }
+    if (newLocation !== "") {
+      let siteId = siteData?.map((data) => data?.id)[0];
       let data = {
-          "location": newLocation,
-          "siteId": siteId,
-          "tenant": {
-            "id": TenantID
+        location: newLocation,
+        siteId: siteId,
+        tenant: {
+          id: TenantID,
+        },
+      };
+      await POST(
+        `contract-managment-service/contracts/site/${siteId}/location`,
+        data
+      )
+        .then((response) => {
+          getLocations();
+        })
+        .catch((error) => {
+          console.log("Error");
+        });
+    }
+  };
+
+  const getSites = async () => {
+    const { data: contractData } = await GET(
+      `contract-managment-service/contracts/${contractId}/contractDetail`
+    );
+    let contractDetail = contractData?.contractDetail;
+    setTimeCommitment(contractDetail?.timeCommitment);
+    setCompensationPolicy(contractDetail?.compensationPolicy ?? "");
+    setContractTermPeriod({
+      start: contractDetail?.contractTerm?.effectiveDate,
+      end: contractDetail?.contractTerm?.endDate,
+    });
+    let temp = [];
+    contractDetail?.contractFiles?.map((data) => {
+      temp.push({ name: data?.documentName, url: data?.fileURL });
+    });
+    setContractTypeId(contractData?.contractTypeId?.id);
+    setContractDocumentList(temp);
+    let sites = contractDetail?.site?.sites;
+    if (sites && siteList?.length === 0) {
+      setSiteList(sites);
+    }
+    getServiceList(contractData?.contractTypeId?.id)
+  };
+
+  console.log("metadata", metadata);
+
+  const addOnWorkFlow = async (buttonType) => {
+    setContinueLoading(true);
+    setAddOnButton(buttonType);
+    if (
+      (serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE) &&
+      editService &&
+      metadata?.[0]?.approver !== undefined
+    ) {
+      let dataValue = [];
+      let temp = metadata;
+      console.log("temp", temp);
+      temp?.map((data, index) => {
+        data.serviceLocations = data?.locationSpecified
+          ? data?.locations
+          : [];
+        data.performingActivity = data?.activities
+          ?.map((data) => data?.activity)
+          ?.join("-");
+        data.addOnActivityType = data?.addOnActivityType;
+        console.log(
+          "performing Activity and addOnActivityType",
+          data.performingActivity,
+          data.addOnActivityType
+        );
+        if (data?.approver !== undefined) {
+          let workFlowData;
+          data.activityType.activityType = serviceType;
+          // data.activityType.id = serviceTypeId;
+          data.activityTypeTemplate = {
+            activityTypeTemplate: serviceTypeTemplate,
+          };
+          if (
+            data?.approver?.id === data?.paymentApprover?.id ||
+            data?.paymentApprover === undefined
+          ) {
+            let name = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`;
+            workFlowData = workFlowDataGenerator(data?.performingActivity, [
+              {
+                step: 1,
+                userId: data?.approver?.id,
+                userName: name,
+                userTitle: {
+                  title: data?.approverTitle?.title,
+                  id: data?.approverTitle?.id,
+                },
+                userSuffix: data?.approver?.name?.suffix,
+                status: "APPROVED",
+              },
+            ]);
+          } else {
+            let approverName = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`;
+            let paymentApproverName = `${data?.paymentApprover?.name?.firstName} ${data?.paymentApprover?.name?.lastName}`;
+            workFlowData = workFlowDataGenerator(data?.performingActivity, [
+              {
+                step: 1,
+                userId: data?.approver?.id,
+                userName: approverName,
+                userTitle: {
+                  title: data?.approverTitle?.title,
+                  id: data?.approverTitle?.id,
+                },
+                userSuffix: data?.approver?.name?.suffix,
+                status: "PRE_AUTHORIZED",
+              },
+              {
+                step: 2,
+                userId: data?.paymentApprover?.id,
+                userName: paymentApproverName,
+                userTitle: data?.paymentApprover?.title,
+                userSuffix: data?.paymentApprover?.name?.suffix,
+                status: "APPROVED",
+              },
+            ]);
           }
-        }
-      await POST(`contract-managment-service/contracts/site/${siteId}/location`, data)
-      .then(response=>{
-        getLocations();
-      })
-      .catch(error=>{
-        console.log('Error');
-      })
-    }
-
-    const getSites = async () => {
-      const {data: contractData} = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
-      let contractDetail = contractData?.contractDetail;
-      let sites = contractDetail?.site?.sites;
-      if(sites && siteList?.length === 0){
-        setSiteList(sites);
-      }
-    }
-
-    const handleDutyDays = (value) => {
-        if(!dutyDays.includes(value)){
-            setDutyDays([...dutyDays, value])
+          if (
+            data.workflowId === undefined ||
+            data.workflowId === null ||
+            data.workflowId === ""
+          ) {
+            POST(
+              `timesheet-management-service/workflow`,
+              JSON.stringify(workFlowData)
+            )
+              .then((response) => {
+                data.workFlow = {
+                  id: response?.data,
+                  name: data?.performingActivity,
+                  workFlowMap: workFlowData?.workFlowMap,
+                };
+                dataValue.push(data);
+                if (temp?.length - 1 === index) {
+                  setMetadata(dataValue);
+                  setIsWorkFlowUpdated(true);
+                }
+              })
+              .catch((error) => {
+                ErrorToaster("Unexpected Error");
+              });
+          } else {
+            PUT(
+              `timesheet-management-service/workflow/${data.workflowId}`,
+              workFlowData
+            )
+              .then((response) => {
+                data.workFlow = {
+                  id: data?.workflowId,
+                  name: data?.workflowName,
+                  workFlowMap: workFlowData?.workFlowMap,
+                };
+                dataValue.push(data);
+                setMetadata(dataValue);
+                setIsWorkFlowUpdated(true);
+              })
+              .catch((error) => {
+                ErrorToaster("Unexpected Error");
+              });
+          }
         } else {
-            setDutyDays(dutyDays?.filter(data => data !== value)?.map(data => data))
+          data.workFlow = null;
+          data.activityType.activityType = serviceType;
+          // data.activityType.id = serviceTypeId;
+          data.activityTypeTemplate.activityTypeTemplate = {
+            activityTypeTemplate: serviceTypeTemplate,
+          };
         }
-    }
-
-    const handleSave = async(buttonType) => {
-        let performingActivity = '';
-        let activities = [];
-        if(serviceType !== 'Supplemental Services' && serviceType !== 'Add-On Services'){
-          performingActivity = selectedActivity?.map(data=>data?.activity?.activity)?.join('-')
-          selectedActivity?.map(data=>{
-            activities?.push({"activity":data?.activity?.activity})
-          })
+      });
+    } else if ((serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE) && !editService) {
+      let dataValue = [];
+      let data = [];
+      let temp = metadata;
+      data = temp;
+      temp?.map((data, index) => {
+        data.serviceLocations = data?.locationSpecified
+          ? data?.locations
+          : [];
+        data.patientMRNRequired = data?.patientMRNRequired;
+        data.cptcodeRequired = data?.cptcodeRequired;
+        data.reasonRequired = data?.reasonRequired;
+        data.administrativeApprovalForPaymentRequired = data?.administrativeApprovalForPaymentRequired;
+        data.refId = new Date().getTime()?.toString();
+        let dataMap = {
+          selectedActivityId: data?.selectedActivityId,
+          additionalDetails: data?.activityResponse?.dataMap?.additionalDetails,
+        };
+        if (!data?.selectedActivityId) {
+          data.payableAmount = { value: parseFloat(data?.sessionAmount) };
         }
-        if(serviceType === 'Administrative / Miscellaneous Services'){
-          performingActivity = metadata?.selectedActivities?.map(data=>data?.activity)?.join('-')
-          metadata?.selectedActivities?.map(data=>{
-            activities?.push({"activity":data?.activity})
-          })
+        data.activityResponse = { dataMap: dataMap };
+        data.sites = siteData;
+        data.activityType.activityType = serviceType;
+        if (data?.selectedActivityId) {
+          data.addOnActivityType = data?.addOnActivityType;
         }
-        if(serviceType === 'Supplemental Services'){
-          performingActivity = metadata?.supplementServiceName?.map(data=>data)?.join('-') || '';
-          metadata?.supplementServiceName?.map(data=>(
-            activities.push({"activity":data})
-          ));
-        }
-        let data = [];
-        if(serviceType === 'Add-On Services'){
-          let temp = metadata;
-          temp?.map(data=>{
-            data.sites = siteData;
-            data.performingActivity = {activity:data?.performingActivity};
-            data.users = selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers;
-          });
-          data = temp;
-          console.log('inside if', data);
-        }
-        else{
-             data = [{
-                  "sites": siteData,
-                  "activityType": {
-                    "activityType": serviceType
+        // data.activityType.id = serviceTypeId;
+        data.activityTypeTemplate = {
+          activityTypeTemplate: serviceTypeTemplate,
+        };
+        // data.serviceRate = {
+        //   rate: data?.serviceRate,
+        //   rateFrequency: data?.serviceRateFrequency,
+        // };
+        data.performingActivity = data?.activities
+          ?.map((data) => data?.activity)
+          ?.join("-");
+        // typeof data.performingActivity !== 'object' ? { activity: data?.performingActivity?.split('(')?.[1]?.split(')')?.[0] } : data?.performingActivity?.split('(')?.[1]?.split(')')?.[0]
+        // ;
+        data.users =
+          selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers;
+        if (data?.approver !== undefined) {
+          let workFlowData;
+          if (
+            data?.approver?.id === data?.paymentApprover?.id ||
+            data?.paymentApprover === undefined
+          ) {
+            let name = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`;
+            workFlowData = workFlowDataGenerator(
+              data?.performingActivity?.activity,
+              [
+                {
+                  step: 1,
+                  userId: data?.approver?.id,
+                  userName: name,
+                  userTitle: {
+                    title: data?.approverTitle?.title,
+                    id: data?.approverTitle?.id,
                   },
-                  "users": selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers,
-                  "performingActivity": {
-                    "activity": performingActivity
+                  userSuffix: data?.approver?.name?.suffix,
+                  status: "APPROVED",
+                },
+              ]
+            );
+          } else {
+            let approverName = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`;
+            let paymentApproverName = `${data?.paymentApprover?.name?.firstName} ${data?.paymentApprover?.name?.lastName}`;
+            workFlowData = workFlowDataGenerator(
+              data?.performingActivity?.activity,
+              [
+                {
+                  step: 1,
+                  userId: data?.approver?.id,
+                  userName: approverName,
+                  firstName: data?.approver?.name?.firstName,
+                  middleName: data?.approver?.name?.middleName,
+                  lastName: data?.approver?.name?.lastName,
+                  userTitle: {
+                    title: data?.approverTitle?.title,
+                    id: data?.approverTitle?.id,
                   },
-                  "activities": activities,
-                  ...((serviceType === 'Supplemental Services' || serviceType === 'Administrative / Miscellaneous Services') &&
-                  {"hoursBorrowed": {
-                      "activityType": {
-                        "activityType": metadata?.dedicatedHoursActivityType || ''
-                      },
-                      "performingActivity": {
-                        "activity": metadata?.dedicatedHoursPerformingActivity || ''
-                      }
-                    }}),
-                  "locations": selectedLocation,
-                  "contractedSchedule": {
-                    "minimum": {
-                      "value": parseInt(metadata?.min || '0')
-                    },
-                    "maximum": {
-                      "value": parseInt(metadata?.max || '0')
-                    },
-                    "frequency": metadata?.frequency
-                  },
-                  "patientsSeenTarget": {
-                    "withNurse": {
-                      "value": parseInt(metadata?.withNurse || '0')
-                    },
-                    "withoutNurse": {
-                      "value": parseInt(metadata?.withoutNurse || "0")
-                    },
-                    "noTargetApplicable": metadata?.noTargetApplicable || false
-                  },
-                  "scheduledPatientsTarget": {
-                    "withNurse": {
-                      "value": parseInt(metadata?.targetWithNurse || '0')
-                    },
-                    "withoutNurse": {
-                      "value": parseInt(metadata?.targetWithoutNurse || '0')
-                    },
-                    "noTargetApplicable": metadata?.targetNoTargetApplicable || false
-                  },
-                  "additionalSchedule": {
-                    "value": parseInt(metadata?.additionalScheduleValue),
-                    "frequency": metadata?.additionalScheduleFrequency,
-                    "scheduleRequired": metadata?.additionalScheduleRequired
-                  },
-                  "rateType": metadata?.rateType,
-                  "activityResponse": {
-                    "dataMap": {
-                      ...(serviceType === 'On Call Coverage Duty Days' && {
-                        'onCallCoverageFor' : metadata?.onCallCoverageFor,
-                      }
-                    ),
-                    ...(serviceType === 'Administrative / Miscellaneous Services' && {
-                      'adminActivities' : metadata?.selectedActivities,
-                    }),
-                    }
-                  },
-                  "duration": {
-                    "hours": parseInt(metadata?.sessionDuration)
-                  },
-                  "payableAmount": {
-                    "value": parseInt(metadata?.sessionAmount)
-                  },
-                  "totalSessions": {
-                    "value": parseInt(metadata?.totalSession),
-                    "frequency": metadata?.totalSessionFrequency
-                  },
-                  "serviceDays": metadata?.serviceDays,
-                  "workingPeriod": {
-                    "from": metadata?.workingTimeFrom,
-                    "to": metadata?.workingTimeTo
-                  },
-                  "workingHours": {
-                    "normalWorkingHours": true,
-                    "afterWorkingHours": true
-                  },
-                  "activityApprovalWFRequired": true,
-                  "designateSpecificContractor": isDesignatedSpecificContractor,
-                  "locationSpecified": showLocation,
-                  "dedicatedHoursSpecified": serviceType === 'Supplemental Services' ? metadata?.dedicatedHoursSpecified : false,
-                  "billableService": metadata?.billableService
-                }]
-              }
-              console.log('services',contractedServices, data);
-            let services = existingServices || [];
-            console.log('service down', services);
-            if(editService){
-              console.log('inside if');
-              let temp = services?.filter(data=>data?.activityType?.activityType !== serviceType && data?.performingActivity !== selectedService?.performingActivity)?.map(data=>data);
-              temp.push(...data);
-              services = temp;
-            }else{
-              console.log('inside else')
-              console.log('data top', data, 'services top', services)
-              services.push(...data);
-              console.log('data',data);
-              console.log('services', services);
-            }
-            console.log('outside', services);
-            let formattedData = {
-                contractedServices: services
-            }
-            console.log('formattedData', formattedData);
-
-            const response = await PUT(`contract-managment-service/contracts/${contractId}/ContractedService`, JSON.stringify(formattedData));
-            if(response){
-                SuccessToaster('Contracted Service Updated Successfully');
-            }
-            else {
-                ErrorToaster('Unexpected Error');
-            }
-          if(buttonType === 'SAVE AND EXIT'){
-            getAddServiceDialog(false);
-            getEditServiceDialog(false);
+                  userSuffix: data?.approver?.name?.suffix,
+                  status: "PRE_AUTHORIZED",
+                },
+                {
+                  step: 2,
+                  userId: data?.paymentApprover?.id,
+                  userName: paymentApproverName,
+                  userTitle: data?.paymentApprover?.title,
+                  userSuffix: data?.paymentApprover?.name?.suffix,
+                  status: "APPROVED",
+                },
+              ]
+            );
           }
-          reset();
+
+          if (
+            data.workflowId === undefined ||
+            data.workflowId === null ||
+            data.workflowId === ""
+          ) {
+            POST(
+              `timesheet-management-service/workflow`,
+              JSON.stringify(workFlowData)
+            )
+              .then((response) => {
+                data.workFlow = {
+                  id: response?.data,
+                  name: data?.performingActivity?.activity,
+                  workFlowMap: workFlowData?.workFlowMap,
+                };
+                dataValue.push(data);
+                if (temp?.length - 1 === index) {
+                  setMetadata(dataValue);
+                  setIsWorkFlowUpdated(true);
+                }
+              })
+              .catch((error) => {
+                ErrorToaster("Unexpected Error");
+              });
+          }
+        } else {
+          data.workFlow = null;
+          handleSave(buttonType);
+        }
+      });
+    } else if (serviceTypeTemplate === ONCALL) {
+      let data = metadata;
+      if (data?.approver !== undefined) {
+        let workFlowData;
+        let name = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`;
+        workFlowData = workFlowDataGenerator(
+          "On-Call Additional Activity Workflow",
+          [
+            {
+              step: 1,
+              userId: data?.approver?.id,
+              userName: name,
+              firstName: data?.approver?.name?.firstName,
+              middleName: data?.approver?.name?.middleName,
+              lastName: data?.approver?.name?.lastName,
+              userTitle: {
+                title: data?.approverTitle?.title,
+                id: data?.approverTitle?.id,
+              },
+              userSuffix: data?.approver?.name?.suffix,
+              status: "APPROVED",
+            },
+          ]
+        );
+        if (
+          data.workflowId === undefined ||
+          data.workflowId === null ||
+          data.workflowId === ""
+        ) {
+          POST(
+            `timesheet-management-service/workflow`,
+            JSON.stringify(workFlowData)
+          )
+            .then((response) => {
+              data.workFlow = {
+                id: response?.data,
+                name: data?.performingActivity?.activity,
+                workFlowMap: workFlowData?.workFlowMap,
+              };
+              setMetadata(data);
+              setIsWorkFlowUpdated(true);
+            })
+            .catch((error) => {
+              ErrorToaster("Unexpected Error");
+            });
+        } else {
+          PUT(
+            `timesheet-management-service/workflow/${data.workflowId}`,
+            workFlowData
+          )
+            .then((response) => {
+              data.workFlow = {
+                id: data?.workflowId,
+                name: data?.workflowName,
+                workFlowMap: workFlowData?.workFlowMap,
+              };
+              setMetadata(data);
+              setIsWorkFlowUpdated(true);
+            })
+            .catch((error) => {
+              ErrorToaster("Unexpected Error");
+            });
+        }
+      } else {
+        handleSave(buttonType);
+      }
+    } else if (serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === HIT) {
+      let data = metadata;
+      if (data?.approver !== undefined) {
+        let workFlowData;
+        let name = `${data?.approver?.name?.firstName} + " " +${data?.approver?.name?.middleName} + " " + ${data?.approver?.name?.lastName}`;
+        workFlowData = workFlowDataGenerator(
+          "Administrative Service Workflow",
+          [
+            {
+              step: 1,
+              userId: data?.approver?.id,
+              userName: name,
+              firstName: data?.approver?.name?.firstName,
+              middleName: data?.approver?.name?.middleName,
+              lastName: data?.approver?.name?.lastName,
+              userTitle: {
+                title: data?.approverTitle?.title,
+                id: data?.approverTitle?.id,
+              },
+              userSuffix: data?.approver?.name?.suffix,
+              status: "APPROVED",
+            },
+          ]
+        );
+        if (
+          data.workflowId === undefined ||
+          data.workflowId === null ||
+          data.workflowId === ""
+        ) {
+          POST(
+            `timesheet-management-service/workflow`,
+            JSON.stringify(workFlowData)
+          )
+            .then((response) => {
+              data.workFlow = {
+                id: response?.data,
+                name: data?.performingActivity?.activity,
+                workFlowMap: workFlowData?.workFlowMap,
+              };
+              setMetadata(data);
+              setIsWorkFlowUpdated(true);
+            })
+            .catch((error) => {
+              ErrorToaster("Unexpected Error");
+            });
+        } else {
+          PUT(
+            `timesheet-management-service/workflow/${data.workflowId}`,
+            workFlowData
+          )
+            .then((response) => {
+              data.workFlow = {
+                id: data?.workflowId,
+                name: data?.workflowName,
+                workFlowMap: workFlowData?.workFlowMap,
+              };
+              setMetadata(data);
+              setIsWorkFlowUpdated(true);
+            })
+            .catch((error) => {
+              ErrorToaster("Unexpected Error");
+            });
+        }
+      } else {
+        handleSave(buttonType);
+      }
+    } else {
+      handleSave(buttonType);
+    }
+    setContinueLoading(false);
+  };
+
+  const handleSave = async (buttonType) => {
+    if (serviceType === "") {
+      ErrorToaster("Activity Type Selection is Mandatory");
+      return;
+    }
+    if (
+      (serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE) &&
+      showLocation &&
+      selectedLocation?.length === 0
+    ) {
+      ErrorToaster("Atleast one location has to be selected if yes");
+      return;
+    }
+    if (serviceTypeTemplate !== CLINIC && serviceTypeTemplate !== PROCEDUREREADING && metadata?.max < metadata?.min) {
+      ErrorToaster("Maximum Value cannot be less than the minimum value");
+      return;
+    } else {
+      if (metadata?.contractedSchedules?.filter(data => data?.minimum?.value > data?.maximum?.value)?.map(data => data)?.length || 0) {
+        ErrorToaster("Maximum Value cannot be less than the minimum value");
+        return;
+      }
     }
 
-    const reset = () => {
-      setMetadata([]);
-      setSelectedLocation([]);
-      setSelectedActivity([]);
-      setSiteData([]);
+    if (
+      (serviceTypeTemplate === CLINIC ||
+        serviceTypeTemplate === PROCEDUREREADING) &&
+      (metadata?.contractedSchedules?.[0]?.startDate !==
+        contractTermPeriod?.start ||
+        metadata?.contractedSchedules?.[
+          metadata?.contractedSchedules?.length - 1
+        ]?.endDate !== contractTermPeriod?.end)
+    ) {
+      ErrorToaster(
+        "Target Applicable Period Should cover contract effective date and contract end date range"
+      );
+      return;
     }
+    if (
+      selectContractInfo !== "INDIVIDUAL" &&
+      isDesignatedSpecificContractor &&
+      selectedUsers?.length === 0
+    ) {
+      ErrorToaster(
+        "Atleast one User has to be selected if Specific Contractor is Yes"
+      );
+      return;
+    }
+    if (
+      metadata?.[0]?.additionalScheduleRequired &&
+      (parseInt(metadata?.[0]?.additionalScheduleValue) === 0 ||
+        metadata?.[0]?.additionalScheduleFrequency === null)
+    ) {
+      ErrorToaster("Additional Schedule value and frequency required");
+      return;
+    }
+    if (
+      (serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE) &&
+      metadata?.[0]?.billableService &&
+      parseInt(metadata?.[0]?.sessionAmount) === 0
+    ) {
+      ErrorToaster(
+        "Payment Amount field is mandatory if the service is Billable"
+      );
+      return;
+    }
+    var performingActivity = "";
+    var parentActivity = "";
+    let activities = [];
+    let dependentActivities = [];
+    let overlappingActivitiesForSplit = [];
+    if (
+      serviceTypeTemplate !== SUPPLEMENTAL &&
+      serviceTypeTemplate !== ADDON &&
+      serviceTypeTemplate !== HOSPICE &&
+      serviceTypeTemplate !== ADMINISTRATIVE &&
+      serviceTypeTemplate !== HIT
+    ) {
+      performingActivity = selectedActivity
+        ?.map((data) => data?.activity?.activity)
+        ?.join("-");
+      selectedActivity?.map((data) => {
+        activities?.push({ activity: data?.activity?.activity });
+      });
+    }
+    if (serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === HIT) {
+      performingActivity = metadata?.selectedActivities
+        ?.map((data) => data?.activity)
+        ?.join("-");
+      metadata?.selectedActivities?.map((data) => {
+        activities?.push({ activity: data?.activity });
+      });
+    }
+    if (serviceTypeTemplate === ONCALL) {
+      let temp = metadata?.additionalActivity;
+      // if (activities?.length === 0 && !metadata?.customizedSchedule) {
+      //   metadata?.serviceDaysArray?.map((serviceDays) => {
+      //     activities?.push({ activity: serviceDays });
+      //   });
+      // }
+      console.log('customize log', metadata);
+      if (metadata?.customizedSchedule) {
+        console.log('inside Custom SChedule', metadata);
+        // activities = [];
+        // metadata?.serviceDaysArray?.map((serviceDays) => {
+        console.log('Activity', activities)
+        if
+          (metadata?.weekdayMin ||
+          metadata?.weekdayMax ||
+          metadata?.weekdayPayment !== 0
+        ) {
+          console.log('inside weekday else');
+          if (!activities?.map(data => data?.activity).includes(metadata?.weekdayActivity) && metadata?.weekdayActivity !== '' && metadata?.weekdayActivity !== null) {
+            activities?.push({ activity: metadata?.weekdayActivity });
+          }
 
-    const handleUsers = (value) => {
-        if (value !== '0') {
-          const selectedValue = users?.filter(data => data?.id === value)?.map(data => data)[0];
-          if (!selectedUsers?.map(data => data?.id)?.includes(value)) {
-            setSelectedUsers([...selectedUsers, selectedValue]);
+        }
+        if (
+          metadata?.weekdayNightsMin ||
+          metadata?.weekdayNightsMax ||
+          metadata?.weekdayNightsPayment !== 0
+        ) {
+          console.log('inside weeknight else');
+          if (!activities?.map(data => data?.activity).includes(metadata?.weekdayNightActivity) && metadata?.weekdayNightActivity !== '' && metadata?.weekdayNightActivity !== null) {
+            activities?.push({ activity: metadata?.weekdayNightActivity })
           }
         }
+
+        if (
+          metadata?.weekendMin ||
+          metadata?.weekendMax ||
+          metadata?.weekendPayment !== 0
+        ) {
+          console.log('inside weekend else');
+          if (!activities?.map(data => data?.activity).includes(metadata?.weekendActivity) && metadata?.weekendActivity !== '' && metadata?.weekendActivity !== null) {
+            activities?.push({ activity: metadata?.weekendActivity })
+          }
+        }
+        if (
+          metadata?.holidayMin ||
+          metadata?.holidayMax ||
+          metadata?.holidayPayment !== 0
+        ) {
+          console.log('inside holiday else');
+          if (!activities?.map(data => data?.activity).includes(metadata?.holidayActivity) && metadata?.holidayActivity !== '' && metadata?.holidayActivity !== null) {
+            activities?.push({ activity: metadata?.holidayActivity })
+          }
+        }
+        // }
+        //   );
+      }
+      let overlappingActivityTemp = [];
+      metadata?.overlappingActivities?.map(data => {
+        overlappingActivityTemp.push({ activityTypeTemplate: data })
+      });
+      overlappingActivitiesForSplit = overlappingActivityTemp;
+      performingActivity = activities?.map(data => data?.activity)?.join("-");
+      console.log('Performing Actiity', performingActivity, activities)
+        ?.map((activity) => activity?.activity)
+        ?.join("-");
+      temp?.map((activity) => {
+        dependentActivities.push({
+          activity: {
+            activity: activity?.activity,
+          },
+          weekday: {
+            from: activity?.weekdayFrom?.toLocaleTimeString("it-IT").toString(),
+            to: activity?.weekdayTo?.toLocaleTimeString("it-IT").toString(),
+          },
+          weekend: {
+            from: activity?.weekendFrom?.toLocaleTimeString("it-IT").toString(),
+            to: activity?.weekendTo?.toLocaleTimeString("it-IT").toString(),
+          },
+          holiday: {
+            from: activity?.holidayFrom?.toLocaleTimeString("it-IT").toString(),
+            to: activity?.holidayTo?.toLocaleTimeString("it-IT").toString(),
+          },
+          patientMRNRequired: activity?.patientMRNRequired,
+          attendingDocRequired: activity?.attendingDocRequired,
+        });
+      });
+    }
+    if (serviceTypeTemplate === SUPPLEMENTAL) {
+      performingActivity =
+        metadata?.supplementServiceName?.map((data) => data)?.join("-") || "";
+      metadata?.supplementServiceName?.map((data) =>
+        activities.push({ activity: data })
+      );
+    }
+    let data = [];
+    if ((serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE) && !editService) {
+      data = metadata;
+
+      data.map((item, index) => {
+        item.workingPeriod = metadata?.[index]?.workingPeriod;
+        item.serviceLocations = metadata?.[index]?.serviceLocations
+          ? metadata?.[index]?.serviceLocations
+          : metadata?.[index]?.locations;
+        item.duration = {
+          hours: parseInt(item?.sessionDuration),
+        };
+        item.serviceRate = {
+          rate: metadata?.[index]?.serviceRate?.rate,
+          rateFrequency: metadata?.[index]?.serviceRate?.rateFrequency,
+          duration: metadata?.[index]?.serviceRate?.rateFrequency === "SESSION" ? item?.sessionDuration : 1,
+        }
+        console.log("performing Activity", metadata?.[index]?.parentActivity);
+        item.addOnActivityType = {
+          activityType: metadata?.[index]?.parentActivity,
+        };
+        item.performingActivity = {
+          activity: metadata?.[index]?.activities
+            ?.map((data) => data?.activity)
+            ?.join("-"),
+        };
+      });
+      // data.workingPeriod = {
+      //   "from": metadata?.workingTimeFrom?.toLocaleTimeString('it-IT').toString(),
+      //   "to": metadata?.workingTimeTo?.toLocaleTimeString('it-IT').toString()
+      // };
+      // data.serviceLocations = data?.locationSpecified ? data?.locations : locationItems;
+    } else {
+      let dataValues = metadata;
+      if (serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE) {
+        dataValues = metadata?.[0];
+
+        parentActivity = dataValues?.addOnActivityType;
+        performingActivity = dataValues?.activities
+          ?.map((data) => data?.activity)
+          ?.join("-");
+      }
+      if (serviceTypeTemplate === HIT && dataValues?.serviceAgreementOnFile && dataValues?.contractedServiceFiles?.length === 0) {
+        ErrorToaster(`Upload atleast one Service Agreement File to continue`)
+        return;
+      }
+      if (activities?.length === 0 && serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE && (serviceTypeTemplate === ONCALL && !dataValues?.customizedSchedule)) {
+        let message =
+          serviceTypeTemplate === SUPPLEMENTAL
+            ? "Supplement Services"
+            : serviceTypeTemplate === ADMINISTRATIVE
+              ? "Allowable Administrative Duties"
+              : serviceTypeTemplate === HIT
+                ? "Allowable Clinical Informative / HIT Duties"
+                : "Activity To Be Performed";
+        ErrorToaster(
+          `Atleast One ${message} needs to be added to create a service`
+        );
+        return;
       }
 
-    const usersTags = selectedUsers
-    ?.filter(data => users?.map(user => user.id === data?.id))
+      data = [
+        {
+          refId: dataValues?.refId?.toString()
+            ? dataValues?.refId?.toString()
+            : new Date().getTime()?.toString(),
+          sites: siteData,
+          activityType: {
+            activityType: serviceType,
+          },
+          activityTypeTemplate: {
+            activityTypeTemplate: serviceTypeTemplate,
+          },
+          ...((serviceTypeTemplate === ADDON || serviceTypeTemplate) &&
+            dataValues?.activityResponse?.dataMap?.selectedActivityId !==
+            null && {
+            addOnActivityType: {
+              activityType: parentActivity,
+            },
+          }),
+          users:
+            selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers,
+          performingActivity: {
+            activity: performingActivity,
+          },
+          activities: activities,
+          ...((((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ONCALLSERVICE) &&
+            !dataValues?.dedicatedHoursSpecified) ||
+            (serviceTypeTemplate === ADMINISTRATIVE &&
+              !dataValues?.dedicatedHoursSpecified) || (serviceTypeTemplate === HIT &&
+                !dataValues?.dedicatedHoursSpecified)) && {
+            hoursBorrowed: {
+              activityType: {
+                activityType: dataValues?.dedicatedHoursActivityType || "",
+              },
+              performingActivity: {
+                activity: dataValues?.dedicatedHoursPerformingActivity || "",
+              },
+            },
+          }),
+          overlappingActivitiesForSplit: overlappingActivitiesForSplit || [],
+          splitActivityTimeOnOverlap: metadata?.overlap || false,
+          contractedServiceFiles: dataValues?.contractedServiceFiles || [],
+          baseServiceAvailable: serviceTypeTemplate === SUPPLEMENTAL ? dataValues?.baseServiceAvailable : false,
+          baseServices:
+            serviceTypeTemplate === SUPPLEMENTAL
+              ? dataValues?.baseServices
+              : [],
+          serviceLocations:
+            (serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE)
+              ? dataValues?.locationSpecified
+                ? dataValues?.locations
+                : []
+              : showLocation
+                ? selectedLocation
+                : [],
+          ...((serviceTypeTemplate === CLINIC ||
+            serviceTypeTemplate === PROCEDUREREADING) && {
+            contractedSchedules: metadata?.contractedSchedules,
+            patientsSeenTargets: metadata?.patientsSeenTargets,
+            scheduledPatientsTargets: metadata?.scheduledPatientsTargets,
+          }),
+          ...(serviceTypeTemplate !== CLINIC &&
+            serviceTypeTemplate !== PROCEDUREREADING && {
+            contractedSchedules: [
+              {
+                minimum: {
+                  value: parseFloat(dataValues?.min || "0"),
+                },
+                maximum: {
+                  value: parseFloat(dataValues?.max || 99999999),
+                },
+                frequency: dataValues?.frequency,
+                ...(serviceTypeTemplate === HIT && {
+                  startDate: dataValues?.contractTermPeriodFrom === null ? null : format(dataValues?.contractTermPeriodFrom, 'yyyy-MM-dd').toString(),
+                  endDate: dataValues?.contractTermPeriodTo === null ? null : format(dataValues?.contractTermPeriodTo, 'yyyy-MM-dd').toString(),
+                }),
+                ...(serviceTypeTemplate !== HIT && {
+                  startDate: contractTermPeriod?.start,
+                  endDate: contractTermPeriod?.end,
+                })
+              },
+            ],
+            patientsSeenTargets: [
+              {
+                withNurse: {
+                  value: parseInt(dataValues?.withNurse || "0"),
+                },
+                withoutNurse: {
+                  value: parseInt(dataValues?.withoutNurse || "0"),
+                },
+                noTargetApplicable: dataValues?.noTargetApplicable,
+                ...(serviceTypeTemplate === HIT && {
+                  startDate: dataValues?.contractTermPeriodFrom === null ? null : format(dataValues?.contractTermPeriodFrom, 'yyyy-MM-dd').toString(),
+                  endDate: dataValues?.contractTermPeriodTo === null ? null : format(dataValues?.contractTermPeriodTo, 'yyyy-MM-dd').toString(),
+                }),
+                ...(serviceTypeTemplate !== HIT && {
+                  startDate: contractTermPeriod?.start,
+                  endDate: contractTermPeriod?.end,
+                })
+              },
+            ],
+            scheduledPatientsTargets: [
+              {
+                withNurse: {
+                  value: parseInt(dataValues?.targetWithNurse || "0"),
+                },
+                withoutNurse: {
+                  value: parseInt(dataValues?.targetWithoutNurse || "0"),
+                },
+                noTargetApplicable: dataValues?.targetNoTargetApplicable,
+                ...(serviceTypeTemplate === HIT && {
+                  startDate: dataValues?.contractTermPeriodFrom === null ? null : format(dataValues?.contractTermPeriodFrom, 'yyyy-MM-dd').toString(),
+                  endDate: dataValues?.contractTermPeriodTo === null ? null : format(dataValues?.contractTermPeriodTo, 'yyyy-MM-dd').toString(),
+                }),
+                ...(serviceTypeTemplate !== HIT && {
+                  startDate: contractTermPeriod?.start,
+                  endDate: contractTermPeriod?.end,
+                })
+              },
+            ],
+          }),
+          ...(serviceTypeTemplate !== SUPPLEMENTAL && serviceTypeTemplate !== ONCALLSERVICE && {
+            additionalSchedule: {
+              value: parseFloat(dataValues?.additionalScheduleValue),
+              frequency: dataValues?.additionalScheduleFrequency,
+              scheduleRequired: dataValues?.additionalScheduleRequired,
+            },
+          }),
+          rateType: dataValues?.rateType,
+          activityResponse: {
+            dataMap: {
+              ...(serviceTypeTemplate === ONCALL && {
+                onCallCoverageFor: dataValues?.onCallCoverageFor,
+              }),
+              ...((serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === HIT) && {
+                adminActivities: dataValues?.selectedActivities,
+              }),
+              ...((serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE) && {
+                selectedActivityId:
+                  dataValues?.activityResponse?.dataMap?.selectedActivityId,
+                additionalDetails:
+                  dataValues?.activityResponse?.dataMap?.additionalDetails ||
+                  [],
+              }),
+            },
+          },
+          duration: {
+            hours: parseFloat(dataValues?.sessionDuration),
+          },
+          payableAmount: {
+            value: parseFloat(dataValues?.sessionAmount),
+          },
+          minSessionDuration: {
+            hours: parseInt(dataValues?.minimumSessionDuration || 0),
+          },
+          patientConsultRequired: dataValues?.patientConsultRequired || false,
+          professionalServiceRequired: dataValues?.professionalServiceRequired || false,
+          ...((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ONCALLSERVICE ||
+            serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === HIT) &&
+            dataValues?.dedicatedHoursSpecified && {
+            hourlyRate: {
+              value:
+                (serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ONCALLSERVICE) &&
+                  dataValues?.totalSession === 0
+                  ? Number(dataValues?.sessionAmount)?.toFixed(2) !== 'NaN' ? Number(dataValues?.sessionAmount)?.toFixed(2) : 0
+                  : Number(
+                    dataValues?.sessionAmount / dataValues?.totalSession
+                  )?.toFixed(2) !== "NaN" ? dataValues?.serviceRateFrequency === "SESSION" ? Number(dataValues?.serviceRate / dataValues?.serviceRateDuration) : Number(
+                    dataValues?.sessionAmount / dataValues?.totalSession
+                  )?.toFixed(2) : 0,
+            },
+          }),
+          ...((serviceTypeTemplate === SUPPLEMENTAL ||
+            serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === ONCALLSERVICE || serviceTypeTemplate === HIT) &&
+            !dataValues?.dedicatedHoursSpecified && {
+            hourlyRate: {
+              value: dataValues?.hourlyRate !== "NaN" ? dataValues?.hourlyRate : 0,
+            },
+          }),
+          ...((serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE) && {
+            hourlyRate: dataValues?.hourlyRate,
+            serviceRate: {
+              rate: dataValues?.serviceRate,
+              rateFrequency: dataValues?.serviceRateFrequency,
+              duration: dataValues?.serviceRateFrequency === "SESSION" ? dataValues?.sessionDuration : 1,
+            },
+          }),
+          ...([CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(
+            serviceTypeTemplate
+          ) && {
+            hourlyRate: {
+              value: isNaN(
+                (
+                  dataValues?.sessionAmount / dataValues?.sessionDuration
+                )?.toFixed(2)
+              )
+                ? 0
+                : (
+                  dataValues?.sessionAmount / dataValues?.sessionDuration
+                )?.toFixed(2),
+            },
+          }),
+          totalSessions: {
+            value: parseFloat(dataValues?.totalSession),
+            frequency: dataValues?.totalSessionFrequency,
+          },
+          sessionsAsNeeded: dataValues?.sessionsAsNeeded || false,
+          serviceDays: dataValues?.serviceDays,
+          ...(serviceTypeTemplate === ONCALL && {
+            dependentService: {
+              payableAmount: {
+                value: parseInt(dataValues?.dependencyPayableAmount),
+              },
+              frequency: dataValues?.dependencyFrequency,
+              additionalServices: dependentActivities,
+              workFlow: dataValues?.workFlow,
+              billableService: dataValues?.additionalActivityBillable,
+              paymentApprovalRequired:
+                dataValues?.additionalActivityPaymentApprovalRequired,
+            },
+            ...(!dataValues?.customizeSchedule && {
+              customschedule: {
+                weekdayDay: {
+                  from: dataValues?.weekdayFrom
+                    ?.toLocaleTimeString("it-IT")
+                    .toString(),
+                  to: dataValues?.weekdayTo
+                    ?.toLocaleTimeString("it-IT")
+                    .toString(),
+                  target: {
+                    minimum: {
+                      value: parseInt(dataValues?.weekdayMin),
+                    },
+                    maximum: {
+                      value: parseInt(dataValues?.weekdayMax),
+                    },
+                    frequency: dataValues?.weekdayFrequency,
+                  },
+                  duration: {
+                    hours: parseFloat(dataValues?.weekdayDuration),
+                  },
+                  serviceRate: {
+                    rate: parseFloat(dataValues?.weekdayDayServiceRate),
+                    rateFrequency: dataValues?.weekdayDayServiceFrequency,
+                    duration: dataValues?.weekdayDayServiceFrequency === "SESSION" ? dataValues?.weekdayDuration : 1,
+                  },
+                  activity: {
+                    activity: dataValues?.weekdayActivity
+                  },
+                  payableAmount: {
+                    value: parseFloat(dataValues?.weekdayPayment),
+                  },
+                  hourlyRate: {
+                    value: isNaN(
+                      dataValues?.weekdayPayment / dataValues?.weekdayDuration
+                    ) ? 0 : (
+                      dataValues?.weekdayPayment / dataValues?.weekdayDuration
+                    )?.toFixed(2),
+                  },
+                  paymentNotApplicable: dataValues?.weekdayPaymentNa,
+                  serviceWeekDays: dataValues?.serviceWeekDaysDay,
+                },
+                weekdayNight: {
+                  from: dataValues?.weekdayNightsFrom
+                    ?.toLocaleTimeString("it-IT")
+                    .toString(),
+                  to: dataValues?.weekdayNightsTo
+                    ?.toLocaleTimeString("it-IT")
+                    .toString(),
+                  target: {
+                    minimum: {
+                      value: parseInt(dataValues?.weekdayNightsMin),
+                    },
+                    maximum: {
+                      value: parseInt(dataValues?.weekdayNightsMax),
+                    },
+                    frequency: dataValues?.weekdayNightsFrequency,
+                  },
+                  duration: {
+                    hours: parseFloat(dataValues?.weekdayNightsDuration),
+                  },
+                  activity: {
+                    activity: dataValues?.weekdayNightActivity
+                  },
+                  payableAmount: {
+                    value: parseFloat(dataValues?.weekdayNightsPayment),
+                  },
+                  serviceRate: {
+                    rate: parseFloat(dataValues?.weekdayNightServiceRate),
+                    rateFrequency: dataValues?.weekdayNightServiceFrequency,
+                    duration: dataValues?.weekdayNightServiceFrequency === "SESSION" ? dataValues?.weekdayNightsDuration : 1,
+                  },
+                  hourlyRate: {
+                    value: isNaN(
+                      dataValues?.weekdayNightsPayment /
+                      dataValues?.weekdayNightsDuration
+                    ) ? 0 : (
+                      dataValues?.weekdayNightsPayment /
+                      dataValues?.weekdayNightsDuration
+                    )?.toFixed(2),
+                  },
+                  paymentNotApplicable: dataValues?.weekdayNightsPaymentNa,
+                  serviceWeekDays: dataValues?.serviceWeekDaysNight,
+                },
+                weekend: {
+                  from: dataValues?.weekendFrom
+                    ?.toLocaleTimeString("it-IT")
+                    .toString(),
+                  to: dataValues?.weekendTo
+                    ?.toLocaleTimeString("it-IT")
+                    .toString(),
+                  ...(dataValues?.weekendStartday !== "" && {
+                    startDay: dataValues?.weekendStartday,
+                  }),
+                  ...(dataValues?.weekendEndday !== "" && {
+                    endDay: dataValues?.weekendEndday,
+                  }),
+                  target: {
+                    minimum: {
+                      value: parseInt(dataValues?.weekendMin),
+                    },
+                    maximum: {
+                      value: parseInt(dataValues?.weekendMax),
+                    },
+                    frequency: dataValues?.weekendFrequency,
+                  },
+                  duration: {
+                    hours: parseFloat(dataValues?.weekendDuration),
+                  },
+                  activity: {
+                    activity: dataValues?.weekendActivity,
+                  },
+                  payableAmount: {
+                    value: parseFloat(dataValues?.weekendPayment),
+                  },
+                  serviceRate: {
+                    rate: parseFloat(dataValues?.weekendServiceRate),
+                    rateFrequency: dataValues?.weekendServiceFrequency,
+                    duration: dataValues?.weekendServiceFrequency === "SESSION" ? dataValues?.weekendDuration : 1,
+                  },
+                  hourlyRate: {
+                    value: isNaN(
+                      dataValues?.weekendPayment / dataValues?.weekendDuration
+                    ) ? 0 : (
+                      dataValues?.weekendPayment / dataValues?.weekendDuration
+                    )?.toFixed(2),
+                  },
+                  paymentNotApplicable: dataValues?.weekendPaymentNa,
+                },
+                holiday: {
+                  from: dataValues?.holidayFrom
+                    ?.toLocaleTimeString("it-IT")
+                    .toString(),
+                  to: dataValues?.holidayTo
+                    ?.toLocaleTimeString("it-IT")
+                    .toString(),
+                  holidayTerm: dataValues?.holidayTerm,
+                  target: {
+                    minimum: {
+                      value: parseInt(dataValues?.holidayMin),
+                    },
+                    maximum: {
+                      value: parseInt(dataValues?.holidayMax),
+                    },
+                    frequency: dataValues?.holidayFrequency,
+                  },
+                  duration: {
+                    hours: parseFloat(dataValues?.holidayDuration),
+                  },
+                  serviceRate: {
+                    rate: parseFloat(dataValues?.holidayServiceRate),
+                    rateFrequency: dataValues?.holidayServiceFrequency,
+                    duration: dataValues?.holidayServiceFrequency === "SESSION" ? dataValues?.holidayDuration : 1,
+                  },
+                  activity: {
+                    activity: dataValues?.holidayActivity
+                  },
+                  payableAmount: {
+                    value: parseFloat(dataValues?.holidayPayment),
+                  },
+                  hourlyRate: {
+                    value: isNaN(
+                      dataValues?.holidayPayment / dataValues?.holidayDuration
+                    ) ? 0 : (
+                      dataValues?.holidayPayment / dataValues?.holidayDuration
+                    )?.toFixed(2),
+                  },
+                  serviceDays: {
+                    isholidays: dataValues?.holidayActivity === "" ? false : true,
+                  },
+                  paymentNotApplicable: dataValues?.holidayPaymentNa,
+                },
+              },
+            }),
+          }),
+          workingPeriod: {
+            from: dataValues?.workingTimeFrom
+              ?.toLocaleTimeString("it-IT")
+              .toString() || "00:00:00",
+            to: dataValues?.workingTimeTo
+              ?.toLocaleTimeString("it-IT")
+              .toString() || "23:59:00",
+          },
+          ...((serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE ||
+            serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === HIT) && {
+            workFlow: dataValues?.workFlow,
+          }),
+          patientMRNRequired: dataValues?.patientMRNRequired || false,
+          reasonRequired: dataValues?.reasonRequired || false,
+          cptcodeRequired: dataValues?.cptcodeRequired || false,
+          encounterDocumentationRequired: dataValues?.encounterDocumentationRequired || false,
+          attendingDocRequired: dataValues?.attendingDocRequired || false,
+          serviceAgreementOnFile: dataValues?.serviceAgreementOnFile || false,
+          activityApprovalWFRequired:
+            dataValues?.activityApprovalWFRequired || false,
+          designateSpecificContractor: isDesignatedSpecificContractor,
+          locationSpecified:
+            (serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE)
+              ? dataValues?.locationSpecified
+              : showLocation,
+          dedicatedHoursSpecified: [SUPPLEMENTAL, ADMINISTRATIVE, HIT, ONCALLSERVICE].includes(
+            serviceTypeTemplate
+          )
+            ? dataValues?.dedicatedHoursSpecified
+            : false,
+          billableService: dataValues?.billableService,
+          ...((serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE && {
+            serviceRate: {
+              rate: dataValues?.serviceRate,
+              rateFrequency: dataValues?.serviceRateFrequency,
+              duration: !serviceTypeTemplate.includes([ADMINISTRATIVE, SUPPLEMENTAL, HIT, ONCALLSERVICE]) && dataValues?.dedicatedHoursSpecified ? dataValues?.serviceRateFrequency === 'SESSION' ? dataValues?.serviceRateDuration : dataValues?.totalSession : dataValues?.serviceRateFrequency === 'SESSION' ? parseFloat(dataValues?.sessionDuration) : 1,
+            },
+          })),
+          dependantServiceIncluded:
+            dataValues?.dependantServiceIncluded || false,
+          customizedSchedule: dataValues?.customizedSchedule || false,
+          ...((serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE) &&
+            !(
+              serviceTypeTemplate === ADMINISTRATIVE &&
+              !metadata?.dedicatedHoursSpecified
+            ) &&
+            !(
+              serviceTypeTemplate === HIT &&
+              !metadata?.dedicatedHoursSpecified
+            ) &&
+            !(
+              serviceTypeTemplate === SUPPLEMENTAL &&
+              !metadata?.dedicatedHoursSpecified
+            ) &&
+            !(serviceTypeTemplate === ONCALLSERVICE && !metadata?.dedicatedHoursSpecified) && {
+            compensationReductionApplicable: reducedOffsetApplicable,
+          }),
+        },
+      ];
+    }
+    if (editService && (serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE)) {
+      data[0].activities = metadata?.[0]?.activities;
+      data[0].workingHours = metadata?.[0]?.workingHours;
+    }
+    let services = existingServices || [];
+    if (editService) {
+      let temp = services
+        ?.filter((data, index) => index !== selectedIndex)
+        ?.map((data) => data);
+      temp.push(...data);
+      services = temp;
+    } else {
+      if (existingServices?.length === services?.length) {
+        data?.map((data) => {
+          if (
+            !services?.map((service) => service?.refId)?.includes(data?.refId)
+          ) {
+            services.push(data);
+          }
+        });
+      }
+    }
+
+    const dataChange = () => {
+      let conflictedData = checkActivityChange(
+        existingServices,
+        selectedService
+      );
+      console.log("conflicted Data", conflictedData);
+      conflictedData?.map((conflictData) => {
+        let conflictedIndex = services?.indexOf(
+          services
+            ?.filter((data) => data?.refId === conflictData?.id)
+            ?.map((data) => data)[0]
+        );
+        let currentServiceIndex = services?.indexOf(
+          services
+            ?.filter((data) => data?.refId === selectedService?.refId)
+            ?.map((data) => data)[0]
+        );
+        let conflictedAddOn = cloneDeep(services[conflictedIndex]);
+        if (conflictData?.type === ADDON) {
+          console.log(
+            "conflictData is add on data",
+            conflictedIndex,
+            currentServiceIndex
+          );
+          services[conflictedIndex] = cloneDeep(services[currentServiceIndex]);
+          services[conflictedIndex].activityResponse =
+            conflictedAddOn?.activityResponse;
+          services[conflictedIndex].activityTypeTemplate =
+            conflictedAddOn?.activityTypeTemplate;
+          services[conflictedIndex].activityType =
+            conflictedAddOn?.activityType;
+          services[conflictedIndex].refId = conflictedAddOn.refId;
+          services[conflictedIndex].workFlow = conflictedAddOn.workFlow;
+          services[conflictedIndex].contractedSchedules = [];
+          services[conflictedIndex].patientsSeenTargets = [];
+          services[conflictedIndex].scheduledPatientsTargets = [];
+          services[
+            conflictedIndex
+          ].performingActivity.activity = `${selectedActivity
+            ?.map((data) => data?.activity?.activity)
+            ?.join(", ")}`;
+        }
+        if (
+          conflictData?.type === SUPPLEMENTAL ||
+          conflictData?.type === ADMINISTRATIVE ||
+          conflictData?.type === HIT ||
+          conflictData?.type === ONCALLSERVICE
+        ) {
+          services[conflictedIndex].hoursBorrowed = {
+            activityType: {
+              activityType:
+                services[currentServiceIndex].activityType?.activityType,
+            },
+            performingActivity: {
+              activity: services[currentServiceIndex]?.activities
+                ?.map((activity) => activity?.activity)
+                ?.join(", "),
+            },
+          };
+          services[conflictedIndex].billableService =
+            services[currentServiceIndex]?.billableService;
+          services[conflictedIndex].rateType =
+            services[currentServiceIndex]?.rateType;
+          services[conflictedIndex].payableAmount =
+            services[currentServiceIndex]?.payableAmount;
+          services[conflictedIndex].duration =
+            services[currentServiceIndex]?.duration;
+          services[conflictedIndex].totalSessions =
+            services[currentServiceIndex]?.totalSessions;
+          services[conflictedIndex].hourlyRate =
+            services[currentServiceIndex]?.hourlyRate;
+        }
+      });
+      updateTimesheet(services);
+      return services;
+    };
+
+    const updateTimesheet = async (serviceData) => {
+      const { data: timesheetSubmissionTerms } = await GET(
+        `contract-managment-service/contracts/${contractId}/timesheetSubmissionTerms`
+      );
+      let temp = [];
+      if (timesheetSubmissionTerms?.timesheetActivitiesPeriods?.length === 1) {
+        serviceData?.map((data) => {
+          temp.push({
+            activityType: { activityType: data?.activityType?.activityType },
+            performingActivity: {
+              activity: data?.activities
+                ?.map((data) => data?.activity)
+                ?.join("-"),
+            },
+          });
+        });
+        timesheetSubmissionTerms.timesheetActivitiesPeriods[0].activities =
+          temp;
+      } else {
+        timesheetSubmissionTerms.timesheetActivitiesPeriods?.map((data) => {
+          data.activities = [];
+        });
+      }
+      if (!editService || activityUpdated) {
+        const response = await PUT(
+          `contract-managment-service/contracts/${contractId}/timesheetSubmissionTerms`,
+          JSON.stringify(timesheetSubmissionTerms)
+        );
+        if (response) {
+          console.log("Successfully Updated Timesheet Activities");
+        } else {
+          console.log("Unexpected Error");
+        }
+      }
+    };
+
+    console.log("datachanged", dataChange());
+
+    let formattedData = {
+      contractedServices: dataChange(),
+    };
+
+    const response = await PUT(
+      `contract-managment-service/contracts/${contractId}/ContractedService`,
+      JSON.stringify(formattedData)
+    );
+    if (response) {
+      SuccessToaster("Contracted Service Updated Successfully");
+    } else {
+      ErrorToaster("Unexpected Error");
+    }
+    getContractedServices();
+    if (buttonType === "SAVE AND EXIT") {
+      getAddServiceDialog(false);
+      getEditServiceDialog(false);
+    } else {
+      reset();
+      getIsReset(true);
+    }
+    getTabDataStatus();
+  };
+
+  const getIsReset = (value) => {
+    setIsReset(value);
+  };
+
+  const reset = () => {
+    setMetadata([]);
+    setSelectedLocation([]);
+    setSelectedActivity([]);
+    setSiteData([]);
+  };
+
+  const handleUsers = (value) => {
+    if (value !== "") {
+      const selectedValue = users
+        ?.filter((data) => data?.id === value)
+        ?.map((data) => data)[0];
+      if (!selectedUsers?.map((data) => data?.id)?.includes(value)) {
+        setSelectedUsers([...selectedUsers, selectedValue]);
+      }
+    }
+  };
+
+  const usersTags = selectedUsers
+    ?.filter((data) => users?.map((user) => user.id === data?.id))
     .map((tag, index) => {
       const onRemove = () => {
-        setSelectedUsers(selectedUsers.filter((user) => user?.id !== tag?.id)?.map(data=>data));
+        setSelectedUsers(
+          selectedUsers
+            .filter((user) => user?.id !== tag?.id)
+            ?.map((data) => data)
+        );
       };
       return (
-        <Tag key={index} onRemove={onRemove} large={true} className={style.tagStyle}>
+        <Tag
+          key={index}
+          onRemove={onRemove}
+          large={true}
+          className={style.tagStyle}
+        >
           {tag?.name?.firstName} {tag?.name?.lastName}
         </Tag>
       );
     });
 
-    const inputElementText = (text) => {
-        return (
-            <button className={`${style.textElement}`}>{text}</button>
-        )
-    }
-
-    const activityItems = useMemo(
-      () =>
-        activity?.filter(data=>!usedActivity?.includes(data?.activity?.activity))?.map((data) => ({
+  const getActivityItems = () => {
+    let temp = [];
+    activity
+      ?.filter((data) => !usedActivity?.includes(data?.activity?.activity))
+      ?.map((data) =>
+        temp.push({
           id: data.id,
           value: data?.activity?.activity,
           ...data,
-        })),
-      [activity, usedActivity],
-    );
+        })
+      );
+    setActivityItems(temp);
+  };
 
-    const locationItems = useMemo(
-      () =>
-        locationList?.map((data) => ({
-          value: data?.location,
-          location: data?.location
-        })),
-      [locationList],
-    )
+  console.log("activit Items", activityItems, activity, usedActivity);
 
-    const onActivitySelect = (selectedItem) => {
-      setItem(selectedItem);
-      if(!selectedActivity?.map(data=>data?.id)?.includes(selectedItem?.id)){
-        delete selectedItem["value"];
-        let temp = selectedActivity;
-        temp.push(selectedItem);
-        setSelectedActivity(temp);
-      }
+  const locationItems = useMemo(
+    () =>
+      locationList?.map(
+        (data) =>
+          data?.location && {
+            ...data,
+            value: data?.location,
+            location: data?.location,
+          }
+      ),
+    [locationList]
+  );
+
+  const updateConflict = (value) => {
+    setConflict({ ...conflict, isPresent: value });
+  };
+
+  const onActivitySelect = (selectedItem) => {
+    console.log("selectedItem", selectedItem);
+    if (selectedItem === undefined) {
+      ErrorToaster("Select Department To Add Activities");
+      return;
     }
-
-    const onLocationSelect = (selectedItem) => {
-      setItem(selectedItem);
-      if(!selectedLocation?.map(data=>data)?.includes(selectedItem)){
-        delete selectedItem["value"];
-        let temp = selectedLocation;
-        temp.push(selectedItem);
-        setSelectedLocation(temp);
-      }
+    setItem(selectedItem);
+    if (
+      !selectedActivity?.map((data) => data?.id)?.includes(selectedItem?.id)
+    ) {
+      delete selectedItem["value"];
+      let temp = selectedActivity;
+      temp.push(selectedItem);
+      let usedActivityTemp = usedActivity;
+      usedActivityTemp.push(selectedItem?.activity?.activity);
+      setUsedActivity(usedActivityTemp);
+      setSelectedActivity(temp);
     }
+    setValue("");
+    if (editService) {
+      let conflictedData = checkActivityChange(
+        existingServices,
+        selectedService
+      );
+      setConflict({
+        isPresent: conflictedData?.length !== 0,
+        conflict: conflictedData,
+      });
+    }
+  };
 
+  const onLocationSelect = (selectedItem) => {
+    setItem(selectedItem);
+    if (!selectedLocation?.map((data) => data)?.includes(selectedItem)) {
+      delete selectedItem["value"];
+      let temp = selectedLocation;
+      temp.push(selectedItem);
+      setSelectedLocation(temp);
+    }
+    removeSelectedLocationFromList();
+    setLocation("");
+  };
 
-    return (
-        <div>
-            <Dialog isOpen={getAddServiceDialog} onClose={() => {getAddServiceDialog(false);getEditServiceDialog(false);}} className={rightHelpArea ? `${style.addServiceDialog} ${style.addManagerDialogBackground}` : `${style.manageServiceDialog} ${style.addManagerDialogBackground}`}>
-                <div className={`${Classes.DIALOG_BODY} `}>
-                    <div className={style.spaceBetween}>
-                        <p className={style.extensionStyle}>Add Services To Be Provided As Per Contract</p>
-                        <div>
-                        {
-                          // <Icon icon="edit" size={20} className={`${style.crossStyle} ${style.calculatorIconColor} ${style.marginRight}`} onClick={() => setHelpTool({...helpTool, textArea:!helpTool?.textArea})} />
-                          // <Icon icon="calculator" size={20} className={`${style.crossStyle} ${style.calculatorIconColor} ${style.marginRight}`} onClick={() => setHelpTool({...helpTool, calculator:!helpTool?.calculator})} />
-                        }
-                          <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => {getAddServiceDialog(false);getEditServiceDialog(false);}} />
-                        </div>
-                    </div>
-                    <div className={style.extensionBorder}></div>
-                    <div className={rightHelpArea ? style.addServiceGrid : ''}>
-                    <div className={style.proofBorder}>
-                        <div className={`${style.addManagerGrid} `}>
-                            <div className={style.extentionLableStyle}>Primary Sites/ Department Affiliation</div>
-                            <SiteDepartmentField sites={siteList} getSelectedSites={getSelectedSites} selectedSites={siteData} isMultiSiteEntity={isMultiSiteEntity}/>
-                        </div>
-                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                            <div className={style.extentionLableStyle}>Activity /Service Type Contracted for*</div>
-                            <div>
-                                <Select
-                                    displayEmpty
-                                    value={serviceType}
-                                    onChange={(e) => {setServiceType(e.target.value)}}
-                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                                    className={`${style.fullWidth}`}
-                                >
-                                <MenuItem value="">Select Activity /Service Type</MenuItem>
-                                {serviceTypeList?.map(data=>(
-                                  <MenuItem value={data}>{data}</MenuItem>
-                                ))}
-                                </Select>
-                            </div>
-                        </div>
-                        {selectContractInfo !== "INDIVIDUAL" && (
-                            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                <div className={style.extentionLableStyle}>Designate Specific Contractor*</div>
-                                <div>
-                                    <div className={`${style.displayInRow} `}>
-                                        <FormControlLabel
-                                            control={
-                                                <Switch checked={isDesignatedSpecificContractor} disabled={(selectContractInfo === "INDIVIDUAL") && true} className={`${style.textAlignLeft}`} onChange={() => setIsDesignatedSpecificContractor(!isDesignatedSpecificContractor)} />
-                                            }
-                                            className={`${style.switchFontStyle} ${style.flexLeft} `}
-                                            label={isDesignatedSpecificContractor ? 'YES' : 'NO'}
-                                        />
+  const handleDesignateContractor = () => {
+    setIsDesignatedSpecificContractor(!isDesignatedSpecificContractor);
+    if (isDesignatedSpecificContractor) {
+      setSelectedUsers(users);
+    } else {
+      setSelectedUsers([]);
+    }
+  };
 
-                                        {isDesignatedSpecificContractor && (
-                                            <Select
-                                                displayEmpty
-                                                onChange={(e) => handleUsers(e.target.value)}
-                                                SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                                                className={`${style.fullWidth}`}
-                                            >
-                                                <MenuItem value="">Select Contracted Services Provided</MenuItem>
-                                                {users?.map((data, index) => (
-                                                    <MenuItem value={data?.id} key={index}> {data?.name?.firstName} {data?.name?.lastName}</MenuItem>
-                                                ))}
-                                            </Select>
-                                        )}
-                                    </div>
-                                    {usersTags?.length !== 0 && (
-                                        <div className={`${style.marginTop20} ${style.marginLeft20}`}>
-                                            {usersTags}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        )}
-                        {
-                          serviceType !== 'Administrative / Miscellaneous Services' && serviceType !== 'Add-On Services' && serviceType !== 'Supplemental Services' &&
-                          <div>
-                              <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                  <div className={style.extentionLableStyle}>Activities To Be Performed*</div>
-                                  <div>
-                                      <div className={style.addGrid}>
-                                          <DatalistInput items={activityItems || []} onSelect={onActivitySelect} className={style.fullWidth} onChange={(e)=>setNewActivity(e.target.value)}/>
-                                          <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
-                                              <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={activityToAdd} />
-                                          </div>
-                                      </div>
-                                      {
-                                        selectedActivity?.length !== 0 &&
-                                        <MultiSelectDisplay values={selectedActivity?.map(data=>data?.activity?.activity)} removeItem={removeFriendlyName}/>
-                                      }
-                                  </div>
-                              </div>
-                          </div>
-                        }
+  const handleClose = () => {
+    if (!isShowPDF) {
+      getAddServiceDialog(false);
+      getEditServiceDialog(false);
+    } else {
+      setIsShowPDF(!isShowPDF);
+    }
+  };
 
+  const onShowLocationChange = (value) => {
+    setShowLocation(value);
+    if (!value) {
+      setSelectedLocation([]);
+    }
+  };
 
-                        {serviceType !== 'Add-On Services' && <div>
-                            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                <div className={style.extentionLableStyle}>Specify Service Facility / Location</div>
-                                <div>
-                                    <div className={`${style.displayInRow} `}>
-                                        <FormControlLabel
-                                            control={
-                                                <Switch className={`${style.textAlignLeft}`} />
-                                            }
-                                            checked={showLocation}
-                                            onChange={()=>setShowLocation(!showLocation)}
-                                            className={`${style.switchFontStyle} ${style.flexLeft} `}
-                                            label={showLocation ? 'YES' : 'NO'}
-                                        />
-                                        {showLocation &&
-                                          <div className={`${style.addGrid} ${style.fullWidth}`}>
-                                              <DatalistInput items={locationItems || []} onSelect={onLocationSelect} className={style.fullWidth} onChange={(e)=>setNewLocation(e.target.value)}/>
-                                              <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
-                                                  <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={locationToAdd}/>
-                                              </div>
-                                          </div>
-                                        }
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
 
-                                    </div>
-                                    {
-                                      showLocation && selectedLocation?.length !== 0 &&
-                                       <MultiSelectDisplay values={selectedLocation?.map(data=>data?.location)} removeItem={removeLocation}/>
-                                    }
-                                </div>
-                            </div>
-                        </div>}
+  const handleClosePopover = () => {
+    setAnchorEl(null);
+  };
 
-                        {serviceType === 'Clinic Blocks'
-                        ? <ClinicBlocksFields getMetaData={getMetaData} serviceSelected={selectedService} editService={editService}/>
-                        : serviceType === 'Surgery Session'
-                        ? <SurgerySessionFields getMetaData={getMetaData} serviceSelected={selectedService} editService={editService}/>
-                        : serviceType === 'On Call Coverage Duty Days'
-                        ? <OnCallCoverageFields getMetaData={getMetaData} serviceSelected={selectedService} editService={editService}/>
-                        : serviceType === 'Supplemental Services'
-                        ? <SupplementalFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService}/>
-                        : serviceType === 'Add-On Services'
-                        ? <AddonClinicFields getMetaData={getMetaData} services={contractedServices} locationItems={locationItems} getNewLocation={getNewLocation} locationToAdd={locationToAdd} serviceSelected={selectedService} editService={editService}/>
-                        : <AdministrativeFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService}/>}
+  const handleClickDoc = (event) => {
+    setAnchorElDoc(event.currentTarget);
+  };
+
+  const handleClosePopoverDoc = () => {
+    setAnchorElDoc(null);
+  };
+
+  const dataCheck = (value) => {
+    if (editService) {
+      return valueCheck(value);
+    } else {
+      return false;
+    }
+  };
+
+  return (
+    <>
+      <div>
+        <Dialog
+          isOpen={getAddServiceDialog}
+          onClose={() => {
+            getAddServiceDialog(false);
+            getEditServiceDialog(false);
+          }}
+          className={`${style.manageServiceDialog} ${style.addManagerDialogBackground
+            } ${rightHelpArea && style.moveDialogPosition}`}
+          canOutsideClickClose={false}
+        >
+          <div className={`${Classes.DIALOG_BODY} `}>
+            <div className={style.spaceBetween}>
+              <p className={style.extensionStyle}>
+                Add Services To Be Provided As Per Contract
+              </p>
+              <div className={style.displayInRow}>
+                <div
+                  className={`${style.cursorPointer} ${style.marginRight20} `}
+                >
+                  <div
+                    onClick={(e) => {
+                      handleClick(e);
+                      setIsShowNotesList(!isShowNotesList);
+                    }}
+                    aria-describedby={id}
+                  >
+                    {helpTool?.textArea ? (
+                      <img
+                        src={NotesOpen}
+                        alt=""
+                        className={style.addServiceNotesImgStyle}
+                      />
+                    ) : (
+                      <img
+                        src={NotesNotOpen}
+                        alt=""
+                        className={style.addServiceNotesImgStyle}
+                      />
+                    )}
+                    <div
+                      className={`${style.addServiceCountStyle} ${style.alignCenter} ${style.marginNotes} `}
+                    >
+                      4
                     </div>
                   </div>
+                  {isShowNotesList && (
+                    <Popover
+                      id={id}
+                      open={open}
+                      anchorEl={anchorEl}
+                      onClose={handleClosePopover}
+                      anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "left",
+                      }}
+                    >
+                      <div className={style.actionsCard}>
+                        <div
+                          className={`${style.specificActionCard} ${style.cursorPointer} `}
+                          onClick={() =>
+                            setHelpTool({
+                              ...helpTool,
+                              textArea: !helpTool?.textArea,
+                            })
+                          }
+                        >
+                          Notes 1
+                        </div>
+                        <div
+                          className={`${style.specificActionCard} ${style.cursorPointer} `}
+                          onClick={() =>
+                            setHelpTool({
+                              ...helpTool,
+                              textArea: !helpTool?.textArea,
+                            })
+                          }
+                        >
+                          Notes 2
+                        </div>
+                        <div
+                          className={`${style.specificActionCard} ${style.cursorPointer} `}
+                          onClick={() =>
+                            setHelpTool({
+                              ...helpTool,
+                              textArea: !helpTool?.textArea,
+                            })
+                          }
+                        >
+                          Notes 3
+                        </div>
+                      </div>
+                    </Popover>
+                  )}
                 </div>
-                <div>
-                    <div className={`${style.floatRight}`}>
-                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {handleSave('ADD MORE');reset()}}>ADD MORE</button>
-                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={()=> {handleSave('SAVE AND EXIT');reset()}}>SAVE & EXIT</button>
+                <div
+                  className={`${style.cursorPointer} ${style.marginRight20} `}
+                >
+                  <div
+                    onClick={(e) => {
+                      handleClickDoc(e);
+                      setIsShowDocumentsList(!isShowDocumentsList);
+                    }}
+                    aria-describedby={idDoc}
+                  >
+                    {isShowPDF ? (
+                      <img
+                        src={DocumentOpen}
+                        alt=""
+                        className={style.addServiceImgStyle}
+                      />
+                    ) : (
+                      <img
+                        src={DocumentNotOpen}
+                        alt=""
+                        className={style.addServiceImgStyle}
+                      />
+                    )}
+                    <div
+                      className={`${style.addServiceCountStyle} ${style.alignCenter} ${style.marginDocument} `}
+                    >
+                      {contractDocumentList?.length}
                     </div>
+                  </div>
+                  {isShowDocumentsList && (
+                    <Popover
+                      id={idDoc}
+                      open={openDoc}
+                      anchorEl={anchorElDoc}
+                      onClose={handleClosePopoverDoc}
+                      anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "left",
+                      }}
+                    >
+                      <div className={style.actionsCard}>
+                        {contractDocumentList?.map((doc) => (
+                          <div
+                            className={`${style.specificActionCard} ${style.cursorPointer} `}
+                            onClick={() => {
+                              setIsShowPDF(!isShowPDF);
+                              setPdfToOpen(doc?.url);
+                            }}
+                          >
+                            {doc?.name}
+                          </div>
+                        ))}
+                      </div>
+                    </Popover>
+                  )}
                 </div>
-            </Dialog>
+                <div
+                  className={`${style.cursorPointer} ${style.marginRight20} `}
+                  onClick={() =>
+                    setHelpTool({
+                      ...helpTool,
+                      calculator: !helpTool?.calculator,
+                    })
+                  }
+                >
+                  {/* <CalculateIcon style={{ fontSize: 30, color: '#bfbfbf' }} /> */}
+                  <div>
+                    {helpTool?.calculator ? (
+                      <img
+                        src={CalculatorOpen}
+                        alt=""
+                        className={style.addServiceImgStyle}
+                      />
+                    ) : (
+                      <img
+                        src={CalculatorNotOpen}
+                        alt=""
+                        className={style.addServiceImgStyle}
+                      />
+                    )}
+                  </div>
+                </div>
+                <Icon
+                  icon="cross"
+                  size={20}
+                  intent={Intent.DANGER}
+                  className={style.crossStyle}
+                  onClick={() => handleClose()}
+                />
+              </div>
+            </div>
+            <div className={style.extensionBorder}></div>
+            {!isShowPDF ? (
+              <div>
+                <div className={style.proofBorder}>
+                  <div className={`${style.addManagerGrid} `}>
+                    <CommonLabel value="Primary Sites / Department Affiliation" />
+                    <SiteDepartmentField
+                      sites={siteList}
+                      getSelectedSites={getSelectedSites}
+                      selectedSites={siteData}
+                      isMultiSiteEntity={isMultiSiteEntity}
+                    />
+                  </div>
+                  <div
+                    className={`${style.addManagerGrid} ${style.marginTop20} `}
+                  >
+                    <CommonLabel value="Activity / Service Type Contracted for*"
+                      className={editService && (!serviceTypeList || serviceTypeList?.length === 0) ? style.redLable : ""}
+                    />
+                    <div>
+                      <CommonSelectField
+                        value={serviceType}
+                        onChange={(e) => {
+                          setServiceType(e.target.value);
+                          setServiceTypeTemplate(
+                            serviceTypeList
+                              ?.filter(
+                                (type) => type?.serviceType === e.target.value
+                              )
+                              ?.map((data) => data?.serviceTypeTemplate)?.[0]
+                          );
+                          setSelectedActivity([]);
+                          setServiceTypeId(
+                            serviceTypeList
+                              ?.filter(
+                                (data) => data?.serviceType === e.target.value
+                              )
+                              ?.map((data) => data?.id)[0]
+                          );
+                        }}
+                        className={`${style.fullWidth} `}
+                        firstOptionLabel={"Select Activity /Service Type"}
+                        firstOptionValue={""}
+                        valueList={serviceTypeList?.map(
+                          (data) => data?.serviceType
+                        )}
+                        labelList={serviceTypeList?.map(
+                          (data) => data?.serviceType
+                        )}
+                        disabledList={serviceTypeList?.map((data) => false)}
+                      />
+                    </div>
+                  </div>
+                  {selectContractInfo !== "INDIVIDUAL" && (
+                    <div
+                      className={`${style.addManagerGrid} ${style.marginTop20} `}
+                    >
+                      <CommonLabel value="Designate Specific Contractor*"
+                        className={editService && isDesignatedSpecificContractor && (!usersTags || usersTags?.length === 0) ? style.redLable : ""}
+                      />
+                      <div>
+                        <div className={`${style.displayInRow} `}>
+                          <CommonSwitch
+                            checked={isDesignatedSpecificContractor}
+                            disabled={
+                              selectContractInfo === "INDIVIDUAL" && true
+                            }
+                            className={`${style.switchFontStyle} ${style.textAlignLeft} ${style.flexLeft}`}
+                            onChange={() => handleDesignateContractor()}
+                            label={
+                              isDesignatedSpecificContractor ? "YES" : "NO"
+                            }
+                          />
+                          {isDesignatedSpecificContractor ? (
+                            <CommonSelectField
+                              onChange={(e) => handleUsers(e.target.value)}
+                              className={`${style.fullWidth} `}
+                              firstOptionLabel={
+                                "Select Contractors for Services to be Provided"
+                              }
+                              firstOptionValue={""}
+                              valueList={users?.map((data) => data?.id)}
+                              labelList={users?.map(
+                                (data) =>
+                                  `${data?.name?.firstName} ${data?.name?.lastName}`
+                              )}
+                              disabledList={users?.map((data) => false)}
+                            />
+                          ) : (
+                            <p className={` ${style.marginTop10} `}>
+                              Any Contractor
+                            </p>
+                          )}
+                        </div>
+                        {isDesignatedSpecificContractor && usersTags?.length !== 0 && (
+                          <div
+                            className={`${style.marginTop20} ${style.marginLeft20} `}
+                          >
+                            {usersTags}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  {[
+                    "FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITH_OFFSET",
+                    "FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET",
+                  ]?.includes(compensationPolicy) &&
+                    (serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE) &&
+                    !(
+                      serviceTypeTemplate === ADMINISTRATIVE &&
+                      !metadata?.dedicatedHoursSpecified
+                    ) &&
+                    !(
+                      serviceTypeTemplate === HIT &&
+                      !metadata?.dedicatedHoursSpecified
+                    ) &&
+                    !(
+                      serviceTypeTemplate === SUPPLEMENTAL &&
+                      !metadata?.dedicatedHoursSpecified
+                    ) &&
+                    !(serviceTypeTemplate === ONCALLSERVICE && !metadata?.dedicatedHoursSpecified) &&
+                    (
+                      <div
+                        className={`${style.addManagerGrid} ${style.marginTop20}`}
+                      >
+                        <CommonLabel value="Reduced offset applicable" />
+                        <CommonSwitch
+                          checked={reducedOffsetApplicable}
+                          className={`${style.switchFontStyle} ${style.flexLeft} `}
+                          onChange={() =>
+                            setReducedOffsetApplicable(!reducedOffsetApplicable)
+                          }
+                          label={reducedOffsetApplicable ? "YES" : "NO"}
+                        />
+                      </div>
+                    )}
+                  {serviceTypeTemplate !== ADMINISTRATIVE &&
+                    serviceTypeTemplate !== HIT &&
+                    serviceTypeTemplate !== ADDON &&
+                    serviceTypeTemplate !== HOSPICE &&
+                    serviceTypeTemplate !== SUPPLEMENTAL &&
+                    !selectedService?.customizedSchedule &&
+                    (
+                      <div>
+                        <div
+                          className={`${style.addManagerGrid} ${style.marginTop20} `}
+                        >
+                          <CommonLabel value="Activities To Be Performed*"
+                            className={editService && (!selectedActivity || selectedActivity?.length === 0) ? style.redLable : ""}
+                          />
+                          <div>
+                            <div>
+                              <div className={style.addGrid}>
+                                <DatalistInput
+                                  value={value}
+                                  setValue={setValue}
+                                  items={activityItems || []}
+                                  onSelect={onActivitySelect}
+                                  className={style.fullWidth}
+                                  onChange={(e) => setNewActivity(e.target.value)}
+                                  inputProps={{ disabled: contractStatus === "ACTIVE" ? true : false }}
+                                />
+                                <div
+                                  className={`${style.addStyle} ${style.alignCenter
+                                    } ${style.cursorPointer} ${newActivity === "" ||
+                                      activity?.some((data) =>
+                                        data?.activity?.activity
+                                          ?.replace(" ", "")
+                                          ?.toLowerCase()
+                                          ?.includes(
+                                            newActivity
+                                              ?.replace(" ", "")
+                                              ?.toLowerCase()
+                                          )
+                                      )
+                                      ? style.disabledUploadButton
+                                      : ""
+                                    }`}
+                                >
+                                  <AddIcon
+                                    sx={{ fontSize: 25, color: "white" }}
+                                    onClick={contractStatus === "ACTIVE" ? {} : activityToAdd}
+                                  />
+                                </div>
+                              </div>
 
-        </div>
-    )
-}
+                            </div>
+                            {selectedActivity?.length !== 0 && (
+                              <MultiSelectDisplay
+                                values={selectedActivity?.map(
+                                  (data) => data?.activity?.activity
+                                )}
+                                removeItem={removeFriendlyName}
+                              />
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                  {serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE && serviceTypeTemplate !== HIT && (
+                    <div>
+                      <div
+                        className={`${style.addManagerGrid} ${style.marginTop20} `}
+                      >
+                        <CommonLabel value="Specify Service Facility / Location (Cost Center)*"
+                          className={editService && showLocation && (!selectedLocation || selectedLocation?.length === 0) ? style.redLable : ""}
+                        />
+                        <div>
+                          <div className={`${style.displayInRow} `}>
+                            <CommonSwitch
+                              checked={showLocation}
+                              className={`${style.switchFontStyle} ${style.flexLeft} `}
+                              onChange={() => setShowLocation(!showLocation)}
+                              label={showLocation ? "YES" : "NO"}
+                            />
+
+                            {/* <ThemeProvider theme={switchTheme}>
+                          <FormControlLabel
+                            control={
+                              <Switch className={`${style.textAlignLeft}`} />
+                            }
+                            color='primary'
+                            checked={showLocation}
+                            onChange={() => setShowLocation(!showLocation)}
+                            className={`${style.switchFontStyle} ${style.flexLeft} `}
+                            label={showLocation ? 'YES' : 'NO'}
+                          />
+                        </ThemeProvider> */}
+
+                            {/* <div className={`${style.addGrid} ${style.fullWidth} `}> */}
+                            {showLocation && (
+                              <div className={style.fullWidth}>
+                                <DatalistInput
+                                  value={location}
+                                  setValue={setLocation}
+                                  items={locationItems || []}
+                                  onSelect={onLocationSelect}
+                                  className={style.fullWidth}
+                                  onChange={(e) =>
+                                    contractStatus === "ACTIVE" ? {} : setNewLocation(e.target.value)
+                                  }
+                                  inputProps={{ disabled: contractStatus === "ACTIVE" ? true : false }}
+                                />
+                              </div>
+                            )}
+                          </div>
+                          {showLocation && selectedLocation?.length !== 0 && (
+                            <MultiSelectDisplay
+                              values={selectedLocation?.map(
+                                (data) => data?.location
+                              )}
+                              removeItem={removeLocation}
+                            />
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {serviceTypeTemplate === CLINIC ? (
+                    <ClinicBlocksFields
+                      getMetaData={getMetaData}
+                      serviceSelected={selectedService}
+                      timeCommitment={timeCommitment}
+                      contractTermPeriod={contractTermPeriod}
+                      isReset={isReset}
+                      getIsReset={getIsReset}
+                      editService={editService}
+                    />
+                  ) : serviceTypeTemplate === SURGERY ? (
+                    <SurgerySessionFields
+                      getMetaData={getMetaData}
+                      serviceSelected={selectedService}
+                      timeCommitment={timeCommitment}
+                      isReset={isReset}
+                      getIsReset={getIsReset}
+                      editService={editService}
+                    />
+                  ) : serviceTypeTemplate === ONCALL ? (
+                    <OnCallCoverageFields
+                      servicesList={contractedServices}
+                      getMetaData={getMetaData}
+                      serviceSelected={selectedService}
+                      timeCommitment={timeCommitment}
+                      isReset={isReset}
+                      getIsReset={getIsReset}
+                      sites={siteList}
+                      contractId={contractId}
+                      editService={editService}
+                    />
+                  ) : serviceTypeTemplate === SUPPLEMENTAL ? (
+                    <SupplementalFields
+                      getMetaData={getMetaData}
+                      services={contractedServices}
+                      serviceSelected={selectedService}
+                      editService={editService}
+                      isReset={isReset}
+                      getIsReset={getIsReset}
+                    />
+                  ) : serviceTypeTemplate === ONCALLSERVICE
+                    ? <OnCallService getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} isReset={isReset} getIsReset={getIsReset} />
+                    : serviceTypeTemplate === ADDON ? (
+                      <AddonClinicFields
+                        getMetaData={getMetaData}
+                        services={contractedServices}
+                        locationItems={locationItems}
+                        getNewLocation={getNewLocation}
+                        locationToAdd={locationToAdd}
+                        serviceSelected={selectedService}
+                        editService={editService}
+                        isReset={isReset}
+                        getIsReset={getIsReset}
+                        sites={siteList}
+                        contractId={contractId}
+                      />
+                    ) : serviceTypeTemplate === HOSPICE ? (
+                      <HospiceService
+                        getMetaData={getMetaData}
+                        services={contractedServices}
+                        locationItems={locationItems}
+                        getNewLocation={getNewLocation}
+                        locationToAdd={locationToAdd}
+                        serviceSelected={selectedService}
+                        editService={editService}
+                        isReset={isReset}
+                        getIsReset={getIsReset}
+                        sites={siteList}
+                        contractId={contractId}
+                      />
+                    ) : serviceTypeTemplate === PROCEDUREREADING ? (
+                      <ProcedureReading
+                        getMetaData={getMetaData}
+                        serviceSelected={selectedService}
+                        timeCommitment={timeCommitment}
+                        contractTermPeriod={contractTermPeriod}
+                        isReset={isReset}
+                        getIsReset={getIsReset}
+                        editService={editService}
+                      />
+                    ) :
+                      serviceTypeTemplate === HIT ? (
+                        <HITService
+                          getMetaData={getMetaData}
+                          services={contractedServices}
+                          serviceSelected={selectedService}
+                          editService={editService}
+                          isReset={isReset}
+                          getIsReset={getIsReset}
+                          sites={siteList}
+                          contractId={contractId}
+                          contractTermPeriod={contractTermPeriod}
+                        />
+                      ) :
+                        (
+                          <AdministrativeFields
+                            getMetaData={getMetaData}
+                            services={contractedServices}
+                            serviceSelected={selectedService}
+                            editService={editService}
+                            isReset={isReset}
+                            getIsReset={getIsReset}
+                            sites={siteList}
+                            contractId={contractId}
+                          />
+                        )}
+                </div>
+              </div>
+            ) : (
+              <div className={`${style.pdfViewStyle} ${style.marginTop} `}>
+                <iframe
+                  src={pdfToOpen}
+                  allowfullscreen
+                  height="500px"
+                  width="100%"
+                  title="Document"
+                />
+              </div>
+            )}
+            {helpTool?.calculator ? (
+              <div className={style.calculatorDisplayStyle}>
+                <Calculator />
+              </div>
+            ) : helpTool?.textArea ? (
+              <div className={style.calculatorDisplayStyle}>
+                {
+                  //  notes={notesData} contractId={contractId}
+                }
+                <Notes />
+              </div>
+            ) : (
+              ""
+            )}
+          </div>
+          <div>
+            {
+              <ServiceConflict
+                conflict={conflict}
+                updateConflict={updateConflict}
+              />
+            }
+            {isEditable && !isShowPDF && (
+              <div className={`${style.floatRight} `}>
+                {!editService && (
+                  <button
+                    className={`${style.buttonStyle}  ${style.cursorPointer} ${style.marginLeft20
+                      } ${continueLoading ? style.disabled : ""}`}
+                    onClick={
+                      !continueLoading ? () => addOnWorkFlow("ADD MORE") : null
+                    }
+                  >
+                    ADD MORE
+                  </button>
+                )}
+                <button
+                  className={`${style.buttonStyle}  ${style.cursorPointer} ${style.marginLeft20
+                    } ${continueLoading ? style.disabled : ""}`}
+                  onClick={
+                    !continueLoading
+                      ? () => addOnWorkFlow("SAVE AND EXIT")
+                      : null
+                  }
+                >
+                  SAVE & EXIT
+                </button>
+              </div>
+            )}
+          </div>
+        </Dialog>
+      </div>
+    </>
+  );
+};
 
 export default AddServiceProvided;
