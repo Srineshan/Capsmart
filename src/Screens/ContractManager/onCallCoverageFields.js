@@ -791,7 +791,7 @@ const OnCallCoverageFields = ({ servicesList, getMetaData, serviceSelected, time
                         endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                       }}
                       value={metadata?.weekdayDuration}
-                      onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 3)), 'weekdayDuration')}
+                      onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'weekdayDuration')}
                     />
                   </div>
                 </div>
@@ -960,7 +960,7 @@ const OnCallCoverageFields = ({ servicesList, getMetaData, serviceSelected, time
                         endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                       }}
                       value={metadata?.weekdayNightsDuration}
-                      onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 3)), 'weekdayNightsDuration')}
+                      onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'weekdayNightsDuration')}
                     />
                   </div>
                 </div>
@@ -1141,7 +1141,7 @@ const OnCallCoverageFields = ({ servicesList, getMetaData, serviceSelected, time
                       endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                     }}
                     value={metadata?.weekendDuration}
-                    onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 3)), 'weekendDuration')}
+                    onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'weekendDuration')}
                   />
                 </div>
               </div>
@@ -1330,7 +1330,7 @@ const OnCallCoverageFields = ({ servicesList, getMetaData, serviceSelected, time
                       endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                     }}
                     value={metadata?.holidayDuration}
-                    onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 3)), 'holidayDuration')}
+                    onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'holidayDuration')}
                   />
                 </div>
               </div>

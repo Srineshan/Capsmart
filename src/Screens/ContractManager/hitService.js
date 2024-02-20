@@ -6,7 +6,7 @@ import FormControl from '@mui/material/FormControl';
 import InputAdornment from '@mui/material/InputAdornment';
 import AddIcon from '@mui/icons-material/Add';
 import Select from '@mui/material/Select';
-import { TextArea, Icon, Dialog, Classes, Intent } from '@blueprintjs/core';
+import { TextArea, Icon, Dialog, Classes, Intent, ProgressBar } from '@blueprintjs/core';
 import Tooltip from '@mui/material/Tooltip';
 import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 import TextField from '@mui/material/TextField';
@@ -103,8 +103,6 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         serviceAgreementOnFile: false,
     })
 
-    console.log('Contract Term Period', contractTermPeriod)
-
     const [addOnWorkFlow, setAddOnWorkFlow] = useState([]);
 
     useEffect(() => {
@@ -144,11 +142,6 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
 
     useEffect(() => {
         getMetaData(metadata);
-        // let fileData = [];
-        //   contractDetail?.contractFiles?.map(data => {
-        //     fileData.push({ id: data?.id, type: data?.documentType, name: data?.documentName, desc: data?.documentDescription, fileName: data?.fileName, file: null, filePath: data?.fileURL })
-        //   })
-        //   setFileFields(fileData);
     }, [metadata])
 
     useEffect(() => {
@@ -178,6 +171,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
     }
 
     const addNewDocumentField = async () => {
+        setIsLoading(true);
         let temp = fullyExecutedContractData;
         temp.push(fileFieldData);
         setFileFields(temp);
@@ -207,6 +201,8 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
             .catch(error => {
                 ErrorToaster('File Upload Failed');
             })
+        setIsLoading(false);
+        setIsShowUploadDialog(false);
     }
 
     const handleFileChange = (e, name) => {
@@ -947,20 +943,22 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                             onChange={(e) => handleFileChange(e, 'name')} />
                         <TextArea rows={4} placeholder="Document Description" value={fileFieldData?.documentDescription}
                             maxLength={DESCLEN} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileChange(e, 'documentDescription')} />
-                        {/* <div>
-              <CommonInputField value={fileFieldData?.fileName !== '' ? fileFieldData?.fileName : ''} leftElement={leftElement()} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileUpload(e)} />
-            </div> */}
-                    </div>
-                    {/* )} */}
-                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
-                        <div></div>
-                        {(
-                            (fileFieldData?.documentType === '' || fileFieldData?.fileName === '' || fileFieldData?.file === null) ?
-                                <Tooltip title={'Enter All Values To Enable Upload'} arrow>
-                                    <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${style.disabledUploadButton}`} >UPLOAD</button>
-                                </Tooltip> :
-                                <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} `} disabled={false} onClick={() => { addNewDocumentField(); setIsShowUploadDialog(false) }}>UPLOAD</button>
-                        )}
+
+                        {
+                            isLoading && <div className={`${style.spaceBetween} ${style.marginTop}`}>
+                                <ProgressBar value={50} intent={Intent.PRIMARY} />
+                            </div>
+                        }
+                        <div className={`${style.spaceBetween} ${style.marginTop}`}>
+                            <div></div>
+                            {(
+                                (fileFieldData?.documentType === '' || fileFieldData?.fileName === '' || fileFieldData?.file === null) ?
+                                    <Tooltip title={'Enter All Values To Enable Upload'} arrow>
+                                        <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${style.disabledUploadButton}`} >UPLOAD</button>
+                                    </Tooltip> :
+                                    <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} `} disabled={false} onClick={() => { addNewDocumentField() }}>UPLOAD</button>
+                            )}
+                        </div>
                     </div>
                 </div>
             </Dialog>
