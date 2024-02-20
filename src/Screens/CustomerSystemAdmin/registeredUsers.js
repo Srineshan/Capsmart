@@ -247,14 +247,14 @@ const RegisteredUsers = ({ getSelectedOption }) => {
             dot.push('dot');
             userName.push(`${data?.name?.firstName} ${data?.name?.lastName}`);
             userAffiliation.push(getUserAffiliation(data));
-            title.push(data?.title !== null ? data?.title?.title : '-');
+            title.push(data?.sites !== null ? data?.sites?.sites?.[0]?.siteResponsibility?.title : '-');
             proxy.push('-');
             surrogate.push('-');
             siteName.push(data?.sites?.sites ? data?.sites?.sites : []);
             department.push(data?.sites?.sites ? data?.sites?.sites : []);
             lastLoginDateOrTime.push(data?.lastLogin !== null ? format(new Date(data?.lastLogin), 'MM-dd-yyyy HH:mm') : '-');
             avgLoginPerDay.push(data?.avgLoginCount);
-            angDurationPerLogin.push(data?.avgLoginSession !== null ? millisToMinutesAndSeconds(data?.avgLoginSession?.milliseconds) : 0);
+            angDurationPerLogin.push(data?.avgLoginSession !== null ? millisToMinutesAndSeconds(data?.avgLoginSession?.milliseconds) : '0:00');
             deactivatedDateOrTime.push(data?.userBlockedOrDeactivatedDate !== null ? format(new Date(data?.userBlockedOrDeactivatedDate), 'MM-dd-yyyy HH:mm') : '-');
             deactivatedBy.push(data?.deactivatedBy !== null ? data?.deactivatedBy?.name : '-');
             invitedDateOrTime.push(data?.userCreatedDate !== null ? format(new Date(data?.userCreatedDate), 'MM-dd-yyyy HH:mm') : '-');
