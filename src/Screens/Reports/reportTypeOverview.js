@@ -106,6 +106,14 @@ const ReportTypeOverview = () => {
         paid: 'Payment Made'
     }
 
+    const getContractStatusValue = {
+        ACTIVE: 'Active',
+        DRAFT: 'Draft',
+        EXPIRED: 'Expired',
+        TERMINATED: 'Terminated',
+        ACTIVATION_READY: 'Ready To Activate',
+    }
+
     useEffect(() => {
         setActivitiesOrServices();
     }, [activitiesOrServicesValues]);
@@ -1494,7 +1502,7 @@ const ReportTypeOverview = () => {
                                                         reportType === "contractsWithABusinessEntity") && (
                                                             <div>
                                                                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Contract Status</div>
-                                                                <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.contractStatus}</div>
+                                                                <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{getContractStatusValue[dataToUseInReport?.contractStatus]}</div>
                                                             </div>
                                                         )}
                                                     {(reportType === "contractDocumentsOnFile" || reportType === "currentRemitToAddressForActiveContracts") && (

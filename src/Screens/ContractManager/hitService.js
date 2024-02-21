@@ -98,6 +98,8 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         contractTermPeriodFrom: null,
         contractTermPeriodTo: null,
         contractedServiceFiles: [],
+        workingTimeFrom: null,
+        workingTimeTo: null,
         serviceAgreementOnFile: false,
     })
 
@@ -832,6 +834,31 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                     <div>
                         {fileItems}
                     </div>
+                </div>
+            </div>
+
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                <CommonLabel value='Allowable Working Day Hours For Service*' />
+                <div className={style.displayInRow}>
+                    <TimePicker
+                        useAmPm={false}
+                        onChange={(e) => {
+                            updateWorkingPeriod(e);
+                        }}
+                        disabled={contractStatus === "ACTIVE" ? true : false}
+                        value={metadata?.workingTimeFrom === null ? null : new Date(metadata?.workingTimeFrom)}
+                    />
+                    <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
+                    <TimePicker
+                        useAmPm={false}
+                        onChange={(e) => {
+                            handleValueChange('workingTimeTo', e);
+                        }}
+                        disabled={contractStatus === "ACTIVE" ? true : false}
+                        value={metadata?.workingTimeTo === null ? null : new Date(metadata?.workingTimeTo)}
+                    // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.totalSession * 60 * 60 * 1000))}
+                    />
+
                 </div>
             </div>
 

@@ -723,7 +723,7 @@
 .healthCareIndustriesHeader {
   background: #d3d0f6 0% 0% no-repeat padding-box;
   font-weight: normal;
-  height: 50px;
+  min-height: 50px;
   width: 100%;
   border-radius: 6px;
   margin-top: 2px;
@@ -1662,7 +1662,7 @@
 .boardCertificationSideRows2 {
   background: #a097f5 0% 0% no-repeat padding-box;
   font-weight: normal;
-  height: 50px;
+  min-height: 50px;
   width: 92.5%;
   border-radius: 6px;
   margin-top: 1%;
@@ -1675,7 +1675,7 @@
 .boardCertificationSideRows1 {
   background: #a097f5 0% 0% no-repeat padding-box;
   font-weight: normal;
-  height: 50px;
+  min-height: 50px;
   width: 90%;
   border-radius: 6px;
   margin-top: 1%;
@@ -1688,7 +1688,7 @@
 .ContractedServiceProviderHeaderInsideContainer {
   background: #a097f5 0% 0% no-repeat padding-box;
   font-weight: normal;
-  height: 50px;
+  min-height: 50px;
   border-radius: 6px;
   margin-top: 1%;
   margin-left: 2%;
@@ -1700,7 +1700,7 @@
 .boardCertificationSideRows {
   background: #cecaf5 0% 0% no-repeat padding-box;
   font-weight: normal;
-  height: 50px;
+  min-height: 50px;
   width: 90%;
   border-radius: 6px;
   margin-top: 1%;
@@ -1713,7 +1713,7 @@
 .terminationReasonSideRows {
   background: #928AE1 0% 0% no-repeat padding-box;
   font-weight: normal;
-  height: 50px;
+  min-height: 50px;
   width: 98%;
   border-radius: 6px;
   margin-top: 1%;
@@ -1737,7 +1737,6 @@
 .boardCertificationInnerFolderRows {
   font-weight: normal;
   min-height: 50px;
-  height: 50px;
   width: 83%;
   border: 0.4000000059604645px solid #887ee7af;
   opacity: 1;
@@ -1750,7 +1749,6 @@
 .terminationInnerFolderRows {
   font-weight: normal;
   min-height: 50px;
-  height: 50px;
   width: 93%;
   border: 0.400000006px solid rgba(136, 126, 231, 0.6862745098);
   opacity: 1;
@@ -1775,7 +1773,6 @@
 .HolidayListInnerFolderRows {
   font-weight: normal;
   min-height: 50px;
-  height: 50px;
   width: 82%;
   border: 0.4000000059604645px solid #d7d4f7;
   opacity: 1;
@@ -1996,7 +1993,7 @@
   border: 0.4000000059604645px solid #7165e3;
   border-radius: 6px;
   opacity: 0.75;
-  height: 50px;
+  min-height: 50px;
   width: 100%;
 }
 
@@ -2068,7 +2065,6 @@
   background: #cecaf5 0% 0% no-repeat padding-box;
   font-weight: normal;
   min-height: 50px;
-  // height: 50px;
   width: 90%;
   border: 0.4000000059604645px solid #887ee7af;
   border-radius: 6px;
@@ -2084,7 +2080,6 @@
 .customersAdminInnerRowsStyle1 {
   font-weight: normal;
   min-height: 50px;
-  // height: 50px;
   width: 87%;
   border: 0.4000000059604645px solid #887ee7af;
   border-radius: 6px;
@@ -2101,7 +2096,6 @@
 .customersAdminInnerRowsStyle2 {
   font-weight: normal;
   min-height: 50px;
-  // height: 50px;
   width: 95%;
   border: 0.4000000059604645px solid #887ee7af;
   border-radius: 6px;
@@ -2117,7 +2111,6 @@
 .customersAdminInnerRowsStyle3 {
   font-weight: normal;
   min-height: 50px;
-  // height: 50px;
   width: 87%;
   border: 0.4000000059604645px solid #887ee7af;
   border-radius: 6px;
@@ -2135,7 +2128,6 @@
 .customersAdminInnerRowsStyle4 {
   font-weight: normal;
   min-height: 50px;
-  // height: 50px;
   width: 87%;
   border: 0.4000000059604645px solid #887ee7af;
   border-radius: 6px;
@@ -2152,7 +2144,6 @@
 .customersAdminInnerRowsStyle5 {
   font-weight: normal;
   min-height: 50px;
-  // height: 50px;
   width: 87%;
   border: 0.4000000059604645px solid #887ee7af;
   border-radius: 6px;
@@ -2169,7 +2160,6 @@
 .customersAdminInnerRowsStyle6 {
   font-weight: normal;
   min-height: 50px;
-  // height: 50px;
   width: 90%;
   border: 0.4000000059604645px solid #887ee7af;
   border-radius: 6px;
@@ -2186,7 +2176,6 @@
 .holidayInnerRowsStyle1 {
   font-weight: normal;
   min-height: 50px;
-  // height: 50px;
   width: 87%;
   border: 0.4000000059604645px solid #887ee7af;
   border-radius: 6px;
@@ -2203,7 +2192,6 @@
 .customersAdminInnerRowsStyleLightColor {
   font-weight: normal;
   min-height: 50px;
-  // height: 50px;
   width: 87%;
   border: 0.4000000059604645px solid #887ee7af;
   border-radius: 6px;
@@ -2221,7 +2209,7 @@
   border: 0.4000000059604645px solid #c3bff3;
   opacity: 0.88;
   font-weight: normal;
-  height: 50px;
+  min-height: 50px;
   width: 87%;
   border-radius: 6px;
   margin-top: 1%;
@@ -2236,7 +2224,7 @@
   border: 0.4000000059604645px solid #c3bff3;
   opacity: 0.88;
   font-weight: normal;
-  height: 50px;
+  min-height: 50px;
   width: 90%;
   border-radius: 6px;
   margin-top: 1%;
@@ -2380,7 +2368,7 @@
 .customerAdminTableHeader2 {
   background: #d3d0f6 0% 0% no-repeat padding-box;
   font-weight: normal;
-  height: 50px;
+  min-height: 50px;
   width: 93%;
   border-radius: 6px;
   margin-top: 2px;
@@ -2466,7 +2454,7 @@
   display: grid;
   align-items: center;
   opacity: 0.75;
-  height: 50px;
+  min-height: 50px;
   width: 100%;
   grid-template-columns: 25% 45% 10%;
 }
@@ -2589,7 +2577,7 @@
 .boardCertificationSideRows3 {
   background: #8e86e1 0% 0% no-repeat padding-box;
   font-weight: normal;
-  height: 50px;
+  min-height: 50px;
   width: 90%;
   border-radius: 6px;
   margin-top: 1%;

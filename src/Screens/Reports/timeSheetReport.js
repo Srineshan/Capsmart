@@ -139,12 +139,14 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
 
     useEffect(() => {
         sessionStorage.removeItem('reportFilter');
+        sessionStorage.removeItem('myReportContent');
         sessionStorage.removeItem('myReportId');
     }, [])
 
     const showMyReport = (data) => {
         let reportURL = routeList[data?.report?.type];
         sessionStorage.setItem('reportFilter', JSON.stringify(data?.report?.filters));
+        sessionStorage.setItem('myReportContent', JSON.stringify(data?.report));
         sessionStorage.setItem('myReportId', data?.id);
         navigate(`/myReport/${reportURL}`);
     };
