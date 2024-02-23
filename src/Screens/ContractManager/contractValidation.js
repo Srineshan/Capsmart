@@ -204,10 +204,12 @@ export const validateServices = (contract) => {
   console.log('services data', services)
   services?.map((service, index) => {
     let fieldData = [{ field: 'sites', value: service?.sites?.length },
-    { field: 'Service Days', value: (service?.activityTypeTemplate?.activityTypeTemplate === ADDON || service?.activityTypeTemplate?.activityTypeTemplate === HIT) ? 'ADD ON || HIT' : (service?.serviceDays !== undefined && service?.serviceDays !== null) ? Object.keys(service?.serviceDays || {})?.filter(data => service?.serviceDays[data] === true)?.map(data => data)?.length : '' },
-    { field: 'Working Hours - From', value: service?.activityTypeTemplate?.activityTypeTemplate !== HIT ? service?.workingPeriod?.from : 'HIT' },
-    { field: 'Working Hours - To', value: service?.activityTypeTemplate?.activityTypeTemplate !== HIT ? service?.workingPeriod?.to : 'HIT' }
+      // { field: 'Working Hours - From', value: service?.activityTypeTemplate?.activityTypeTemplate !== HIT ? service?.workingPeriod?.from : 'HIT' },
+      // { field: 'Working Hours - To', value: service?.activityTypeTemplate?.activityTypeTemplate !== HIT ? service?.workingPeriod?.to : 'HIT' }
     ];
+    if (service?.activityTypeTemplate?.activityTypeTemplate !== ONCALL || (service?.activityTypeTemplate?.activityTypeTemplate === ONCALL && !service?.customizedSchedule)) {
+      fieldData.push(...[{ field: 'Service Days', value: (service?.activityTypeTemplate?.activityTypeTemplate === ADDON || service?.activityTypeTemplate?.activityTypeTemplate === HIT) ? 'ADD ON || HIT' : (service?.serviceDays !== undefined && service?.serviceDays !== null) ? Object.keys(service?.serviceDays || {})?.filter(data => service?.serviceDays[data] === true)?.map(data => data)?.length : '' }])
+    }
     if (service?.additionalSchedule?.scheduleRequired) {
       fieldData.push(...[{ field: 'Additional Schedule Value', value: service?.additionalSchedule?.value }, { field: 'Additional Schedule Frequency', value: service?.additionalSchedule?.frequency === 'NA' ? '' : service?.additionalSchedule?.frequency }]);
     }
@@ -340,6 +342,8 @@ export const validateServices = (contract) => {
           fieldData.push(...[{ field: 'Custom Schedule Weekday Day Duration', value: service?.customschedule?.weekdayDay?.duration?.hours }]);
           fieldData.push(...[{ field: 'Custom Schedule Weekday Day Min', value: service?.customschedule?.weekdayDay?.target?.minimum?.value }]);
           fieldData.push(...[{ field: 'Custom Schedule Weekday Day Frequency', value: service?.customschedule?.weekdayDay?.target?.frequency }]);
+          fieldData.push(...[{ field: 'Custom Schedule Weekday Day Service Rate', value: service?.customschedule?.weekdayDay?.serviceRate?.rate }]);
+          fieldData.push(...[{ field: 'Custom Schedule Weekday Day Service Frequency', value: service?.customschedule?.weekdayDay?.serviceRate?.rateFrequency }]);
           if (!service?.customschedule?.weekdayDay?.paymentNotApplicable) {
             fieldData.push(...[{ field: 'Custom Schedule Weekday Day Payment Amount', value: service?.customschedule?.weekdayDay?.payableAmount?.value }]);
           }
@@ -351,6 +355,8 @@ export const validateServices = (contract) => {
           fieldData.push(...[{ field: 'Custom Schedule Weekday Night Duration', value: service?.customschedule?.weekdayNight?.duration?.hours }]);
           fieldData.push(...[{ field: 'Custom Schedule Weekday Night Min', value: service?.customschedule?.weekdayNight?.target?.minimum?.value }]);
           fieldData.push(...[{ field: 'Custom Schedule Weekday Night Frequency', value: service?.customschedule?.weekdayNight?.target?.frequency }]);
+          fieldData.push(...[{ field: 'Custom Schedule Weekday Night Service Rate', value: service?.customschedule?.weekdayNight?.serviceRate?.rate }]);
+          fieldData.push(...[{ field: 'Custom Schedule Weekday Night Service Frequency', value: service?.customschedule?.weekdayNight?.serviceRate?.rateFrequency }]);
           if (!service?.customschedule?.weekdayNight?.paymentNotApplicable) {
             fieldData.push(...[{ field: 'Custom Schedule Weekday Night Payment Amount', value: service?.customschedule?.weekdayNight?.payableAmount?.value }]);
           }
@@ -363,6 +369,8 @@ export const validateServices = (contract) => {
           fieldData.push(...[{ field: 'Custom Schedule Weekend Duration', value: service?.customschedule?.weekend?.duration?.hours }]);
           fieldData.push(...[{ field: 'Custom Schedule Weekend Min', value: service?.customschedule?.weekend?.target?.minimum?.value }]);
           fieldData.push(...[{ field: 'Custom Schedule Weekend Frequency', value: service?.customschedule?.weekend?.target?.frequency }]);
+          fieldData.push(...[{ field: 'Custom Schedule Weekend Service Rate', value: service?.customschedule?.weekend?.serviceRate?.rate }]);
+          fieldData.push(...[{ field: 'Custom Schedule Weekend Service Frequency', value: service?.customschedule?.weekend?.serviceRate?.rateFrequency }]);
           if (!service?.customschedule?.weekend?.paymentNotApplicable) {
             fieldData.push(...[{ field: 'Custom Schedule Weekend Payment Amount', value: service?.customschedule?.weekend?.payableAmount?.value }]);
           }
@@ -374,6 +382,8 @@ export const validateServices = (contract) => {
           fieldData.push(...[{ field: 'Custom Schedule Holiday Duration', value: service?.customschedule?.holiday?.duration?.hours }]);
           fieldData.push(...[{ field: 'Custom Schedule Holiday Min', value: service?.customschedule?.holiday?.target?.minimum?.value }]);
           fieldData.push(...[{ field: 'Custom Schedule Holiday Frequency', value: service?.customschedule?.holiday?.target?.frequency }]);
+          fieldData.push(...[{ field: 'Custom Schedule Holiday Service Rate', value: service?.customschedule?.holiday?.serviceRate?.rate }]);
+          fieldData.push(...[{ field: 'Custom Schedule Holiday Service Frequency', value: service?.customschedule?.holiday?.serviceRate?.rateFrequency }]);
           if (!service?.customschedule?.holiday?.paymentNotApplicable) {
             fieldData.push(...[{ field: 'Custom Schedule Holiday Payment Amount', value: service?.customschedule?.holiday?.payableAmount?.value }]);
           }

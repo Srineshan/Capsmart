@@ -282,6 +282,7 @@ const NewContractFromClone = ({
       "isEditable",
       selectedContract !== "draft" ? false : true
     );
+    sessionStorage.removeItem('Selected Contract Status')
   };
 
   return (

@@ -213,6 +213,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
         //     })
         //     data.departmentList.departments = departments;
         // })
+        console.log(siteData)
         return siteData;
     }
 
@@ -362,12 +363,12 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
 
                     <div className={`${style.marginTop20} ${style.twoCol}`}>
                         <div>
-                            <div className={style.extentionLableStyle}>Is Executive Access Level Needed*</div>
+                            <div className={style.extentionLableStyle}>IS EXECUTIVE ACCESS LEVEL NEEDED*</div>
                             <CommonSwitch label={accessLevelNeeded ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} checked={accessLevelNeeded}
                                 onChange={(e) => setAccessLevelNeeded(e.target.checked)} />
                         </div>
                         <div>
-                            <div className={style.extentionLableStyle}>Type of Access*</div>
+                            <div className={style.extentionLableStyle}>TYPE OF ACCESS*</div>
                             <FormControl sx={{ maxWidth: '300px' }} className={style.fullWidth} size="small">
                                 <Select
                                     labelId="demo-multiple-checkbox-label"
@@ -406,7 +407,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                             </FormControl>
                         </div>
                         <div >
-                            <CommonLabel value='Suffix*' />
+                            <CommonLabel value='SUFFIX*' />
                             <div className={style.grid3}>
                                 <SuffixList value={suffix?.id || ''} onChangeFunc={(id, value) => { setSuffix({ id: id, suffix: value }) }} className={[style.fullWidth]} />
                             </div>
@@ -443,7 +444,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                     onChange={(e) => handleSiteTitle(e.target.value)}
                                     SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                                 >
-                                    {functionalTitle?.map((data, index) =>
+                                    {selectedSites?.length !== 0 && functionalTitle?.map((data, index) =>
                                         <MenuItem value={data?.id} key={index}>{data?.title}</MenuItem>
                                     )}
                                 </Select>
@@ -482,7 +483,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                     selected={deptTitle?.id}
                                     SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                                 >
-                                    {functionalTitle?.map((data, index) =>
+                                    {selectedDepartments?.length !== 0 && functionalTitle?.map((data, index) =>
                                         <MenuItem value={data?.id} key={index}>{data?.title}</MenuItem>
                                     )}
                                 </Select>
