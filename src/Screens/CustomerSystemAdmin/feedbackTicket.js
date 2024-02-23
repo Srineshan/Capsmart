@@ -280,7 +280,7 @@ const FeedbackTicket = ({ getSelectedOption }) => {
             { "type": "icon", "icon": impact },
             { "type": "text", "value": appInUse, "onClickFunction": onClickFunction },
             { "type": "text", "value": submittedBy, "onClickFunction": onClickFunction },
-            { "type": "iconWithCount", "value": messages, "icon": messagesIcon },
+            { "type": "iconWithCount", "value": messages, "icon": messagesIcon, 'isShowHoverText': false },
             { "type": "text", "value": lastUpdated, "onClickFunction": onClickFunction },
             { "type": "action", "value": action },
         ];
