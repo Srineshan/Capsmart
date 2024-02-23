@@ -338,7 +338,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         setMetadata({ ...metadata, workingTimeFrom: e });
     }
 
-    console.log('Metadata', metadata);
+    console.log('Activity', activity);
 
 
     return (
@@ -484,25 +484,25 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                 </>
             }
 
-            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+            {activity?.length !== 0 && <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Allowable Administrative Duties & Function To Perform*' />
 
                 <CommonSelectField
                     // value={serviceType}
-
+                    onChange={(e) => { onSelectActivity(e.target.value, true) }}
                     className={`${style.fullWidth} `}
-                    // firstOptionLabel={"Select Activity /Service Type"}
-                    // firstOptionValue={""}
-                    valueList={activity?.map(
+                    firstOptionLabel={"Select Admin Activity"}
+                    firstOptionValue={""}
+                    valueList={activity?.length !== 0 && activity?.map(
                         (data) => data?.id
                     )}
-                    labelList={activity?.map(
+                    labelList={activity?.length !== 0 && activity?.map(
                         (data) => data?.activity
                     )}
-                // disabledList={false}
+                    disabledList={activity?.length !== 0 && activity?.map(data => false)}
                 />
 
-            </div>
+            </div>}
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='' />
@@ -510,7 +510,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                 <div>
                     {
                         activity?.map((data, index) => (
-                            <div className={`${style.displayInRow} ${style.marginBottom10}`}>
+                            <div className={`${style.displayInRow}`}>
                                 {metadata?.selectedActivities?.map(activities => activities?.id)?.includes(data?.id) && (
                                     <>
                                         <CommonCheckBox checked={metadata?.selectedActivities?.map(activities => activities?.id)?.includes(data?.id)} className={`${style.marginLeft10}`} onChange={(e) => onSelectActivity(data?.id, e.target.checked)} label={metadata?.selectedActivities?.filter(activity => activity?.id === data?.id)?.map(activity => activity?.activity)?.[0]} />
