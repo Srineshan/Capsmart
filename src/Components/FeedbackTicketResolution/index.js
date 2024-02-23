@@ -116,7 +116,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
         if (isEdit) {
             getTicketById();
             getComments();
-            getCommentMessages();
+            // getCommentMessages();
         }
     }, [isEdit]);
 
@@ -124,11 +124,11 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
         getUser();
     }, [userIdList])
 
-    useEffect(() => {
-        if (isEdit && currentUserData) {
-            getCommentMessages();
-        }
-    }, [currentUserData])
+    // useEffect(() => {
+    //     if (isEdit && currentUserData) {
+    //         getCommentMessages();
+    //     }
+    // }, [currentUserData])
 
     useEffect(() => {
         if (ticketDetails) {
@@ -187,11 +187,11 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
 
     console.log('userId', userIdList);
 
-    const getCommentMessages = async () => {
-        const { data: messages } = await GET(`feedback-management-service/ticket_comment/message?userId=${currentUserData?.[0]?.id}`);
-        setAllMessages(messages);
-    }
-    console.log('Messages', allMessages);
+    // const getCommentMessages = async () => {
+    //     const { data: messages } = await GET(`feedback-management-service/ticket_comment/message?userId=${currentUserData?.[0]?.id}`);
+    //     setAllMessages(messages);
+    // }
+    // console.log('Messages', allMessages);
     const getImgBlob = async () => {
         setBlobFormat(await fetch(`${corsUrl}${screenCapture}`).then((res) => res.blob()));
     };

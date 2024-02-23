@@ -33,7 +33,9 @@ const FeedbackTicket = ({ getSelectedOption }) => {
     const [pageOpenTickets, setPageOpenTickets] = useState(1);
     const [totalCountOpenTickets, setTotalCountOpenTickets] = useState(0);
     const [pageNewTickets, setPageNewTickets] = useState(1);
+    const [pageMessages, setPageMessages] = useState(1);
     const [totalCountNewTickets, setTotalCountNewTickets] = useState(0);
+    const [totalCountMessages, setTotalCountMessages] = useState(0);
     const [pageResolvedTickets, setPageResolvedTickets] = useState(1);
     const [totalCountResolvedTickets, setTotalCountResolvedTickets] = useState(0);
 
@@ -83,7 +85,7 @@ const FeedbackTicket = ({ getSelectedOption }) => {
     useEffect(() => {
         getCommentMessages();
         getTicket();
-    }, [currentUser]);
+    }, [currentUser, pageMessages, selectedOption]);
 
     console.log(currentUser, currentUser?.[0]?.roles?.filter(data => data?.roleName === 'Entity Sys Admin')?.map(data => data)?.length !== 0)
 
@@ -100,6 +102,9 @@ const FeedbackTicket = ({ getSelectedOption }) => {
         }
         if (selectedOption === 'EXCEPTION ERRORS') {
             setPage(value);
+        }
+        if (selectedOption === 'Messages') {
+            setPageMessages(value);
         }
     }
 
@@ -134,8 +139,9 @@ const FeedbackTicket = ({ getSelectedOption }) => {
     };
 
     const getCommentMessages = async () => {
-        const { data: messages } = await GET(`feedback-management-service/ticket_comment/message?userId=${currentUser?.[0]?.id}`);
+        const { data: messages } = await GET(`feedback-management-service/ticket_comment/message?userId=${currentUser?.[0]?.id}&limit=${10}&offset=${pageMessages - 1}`);
         setAllMessages(messages);
+        setTotalCountMessages(messages?.numberOfElements)
     }
 
     const getUser = async () => {
@@ -215,7 +221,7 @@ const FeedbackTicket = ({ getSelectedOption }) => {
         messageDateOrTime = [];
         messageAction = [];
 
-        allMessages?.map(data => {
+        allMessages?.ticketComments?.map(data => {
             messageDot.push('green');
             messageDotTooltipValues.push('In-Progress');
             messageType.push('Comment');
@@ -358,7 +364,7 @@ const FeedbackTicket = ({ getSelectedOption }) => {
                 <div className={style.buttonGroupUsers}>
                     <button className={selectedOption === "OPEN TICKETS" && style.activeButton} onClick={() => setSelectedOption('OPEN TICKETS')}>Open Tickets ( {totalCountOpenTickets} )</button>
                     <button className={selectedOption === "EXCEPTION ERRORS" && style.activeButton} onClick={() => setSelectedOption('EXCEPTION ERRORS')}>Exception Error ( {totalCount} )</button>
-                    <button className={selectedOption === "MESSAGES" && style.activeButton} onClick={() => setSelectedOption('MESSAGES')}>Messages ( {allMessages?.length} )</button>
+                    <button className={selectedOption === "MESSAGES" && style.activeButton} onClick={() => setSelectedOption('MESSAGES')}>Messages ( {allMessages?.numberOfElements} )</button>
                     <button className={selectedOption === "RESOLVED TICKETS" && style.activeButton} onClick={() => setSelectedOption('RESOLVED TICKETS')}>Resolved Tickets ( {totalCountResolvedTickets} )</button>
                 </div>
                 <Table
@@ -367,7 +373,7 @@ const FeedbackTicket = ({ getSelectedOption }) => {
                         ? getTicketValues() : selectedOption === "EXCEPTION ERRORS" ? getExceptionTicketValues()
                             : getMessagesValues()}
                     tableData={(selectedOption === 'OPEN TICKETS' || selectedOption === "RESOLVED TICKETS" || selectedOption === "EXCEPTION ERRORS" || selectedOption === "NEW TICKETS")
-                        ? ticket : allMessages}
+                        ? ticket : allMessages?.ticketComments}
                     gridStyle={(selectedOption === 'OPEN TICKETS' || selectedOption === "RESOLVED TICKETS" || selectedOption === "NEW TICKETS")
                         ? style.ticketsGrid : selectedOption === "EXCEPTION ERRORS" ? style.exceptionGrid
                             : style.messageGrid}
@@ -376,8 +382,8 @@ const FeedbackTicket = ({ getSelectedOption }) => {
                             : messagesActionsData}
                     scrollStyle={style.helpScrollStyle}
                     getSelectedPage={getSelectedPage}
-                    totalCount={selectedOption === 'OPEN TICKETS' ? totalCountOpenTickets : selectedOption === "RESOLVED TICKETS" ? totalCountResolvedTickets : selectedOption === "EXCEPTION ERRORS" ? totalCount : selectedOption === "NEW TICKETS" ? totalCountNewTickets : 0}
-                    page={selectedOption === 'OPEN TICKETS' ? pageOpenTickets : selectedOption === "RESOLVED TICKETS" ? pageResolvedTickets : selectedOption === "EXCEPTION ERRORS" ? page : selectedOption === "NEW TICKETS" ? pageNewTickets : 1}
+                    totalCount={selectedOption === 'OPEN TICKETS' ? totalCountOpenTickets : selectedOption === "RESOLVED TICKETS" ? totalCountResolvedTickets : selectedOption === "EXCEPTION ERRORS" ? totalCount : selectedOption === "NEW TICKETS" ? totalCountNewTickets : selectedOption === "MESSAGES" ? totalCountMessages : 0}
+                    page={selectedOption === 'OPEN TICKETS' ? pageOpenTickets : selectedOption === "RESOLVED TICKETS" ? pageResolvedTickets : selectedOption === "EXCEPTION ERRORS" ? page : selectedOption === "NEW TICKETS" ? pageNewTickets : selectedOption === "MESSAGES" ? pageMessages : 1}
                     hidePagination={false}
                 />
                 {showFeedbackTicketResolution && (
