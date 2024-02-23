@@ -40,6 +40,21 @@ const FeedbackTicket = ({ getSelectedOption }) => {
     var cookie = new Cookie();
     let authValue = cookie.get('user');
     const loggedUser = jwt(authValue);
+    const statusAvailableValues = {
+        NEW: 'New',
+        INPROGRESS: 'In-Progress',
+        ESCALATED: 'Escalated',
+        FIXINPROGRESS: 'Fix In-Progress',
+        FIXINDEVELOPMENT: 'Fix In-Developement',
+        ONHOLD: 'On-Hold',
+        FUTURERELEASE: 'Future Release',
+        FEATUREENHANCEMENT: 'Feature Enhancement',
+        FIXINQA: 'Fix In QA',
+        APPUPDATED: 'App Updated',
+        FIXCONFIRMATION: 'Fix Confirmation',
+        RESOLVED: 'resolved',
+        CLOSED: 'Closed'
+    };
     const ticketsTableHeaderValues = ["", "TKT ID", "TYPE", "SUBJECT", "OPEN DATE/TIME", "IMPACT", "APP IN USE", "SUBMITTED BY’", "MESSAGES", "LAST UPDATED", "ACTION"];
     const exceptionTableHeaderValues = ["", "TICKET ID", "EXCEPTION CODE", "DESCRIPTION", "DATE/TIME", "CONTRACTOR NAME", "USER NAME", "LAST UPDATED", "ACTION"];
     const messagesTableHeaderValues = ["", "TYPE", "RELATED TO", "MESSAGE / COMMENT", "LAST RESPONDED", "DATE / TIME", "ACTION"];
@@ -254,8 +269,8 @@ const FeedbackTicket = ({ getSelectedOption }) => {
         action = [];
 
         ticket?.map(data => {
-            dot.push('green');
-            dotTooltipValues.push('In-Progress');
+            dot.push(data?.status === 'RESOLVED' ? 'green' : data?.status === 'INPROGRESS' ? 'yellow' : data?.status === 'NEW' ? 'purple' : data?.status === 'CLOSED' ? 'grey' : 'yellow');
+            dotTooltipValues.push(statusAvailableValues[data?.status]);
             // generationMode.push(data?.generationMode);
             tktId.push(data?.ticketId);
             type.push(data?.type);
@@ -303,7 +318,7 @@ const FeedbackTicket = ({ getSelectedOption }) => {
 
         exceptionErrors?.map(data => {
             dot.push(data?.status === 'RESOLVED' ? 'green' : data?.status === 'INPROGRESS' ? 'yellow' : data?.status === 'NEW' ? 'grey' : '');
-            dotTooltipValues.push(data?.status === 'RESOLVED' ? 'Resolved' : data?.status === 'INPROGRESS' ? 'In-Progress' : data?.status === 'NEW' ? 'New' : '');
+            dotTooltipValues.push(statusAvailableValues[data?.status]);
             tktId.push(data?.ticketId);
             exceptionCode.push('-');
             description.push(data?.description);

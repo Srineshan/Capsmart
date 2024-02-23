@@ -69,6 +69,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
   useEffect(() => {
     getContractsMetadata();
     getEntityData();
+    sessionStorage.removeItem('Selected Contract Status')
   }, []);
 
   const activateContracts = async (data, userData) => {
