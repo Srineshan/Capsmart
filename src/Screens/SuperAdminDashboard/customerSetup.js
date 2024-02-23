@@ -85,21 +85,21 @@ const CustomerSetup = () => {
                 <div className={style.welcomeBackground}>
                     <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={() => setShowWelcomeScreen(false)} />
                     <div className={style.welcomeContentMargin}>
-                        <div className={style.welcomeHeading}>
+                        <div className={`${style.welcomeHeading} ${style.fontColorBlack}`}>
                             WELCOME TO TIMESMARTAI
                         </div>
                         <div className={style.customerSetupText}>CUSTOMER SETUP WIZARD</div>
                         <div className={style.alignCenter}>
                             <img src={WelcomeImg} alt="Welcome Img" className={style.welcomeAccountImgStyle} />
                         </div>
-                        <div className={`${style.welcomeDescription} ${style.marginTop30}`}>
+                        <div className={`${style.welcomeDescription} ${style.marginTop30} ${style.fontColorBlack}`}>
                             {`This setup wizard will guide you to quickly activate your account. Once your
                 account is activated you will be able to invite other users from your organization.
                 Experience the difference in better managing contractor activity logs and timesheet
                 processing. Refer to the quick <Setup Guide> or <Setup Tutorial> to see how easy it
                 is to activate a customer account.`}
                         </div>
-                        <div className={`${style.welcomeDescription} ${style.marginTop20}`}>
+                        <div className={`${style.welcomeDescription} ${style.marginTop20} ${style.fontColorBlack}`}>
                             {`If you experience any problems or have questions,
                 do not hesitate to reach out to our TimeSmartAI support team - <support@timesmart.ai>`}
                         </div>
@@ -121,7 +121,7 @@ const CustomerSetup = () => {
                     </div>
                 </div> */}
                         <div>
-                            <div className={style.welcomeHeading}>
+                            <div className={style.welcomeHeading} style={{ color: 'black' }}>
                                 SELECT SUBSCRIPTION PLAN
                             </div>
                             <div className={style.justifyCenter}>
@@ -129,13 +129,13 @@ const CustomerSetup = () => {
                                     <FormGroup>
                                         <FormControlLabel checked={selectedContractType?.contract} control={<Checkbox value="Contract Account" color="default" onChange={(e) => handleContractType(e.target.checked, 'contract')} />} label="Contract Account"
                                             sx={{
-                                                color: 'white'
+                                                color: 'black'
                                             }} />
                                     </FormGroup>
                                     <FormGroup>
                                         <FormControlLabel checked={selectedContractType?.trial} control={<Checkbox value="Trial account" color="default" onChange={(e) => handleContractType(e.target.checked, 'trial')} />} label="Trial account"
                                             sx={{
-                                                color: 'white',
+                                                color: 'black',
                                             }} />
                                     </FormGroup>
                                 </div>
@@ -143,7 +143,7 @@ const CustomerSetup = () => {
                         </div>
                         <div className={style.marginTop50}>
                             <Link to={'/activeCustomers'}>
-                                <button className={`${style.outlinedWelcomeButton} ${style.cursor}`}>CANCEL</button>
+                                <button className={`${style.outlinedWelcomeButton} ${style.cursor}`} style={{ color: 'black' }} >CANCEL</button>
                             </Link>
                             <button className={`${style.welcomeButton} ${style.marginLeft20} ${style.cursor}`} onClick={handleContinue}>CONTINUE</button>
 
