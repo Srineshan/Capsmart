@@ -1333,6 +1333,7 @@ const ReportTypeOverview = () => {
         city = [];
         state = [];
         zipcode = [];
+        lastUpdatedDate = [];
 
         currentRemitToAddressValues?.map(data => {
             contractName.push(data?.contractName?.contractName);
@@ -1340,7 +1341,8 @@ const ReportTypeOverview = () => {
             address.push(data?.contractorBusinessEntity?.remitAddress !== null ? data?.contractorBusinessEntity?.remitAddress?.addressLine : data?.contractorBusinessEntity?.mailingAddress?.addressLine)
             city.push(data?.contractorBusinessEntity?.remitAddress !== null ? data?.contractorBusinessEntity?.remitAddress?.city : data?.contractorBusinessEntity?.mailingAddress?.city);
             state.push(data?.contractorBusinessEntity?.remitAddress !== null ? data?.contractorBusinessEntity?.remitAddress?.state : data?.contractorBusinessEntity?.mailingAddress?.state);
-            zipcode.push(data?.contractorBusinessEntity?.remitAddress !== null ? data?.contractorBusinessEntity?.remitAddress?.zipcode : data?.contractorBusinessEntity?.mailingAddress?.zipcode)
+            zipcode.push(data?.contractorBusinessEntity?.remitAddress !== null ? data?.contractorBusinessEntity?.remitAddress?.zipcode : data?.contractorBusinessEntity?.mailingAddress?.zipcode);
+            lastUpdatedDate.push(format(new Date(data?.contractorBusinessEntity?.remitAddress !== null ? data?.contractorBusinessEntity?.remitAddress?.updatedOn : data?.contractorBusinessEntity?.mailingAddress?.updatedOn), 'MMM dd, yyyy'))
         })
 
         return [
@@ -1349,7 +1351,8 @@ const ReportTypeOverview = () => {
             address,
             city,
             state,
-            zipcode
+            zipcode,
+            lastUpdatedDate
         ];
     }
 
@@ -2210,10 +2213,10 @@ const ReportTypeOverview = () => {
                                                                     <>
                                                                         <ReportsTable
                                                                             tableType={'Current Remit To Address For Active Contracts'}
-                                                                            tableHeader={['Contract Name', 'Contract Type', 'Remit To Address', 'City', 'State', 'ZIP Code']}
+                                                                            tableHeader={['Contract Name', 'Contract Type', 'Remit To Address', 'City', 'State', 'ZIP Code', 'Last Updated Date']}
                                                                             tableValue={currentRemitToAddressValues}
                                                                             activitiesServicesValues={getCurrentRemitToAddressForActiveContractsValues()}
-                                                                            styleName={style.grid6}
+                                                                            styleName={style.remitToAddressGrid}
                                                                         />
                                                                     </>
                                                                 ) : (

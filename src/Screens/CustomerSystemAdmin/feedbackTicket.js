@@ -103,7 +103,7 @@ const FeedbackTicket = ({ getSelectedOption }) => {
         if (selectedOption === 'EXCEPTION ERRORS') {
             setPage(value);
         }
-        if (selectedOption === 'Messages') {
+        if (selectedOption === 'MESSAGES') {
             setPageMessages(value);
         }
     }
@@ -382,8 +382,8 @@ const FeedbackTicket = ({ getSelectedOption }) => {
                             : messagesActionsData}
                     scrollStyle={style.helpScrollStyle}
                     getSelectedPage={getSelectedPage}
-                    totalCount={selectedOption === 'OPEN TICKETS' ? totalCountOpenTickets : selectedOption === "RESOLVED TICKETS" ? totalCountResolvedTickets : selectedOption === "EXCEPTION ERRORS" ? totalCount : selectedOption === "NEW TICKETS" ? totalCountNewTickets : selectedOption === "MESSAGES" ? totalCountMessages : 0}
-                    page={selectedOption === 'OPEN TICKETS' ? pageOpenTickets : selectedOption === "RESOLVED TICKETS" ? pageResolvedTickets : selectedOption === "EXCEPTION ERRORS" ? page : selectedOption === "NEW TICKETS" ? pageNewTickets : selectedOption === "MESSAGES" ? pageMessages : 1}
+                    totalCount={selectedOption === 'OPEN TICKETS' ? totalCountOpenTickets : selectedOption === "RESOLVED TICKETS" ? totalCountResolvedTickets : selectedOption === "EXCEPTION ERRORS" ? totalCount : selectedOption === "NEW TICKETS" ? totalCountNewTickets : totalCountMessages}
+                    page={selectedOption === 'OPEN TICKETS' ? pageOpenTickets : selectedOption === "RESOLVED TICKETS" ? pageResolvedTickets : selectedOption === "EXCEPTION ERRORS" ? page : selectedOption === "NEW TICKETS" ? pageNewTickets : pageMessages}
                     hidePagination={false}
                 />
                 {showFeedbackTicketResolution && (

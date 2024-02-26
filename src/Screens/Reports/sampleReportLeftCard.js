@@ -30,6 +30,7 @@ const MenuProps = {
 const SampleReportLeftCard = ({ getDataToUseInReport }) => {
     const [showSaveReport, setShowSaveReport] = useState(false);
     const { reportType } = useParams();
+    const isMyReport = window.location.pathname.includes("/myReport");
     const [activityType, setActivityType] = useState('Outpatient Clinic Service');
     const [activityPerformed, setActivityPerformed] = useState('Half Day Clinic Session');
     const [renewalreportingTimePeriod, setRenewalreportingTimePeriod] = useState(30);
@@ -118,10 +119,12 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
         //     reportType !== "contractDocumentsOnFile" && reportType !== "multiProviderContractsList" &&
         //     reportType !== "contractsWithABusinessEntity" && reportType !== "currentRemitToAddressForActiveContracts") {
         if (currentUserDetails?.roles?.length >= 2 || (currentUserDetails?.roles?.length === 1 && currentUserDetails?.roles?.filter(data => data?.roleName === "Activity Logger")?.length === 0)) {
-            const { data: contractAndUserList } = await GET(`contract-managment-service/reports/filter/usersAndContracts?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&reportCategory=${reportCategory[reportType]}`);
+            const { data: contractAndUserList } = await GET(`contract-managment-service/reports/filter/usersAndContracts?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&contracts=${dataToUseInReport?.selectedContracts}&reportCategory=${reportCategory[reportType]}`);
             setContractedServiceProviders(contractAndUserList?.users);
-            setContracts(contractAndUserList?.contracts);
-            if (contractAndUserList?.contracts?.length === 1) {
+            if (selectedContractsToSend?.length === 0) {
+                setContracts(contractAndUserList?.contracts);
+            }
+            if (selectedContractsToSend?.length === 0 && contractAndUserList?.contracts?.length === 1) {
                 setSelectedContracts([contractAndUserList?.contracts?.[0]?.id]);
                 setSelectedContractsToSend([contractAndUserList?.contracts?.[0]]);
             }
@@ -135,7 +138,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                 setSelectedContractedServiceProviderToSend([currentUserDetails]);
             }
             setContracts(currentUserDetails?.contracts);
-            if (currentUserDetails?.contracts?.length === 1) {
+            if (selectedContractsToSend?.length === 0 && currentUserDetails?.contracts?.length === 1) {
                 setSelectedContracts([currentUserDetails?.contracts?.[0]?.id]);
                 setSelectedContractsToSend([currentUserDetails?.contracts?.[0]]);
             }
@@ -185,6 +188,36 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
     }, [currentUserDetails])
 
     useEffect(() => {
+        if (reportFilter) {
+            let sitesToShow = [];
+            let departmentsToShow = [];
+            let contractsToShow = [];
+            let serviceProvidersToShow = [];
+            departments?.map(data => {
+                if (reportFilter?.departments?.includes(data?.id)) {
+                    departmentsToShow.push(data)
+                }
+            })
+            setSelectedDepartmentsToSend(departmentsToShow)
+            contracts?.map(data => {
+                if (reportFilter?.contracts?.includes(data?.id)) {
+                    contractsToShow.push(data)
+                }
+            })
+            setSelectedContractsToSend(contractsToShow)
+            contractedServiceProviders?.map(data => {
+                if (reportFilter?.users?.includes(data?.id)) {
+                    serviceProvidersToShow.push(data)
+                }
+            })
+            setSelectedContractedServiceProviderToSend(serviceProvidersToShow)
+            console.log(sitesToShow, departmentsToShow, contractsToShow, serviceProvidersToShow, sites, departments, contracts, contractedServiceProviders)
+        }
+    }, [sites, departments, contracts, contractedServiceProviders])
+
+    console.log(isMyReport)
+
+    useEffect(() => {
         getDataToUseInReport(dataToUseInReport);
     }, [renewalreportingTimePeriod, selectedSites, selectedDepartments, contractContinuationPolicy, selectedContracts,
         podType, contractStatus, reportingTimePeriod, selectedContractedServiceProvider,
@@ -218,7 +251,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
 
     useEffect(() => {
         getContractAndUserList();
-    }, [selectedSitesToSend, selectedDepartmentsToSend, currentUserDetails]);
+    }, isMyReport ? [currentUserDetails] : [selectedSitesToSend, selectedDepartmentsToSend, selectedContractsToSend, currentUserDetails]);
 
     useEffect(() => {
         if (reportType === "activitiesOrServices" || reportType === "paymentsProcessingSummary" || reportType === "addOnActivities" || reportType === "timesheetProcessingSummary" || reportType === "listingOfTimesheetsNotPaid" || reportType === "submittedTimesheetsPaymentStatus") {
@@ -255,6 +288,13 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
     }, [reportingTimePeriod])
 
     useEffect(() => {
+        if (selectedSites?.length === 0) {
+            if (sites?.length !== 1) {
+                setSelectedSites([defaultOption]);
+            }
+        } else if (selectedSites?.length >= 2 && selectedSites.includes(defaultOption)) {
+            setSelectedSites(selectedSites.filter(value => value !== defaultOption))
+        }
         if (selectedDepartments?.length === 0) {
             if (departments?.length !== 1) {
                 setSelectedDepartments([defaultOption]);
@@ -278,7 +318,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
         } else if (selectedContracts?.length >= 2 && selectedContracts.includes(defaultOption)) {
             setSelectedContracts(selectedContracts.filter(value => value !== defaultOption))
         }
-    }, [defaultOption, selectedDepartments, selectedContractedServiceProvider, selectedContracts]);
+    }, [defaultOption, selectedSites, selectedDepartments, selectedContractedServiceProvider, selectedContracts]);
 
     const handleChange = (event) => {
         setActivityType(event.target.value);
@@ -331,15 +371,22 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
         const {
             target: { value },
         } = event;
-        setSelectedSites(
-            typeof value === 'string' ? value.split(',') : value
-        );
-        setSelectedSitesToSend(
-            typeof value === 'string' ? sites?.filter(data => value.split(',')?.includes(data?.id))?.map(data => data) : sites?.filter(data => value?.includes(data?.id))?.map(data => data),
-        );
-        setSelectedContracts([]);
+        if (value?.length >= 2 && value[value?.length - 1] === defaultOption) {
+            setSelectedSites([defaultOption]);
+            setSelectedSitesToSend([]);
+        } else {
+            setSelectedSites(
+                typeof value === 'string' ? value.split(',') : value
+            );
+            setSelectedSitesToSend(
+                typeof value === 'string' ? sites?.filter(data => value.split(',')?.includes(data?.id))?.map(data => data) : sites?.filter(data => value?.includes(data?.id))?.map(data => data),
+            );
+        }
+        setSelectedDepartments([defaultOption]);
+        setSelectedDepartmentsToSend([]);
+        setSelectedContracts([defaultOption]);
         setSelectedContractsToSend([]);
-        setSelectedContractedServiceProvider([]);
+        setSelectedContractedServiceProvider([defaultOption]);
         setSelectedContractedServiceProviderToSend([]);
     };
 
@@ -381,6 +428,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                 typeof value === 'string' ? contracts?.filter(data => value.split(',')?.includes(data?.id))?.map(data => data) : contracts?.filter(data => value?.includes(data?.id))?.map(data => data),
             );
         }
+        setSelectedContractedServiceProvider([defaultOption]);
+        setSelectedContractedServiceProviderToSend([]);
     };
 
     const handleChangeContractedServiceProviders = (event) => {
@@ -417,6 +466,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                     value={renewalreportingTimePeriod}
                                     onChange={(e) => { setRenewalreportingTimePeriod(e.target.value) }}
                                     label="Renewal Time Frame"
+                                    readOnly={isMyReport}
                                 >
                                     <MenuItem value={30}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 30 days</MenuItem>
                                     <MenuItem value={60}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 60 days</MenuItem>
@@ -433,6 +483,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 value={selectedSites}
                                 onChange={handleChangeSites}
                                 MenuProps={MenuProps}
+                                readOnly={isMyReport}
                             >
                                 {sites?.map((data) => (
                                     <MenuItem
@@ -453,6 +504,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 value={selectedDepartments}
                                 onChange={handleChangeDepartments}
                                 MenuProps={MenuProps}
+                                readOnly={isMyReport}
                             >
                                 {departments?.length >= 2 && (
                                     <MenuItem value={defaultOption}>All Departments</MenuItem>
@@ -481,6 +533,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 multiple
                                 value={selectedContracts}
                                 onChange={handleChangeContracts}
+                                readOnly={isMyReport}
                             // MenuProps={MenuProps}
                             >
                                 {contracts?.length >= 2 && (
@@ -506,6 +559,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                     value={selectedContractedServiceProvider}
                                     onChange={handleChangeContractedServiceProviders}
                                     MenuProps={MenuProps}
+                                    readOnly={isMyReport}
                                 >
                                     {contractedServiceProviders?.length >= 2 && (
                                         <MenuItem value={defaultOption}>All Contracted Service Providers</MenuItem>
@@ -531,6 +585,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                         value={contractStatus}
                                         onChange={(e) => { setContractStatus(e.target.value) }}
                                         MenuProps={MenuProps}
+                                        readOnly={isMyReport}
                                     >
                                         <MenuItem value={'ACTIVE'}>Active</MenuItem>
                                         <MenuItem value={'DRAFT'}>Draft</MenuItem>
@@ -550,6 +605,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                     onChange={(e) => { setContractContinuationPolicy(e.target.value) }}
                                     label="Contract Continuation Policy"
                                     MenuProps={MenuProps}
+                                    readOnly={isMyReport}
                                 >
                                     <MenuItem value={'AUTORENEWAL'}>Auto Renewal</MenuItem>
                                     <MenuItem value={'WRITTENCONTRACTEXTENSIONFORFIXEDTERM'}>Written Contract Extension For Fixed Term</MenuItem>
@@ -569,6 +625,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 MenuProps={MenuProps}
                                 value={reportingTimePeriod}
                                 onChange={(e) => { setReportingTimePeriod(e.target.value) }}
+                                readOnly={isMyReport}
                             >
                                 <MenuItem value={'Current Week'}>Current Week</MenuItem>
                                 <MenuItem value={'Last Week'}>Last Week</MenuItem>
@@ -656,6 +713,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 value={selectedSites}
                                 onChange={handleChangeSites}
                                 MenuProps={MenuProps}
+                                readOnly={isMyReport}
                             >
                                 {sites?.map((data) => (
                                     <MenuItem
@@ -678,6 +736,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 value={selectedDepartments}
                                 onChange={handleChangeDepartments}
                                 MenuProps={MenuProps}
+                                readOnly={isMyReport}
                             >
                                 {departments?.length >= 2 && (
                                     <MenuItem value={defaultOption}>All Departments</MenuItem>
@@ -707,7 +766,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 multiple
                                 value={selectedContracts}
                                 onChange={handleChangeContracts}
-                            // MenuProps={MenuProps}
+                                // MenuProps={MenuProps}
+                                readOnly={isMyReport}
                             >
                                 {contracts?.length >= 2 && (
                                     <MenuItem value={defaultOption}>All Contracts</MenuItem>
@@ -732,6 +792,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                     value={selectedContractedServiceProvider}
                                     onChange={handleChangeContractedServiceProviders}
                                     MenuProps={MenuProps}
+                                    readOnly={isMyReport}
                                 >
                                     <MenuItem
                                         value={currentUserDetails?.id}
@@ -750,6 +811,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                     value={selectedContractedServiceProvider}
                                     onChange={handleChangeContractedServiceProviders}
                                     MenuProps={MenuProps}
+                                    readOnly={isMyReport}
                                 >
                                     {contractedServiceProviders?.length >= 2 && (
                                         <MenuItem value={defaultOption}>All Contracted Service Providers</MenuItem>
@@ -797,6 +859,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 value={selectedSites}
                                 onChange={handleChangeSites}
                                 MenuProps={MenuProps}
+                                readOnly={isMyReport}
                             >
                                 {sites?.map((data) => (
                                     <MenuItem
@@ -817,6 +880,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 value={selectedDepartments}
                                 onChange={handleChangeDepartments}
                                 MenuProps={MenuProps}
+                                readOnly={isMyReport}
                             >
                                 {departments?.length >= 2 && (
                                     <MenuItem value={defaultOption}>All Departments</MenuItem>
@@ -846,6 +910,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 value={selectedContracts}
                                 onChange={handleChangeContracts}
                                 MenuProps={MenuProps}
+                                readOnly={isMyReport}
                             >
                                 {contracts?.length >= 2 && (
                                     <MenuItem value={defaultOption}>All Contracts</MenuItem>
@@ -869,6 +934,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 onChange={(e) => { setContractStatus(e.target.value) }}
                                 label="Contract Continuation Policy"
                                 MenuProps={MenuProps}
+                                readOnly={isMyReport}
                             >
                                 <MenuItem value={'ACTIVE'}>Active</MenuItem>
                                 <MenuItem value={'DRAFT'}>Draft</MenuItem>
@@ -885,6 +951,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 onChange={(e) => { setPodType(e.target.value) }}
                                 label="Proof of Documentation"
                                 MenuProps={MenuProps}
+                                readOnly={isMyReport}
                             >
                                 {podTypes?.map((data, index) => (
                                     <MenuItem value={data} key={index}>{data}</MenuItem>
@@ -903,6 +970,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 value={selectedContracts}
                                 onChange={handleChangeContracts}
                                 MenuProps={MenuProps}
+                                readOnly={isMyReport}
                             >
                                 {contracts?.length >= 2 && (
                                     <MenuItem value={defaultOption}>All Contracts</MenuItem>

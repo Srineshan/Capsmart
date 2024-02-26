@@ -87,7 +87,7 @@ const HelpHome = () => {
 
     useEffect(() => {
         getCommentMessages();
-    }, [currentUserDetails]);
+    }, [currentUserDetails, pageMessages]);
 
     useEffect(() => {
         getUser();
