@@ -1,5 +1,4 @@
-import React, { useMemo, useState } from "react"
-import spacetime from "spacetime"
+import React, { useState } from "react"
 import TimezoneSelect, { allTimezones, useTimezoneSelect } from "react-timezone-select"
 
 const timezones = {
@@ -9,7 +8,6 @@ const timezones = {
 const Timezone = ({ selectedTimezone, setSelectedTimezone }) => {
     const [selectStyle, setSelectStyle] = useState("react-select")
     const [labelStyle, setLabelStyle] = useState("altName")
-    const [isOpen, setIsOpen] = useState(false);
 
     const handleSelectChange = event => {
         setSelectStyle(event.target.value)
@@ -17,16 +15,6 @@ const Timezone = ({ selectedTimezone, setSelectedTimezone }) => {
     const handleLabelChange = event => {
         setLabelStyle(event.target.value)
     }
-
-    const [datetime, setDatetime] = useState(spacetime.now())
-
-    useMemo(() => {
-        const tzValue =
-            typeof selectedTimezone === "string"
-                ? selectedTimezone
-                : selectedTimezone.value
-        setDatetime(datetime.goto(tzValue))
-    }, [selectedTimezone])
 
     const selectOptions = {
         timezones,
@@ -53,17 +41,6 @@ const Timezone = ({ selectedTimezone, setSelectedTimezone }) => {
                     />
                 )}
             </div>
-
-            {/* <div className="code"> */}
-            {/* <div>
-                    Current Date / Time in{" "}
-                    {typeof selectedTimezone === "string"
-                        ? selectedTimezone.split("/")[1]
-                        : selectedTimezone.value.split("/")[1]}
-                    : <pre>{datetime.unixFmt("dd.MM.YY HH:mm:ss")}</pre>
-                </div> */}
-            {/* <pre>{JSON.stringify(selectedTimezone, null, 2)}</pre> */}
-            {/* </div> */}
         </div>
     )
 }
