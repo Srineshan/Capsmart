@@ -879,9 +879,9 @@ const ClientAdminDashboard = () => {
                         <h5 className={`${style.headingForReferenceList}`}>
                           CONTRACT TYPE BY ENTITY / SITE TYPE
                         </h5>
-                        {lastUpdatedDate?.contractedService?.standardList ===
+                        {lastUpdatedDate?.contractType?.standardList ===
                           true &&
-                          lastUpdatedDate?.contractedService?.lastModified !==
+                          lastUpdatedDate?.contractType?.lastModified !==
                           null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol}`}
@@ -891,7 +891,7 @@ const ClientAdminDashboard = () => {
                             </span>
                             <span className={style.dashboardCardColorOption2}>
                               {`LAST UPDATED ON ${new Date(
-                                lastUpdatedDate.contractedService?.lastModified
+                                lastUpdatedDate.contractType?.lastModified
                               )
                                 .toLocaleString("en-US", {
                                   timeZone: "America/New_York",
@@ -905,9 +905,9 @@ const ClientAdminDashboard = () => {
                           <></>
                         )}
 
-                        {lastUpdatedDate?.contractedService?.standardList ===
+                        {lastUpdatedDate?.contractType?.standardList ===
                           false &&
-                          lastUpdatedDate?.contractedService?.lastModified !==
+                          lastUpdatedDate?.contractType?.lastModified !==
                           null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
@@ -919,7 +919,7 @@ const ClientAdminDashboard = () => {
                             </span>
                             <span className={style.dashboardCardColorOption2}>
                               {`LAST UPDATED ON ${new Date(
-                                lastUpdatedDate.contractedService?.lastModified
+                                lastUpdatedDate.contractType?.lastModified
                               )
                                 .toLocaleString("en-US", {
                                   timeZone: "America/New_York",
@@ -933,7 +933,7 @@ const ClientAdminDashboard = () => {
                           <></>
                         )}
 
-                        {lastUpdatedDate?.contractedService?.lastModified ===
+                        {lastUpdatedDate?.contractType?.lastModified ===
                           null ? (
                           <div
                             className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}

@@ -69,7 +69,7 @@ const ContractTypeForCustomer = () => {
         const { data: lastModifiedDate } = await GET(
             `entity-service/referenceList/entity/${entityId}`
         );
-        const date = new Date(lastModifiedDate.contractedService?.lastModified);
+        const date = new Date(lastModifiedDate.contractType?.lastModified);
         setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
     };
 
