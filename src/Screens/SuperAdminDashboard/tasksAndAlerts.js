@@ -229,7 +229,7 @@ const TasksAndAlerts = () => {
                   </div>
                 </div>
               </Link>
-              <Link to={"/user"} className={style.linkStyle}>
+              <Link to={"/entitySitePortal"} className={style.linkStyle}>
                 <div className={style.cardStyle}>
                   <h5 className={`${style.headingForContracts}`}>
                     REGISTERED USERS

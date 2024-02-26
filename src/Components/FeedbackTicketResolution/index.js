@@ -312,7 +312,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                 "deviceType": deviceType,
                 "screenResolution": `width: ${window.innerWidth}, height: ${window.innerHeight}`,
             },
-            "generationMode": "MANUAL",
+            "generationMode": !isEdit ? "MANUAL" : ticketDetails?.generationMode,
             "dueDate": "2022-10-06",
             "screenCaptured": screenCaptured,
             "externalBugTrackingSystem": true

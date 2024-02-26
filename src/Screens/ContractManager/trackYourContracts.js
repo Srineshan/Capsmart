@@ -1,6 +1,7 @@
-import React, { Fragment, useState, useEffect, cloneElement } from 'react';
+import React, { Fragment, useState, useEffect, useRef } from 'react';
 import Navbar from './../../Components/Navbar';
 import SideBar from '../../Components/Sidebar';
+import { useReactToPrint } from 'react-to-print';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 import { GET } from '../dataSaver';
 import { useParams } from 'react-router-dom';
@@ -18,6 +19,7 @@ import SquareIcon from '@mui/icons-material/Square';
 import DownloadIcon from '@mui/icons-material/Download';
 import style from './index.module.scss';
 import TrackTable from '../../Components/TrackTable';
+import NoDataBox from '../../Components/ReusableSmallComponents/noDataBox';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -60,6 +62,10 @@ const TrackYourContracts = () => {
     // ];
 
     console.log(trackType)
+    const componentRef = useRef();
+    const handlePrint = useReactToPrint({
+        content: () => componentRef.current,
+    });
 
 
     const getColumns = (data, index) => {
@@ -434,7 +440,7 @@ const TrackYourContracts = () => {
                             </div>
                         </SideBar>
                     </div>
-                    <div className={` ${style.padding20} ${style.whiteBackground}`}>
+                    <div className={` ${style.padding20} ${style.whiteBackground}`} ref={componentRef}>
                         {trackType === 'compensationTracker' ? (
                             <>
                                 <div className={style.displayInRow}>
@@ -469,7 +475,7 @@ const TrackYourContracts = () => {
                                     </div>
                                 </div>
                                 <div className={`${style.trackTableBackgroudcard} ${style.marginTop20}`}>
-                                    {selectedContracts?.length !== 0 && contractTrackCompensationValues?.map((data, index) => (
+                                    {selectedContracts?.length !== 0 ? contractTrackCompensationValues?.map((data, index) => (
                                         <div key={index}>
                                             <DataGrid
                                                 rows={getRows(data, index)}
@@ -495,7 +501,17 @@ const TrackYourContracts = () => {
                                                 columnHeaderHeight={35}
                                             />
                                         </div>
-                                    ))}
+                                    )) : (
+                                        <div className={style.verticalAlignCenter}>
+                                            <NoDataBox
+                                                heading={'Based on the parameters selected, there were NO RECORDS found.'}
+                                                subHeading={'Try again by changing the service provider on the left or the Contract on the top.'}
+                                                onClickText={''}
+                                                onClickFunction={() => { }}
+                                            />
+                                        </div>
+                                    )}
+
                                 </div>
                                 <div>
 
@@ -505,7 +521,7 @@ const TrackYourContracts = () => {
                             <>
                                 <div className={style.spaceBetween}>
                                     <div className={style.trackServiceProviderName}>{`TIMESHEET SUBMITTED PROCESSING STATUS BY SERVICE PROVIDER`}</div>
-                                    <PrintOutlinedIcon className={`${style.headerPrintIcon} ${style.cursorPointer}`} style={{ color: "#7165E3" }} />
+                                    <PrintOutlinedIcon className={`${style.headerPrintIcon} ${style.cursorPointer}`} style={{ color: "#7165E3" }} onClick={handlePrint} />
                                 </div>
                                 {timesheetIntervals?.length !== 0 && (
                                     <>
@@ -528,7 +544,7 @@ const TrackYourContracts = () => {
                                         )}
                                     </>
                                 )}
-                                {timesheetTrackValues?.length !== 0 && (
+                                {timesheetTrackValues?.length !== 0 ? (
                                     <TrackTable
                                         tableHead={['TIMESHEET NAME', 'COMPENSATION POLICY', 'SUBMISSION', 'REVIEW & APPROVAL', 'PAYMENT PROCESSING', 'REMAINING TERM']}
                                         tableHeadBottom={['', '', 'STATUS & DATE', 'STATUS & DATE', 'APPROVAL DAYS', 'STATUS & DATE', 'APPROVAL DAYS', '', '']}
@@ -539,13 +555,22 @@ const TrackYourContracts = () => {
                                         header={false}
                                         directionRow={true}
                                     />
+                                ) : (
+                                    <div className={style.verticalAlignCenter}>
+                                        <NoDataBox
+                                            heading={'Based on the parameters selected, there were NO RECORDS found.'}
+                                            subHeading={'Try again by changing the service provider on the left or the Timesheet Interval on the top.'}
+                                            onClickText={''}
+                                            onClickFunction={() => { }}
+                                        />
+                                    </div>
                                 )}
                             </>
                         ) : (
                             <>
                                 <div className={style.spaceBetween}>
                                     <div className={style.trackServiceProviderName}>{`STATUS OF ACTIVITIES/ SERVICES BY SERVICE PROVIDER FOR ${format(new Date(), 'MMMM yyyy')}`}</div>
-                                    <PrintOutlinedIcon className={`${style.headerPrintIcon} ${style.cursorPointer}`} style={{ color: "#7165E3" }} />
+                                    <PrintOutlinedIcon className={`${style.headerPrintIcon} ${style.cursorPointer}`} style={{ color: "#7165E3" }} onClick={handlePrint} />
                                 </div>
                                 {selectedContractedServiceProvider !== '' && (
                                     <div className={`${style.trackPeriodCard} ${style.marginTop20} ${style.spaceBetween} ${style.padding20}`}>
@@ -553,7 +578,7 @@ const TrackYourContracts = () => {
                                         <div className={style.trackContractOrAgreementCount}>{activityTrackServices?.length} Contracts/ Service Agreements</div>
                                     </div>
                                 )}
-                                {activityTrackServices?.map((data, index) => (
+                                {activityTrackServices?.length !== 0 ? activityTrackServices?.map((data, index) => (
                                     <TrackTable
                                         heading={`${data?.activityStatsByContract?.[index]?.contract?.contractName?.contractName} - ${data?.activityStatsByContract?.[index]?.contract?.contractId?.id}`}
                                         columnHeading={[
@@ -575,7 +600,16 @@ const TrackYourContracts = () => {
                                         header={true}
                                         directionRow={false}
                                     />
-                                ))}
+                                )) : (
+                                    <div className={style.verticalAlignCenter}>
+                                        <NoDataBox
+                                            heading={'Based on the parameters selected, there were NO RECORDS found.'}
+                                            subHeading={'Try again by changing the service provider on the left.'}
+                                            onClickText={''}
+                                            onClickFunction={() => { }}
+                                        />
+                                    </div>
+                                )}
                             </>
                         )}
                     </div>
