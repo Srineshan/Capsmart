@@ -332,11 +332,7 @@ const BoardCertification = () => {
                             {data?.eventName}
                           </p>
                           <p className={style.tableDataFontStyle}>
-                            {formatInTimeZone(
-                              new Date(data?.eventDate),
-                              "America/New_York",
-                              "MMMM d, yyyy"
-                            )}
+                            {format(new Date(data?.eventDate), "MMMM d, yyyy")}
                           </p>
                           {/* <p className={style.tableDataFontStyle}>
                             {format(new Date(data?.eventDate), "EEEE")}
