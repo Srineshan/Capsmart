@@ -72,7 +72,7 @@ const Home = () => {
     const { data: referenceListCustomDefaultCount } = await GET(
       `entity-service/referenceList/entity/${entityId}`
     );
-    // console.log(referesnceListCustomDefaultCount);
+    console.log(referenceListCustomDefaultCount);
     const mappedDataArray = [];
     for (const key in referenceListCustomDefaultCount) {
       const mappedData = {
@@ -271,7 +271,7 @@ const Home = () => {
                   bigText="CUSTOM"
                   bigNumber2={refMetadata?.defaultCount?.length || 0}
                   bigText2="DEFAULT IN USE"
-                  smallNum1={5}
+                  smallNum1={0}
                   smallNum2={refMetadata?.setupRequired?.length || 0}
                   smallText1="REVIEW FOR USE"
                   smallText2="SETUP REQUIRED"

@@ -106,11 +106,18 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         }
 
         timesheetPayments?.forEach((value, index) => {
+            console.log(value, compensationPolicy)
             if (valueCheck(value?.maxPaymentPerContract) || isNaN(value?.maxPaymentPerContract)) {
                 keys.push(`Max. Compensation Value For Contract Period ${index + 1}`);
             }
-            if (valueCheck(value?.maxPaymentPerTimesheetSubmission) || isNaN(value?.maxPaymentPerTimesheetSubmission)) {
+            if (compensationPolicy !== 'ACTIVITY_BASED' && (valueCheck(value?.maxPaymentPerTimesheetSubmission) || isNaN(value?.maxPaymentPerTimesheetSubmission))) {
                 keys.push(`Fixed Compensation Value Per Timesheet Submission ${index + 1}`);
+            }
+            if (compensationPolicy !== 'ACTIVITY_BASED' && compensationPolicy !== 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET' && (valueCheck(value?.reducedNumberOfServices) || value?.reducedNumberOfServices === 'NA')) {
+                keys.push(`Reduced Number Of Agreed To Services ${index + 1}`);
+            }
+            if (compensationPolicy !== 'ACTIVITY_BASED' && compensationPolicy !== 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET' && (valueCheck(value?.providingAdditionalServices) || value?.providingAdditionalServices === 'NA')) {
+                keys.push(`Providing Additional Services To The Agreed To Services ${index + 1}`);
             }
         });
 
@@ -387,7 +394,9 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                     </div>
                                     {compensationPolicy !== 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET' &&
                                         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                            <CommonLabel value='Compensation Offset Criteria For Reduced Number Of Agreed To Services*' />
+                                            <CommonLabel value='Compensation Offset Criteria For Reduced Number Of Agreed To Services*'
+                                                className={((dataCheck(timesheetPayments?.[i]?.reducedNumberOfServices) || timesheetPayments?.[i]?.reducedNumberOfServices === "NA") && paymentAndCompensation) || dataCheck(timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission)
+                                                    ? style.redLable : ""} />
                                             <CommonSelectField
                                                 value={timesheetPayments?.[i]?.reducedNumberOfServices}
                                                 onChange={(e) => updateTimesheetPayment(e.target.value, 'reducedNumberOfServices', i)}
@@ -438,7 +447,9 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                             </div>
                             {compensationPolicy !== 'ACTIVITY_BASED' && compensationPolicy !== 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET' && (
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                    <CommonLabel value='Compensation Offset Criteria For Providing Additional Services To The Agreed To Services*' />
+                                    <CommonLabel value='Compensation Offset Criteria For Providing Additional Services To The Agreed To Services*'
+                                        className={((dataCheck(timesheetPayments?.[i]?.providingAdditionalServices) || timesheetPayments?.[i]?.providingAdditionalServices === "NA") && paymentAndCompensation) || dataCheck(timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission)
+                                            ? style.redLable : ""} />
                                     <CommonSelectField
                                         value={timesheetPayments?.[i]?.providingAdditionalServices}
                                         onChange={(e) => updateTimesheetPayment(e.target.value, 'providingAdditionalServices', i)}

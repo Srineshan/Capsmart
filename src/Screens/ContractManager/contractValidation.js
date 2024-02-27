@@ -90,23 +90,26 @@ export const validateContractIDTermLimit = (contract) => {
 
 export const validateContractProvider = async (contract) => {
   const contractId = contract?.id;
+  const emptyFields = [];
   let providers = [];
-  let emptyFields = [];
   if (contractId !== "" && contractId !== undefined) {
     const { data: userData } = await GET(
       `user-management-service/user?contractID=${contractId}`
     );
     console.log("userData", userData)
+    // Filter data based on roles
     providers = userData
       ?.filter((data) =>
-        data?.contracts?.map((contract) =>
-          contract?.roles
-            ?.map((role) => role?.roleName)
-            ?.includes("Activity Logger")
+        data?.contracts?.some((contract) =>
+          ["Activity Logger", "Aggregator", "Passive Activity Logger"].some((roleName) =>
+            contract?.roles?.some((role) => role?.roleName === roleName)
+          )
         )
       )
       ?.map((data) => data);
   }
+  console.log("providers", providers)
+
   if (!providers?.length > 0) {
     emptyFields[0] = [
       "Service Provider",
@@ -136,6 +139,7 @@ export const validateContractProvider = async (contract) => {
       { field: "State", value: user?.address?.state },
       { field: "Zipcode", value: user?.address?.zipcode },
     ];
+
     let temp = [];
     temp.push(user?.name?.firstName);
     temp.push(

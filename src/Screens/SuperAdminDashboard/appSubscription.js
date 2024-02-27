@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { InputGroup, Icon, Intent, TextArea, Checkbox } from '@blueprintjs/core';
+import { InputGroup, Icon, Intent, TextArea, Checkbox, NumericInput } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -31,6 +31,8 @@ import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import SaveInProgress from './saveInProgressAlert';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 import CommonInputField from '../../Components/CommonFields/CommonInputField';
+import CommonTextField from '../../Components/CommonFields/CommonTextField';
+import InputAdornment from "@mui/material/InputAdornment";
 
 
 const AppSubscription = ({ getActiveStep }) => {
@@ -366,6 +368,11 @@ const AppSubscription = ({ getActiveStep }) => {
     setShowSaveInProgress(value);
   }
 
+  const handleDecimalsOnValue = (value) => {
+    const regex = /([0-9]*[\.|\,]{0,1}[0-9]{0,2})/s;
+    return value.match(regex)[0];
+  }
+
   return (
     <>
       {isSetupComplete ? <SetupComplete data={plan?.planName === 'TRIAL' ? 'Trial' : 'Customer'} setCompleteValue={getCompleteValue} operation={isSuperAdminAccess ? 'Created' : 'Updated'} isSuperAdminAccess={isSuperAdminAccess} /> : <div className={style.entitySetupBackground}>
@@ -575,21 +582,50 @@ const AppSubscription = ({ getActiveStep }) => {
                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                       <div className={style.extentionLableStyle}>Subscription Fees*</div>
                       <div className={style.displayInRow}>
-                        <InputGroup className={`${style.textFieldWidth} ${style.fourFieldWidth}`}
+                        {/* <InputGroup className={`${style.textFieldWidth} ${style.fourFieldWidth}`}
                           value={plan?.fees}
-                          type="number"
+                          type="text"
                           leftElement={dollarLeftElement()}
                           disabled={!isSuperAdminAccess}
                           onKeyDown={e => exceptThisSymbols.includes(e.key) && e.preventDefault()}
-                          onChange={(e) => setPlan({ ...plan, fees: e.target.value.slice(0, 7) })} />
-                        <div className={`${style.extentionLableStyle} ${style.fourFieldWidth} ${style.marginLeft20} ${style.verticalAlignCenter}`}>Monthly Per User</div>
+                          onChange={(e) => setPlan({ ...plan, fees: parseFloat(e.target.value.slice(0, 7)) })}
+                        /> */}
+                        <CommonTextField
+                          type="number"
+                          InputProps={{
+                            startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
+                          }}
+                          value={plan?.fees}
+                          disabled={!isSuperAdminAccess}
+                          onKeyDown={e => exceptThisSymbols.includes(e.key) && e.preventDefault()}
+                          onChange={(e) => setPlan({ ...plan, fees: handleDecimalsOnValue(e.target.value.slice(0, 7)) })}
+                        />
+                        < div className={`${style.extentionLableStyle} ${style.fourFieldWidth} ${style.marginLeft20} ${style.verticalAlignCenter}`
+                        }>Monthly Per User</div>
                       </div>
                     </div>
                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                       <div className={style.extentionLableStyle}>Agreed To Discount*</div>
-                      <InputGroup className={style.fourFieldWidth} type="number" value={plan?.discount} rightElement={percentRightElement()}
+                      {/* <InputGroup className={style.fourFieldWidth}
+                        value={plan?.discount}
+                        rightElement={percentRightElement()}
                         onKeyDown={e => exceptThisSymbols.includes(e.key) && e.preventDefault()} disabled={!isSuperAdminAccess}
                         onChange={(e) => e.target.value >= 0 && e.target.value <= 100 && setPlan({ ...plan, discount: e.target.value })}
+                      /> */}
+                      <CommonTextField
+                        className={style.fourFieldWidth}
+                        type="number"
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position="end" sx={{ fontSize: 10 }}>
+                              %
+                            </InputAdornment>
+                          ),
+                        }}
+                        value={plan?.discount}
+                        disabled={!isSuperAdminAccess}
+                        onKeyDown={e => exceptThisSymbols.includes(e.key) && e.preventDefault()}
+                        onChange={(e) => e.target.value >= 0 && e.target.value <= 100 && setPlan({ ...plan, discount: handleDecimalsOnValue(e.target.value) })}
                       />
                     </div>
                     {/* <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -892,7 +928,7 @@ const AppSubscription = ({ getActiveStep }) => {
             </div>
           </div>
         </div>
-      </div>}
+      </div >}
       <SaveInProgress alert={showSaveInProgress} getSaveInProgressAlert={getSaveInProgressAlert} fieldData={unassignedKeys?.join(', ')} saveInProgressFunction={saveInProgressFunction} />
     </>
   )
