@@ -41,7 +41,8 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     const [ticketDetails, setTicketDetails] = useState();
     const [workflowActions, setWorkflowActions] = useState();
     const [ticketName, setTicketName] = useState('');
-    const [fileName, setFileName] = useState(`${currentUserData?.[0]?.id}${new Date().getTime().toString()}.png`);
+    const [match, setMatch] = useState([]);
+    const [fileName, setFileName] = useState('');
     const [dateAndTime, setDateAndTime] = useState(formatInTimeZone(new Date(), userTimeZone, 'MM-dd-yyyy HH:mm'));
     const [modifiedDateAndTime, setModifiedDateAndTime] = useState(formatInTimeZone(new Date(), userTimeZone, 'MM-dd-yyyy HH:mm'));
     const [showFeedbackTicketResolutionLog, setShowFeedbackTicketResolutionLog] = useState(false);
@@ -55,6 +56,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     let fromUpload = sessionStorage.getItem('fromUpload');
     let customerName = sessionStorage.getItem('title');
     const [screenCaptureFromUpload, setScreenCaptureFromUpload] = useState('');
+    const [file, setFile] = useState('');
     const statusAvailableValues = {
         NEW: 'New',
         INPROGRESS: 'In-Progress',
@@ -104,11 +106,16 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     }, [allComments])
 
     useEffect(() => {
-        setFileName(`${currentUserData?.[0]?.id}${new Date().getTime().toString()}.png`);
+        if (screenCaptured) {
+            setFileName(`${currentUserData?.[0]?.id}${new Date().getTime().toString()}.${match[1]}`);
+        }
     }, [currentUserData]);
 
     useEffect(() => {
-        getImgBlob();
+        if (!isEdit && screenCapture !== '' && screenCapture !== null && screenCapture !== undefined) {
+            setMatch(screenCapture !== '' ? screenCapture.match(/^data:image\/(\w+);base64,/) : [])
+            getImgBlob();
+        }
     }, [screenCapture]);
 
     useEffect(() => {
@@ -192,9 +199,22 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     //     setAllMessages(messages);
     // }
     // console.log('Messages', allMessages);
+
+    const base64ToUint8Array = (base64) => {
+        var binaryString = atob(base64);
+        var bytes = new Uint8Array(binaryString.length);
+        for (var i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+        }
+        return bytes;
+    }
+
     const getImgBlob = async () => {
-        setBlobFormat(await fetch(`${corsUrl}${screenCapture}`).then((res) => res.blob()));
+        // setBlobFormat(await fetch(`${corsUrl}${screenCapture}`).then((res) => res.blob()));
+        setBlobFormat(base64ToUint8Array(screenCapture.replace(/^data:image\/\w+;base64,/, '')))
     };
+
+    console.log(screenCapture, match, blobFormat)
 
     const getShowFeedbackTicketResolutionLog = (value) => {
         setShowFeedbackTicketResolutionLog(value);
@@ -281,6 +301,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
             },
             "type": type,
             "impact": impact,
+            "messageCount": !isEdit ? 0 : ticketDetails?.messageCount,
             "status": !isEdit ? 'NEW' : ticketDetails?.status,
             ...(isEdit &&
                 { "messageCount": ticketDetails?.messageCount }),
@@ -324,8 +345,13 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
             type: "application/json"
         }));
         if (screenCapture !== null && screenCapture !== '') {
-            const file = new File([blobFormat], fileName);
-            formData.append('ticketFile', file);
+            const blob = new Blob([blobFormat], { type: `image/${match[1]}` });
+            // const file = new File([blobFormat], fileName);
+            if (screenCaptured) {
+                formData.append('ticketFile', blob, fileName);
+            } else {
+                formData.append('ticketFile', file, fileName);
+            }
         }
         if (!isEdit) {
             await POST(`feedback-management-service/ticket`, formData)
@@ -373,6 +399,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                     SuccessToaster('Comment Added Successfully');
                     setComment('');
                     getComments();
+                    getTicketById();
                 })
                 .catch(error => {
                     ErrorToaster('Unexpected Error Occured');
@@ -407,6 +434,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     };
 
     const handleFileUpload = (e) => {
+        setFile(e.target.files[0])
         getBase64(e.target.files[0])
             .then(result => {
                 console.log(result)
@@ -528,7 +556,9 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                             </div>
                             <div className={style.dashedBorder}>
                                 <div className={`${style.imageDisplayStyle} ${style.alignCenter}`}>
-                                    {(!screenCaptured && screenCapture === null) ? (
+                                    {(isEdit && ticketDetails?.ticketFile?.fileURL !== null) ? (
+                                        <img src={ticketDetails?.ticketFile?.fileURL} alt='Screen shot img' className={style.screenCaptureImgStyle} />
+                                    ) : (!screenCaptured && screenCapture === null) ? (
                                         <>
                                             <label htmlFor="file-upload-help" className={`${style.uploadButton} ${style.alignCenter}`}>
                                                 UPLOAD

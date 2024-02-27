@@ -34,7 +34,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
     const [activityType, setActivityType] = useState('Outpatient Clinic Service');
     const [activityPerformed, setActivityPerformed] = useState('Half Day Clinic Session');
     const [renewalreportingTimePeriod, setRenewalreportingTimePeriod] = useState(30);
-    const [contractContinuationPolicy, setContractContinuationPolicy] = useState('');
+    const [contractContinuationPolicy, setContractContinuationPolicy] = useState('ALL');
     const [contractStatus, setContractStatus] = useState('ACTIVE');
     const [podType, setPodType] = useState('Medical Staff Membership & Privileges');
     const [reportingTimePeriod, setReportingTimePeriod] = useState('Current Month');
@@ -182,8 +182,9 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
             setSelectedDepartments(reportFilter?.departments);
             setReportingTimePeriod(reportFilter?.reportingTimePeriod);
             setSelectedContractedServiceProvider(reportFilter?.users);
-            setContractContinuationPolicy(reportFilter?.contractPolicyType);
+            setContractContinuationPolicy(reportFilter?.contractPolicyType !== "" ? reportFilter?.contractPolicyType : 'ALL');
             setContractStatus(reportFilter?.contractStatus);
+            setRenewalreportingTimePeriod(reportFilter?.renewalDays)
         }
     }, [currentUserDetails])
 
@@ -607,6 +608,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                     MenuProps={MenuProps}
                                     readOnly={isMyReport}
                                 >
+                                    <MenuItem value={'ALL'}>All Contract Continuation Policy</MenuItem>
                                     <MenuItem value={'AUTORENEWAL'}>Auto Renewal</MenuItem>
                                     <MenuItem value={'WRITTENCONTRACTEXTENSIONFORFIXEDTERM'}>Written Contract Extension For Fixed Term</MenuItem>
                                     <MenuItem value={'NEWCONTRACTONEXPIRATION'}>New Contract On Expiration</MenuItem>
