@@ -67,21 +67,42 @@ const TrackYourContracts = () => {
         content: () => componentRef.current,
     });
 
+    const dollarFormatter = (cell) => {
+        return (
+            <span>${cell}</span>
+        );
+    };
+
 
     const getColumns = (data, index) => {
         let tempCol = [
             { field: 'service', headerName: '', width: 280 },
             { field: 'hourlyRate', headerName: 'Pro-Rata Hourly Rate', width: 140 },
             { field: 'cyExpectedHours', headerName: 'Expected (Hours)', width: 140 },
-            { field: 'cyExpectedAmount', headerName: 'Expected (Amount)', width: 140 },
+            {
+                field: 'cyExpectedAmount', headerName: 'Expected (Amount)', width: 140,
+                renderCell: (params) => {
+                    return dollarFormatter(params.value?.toLocaleString());
+                }
+            },
             { field: 'cymExpectedHours', headerName: 'Expected (Hours)', width: 140 },
-            { field: 'cymExpectedAmount', headerName: 'Expected (Amount)', width: 140 },
+            {
+                field: 'cymExpectedAmount', headerName: 'Expected (Amount)', width: 140,
+                renderCell: (params) => {
+                    return dollarFormatter(params.value?.toLocaleString());
+                }
+            },
         ];
 
         // contractTrackCompensationValues?.map((data, index) => {
         data?.timesheetActivitiesWithActualValuesList?.map((actualValue, actualIndex) => {
             tempCol.push({ field: `cy${index + 1}m${actualIndex + 1}ActualHours`, headerName: `Actual (Hours)`, width: 140 })
-            tempCol.push({ field: `cy${index + 1}m${actualIndex + 1}ActualAmount`, headerName: `Actual (Amount)`, width: 140 })
+            tempCol.push({
+                field: `cy${index + 1}m${actualIndex + 1}ActualAmount`, headerName: `Actual (Amount)`, width: 140,
+                renderCell: (params) => {
+                    return dollarFormatter(params.value?.toLocaleString());
+                }
+            })
         })
         // })
 
@@ -97,7 +118,7 @@ const TrackYourContracts = () => {
             tempRow.push({
                 id: `${index}${expectedIndex}`,
                 service: `${expectedValue?.activityType} - ${expectedValue?.performingActivity}`,
-                hourlyRate: `${expectedValue?.hourlyRate}`,
+                hourlyRate: expectedValue?.hourlyRate,
                 cyExpectedHours: expectedValue?.expectedHoursInYear,
                 cyExpectedAmount: expectedValue?.expectedAmountInYear,
                 cymExpectedHours: expectedValue?.expectedHoursInMonth,
@@ -108,7 +129,7 @@ const TrackYourContracts = () => {
             timesheetData?.activityWithActualValuesList?.map((actualValue, actualIndex) => {
                 let tempIndex = tempRow.findIndex(obj => obj['service'] === `${actualValue?.activityType} - ${actualValue?.performingActivity}`)
                 tempRow[tempIndex][`cy${index + 1}m${timesheetIndex + 1}ActualHours`] = actualValue?.actualHours
-                tempRow[tempIndex][`cy${index + 1}m${timesheetIndex + 1}ActualAmount`] = `$ ${actualValue?.actualAmount?.toLocaleString()}`
+                tempRow[tempIndex][`cy${index + 1}m${timesheetIndex + 1}ActualAmount`] = actualValue?.actualAmount
             })
         })
         // });
