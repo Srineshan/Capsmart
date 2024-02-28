@@ -624,7 +624,7 @@ const TrackYourContracts = () => {
                                 )) : (
                                     <div className={style.verticalAlignCenter}>
                                         <NoDataBox
-                                            heading={'Based on the parameters selected, there were NO RECORDS found.'}
+                                            heading={'Based on the selection, there were NO RECORDS found.'}
                                             subHeading={'Try again by changing the service provider on the left.'}
                                             onClickText={''}
                                             onClickFunction={() => { }}
