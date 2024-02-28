@@ -555,6 +555,18 @@ const EditServiceProvider = ({
       return;
     }
 
+    if (siteLevel && siteTitleValues?.length === 0) {
+      ErrorToaster("Select Sites for all the Fields");
+      setContinueLoading(false);
+      return;
+    }
+
+    if (departmentLevel && departmentTitleValues?.length === 0) {
+      ErrorToaster("Select Departments for all the Fields");
+      setContinueLoading(false);
+      return;
+    }
+
     const data = {
       id: userProviderData?.id,
       name: {
