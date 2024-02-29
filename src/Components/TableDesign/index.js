@@ -241,7 +241,7 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, hidePagination, 
                                             <Typography className={`${style.displayInRow} ${style.cursorPointer} ${style.verticalAlignCenter}`}  >
                                                 {tableData?.icon?.[index]}
                                                 <p className={`${style.tableDataFontStyle} ${style.marginTop10} ${style.marginLeft5}`}>{tableData?.value?.[index]}</p>
-                                                {index === selectedMenuIndex && tableDataIndex === selectedMenuColIndex && tableData?.value?.[index] !== '-' && (
+                                                {tableData?.isShowHoverText && index === selectedMenuIndex && tableDataIndex === selectedMenuColIndex && tableData?.value?.[index] !== '-' && (
                                                     <Popover
                                                         id={'mouse-over-popover'}
                                                         sx={{

@@ -399,7 +399,8 @@ const Navbar = () => {
           <div>
             <div
               className={`${style.menuStyle} ${(window.location.pathname.includes("/reports") ||
-                window.location.pathname.includes("/reportTypeOverview")) &&
+                window.location.pathname.includes("/reportTypeOverview") ||
+                window.location.pathname.includes("/myReport")) &&
                 style.activeMenuColor
                 }`}
               ref={popoverAnchor}

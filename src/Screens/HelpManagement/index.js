@@ -59,7 +59,9 @@ const HelpHome = () => {
     const [totalCount, setTotalCount] = useState(0);
     const [searchKeyTickets, setSearchKeyTickets] = useState('');
     const [pageTickets, setPageTickets] = useState(1);
+    const [pageMessages, setPageMessages] = useState(1);
     const [totalCountTickets, setTotalCountTickets] = useState(0);
+    const [totalCountMessages, setTotalCountMessages] = useState(0);
     const currentUserData = currentUser();
     let screenCaptureImg = sessionStorage.getItem('screenCapture');
 
@@ -85,7 +87,7 @@ const HelpHome = () => {
 
     useEffect(() => {
         getCommentMessages();
-    }, [currentUserDetails]);
+    }, [currentUserDetails, pageMessages]);
 
     useEffect(() => {
         getUser();
@@ -110,6 +112,9 @@ const HelpHome = () => {
     const getSelectedPage = (value) => {
         if (selectedOption === 'TICKETS') {
             setPageTickets(value);
+        }
+        if (selectedOption === 'Messages') {
+            setPageMessages(value);
         }
         if (selectedOption === 'Exception Error Tickets') {
             setPage(value);
@@ -144,8 +149,9 @@ const HelpHome = () => {
     };
 
     const getCommentMessages = async () => {
-        const { data: messages } = await GET(`feedback-management-service/ticket_comment/message?userId=${currentUserData?.id}`);
+        const { data: messages } = await GET(`feedback-management-service/ticket_comment/message?userId=${currentUserData?.id}&limit=${10}&offset=${pageMessages - 1}`);
         setAllMessages(messages);
+        setTotalCountMessages(messages?.numberOfElements)
     }
 
     const getUser = async () => {
@@ -199,7 +205,7 @@ const HelpHome = () => {
         messageDateOrTime = [];
         messageAction = [];
 
-        allMessages?.map(data => {
+        allMessages?.ticketComments?.map(data => {
             let status = myTicket?.filter(ticketData => ticketData?.id === data?.ticketId?.id)?.map(data => data)[0]?.status;
 
             messageDot.push(status === 'RESOLVED' ? 'green' : status === 'INPROGRESS' ? 'yellow' : status === 'NEW' ? 'purple' : status === 'CLOSED' ? 'grey' : 'yellow');
@@ -346,7 +352,7 @@ const HelpHome = () => {
                                 {currentUserData?.roles?.includes('Entity Sys Admin') && (
                                     <button className={selectedOption === "Exception Error Tickets" && style.activeButton} onClick={() => setSelectedOption('Exception Error Tickets')}>Exception Error ( {totalCount} )</button>
                                 )}
-                                <button className={selectedOption === "Messages" && style.activeButton} onClick={() => setSelectedOption('Messages')}>Messages ( {allMessages?.length} )</button>
+                                <button className={selectedOption === "Messages" && style.activeButton} onClick={() => setSelectedOption('Messages')}>Messages ( {allMessages?.numberOfElements} )</button>
                             </div>
                             {/* {selectedOption !== "Exception Error Tickets" && ( */}
                             <Table
@@ -355,15 +361,15 @@ const HelpHome = () => {
                                     || selectedOption === "RELEASE NOTES") ? []
                                     : selectedOption === "Messages" ? getMessagesValues() : selectedOption === 'Exception Error Tickets' ? getExceptionTicketValues() : []}
                                 tableData={selectedOption === 'TICKETS' ? myTicket : (selectedOption === "TUTORIALS & VIDEOS" || selectedOption === "RELEASE NOTES")
-                                    ? [] : selectedOption === "Messages" ? allMessages : selectedOption === 'Exception Error Tickets' ? exceptionTicket : []}
+                                    ? [] : selectedOption === "Messages" ? allMessages?.ticketComments : selectedOption === 'Exception Error Tickets' ? exceptionTicket : []}
                                 gridStyle={(selectedOption === 'TICKETS' || selectedOption === 'Exception Error Tickets') ? style.ticketTableDataGrid : selectedOption === "TUTORIALS & VIDEOS" ? style.tutorialTableDataGrid
                                     : selectedOption === "RELEASE NOTES" ? style.releaseTableDataGrid
                                         : selectedOption === "Messages" ? style.messageTableDataGrid : ''}
                                 scrollStyle={style.helpScrollStyle}
                                 actions={selectedOption === 'Messages' ? messagesActionsData : []}
                                 getSelectedPage={getSelectedPage}
-                                totalCount={selectedOption === 'TICKETS' ? totalCountTickets : totalCount}
-                                page={selectedOption === 'TICKETS' ? pageTickets : page}
+                                totalCount={selectedOption === 'TICKETS' ? totalCountTickets : selectedOption === "Messages" ? totalCountMessages : totalCount}
+                                page={selectedOption === 'TICKETS' ? pageTickets : selectedOption === 'Messages' ? pageMessages : page}
                                 hidePagination={false}
                             />
                             {/* )} */}

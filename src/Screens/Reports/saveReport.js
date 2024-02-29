@@ -220,7 +220,9 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
                     'sites': dataToUseInReport?.selectedSites,
                     'departments': dataToUseInReport?.selectedDepartments,
                     'contractPolicyType': dataToUseInReport?.contractContinuationPolicy,
-                    'contractStatus': dataToUseInReport?.contractStatus
+                    'contractStatus': dataToUseInReport?.contractStatus,
+                    "renewalDays": dataToUseInReport?.renewalreportingTimePeriod,
+                    "contractNames": ['']
                 },
                 "private": isPrivate
             }
