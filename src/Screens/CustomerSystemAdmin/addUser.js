@@ -160,7 +160,11 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             setAccessLevelNeeded(user?.executiveAccessLevelNeeded);
             setSelectedAccessLevelToShow(user?.accessLevel);
             setSiteTitle(user?.sites?.sites?.[0]?.siteResponsibility);
-            setDeptTitle(user?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.departmentResponsibility)
+            user?.sites?.sites?.map((data, index) => {
+                if (data?.departmentList?.departments?.length !== 0) {
+                    setDeptTitle(user?.sites?.sites?.[index]?.departmentList?.departments?.[0]?.departmentResponsibility)
+                } 
+            })
             setSuffix(user?.name?.suffix);
             let rolesToShow = [];
             user?.roles?.map(data => {

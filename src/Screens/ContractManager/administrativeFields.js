@@ -489,7 +489,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
 
                 <CommonSelectField
                     // value={serviceType}
-                    onChange={(e) => { onSelectActivity(e.target.value, true) }}
+                    onChange={(e) => { e.target.value !== "" && onSelectActivity(e.target.value, true) }}
                     className={`${style.fullWidth} `}
                     firstOptionLabel={"Select Admin Activity"}
                     firstOptionValue={""}

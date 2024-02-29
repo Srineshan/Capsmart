@@ -842,6 +842,12 @@
     grid-gap: 0.5%;
 }
 
+.remitToAddressGrid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1.5fr 1fr 0.5fr 0.5fr 1fr;
+    grid-gap: 20px;
+}
+
 .grid12 {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;

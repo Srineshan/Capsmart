@@ -10,7 +10,7 @@ import { GET } from "./../dataSaver";
 import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
 import IndividualSvg from "../../images/Individual.svg";
 import MultipleSvg from "../../images/Multiple.svg";
-import EmployeeSvg from "../../images/Multiple.svg";
+import EmployeeSvg from "../../images/Employed_Staff_Agreement.svg";
 
 const AddContract = ({
   getAddContract,
@@ -115,7 +115,7 @@ const AddContract = ({
             <div className={`${style.positionCenter} ${style.marginLeft20}`}>
               {contractTypeList?.map(data => (
                 <div
-                  className={`${style.contractCards} ${contractType === data?.contractTypeTemplate && style.selectedContractCard
+                  className={`${style.contractCards} ${contractType?.value === data?.contractTypeTemplate && style.selectedContractCard
                     }`}
                   onClick={() => {
                     setSelectedContractOnClick(true);
@@ -131,10 +131,9 @@ const AddContract = ({
                         //     ? HighlightedDoctor
                         //     : Doctor
                         // }
-                        src={`https://app.timesmartai.com/cors/${data?.icon?.fileURL}`}
+                        src={(selectedContractOnClick && contractType?.value === data?.contractTypeTemplate) ? `https://app.timesmartai.com/cors/${data?.selectedIcon?.fileURL}` : `https://app.timesmartai.com/cors/${data?.icon?.fileURL}`}
                         alt="doctor"
                         className={`${style.contractCardImage} ${style.alignCenter
-                          } ${selectedContract !== "0" ? "" : style.reducedOpacity
                           }`}
                       />
                       <div
@@ -210,7 +209,25 @@ const AddContract = ({
               </div>} */}
             </div>
           </div>
-
+          {selectedContractOnClick && (
+            <div
+              className={`${style.descriptionBoxStyle} ${contractType?.value === 'MULTIPLE' ? style.multipleSvgMarginLeft : ''}  ${contractType?.value === "INDIVIDUAL" ? style.individualSvgMarginLeft : ''}`}
+              style={{
+                backgroundImage: `url(${contractType?.value === 'EMPLOYEE' ? IndividualSvg : contractType?.value === 'MULTIPLE' ? MultipleSvg : EmployeeSvg})`,
+                backgroundRepeat: "no-repeat",
+                backgroundSize: "contain",
+              }}
+            >
+              <p className={style.descriptionStyle}>
+                After selecting one of the options above and clicking Next, you
+                will be guided through
+                <span className={`${style.blueColor} ${style.marginLeft20}`}>
+                  the Contracts Manager wizard to help upload contracts and
+                  assign the appropriate metadata.
+                </span>
+              </p>
+            </div>
+          )}
           {/* {selectedContractOnClick && (
             <div
               className={style.descriptionBoxStyle}

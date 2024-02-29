@@ -332,10 +332,12 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
     const handleValueChange = (name, value) => {
         if (name === 'dedicatedHoursSpecified') {
             if (value) {
+                console.log('value', value)
                 setMetadata({ ...metadata, sessionDuration: '1', totalSession: '0', sessionAmount: '', totalSessionFrequency: 'NA', dedicatedHoursActivityType: '', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
             } else {
                 setMetadata({ ...metadata, sessionDuration: '1', dedicatedHoursActivityType: '', sessionAmount: '', totalSession: '0', totalSessionFrequency: 'NA', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
             }
+
         }
         if (name === 'totalSessionFrequency' && value === "NA") {
             setMetadata({ ...metadata, [name]: value, totalSession: 0 })
@@ -346,6 +348,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         if (name === 'sessionAmount') {
             setMetadata({ ...metadata, sessionAmount: value, hourlyRate: (value / metadata?.sessionDuration) || '0' })
         }
+        console.log('inside if metadata', metadata)
     }
 
     const activityToAdd = async () => {
@@ -428,7 +431,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         }
     }
 
-    console.log('metadata', metadata);
+    console.log('metadata', metadata?.sessionDuration);
 
     const editActivitySelected = () => {
         let editableData = metadata?.selectedActivities?.filter(data => data?.id === adminActivity?.id)?.map(data => data)[0];
