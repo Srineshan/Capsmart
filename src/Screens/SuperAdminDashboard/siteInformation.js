@@ -192,7 +192,6 @@ const SiteInformation = ({ getActiveStep }) => {
     setIsCompleteSetup(value);
   };
 
-  console.log(logo)
   const updateEntitySite = async (buttonText) => {
     // let temp = entityData?.sites;
     // if (!isEdit) { //POST
@@ -359,13 +358,15 @@ const SiteInformation = ({ getActiveStep }) => {
     if (isEdit) {
       await PUT('entity-service/sites', JSON.stringify(data))
         .then(response => {
-          console.log('update Response:', response);
           SuccessToaster('Site Updated Successfully');
           if (logo?.name !== '') {
             handleLogoUpload(response?.data?.id);
           }
           if (buttonText === 'Continue') {
-            navigate(`/entitySetup/${id}/entitySystemAdmin`);
+            !isSuperAdminAccess
+              ? setIsCompleteSetup(true)
+              : navigate(`/entitySetup/${id}/entitySystemAdmin`);
+            // navigate(`/entitySetup/${id}/entitySystemAdmin`);
             resetSiteValues();
           } else if (buttonText === "Saveinprogress") {
             resetSiteValues();
@@ -380,7 +381,6 @@ const SiteInformation = ({ getActiveStep }) => {
     } else {
       await POST('entity-service/sites', JSON.stringify(data))
         .then(response => {
-          console.log("site creation", response)
           SuccessToaster('Site Created Successfully');
           if (logo?.name !== '') {
             handleLogoUpload(response?.data?.id);
@@ -388,7 +388,10 @@ const SiteInformation = ({ getActiveStep }) => {
           let newEntityId = response?.data?.id;
           if (buttonText === 'Continue') {
             window.location = `/app/entitySetup/${newEntityId}/entitySystemAdmin`
-            navigate(`/entitySetup/${newEntityId}/entitySystemAdmin`);
+            !isSuperAdminAccess
+              ? setIsCompleteSetup(true)
+              : navigate(`/entitySetup/${newEntityId}/entitySystemAdmin`);
+            // navigate(`/entitySetup/${newEntityId}/entitySystemAdmin`);
             resetSiteValues();
           } else if (buttonText === "Saveinprogress") {
             resetSiteValues();
@@ -760,14 +763,14 @@ const SiteInformation = ({ getActiveStep }) => {
               </p>
               <div className={style.greyBorder}></div>
               <div className={style.entityDescription}>
-                Help lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                {/* Help lorem ipsum dolor sit amet, consectetur adipiscing elit.
                 sed finibus quam nec tellus dictum, vitae ultrices urna
                 porttitor. donec commodo tellus dapibus semper mattis. aenean ut
                 massa vitae tortor consequat tristique. etiam eget condimentum
                 sapien. morbi est ante, sagittis ac rhoncus eget, faucibus ut
                 felis. pellentesque iaculis aliquam massa. lorem ipsum dolor sit
                 amet, consectetur adipiscing elit. sed finibus quam nec tellus
-                dictum.
+                dictum. */}
               </div>
               <div>
                 <div className={style.cloneBlockStyle}>
