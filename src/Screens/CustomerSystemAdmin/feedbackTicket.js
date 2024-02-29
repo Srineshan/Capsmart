@@ -72,7 +72,23 @@ const FeedbackTicket = ({ getSelectedOption }) => {
 
     useEffect(() => {
         getTicket();
-    }, [showFeedbackTicketResolution, from, to, selectedOption, page, pageOpenTickets, pageNewTickets, pageResolvedTickets])
+    }, [showFeedbackTicketResolution, from, to, selectedOption])
+
+    useEffect(() => {
+        getOpenTicket();
+    }, [pageOpenTickets]);
+
+    useEffect(() => {
+        getNewTicket();
+    }, [pageNewTickets]);
+
+    useEffect(() => {
+        getResolvedTicket();
+    }, [pageResolvedTickets]);
+
+    useEffect(() => {
+        getExceptionTicket();
+    }, [page]);
 
     useEffect(() => {
         setCurrentUser(users?.filter(data => data?.id === loggedUser?.id)?.map(data => data));
@@ -110,32 +126,80 @@ const FeedbackTicket = ({ getSelectedOption }) => {
 
     const getTicket = async () => {
         if (currentUser?.[0]?.roles?.filter(data => data?.roleName === 'Entity Sys Admin')?.map(data => data)?.length !== 0) {
-            const { data: ticket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&limit=${10}&offset=${selectedOption === 'OPEN TICKETS' ? pageOpenTickets - 1 : selectedOption === "RESOLVED TICKETS" ? pageResolvedTickets - 1 : selectedOption === "NEW TICKETS" ? pageNewTickets - 1 : 0}`);
+            const { data: newTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&limit=${10}&offset=${pageNewTickets - 1}&status=NEW`);
+            const { data: openTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&limit=${10}&offset=${pageOpenTickets - 1}&status=INPROGRESS`);
+            const { data: resolvedTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&limit=${10}&offset=${pageResolvedTickets - 1}&status=RESOLVED`);
             const { data: exceptionTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&generationMode=SYSTEM&limit=${10}&offset=${page - 1}`);
-            setOpenTicket(ticket?.tickets?.filter(data => (data?.status !== "NEW" && data?.status !== "RESOLVED"))?.map(data => data));
-            setNewTicket(ticket?.tickets?.filter(data => data?.status === "NEW")?.map(data => data));
-            setResolvedTicket(ticket?.tickets?.filter(data => data?.status === "RESOLVED")?.map(data => data));
+            setOpenTicket(openTicket?.tickets);
+            setNewTicket(newTicket?.tickets);
+            setResolvedTicket(resolvedTicket?.tickets);
             setExceptionErrors(exceptionTicket?.tickets);
-            setTotalCountOpenTickets(ticket?.tickets?.filter(data => (data?.status !== "NEW" && data?.status !== "RESOLVED"))?.map(data => data)?.length);
-            setTotalCountResolvedTickets(ticket?.tickets?.filter(data => data?.status === "RESOLVED")?.map(data => data)?.length);
-            setTotalCountNewTickets(ticket?.tickets?.filter(data => data?.status === "NEW")?.map(data => data)?.length);
+            setTotalCountOpenTickets(openTicket?.numberOfElements);
+            setTotalCountResolvedTickets(resolvedTicket?.numberOfElements);
+            setTotalCountNewTickets(newTicket?.numberOfElements);
             setTotalCount(exceptionTicket?.numberOfElements);
         } else {
-            const { data: ticket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&userId=${currentUser?.[0]?.id}&limit=${10}&offset=${selectedOption === 'OPEN TICKETS' ? pageOpenTickets - 1 : selectedOption === "RESOLVED TICKETS" ? pageResolvedTickets - 1 : selectedOption === "NEW TICKETS" ? pageNewTickets - 1 : 0}`);
+            const { data: newTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&userId=${currentUser?.[0]?.id}&limit=${10}&offset=${pageNewTickets - 1}&status=NEW`);
+            const { data: openTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&userId=${currentUser?.[0]?.id}&limit=${10}&offset=${pageOpenTickets - 1}&status=INPROGRESS`);
+            const { data: resolvedTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&userId=${currentUser?.[0]?.id}&limit=${10}&offset=${pageResolvedTickets - 1}&status=RESOLVED`);
             const { data: exceptionTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&userId=${currentUser?.[0]?.id}&generationMode=SYSTEM&limit=${10}&offset=${page - 1}`);
-            setOpenTicket(ticket?.tickets?.filter(data => (data?.status !== "NEW" && data?.status !== "RESOLVED"))?.map(data => data));
-            setNewTicket(ticket?.tickets?.filter(data => data?.status === "NEW")?.map(data => data));
-            setResolvedTicket(ticket?.tickets?.filter(data => data?.status === "RESOLVED")?.map(data => data));
+            setOpenTicket(openTicket?.tickets);
+            setNewTicket(newTicket?.tickets);
+            setResolvedTicket(resolvedTicket?.tickets);
             setExceptionErrors(exceptionTicket?.tickets);
-            setTotalCountOpenTickets(ticket?.tickets?.filter(data => (data?.status !== "NEW" && data?.status !== "RESOLVED"))?.map(data => data)?.length);
-            setTotalCountResolvedTickets(ticket?.tickets?.filter(data => data?.status === "RESOLVED")?.map(data => data)?.length);
-            setTotalCountNewTickets(ticket?.tickets?.filter(data => data?.status === "NEW")?.map(data => data)?.length);
+            setTotalCountOpenTickets(openTicket?.numberOfElements);
+            setTotalCountResolvedTickets(resolvedTicket?.numberOfElements);
+            setTotalCountNewTickets(newTicket?.numberOfElements);
             setTotalCount(exceptionTicket?.numberOfElements);
         }
-        // const { data: ticket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}`);
-        // setOpenTicket(ticket?.filter(data => (data?.status !== "NEW" && data?.status !== "RESOLVED"))?.map(data => data));
-        // setNewTicket(ticket?.filter(data => data?.status === "NEW")?.map(data => data));
-        // setResolvedTicket(ticket?.filter(data => data?.status === "RESOLVED")?.map(data => data));
+    };
+
+    const getNewTicket = async () => {
+        if (currentUser?.[0]?.roles?.filter(data => data?.roleName === 'Entity Sys Admin')?.map(data => data)?.length !== 0) {
+            const { data: newTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&limit=${10}&offset=${pageNewTickets - 1}&status=NEW`);
+            setNewTicket(newTicket?.tickets);
+            setTotalCountNewTickets(newTicket?.numberOfElements);
+        } else {
+            const { data: newTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&userId=${currentUser?.[0]?.id}&limit=${10}&offset=${pageNewTickets - 1}&status=NEW`);
+            setNewTicket(newTicket?.tickets);
+            setTotalCountNewTickets(newTicket?.numberOfElements);
+        }
+    };
+
+    const getOpenTicket = async () => {
+        if (currentUser?.[0]?.roles?.filter(data => data?.roleName === 'Entity Sys Admin')?.map(data => data)?.length !== 0) {
+            const { data: openTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&limit=${10}&offset=${pageOpenTickets - 1}&status=INPROGRESS`);
+            setOpenTicket(openTicket?.tickets);
+            setTotalCountOpenTickets(openTicket?.numberOfElements);
+        } else {
+            const { data: openTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&userId=${currentUser?.[0]?.id}&limit=${10}&offset=${pageOpenTickets - 1}&status=INPROGRESS`);
+            setOpenTicket(openTicket?.tickets);
+            setTotalCountOpenTickets(openTicket?.numberOfElements);
+        }
+    };
+
+    const getResolvedTicket = async () => {
+        if (currentUser?.[0]?.roles?.filter(data => data?.roleName === 'Entity Sys Admin')?.map(data => data)?.length !== 0) {
+            const { data: resolvedTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&limit=${10}&offset=${pageResolvedTickets - 1}&status=RESOLVED`);
+            setResolvedTicket(resolvedTicket?.tickets);
+            setTotalCountResolvedTickets(resolvedTicket?.numberOfElements);
+        } else {
+            const { data: resolvedTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&userId=${currentUser?.[0]?.id}&limit=${10}&offset=${pageResolvedTickets - 1}&status=RESOLVED`);
+            setResolvedTicket(resolvedTicket?.tickets);
+            setTotalCountResolvedTickets(resolvedTicket?.numberOfElements);
+        }
+    };
+
+    const getExceptionTicket = async () => {
+        if (currentUser?.[0]?.roles?.filter(data => data?.roleName === 'Entity Sys Admin')?.map(data => data)?.length !== 0) {
+            const { data: exceptionTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&generationMode=SYSTEM&limit=${10}&offset=${page - 1}`);
+            setExceptionErrors(exceptionTicket?.tickets);
+            setTotalCount(exceptionTicket?.numberOfElements);
+        } else {
+            const { data: exceptionTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&userId=${currentUser?.[0]?.id}&generationMode=SYSTEM&limit=${10}&offset=${page - 1}`);
+            setExceptionErrors(exceptionTicket?.tickets);
+            setTotalCount(exceptionTicket?.numberOfElements);
+        }
     };
 
     const getCommentMessages = async () => {

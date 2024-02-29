@@ -123,6 +123,12 @@
     color: #52575D;
 }
 
+.feedbackMessageSize {
+    max-width: 270px;
+    max-height: 100px;
+    overflow: scroll;
+}
+
 .twoCol {
     display: grid;
     grid-template-columns: 1fr 1fr;

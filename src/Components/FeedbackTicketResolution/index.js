@@ -481,22 +481,30 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                                 </div>
                                 <div>
                                     <p className={style.extentionLableStyle}>Feedback SUBJECT*</p>
-                                    <InputGroup value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Subject" readOnly={ticketDetails?.generationMode === 'SYSTEM'} />
+                                    {ticketDetails?.generationMode === 'SYSTEM' ? (
+                                        <p className={style.feedbackFontStyle}>{subject}</p>
+                                    ) : (
+                                        <InputGroup value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Subject" />
+                                    )}
                                 </div>
                                 <div className={style.marginLeft}>
                                     <p className={style.extentionLableStyle}>FEEDBACK DESCRIPTION</p>
-                                    <TextArea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description" rows={3} className={`${style.fullWidth}`} readOnly={ticketDetails?.generationMode === 'SYSTEM'} />
+                                    {ticketDetails?.generationMode === 'SYSTEM' ? (
+                                        <p className={style.feedbackFontStyle}>{subject}</p>
+                                    ) : (
+                                        <TextArea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description" rows={3} className={`${style.fullWidth}`} readOnly={ticketDetails?.generationMode === 'SYSTEM'} />
+                                    )}
                                 </div>
                                 {
                                     isEdit && ticketDetails?.generationMode === 'SYSTEM' && (
                                         <>
                                             <div>
                                                 <p className={style.extentionLableStyle}>Feedback Trace</p>
-                                                <TextArea value={ticketDetails?.exceptionDetails?.trace} onChange={(e) => setDescription(e.target.value)} placeholder="Trace" rows={3} className={`${style.fullWidth}`} readOnly={ticketDetails?.generationMode === 'SYSTEM'} />
+                                                <p className={`${style.feedbackFontStyle} ${style.feedbackMessageSize}`}>{ticketDetails?.exceptionDetails?.trace}</p>
                                             </div>
                                             <div className={style.marginLeft}>
                                                 <p className={style.extentionLableStyle}>Feedback Message</p>
-                                                <TextArea value={ticketDetails?.exceptionDetails?.message} onChange={(e) => setDescription(e.target.value)} placeholder="Message" rows={3} className={`${style.fullWidth}`} readOnly={ticketDetails?.generationMode === 'SYSTEM'} />
+                                                <p className={`${style.feedbackFontStyle} ${style.feedbackMessageSize}`}>{ticketDetails?.exceptionDetails?.message}</p>
                                             </div>
                                         </>
                                     )
@@ -507,46 +515,58 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                             <div className={`${style.feedbackContentGrid} ${style.marginTop20}`}>
                                 <div>
                                     <p className={style.extentionLableStyle}>Feedback TYPE</p>
-                                    <FormControl sx={{ maxWidth: 180 }} className={style.reduceMarginTop} size="small">
-                                        <Select
-                                            readOnly={ticketDetails?.generationMode === 'SYSTEM'}
-                                            labelId="demo-select-small"
-                                            id="demo-select-small"
-                                            value={type}
-                                            className={style.selectFontStyle}
-                                            onChange={(e) => setType(e.target.value)}
-                                        >
-                                            <MenuItem value={'APPLICATION'}>Application</MenuItem>
-                                        </Select>
-                                    </FormControl>
+                                    {ticketDetails?.generationMode === 'SYSTEM' ? (
+                                        <p className={style.feedbackFontStyle}>{type !== null ? type : 'SYSTEM TICKET'}</p>
+                                    ) : (
+                                        <FormControl sx={{ maxWidth: 180 }} className={style.reduceMarginTop} size="small">
+                                            <Select
+                                                readOnly={ticketDetails?.generationMode === 'SYSTEM'}
+                                                labelId="demo-select-small"
+                                                id="demo-select-small"
+                                                value={type}
+                                                className={style.selectFontStyle}
+                                                onChange={(e) => setType(e.target.value)}
+                                            >
+                                                <MenuItem value={'APPLICATION'}>Application</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    )}
                                 </div>
                                 <div className={style.twoCol}>
                                     <div>
                                         <p className={style.extentionLableStyle}>Work impact</p>
-                                        <FormControl sx={{ maxWidth: 180 }} className={style.reduceMarginTop} size="small">
-                                            <Select
-                                                // readOnly={ticketDetails?.generationMode === 'SYSTEM'}
-                                                labelId="demo-select-small"
-                                                id="demo-select-small"
-                                                value={impact}
-                                                className={style.selectFontStyle}
-                                                onChange={(e) => setImpact(e.target.value)}
-                                            >
-                                                <MenuItem value={'HIGH'}>High</MenuItem>
-                                                <MenuItem value={'MEDIUM'}>Medium</MenuItem>
-                                                <MenuItem value={'LOW'}>Low</MenuItem>
-                                            </Select>
-                                        </FormControl>
+                                        {ticketDetails?.generationMode === 'SYSTEM' ? (
+                                            <p className={style.feedbackFontStyle}>{impact !== null ? impact : 'Low'}</p>
+                                        ) : (
+                                            <FormControl sx={{ maxWidth: 180 }} className={style.reduceMarginTop} size="small">
+                                                <Select
+                                                    // readOnly={ticketDetails?.generationMode === 'SYSTEM'}
+                                                    labelId="demo-select-small"
+                                                    id="demo-select-small"
+                                                    value={impact}
+                                                    className={style.selectFontStyle}
+                                                    onChange={(e) => setImpact(e.target.value)}
+                                                >
+                                                    <MenuItem value={'HIGH'}>High</MenuItem>
+                                                    <MenuItem value={'MEDIUM'}>Medium</MenuItem>
+                                                    <MenuItem value={'LOW'}>Low</MenuItem>
+                                                </Select>
+                                            </FormControl>
+                                        )}
                                     </div>
                                     <div>
                                         <p className={style.extentionLableStyle}>SCREEN CAPTURE</p>
-                                        <FormControlLabel
-                                            control={
-                                                <Switch checked={screenCaptured} size="small" onChange={(e) => { ticketDetails?.generationMode !== 'SYSTEM' && setScreenCaptured(e.target.checked) }} disabled={(screenCaptureImg !== '' && screenCaptureImg !== null) ? false : true} />
-                                            }
-                                            className={`${style.switchFontStyle}`}
-                                            label={screenCaptured ? 'YES' : 'NO'}
-                                        />
+                                        {ticketDetails?.generationMode === 'SYSTEM' ? (
+                                            <p className={style.feedbackFontStyle}>{screenCaptured ? 'YES' : 'NO'}</p>
+                                        ) : (
+                                            <FormControlLabel
+                                                control={
+                                                    <Switch checked={screenCaptured} size="small" onChange={(e) => { ticketDetails?.generationMode !== 'SYSTEM' && setScreenCaptured(e.target.checked) }} disabled={(screenCaptureImg !== '' && screenCaptureImg !== null) ? false : true} />
+                                                }
+                                                className={`${style.switchFontStyle}`}
+                                                label={screenCaptured ? 'YES' : 'NO'}
+                                            />
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -555,27 +575,31 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                                 <p className={style.extentionLableStyle}>SCREEN CAPTURE</p>
                             </div>
                             <div className={style.dashedBorder}>
-                                <div className={`${style.imageDisplayStyle} ${style.alignCenter}`}>
-                                    {(isEdit && ticketDetails?.ticketFile?.fileURL !== null) ? (
-                                        <img src={ticketDetails?.ticketFile?.fileURL} alt='Screen shot img' className={style.screenCaptureImgStyle} />
-                                    ) : (!screenCaptured && screenCapture === null) ? (
-                                        <>
-                                            <label htmlFor="file-upload-help" className={`${style.uploadButton} ${style.alignCenter}`}>
-                                                UPLOAD
-                                            </label>
-                                            <input id="file-upload-help" type="file" onChange={(e) => handleFileUpload(e)} />
-                                        </>
-                                    ) : (screenCapture !== null) ? (
-                                        <img src={!fromUpload ? screenCapture : screenCaptureFromUpload} alt='Screen shot' className={style.screenCaptureImgStyle} />
-                                    ) : (
-                                        <>
-                                            <label htmlFor="file-upload-help" className={`${style.uploadButton} ${style.alignCenter}`}>
-                                                UPLOAD
-                                            </label>
-                                            <input id="file-upload-help" type="file" onChange={(e) => handleFileUpload(e)} />
-                                        </>
-                                    )}
-                                </div>
+                                {ticketDetails?.generationMode === 'SYSTEM' ? (
+                                    <div className={`${style.imageDisplayStyle} ${style.alignCenter} ${style.imageNameStyle}`}>IMAGE.PNG</div>
+                                ) : (
+                                    <div className={`${style.imageDisplayStyle} ${style.alignCenter}`}>
+                                        {(isEdit && ticketDetails?.ticketFile?.fileURL !== null) ? (
+                                            <img src={ticketDetails?.ticketFile?.fileURL} alt='Screen shot img' className={style.screenCaptureImgStyle} />
+                                        ) : (!screenCaptured && screenCapture === null) ? (
+                                            <>
+                                                <label htmlFor="file-upload-help" className={`${style.uploadButton} ${style.alignCenter}`}>
+                                                    UPLOAD
+                                                </label>
+                                                <input id="file-upload-help" type="file" onChange={(e) => handleFileUpload(e)} />
+                                            </>
+                                        ) : (screenCapture !== null) ? (
+                                            <img src={!fromUpload ? screenCapture : screenCaptureFromUpload} alt='Screen shot' className={style.screenCaptureImgStyle} />
+                                        ) : (
+                                            <>
+                                                <label htmlFor="file-upload-help" className={`${style.uploadButton} ${style.alignCenter}`}>
+                                                    UPLOAD
+                                                </label>
+                                                <input id="file-upload-help" type="file" onChange={(e) => handleFileUpload(e)} />
+                                            </>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                             {/* {isEdit && (
                                 <>
@@ -828,10 +852,11 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                         </div>
                     </div>
                 </div>
-            </Dialog>
+            </Dialog >
             {showFeedbackTicketResolutionLog && (
                 <FeedbackTicketResolutionLog getShowFeedbackTicketResolutionLog={getShowFeedbackTicketResolutionLog} ticketId={ticketDetails?.id} />
-            )}
+            )
+            }
         </>
     )
 }

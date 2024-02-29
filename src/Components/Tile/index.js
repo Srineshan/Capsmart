@@ -29,9 +29,8 @@ const Tile = ({
 }) => {
   return (
     <div
-      className={`${style.cardStyle} ${
-        selectedContract === currentTile && style.selectedContractBackground
-      }`}
+      className={`${style.cardStyle} ${selectedContract === currentTile && style.selectedContractBackground
+        }`}
       onClick={() => getSelectedContract(currentTile)}
     >
       {topText !== "" && <p className={style.next30Style}>{topText}</p>}
@@ -48,12 +47,9 @@ const Tile = ({
             {bigText2 !== "" && (
               <div className={` ${style.displayInGrid}  `}>
                 <div
-                  className={`${style.headingCountForContracts}  ${
-                    style.verticalAlignCenter
-                  } ${
-                    // selectedContract === currentTile && bigNumberColor
-                    bigNumber2 !== "-" ? bigNumber1Color : ""
-                  } ${style.alignLeft}`}
+                  className={`${style.headingCountForContracts}  ${style.verticalAlignCenter
+                    }  ${bigNumber2 !== "-" ? bigNumber1Color : ""
+                    } ${style.alignLeft}`}
                 >
                   {bigNumber2}
                 </div>
@@ -68,9 +64,8 @@ const Tile = ({
               className={`${style.displayInGrid} ${style.counterHeight} ${style.alignRight}`}
             >
               <div
-                className={`${style.headingCountForContracts} ${
-                  bigNumber !== "-" ? bigNumberColor : ""
-                } ${style.alignLeft} ${style.verticalAlignCenter}`}
+                className={`${style.headingCountForContracts} ${(window.location.pathname.includes("/entitySitePortal") && selectedContract === currentTile) ? style.purple : ''} ${bigNumber !== "-" ? bigNumberColor : ""
+                  } ${style.alignLeft} ${style.verticalAlignCenter}`}
               >
                 {bigNumber}
               </div>
@@ -90,13 +85,12 @@ const Tile = ({
               >
                 {smallText3}
                 <span
-                  className={`${
-                    smallNum3 !== "-"
-                      ? selectedContract === currentTile
-                        ? smallNum3SelectedColor
-                        : smallNum3Color
-                      : style.defaultSmallNumber
-                  } ${style.countDesign}`}
+                  className={`${smallNum3 !== "-"
+                    ? selectedContract === currentTile
+                      ? smallNum3SelectedColor
+                      : smallNum3Color
+                    : style.defaultSmallNumber
+                    } ${style.countDesign}`}
                 >
                   {smallNum3}
                 </span>
@@ -108,13 +102,12 @@ const Tile = ({
               >
                 {smallText1}
                 <span
-                  className={`${
-                    smallNum1 !== "-"
-                      ? selectedContract === currentTile
-                        ? smallNum1SelectedColor
-                        : smallNum1Color
-                      : style.defaultSmallNumber
-                  } ${style.countDesign}`}
+                  className={`${smallNum1 !== "-"
+                    ? selectedContract === currentTile
+                      ? smallNum1SelectedColor
+                      : smallNum1Color
+                    : style.defaultSmallNumber
+                    } ${style.countDesign}`}
                 >
                   {smallNum1}
                 </span>
@@ -126,13 +119,12 @@ const Tile = ({
               >
                 {smallText2}
                 <span
-                  className={`${
-                    smallNum2 !== "-"
-                      ? selectedContract === currentTile
-                        ? smallNum2SelectedColor
-                        : smallNum2Color
-                      : style.defaultSmallNumber
-                  } ${style.countDesign}`}
+                  className={`${smallNum2 !== "-"
+                    ? selectedContract === currentTile
+                      ? smallNum2SelectedColor
+                      : smallNum2Color
+                    : style.defaultSmallNumber
+                    } ${style.countDesign}`}
                 >
                   {smallNum2}
                 </span>
@@ -141,7 +133,7 @@ const Tile = ({
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 
