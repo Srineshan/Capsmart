@@ -1297,7 +1297,7 @@ const AddServiceProvided = ({
             value: parseFloat(dataValues?.sessionAmount),
           },
           minSessionDuration: {
-            hours: parseInt(dataValues?.minimumSessionDuration || 0),
+            hours: parseInt(dataValues?.minimumSessionDuration || 1),
           },
           patientConsultRequired: dataValues?.patientConsultRequired || false,
           professionalServiceRequired: dataValues?.professionalServiceRequired || false,
@@ -1385,6 +1385,7 @@ const AddServiceProvided = ({
                   duration: {
                     hours: parseFloat(dataValues?.weekdayDuration),
                   },
+                  minSessionDuration: { hours: 1 },
                   serviceRate: {
                     rate: parseFloat(dataValues?.weekdayDayServiceRate),
                     rateFrequency: dataValues?.weekdayDayServiceFrequency,
@@ -1425,6 +1426,7 @@ const AddServiceProvided = ({
                   duration: {
                     hours: parseFloat(dataValues?.weekdayNightsDuration),
                   },
+                  minSessionDuration: { hours: 1 },
                   activity: {
                     activity: dataValues?.weekdayNightActivity
                   },
@@ -1473,6 +1475,7 @@ const AddServiceProvided = ({
                   duration: {
                     hours: parseFloat(dataValues?.weekendDuration),
                   },
+                  minSessionDuration: { hours: 1 },
                   activity: {
                     activity: dataValues?.weekendActivity,
                   },
@@ -1513,6 +1516,7 @@ const AddServiceProvided = ({
                   duration: {
                     hours: parseFloat(dataValues?.holidayDuration),
                   },
+                  minSessionDuration: { hours: 1 },
                   serviceRate: {
                     rate: parseFloat(dataValues?.holidayServiceRate),
                     rateFrequency: dataValues?.holidayServiceFrequency,
