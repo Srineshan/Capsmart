@@ -99,7 +99,7 @@ const Navbar = () => {
       setIsContractManagementAvailable(true);
     } else if (currentUserRoles?.includes("Contract Manager")) {
       setIsContractManagementAvailable(true);
-      setIsPaymentsAvailable(true);
+      // setIsPaymentsAvailable(true);
     } else if (
       currentUserRoles?.includes("Super Sys Admin") ||
       currentUserRoles?.includes("Entity Sys Admin") ||
