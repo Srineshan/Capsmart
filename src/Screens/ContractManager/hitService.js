@@ -561,7 +561,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
                                     }}
                                     value={metadata?.serviceRate}
-                                    onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, serviceRate: parseFloat(e.target.value.slice(0, 9)), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? (parseFloat(e.target.value.slice(0, 9)) * (metadata?.totalSession / metadata?.serviceRateDuration)) : (parseFloat(e.target.value || '0') * (metadata?.totalSession || 1)) })}
+                                    onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, serviceRateDuration: metadata?.serviceRateFrequency === "SESSION" ? metadata?.serviceRateDuration : 1, serviceRate: parseFloat(e.target.value.slice(0, 9)), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? (parseFloat(e.target.value.slice(0, 9)) * (metadata?.totalSession / metadata?.serviceRateDuration)) : (parseFloat(e.target.value || '0') * (metadata?.totalSession || 1)) })}
                                 />
                             </div>
                         </div>
@@ -584,7 +584,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                                     }}
                                     onChange={(e) =>
                                         e.target.value >= 0 &&
-                                        setMetadata({ ...metadata, serviceRateDuration: parseFloat(e.target.value || '0'), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? (metadata?.serviceRate * (metadata?.totalSession / parseFloat(e.target.value))) : (metadata?.serviceRate * parseFloat(e.target.value || '1')) })
+                                        setMetadata({ ...metadata, serviceRateDuration: metadata?.serviceRateFrequency === "SESSION" ? parseFloat(e.target.value || '0') : 1, sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? (metadata?.serviceRate * (metadata?.totalSession / parseFloat(e.target.value))) : (metadata?.serviceRate * parseFloat(e.target.value || '1')) })
                                     }
                                     value={metadata?.serviceRateDuration}
                                 />

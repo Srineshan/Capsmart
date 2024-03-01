@@ -1100,7 +1100,6 @@ const AddServiceProvided = ({
           rateFrequency: metadata?.[index]?.serviceRate?.rateFrequency,
           duration: metadata?.[index]?.serviceRate?.rateFrequency === "SESSION" ? item?.sessionDuration : 1,
         }
-        console.log("performing Activity", metadata?.[index]?.parentActivity);
         item.addOnActivityType = {
           activityType: metadata?.[index]?.parentActivity,
         };
@@ -1578,7 +1577,7 @@ const AddServiceProvided = ({
             serviceRate: {
               rate: dataValues?.serviceRate,
               rateFrequency: dataValues?.serviceRateFrequency,
-              duration: !serviceTypeTemplate.includes([ADMINISTRATIVE, SUPPLEMENTAL, HIT, ONCALLSERVICE]) && dataValues?.dedicatedHoursSpecified ? dataValues?.serviceRateFrequency === 'SESSION' ? dataValues?.serviceRateDuration : dataValues?.totalSession : dataValues?.serviceRateFrequency === 'SESSION' ? parseFloat(dataValues?.sessionDuration) : 1,
+              duration: !serviceTypeTemplate.includes([ADMINISTRATIVE, SUPPLEMENTAL, HIT, ONCALLSERVICE]) && dataValues?.dedicatedHoursSpecified ? dataValues?.serviceRateFrequency === 'SESSION' ? dataValues?.serviceRateDuration : 1 : dataValues?.serviceRateFrequency === 'SESSION' ? parseFloat(dataValues?.sessionDuration) : 1,
             },
           })),
           dependantServiceIncluded:
