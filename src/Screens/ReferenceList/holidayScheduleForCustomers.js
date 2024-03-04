@@ -241,9 +241,8 @@ const HolidayScheduleForCustomers = () => {
         <Navbar />
         <div className={style.margin20}>
           <div
-            className={`${
-              isExpanded ? style.bigCardGrid : style.smallCardGrid
-            }`}
+            className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid
+              }`}
           >
             <div>
               <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
@@ -470,9 +469,8 @@ const HolidayScheduleForCustomers = () => {
                                           <p
                                             className={style.tableDataFontStyle}
                                           >
-                                            {formatInTimeZone(
+                                            {format(
                                               new Date(data?.eventDate),
-                                              "America/New_York",
                                               "MMMM d"
                                             )}{" "}
                                           </p>
