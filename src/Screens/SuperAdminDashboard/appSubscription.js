@@ -284,7 +284,7 @@ const AppSubscription = ({ getActiveStep }) => {
         "subscriptionStatus": plan?.subscriptionStatus || 'ACTIVE',
         "billingFrequency": plan?.billingFrequency || 'MONTHLY',
         "discount": {
-          "discount": parseInt(plan?.discount)
+          "discount": plan?.discount
         },
         "plannedToGoLive": entityData?.subscriptionPlan?.plannedToGoLive,
         ...(plan?.allowableSites !== '' && { "allowableSites": plan?.allowableSites }),

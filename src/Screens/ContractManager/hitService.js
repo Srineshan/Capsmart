@@ -332,10 +332,12 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
     const handleValueChange = (name, value) => {
         if (name === 'dedicatedHoursSpecified') {
             if (value) {
+                console.log('value', value)
                 setMetadata({ ...metadata, sessionDuration: '1', totalSession: '0', sessionAmount: '', totalSessionFrequency: 'NA', dedicatedHoursActivityType: '', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
             } else {
                 setMetadata({ ...metadata, sessionDuration: '1', dedicatedHoursActivityType: '', sessionAmount: '', totalSession: '0', totalSessionFrequency: 'NA', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
             }
+
         }
         if (name === 'totalSessionFrequency' && value === "NA") {
             setMetadata({ ...metadata, [name]: value, totalSession: 0 })
@@ -346,6 +348,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         if (name === 'sessionAmount') {
             setMetadata({ ...metadata, sessionAmount: value, hourlyRate: (value / metadata?.sessionDuration) || '0' })
         }
+        console.log('inside if metadata', metadata)
     }
 
     const activityToAdd = async () => {
@@ -428,7 +431,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         }
     }
 
-    console.log('metadata', metadata);
+    console.log('metadata', metadata?.sessionDuration);
 
     const editActivitySelected = () => {
         let editableData = metadata?.selectedActivities?.filter(data => data?.id === adminActivity?.id)?.map(data => data)[0];
@@ -558,7 +561,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
                                     }}
                                     value={metadata?.serviceRate}
-                                    onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, serviceRate: parseFloat(e.target.value.slice(0, 9)), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? (parseFloat(e.target.value.slice(0, 9)) * (metadata?.totalSession / metadata?.serviceRateDuration)) : (parseFloat(e.target.value || '0') * (metadata?.totalSession || 1)) })}
+                                    onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, serviceRateDuration: metadata?.serviceRateFrequency === "SESSION" ? metadata?.serviceRateDuration : 1, serviceRate: parseFloat(e.target.value.slice(0, 9)), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? (parseFloat(e.target.value.slice(0, 9)) * (metadata?.totalSession / metadata?.serviceRateDuration)) : (parseFloat(e.target.value || '0') * (metadata?.totalSession || 1)) })}
                                 />
                             </div>
                         </div>
@@ -581,7 +584,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                                     }}
                                     onChange={(e) =>
                                         e.target.value >= 0 &&
-                                        setMetadata({ ...metadata, serviceRateDuration: parseFloat(e.target.value || '0'), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? (metadata?.serviceRate * (metadata?.totalSession / parseFloat(e.target.value))) : (metadata?.serviceRate * parseFloat(e.target.value || '1')) })
+                                        setMetadata({ ...metadata, serviceRateDuration: metadata?.serviceRateFrequency === "SESSION" ? parseFloat(e.target.value || '0') : 1, sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? (metadata?.serviceRate * (metadata?.totalSession / parseFloat(e.target.value))) : (metadata?.serviceRate * parseFloat(e.target.value || '1')) })
                                     }
                                     value={metadata?.serviceRateDuration}
                                 />

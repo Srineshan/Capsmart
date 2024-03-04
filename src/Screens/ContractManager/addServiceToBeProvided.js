@@ -1100,7 +1100,6 @@ const AddServiceProvided = ({
           rateFrequency: metadata?.[index]?.serviceRate?.rateFrequency,
           duration: metadata?.[index]?.serviceRate?.rateFrequency === "SESSION" ? item?.sessionDuration : 1,
         }
-        console.log("performing Activity", metadata?.[index]?.parentActivity);
         item.addOnActivityType = {
           activityType: metadata?.[index]?.parentActivity,
         };
@@ -1297,7 +1296,7 @@ const AddServiceProvided = ({
             value: parseFloat(dataValues?.sessionAmount),
           },
           minSessionDuration: {
-            hours: parseInt(dataValues?.minimumSessionDuration || 0),
+            hours: parseInt(dataValues?.minimumSessionDuration || 1),
           },
           patientConsultRequired: dataValues?.patientConsultRequired || false,
           professionalServiceRequired: dataValues?.professionalServiceRequired || false,
@@ -1385,6 +1384,7 @@ const AddServiceProvided = ({
                   duration: {
                     hours: parseFloat(dataValues?.weekdayDuration),
                   },
+                  minSessionDuration: { hours: 1 },
                   serviceRate: {
                     rate: parseFloat(dataValues?.weekdayDayServiceRate),
                     rateFrequency: dataValues?.weekdayDayServiceFrequency,
@@ -1425,6 +1425,7 @@ const AddServiceProvided = ({
                   duration: {
                     hours: parseFloat(dataValues?.weekdayNightsDuration),
                   },
+                  minSessionDuration: { hours: 1 },
                   activity: {
                     activity: dataValues?.weekdayNightActivity
                   },
@@ -1473,6 +1474,7 @@ const AddServiceProvided = ({
                   duration: {
                     hours: parseFloat(dataValues?.weekendDuration),
                   },
+                  minSessionDuration: { hours: 1 },
                   activity: {
                     activity: dataValues?.weekendActivity,
                   },
@@ -1513,6 +1515,7 @@ const AddServiceProvided = ({
                   duration: {
                     hours: parseFloat(dataValues?.holidayDuration),
                   },
+                  minSessionDuration: { hours: 1 },
                   serviceRate: {
                     rate: parseFloat(dataValues?.holidayServiceRate),
                     rateFrequency: dataValues?.holidayServiceFrequency,
@@ -1574,7 +1577,7 @@ const AddServiceProvided = ({
             serviceRate: {
               rate: dataValues?.serviceRate,
               rateFrequency: dataValues?.serviceRateFrequency,
-              duration: !serviceTypeTemplate.includes([ADMINISTRATIVE, SUPPLEMENTAL, HIT, ONCALLSERVICE]) && dataValues?.dedicatedHoursSpecified ? dataValues?.serviceRateFrequency === 'SESSION' ? dataValues?.serviceRateDuration : dataValues?.totalSession : dataValues?.serviceRateFrequency === 'SESSION' ? parseFloat(dataValues?.sessionDuration) : 1,
+              duration: !serviceTypeTemplate.includes([ADMINISTRATIVE, SUPPLEMENTAL, HIT, ONCALLSERVICE]) && dataValues?.dedicatedHoursSpecified ? dataValues?.serviceRateFrequency === 'SESSION' ? dataValues?.serviceRateDuration : 1 : dataValues?.serviceRateFrequency === 'SESSION' ? parseFloat(dataValues?.sessionDuration) : 1,
             },
           })),
           dependantServiceIncluded:
