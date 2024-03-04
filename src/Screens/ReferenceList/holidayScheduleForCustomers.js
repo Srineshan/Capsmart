@@ -373,9 +373,8 @@ const HolidayScheduleForCustomers = () => {
                                       <p
                                         className={`${style.TextStyle4} ${style.marginLeft5}`}
                                       >
-                                        {formatInTimeZone(
+                                        {format(
                                           new Date(data?.eventDate),
-                                          "America/New_York",
                                           "MMMM d, yyyy"
                                         )}
                                       </p>
