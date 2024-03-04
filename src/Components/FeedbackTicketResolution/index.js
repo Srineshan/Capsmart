@@ -55,6 +55,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     let screenCaptureImg = sessionStorage.getItem('screenCapture');
     let fromUpload = sessionStorage.getItem('fromUpload');
     let customerName = sessionStorage.getItem('title');
+    let assignToTemp = sessionStorage.getItem('assignTo');
     const [screenCaptureFromUpload, setScreenCaptureFromUpload] = useState('');
     const [file, setFile] = useState('');
     const statusAvailableValues = {
@@ -147,8 +148,10 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
             setType(ticketDetails?.type);
             setImpact(ticketDetails?.impact);
             setScreenCaptured(ticketDetails?.screenCaptured)
-            setAssignToId(ticketDetails?.assignedTo?.id !== null ? ticketDetails?.assignedTo?.id : "");
-            handleAssignTo(ticketDetails?.assignedTo?.id !== null ? ticketDetails?.assignedTo?.id : "");
+            if (assignToTemp === '' || assignToTemp === null) {
+                setAssignToId(ticketDetails?.assignedTo?.id !== null ? ticketDetails?.assignedTo?.id : "");
+                handleAssignTo(ticketDetails?.assignedTo?.id !== null ? ticketDetails?.assignedTo?.id : "");
+            }
             // setTicketStatus(ticketDetails?.status);
             setFileName(ticketDetails?.ticketFile?.fileName);
             setScreenCapture(ticketDetails?.ticketFile?.fileURL);
@@ -156,6 +159,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
         }
     }, [ticketDetails])
 
+    console.log(assignToTemp)
     const getUser = async () => {
         const { data: user } = await GET(`user-management-service/user/ListOfId?userIds=${userIdList}`);
         const { data: entityUsers } = await GET(`user-management-service/user/role?role=Entity Sys User&role=Entity Sys Admin`);
@@ -222,6 +226,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
 
     const handleAssignTo = (id) => {
         setAssignTo(entityAndSiteLevelUsers?.filter(data => data?.id === id)?.map(data => data))
+        sessionStorage.setItem('assignTo', entityAndSiteLevelUsers?.filter(data => data?.id === id)?.map(data => data)?.[0]?.id)
     }
 
     const handleWorkflowUpdate = async () => {
@@ -359,6 +364,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                     SuccessToaster('Feedback Added Successfully');
                     sessionStorage.removeItem('screenCapture');
                     sessionStorage.removeItem('fromUpload');
+                    sessionStorage.removeItem('assignTo');
                     getShowFeedbackTicketResolution(false);
                 })
                 .catch(error => {
@@ -370,6 +376,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                     SuccessToaster('Feedback Updated Successfully');
                     sessionStorage.removeItem('screenCapture');
                     sessionStorage.removeItem('fromUpload');
+                    sessionStorage.removeItem('assignTo');
                     getShowFeedbackTicketResolution(false);
                 })
                 .catch(error => {
@@ -413,6 +420,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
         sessionStorage.removeItem('screenCapture');
         sessionStorage.removeItem('selectedOption');
         sessionStorage.removeItem('fromUpload');
+        sessionStorage.removeItem('assignTo');
     }
 
     const getBase64 = (file) => {
@@ -731,7 +739,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                                                     </select> */}
                                                     <CommonSelectField
                                                         value={ticketStatus}
-                                                        onChange={(e) => setTicketStatus(e.target.value)}
+                                                        onChange={(e) => { setTicketStatus(e.target.value); sessionStorage.setItem('assignTo', e.target.value) }}
                                                         className={`${style.fieldWidth2InARow}`}
                                                         firstOptionLabel={
                                                             "Select Status"

@@ -65,7 +65,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
         contractDocumentsOnFile: 'CONTRACT',
         contractsWithABusinessEntity: 'CONTRACT',
         multiProviderContractsList: 'CONTRACT',
-        currentRemitToAddressForActiveContracts: 'CONTRACT'
+        currentRemitToAddressForActiveContracts: 'CONTRACT',
+        nonCompliant: 'CONTRACT',
     }
     const defaultOption = ''
 
@@ -456,7 +457,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                 <div className={style.reportTypeTextStyle}>Reporting Parameter Selection For This Report</div>
                 {(reportType === "upcomingContractRenewals" || reportType === "oneTimeContract" ||
                     reportType === "contractDocumentsOnFile" || reportType === "multiProviderContractsList" ||
-                    reportType === "contractsWithABusinessEntity" || reportType === "currentRemitToAddressForActiveContracts") ? (
+                    reportType === "contractsWithABusinessEntity" || reportType === "currentRemitToAddressForActiveContracts" ||
+                    reportType === 'nonCompliant') ? (
                     <>
                         {reportType === "upcomingContractRenewals" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
@@ -577,7 +579,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                             </FormControl>
                         )}
                         {(reportType === "contractDocumentsOnFile" || reportType === "multiProviderContractsList" ||
-                            reportType === "contractsWithABusinessEntity") && (
+                            reportType === "contractsWithABusinessEntity" || reportType === 'nonCompliant') && (
                                 <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                     <InputLabel id="demo-simple-select-standard-label3">Contract Status</InputLabel>
                                     <Select
@@ -613,6 +615,24 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                     <MenuItem value={'WRITTENCONTRACTEXTENSIONFORFIXEDTERM'}>Written Contract Extension For Fixed Term</MenuItem>
                                     <MenuItem value={'NEWCONTRACTONEXPIRATION'}>New Contract On Expiration</MenuItem>
                                     <MenuItem value={'ONETIMECONTRACTTERMINATEONEXPIRATION'}>One Time Contract - Terminate On Expiration</MenuItem>
+                                </Select>
+                            </FormControl>
+                        )}
+                        {reportType === 'nonCompliant' && (
+                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                <InputLabel id="demo-simple-select-standard-label4">Proof of Documentation</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-standard-label4"
+                                    id="demo-simple-select-standard4"
+                                    value={podType}
+                                    onChange={(e) => { setPodType(e.target.value) }}
+                                    label="Proof of Documentation"
+                                    MenuProps={MenuProps}
+                                    readOnly={isMyReport}
+                                >
+                                    {podTypes?.map((data, index) => (
+                                        <MenuItem value={data} key={index}>{data}</MenuItem>
+                                    ))}
                                 </Select>
                             </FormControl>
                         )}
@@ -850,117 +870,6 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                     </>
                     //     )}
                     // </>
-                ) : reportType === "nonCompliant" ? (
-                    <>
-                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                            <InputLabel id="demo-multiple-name-label1">Site</InputLabel>
-                            <Select
-                                labelId="demo-multiple-name-label1"
-                                id="demo-multiple-name1"
-                                multiple
-                                value={selectedSites}
-                                onChange={handleChangeSites}
-                                MenuProps={MenuProps}
-                                readOnly={isMyReport}
-                            >
-                                {sites?.map((data) => (
-                                    <MenuItem
-                                        key={data?.id}
-                                        value={data?.id}
-                                    >
-                                        {data?.siteName?.siteName}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                            <InputLabel id="demo-multiple-name-label2">Departments</InputLabel>
-                            <Select
-                                labelId="demo-multiple-name-label2"
-                                id="demo-multiple-name2"
-                                multiple
-                                value={selectedDepartments}
-                                onChange={handleChangeDepartments}
-                                MenuProps={MenuProps}
-                                readOnly={isMyReport}
-                            >
-                                {departments?.length >= 2 && (
-                                    <MenuItem value={defaultOption}>All Departments</MenuItem>
-                                )}
-                                {departments?.map((data) => (
-                                    // <MenuItem
-                                    //     key={data?.dept?.id}
-                                    //     value={data?.dept?.id}
-                                    // >
-                                    //     {data?.site?.siteName?.siteName - data?.dept?.departmentName?.name}
-                                    // </MenuItem>
-                                    <MenuItem
-                                        key={data?.id}
-                                        value={data?.id}
-                                    >
-                                        {data?.departmentName?.name}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                            <InputLabel id="demo-multiple-name-label5">Contract</InputLabel>
-                            <Select
-                                labelId="demo-multiple-name-label5"
-                                id="demo-multiple-name5"
-                                multiple
-                                value={selectedContracts}
-                                onChange={handleChangeContracts}
-                                MenuProps={MenuProps}
-                                readOnly={isMyReport}
-                            >
-                                {contracts?.length >= 2 && (
-                                    <MenuItem value={defaultOption}>All Contracts</MenuItem>
-                                )}
-                                {contracts?.map((data) => (
-                                    <MenuItem
-                                        key={data?.id}
-                                        value={data?.id}
-                                    >
-                                        {data?.contractName?.contractName}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                            <InputLabel id="demo-simple-select-standard-label3">Contract Status</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-standard-label3"
-                                id="demo-simple-select-standard3"
-                                value={contractStatus}
-                                onChange={(e) => { setContractStatus(e.target.value) }}
-                                label="Contract Continuation Policy"
-                                MenuProps={MenuProps}
-                                readOnly={isMyReport}
-                            >
-                                <MenuItem value={'ACTIVE'}>Active</MenuItem>
-                                <MenuItem value={'DRAFT'}>Draft</MenuItem>
-                                <MenuItem value={'EXPIRED'}>Expired</MenuItem>
-                                <MenuItem value={'TERMINATED'}>Terminated</MenuItem>
-                            </Select>
-                        </FormControl>
-                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                            <InputLabel id="demo-simple-select-standard-label4">Proof of Documentation</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-standard-label4"
-                                id="demo-simple-select-standard4"
-                                value={podType}
-                                onChange={(e) => { setPodType(e.target.value) }}
-                                label="Proof of Documentation"
-                                MenuProps={MenuProps}
-                                readOnly={isMyReport}
-                            >
-                                {podTypes?.map((data, index) => (
-                                    <MenuItem value={data} key={index}>{data}</MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    </>
                 ) : reportType === "compensationCostAnalysis" ? (
                     <>
                         <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>

@@ -188,6 +188,8 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
         setUserDetails(user);
     }
 
+    console.log(dataToUseInReport?.selectedContracts?.[0] !== '' ? dataToUseInReport?.selectedContracts : [], dataToUseInReport?.selectedContracts)
+
     const handleSave = async () => {
         setIsReadOnly(true)
         let data = {
@@ -215,11 +217,11 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
                     'reportingTimePeriod': dataToUseInReport?.reportingTimePeriod,
                     'startDate': dataToUseInReport?.from,
                     'endDate': dataToUseInReport?.to,
-                    'contracts': dataToUseInReport?.selectedContracts,
-                    'users': dataToUseInReport?.selectedContractedServiceProvider,
-                    'sites': dataToUseInReport?.selectedSites,
-                    'departments': dataToUseInReport?.selectedDepartments,
-                    'contractPolicyType': dataToUseInReport?.contractContinuationPolicy,
+                    'contracts': dataToUseInReport?.selectedContracts?.[0] !== '' ? dataToUseInReport?.selectedContracts : [],
+                    'users': dataToUseInReport?.selectedContractedServiceProvider?.[0] !== '' ? dataToUseInReport?.selectedContractedServiceProvider : [],
+                    'sites': dataToUseInReport?.selectedSites?.[0] !== '' ? dataToUseInReport?.selectedSites : [],
+                    'departments': dataToUseInReport?.selectedDepartments?.[0] !== '' ? dataToUseInReport?.selectedDepartments : [],
+                    'contractPolicyType': dataToUseInReport?.contractContinuationPolicy !== 'ALL' ? dataToUseInReport?.contractContinuationPolicy : '',
                     'contractStatus': dataToUseInReport?.contractStatus,
                     "renewalDays": dataToUseInReport?.renewalreportingTimePeriod,
                     "contractNames": ['']

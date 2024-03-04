@@ -320,7 +320,7 @@ const ReportTypeOverview = () => {
         scheduledActivity: "Scheduled Activity/ Services - Forcasted To Actual",
         scheduledActivityByContract: "Scheduled Activity/ Services - Forcasted To Actual By Contract",
         complianceStatus: "Proof Of Documentation Status By Contractor",
-        nonCompliant: 'List of Contracts that are non compliant with proof of documentation requirement',
+        nonCompliant: 'Proof Of Documentation Compliance For Contract Based Requirments',
         paymentsProcessingSummary: 'Payments Processing Summary',
         compensationCostAnalysis: 'Compensation Cost Analysis',
         timesheetProcessingSummary: 'Timesheet Processing Summary',
@@ -811,19 +811,23 @@ const ReportTypeOverview = () => {
     }
 
     const getNonCompliantContractReportTile = async () => {
-        const { data: nonCompliantContract } = await GET(`contract-managment-service/reports/documentProofReport?contractNames=${dataToUseInReport?.selectedContracts}&contractStatus=${dataToUseInReport?.contractStatus}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
-        if (nonCompliantContract) {
-            setNonCompliantContractTile(nonCompliantContract);
+        if (dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined && dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.contractStatus !== undefined) {
+            const { data: nonCompliantContract } = await GET(`contract-managment-service/reports/documentProofReport?contractNames=${dataToUseInReport?.selectedContracts}&contractStatus=${dataToUseInReport?.contractStatus}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
+            if (nonCompliantContract) {
+                setNonCompliantContractTile(nonCompliantContract);
+            }
+            setIsLoading(false);
         }
-        setIsLoading(false);
     }
 
     const getNonCompliantContractReport = async () => {
-        const { data: nonCompliantContract } = await GET(`contract-managment-service/reports/nonCompliantContractReport?podType=${encodeURIComponent(selectedPodTypeFromTile)}&contractStatus=${dataToUseInReport?.contractStatus}&contractNames=${dataToUseInReport?.selectedContracts}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
-        if (nonCompliantContract) {
-            setNonCompliantContract(nonCompliantContract);
+        if (dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined && dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.contractStatus !== undefined) {
+            const { data: nonCompliantContract } = await GET(`contract-managment-service/reports/nonCompliantContractReport?podType=${encodeURIComponent(selectedPodTypeFromTile)}&contractStatus=${dataToUseInReport?.contractStatus}&contractNames=${dataToUseInReport?.selectedContracts}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
+            if (nonCompliantContract) {
+                setNonCompliantContract(nonCompliantContract);
+            }
+            setIsLoading(false);
         }
-        setIsLoading(false);
     }
 
     let activityPerformed = [];

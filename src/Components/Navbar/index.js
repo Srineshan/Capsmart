@@ -84,7 +84,7 @@ const Navbar = () => {
       currentUserRoles?.includes("Reviewer") ||
       currentUserRoles?.includes("Approver")
     ) {
-      // setIsActivityServiceLogAvailable(true);
+      setIsActivityServiceLogAvailable(true);
       setIsContractComplianceAvailable(true);
       setIsContractPerformanceAvailable(true);
       setIsPaymentsAvailable(true);
@@ -99,7 +99,7 @@ const Navbar = () => {
       setIsContractManagementAvailable(true);
     } else if (currentUserRoles?.includes("Contract Manager")) {
       setIsContractManagementAvailable(true);
-      setIsPaymentsAvailable(true);
+      // setIsPaymentsAvailable(true);
     } else if (
       currentUserRoles?.includes("Super Sys Admin") ||
       currentUserRoles?.includes("Entity Sys Admin") ||
@@ -442,6 +442,14 @@ const Navbar = () => {
                         </div>
                       </Link>
                     )}
+                    {isContractManagementAvailable && (
+                      <Link
+                        to={"/reports/contractManagement"}
+                        className={style.noFontStyle}
+                      >
+                        <div className={style.options}>Contract Management</div>
+                      </Link>
+                    )}
                     {isTimesheetsAvailable && (
                       <Link
                         to={"/reports/timesheets"}
@@ -464,23 +472,15 @@ const Navbar = () => {
                         <div className={style.options}>Payments</div>
                       </Link>
                     )}
-                    {isContractManagementAvailable && (
+
+                    {/* {isContractComplianceAvailable && (
                       <Link
-                        to={"/reports/contractManagement"}
+                        to={"/reports/contractCompliance"}
                         className={style.noFontStyle}
                       >
-                        <div className={style.options}>Contract Management</div>
+                        <div className={style.options}>Contract Compliance</div>
                       </Link>
-                    )}
-                    {/*
-                  {isContractComplianceAvailable && (
-                    <Link
-                      to={"/reports/contractCompliance"}
-                      className={style.noFontStyle}
-                    >
-                      <div className={style.options}>Contract Compliance</div>
-                    </Link>
-                  )} */}
+                    )} */}
                     {/* <Link to={'/reports/contractPerformance'} className={style.noFontStyle}>
                                     <div className={style.options}>Contract Performance</div>
                                 </Link>

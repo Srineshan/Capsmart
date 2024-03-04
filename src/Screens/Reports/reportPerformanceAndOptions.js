@@ -21,6 +21,7 @@ import ReportsSchedule from './../../images/reportsSchedule.png';
 import ReportsPrint from './../../images/reportsPrint.png';
 import ReportsFullScreen from './../../images/reportsFullScreen.png';
 import ReportsShare from './../../images/reportsShare.png';
+import Info from './../../images/info.png';
 import SaveReport from './saveReport';
 
 import style from './index.module.scss';
@@ -44,6 +45,8 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
     const openDownload = Boolean(anchorElDownload);
     const [anchorElFullscreen, setAnchorElFullscreen] = useState(null);
     const openFullscreen = Boolean(anchorElFullscreen);
+    const [anchorElInfo, setAnchorElInfo] = useState(null);
+    const openInfo = Boolean(anchorElInfo);
 
     const reportTitleList = {
         upcomingContractRenewals: 'Upcoming Contract Renewals',
@@ -75,6 +78,25 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
                 <div className={`${style.displayInRow} ${style.cardPadding} ${style.alignCenter}`}>
                     <div className={style.reportTypeTextStyle}>
                         {reportTitleList[reportType]}
+                    </div>
+                    <div onMouseEnter={(e) => setAnchorElInfo(e.currentTarget)} onMouseLeave={() => setAnchorElInfo(null)} aria-owns={openInfo ? 'mouse-over-popover' : undefined} aria-haspopup="true">
+                        <img src={Info} className={`${style.infoStyle} ${style.marginTop5} ${style.marginLeft10}`} />
+                        <Popover
+                            id={'mouse-over-popover'}
+                            sx={{
+                                pointerEvents: 'none',
+                            }}
+                            open={openInfo}
+                            anchorEl={anchorElInfo}
+                            onClose={() => setAnchorElInfo(null)}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'left',
+                            }}
+                            disableRestoreFocus
+                        >
+                            <div className={style.popoverStyle}>{reportTitleList[reportType]}</div>
+                        </Popover>
                     </div>
                 </div>
                 <div className={` ${style.margin20}`}>
