@@ -3,10 +3,10 @@ import { GET } from './../dataSaver';
 import { CLINIC, SURGERY, SUPPLEMENTAL, ADDON, ADMINISTRATIVE, PROCEDUREREADING, ONCALL, HIT, ONCALLSERVICE } from '../../Constants';
 
 export const validateContractIDTermLimit = (contract) => {
-  console.log("contract",contract)
+  console.log("contract", contract)
   let fieldData = [
     { field: "Contract Name", value: contract?.contractName?.contractName },
-    { field: "Contract Id", value: contract?.contractDetail?.contractId?.id !== '' && contract?.contractDetail?.contractIdMissing === false ?  contract?.contractDetail?.contractId?.id : " "},
+    { field: "Contract Id", value: contract?.contractDetail?.contractId?.id !== '' && contract?.contractDetail?.contractIdMissing === false ? contract?.contractDetail?.contractId?.id : " " },
     {
       field: "Contract Manager",
       value: contract?.contractDetail?.contractManager?.userID,
@@ -30,7 +30,7 @@ export const validateContractIDTermLimit = (contract) => {
     },
     {
       field: "Time Commitment - frequency",
-      value: contract?.contractDetail?.timeCommitment?.frequency === 'NA' ? '' : contract?.contractDetail?.timeCommitment?.frequency ,
+      value: contract?.contractDetail?.timeCommitment?.frequency === 'NA' ? '' : contract?.contractDetail?.timeCommitment?.frequency,
     },
     {
       field: "Contract Continuation Policy",
@@ -38,10 +38,10 @@ export const validateContractIDTermLimit = (contract) => {
     },
     {
       field: "Contract Documents On File",
-      value: contract?.contractDetail?.fullyExecutedContract === true && contract?.contractDetail?.contractFiles.length === 0 ? '': contract?.contractDetail?.continuationPolicy?.contractPolicyType,
+      value: contract?.contractDetail?.fullyExecutedContract === true && contract?.contractDetail?.contractFiles?.length === 0 ? '' : contract?.contractDetail?.continuationPolicy?.contractPolicyType,
     },
   ];
- 
+
   let temp = fieldData;
   temp
     ?.filter((data) => data?.field === "Contract Continuation Policy")
@@ -90,7 +90,7 @@ export const validateContractProvider = async (contract) => {
     const { data: userData } = await GET(
       `user-management-service/user?contractID=${contractId}`
     );
-    console.log("userData",userData)
+    console.log("userData", userData)
     providers = userData
       ?.filter((data) =>
         data?.contracts?.map((contract) =>
@@ -502,7 +502,7 @@ export const validatePaymentsAndCompensation = (contract) => {
         ]
       );
     }
-    else{
+    else {
     }
   });
 
@@ -524,21 +524,21 @@ export const validateTimesheetSubmission = (contract) => {
   let isEmptyField = [];
   let fieldData = [];
   if (timesheets === null || timesheets?.timesheetSubmissionServicesCount?.count === 0) {
-      isEmptyField = [
-        "Number Of Timesheet",
-        "Timesheet Label",
-        "Payment Source",
-        "Service Log Period For Timesheet Submission",
-        "Contracted Activity To Include",
-        "Day Limit For Submission Of Timesheet Based On Activity Service Date",
-        "Day Limit For Submission Of Timesheet Based On Contract End Date",
-        "Invoice Processing Days",
-        "Planned Absence Limit",
-        "Maximum Unplanned Absence Days",
-        "Maximum Absence Allowed",
-        "Invoice Processing Goal",
-        "Invoice Processing Threshold",
-      ];
+    isEmptyField = [
+      "Number Of Timesheet",
+      "Timesheet Label",
+      "Payment Source",
+      "Service Log Period For Timesheet Submission",
+      "Contracted Activity To Include",
+      "Day Limit For Submission Of Timesheet Based On Activity Service Date",
+      "Day Limit For Submission Of Timesheet Based On Contract End Date",
+      "Invoice Processing Days",
+      "Planned Absence Limit",
+      "Maximum Unplanned Absence Days",
+      "Maximum Absence Allowed",
+      "Invoice Processing Goal",
+      "Invoice Processing Threshold",
+    ];
   }
 
   fieldData = [
@@ -597,25 +597,25 @@ export const validateTimesheetSubmission = (contract) => {
         }
       ]);
   })
-   
-    const temp = fieldData
-      ?.filter(
-        (data) =>
-          data?.value === null ||
-          data?.value === "" ||
-          data?.value === undefined ||
-          data?.value === 0
-      )
-      ?.map((data) => data?.field);
-    isEmptyField = temp;
-    return isEmptyField;
+
+  const temp = fieldData
+    ?.filter(
+      (data) =>
+        data?.value === null ||
+        data?.value === "" ||
+        data?.value === undefined ||
+        data?.value === 0
+    )
+    ?.map((data) => data?.field);
+  isEmptyField = temp;
+  return isEmptyField;
 };
 
 export const validateTimesheetProcessingWorkflow = (contract) => {
   let isValid = false;
   if (
-     contract?.workFlowDetails?.length ===
-     contract?.timesheetSubmissionTerms?.timesheetActivitiesPeriods?.length
+    contract?.workFlowDetails?.length ===
+    contract?.timesheetSubmissionTerms?.timesheetActivitiesPeriods?.length
   ) {
     isValid = true;
   }
