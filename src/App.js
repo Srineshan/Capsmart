@@ -416,6 +416,7 @@ const App = ({ props }) => {
     sessionStorage.setItem("thumbnail", data?.logoThumbnail?.file?.fileURL);
     sessionStorage.setItem("title", data?.entityName?.entityName);
     sessionStorage.setItem("isEmployeeContractNeeded", data?.isEmployeeContractIncluded);
+    sessionStorage.setItem("isMultiSiteEntity", data?.multiSiteEntity);
   };
 
   const changeFavicon = () => {

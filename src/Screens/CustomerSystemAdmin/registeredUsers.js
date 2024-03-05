@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, createRef, useCallback, useRef } from 'react';
 import { GET, PUT } from './../dataSaver';
 import Tile from '../../Components/Tile';
 import Table from '../../Components/TableDesign';
@@ -7,12 +7,23 @@ import { format, startOfWeek, endOfWeek } from 'date-fns';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import LevelTwoHeader from '../../Components/LevelTwoHeader';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-
+import { toPDF } from '../../Components/ConvertToPdf';
+import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
+import DownloadIcon from '@mui/icons-material/Download';
+import { useReactToPrint } from "react-to-print";
+import Download from '../../images/download.png'
 import style from './index.module.scss';
 import DeleteConfirmation from '../../Components/DeleteConfirmation';
 import AddUserInCustomerAdmin from './addUser';
 
 const RegisteredUsers = ({ getSelectedOption }) => {
+    const PDFRef = createRef();
+    const componentRef = useRef(null);
+
+    const reactToPrintContent = useCallback(() => {
+        return componentRef.current;
+    }, [componentRef.current]);
+
     const [viewRegistered, setViewRegistered] = useState(true);
     const [selectedOption, setSelectedOption] = useState('ENTITY REGISTERED USERS');
     const [registeredUsers, setRegisteredUsers] = useState([]);
@@ -27,7 +38,8 @@ const RegisteredUsers = ({ getSelectedOption }) => {
     const [isEdit, setIsEdit] = useState(false);
     const [showAddUserDialog, setShowAddUserDialog] = useState(false);
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-    const entityTableHeaderValues = ["", "USER NAME", "TITLE", "PROXY", "SURROGATE", "LAST LOGIN DATE/TIME", "AVG LOGIN PER DAY", "AVG DURATION PER LOGIN (MIN)", "ACTION"];
+    let isMultiSiteEntity = sessionStorage.getItem('isMultiSiteEntity') === 'true' ? true : false;
+    const entityTableHeaderValues = isMultiSiteEntity ? ["", "USER NAME", "TITLE", "SITE NAME", "PROXY", "SURROGATE", "LAST LOGIN DATE/TIME", "AVG LOGIN PER DAY", "AVG DURATION PER LOGIN (MIN)", "ACTION"] : ["", "USER NAME", "TITLE", "PROXY", "SURROGATE", "LAST LOGIN DATE/TIME", "AVG LOGIN PER DAY", "AVG DURATION PER LOGIN (MIN)", "ACTION"];
     const deactivatedTableHeaderValues = ["", "USER NAME", "TITLE", "SITE NAME", "DEPARTMENT", "LAST LOGIN DATE/TIME", "DEACTIVATED DATE/TIME", "DEACTIVATED BY", "ACTION"];
     const invitedTableHeaderValues = ["", "USER NAME", "USER AFFILIATION", "TITLE", "SITE NAME", "DEPARTMENT", "INVITED DATE/TIME", "INVITED BY", "ACTION"];
 
@@ -209,6 +221,7 @@ const RegisteredUsers = ({ getSelectedOption }) => {
     }
 
     let dot = [];
+    let dotTooltipValues = [];
     let userName = [];
     let userAffiliation = [];
     let title = [];
@@ -227,6 +240,7 @@ const RegisteredUsers = ({ getSelectedOption }) => {
 
     const getValues = () => {
         dot = [];
+        dotTooltipValues = [];
         userName = [];
         userAffiliation = [];
         title = [];
@@ -244,7 +258,8 @@ const RegisteredUsers = ({ getSelectedOption }) => {
         action = [];
 
         valuesToUse?.map(data => {
-            dot.push('dot');
+            dot.push(data?.activated ? 'green' : 'grey');
+            dotTooltipValues.push(data?.activated ? 'Activated' : 'Deactivated');
             userName.push(`${data?.name?.firstName} ${data?.name?.lastName}`);
             userAffiliation.push(getUserAffiliation(data));
             title.push(data?.sites !== null ? data?.sites?.sites?.[0]?.siteResponsibility?.title : '-');
@@ -263,9 +278,10 @@ const RegisteredUsers = ({ getSelectedOption }) => {
         })
 
         return (selectedOption === 'ENTITY REGISTERED USERS' || selectedOption === 'CONTRACTED SERVICE PROVIDER USERS') ? [
-            { "type": "dot", "value": dot },
+            { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
             { "type": "text", "value": userName },
             { "type": "text", "value": title },
+            { "type": "site", "value": siteName },
             { "type": "text", "value": proxy },
             { "type": "text", "value": surrogate },
             { "type": "text", "value": lastLoginDateOrTime },
@@ -274,7 +290,7 @@ const RegisteredUsers = ({ getSelectedOption }) => {
             { "type": "action", "value": action },
         ] : selectedOption === 'DEACTIVATED USERS' ?
             [
-                { "type": "dot", "value": dot },
+                { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
                 { "type": "text", "value": userName },
                 { "type": "text", "value": title },
                 { "type": "site", "value": siteName },
@@ -284,7 +300,7 @@ const RegisteredUsers = ({ getSelectedOption }) => {
                 { "type": "text", "value": deactivatedBy },
                 { "type": "action", "value": action },
             ] : [
-                { "type": "dot", "value": dot },
+                { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
                 { "type": "text", "value": userName },
                 { "type": "text", "value": userAffiliation },
                 { "type": "text", "value": title },
@@ -315,6 +331,19 @@ const RegisteredUsers = ({ getSelectedOption }) => {
 
     const actionsData = ((selectedOption === 'ENTITY REGISTERED USERS' || selectedOption === 'CONTRACTED SERVICE PROVIDER USERS')) ? (!viewRegistered ? blockedActionsData : registeredActionsData) :
         selectedOption === 'DEACTIVATED USERS' ? deactivatedActionsData : inviteActionsData;
+
+    const handleDownloadClicked = () => {
+        toPDF(".registeredUsers", `RegisteredUsersList_${format(new Date(), 'MM_dd_yy')}`);
+    }
+
+    const handlePrint = useReactToPrint({
+        content: reactToPrintContent,
+        documentTitle: `registeredUserList_${format(new Date(), 'MM_dd_yy')}`,
+        // onBeforeGetContent: handleOnBeforeGetContent,
+        // onBeforePrint: handleBeforePrint,
+        // onAfterPrint: handleAfterPrint,
+        removeAfterPrint: true
+    });
     return (
         <div>
             <LevelTwoHeader heading={'REGISTERED USER MANAGEMENT'} updatedTime={''} onCloseLevel2={onCloseLevel2} needDateFilter={true} getFrom={getFrom} getTo={getTo} />
@@ -347,20 +376,31 @@ const RegisteredUsers = ({ getSelectedOption }) => {
                             </div>
                         )}
                     </div>
-                    {selectedOption === 'ENTITY REGISTERED USERS' && (
-                        <div className={`${style.displayInRow} ${style.marginTop20} ${style.marginRight30} ${style.cursorPointer}`}>
-                            <AddCircleOutlineIcon sx={{ fontSize: 30, color: '#7165E3' }} onClick={() => setShowAddUserDialog(true)} />
+                    <div className={`${style.displayInRow} ${style.marginTop20} ${style.marginRight30} ${style.cursorPointer}`}>
+                        <div className={` ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft20}`} onClick={() => handleDownloadClicked()}>
+                            {/* <DownloadIcon sx={{ fontSize: 30, color: '#7165E3' }} /> */}
+                            <img src={Download} alt='' className={style.iconSize} />
                         </div>
-                    )}
+                        <div className={`${style.alignCenter} ${style.cursorPointer} ${style.marginLeft20}`} onClick={() => handlePrint()}>
+                            <PrintOutlinedIcon sx={{ fontSize: 30, color: '#7165E3' }} />
+                        </div>
+                        {selectedOption === 'ENTITY REGISTERED USERS' && (
+                            <div className={`${style.alignCenter} ${style.cursorPointer} ${style.marginLeft20}`}>
+                                <AddCircleOutlineIcon sx={{ fontSize: 30, color: '#7165E3' }} onClick={() => setShowAddUserDialog(true)} />
+                            </div>
+                        )}
+                    </div>
                 </div>
-                <div className={style.reduceMarginTop10}>
-                    <Table
-                        tableHeaderValues={tableHeaderValues}
-                        tableDataValues={getValues()}
-                        tableData={valuesToUse}
-                        gridStyle={selectedOption === 'INVITED USERS' ? style.invitedUsersGrid : style.registeredUsersGrid}
-                        actions={actionsData}
-                    />
+                <div ref={componentRef}>
+                    <div className={`${style.reduceMarginTop10} registeredUsers`} ref={PDFRef}>
+                        <Table
+                            tableHeaderValues={tableHeaderValues}
+                            tableDataValues={getValues()}
+                            tableData={valuesToUse}
+                            gridStyle={selectedOption === 'INVITED USERS' ? style.invitedUsersGrid : isMultiSiteEntity ? (selectedOption === 'ENTITY REGISTERED USERS' || selectedOption === 'CONTRACTED SERVICE PROVIDER USERS') ? style.registeredUsersMultiSiteGrid : style.registeredUsersGrid : style.registeredUsersGrid}
+                            actions={actionsData}
+                        />
+                    </div>
                 </div>
             </div>
             {showDeleteConfirmation && <DeleteConfirmation getShowDeleteConfirmation={getShowDeleteConfirmation} getDeleteConfirmation={getDeleteConfirmation} confirmationText="Do you want to delete this User?" />}

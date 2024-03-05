@@ -213,59 +213,6 @@ const ReportTypeOverview = () => {
         }
     }
 
-    const getIsRefresh = (value) => {
-        if (value) {
-            setIsLoading(true);
-            setIsUpdated(false);
-            if (reportType === 'upcomingContractRenewals') {
-                getContractRenewalReportWithParameters();
-            }
-            if (reportType === 'oneTimeContract') {
-                getOneTimeContractWithParameters();
-            }
-            if (reportType === 'contractDocumentsOnFile') {
-                getContractDocumentsOnFile();
-            }
-            if (reportType === 'multiProviderContractsList') {
-                getMultiProviderContractsList();
-            }
-            if (reportType === 'contractsWithABusinessEntity') {
-                getContractsWithABusinessEntity();
-            }
-            if (reportType === 'currentRemitToAddressForActiveContracts') {
-                getCurrentRemitToAddressForActiveContracts();
-            }
-            if (reportType === 'nonCompliant') {
-                getNonCompliantContractReportTile();
-            }
-            if (reportType === 'activitiesOrServices') {
-                getAcvityAndServicesWithParameter();
-            }
-            if (reportType === 'addOnActivities') {
-                getAddOnServicesWithParameter();
-            }
-            if (reportType === 'nonCompliant' && isNonCompliantReportTileClicked) {
-                setSelectedPodTypeFromTile(dataToUseInReport?.podType)
-                getNonCompliantContractReport();
-            }
-            if (reportType === 'paymentsProcessingSummary') {
-                getPayments();
-            }
-            if (reportType === 'compensationCostAnalysis') {
-                getCompensationCostAnalysis();
-            }
-            if (reportType === 'timesheetProcessingSummary') {
-                getTimesheetProcessingSummary('withParameter');
-            }
-            if (reportType === 'listingOfTimesheetsNotPaid') {
-                getListingOfTimesheetNotPaid('withParameter');
-            }
-            if (reportType === 'submittedTimesheetsPaymentStatus') {
-                getSubmittedTimesheetsPaymentStatus('withParameter');
-            }
-        }
-    }
-
     useEffect(() => {
         setIndividualContract(contractRenewalReport?.filter(data => data?.contractType === "INDIVIDUAL")?.map(data => data));
         setMultipleContract(contractRenewalReport?.filter(data => data?.contractType === "MULTIPLE")?.map(data => data));
@@ -1450,7 +1397,7 @@ const ReportTypeOverview = () => {
                     </SideBar>
                 </div>
                 <div>
-                    <ReportPerformanceAndOptions handle={handle} getIsRefresh={getIsRefresh} handlePrint={handlePrint} isUpdated={isLoading} dataToUseInReport={dataToUseInReport} refToUse={PDFRef} getIsDownloadClicked={getIsDownloadClicked} isNoData={isNoData} />
+                    <ReportPerformanceAndOptions handle={handle} handlePrint={handlePrint} isUpdated={isLoading} dataToUseInReport={dataToUseInReport} refToUse={PDFRef} getIsDownloadClicked={getIsDownloadClicked} isNoData={isNoData} />
                     <FullScreen handle={handle} className={handle.active ? style.scroll : ''}>
                         <div className={`Report`} ref={PDFRef}>
                             <div className={`${style.reportBackgroundCard} ${style.marginTop20} `} ref={componentRef}>
