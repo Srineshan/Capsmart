@@ -483,7 +483,6 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
 
 
   const handleTimeSheetWorkFlow = (name, reviewer, approver, activeTab) => {
-    console.log('user data', getSelectedUserDetails(reviewer));
     let data = {
       "name": {
         "name": name

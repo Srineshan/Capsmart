@@ -1702,7 +1702,7 @@ const AddServiceProvided = ({
           data.activities = [];
         });
       }
-      if (!editService || activityUpdated) {
+      if (!editService || activityUpdated || [HIT, ADMINISTRATIVE, SUPPLEMENTAL, HOSPICE, ADDON].includes(serviceTypeTemplate)) {
         const response = await PUT(
           `contract-managment-service/contracts/${contractId}/timesheetSubmissionTerms`,
           JSON.stringify(timesheetSubmissionTerms)
