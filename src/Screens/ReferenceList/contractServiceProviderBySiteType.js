@@ -129,6 +129,10 @@ const ContractServiceProviderBySite = () => {
 
   // console.log(siteTypeCount("63ae935308c64577d67acf8f"));
 
+  const uniqueArrayList = entityTypes.filter((ele, ind) => ind === entityTypes.findIndex(elem => elem.siteType?.id === ele.siteType?.id && elem.siteType?.type === ele.siteType?.type))
+
+  console.log(uniqueArrayList)
+
   const getContractedServiceProviderMaster = async () => {
     const { data: contractedServiceProviderMaster } = await GET(
       `entity-service/contractedServiceProviderMaster?siteTypeId=${siteTypeId}`
@@ -295,7 +299,7 @@ const ContractServiceProviderBySite = () => {
                         </p>
                       </div>
                       <div className={style.customersAdminCardStyle1}>
-                        {entityTypes?.map((data, index) => (
+                        {uniqueArrayList?.map((data, index) => (
                           <>
                             <div
                               className={`${style.boardCertificationSideRows2} ${style.displayInRow}`}
@@ -444,11 +448,11 @@ const ContractServiceProviderBySite = () => {
                       </div>
                       <div className={style.customersAdminCardStyle3}>
                         {contractedServiceProvider?.length !== 0 ? (
-                          entityTypes?.map((data, index) => (
+                          uniqueArrayList?.map((data, index) => (
                             <>
                               <div>
                                 <div
-                                  className={`${style.ContractedServiceProviderHeaderInsideContainer} ${style.displayInRow}`}
+                                  className={`${style.ContractedServiceProviderHeaderInsideContainer1} ${style.displayInRow}`}
                                 >
                                   <img
                                     src={IndustriesEntityFolder}
@@ -458,7 +462,12 @@ const ContractServiceProviderBySite = () => {
                                   <p
                                     className={`${style.tableHeaderIndustriesFontStyle} ${style.textUppercase} ${style.marginLeft10}`}
                                   >
-                                    {data?.siteType?.type}
+                                    {data?.siteType?.type}`}
+                                  </p>
+                                  <p
+                                    className={`${style.tableHeaderIndustriesFontStyle} ${style.textUppercase} ${style.marginLeft10}`}
+                                  >
+                                    {`${multisiteEntity === true ? "( " + siteTypeCount(data?.siteType?.id) + " SITES )" : ""}`}
                                   </p>
                                   <img
                                     src={
