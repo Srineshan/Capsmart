@@ -114,10 +114,15 @@ const FunctionalTitleForCustomer = () => {
   };
 
   const getEntityTypes = async () => {
-    const { data: entityTypes } = await GET(`entity-service/entity/entityType`);
-    if (entityTypes?.length !== 0) {
-      setSiteTypeId(entityTypes?.[0]?.siteTypeId);
+    // const { data: entityTypes } = await GET(`entity-service/entity/entityType`);
+    // if (entityTypes?.length !== 0) {
+    //   setSiteTypeId(entityTypes?.[0]?.siteTypeId);
+    // }
+    const { data: entityType } = await GET(`entity-service/entity/${TenantID}`);
+    if (entityType?.sites?.length !== 0) {
+      setSiteTypeId(entityType?.sites?.[0]?.siteType?.id);
     }
+
   };
 
   const getContractedServiceProviderMaster = async () => {
@@ -481,13 +486,13 @@ const FunctionalTitleForCustomer = () => {
                                   }
                                   alt="OpenFolder"
                                   className={`${style.colorFileStyle2} ${style.marginLeft5}`}
-                                  // onClick={() => {
-                                  //   setSelectedIndex(index);
-                                  //   setCSPTypeId(data?.id);
-                                  //   setCSPTypeName(
-                                  //     data?.contractedServiceProviderType
-                                  //   );
-                                  // }}
+                                // onClick={() => {
+                                //   setSelectedIndex(index);
+                                //   setCSPTypeId(data?.id);
+                                //   setCSPTypeName(
+                                //     data?.contractedServiceProviderType
+                                //   );
+                                // }}
                                 />
                               </div>
                               {selectedIndex === index &&

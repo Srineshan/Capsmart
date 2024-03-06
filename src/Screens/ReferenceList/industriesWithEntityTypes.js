@@ -140,6 +140,7 @@ const IndustriesWithEntityTypes = () => {
               needHeader={true}
               getAddEntityDialog={getAddEntityDialog}
               Title={"ADD INDUSTRY"}
+              setIsEdit={setIsEdit}
             />
 
             <div className={style.marginTop35}>

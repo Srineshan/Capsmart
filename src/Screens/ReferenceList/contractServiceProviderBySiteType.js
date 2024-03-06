@@ -20,6 +20,7 @@ import { format } from "date-fns";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
 import { formatInTimeZone } from "date-fns-tz";
+import { count } from "d3";
 
 const ContractServiceProviderBySite = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -50,6 +51,7 @@ const ContractServiceProviderBySite = () => {
 
   const [selectAllList, setSelectAllList] = useState([]);
   const [checkedAll, setCheckedAll] = useState(false);
+  const [multisiteEntity, setMultisiteEntity] = useState({});
 
   useEffect(() => {
     getEntity();
@@ -101,14 +103,31 @@ const ContractServiceProviderBySite = () => {
   };
 
   const getEntityTypes = async () => {
-    const { data: entityTypes } = await GET(`entity-service/entity/entityType`);
-    if (entityTypes?.length !== 0) {
-      console.log(entityTypes, entityTypes?.[0]?.entityType?.id);
-      setSiteTypeId(entityTypes?.[0]?.siteTypeId);
-      setSelectedEntityType(entityTypes?.[0]?.siteTypeName);
-      setEntityTypes(entityTypes);
+    const { data: entityType } = await GET(`entity-service/entity/${TenantID}`);
+    // console.log(entityType?.sites)
+    setMultisiteEntity(entityType?.multiSiteEntity)
+    if (entityType?.sites?.length !== 0) {
+      setSiteTypeId(entityType?.sites?.[0]?.siteType?.id);
+      setSelectedEntityType(entityType?.sites?.[0]?.siteType?.type);
+      setEntityTypes(entityType?.sites);
     }
   };
+
+  // Count the occurrence of each unique siteType value
+  // const siteTypeCounts = {};
+
+  // for (const obj of entityTypes) {
+  //   const siteTypeId = obj.siteType?.id;
+  //   siteTypeCounts[siteTypeId] = siteTypeCounts[siteTypeId] ? siteTypeCounts[siteTypeId] + 1 : 1;
+  // }
+
+  // console.log("siteTypeCounts", siteTypeCounts)
+
+  const siteTypeCount = (siteTypeId) => {
+    return entityTypes.filter((currentSiteType) => currentSiteType?.siteType?.id === siteTypeId).length;
+  };
+
+  // console.log(siteTypeCount("63ae935308c64577d67acf8f"));
 
   const getContractedServiceProviderMaster = async () => {
     const { data: contractedServiceProviderMaster } = await GET(
@@ -141,8 +160,8 @@ const ContractServiceProviderBySite = () => {
       return setSelectedIndex("0");
     }
     setSelectedIndex(index);
-    setSiteTypeId(data?.siteTypeId);
-    setSelectedEntityType(data?.siteTypeName);
+    setSiteTypeId(data?.siteType?.id);
+    setSelectedEntityType(data?.siteType?.type);
   };
 
   const handleSelectContractedServiceProvider = (e, innerData) => {
@@ -279,7 +298,7 @@ const ContractServiceProviderBySite = () => {
                         {entityTypes?.map((data, index) => (
                           <>
                             <div
-                              className={`${style.boardCertificationSideRows1} ${style.displayInRow}`}
+                              className={`${style.boardCertificationSideRows2} ${style.displayInRow}`}
                               key={index}
                               onClick={() => handleClickSelected(index, data)}
                             >
@@ -291,7 +310,12 @@ const ContractServiceProviderBySite = () => {
                               <p
                                 className={`${style.tableHeaderIndustriesFontStyle} ${style.textUppercase} ${style.marginLeft10}`}
                               >
-                                {data?.siteTypeName}
+                                {`${data?.siteType.type}`}
+                              </p>
+                              <p
+                                className={`${style.tableHeaderIndustriesFontStyle} ${style.textUppercase} ${style.marginLeft10}`}
+                              >
+                                {`${multisiteEntity === true ? "( " + siteTypeCount(data?.siteType?.id) + " SITES )" : ""}`}
                               </p>
                               <img
                                 src={
@@ -434,7 +458,7 @@ const ContractServiceProviderBySite = () => {
                                   <p
                                     className={`${style.tableHeaderIndustriesFontStyle} ${style.textUppercase} ${style.marginLeft10}`}
                                   >
-                                    {data?.siteTypeName}
+                                    {data?.siteType?.type}
                                   </p>
                                   <img
                                     src={
@@ -446,8 +470,8 @@ const ContractServiceProviderBySite = () => {
                                     className={`${style.colorFileStyle2} ${style.marginLeft5}`}
                                     onClick={() => {
                                       setSelectedIndex(index);
-                                      setSiteTypeId(data?.siteTypeId);
-                                      setSelectedEntityType(data?.siteTypeName);
+                                      setSiteTypeId(data?.siteType.id);
+                                      setSelectedEntityType(data?.siteType.type);
                                     }}
                                   />
                                 </div>

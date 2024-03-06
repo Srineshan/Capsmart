@@ -165,6 +165,7 @@ const BoardCertification = () => {
               needHeader={true}
               getAddEntityDialog={getAddEntityDialog}
               Title={"ADD HOLIDAY"}
+              setIsEdit={setIsEdit}
             />
 
             <div className={style.marginTop35}>

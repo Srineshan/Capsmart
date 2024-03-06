@@ -164,6 +164,7 @@ const BoardCertification = () => {
               needHeader={true}
               getAddEntityDialog={getAddEntityDialog}
               Title={"ADD TERMINATION"}
+              setIsEdit={setIsEdit}
             />
 
             <div className={style.marginTop35}>

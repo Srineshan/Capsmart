@@ -138,6 +138,7 @@ const SuffixByIndustries = () => {
               needHeader={true}
               getAddEntityDialog={getAddEntityDialog}
               Title={"ADD SUFFIX"}
+              setIsEdit={setIsEdit}
             />
 
             <div className={style.marginTop35}>

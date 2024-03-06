@@ -179,6 +179,7 @@ const ContractedServiceProvidedByIndustries = () => {
               needHeader={true}
               getAddEntityDialog={getAddEntityDialog}
               Title={"ADD CSP"}
+              setIsEdit={setIsEdit}
             />
 
             <div className={style.marginTop35}>

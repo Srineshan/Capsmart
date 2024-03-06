@@ -72,7 +72,7 @@ const BoardCertification = () => {
       `entity-service/referenceList/master`
     );
 
-    const date = new Date(lastModifiedDate.boardCertification?.lastModified);
+    const date = new Date(lastModifiedDate?.boardCertification?.lastModified);
     setLastUpdatedDate(
       formatInTimeZone(date, "America/New_York", "MMM d, yyyy HH:mm zzz")
     );
@@ -96,9 +96,9 @@ const BoardCertification = () => {
     setSelectedEntity(data.CSP[0]);
   };
 
-  const getBoardCertificationData = async (industryId, contractPID) => {
+  const getBoardCertificationData = async () => {
     const { data: boardData } = await GET(
-      `entity-service/boardCertificateSpecialtiesMaster?industry=${industryData.id}&contractedServiceProviderType=${selectedEntity.id}`
+      `entity-service/boardCertificateSpecialtiesMaster?industry=${industryData?.id}&contractedServiceProviderType=${selectedEntity.id}`
     );
     setBoardCertificationTable(boardData);
   };
@@ -203,6 +203,7 @@ const BoardCertification = () => {
               needHeader={true}
               getAddEntityDialog={getAddEntityDialog}
               Title={"ADD BOARD CERTIFICATION"}
+              setIsEdit={setIsEdit}
             />
 
             <div className={style.marginTop35}>
@@ -295,7 +296,7 @@ const BoardCertification = () => {
                                           <div
                                             className={
                                               siteType?.contractedServiceProviderType ===
-                                              selectedTitle
+                                                selectedTitle
                                                 ? `${style.healthCareListCardStyle}  ${style.marginTop10} ${style.HealthCareListBackground5} ${style.spaceBetween}`
                                                 : `${style.healthCareListCardStyle2}  ${style.marginTop10}  ${style.spaceBetween}`
                                             }
@@ -310,7 +311,7 @@ const BoardCertification = () => {
                                             <img
                                               src={
                                                 siteType?.contractedServiceProviderType ===
-                                                selectedTitle
+                                                  selectedTitle
                                                   ? BlueFolder
                                                   : IndustriesEntityFolder
                                               }

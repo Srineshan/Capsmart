@@ -133,6 +133,7 @@ const AbsenseReasonsByIndustries = () => {
               needHeader={true}
               getAddEntityDialog={getAddEntityDialog}
               Title={"ADD ABSENSE REASONS"}
+              setIsEdit={setIsEdit}
             />
 
             <div className={style.marginTop35}>
