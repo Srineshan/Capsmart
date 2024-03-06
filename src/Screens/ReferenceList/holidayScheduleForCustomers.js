@@ -374,7 +374,7 @@ const HolidayScheduleForCustomers = () => {
                                         className={`${style.TextStyle4} ${style.marginLeft5}`}
                                       >
                                         {format(
-                                          new Date(data?.eventDate),
+                                          new Date(`${data?.eventDate}T00:00`),
                                           "MMMM d, yyyy"
                                         )}
                                       </p>
@@ -469,7 +469,7 @@ const HolidayScheduleForCustomers = () => {
                                             className={style.tableDataFontStyle}
                                           >
                                             {format(
-                                              new Date(data?.eventDate),
+                                              new Date(`${data?.eventDate}T00:00`),
                                               "MMMM d"
                                             )}{" "}
                                           </p>
