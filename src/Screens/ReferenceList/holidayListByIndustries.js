@@ -333,7 +333,7 @@ const BoardCertification = () => {
                             {data?.eventName}
                           </p>
                           <p className={style.tableDataFontStyle}>
-                            {format(new Date(data?.eventDate), "MMMM d, yyyy")}
+                            {format(new Date(`${data?.eventDate}T00:00`), "MMMM d, yyyy")}
                           </p>
                           {/* <p className={style.tableDataFontStyle}>
                             {format(new Date(data?.eventDate), "EEEE")}
