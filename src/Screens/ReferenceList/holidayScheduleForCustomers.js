@@ -373,7 +373,7 @@ const HolidayScheduleForCustomers = () => {
                                       <p
                                         className={`${style.TextStyle4} ${style.marginLeft5}`}
                                       >
-                                        {format(new Date(data?.eventDate), "MMMM d, yyyy")}
+                                        {format(new Date(`${data?.eventDate}T00:00`), "MMMM d, yyyy")}
                                       </p>
                                     </div>
                                   ))}
@@ -463,7 +463,7 @@ const HolidayScheduleForCustomers = () => {
                                           key={index}
                                         >
                                           <p className={style.tableDataFontStyle}>
-                                            {format(new Date(data?.eventDate), "MMMM d")}
+                                            {format(new Date(`${data?.eventDate}T00:00`), "MMMM d")}
                                           </p>
                                           <p
                                             className={style.tableDataFontStyle}
