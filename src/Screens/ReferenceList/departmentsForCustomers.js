@@ -779,8 +779,7 @@ const DepartmentsForCustomers = () => {
             selectedDepart={selectedDepartmentService}
             selectedTitle={selectedEntityType}
             siteTypeId={siteTypeId}
-            // isService={isService}
-            DepartmentService={departmentService}
+            departmentList={departmentService}
           />
         )}
 

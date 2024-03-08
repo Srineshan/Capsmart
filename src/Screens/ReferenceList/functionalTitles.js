@@ -204,6 +204,7 @@ const FunctionalTitles = () => {
               needHeader={true}
               getAddEntityDialog={getAddEntityDialog}
               Title={"ADD FUNCTIONAL TITLES"}
+              setIsEdit={setIsEdit}
             />
 
             <div className={style.marginTop35}>
@@ -280,7 +281,7 @@ const FunctionalTitles = () => {
                                           <div
                                             className={
                                               siteType?.contractedServiceProviderType ===
-                                              selectedTitle
+                                                selectedTitle
                                                 ? `${style.healthCareListCardStyle}  ${style.marginTop10} ${style.HealthCareListBackground2} ${style.spaceBetween}`
                                                 : `${style.healthCareListCardStyle}  ${style.marginTop10}  ${style.spaceBetween}`
                                             }

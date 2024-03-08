@@ -22,20 +22,18 @@ const AddNewDepartments = ({
   isEdit,
   getEntityData,
   selectedDepart,
-  departmentList,
   selectedTitle,
   isService,
   callingFrom,
   siteTypeId,
-  DepartmentService,
+  departmentList,
 }) => {
   const [departId, setDepartId] = useState("");
   const [departName, setDepartName] = useState("");
   const [createdDate, setCreatedDate] = useState("");
   const [addService, setAddService] = useState(true);
-  const [serviceArea, setServiceArea] = useState("");
+  const [serviceAreaSuper, setServiceAreaSuper] = useState([{ name: '' }]);
   const [serviceLocation, setServiceLocation] = useState([]);
-  // const [selectedServiceAreas, setSelectedServiceAreas] = useState([]);
   const [selectedLocations, setSelectedLocations] = useState([]);
   const [selectedLocationDeleteId, setSelectedLocationDeleteId] = useState("");
 
@@ -279,6 +277,17 @@ const AddNewDepartments = ({
     setServiceAreaList(list);
   };
 
+  const handleInputChangeSuperSys = (e, index) => {
+    const { name, value } = e.target;
+    const updatedServiceAreas = [...serviceAreaSuper];
+    updatedServiceAreas[index][name] = value;
+    setServiceAreaSuper(updatedServiceAreas);
+  };
+
+  const addServiceArea = () => {
+    setServiceAreaSuper([...serviceAreaSuper, { name: '' }]);
+  };
+
   const handleAddMoreClick = () => {
     setServiceAreaList([
       ...serviceAreaList,
@@ -287,7 +296,7 @@ const AddNewDepartments = ({
   };
 
   const saveSubmitHandler = async (type) => {
-    const isPresent = DepartmentService.find(
+    const isPresent = departmentList.find(
       (depart) => depart?.departmentName.name === departName
     );
 
@@ -318,14 +327,16 @@ const AddNewDepartments = ({
       departmentGroupBy: {
         name: departName,
       },
-      serviceAreas: addService ? serviceAreaList : [],
-      serviceLocations: !addService ? selectedLocations : [],
+      // serviceAreas: addService ? callingFrom === "Super Admin" ? serviceAreaSuper : serviceAreaList : [],
       ...(callingFrom === "Super Admin" && {
         siteTypeId: {
           id: selectedEntity?.id,
         },
+        serviceAreas: serviceAreaSuper,
       }),
       ...(callingFrom === "Customer Admin" && {
+        serviceAreas: addService ? serviceAreaList : [],
+        serviceLocations: !addService ? selectedLocations : [],
         customized: true,
         siteTypeId: {
           id: siteTypeId,
@@ -333,10 +344,12 @@ const AddNewDepartments = ({
       }),
     };
 
+    console.log("selectedDepart", selectedDepart)
+    console.log("DataPayload", data)
     // let ApiData = callingFrom === "Customer Admin" && !isEdit ? data : [data];
     let ApiData = callingFrom === "Customer Admin" ? [data] : data;
 
-    // console.log(ApiData);
+    console.log(ApiData);
     let ApiUrl =
       callingFrom === "Super Admin"
         ? "entity-service/departmentMaster"
@@ -344,7 +357,7 @@ const AddNewDepartments = ({
 
     await POST(ApiUrl, JSON.stringify(ApiData))
       .then((response) => {
-        SuccessToaster("Department Added Successfully");
+        SuccessToaster(`Department ${isEdit ? "Updated" : "Added"} Successfully`);
         getEntityData();
       })
       .catch((error) => {
@@ -355,9 +368,9 @@ const AddNewDepartments = ({
       getAddEntityDialog(false);
     } else {
       setDepartName("");
-      if (callingFrom === "Customer Admin") {
-        setServiceArea("");
-      }
+      // if (callingFrom === "Customer Admin") {
+      //   setServiceArea("");
+      // }
       document.getElementById("departmentEl").focus();
     }
   };
@@ -367,23 +380,28 @@ const AddNewDepartments = ({
       setDepartId(selectedDepart?.id);
       setDepartName(selectedDepart?.departmentName?.name);
       setCreatedDate(selectedDepart?.createdDate);
-      if (selectedDepart?.serviceAreas.length > 0) {
+
+      if (callingFrom === "Customer Admin" && selectedDepart?.serviceAreas.length > 0) {
         setServiceAreaList(selectedDepart?.serviceAreas);
         setAddService(true);
       } else {
         setAddService(false);
       }
 
-      if (selectedDepart?.serviceLocations.length > 0) {
+      if (callingFrom === "Super Admin" && selectedDepart?.serviceAreas.length > 0) {
+        setServiceAreaSuper(selectedDepart?.serviceAreas);
+      }
+
+      if (selectedDepart?.serviceLocations !== undefined && selectedDepart?.serviceLocations.length > 0) {
         setSelectedLocations(selectedDepart?.serviceLocations);
         setAddService(false);
       } else {
         setAddService(true);
       }
 
-      if (isService) {
-        setServiceArea(selectedDepart?.serviceAreas[0]?.name);
-      }
+      // if (isService) {
+      //   setServiceArea(selectedDepart?.serviceAreas[0]?.name);
+      // }
     }
   }, [selectedDepart]);
 
@@ -442,20 +460,22 @@ const AddNewDepartments = ({
                 className={style.fullWidth}
                 onChange={(e) => setDepartName(e.target.value)}
               />
-              <Checkbox
-                value="ADD SERVICES"
-                checked={addService}
-                onChange={(e) => setAddService(e.target.checked)}
-                // onChange={(e) => handleAddService(e.target.checked)}
-                className={` ${style.marginLeft20} ${style.marginTop}`}
-                label="ADD SERVICES"
-              />
+              {
+                callingFrom === "Customer Admin" &&
+                <Checkbox
+                  value="ADD SERVICES"
+                  checked={addService}
+                  onChange={(e) => setAddService(e.target.checked)}
+                  className={` ${style.marginLeft20} ${style.marginTop}`}
+                  label="ADD SERVICES"
+                />
+              }
             </div>
           </div>
           <div
             className={`${style.ReferenceListEntityBorder} ${style.marginTop20}`}
           ></div>
-          {addService && callingFrom === "Super Admin" && (
+          {/* {addService && callingFrom === "Super Admin" && (
             <div className={`${style.addHealthCareBoxStyle}`}>
               <div className={`${style.editHealthCareGrid2}`}>
                 <div className={style.entityLableStyle}>Service Area*</div>
@@ -468,7 +488,49 @@ const AddNewDepartments = ({
                 </div>
               </div>
             </div>
-          )}
+          )} */}
+
+          {callingFrom === "Super Admin" &&
+            serviceAreaSuper.map((serviceArea, index) => {
+              return (
+                <>
+                  <div className={`${style.addHealthCareBoxStyle}`}>
+                    <div
+                      className={`${style.editHealthCareGrid2} `}
+                      key={`${index}${serviceAreaSuper[index]}`}
+                    >
+                      <div className={`${style.entityLableStyle}`}>Service Area* {index + 1}</div>
+                      <div className={`${style.displayInRow} ${style.marginTop10}`}>
+                        <InputGroup
+                          name="name"
+                          value={serviceArea?.name}
+                          className={style.fullWidth}
+                          onChange={(e) => handleInputChangeSuperSys(e, index)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {serviceAreaSuper.length - 1 === index && (
+                    <div
+                      className={`${style.spaceBetween} ${style.marginTop20}`}
+                    >
+                      <div></div>
+                      {callingFrom === "Super Admin" && (
+                        <>
+                          <div
+                            className={`${style.buttonStyle3} ${style.addMoreCardStyle}`}
+                            onClick={addServiceArea}
+                          >
+                            ADD MORE
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </>
+              );
+            })}
 
           {addService &&
             callingFrom === "Customer Admin" &&
@@ -565,6 +627,7 @@ const AddNewDepartments = ({
                       )}
                     </div>
                   )}
+
                 </>
               );
             })}

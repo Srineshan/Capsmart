@@ -139,6 +139,8 @@ const DepartmentsByEntityTypes = () => {
     EntityDefaultSet(allData);
   }, [allData]);
 
+  console.log("departmentList", departmentList)
+
   return (
     <Fragment>
       <Navbar />
@@ -162,6 +164,7 @@ const DepartmentsByEntityTypes = () => {
               needHeader={true}
               getAddEntityDialog={getAddEntityDialog}
               Title={"ADD DEPARTMENT"}
+              setIsEdit={setIsEdit}
             />
 
             <div className={style.marginTop35}>
@@ -317,13 +320,7 @@ const DepartmentsByEntityTypes = () => {
                                   <p className={style.tableDataFontStyle}>
                                     {data?.departmentName.name}
                                   </p>
-                                  <p className={style.tableDataFontStyle}>
-                                    {/* {data.createdDate
-                          .split("T")[0]
-                          .split("-")
-                          .reverse()
-                          .join("-")} */}
-                                  </p>
+                                  <p className={style.tableDataFontStyle}></p>
                                   <p className={style.tableDataFontStyle}>
                                     {formatInTimeZone(
                                       new Date(`${data.lastModifiedDate}`),
@@ -346,9 +343,9 @@ const DepartmentsByEntityTypes = () => {
                                     src={DeleteHcFolder}
                                     className={style.colorFileStyle}
                                     alt=""
-                                    // onClick={() => {
-                                    //   deleteHandler(data);
-                                    // }}
+                                  // onClick={() => {
+                                  //   deleteHandler(data);
+                                  // }}
                                   />
                                 </div>
                                 {data?.serviceAreas.map((service, idx) => {
@@ -364,13 +361,7 @@ const DepartmentsByEntityTypes = () => {
                                       <p className={style.tableDataFontStyle}>
                                         {service?.name}
                                       </p>
-                                      <p className={style.tableDataFontStyle}>
-                                        {/* {data.createdDate
-                              .split("T")[0]
-                              .split("-")
-                              .reverse()
-                              .join("-")} */}
-                                      </p>
+                                      <p className={style.tableDataFontStyle}> </p>
                                       <p className={style.tableDataFontStyle}>
                                         {formatInTimeZone(
                                           new Date(`${data.lastModifiedDate}`),
@@ -393,12 +384,12 @@ const DepartmentsByEntityTypes = () => {
                                         src={DeleteHcRow}
                                         className={style.colorFileStyle}
                                         alt=""
-                                        // onClick={() => {
-                                        //   DeleteSecondaryBoardHandler(
-                                        //     data?.id,
-                                        //     secondary?.name
-                                        //   );
-                                        // }}
+                                      // onClick={() => {
+                                      //   DeleteSecondaryBoardHandler(
+                                      //     data?.id,
+                                      //     secondary?.name
+                                      //   );
+                                      // }}
                                       />
                                     </div>
                                   );
@@ -419,13 +410,7 @@ const DepartmentsByEntityTypes = () => {
                                   <p className={style.tableDataFontStyle}>
                                     {data?.departmentName?.name}
                                   </p>
-                                  <p className={style.tableDataFontStyle}>
-                                    {/* {data.createdDate
-                          .split("T")[0]
-                          .split("-")
-                          .reverse()
-                          .join("-")} */}
-                                  </p>
+                                  <p className={style.tableDataFontStyle}></p>
                                   <p className={style.tableDataFontStyle}>
                                     {formatInTimeZone(
                                       new Date(`${data.lastModifiedDate}`),
@@ -446,9 +431,9 @@ const DepartmentsByEntityTypes = () => {
                                   <img
                                     src={DeleteHcRow}
                                     className={style.colorFileStyle}
-                                    onClick={() => {
-                                      deleteHandler(data);
-                                    }}
+                                    // onClick={() => {
+                                    //   deleteHandler(data);
+                                    // }}
                                     alt=""
                                   />
                                 </div>

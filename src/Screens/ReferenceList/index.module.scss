@@ -1685,6 +1685,19 @@
   grid-template-columns: 10% 75% 15%;
 }
 
+.boardCertificationSideRows2 {
+  background: #a097f5 0% 0% no-repeat padding-box;
+  font-weight: normal;
+  min-height: 50px;
+  width: 90%;
+  border-radius: 6px;
+  margin-top: 1%;
+  margin-left: 2%;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 10% 55% 25% 10%;
+}
+
 .ContractedServiceProviderHeaderInsideContainer {
   background: #a097f5 0% 0% no-repeat padding-box;
   font-weight: normal;
@@ -1695,6 +1708,18 @@
   align-items: center;
   display: grid;
   grid-template-columns: 7% 84% 5%;
+}
+
+.ContractedServiceProviderHeaderInsideContainer1 {
+  background: #a097f5 0% 0% no-repeat padding-box;
+  font-weight: normal;
+  min-height: 50px;
+  border-radius: 6px;
+  margin-top: 1%;
+  margin-left: 2%;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 7% 65% 20% 10%;
 }
 
 .boardCertificationSideRows {
