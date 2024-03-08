@@ -12,6 +12,7 @@ import { GET } from "../dataSaver";
 import { format } from "date-fns";
 import style from "./index.module.scss";
 import { formatInTimeZone } from "date-fns-tz";
+import { siteTimeZone } from "../../utils/formatting";
 
 const Tasks = () => {
   let cookie = new Cookie();
@@ -45,7 +46,7 @@ const Tasks = () => {
                     last login{" "}
                     {formatInTimeZone(
                       new Date(currentUserDetails?.lastLogin || new Date()),
-                      "America/New_York",
+                      siteTimeZone(),
                       "MMM d,yy h:mm a"
                     )}
                   </div>

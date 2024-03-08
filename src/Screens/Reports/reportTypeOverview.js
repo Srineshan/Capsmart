@@ -30,6 +30,7 @@ import ApexBoxChart from './chart-data/boxChart';
 import ReportsTable from '../../Components/ReportsTable';
 import ReportNoDataBox from '../../Components/ReusableSmallComponents/reportNoDataBox';
 import { formatInTimeZone } from 'date-fns-tz';
+import { siteTimeZone } from '../../utils/formatting';
 
 const ReportTypeOverview = () => {
     const { reportType } = useParams();
@@ -839,7 +840,7 @@ const ReportTypeOverview = () => {
             addOnRejectedReportLog !== [] && addOnRejectedReportLog?.map(data => {
                 addonActivityServices.push(data?.activity?.activity?.activity);
                 requestDateTime.push(`${format(new Date(data?.activity?.activityTimeFrame?.startDateTime), 'MM-dd-yyyy, HH:mm')}`)
-                rejectedDateTime.push(`${data?.logs?.filter(filterData => filterData?.workFlowAction === "REJECTED") !== [] ? formatInTimeZone(new Date(data?.logs?.filter(filterData => filterData?.workFlowAction === "REJECTED")?.[0]?.createdDate), 'America/New_York', 'MM-dd-yyyy, HH:mm') : '-'}`)
+                rejectedDateTime.push(`${data?.logs?.filter(filterData => filterData?.workFlowAction === "REJECTED") !== [] ? formatInTimeZone(new Date(data?.logs?.filter(filterData => filterData?.workFlowAction === "REJECTED")?.[0]?.createdDate), siteTimeZone(), 'MM-dd-yyyy, HH:mm') : '-'}`)
                 requestingProvider.push(data?.activity?.user?.name)
                 requestReviewer.push(data?.logs?.filter(filterData => filterData?.workFlowAction === "REJECTED") !== [] ? data?.logs?.filter(filterData => filterData?.workFlowAction === "REJECTED")?.[0]?.workFlowUser?.name?.name : '-');
                 site.push(data?.activity?.site?.name)
@@ -849,7 +850,7 @@ const ReportTypeOverview = () => {
             addOnAcceptedReportLog !== [] && addOnAcceptedReportLog?.map(data => {
                 addonActivityServices.push(data?.activity?.activity?.activity);
                 requestDateTime.push(`${format(new Date(data?.activity?.activityTimeFrame?.startDateTime), 'MM-dd-yyyy, HH:mm')}`)
-                rejectedDateTime.push(`${data?.logs?.filter(filterData => filterData?.workFlowAction === "APPROVED")?.length !== 0 ? formatInTimeZone(new Date(data?.logs?.filter(filterData => filterData?.workFlowAction === "APPROVED")?.[0]?.createdDate), 'America/New_York', 'MM-dd-yyyy, HH:mm') : '-'}`)
+                rejectedDateTime.push(`${data?.logs?.filter(filterData => filterData?.workFlowAction === "APPROVED")?.length !== 0 ? formatInTimeZone(new Date(data?.logs?.filter(filterData => filterData?.workFlowAction === "APPROVED")?.[0]?.createdDate), siteTimeZone(), 'MM-dd-yyyy, HH:mm') : '-'}`)
                 requestingProvider.push(data?.activity?.user?.name)
                 requestReviewer.push(data?.logs?.filter(filterData => filterData?.workFlowAction === "APPROVED")?.length !== 0 ? data?.logs?.filter(filterData => filterData?.workFlowAction === "APPROVED")?.[0]?.workFlowUser?.name?.name : '-');
                 site.push(data?.activity?.site?.name)

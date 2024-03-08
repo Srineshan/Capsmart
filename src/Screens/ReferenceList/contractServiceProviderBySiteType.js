@@ -21,6 +21,7 @@ import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
 import { formatInTimeZone } from "date-fns-tz";
 import { count } from "d3";
+import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
 
 const ContractServiceProviderBySite = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -98,7 +99,7 @@ const ContractServiceProviderBySite = () => {
       lastModifiedDate.contractedServiceProviders?.lastModified
     );
     setLastUpdatedDate(
-      formatInTimeZone(date, "America/New_York", "MMM d, yyyy HH:mm zzz")
+      `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
     );
   };
 

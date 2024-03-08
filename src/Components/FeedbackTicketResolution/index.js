@@ -21,7 +21,7 @@ import { getDaysAgo } from '../../utils/getDaysAgo';
 import { currentUser } from './../../utils/auth';
 import FeedbackTicketResolutionLog from './feedbackTicketResolutionLog';
 import { formatInTimeZone } from 'date-fns-tz';
-import { corsUrl, userTimeZone, siteTimeZone } from '../../utils/formatting';
+import { siteTimeZone, timeZoneAbbreviation } from '../../utils/formatting';
 
 const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, isEdit }) => {
 
@@ -43,8 +43,8 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     const [ticketName, setTicketName] = useState('');
     const [match, setMatch] = useState([]);
     const [fileName, setFileName] = useState('');
-    const [dateAndTime, setDateAndTime] = useState(formatInTimeZone(new Date(), siteTimeZone !== 'undefined' ? siteTimeZone : userTimeZone, 'MM-dd-yyyy HH:mm'));
-    const [modifiedDateAndTime, setModifiedDateAndTime] = useState(formatInTimeZone(new Date(), siteTimeZone !== 'undefined' ? siteTimeZone : userTimeZone, 'MM-dd-yyyy HH:mm'));
+    const [dateAndTime, setDateAndTime] = useState(formatInTimeZone(new Date(), siteTimeZone(), 'MM-dd-yyyy HH:mm'));
+    const [modifiedDateAndTime, setModifiedDateAndTime] = useState(formatInTimeZone(new Date(), siteTimeZone(), 'MM-dd-yyyy HH:mm'));
     const [showFeedbackTicketResolutionLog, setShowFeedbackTicketResolutionLog] = useState(false);
     const [blobFormat, setBlobFormat] = useState();
     const [comment, setComment] = useState('');
@@ -141,8 +141,8 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     useEffect(() => {
         if (ticketDetails) {
             setTicketName(ticketDetails?.ticketId);
-            setDateAndTime(formatInTimeZone(new Date(ticketDetails?.createdDateTime), siteTimeZone !== 'undefined' ? siteTimeZone : userTimeZone, 'MM-dd-yyyy HH:mm'));
-            setModifiedDateAndTime(formatInTimeZone(new Date(ticketDetails?.modifiedDateTime), siteTimeZone !== 'undefined' ? siteTimeZone : userTimeZone, 'MM-dd-yyyy HH:mm'));
+            setDateAndTime(formatInTimeZone(new Date(ticketDetails?.createdDateTime), siteTimeZone(), 'MM-dd-yyyy HH:mm'));
+            setModifiedDateAndTime(formatInTimeZone(new Date(ticketDetails?.modifiedDateTime), siteTimeZone(), 'MM-dd-yyyy HH:mm'));
             setSubject(ticketDetails?.subject);
             setDescription(ticketDetails?.description);
             setType(ticketDetails?.type);
@@ -477,7 +477,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                                 </div>
                                 <div className={style.marginLeft}>
                                     <p className={style.extentionLableStyle}>Date & Time</p>
-                                    <p className={style.feedbackFontStyle}>{dateAndTime}</p>
+                                    <p className={style.feedbackFontStyle}>{`${dateAndTime} ${timeZoneAbbreviation()}`}</p>
                                 </div>
                                 <div>
                                     <p className={style.extentionLableStyle}>User Name</p>
@@ -644,7 +644,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                                                 <div className={`${ticketStatus !== 'In-Progress' ? style.greenDotFeedbackStyle : style.orageDotFeedbackStyle} ${style.marginLeft20}`}></div>
                                             </div>
                                             <div className={style.displayInRow}>
-                                                <p className={style.feedbackFontStyle}>Updated On {modifiedDateAndTime}</p>
+                                                <p className={style.feedbackFontStyle}>Updated On {`${modifiedDateAndTime} ${timeZoneAbbreviation()}`}</p>
                                                 <Icon icon="chevron-up" color='#7165E3' className={style.marginLeft20} />
                                             </div>
                                         </div>

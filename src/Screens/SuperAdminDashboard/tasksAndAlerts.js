@@ -25,6 +25,7 @@ import { GET } from "../dataSaver";
 import { formatInTimeZone } from "date-fns-tz";
 import style from "./index.module.scss";
 import PartnerPortalTiles from "./partnerPortalTiles";
+import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
 
 const TasksAndAlerts = () => {
   const [viewToDo, setViewToDo] = useState(true);
@@ -345,9 +346,9 @@ const TasksAndAlerts = () => {
                 >
                   {formatInTimeZone(
                     new Date(),
-                    "America/New_York",
-                    "MMM d, yyyy H:m zzz"
-                  )}
+                    siteTimeZone(),
+                    "MMM d, yyyy H:m"
+                  )} {timeZoneAbbreviation()}
                 </p>
                 <div className={`${style.displayInRow}`}>
                   <SearchBar />

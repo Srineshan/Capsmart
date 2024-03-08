@@ -185,7 +185,11 @@ const App = ({ props }) => {
   const [logo, setLogo] = useState(null);
   const [title, setTitle] = useState("TimeSmartAI");
   const [entityId, setEntityId] = useState("");
+  const [currentUserDetails, setCurrentUserDetails] = useState();
+  const [entityDetails, setEntityDetails] = useState();
   var cookie = new Cookie();
+  const loggedInUser = currentUser();
+
   // const navigate = useNavigate();
 
 
@@ -209,6 +213,15 @@ const App = ({ props }) => {
     }
   }, [])
 
+  useEffect(() => {
+    setUserDetails()
+  }, [loggedInUser?.id])
+
+  useEffect(() => {
+    sessionStorage.setItem('timeZoneAbbreviation', entityDetails?.sites?.filter(data => data?.id === currentUserDetails?.sites?.sites?.[0]?.id)?.map(data => data)?.[0]?.timeZone?.abbrevation)
+    sessionStorage.setItem('siteTimeZone', entityDetails?.sites?.filter(data => data?.id === currentUserDetails?.sites?.sites?.[0]?.id)?.map(data => data)?.[0]?.timeZone?.id)
+  }, [entityDetails, currentUserDetails])
+
   axios.interceptors.request.use((request) => {
     return request;
   }, (error) => {
@@ -223,8 +236,6 @@ const App = ({ props }) => {
     console.log('response error', error);
     return error;
   })
-
-  const loggedInUser = currentUser();
 
   const logError = async (error) => {
     let browser = browserName === 'Chrome' ? 'CHROME' :
@@ -346,6 +357,11 @@ const App = ({ props }) => {
     }
   };
 
+  const setUserDetails = async () => {
+    const { data: user } = await GET(`user-management-service/user/${loggedInUser?.id}`);
+    setCurrentUserDetails(user);
+  }
+
 
   const getEntityId = async () => {
     await axios(`http://ec2-35-175-13-4.compute-1.amazonaws.com:8010/entity-service/entityID`, {
@@ -407,6 +423,7 @@ const App = ({ props }) => {
 
   const getLogo = async () => {
     const { data: data } = await GET(`entity-service/entity/${TenantID}`);
+    setEntityDetails(data);
     setLogo(data?.logoThumbnail?.file?.fileURL);
     setTitle(data?.entityName?.entityName);
     sessionStorage.setItem("entityTypeId", data?.entityType?.id);
@@ -417,7 +434,6 @@ const App = ({ props }) => {
     sessionStorage.setItem("title", data?.entityName?.entityName);
     sessionStorage.setItem("isEmployeeContractNeeded", data?.isEmployeeContractIncluded);
     sessionStorage.setItem("isMultiSiteEntity", data?.multiSiteEntity);
-    sessionStorage.setItem('siteTimeZone', data?.sites?.filter(data => data?.primarySite)?.map(data => data)?.[0]?.timeZone?.id)
   };
 
   const changeFavicon = () => {

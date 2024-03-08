@@ -21,6 +21,7 @@ import style from "./index.module.scss";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
 import { formatInTimeZone } from "date-fns-tz";
+import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
 
 const HolidayScheduleForCustomers = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -83,7 +84,7 @@ const HolidayScheduleForCustomers = () => {
     );
     const date = new Date(lastModifiedDate.holidayList?.lastModified);
     setLastUpdatedDate(
-      formatInTimeZone(date, "America/New_York", "MMM d, yyyy HH:mm zzz")
+      `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
     );
   };
 

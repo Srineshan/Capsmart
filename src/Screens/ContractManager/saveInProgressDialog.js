@@ -12,6 +12,7 @@ import {
 import { GET } from "../dataSaver";
 import style from "./index.module.scss";
 import { formatInTimeZone } from 'date-fns-tz'
+import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
 
 const SaveInProgressDialog = ({
   getSaveInProgressDialog,
@@ -107,7 +108,7 @@ const SaveInProgressDialog = ({
             </p>
             <p className={style.extentionLableStyle}>
               {/* LAST UPDATED ON 10-23-2023 11:23 AM EST */}
-              LAST UPDATED ON {contractData.lastModifiedDate && formatInTimeZone(new Date(contractData.lastModifiedDate) || new Date(), 'America/New_York', 'MM-dd-yyyy HH:mm a zzz')}
+              LAST UPDATED ON {contractData.lastModifiedDate && formatInTimeZone(new Date(contractData.lastModifiedDate) || new Date(), siteTimeZone(), 'MM-dd-yyyy HH:mm a')} {timeZoneAbbreviation()}
             </p>
           </div>
         </div>
