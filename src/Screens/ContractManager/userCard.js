@@ -6,6 +6,7 @@ import jwt from 'jwt-decode';
 import { GET } from '../dataSaver';
 import { formatInTimeZone } from 'date-fns-tz'
 import { Link } from 'react-router-dom';
+import { siteTimeZone } from '../../utils/formatting';
 
 import style from './index.module.scss';
 
@@ -50,7 +51,7 @@ const UserCard = ({ getIsExpanded, updateProfileData }) => {
                         Hi, {updateProfileData ? `${updateProfileData?.name?.firstName} ${updateProfileData?.name?.lastName}` : `${currentUserDetails?.name?.firstName} ${currentUserDetails?.name?.lastName}`}
                     </div>
                     <div className={style.loginStatus}>
-                        last login {currentUserDetails && formatInTimeZone(new Date(currentUserDetails?.lastLogin) || new Date(), userTimeZone, 'MMM d, yy H:mm')}
+                        last login {currentUserDetails && formatInTimeZone(new Date(currentUserDetails?.lastLogin) || new Date(), siteTimeZone !== 'undefined' ? siteTimeZone : userTimeZone, 'MMM d, yy H:mm')}
                     </div>
                 </div>
                 <img src={ChevronRight} className={style.chevronRightStyle} onClick={() => getIsExpanded(false)} />

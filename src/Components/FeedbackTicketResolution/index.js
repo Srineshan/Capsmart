@@ -7,7 +7,7 @@ import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-import { format } from 'date-fns';
+// import { format } from 'date-fns';
 import { useReactToPrint } from 'react-to-print';
 import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
 import DoctorAnime from './../../images/doctorAnime.png';
@@ -21,7 +21,7 @@ import { getDaysAgo } from '../../utils/getDaysAgo';
 import { currentUser } from './../../utils/auth';
 import FeedbackTicketResolutionLog from './feedbackTicketResolutionLog';
 import { formatInTimeZone } from 'date-fns-tz';
-import { corsUrl, userTimeZone } from '../../utils/formatting';
+import { corsUrl, userTimeZone, siteTimeZone } from '../../utils/formatting';
 
 const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, isEdit }) => {
 
@@ -43,8 +43,8 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     const [ticketName, setTicketName] = useState('');
     const [match, setMatch] = useState([]);
     const [fileName, setFileName] = useState('');
-    const [dateAndTime, setDateAndTime] = useState(formatInTimeZone(new Date(), userTimeZone, 'MM-dd-yyyy HH:mm'));
-    const [modifiedDateAndTime, setModifiedDateAndTime] = useState(formatInTimeZone(new Date(), userTimeZone, 'MM-dd-yyyy HH:mm'));
+    const [dateAndTime, setDateAndTime] = useState(formatInTimeZone(new Date(), siteTimeZone !== 'undefined' ? siteTimeZone : userTimeZone, 'MM-dd-yyyy HH:mm'));
+    const [modifiedDateAndTime, setModifiedDateAndTime] = useState(formatInTimeZone(new Date(), siteTimeZone !== 'undefined' ? siteTimeZone : userTimeZone, 'MM-dd-yyyy HH:mm'));
     const [showFeedbackTicketResolutionLog, setShowFeedbackTicketResolutionLog] = useState(false);
     const [blobFormat, setBlobFormat] = useState();
     const [comment, setComment] = useState('');
@@ -141,8 +141,8 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     useEffect(() => {
         if (ticketDetails) {
             setTicketName(ticketDetails?.ticketId);
-            setDateAndTime(formatInTimeZone(new Date(ticketDetails?.createdDateTime), 'America/New_York', 'MM-dd-yyyy HH:mm zzz'));
-            setModifiedDateAndTime(formatInTimeZone(new Date(ticketDetails?.modifiedDateTime), 'America/New_York', 'MM-dd-yyyy HH:mm zzz'));
+            setDateAndTime(formatInTimeZone(new Date(ticketDetails?.createdDateTime), siteTimeZone !== 'undefined' ? siteTimeZone : userTimeZone, 'MM-dd-yyyy HH:mm'));
+            setModifiedDateAndTime(formatInTimeZone(new Date(ticketDetails?.modifiedDateTime), siteTimeZone !== 'undefined' ? siteTimeZone : userTimeZone, 'MM-dd-yyyy HH:mm'));
             setSubject(ticketDetails?.subject);
             setDescription(ticketDetails?.description);
             setType(ticketDetails?.type);

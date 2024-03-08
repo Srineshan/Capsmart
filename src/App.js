@@ -417,6 +417,7 @@ const App = ({ props }) => {
     sessionStorage.setItem("title", data?.entityName?.entityName);
     sessionStorage.setItem("isEmployeeContractNeeded", data?.isEmployeeContractIncluded);
     sessionStorage.setItem("isMultiSiteEntity", data?.multiSiteEntity);
+    sessionStorage.setItem('siteTimeZone', data?.sites?.filter(data => data?.primarySite)?.map(data => data)?.[0]?.timeZone?.id)
   };
 
   const changeFavicon = () => {

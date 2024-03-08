@@ -49,6 +49,8 @@ export const preventNegativeValues = (e) => ["e", "E", "+", "-"].includes(e.key)
 
 export const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
+export const siteTimeZone = sessionStorage.getItem('siteTimeZone')
+
 export const corsUrl = 'https://app.mytimesmart.com/cors/'
 
 // export const corsUrl = 'https://app.timesmartai.com/cors/'

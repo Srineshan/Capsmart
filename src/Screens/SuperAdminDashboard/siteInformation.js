@@ -534,6 +534,8 @@ const SiteInformation = ({ getActiveStep }) => {
     setSelectedTimezone({ ...selectedTimezone, value: selectedSite?.timeZone?.id })
   };
 
+  console.log(selectedTimezone?.abbrev)
+
   const onSiteTypeChange = (id, value) => {
     setSite({ ...site, type: { type: value, id: id } });
   };
