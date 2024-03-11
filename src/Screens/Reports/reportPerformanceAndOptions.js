@@ -26,7 +26,7 @@ import SaveReport from './saveReport';
 
 import style from './index.module.scss';
 
-const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpdated, dataToUseInReport, refToUse, getIsDownloadClicked, isNoData }) => {
+const ReportPerformanceAndOptions = ({ handle, handlePrint, isUpdated, dataToUseInReport, refToUse, getIsDownloadClicked, isNoData }) => {
     const { reportType } = useParams();
     const [showSaveReportOutput, setShowSaveReportOutput] = useState(false);
     const [showReportRefreshingDialog, setShowReportRefreshingDialog] = useState(false);

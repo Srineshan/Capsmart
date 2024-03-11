@@ -163,7 +163,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             user?.sites?.sites?.map((data, index) => {
                 if (data?.departmentList?.departments?.length !== 0) {
                     setDeptTitle(user?.sites?.sites?.[index]?.departmentList?.departments?.[0]?.departmentResponsibility)
-                } 
+                }
             })
             setSuffix(user?.name?.suffix);
             let rolesToShow = [];
@@ -502,7 +502,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                     </div>
                 </div>
                 <div className={`${style.floatRight} ${style.marginTop10}`}>
-                    <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => submitUserDetails()} >SAVE & EXIT</button>
+                    <button className={`${style.buttonStyle} ${style.marginLeft10}`} onClick={() => submitUserDetails()} >SAVE & EXIT</button>
                 </div>
             </div>
         </Dialog >

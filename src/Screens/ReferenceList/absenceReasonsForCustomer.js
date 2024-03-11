@@ -23,6 +23,7 @@ import ArrowDown from "./../../images/arrowDown.png";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
 import { formatInTimeZone } from "date-fns-tz";
+import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
 
 const AbsenceReasonsForCustomer = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -87,7 +88,7 @@ const AbsenceReasonsForCustomer = () => {
     );
     const date = new Date(lastModifiedDate.absenceResons?.lastModified);
     setLastUpdatedDate(
-      formatInTimeZone(date, "America/New_York", "MMM d, yyyy HH:mm zzz")
+      `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
     );
   };
 

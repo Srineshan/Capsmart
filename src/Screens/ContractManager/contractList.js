@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import Download from './../../images/downloadLightColor.png';
+import React, { useState, useEffect, createRef, useCallback, useRef } from 'react';
+import DownloadLight from './../../images/downloadLightColor.png';
+import Download from '../../images/download.png'
 import PrintIcon from './../../images/printIcon.png';
 import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
 import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
@@ -24,6 +25,8 @@ import UserCard from './userCard';
 import Table from '../../Components/TableDesign';
 import LeftStatsCard from '../../Components/LeftStatsCard';
 import LoadingScreen from '../../Components/LoadingScreen';
+import { toPDF } from '../../Components/ConvertToPdf';
+import { useReactToPrint } from "react-to-print";
 
 import { validateTimesheetSubmission } from './contractValidation';
 
@@ -33,6 +36,12 @@ import PreImplementationDataDialog from './preImplementationDataDialog';
 import ReviewAndApprovalStatusSummary from './reviewAndApprovalStatusSummary';
 
 const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog, contracts, getSelectedContract, getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page, getActiveContractView }) => {
+  const PDFRef = createRef();
+  const componentRef = useRef(null);
+
+  const reactToPrintContent = useCallback(() => {
+    return componentRef.current;
+  }, [componentRef.current]);
   const [selectedContractId, setSelectedContractId] = useState();
   const activeHeaderValues = ["", "", "CONTRACT TYPE", "ID",
     "",
@@ -189,6 +198,19 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     console.log(data, 'contract data')
     sessionStorage.setItem('Selected Contract Status', data?.contractStatus)
   }
+
+  const handleDownloadClicked = () => {
+    toPDF(".contractList", `ContractsList_${format(new Date(), 'MM_dd_yy')}`);
+  }
+
+  const handlePrint = useReactToPrint({
+    content: reactToPrintContent,
+    documentTitle: `ContractsList_${format(new Date(), 'MM_dd_yy')}`,
+    // onBeforeGetContent: handleOnBeforeGetContent,
+    // onBeforePrint: handleBeforePrint,
+    // onAfterPrint: handleAfterPrint,
+    removeAfterPrint: true
+  });
 
   let dot = [];
   let dotTooltipValues = [];
@@ -499,32 +521,33 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
                 <div className={style.marginLeft}>
                   <SearchBar getSearchKey={getSearchKey} searchKey={searchKey} />
                 </div>
-                {
-                  //   <div className={`${isDownloadClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft}`} onClick={() => setIsDownloadClicked(!isDownloadClicked)}>
-                  //     <DownloadIcon sx={{ fontSize: isDownloadClicked ? 20 : 25, color: isDownloadClicked ? '#fff' : '#857AEF' }} />
-                  //   </div>
-                  //   <div className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft}`} onClick={() => setIsPrintClicked(!isPrintClicked)}>
-                  //     <PrintOutlinedIcon sx={{ fontSize: isPrintClicked ? 20 : 25, color: isPrintClicked ? '#fff' : '#857AEF' }} onClick={(e) => handleClick(e)} aria-describedby={id} />
-                  //     <Popover
-                  //       id={id}
-                  //       open={open}
-                  //       anchorEl={anchorEl}
-                  //       onClose={handleClose}
-                  //       anchorOrigin={{
-                  //         vertical: 'bottom',
-                  //         horizontal: 'left',
-                  //       }}
-                  //     >
-                  //       <div className={style.actionsCard}>
-                  //         <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { handleClose() }}>Contract Master List</div>
-                  //         <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { handleClose() }}>One Time Contracts With Termination Date</div>
-                  //         <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { handleClose() }}>Contracts With Written Continuation Policy</div>
-                  //         <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { handleClose() }}>Contracts In Auto-Renewal Mode</div>
-                  //       </div>
-                  //     </Popover>
-                  //   </div>
-                  //
-                }
+                <div className={`${isDownloadClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft}`} onClick={() => { setIsDownloadClicked(!isDownloadClicked); handleDownloadClicked() }}>
+                  <img src={contracts?.length !== 0 ? Download : DownloadLight} alt='' className={style.iconSize} />
+
+                  {/* <DownloadIcon sx={{ fontSize: isDownloadClicked ? 20 : 25, color: isDownloadClicked ? '#fff' : '#857AEF' }} /> */}
+                </div>
+                <div className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft}`} onClick={() => { setIsPrintClicked(!isPrintClicked); handlePrint() }}>
+                  <PrintOutlinedIcon sx={{ fontSize: isPrintClicked ? 20 : 25, color: isPrintClicked ? '#fff' : '#857AEF' }} onClick={(e) => handleClick(e)} aria-describedby={id} />
+                  {/* <Popover
+                    id={id}
+                    open={open}
+                    anchorEl={anchorEl}
+                    onClose={handleClose}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'left',
+                    }}
+                  >
+                    <div className={style.actionsCard}>
+                      <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { handleClose() }}>Contract Master List</div>
+                      <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { handleClose() }}>One Time Contracts With Termination Date</div>
+                      <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { handleClose() }}>Contracts With Written Continuation Policy</div>
+                      <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { handleClose() }}>Contracts In Auto-Renewal Mode</div>
+                    </div>
+                  </Popover> */}
+                </div>
+
+
                 <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft}`} onClick={() => { handleAddContract() }}>
                   <AddCircleOutlineIcon sx={{ fontSize: 20, color: 'white' }} />
                 </div>
@@ -534,29 +557,34 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
               <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
                 <CircularProgress sx={{ color: "#7165E3" }} />
               </div> :
-              <Table
-                tableHeaderValues={tableHeaderValues}
-                tableDataValues={tableDataValues}
-                tableData={contracts}
-                getNewContract={getNewContract}
-                getContractType={getContractType}
-                getSelectedContractType={getSelectedContractType}
-                getContractIdFromActive={getContractIdFromActive}
-                gridStyle={gridStyle}
-                actions={actions}
-                getSelectedPage={getSelectedPage}
-                totalCount={totalCount}
-                page={page}
-                scrollStyle={style.contractScrollStyle}
-                tableSortValues={tableSortValues}
-                heading={'There are no contracts for you to manage'}
-                subHeading={'To add a new contract click on'}
-                onClickText={'Click To View A Short Tutorial On How To Add A Contract'}
-                buttonComponent={<div className={`${style.addStyle} ${style.alignCenter} ${style.marginLeft20}`}>
-                  <AddCircleOutlineIcon sx={{ fontSize: 20, color: 'white' }} />
-                </div>}
-                onClickFunction={() => { }}
-              />}
+              <div ref={componentRef}>
+                <div className={`${style.reduceMarginTop10} contractList`} ref={PDFRef}>
+                  <Table
+                    tableHeaderValues={tableHeaderValues}
+                    tableDataValues={tableDataValues}
+                    tableData={contracts}
+                    getNewContract={getNewContract}
+                    getContractType={getContractType}
+                    getSelectedContractType={getSelectedContractType}
+                    getContractIdFromActive={getContractIdFromActive}
+                    gridStyle={gridStyle}
+                    actions={actions}
+                    getSelectedPage={getSelectedPage}
+                    totalCount={totalCount}
+                    page={page}
+                    scrollStyle={style.contractScrollStyle}
+                    tableSortValues={tableSortValues}
+                    heading={'There are no contracts for you to manage'}
+                    subHeading={'To add a new contract click on'}
+                    onClickText={'Click To View A Short Tutorial On How To Add A Contract'}
+                    buttonComponent={<div className={`${style.addStyle} ${style.alignCenter} ${style.marginLeft20}`}>
+                      <AddCircleOutlineIcon sx={{ fontSize: 20, color: 'white' }} />
+                    </div>}
+                    onClickFunction={() => { }}
+                  />
+                </div>
+              </div>
+            }
             {
               //   <div className={`${style.noContractsBox} ${style.alignCenter}`}>
               //   <div>

@@ -30,6 +30,7 @@ import ApexBoxChart from './chart-data/boxChart';
 import ReportsTable from '../../Components/ReportsTable';
 import ReportNoDataBox from '../../Components/ReusableSmallComponents/reportNoDataBox';
 import { formatInTimeZone } from 'date-fns-tz';
+import { siteTimeZone } from '../../utils/formatting';
 
 const ReportTypeOverview = () => {
     const { reportType } = useParams();
@@ -210,59 +211,6 @@ const ReportTypeOverview = () => {
         }
         if (reportType === 'submittedTimesheetsPaymentStatus') {
             getSubmittedTimesheetsPaymentStatus('withParameter');
-        }
-    }
-
-    const getIsRefresh = (value) => {
-        if (value) {
-            setIsLoading(true);
-            setIsUpdated(false);
-            if (reportType === 'upcomingContractRenewals') {
-                getContractRenewalReportWithParameters();
-            }
-            if (reportType === 'oneTimeContract') {
-                getOneTimeContractWithParameters();
-            }
-            if (reportType === 'contractDocumentsOnFile') {
-                getContractDocumentsOnFile();
-            }
-            if (reportType === 'multiProviderContractsList') {
-                getMultiProviderContractsList();
-            }
-            if (reportType === 'contractsWithABusinessEntity') {
-                getContractsWithABusinessEntity();
-            }
-            if (reportType === 'currentRemitToAddressForActiveContracts') {
-                getCurrentRemitToAddressForActiveContracts();
-            }
-            if (reportType === 'nonCompliant') {
-                getNonCompliantContractReportTile();
-            }
-            if (reportType === 'activitiesOrServices') {
-                getAcvityAndServicesWithParameter();
-            }
-            if (reportType === 'addOnActivities') {
-                getAddOnServicesWithParameter();
-            }
-            if (reportType === 'nonCompliant' && isNonCompliantReportTileClicked) {
-                setSelectedPodTypeFromTile(dataToUseInReport?.podType)
-                getNonCompliantContractReport();
-            }
-            if (reportType === 'paymentsProcessingSummary') {
-                getPayments();
-            }
-            if (reportType === 'compensationCostAnalysis') {
-                getCompensationCostAnalysis();
-            }
-            if (reportType === 'timesheetProcessingSummary') {
-                getTimesheetProcessingSummary('withParameter');
-            }
-            if (reportType === 'listingOfTimesheetsNotPaid') {
-                getListingOfTimesheetNotPaid('withParameter');
-            }
-            if (reportType === 'submittedTimesheetsPaymentStatus') {
-                getSubmittedTimesheetsPaymentStatus('withParameter');
-            }
         }
     }
 
@@ -892,7 +840,7 @@ const ReportTypeOverview = () => {
             addOnRejectedReportLog !== [] && addOnRejectedReportLog?.map(data => {
                 addonActivityServices.push(data?.activity?.activity?.activity);
                 requestDateTime.push(`${format(new Date(data?.activity?.activityTimeFrame?.startDateTime), 'MM-dd-yyyy, HH:mm')}`)
-                rejectedDateTime.push(`${data?.logs?.filter(filterData => filterData?.workFlowAction === "REJECTED") !== [] ? formatInTimeZone(new Date(data?.logs?.filter(filterData => filterData?.workFlowAction === "REJECTED")?.[0]?.createdDate), 'America/New_York', 'MM-dd-yyyy, HH:mm') : '-'}`)
+                rejectedDateTime.push(`${data?.logs?.filter(filterData => filterData?.workFlowAction === "REJECTED") !== [] ? formatInTimeZone(new Date(data?.logs?.filter(filterData => filterData?.workFlowAction === "REJECTED")?.[0]?.createdDate), siteTimeZone(), 'MM-dd-yyyy, HH:mm') : '-'}`)
                 requestingProvider.push(data?.activity?.user?.name)
                 requestReviewer.push(data?.logs?.filter(filterData => filterData?.workFlowAction === "REJECTED") !== [] ? data?.logs?.filter(filterData => filterData?.workFlowAction === "REJECTED")?.[0]?.workFlowUser?.name?.name : '-');
                 site.push(data?.activity?.site?.name)
@@ -902,7 +850,7 @@ const ReportTypeOverview = () => {
             addOnAcceptedReportLog !== [] && addOnAcceptedReportLog?.map(data => {
                 addonActivityServices.push(data?.activity?.activity?.activity);
                 requestDateTime.push(`${format(new Date(data?.activity?.activityTimeFrame?.startDateTime), 'MM-dd-yyyy, HH:mm')}`)
-                rejectedDateTime.push(`${data?.logs?.filter(filterData => filterData?.workFlowAction === "APPROVED")?.length !== 0 ? formatInTimeZone(new Date(data?.logs?.filter(filterData => filterData?.workFlowAction === "APPROVED")?.[0]?.createdDate), 'America/New_York', 'MM-dd-yyyy, HH:mm') : '-'}`)
+                rejectedDateTime.push(`${data?.logs?.filter(filterData => filterData?.workFlowAction === "APPROVED")?.length !== 0 ? formatInTimeZone(new Date(data?.logs?.filter(filterData => filterData?.workFlowAction === "APPROVED")?.[0]?.createdDate), siteTimeZone(), 'MM-dd-yyyy, HH:mm') : '-'}`)
                 requestingProvider.push(data?.activity?.user?.name)
                 requestReviewer.push(data?.logs?.filter(filterData => filterData?.workFlowAction === "APPROVED")?.length !== 0 ? data?.logs?.filter(filterData => filterData?.workFlowAction === "APPROVED")?.[0]?.workFlowUser?.name?.name : '-');
                 site.push(data?.activity?.site?.name)
@@ -1450,7 +1398,7 @@ const ReportTypeOverview = () => {
                     </SideBar>
                 </div>
                 <div>
-                    <ReportPerformanceAndOptions handle={handle} getIsRefresh={getIsRefresh} handlePrint={handlePrint} isUpdated={isLoading} dataToUseInReport={dataToUseInReport} refToUse={PDFRef} getIsDownloadClicked={getIsDownloadClicked} isNoData={isNoData} />
+                    <ReportPerformanceAndOptions handle={handle} handlePrint={handlePrint} isUpdated={isLoading} dataToUseInReport={dataToUseInReport} refToUse={PDFRef} getIsDownloadClicked={getIsDownloadClicked} isNoData={isNoData} />
                     <FullScreen handle={handle} className={handle.active ? style.scroll : ''}>
                         <div className={`Report`} ref={PDFRef}>
                             <div className={`${style.reportBackgroundCard} ${style.marginTop20} `} ref={componentRef}>

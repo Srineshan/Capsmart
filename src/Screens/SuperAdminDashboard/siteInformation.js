@@ -32,6 +32,7 @@ import CommonInputField from "../../Components/CommonFields/CommonInputField";
 import { format } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
 import Timezone from "./timeZone";
+import { siteTimeZone } from "../../utils/formatting";
 
 // const VALUES = ['Department 1', "Department 2"];
 
@@ -349,7 +350,8 @@ const SiteInformation = ({ getActiveStep }) => {
         country: address?.country,
       },
       "timeZone": {
-        "id": selectedTimezone?.value
+        "id": selectedTimezone?.value,
+        "abbrevation": selectedTimezone?.abbrev
       },
       "logo": selectedSite?.logo,
       primarySite: true,
@@ -533,6 +535,8 @@ const SiteInformation = ({ getActiveStep }) => {
     setLogo({ ...logo, name: selectedSite?.logo?.fileName || '', url: selectedSite?.logo?.file?.fileURL || '' });
     setSelectedTimezone({ ...selectedTimezone, value: selectedSite?.timeZone?.id })
   };
+
+  console.log(selectedTimezone?.abbrev)
 
   const onSiteTypeChange = (id, value) => {
     setSite({ ...site, type: { type: value, id: id } });
@@ -1083,7 +1087,7 @@ const SiteInformation = ({ getActiveStep }) => {
                       <p className={style.tableDataFontStyle}>
                         {formatInTimeZone(
                           new Date(data?.createdDate),
-                          "America/New_York",
+                          siteTimeZone(),
                           "MM/dd/yyyy"
                         )}
                       </p>

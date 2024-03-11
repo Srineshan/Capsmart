@@ -488,6 +488,9 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 MenuProps={MenuProps}
                                 readOnly={isMyReport}
                             >
+                                {sites?.length >= 2 && (
+                                    <MenuItem value={defaultOption}>All Sites</MenuItem>
+                                )}
                                 {sites?.map((data) => (
                                     <MenuItem
                                         key={data?.id}
@@ -737,6 +740,9 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 MenuProps={MenuProps}
                                 readOnly={isMyReport}
                             >
+                                {sites?.length >= 2 && (
+                                    <MenuItem value={defaultOption}>All Sites</MenuItem>
+                                )}
                                 {sites?.map((data) => (
                                     <MenuItem
                                         key={data?.id}
