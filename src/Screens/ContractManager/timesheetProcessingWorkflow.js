@@ -20,6 +20,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
   const [activeTab, setActiveTab] = useState('');
   const [selectTimesheetToDefineProcess, setSelectTimesheetToDefineProcess] = useState('');
   const [customWorkFlow, setCustomWorkFlow] = useState(false);
+  const [workflowExisting, setWorkflowExisting] = useState([]);
   const [workflowTemplateToUse, setWorkflowTemplateToUse] = useState('');
   const [timesheetProcessingWorkflow, setTimesheetProcessingWorkflow] = useState([]);
   const [timeSheetTabs, setTimeSheetTabs] = useState([]);
@@ -306,7 +307,37 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
           }
         }
       }
-    } else {
+    } else if ((isAggregationNeeded) && reviewer === approver) {
+      data = {
+        "name": {
+          "name": name
+        },
+        "workFlowMap": {
+          "workflow": {
+            "1": {
+              "workFlowUser": {
+                "id": reviewer,
+                "title": { id: timesheet?.reviewerTitle?.id, title: timesheet?.reviewerTitle?.title },
+                "name": {
+                  "name": reviewerFirstName + reviewerMiddleName + reviewerLastName,
+                  "firstName": reviewerFirstName,
+                  "middleName": reviewerMiddleName,
+                  "lastName": reviewerLastName,
+                },
+                "suffix": {
+                  "id": getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
+                  "suffix": getSelectedUserDetails(reviewer)?.name?.suffix?.suffix || '',
+                }
+              },
+              "workFlowStatus": {
+                "status": "APPROVED"
+              }
+            }
+          }
+        }
+      }
+    }
+    else {
       data = {
         "name": {
           "name": name
@@ -430,7 +461,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
   }
 
   const handleContinue = async (workflowId, workFlowMap, method) => {
-    let temp = timesheetProcessingWorkflow;
+    let temp = workflowExisting;
     if (method === 'post') {
       temp?.push({
         "timesheetLabel": {
@@ -446,7 +477,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
         "customWorkFlow": false
       })
     } else {
-      let index = temp.findIndex(data => data.workFlow.id === workflowId);
+      let index = temp.findIndex(data => data?.workFlow?.id === workflowId);
       console.log('index value', index)
       temp[index] = {
         "timesheetLabel": {
@@ -476,6 +507,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
 
   const getTimeSheetSubmissionTerms = async () => {
     const { data: timesheetFlow } = await GET(`contract-managment-service/contracts/${contractId}/timesheetProcessingWorkFlow`);
+    setWorkflowExisting(timesheetFlow?.workFlowDetails);
     let id = timesheetFlow?.workFlowDetails?.filter(data => data?.workFlow?.name?.name === activeTab)?.map(data => data?.workFlow?.id)[0];
     if (timesheetFlow) {
       let workflowData = timesheetWorkFlow?.filter(data => data?.id === id)?.map(data => data?.workFlowMap?.workflow)[0];
