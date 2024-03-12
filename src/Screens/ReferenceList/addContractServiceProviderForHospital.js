@@ -22,6 +22,8 @@ const AddContractedServiceForHospital = ({
   entityType,
   siteTypeId,
   getContractedServiceProvider,
+  siteEntityCount,
+  multiSiteEntity
 }) => {
   const [contractedServiceProviderType, setContractedServiceProviderType] =
     useState("");
@@ -30,9 +32,12 @@ const AddContractedServiceForHospital = ({
       <img
         src={ArrowDown}
         className={`${style.colorFileStyle3} ${style.marginRight}`}
+        alt=""
       />
     );
   };
+
+  console.log(siteEntityCount, multiSiteEntity)
 
   useEffect(() => {
     if (isEdit) {
@@ -127,7 +132,7 @@ const AddContractedServiceForHospital = ({
             <div className={style.entityLableStyle}>Entity / Site Type*</div>
             <div className={style.displayInRow}>
               <InputGroup
-                value={entityType}
+                value={`${entityType} ${multiSiteEntity === true ? "    ( " + siteEntityCount + " sites )" : ""}`}
                 className={style.fullWidth}
                 rightElement={arrowDown()}
                 disabled={true}
