@@ -533,7 +533,7 @@ const SiteInformation = ({ getActiveStep }) => {
     });
     setSelectedDepartment(selectedSite?.departmentList?.departments || []);
     setLogo({ ...logo, name: selectedSite?.logo?.fileName || '', url: selectedSite?.logo?.file?.fileURL || '' });
-    setSelectedTimezone({ ...selectedTimezone, value: selectedSite?.timeZone?.id })
+    setSelectedTimezone({ ...selectedTimezone, value: selectedSite?.timeZone?.id, abbrev: selectedSite?.timeZone?.abbrevation })
   };
 
   console.log(selectedTimezone?.abbrev)

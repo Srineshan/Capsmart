@@ -28,6 +28,7 @@ import SaveInProgress from './saveInProgressAlert';
 import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
 import ContractAndBillingDetails from './contractAndBillingDetails';
 import Welcome from './welcome';
+import Timezone from "./timeZone";
 import CommonInputField from '../../Components/CommonFields/CommonInputField';
 
 const EntitySetup = () => {
@@ -58,7 +59,8 @@ const EntitySetup = () => {
   const Fields = { customerType: 'Customer Type', npin: 'NPIN', name: 'Entity Name', type: 'Entity Type', addressLine: 'Mailing Address', city: 'City', state: 'State', country: 'Country', zipcode: 'Zipcode', subdomain: 'Subdomain', officialEmailDomain: 'Official Email Domain' };
   const role = '';
   const accessToken = Auth();
-
+  const [selectedTimezone, setSelectedTimezone] = useState({ value: '', abbrev: '' })
+  console.log(selectedTimezone)
   useEffect(() => {
     getEntityData();
     getDepartmentData();
@@ -71,6 +73,12 @@ const EntitySetup = () => {
   useEffect(() => {
     getDepartmentData();
   }, [departmentSpecific])
+
+  useEffect(() => {
+    if (selectedTimezone?.value !== entityData?.sites?.filter(data => data.primarySite === true)?.map(data => data)[0]?.timeZone?.id) {
+      setIsUpdated(true);
+    }
+  }, [selectedTimezone])
 
   // useEffect(()=>{
   //   if(entity.npin?.length === 10){
@@ -126,6 +134,7 @@ const EntitySetup = () => {
     setDepartmentSpecific(siteData?.canSetupDepartment);
     setLogo({ ...logo, url: data?.logo?.file?.fileURL || '' });
     setThumbnail({ ...thumbnail, url: data?.logoThumbnail?.file?.fileURL || '' });
+    setSelectedTimezone({ ...selectedTimezone, value: siteData?.timeZone?.id, abbrev: siteData?.timeZone?.abbrevation })
     console.log('entered', entityData)
   }
 
@@ -233,6 +242,10 @@ const EntitySetup = () => {
         ErrorToaster('Official Email Domain Is Mandatory');
         return;
       }
+      if (selectedTimezone?.value === "" || selectedTimezone?.value === null || selectedTimezone?.value === undefined) {
+        ErrorToaster("Timezone is Mandatory");
+        return;
+      }
     }
     if (buttonType === 'SaveInProgress') {
       // saveInProgressCheck();
@@ -243,7 +256,7 @@ const EntitySetup = () => {
     }
   }
 
-  console.log(entity)
+  console.log(entityData, selectedTimezone)
 
   const saveInProgressCheck = () => {
     var keys = Object.keys(entity)?.filter(key => entity[key] === '' && key !== 'id' && key !== 'type' && key !== 'npin' || entity[key] === null)?.map(data => Fields[data]);
@@ -310,6 +323,10 @@ const EntitySetup = () => {
           "state": address.state,
           "zipcode": address.zipcode,
           "country": address.country,
+        },
+        "timeZone": {
+          "id": selectedTimezone?.value,
+          "abbrevation": selectedTimezone?.abbrev
         },
         "primarySite": true
       }
@@ -683,7 +700,16 @@ const EntitySetup = () => {
                         label={entity?.isEmployeeContractIncluded ? 'YES' : 'NO'}
                       />
                     </div>}
-
+                    <div
+                      className={`${style.extentionGrid} ${style.marginTop20}`}
+                    >
+                      <div className={style.extentionLableStyle}>
+                        Time Zone*
+                      </div>
+                      <div className={`${style.leftAlign} `}>
+                        <Timezone selectedTimezone={selectedTimezone} setSelectedTimezone={setSelectedTimezone} />
+                      </div>
+                    </div>
                     {/* </div>
                       </div> */}
                     {/* </div> */}
