@@ -90,6 +90,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         CONTRACT_WITH_BUSINESS_ENTITY: 'contractsWithABusinessEntity',
         MULTI_PROVIDER_CONTRACT: 'multiProviderContractsList',
         PROOF_OF_DOCUMENTATION_COMPLIANCE_FOR_CONTRACT_BASED_REQUIREMENTS: 'nonCompliant',
+        ACTIVITY_STATUS_TRACKER: 'activityStatusTracker'
     }
     const descriptionList = {
         ACTIVITES_SERVICES_LOG_SUMMARY: 'Activities/ Services Log Status Summary',
@@ -111,7 +112,8 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         CONTRACT_DOCUMENT_ON_FILE: 'Contract Documents On File',
         CONTRACT_WITH_BUSINESS_ENTITY: 'Contracts With A Business Entity',
         MULTI_PROVIDER_CONTRACT: 'Multi Provider Contracts List',
-        PROOF_OF_DOCUMENTATION_COMPLIANCE_FOR_CONTRACT_BASED_REQUIREMENTS: 'Proof of documentation compliance for contract based requirments'
+        PROOF_OF_DOCUMENTATION_COMPLIANCE_FOR_CONTRACT_BASED_REQUIREMENTS: 'Proof of documentation compliance for contract based requirments',
+        ACTIVITY_STATUS_TRACKER: `Status Of Activities/ Services By Service Provider For ${format(new Date(), 'MMMM yyyy')}`
     }
 
     const titleList = {
@@ -134,7 +136,8 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         CONTRACT_DOCUMENT_ON_FILE: 'Contract Documents On File',
         CONTRACT_WITH_BUSINESS_ENTITY: 'Contracts With A Business Entity',
         MULTI_PROVIDER_CONTRACT: 'Multi Provider Contracts List',
-        PROOF_OF_DOCUMENTATION_COMPLIANCE_FOR_CONTRACT_BASED_REQUIREMENTS: 'Proof of documentation compliance for contract based requirments'
+        PROOF_OF_DOCUMENTATION_COMPLIANCE_FOR_CONTRACT_BASED_REQUIREMENTS: 'Proof of documentation compliance for contract based requirments',
+        ACTIVITY_STATUS_TRACKER: `Status Of Activities/ Services By Service Provider For ${format(new Date(), 'MMMM yyyy')}`
     }
 
     useEffect(() => {

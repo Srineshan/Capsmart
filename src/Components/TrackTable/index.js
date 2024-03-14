@@ -118,15 +118,15 @@ const TrackTable = ({ heading, columnHeading, tableHead, tableHeadTop, tableHead
                                                     <div>
                                                         <div className={style.marginTop20}>
                                                             <div className={style.nteTextStyle}>CY NTE AMOUNT</div>
-                                                            <div className={`${style.nteAmountCard} ${style.verticalAlignCenter} ${style.alignCenter} ${style.marginTop5}`}>$ {arrayData?.values?.maxContractYearPayment?.toLocaleString()}</div>
+                                                            <div className={`${style.nteAmountCard} ${style.verticalAlignCenter} ${style.alignCenter} ${style.marginTop5}`}>$ {arrayData?.values?.maxContractYearPayment?.toLocaleString("en-US")}</div>
                                                         </div>
                                                         <div className={style.marginTop20}>
                                                             <div className={style.nteTextStyle}>NTE USED</div>
-                                                            <div className={`${style.nteAmountCard} ${style.verticalAlignCenter} ${style.alignCenter} ${style.marginTop5}`}>$ {(arrayData?.values?.maxContractYearPayment - arrayData?.values?.contractYearBalance)?.toLocaleString()}</div>
+                                                            <div className={`${style.nteAmountCard} ${style.verticalAlignCenter} ${style.alignCenter} ${style.marginTop5}`}>$ {(arrayData?.values?.maxContractYearPayment - arrayData?.values?.contractYearBalance)?.toLocaleString("en-US")}</div>
                                                         </div>
                                                         <div className={style.marginTop20}>
                                                             <div className={style.nteTextStyle}>NTE BALANCE</div>
-                                                            <div className={`${style.nteAmountCardGreen} ${style.verticalAlignCenter} ${style.alignCenter} ${style.marginTop5}`}>$ {arrayData?.values?.contractYearBalance?.toLocaleString()}</div>
+                                                            <div className={`${style.nteAmountCardGreen} ${style.verticalAlignCenter} ${style.alignCenter} ${style.marginTop5}`}>$ {arrayData?.values?.contractYearBalance?.toLocaleString("en-US")}</div>
                                                         </div>
                                                     </div>
                                                 </div>

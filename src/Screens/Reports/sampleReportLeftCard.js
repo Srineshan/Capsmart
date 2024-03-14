@@ -67,6 +67,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
         multiProviderContractsList: 'CONTRACT',
         currentRemitToAddressForActiveContracts: 'CONTRACT',
         nonCompliant: 'CONTRACT',
+        activityStatusTracker: 'CONTRACT'
     }
     const defaultOption = ''
 
@@ -458,7 +459,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                 {(reportType === "upcomingContractRenewals" || reportType === "oneTimeContract" ||
                     reportType === "contractDocumentsOnFile" || reportType === "multiProviderContractsList" ||
                     reportType === "contractsWithABusinessEntity" || reportType === "currentRemitToAddressForActiveContracts" ||
-                    reportType === 'nonCompliant') ? (
+                    reportType === 'nonCompliant' || reportType === "activityStatusTracker") ? (
                     <>
                         {reportType === "upcomingContractRenewals" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
@@ -555,7 +556,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 ))}
                             </Select>
                         </FormControl>
-                        {(reportType === "contractDocumentsOnFile" || reportType === "currentRemitToAddressForActiveContracts") && (
+                        {(reportType === "contractDocumentsOnFile" || reportType === "currentRemitToAddressForActiveContracts" || reportType === "activityStatusTracker") && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-multiple-name-label5">Contracted Service Provider</InputLabel>
                                 <Select

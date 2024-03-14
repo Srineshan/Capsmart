@@ -40,6 +40,7 @@ const TrackYourContracts = () => {
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const userDetail = jwt(userDetails);
+    const entityName = sessionStorage.getItem('title');
     const [currentUserDetails, setCurrentUserDetails] = useState();
     const [userId, setUserId] = useState(userDetail?.id);
     const [selectedContracts, setSelectedContracts] = useState([]);
@@ -599,29 +600,29 @@ const TrackYourContracts = () => {
                                         <div className={style.trackContractOrAgreementCount}>{activityTrackServices?.length} Contracts/ Service Agreements</div>
                                     </div>
                                 )}
-                                {activityTrackServices?.length !== 0 ? activityTrackServices?.map((data, index) => (
+                                {activityTrackServices?.length !== 0 ? activityTrackServices?.map((data, index) => data?.activityStatsByContract?.map((innerData, innerIndex) => (
                                     <TrackTable
-                                        heading={`${data?.activityStatsByContract?.[index]?.contract?.contractName?.contractName} - ${data?.activityStatsByContract?.[index]?.contract?.contractId?.id}`}
+                                        heading={`${innerData?.contract?.contractName?.contractName} - ${innerData?.contract?.contractId?.id}`}
                                         columnHeading={[
-                                            `Compensation Policy: ${compensationPolicy[data?.activityStatsByContract?.[index]?.contract?.compensationPolicy]}`,
-                                            `Contract Period: ${format(new Date(data?.activityStatsByContract?.[index]?.contract?.contractTerm?.startDate), 'MMM d, yyyy')} - ${format(new Date(data?.activityStatsByContract?.[index]?.contract?.contractTerm?.endDate), 'MMM d, yyyy')}`,
-                                            'San Mateo Medical Center'
+                                            `Compensation Policy: ${compensationPolicy[innerData?.contract?.compensationPolicy]}`,
+                                            `Contract Period:  ${format(new Date(innerData?.contract?.contractTerm?.startDate), 'MMM d, yyyy')} - ${format(new Date(innerData?.contract?.contractTerm?.endDate), 'MMM d, yyyy')}`,
+                                            entityName
                                         ]}
-                                        tableHead={data?.activityStatsByContract?.[index]?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? ['CONTRACTED ACTIVITY / SERVICES', 'COMPLETED', 'TO BE PROCESSED', ''] : ['CONTRACTED ACTIVITY / SERVICES', 'EXPECTED', 'COMPLETED', 'TO BE PROCESSED', 'BALANCE', '']}
+                                        tableHead={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? ['CONTRACTED ACTIVITY / SERVICES', 'COMPLETED', 'TO BE PROCESSED', ''] : ['CONTRACTED ACTIVITY / SERVICES', 'EXPECTED', 'COMPLETED', 'TO BE PROCESSED', 'BALANCE', '']}
                                         // tableHead={['CONTRACTED ACTIVITY / SERVICES', 'COMPLETED', 'TO BE PROCESSED', 'BALANCE', '']}
-                                        tableHeadTop={['', `Contract Year: ${format(new Date(data?.activityStatsByContract?.[index]?.activityStatsMeta?.contractYearInterval?.startDate), 'MMM d, yyyy')} - ${format(new Date(data?.activityStatsByContract?.[index]?.activityStatsMeta?.contractYearInterval?.endDate), 'MMM d, yyyy')}`]}
-                                        tableHeadBottom={data?.activityStatsByContract?.[index]?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? ['', 'UNITS', 'HOURS', 'UNITS', 'HOURS', ''] : ['', 'UNITS', 'UNITS', 'HOURS', 'UNITS', 'HOURS', 'UNITS', 'HOURS', '']}
+                                        tableHeadTop={['', `Contract Year:  ${format(new Date(innerData?.activityStatsMeta?.contractYearInterval?.startDate), 'MMM d, yyyy')} - ${format(new Date(innerData?.activityStatsMeta?.contractYearInterval?.endDate), 'MMM d, yyyy')}`]}
+                                        tableHeadBottom={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? ['', 'UNITS', 'HOURS', 'UNITS', 'HOURS', ''] : ['', 'UNITS', 'UNITS', 'HOURS', 'UNITS', 'HOURS', 'UNITS', 'HOURS', '']}
                                         // tableHeadBottom={['', 'UNITS', 'HOURS', 'UNITS', 'HOURS', 'UNITS', 'HOURS', '']}
                                         tableData={getTrackTableValue(data)}
                                         headerGrid={style.trackTableHeaderGrid}
-                                        dataGrid={data?.activityStatsByContract?.[index]?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableDataGridForActivityBased : style.trackTableDataGrid}
-                                        tableHeadGrid={data?.activityStatsByContract?.[index]?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableHeaderMiddleGridForActivityBased : style.trackTableHeaderMiddleGrid}
-                                        tableHeadTopGrid={data?.activityStatsByContract?.[index]?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableHeaderTopGridForActivityBased : style.trackTableHeaderTopGrid}
-                                        tableHeadBottomGrid={data?.activityStatsByContract?.[index]?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableHeaderBottomGridForActivityBased : style.trackTableHeaderBottomGrid}
+                                        dataGrid={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableDataGridForActivityBased : style.trackTableDataGrid}
+                                        tableHeadGrid={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableHeaderMiddleGridForActivityBased : style.trackTableHeaderMiddleGrid}
+                                        tableHeadTopGrid={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableHeaderTopGridForActivityBased : style.trackTableHeaderTopGrid}
+                                        tableHeadBottomGrid={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableHeaderBottomGridForActivityBased : style.trackTableHeaderBottomGrid}
                                         header={true}
                                         directionRow={false}
                                     />
-                                )) : (
+                                ))) : (
                                     <div className={style.verticalAlignCenter}>
                                         <NoDataBox
                                             heading={'Based on the selection, there were NO RECORDS found.'}

@@ -23,6 +23,7 @@ import ReportsFullScreen from './../../images/reportsFullScreen.png';
 import ReportsShare from './../../images/reportsShare.png';
 import Info from './../../images/info.png';
 import SaveReport from './saveReport';
+import { format } from 'date-fns';
 
 import style from './index.module.scss';
 
@@ -66,6 +67,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, isUpdated, dataToUse
         multiProviderContractsList: 'Multi Provider Contracts List',
         contractsWithABusinessEntity: 'Contracts With A Business Entity',
         currentRemitToAddressForActiveContracts: 'Current Remit To Address For Active Contracts',
+        activityStatusTracker: `Status Of Activities/ Services By Service Provider For ${format(new Date(), 'MMMM yyyy')}`
     }
 
     const getSaveReportDialog = (value) => {
