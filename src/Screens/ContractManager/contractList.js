@@ -435,7 +435,7 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
       <div className={isExpanded ? style.bigCardGrid : style.smallCardGrid}>
         <div>
           <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
-            <LeftStatsCard metadata={metadata} getContractFilterValues={getContractFilterValues} />
+            <LeftStatsCard metadata={metadata} getContractFilterValues={getContractFilterValues} selectedContract={selectedContract} />
           </SideBar>
         </div>
         <div>

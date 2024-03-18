@@ -7,10 +7,11 @@ import CommonCheckBox from '../CommonFields/CommonCheckBox';
 import CommonDateField from '../CommonFields/CommonDateField';
 import { sub, add } from "date-fns";
 import TextField from '@mui/material/TextField';
+import { GET } from '../../Screens/dataSaver';
 
 import style from './index.module.scss';
 
-const LeftStatsCard = ({ metadata, getContractFilterValues }) => {
+const LeftStatsCard = ({ metadata, getContractFilterValues, selectedContract }) => {
     let individualCount = metadata?.metaData?.individualContractCount;
     let multipleCount = metadata?.metaData?.multipleContractCount;
     let expiringDoc = metadata?.metaData?.contractWithExpiringDocCount;
@@ -30,8 +31,17 @@ const LeftStatsCard = ({ metadata, getContractFilterValues }) => {
     })
 
     useEffect(() => {
+        // getFilterData();
+    }, [])
+
+    useEffect(() => {
         getContractFilterValues(contractFilter)
     }, [contractFilter])
+
+    const getFilterData = async () => {
+        const { data: filterData } = await GET(`contract-managment-service/contracts/filters?tab=${selectedContract}`);
+        setContractFilter(filterData);
+    };
 
     const reset = () => {
         setContractFilter({
