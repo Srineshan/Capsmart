@@ -1301,7 +1301,7 @@ const ContractIdTermLimitIndividual = ({
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <div></div>
             <SiteDepartmentField
-              sites={sites}
+              sites={selectedSites && selectedSites.length > 0 ? selectedSites : sites}
               getSelectedSites={onSelectDepartment}
               selectedSites={selectedSites}
               isMultiSiteEntity={isMultiSiteEntity}
