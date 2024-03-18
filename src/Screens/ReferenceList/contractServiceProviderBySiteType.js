@@ -24,7 +24,6 @@ import { count } from "d3";
 import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
 
 const ContractServiceProviderBySite = () => {
-  const [isSelected, setIsSelected] = useState(false);
   const [entityDetails, setEntityDetails] = useState({});
   const [entityTypes, setEntityTypes] = useState([]);
   const [contractedServiceProviderMaster, setContractedServiceProviderMaster] =
@@ -446,7 +445,7 @@ const ContractServiceProviderBySite = () => {
                                   <p
                                     className={`${style.tableHeaderIndustriesFontStyle} ${style.textUppercase} ${style.marginLeft10}`}
                                   >
-                                    {data?.siteTypeName}`}
+                                    {data?.siteTypeName}
                                   </p>
                                   <p
                                     className={`${style.tableHeaderIndustriesFontStyle} ${style.textUppercase} ${style.marginLeft10}`}
