@@ -3,9 +3,10 @@ import { GET } from './../dataSaver';
 import { CLINIC, SURGERY, SUPPLEMENTAL, ADDON, ADMINISTRATIVE, PROCEDUREREADING, ONCALL, HIT, ONCALLSERVICE } from '../../Constants';
 
 export const validateContractIDTermLimit = (contract) => {
+  console.log("contract", contract)
   let fieldData = [
     { field: "Contract Name", value: contract?.contractName?.contractName },
-    { field: "Contract Id", value: contract?.contractDetail?.contractId?.id },
+    { field: "Contract Id", value: contract?.contractDetail?.contractId?.id !== '' && contract?.contractDetail?.contractIdMissing === false ? contract?.contractDetail?.contractId?.id : " " },
     {
       field: "Contract Manager",
       value: contract?.contractDetail?.contractManager?.userID,
@@ -29,17 +30,24 @@ export const validateContractIDTermLimit = (contract) => {
     },
     {
       field: "Time Commitment - frequency",
-      value: contract?.contractDetail?.timeCommitment?.frequency,
+      value: contract?.contractDetail?.timeCommitment?.frequency === 'NA' ? '' : contract?.contractDetail?.timeCommitment?.frequency,
+    },
+    {
+      field: "Compensation Policy",
+      value: contract?.contractDetail?.compensationPolicy,
     },
     {
       field: "Contract Continuation Policy",
       value: contract?.contractDetail?.continuationPolicy?.contractPolicyType,
     },
     {
-      field: "Contract Compensation Policy",
-      value: contract?.contractDetail?.compensationPolicy,
+      field: "Contract Documents On File",
+      value: (contract?.contractDetail?.contractFiles?.length !== 0 && contract?.contractDetail?.fullyExecutedContract === true) || (contract?.contractDetail?.contractFiles?.length === 0 && contract?.contractDetail?.fullyExecutedContract === false) ? contract?.contractDetail?.contractFiles : "",
     },
   ];
+
+
+
   let temp = fieldData;
   temp
     ?.filter((data) => data?.field === "Contract Continuation Policy")
@@ -67,6 +75,7 @@ export const validateContractIDTermLimit = (contract) => {
         });
       }
     });
+
   const emptyFields = fieldData
     ?.filter(
       (data) =>
@@ -81,22 +90,26 @@ export const validateContractIDTermLimit = (contract) => {
 
 export const validateContractProvider = async (contract) => {
   const contractId = contract?.id;
+  const emptyFields = [];
   let providers = [];
-  let emptyFields = [];
   if (contractId !== "" && contractId !== undefined) {
     const { data: userData } = await GET(
       `user-management-service/user?contractID=${contractId}`
     );
+    console.log("userData", userData)
+    // Filter data based on roles
     providers = userData
       ?.filter((data) =>
-        data?.contracts?.map((contract) =>
-          contract?.roles
-            ?.map((role) => role?.roleName)
-            ?.includes("Activity Logger")
+        data?.contracts?.some((contract) =>
+          ["Activity Logger", "Aggregator", "Passive Activity Logger"].some((roleName) =>
+            contract?.roles?.some((role) => role?.roleName === roleName)
+          )
         )
       )
       ?.map((data) => data);
   }
+  console.log("providers", providers)
+
   if (!providers?.length > 0) {
     emptyFields[0] = [
       "Service Provider",
@@ -115,14 +128,18 @@ export const validateContractProvider = async (contract) => {
   providers?.map((user, index) => {
     let fieldData = [
       { field: "Service Provider", value: user?.serviceProviderType?.id },
-      { field: "NPIN", value: user?.npin?.npin },
+      { field: "NPIN", value: user?.npin?.npin !== '' && user?.npin?.missing === false && user?.npin?.notApplicable === false ? user?.npin?.npin : " " },
       { field: "Contract Provider First Name", value: user?.name?.firstName },
       { field: "Contract Provider Last Name", value: user?.name?.lastName },
       { field: "Suffix", value: user?.name?.suffix?.id },
       { field: "Contract Provider Email", value: user?.email?.officialEmail },
-      { field: "Mobile Number", value: user?.communication?.mobileNumber },
+      { field: "Mobile Number", value: user?.communication?.mobileNumber !== '' && user?.communication?.mobileNumberNotApplicable === false ? user?.communication?.mobileNumber : " " },
       { field: "Address", value: user?.address?.addressLine },
+      { field: "City", value: user?.address?.city },
+      { field: "State", value: user?.address?.state },
+      { field: "Zipcode", value: user?.address?.zipcode },
     ];
+
     let temp = [];
     temp.push(user?.name?.firstName);
     temp.push(
@@ -144,12 +161,9 @@ export const validateContractProvider = async (contract) => {
 export const validateBusinessEntity = (contract) => {
   let businessEntity = contract?.contractorBusinessEntity;
   let fieldData = [
-    { field: "NPIN", value: businessEntity?.contractorNPIN?.npin },
-    { field: "Tax Id", value: businessEntity?.contractorEntityTaxId?.taxId },
-    {
-      field: "Business Entity Name",
-      value: businessEntity?.businessEntity?.name,
-    },
+    { field: "NPIN", value: businessEntity?.contractorNPIN?.npin !== '' && businessEntity?.contractorNPIN?.missing === false && businessEntity?.contractorNPIN?.notApplicable === false ? businessEntity?.contractorNPIN?.npin : " " },
+    { field: "Tax Id", value: businessEntity?.contractorEntityTaxId?.taxId !== '' && businessEntity?.contractorEntityTaxId?.missing === false && businessEntity?.contractorEntityTaxId?.notApplicable === false ? businessEntity?.contractorEntityTaxId?.taxId : " " },
+    { field: "Business Entity Name", value: businessEntity?.businessEntity?.name !== '' && businessEntity?.businessEntity?.notApplicable === false ? businessEntity?.businessEntity?.name : " " },
     {
       field: "Point Of Contact - First Name",
       value: businessEntity?.businessEntityUser?.name?.firstName,
@@ -162,10 +176,7 @@ export const validateBusinessEntity = (contract) => {
       field: "Business Contact Email Address",
       value: businessEntity?.businessEntityUser?.email?.officialEmail,
     },
-    {
-      field: "Mobile Number",
-      value: businessEntity?.businessEntityUser?.contactNumber?.number,
-    },
+    { field: "Mobile Number", value: businessEntity?.businessEntityUser?.contactNumber?.number !== '' && businessEntity?.businessEntityUser?.contactNumber?.missing === false ? businessEntity?.businessEntityUser?.contactNumber?.number : " " },
     {
       field: "Address Line",
       value: businessEntity?.mailingAddress?.addressLine,
@@ -193,10 +204,12 @@ export const validateServices = (contract) => {
   console.log('services data', services)
   services?.map((service, index) => {
     let fieldData = [{ field: 'sites', value: service?.sites?.length },
-    { field: 'Service Days', value: (service?.activityTypeTemplate?.activityTypeTemplate === ADDON || service?.activityTypeTemplate?.activityTypeTemplate === HIT) ? 'ADD ON || HIT' : (service?.serviceDays !== undefined && service?.serviceDays !== null) ? Object.keys(service?.serviceDays || {})?.filter(data => service?.serviceDays[data] === true)?.map(data => data)?.length : '' },
-    { field: 'Working Hours - From', value: service?.activityTypeTemplate?.activityTypeTemplate !== HIT ? service?.workingPeriod?.from : 'HIT' },
-    { field: 'Working Hours - To', value: service?.activityTypeTemplate?.activityTypeTemplate !== HIT ? service?.workingPeriod?.to : 'HIT' }
+      // { field: 'Working Hours - From', value: service?.activityTypeTemplate?.activityTypeTemplate !== HIT ? service?.workingPeriod?.from : 'HIT' },
+      // { field: 'Working Hours - To', value: service?.activityTypeTemplate?.activityTypeTemplate !== HIT ? service?.workingPeriod?.to : 'HIT' }
     ];
+    if (service?.activityTypeTemplate?.activityTypeTemplate !== ONCALL || (service?.activityTypeTemplate?.activityTypeTemplate === ONCALL && !service?.customizedSchedule)) {
+      fieldData.push(...[{ field: 'Service Days', value: (service?.activityTypeTemplate?.activityTypeTemplate === ADDON || service?.activityTypeTemplate?.activityTypeTemplate === HIT) ? 'ADD ON || HIT' : (service?.serviceDays !== undefined && service?.serviceDays !== null) ? Object.keys(service?.serviceDays || {})?.filter(data => service?.serviceDays[data] === true)?.map(data => data)?.length : '' }])
+    }
     if (service?.additionalSchedule?.scheduleRequired) {
       fieldData.push(...[{ field: 'Additional Schedule Value', value: service?.additionalSchedule?.value }, { field: 'Additional Schedule Frequency', value: service?.additionalSchedule?.frequency === 'NA' ? '' : service?.additionalSchedule?.frequency }]);
     }
@@ -323,23 +336,27 @@ export const validateServices = (contract) => {
       })
       if (service?.customizedSchedule) {
         if (service?.customschedule?.weekdayDay?.activity?.activity !== '') {
-          fieldData.push(...[{ field: 'Custom Schedule Weekday Day Service days', value: Object.values(service?.customschedule?.weekdayDay?.serviceWeekDays)?.filter(data => data === true)?.map(data => data)?.length }]);
+          fieldData.push(...[{ field: 'Custom Schedule Weekday Day Service days', value: Object.values(service?.customschedule?.weekdayDay?.serviceWeekDays || {})?.filter(data => data === true)?.map(data => data)?.length }]);
           fieldData.push(...[{ field: 'Custom Schedule Weekday Day From', value: service?.customschedule?.weekdayDay?.from }]);
           fieldData.push(...[{ field: 'Custom Schedule Weekday Day To', value: service?.customschedule?.weekdayDay?.to }]);
           fieldData.push(...[{ field: 'Custom Schedule Weekday Day Duration', value: service?.customschedule?.weekdayDay?.duration?.hours }]);
           fieldData.push(...[{ field: 'Custom Schedule Weekday Day Min', value: service?.customschedule?.weekdayDay?.target?.minimum?.value }]);
           fieldData.push(...[{ field: 'Custom Schedule Weekday Day Frequency', value: service?.customschedule?.weekdayDay?.target?.frequency }]);
+          fieldData.push(...[{ field: 'Custom Schedule Weekday Day Service Rate', value: service?.customschedule?.weekdayDay?.serviceRate?.rate }]);
+          fieldData.push(...[{ field: 'Custom Schedule Weekday Day Service Frequency', value: service?.customschedule?.weekdayDay?.serviceRate?.rateFrequency }]);
           if (!service?.customschedule?.weekdayDay?.paymentNotApplicable) {
             fieldData.push(...[{ field: 'Custom Schedule Weekday Day Payment Amount', value: service?.customschedule?.weekdayDay?.payableAmount?.value }]);
           }
         }
         if (service?.customschedule?.weekdayNight?.activity?.activity !== '') {
-          fieldData.push(...[{ field: 'Custom Schedule Weekday Night Service days', value: Object.values(service?.customschedule?.weekdayNight?.serviceWeekDays)?.filter(data => data === true)?.map(data => data)?.length }]);
+          fieldData.push(...[{ field: 'Custom Schedule Weekday Night Service days', value: Object.values(service?.customschedule?.weekdayNight?.serviceWeekDays || {})?.filter(data => data === true)?.map(data => data)?.length }]);
           fieldData.push(...[{ field: 'Custom Schedule Weekday Night From', value: service?.customschedule?.weekdayNight?.from }]);
           fieldData.push(...[{ field: 'Custom Schedule Weekday Night To', value: service?.customschedule?.weekdayNight?.to }]);
           fieldData.push(...[{ field: 'Custom Schedule Weekday Night Duration', value: service?.customschedule?.weekdayNight?.duration?.hours }]);
           fieldData.push(...[{ field: 'Custom Schedule Weekday Night Min', value: service?.customschedule?.weekdayNight?.target?.minimum?.value }]);
           fieldData.push(...[{ field: 'Custom Schedule Weekday Night Frequency', value: service?.customschedule?.weekdayNight?.target?.frequency }]);
+          fieldData.push(...[{ field: 'Custom Schedule Weekday Night Service Rate', value: service?.customschedule?.weekdayNight?.serviceRate?.rate }]);
+          fieldData.push(...[{ field: 'Custom Schedule Weekday Night Service Frequency', value: service?.customschedule?.weekdayNight?.serviceRate?.rateFrequency }]);
           if (!service?.customschedule?.weekdayNight?.paymentNotApplicable) {
             fieldData.push(...[{ field: 'Custom Schedule Weekday Night Payment Amount', value: service?.customschedule?.weekdayNight?.payableAmount?.value }]);
           }
@@ -352,6 +369,8 @@ export const validateServices = (contract) => {
           fieldData.push(...[{ field: 'Custom Schedule Weekend Duration', value: service?.customschedule?.weekend?.duration?.hours }]);
           fieldData.push(...[{ field: 'Custom Schedule Weekend Min', value: service?.customschedule?.weekend?.target?.minimum?.value }]);
           fieldData.push(...[{ field: 'Custom Schedule Weekend Frequency', value: service?.customschedule?.weekend?.target?.frequency }]);
+          fieldData.push(...[{ field: 'Custom Schedule Weekend Service Rate', value: service?.customschedule?.weekend?.serviceRate?.rate }]);
+          fieldData.push(...[{ field: 'Custom Schedule Weekend Service Frequency', value: service?.customschedule?.weekend?.serviceRate?.rateFrequency }]);
           if (!service?.customschedule?.weekend?.paymentNotApplicable) {
             fieldData.push(...[{ field: 'Custom Schedule Weekend Payment Amount', value: service?.customschedule?.weekend?.payableAmount?.value }]);
           }
@@ -363,6 +382,8 @@ export const validateServices = (contract) => {
           fieldData.push(...[{ field: 'Custom Schedule Holiday Duration', value: service?.customschedule?.holiday?.duration?.hours }]);
           fieldData.push(...[{ field: 'Custom Schedule Holiday Min', value: service?.customschedule?.holiday?.target?.minimum?.value }]);
           fieldData.push(...[{ field: 'Custom Schedule Holiday Frequency', value: service?.customschedule?.holiday?.target?.frequency }]);
+          fieldData.push(...[{ field: 'Custom Schedule Holiday Service Rate', value: service?.customschedule?.holiday?.serviceRate?.rate }]);
+          fieldData.push(...[{ field: 'Custom Schedule Holiday Service Frequency', value: service?.customschedule?.holiday?.serviceRate?.rateFrequency }]);
           if (!service?.customschedule?.holiday?.paymentNotApplicable) {
             fieldData.push(...[{ field: 'Custom Schedule Holiday Payment Amount', value: service?.customschedule?.holiday?.payableAmount?.value }]);
           }
@@ -396,6 +417,7 @@ export const validateServices = (contract) => {
 };
 
 export const validatePaymentsAndCompensation = (contract) => {
+  console.log(contract)
   let payments = contract?.paymentAndCompensation;
   let isEmptyField = [];
   let fieldData = [];
@@ -450,10 +472,10 @@ export const validatePaymentsAndCompensation = (contract) => {
           field: `Max Payment Per Contract ${index + 1}`,
           value: data?.maxPaymentPerContract,
         },
-        {
-          field: `Providing Additional Services ${index + 1}`,
-          value: data?.providingAdditionalServices,
-        },
+        // {
+        //   field: `Reduced Number Of Services Services ${index + 1}`,
+        //   value: data?.reducedNumberOfServices,
+        // },
         // { field: `OverUnderPayment ${index + 1}`, value: data?.overUnderPayment },
         {
           field: `Payment Based on Fixed Hours Vs Actual ${index + 1}`,
@@ -461,41 +483,26 @@ export const validatePaymentsAndCompensation = (contract) => {
         },
       ]
     );
-    if (
-      contract?.contractDetail?.continuationPolicy?.contractPolicyType !==
-      "FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET" &&
-      contract?.contractDetail?.continuationPolicy?.contractPolicyType !==
-      "ACTIVITY_BASED" &&
-      contract?.contractDetail?.continuationPolicy?.contractPolicyType !==
-      "AUTORENEWAL"
-    ) {
+
+    if (contract?.contractDetail?.compensationPolicy !== 'ACTIVITY_BASED' && contract?.contractDetail?.compensationPolicy !== 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET') {
       fieldData.push(
         ...[
           {
-            field: `Max Payment Per Timesheet Submission ${index + 1}`,
+            field: `Fixed Compensation Value Per Timesheet Submission ${index + 1}`,
             value: data?.maxPaymentPerTimesheetSubmission,
           },
           {
-            field: `Reduced Number Of Services ${index + 1}`,
-            value: data?.reducedNumberOfServices,
+            field: `Providing Additional Services ${index + 1}`,
+            value: data?.providingAdditionalServices !== 'NA' ? data?.providingAdditionalServices : "",
+          },
+          {
+            field: `Reduced Number Of Services Services ${index + 1}`,
+            value: data?.reducedNumberOfServices !== 'NA' ? data?.reducedNumberOfServices : "",
           },
         ]
       );
     }
-    else if (
-      contract?.contractDetail?.continuationPolicy?.contractPolicyType ===
-      "FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET"
-    ) {
-      fieldData.push(
-        ...[
-          {
-            field: `Max Payment Per Timesheet Submission ${index + 1}`,
-            value: data?.maxPaymentPerTimesheetSubmission,
-          },
-        ]
-      );
-    } else {
-    }
+
   });
 
   let temp = fieldData
@@ -515,10 +522,7 @@ export const validateTimesheetSubmission = (contract) => {
   let timesheets = contract?.timesheetSubmissionTerms;
   let isEmptyField = [];
   let fieldData = [];
-  if (
-    timesheets === null ||
-    timesheets?.timesheetSubmissionServicesCount?.count === 0
-  ) {
+  if (timesheets === null || timesheets?.timesheetSubmissionServicesCount?.count === 0) {
     isEmptyField = [
       "Number Of Timesheet",
       "Timesheet Label",
@@ -529,81 +533,88 @@ export const validateTimesheetSubmission = (contract) => {
       "Day Limit For Submission Of Timesheet Based On Contract End Date",
       "Invoice Processing Days",
       "Planned Absence Limit",
+      "Maximum Unplanned Absence Days",
       "Maximum Absence Allowed",
       "Invoice Processing Goal",
       "Invoice Processing Threshold",
     ];
   }
-  timesheets?.timesheetActivitiesPeriods?.map((data, index) => {
-    let fieldData = [
-      {
-        field: "Number Of Timesheet",
-        value: timesheets?.timesheetSubmissionServicesCount?.count,
-      },
-      {
-        field: `Timesheet Label ${index + 1}`,
-        value: data?.timesheetLabel?.label,
-      },
-      { field: `Payment Source ${index + 1}`, value: data?.paymentSource },
-      {
-        field: `Service Log Period For Timesheet Submission ${index + 1}`,
-        value: data?.servicePeriod?.value,
-      },
-      {
-        field: `Contracted Activity To Include ${index + 1}`,
-        value: data?.activities?.length,
-      },
-      {
-        field:
-          "Day Limit For Submission Of Timesheet Based On Activity Service Date",
-        value: timesheets?.dayLimit?.activityServiceDate?.days,
-      },
-      {
-        field:
-          "Day Limit For Submission Of Timesheet Based On Contract End Date",
-        value: timesheets?.dayLimit?.contractEndDate?.days,
-      },
-      {
-        field: "Maximum Absence Allowed",
-        value: timesheets?.maximumAbsenceAllowed?.days,
-      },
-      {
-        field: "Planned Absence Limit",
-        value: timesheets?.plannedAbsenceLimit?.days,
-      },
-      {
-        field: "Invoice Processing Days",
-        value: timesheets?.invoiceProcessing?.days,
-      },
-      {
-        field: "Invoice Processing Goal",
-        value: timesheets?.invoiceProcessing?.goal,
-      },
-      {
-        field: "Invoice Processing Threshold",
-        value: timesheets?.invoiceProcessing?.threshold,
-      },
-    ];
-    let temp = fieldData
-      ?.filter(
-        (data) =>
-          data?.value === null ||
-          data?.value === "" ||
-          data?.value === undefined ||
-          data?.value === 0
-      )
-      ?.map((data) => data?.field);
-    isEmptyField.push(...temp);
-  });
+
+  fieldData = [
+    { field: "Number Of Timesheet", value: timesheets?.timesheetSubmissionServicesCount?.count !== 0 ? timesheets?.timesheetSubmissionServicesCount?.count : '' },
+  ];
+
+  timesheets && timesheets?.timesheetActivitiesPeriods?.map((data, index) => {
+    fieldData?.push(
+      ...[
+        {
+          field: `Timesheet Label ${index + 1}`,
+          value: data?.timesheetLabel?.label,
+        },
+        { field: `Payment Source ${index + 1}`, value: data?.paymentSource },
+        {
+          field: `Service Log Period For Timesheet Submission ${index + 1}`,
+          value: data?.servicePeriod?.value,
+        },
+        {
+          field: `Contracted Activity To Include ${index + 1}`,
+          value: data?.activities?.length,
+        },
+        {
+          field:
+            "Day Limit For Submission Of Timesheet Based On Activity Service Date",
+          value: timesheets?.dayLimit?.activityServiceDate?.days,
+        },
+        {
+          field:
+            "Day Limit For Submission Of Timesheet Based On Contract End Date",
+          value: timesheets?.dayLimit?.contractEndDate?.days,
+        },
+        {
+          field: "Maximum Absence Allowed",
+          value: timesheets?.maximumAbsenceAllowed?.days,
+        },
+        {
+          field: "Planned Absence Limit",
+          value: timesheets?.plannedAbsenceLimit?.days,
+        },
+        {
+          field: "Maximum Unplanned Absence Days",
+          value: timesheets?.maximumAbsenceAllowed?.days,
+        },
+        {
+          field: "Invoice Processing Days",
+          value: timesheets?.invoiceProcessing?.days,
+        },
+        {
+          field: "Invoice Processing Goal",
+          value: timesheets?.invoiceProcessing?.goal,
+        },
+        {
+          field: "Invoice Processing Threshold",
+          value: timesheets?.invoiceProcessing?.threshold,
+        }
+      ]);
+  })
+
+  const temp = fieldData
+    ?.filter(
+      (data) =>
+        data?.value === null ||
+        data?.value === "" ||
+        data?.value === undefined ||
+        data?.value === 0
+    )
+    ?.map((data) => data?.field);
+  isEmptyField = temp;
   return isEmptyField;
 };
 
 export const validateTimesheetProcessingWorkflow = (contract) => {
   let isValid = false;
-  if (
-    contract?.workFlowDetails?.length ===
-    contract?.timesheetSubmissionTerms?.timesheetActivitiesPeriods?.length
-  ) {
+  if (contract?.workFlowDetails?.length > 0 &&
+    contract?.timesheetSubmissionTerms?.timesheetActivitiesPeriods?.length > 0 &&
+    contract?.workFlowDetails?.length === contract?.timesheetSubmissionTerms?.timesheetActivitiesPeriods?.length) {
     isValid = true;
   }
   return isValid;

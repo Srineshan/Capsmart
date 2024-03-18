@@ -15,6 +15,8 @@ import { format } from "date-fns";
 import Navbar from "../../Components/Navbar";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import SideBar from "../../Components/Sidebar";
+import { formatInTimeZone } from "date-fns-tz";
+import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
 
 const BoardCertification = () => {
   const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
@@ -68,7 +70,9 @@ const BoardCertification = () => {
     );
 
     const date = new Date(lastModifiedDate.terminationReason?.lastModified);
-    setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
+    setLastUpdatedDate(
+      `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
+    );
   };
 
   const handleToggle = (index, data) => {
@@ -161,6 +165,7 @@ const BoardCertification = () => {
               needHeader={true}
               getAddEntityDialog={getAddEntityDialog}
               Title={"ADD TERMINATION"}
+              setIsEdit={setIsEdit}
             />
 
             <div className={style.marginTop35}>

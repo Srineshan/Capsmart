@@ -99,7 +99,7 @@ const ClientAdminDashboard = () => {
                           DEPARTMENTS / SERVICE AREAS BY ENTITY / SITE
                         </h5>
                         {lastUpdatedDate?.departments?.standardList === true &&
-                        lastUpdatedDate?.departments?.lastModified !== null ? (
+                          lastUpdatedDate?.departments?.lastModified !== null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol}`}
                           >
@@ -123,7 +123,7 @@ const ClientAdminDashboard = () => {
                         )}
 
                         {lastUpdatedDate?.departments?.standardList === false &&
-                        lastUpdatedDate?.departments?.lastModified !== null ? (
+                          lastUpdatedDate?.departments?.lastModified !== null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol}`}
                           >
@@ -171,7 +171,7 @@ const ClientAdminDashboard = () => {
                         </h5>
                         {lastUpdatedDate?.absenceResons?.standardList ===
                           true &&
-                        lastUpdatedDate?.absenceResons?.lastModified !==
+                          lastUpdatedDate?.absenceResons?.lastModified !==
                           null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol}`}
@@ -197,7 +197,7 @@ const ClientAdminDashboard = () => {
 
                         {lastUpdatedDate?.absenceResons?.standardList ===
                           false &&
-                        lastUpdatedDate?.absenceResons?.lastModified !==
+                          lastUpdatedDate?.absenceResons?.lastModified !==
                           null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
@@ -224,7 +224,7 @@ const ClientAdminDashboard = () => {
                         )}
 
                         {lastUpdatedDate?.absenceResons?.lastModified ===
-                        null ? (
+                          null ? (
                           <div
                             className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
                           >
@@ -246,7 +246,7 @@ const ClientAdminDashboard = () => {
                           NAME SUFFIX
                         </h5>
                         {lastUpdatedDate?.nameSuffix?.standardList === true &&
-                        lastUpdatedDate?.nameSuffix?.lastModified !== null ? (
+                          lastUpdatedDate?.nameSuffix?.lastModified !== null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol}`}
                           >
@@ -270,7 +270,7 @@ const ClientAdminDashboard = () => {
                         )}
 
                         {lastUpdatedDate?.nameSuffix?.standardList === false &&
-                        lastUpdatedDate?.nameSuffix?.lastModified !== null ? (
+                          lastUpdatedDate?.nameSuffix?.lastModified !== null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
                           >
@@ -319,8 +319,8 @@ const ClientAdminDashboard = () => {
                         </h5>
                         {lastUpdatedDate?.contractedServiceProviders
                           ?.standardList === true &&
-                        lastUpdatedDate?.contractedServiceProviders
-                          ?.lastModified !== null ? (
+                          lastUpdatedDate?.contractedServiceProviders
+                            ?.lastModified !== null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol}`}
                           >
@@ -345,8 +345,8 @@ const ClientAdminDashboard = () => {
 
                         {lastUpdatedDate?.contractedServiceProviders
                           ?.standardList === false &&
-                        lastUpdatedDate?.contractedServiceProviders
-                          ?.lastModified !== null ? (
+                          lastUpdatedDate?.contractedServiceProviders
+                            ?.lastModified !== null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
                           >
@@ -386,6 +386,8 @@ const ClientAdminDashboard = () => {
                       </div>
                     </Link>
                   </div>
+
+
                 </div>
                 <div className={style.margin20}>
                   <div className={style.grid4}>
@@ -400,7 +402,7 @@ const ClientAdminDashboard = () => {
                         </h5>
                         {lastUpdatedDate?.functionalTitles?.standardList ===
                           true &&
-                        lastUpdatedDate?.functionalTitles?.lastModified !==
+                          lastUpdatedDate?.functionalTitles?.lastModified !==
                           null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol}`}
@@ -426,7 +428,7 @@ const ClientAdminDashboard = () => {
 
                         {lastUpdatedDate?.functionalTitles?.standardList ===
                           false &&
-                        lastUpdatedDate?.functionalTitles?.lastModified !==
+                          lastUpdatedDate?.functionalTitles?.lastModified !==
                           null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
@@ -453,7 +455,7 @@ const ClientAdminDashboard = () => {
                         )}
 
                         {lastUpdatedDate?.functionalTitles?.lastModified ===
-                        null ? (
+                          null ? (
                           <div
                             className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
                           >
@@ -477,7 +479,7 @@ const ClientAdminDashboard = () => {
                         </h5>
                         {lastUpdatedDate?.terminationReason?.standardList ===
                           true &&
-                        lastUpdatedDate?.terminationReason?.lastModified !==
+                          lastUpdatedDate?.terminationReason?.lastModified !==
                           null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol}`}
@@ -503,7 +505,7 @@ const ClientAdminDashboard = () => {
 
                         {lastUpdatedDate?.terminationReason?.standardList ===
                           false &&
-                        lastUpdatedDate?.terminationReason?.lastModified !==
+                          lastUpdatedDate?.terminationReason?.lastModified !==
                           null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
@@ -530,7 +532,7 @@ const ClientAdminDashboard = () => {
                         )}
 
                         {lastUpdatedDate?.terminationReason?.lastModified ===
-                        null ? (
+                          null ? (
                           <div
                             className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
                           >
@@ -554,7 +556,7 @@ const ClientAdminDashboard = () => {
                         </h5>
                         {lastUpdatedDate?.contractedService?.standardList ===
                           true &&
-                        lastUpdatedDate?.contractedService?.lastModified !==
+                          lastUpdatedDate?.contractedService?.lastModified !==
                           null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol}`}
@@ -580,7 +582,7 @@ const ClientAdminDashboard = () => {
 
                         {lastUpdatedDate?.contractedService?.standardList ===
                           false &&
-                        lastUpdatedDate?.contractedService?.lastModified !==
+                          lastUpdatedDate?.contractedService?.lastModified !==
                           null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
@@ -607,7 +609,7 @@ const ClientAdminDashboard = () => {
                         )}
 
                         {lastUpdatedDate?.contractedService?.lastModified ===
-                        null ? (
+                          null ? (
                           <div
                             className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
                           >
@@ -629,7 +631,7 @@ const ClientAdminDashboard = () => {
                           HOLIDAY LIST BY ENTITY TYPE
                         </h5>
                         {lastUpdatedDate?.holidayList?.standardList === true &&
-                        lastUpdatedDate?.holidayList?.lastModified !== null ? (
+                          lastUpdatedDate?.holidayList?.lastModified !== null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol}`}
                           >
@@ -653,7 +655,7 @@ const ClientAdminDashboard = () => {
                         )}
 
                         {lastUpdatedDate?.holidayList?.standardList === false &&
-                        lastUpdatedDate?.holidayList?.lastModified !== null ? (
+                          lastUpdatedDate?.holidayList?.lastModified !== null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
                           >
@@ -803,8 +805,8 @@ const ClientAdminDashboard = () => {
                         </h5>
                         {lastUpdatedDate?.costCenterAndServiceLocation
                           ?.standardList === true &&
-                        lastUpdatedDate?.costCenterAndServiceLocation
-                          ?.lastModified !== null ? (
+                          lastUpdatedDate?.costCenterAndServiceLocation
+                            ?.lastModified !== null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol}`}
                           >
@@ -829,8 +831,8 @@ const ClientAdminDashboard = () => {
 
                         {lastUpdatedDate?.costCenterAndServiceLocation
                           ?.standardList === false &&
-                        lastUpdatedDate?.costCenterAndServiceLocation
-                          ?.lastModified !== null ? (
+                          lastUpdatedDate?.costCenterAndServiceLocation
+                            ?.lastModified !== null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
                           >
@@ -857,6 +859,82 @@ const ClientAdminDashboard = () => {
 
                         {lastUpdatedDate?.costCenterAndServiceLocation
                           ?.lastModified === null ? (
+                          <div
+                            className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
+                          >
+                            <span className={style.dashboardCardColorOption4}>
+                              SETUP REQUIRED
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </Link>
+                    <Link
+                      to={"/referenceList/contractTypeForCustomer"}
+                      className={style.linkStyle}
+                    >
+                      <div className={style.dashboardCardStyle}>
+                        <h5 className={`${style.headingForReferenceList}`}>
+                          CONTRACT TYPE BY ENTITY / SITE TYPE
+                        </h5>
+                        {lastUpdatedDate?.contractType?.standardList ===
+                          true &&
+                          lastUpdatedDate?.contractType?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol}`}
+                          >
+                            <span className={style.dashboardCardColorOption1}>
+                              STANDARD LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.contractType?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.contractType?.standardList ===
+                          false &&
+                          lastUpdatedDate?.contractType?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
+                          >
+                            <span
+                              className={`${style.dashboardCardColorOption3}`}
+                            >
+                              MY CUSTOM LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.contractType?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.contractType?.lastModified ===
+                          null ? (
                           <div
                             className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
                           >

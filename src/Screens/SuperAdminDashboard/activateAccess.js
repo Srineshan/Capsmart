@@ -60,13 +60,6 @@ const ActivateAccess = () => {
     handlePasswordStrengthCheck();
   }, [password]);
 
-  useEffect(() => {
-    getUser();
-    getEntityLogo();
-    getEntity();
-  }, [tenantId])
-
-
   const handlePasswordStrengthCheck = () => {
     if (/^(?=.*[@$!%#?&^()*~`])/.test(password)) {
       setIsSpecialCharacterAvailable(true);
@@ -96,8 +89,14 @@ const ActivateAccess = () => {
     setPasswordStrengthLength([isCapitalCharacterAvailable, isSmallCharacterAvailable, isMin8CharacterAvailable, isNumberAvailable, isSpecialCharacterAvailable]?.filter(data => data === true)?.length)
   }
 
+  useEffect(() => {
+    getUser();
+    getEntityLogo();
+    getEntity();
+  }, [tenantId])
+
   const getEntityId = async () => {
-    await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/entity-service/entityID`, {
+    await axios(`http://ec2-35-175-13-4.compute-1.amazonaws.com:8010/entity-service/entityID`, {
       method: 'GET',
       // headers: { "X-subdomain": "smmc-trial" },
     }).then(response => {
@@ -125,7 +124,7 @@ const ActivateAccess = () => {
   }
 
   const getUser = async () => {
-    await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/user-management-service/user`, {
+    await axios(`http://ec2-35-175-13-4.compute-1.amazonaws.com:8010/user-management-service/user`, {
       method: 'GET',
       headers: headers,
     }).then(response => {
@@ -157,7 +156,7 @@ const ActivateAccess = () => {
     //             "password": password,
     //         }
     //     }
-    //     axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/user-management-service/user/updatepassword`, {
+    //     axios(`http://ec2-35-175-13-4.compute-1.amazonaws.com:8010/user-management-service/user/updatepassword`, {
     //         method: 'POST',
     //         headers: headers,
     //         data: JSON.stringify(data),
@@ -168,6 +167,9 @@ const ActivateAccess = () => {
     //         .catch(error => {
     //             console.log('Error', error);
     //             ErrorToaster(error?.response?.data);
+
+    //         })
+    // }
   }
 
   const EyeOpenElement = (index) => {

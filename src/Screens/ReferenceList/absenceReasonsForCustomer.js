@@ -22,6 +22,8 @@ import { Link } from "react-router-dom";
 import ArrowDown from "./../../images/arrowDown.png";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
+import { formatInTimeZone } from "date-fns-tz";
+import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
 
 const AbsenceReasonsForCustomer = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -85,7 +87,9 @@ const AbsenceReasonsForCustomer = () => {
       `entity-service/referenceList/entity/${entityId}`
     );
     const date = new Date(lastModifiedDate.absenceResons?.lastModified);
-    setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
+    setLastUpdatedDate(
+      `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
+    );
   };
 
   const getAbsenceReasonMaster = async () => {

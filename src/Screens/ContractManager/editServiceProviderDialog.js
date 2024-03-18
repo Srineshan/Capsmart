@@ -23,6 +23,10 @@ import { valueCheck } from "./../../utils/valueCheck";
 
 import style from "./index.module.scss";
 
+const TEXTFIELDLEN50 = 50;
+const TEXTFIELDLEN100 = 100;
+const MAXZIPCODELEN = 10;
+
 const EditServiceProvider = ({
   getEditServiceDialog,
   userProviderData,
@@ -225,12 +229,22 @@ const EditServiceProvider = ({
 
   const handleRoles = (value) => {
     if (value !== "0") {
-      const selectedValue = roles
-        .filter((data) => data?.roleName === value)
-        .map((data) => data)[0];
+      let selectedValue = [];
+      if (value === "Aggregator" || value === "Activity Logger") {
+        selectedValue = selectedRoles?.filter(data => data?.roleName !== "Passive Activity Logger")?.map(data => data);
+        roles?.filter((data) => data?.roleName === "Aggregator" || data?.roleName === "Activity Logger")?.map(data => selectedValue.push(data))
+      } else if (value === "Passive Activity Logger") {
+        selectedValue = selectedRoles?.filter(data => data?.roleName !== "Activity Logger" && data?.roleName !== "Aggregator")?.map(data => data);;
+        roles?.filter((data) => data?.roleName === "Passive Activity Logger")?.map(data => selectedValue.push(data))
+      } else {
+        selectedValue = [...selectedRoles];
+        selectedValue.push(roles
+          .filter((data) => data?.roleName === value)
+          .map((data) => data)[0])
+      }
+      if (!selectedRoles?.map((data) => data?.roleName).includes(value)) {
+        setSelectedRoles(selectedValue)
 
-      if (!selectedRoles.map((data) => data?.roleName).includes(value)) {
-        setSelectedRoles([...selectedRoles, selectedValue]);
       }
     }
   };
@@ -245,8 +259,8 @@ const EditServiceProvider = ({
       };
       return (
         <Tag
-          key={index}
-          onRemove={tag?.roleName !== "Activity Logger" && onRemove}
+          key={`${tag?.roleName} - ${index}`}
+          onRemove={tag?.roleName !== "Activity Logger" && tag?.roleName !== "Passive Activity Logger" && tag?.roleName !== "Aggregator" && onRemove}
           large={true}
           className={style.tagStyle}
         >
@@ -263,16 +277,16 @@ const EditServiceProvider = ({
       setRoles(roles);
     }
     let temp = selectedRoles;
-    if (
-      !selectedRoles?.map((data) => data?.roleName)?.includes("Activity Logger")
-    ) {
-      temp.push(
-        roles
-          ?.filter((role) => role?.roleName === "Activity Logger")
-          ?.map((data) => data)[0]
-      );
-      setSelectedRoles(temp);
-    }
+    // if (
+    //   !selectedRoles?.map((data) => data?.roleName)?.includes("Activity Logger")
+    // ) {
+    //   temp.push(
+    //     roles
+    //       ?.filter((role) => role?.roleName === "Activity Logger")
+    //       ?.map((data) => data)[0]
+    //   );
+    setSelectedRoles(temp);
+    // }
   };
 
   const handleUserData = (name, value) => {
@@ -541,6 +555,18 @@ const EditServiceProvider = ({
       return;
     }
 
+    if (siteLevel && siteTitleValues?.length === 0) {
+      ErrorToaster("Select Sites for all the Fields");
+      setContinueLoading(false);
+      return;
+    }
+
+    if (departmentLevel && departmentTitleValues?.length === 0) {
+      ErrorToaster("Select Departments for all the Fields");
+      setContinueLoading(false);
+      return;
+    }
+
     const data = {
       id: userProviderData?.id,
       name: {
@@ -555,11 +581,11 @@ const EditServiceProvider = ({
         title: "",
       },
       email: {
-        officialEmail: userDetails?.email,
+        officialEmail: userDetails?.email?.trim(),
       },
-      ssoId: userDetails?.ssoId,
+      ssoId: userDetails?.ssoId?.id?.trim(),
       communication: {
-        personalEmail: userDetails?.email,
+        personalEmail: userDetails?.email?.trim(),
         mobileNumber: userDetails?.phone,
         landlineNumber: "",
         mobileNumberNotApplicable: phoneNA,
@@ -862,6 +888,7 @@ const EditServiceProvider = ({
                 className={style.fullWidth}
                 placeholder="Street"
                 value={address?.addressLine}
+                maxLength={TEXTFIELDLEN100}
                 onChange={(e) =>
                   setAddress({ ...address, addressLine: e.target.value })
                 }
@@ -871,18 +898,21 @@ const EditServiceProvider = ({
                   className={style.fullWidth}
                   placeholder="City"
                   value={address.city}
+                  maxLength={TEXTFIELDLEN50}
                   onChange={(e) => handleAddress("city", e.target.value)}
                 />
                 <CommonInputField
                   className={style.fullWidth}
                   placeholder="State"
                   value={address.state}
+                  maxLength={TEXTFIELDLEN50}
                   onChange={(e) => handleAddress("state", e.target.value)}
                 />
                 <CommonInputField
                   className={style.fullWidth}
                   placeholder="Zipcode"
                   value={address.zipcode}
+                  maxLength={MAXZIPCODELEN}
                   onChange={(e) => handleAddress("zipcode", e.target.value)}
                 />
               </div>
@@ -1073,7 +1103,7 @@ const EditServiceProvider = ({
                   )?.length === 0
                     ? roles?.map((data) => data?.roleName)
                     : roles
-                      ?.filter((data) => data?.roleName !== "Aggregator")
+                      ?.filter((data) => data?.roleName !== "Aggregator" && data?.roleName !== "Activity Logger")
                       ?.map((data) => data?.roleName)
                 }
                 labelList={
@@ -1084,7 +1114,7 @@ const EditServiceProvider = ({
                   )?.length === 0
                     ? roles?.map((data) => data?.roleName)
                     : roles
-                      ?.filter((data) => data?.roleName !== "Aggregator")
+                      ?.filter((data) => data?.roleName !== "Aggregator" && data?.roleName !== "Activity Logger")
                       ?.map((data) => data?.roleName)
                 }
                 disabledList={
@@ -1095,7 +1125,7 @@ const EditServiceProvider = ({
                   )?.length === 0
                     ? roles?.map((data) => false)
                     : roles
-                      ?.filter((data) => data?.roleName !== "Aggregator")
+                      ?.filter((data) => data?.roleName !== "Aggregator" && data?.roleName !== "Activity Logger")
                       ?.map((data) => false)
                 }
               />
@@ -1110,12 +1140,10 @@ const EditServiceProvider = ({
             <button
               className={`${style.buttonStyle}  ${style.cursorPointer} ${style.marginLeft20
                 } ${continueLoading ? style.disabled : ""}`}
-              onClick={
-                !continueLoading
-                  ? () => {
-                    handleSave();
-                  }
-                  : {}
+              onClick={() => {
+                !continueLoading &&
+                  handleSave();
+              }
               }
             >
               SAVE & EXIT

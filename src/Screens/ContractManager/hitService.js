@@ -6,7 +6,7 @@ import FormControl from '@mui/material/FormControl';
 import InputAdornment from '@mui/material/InputAdornment';
 import AddIcon from '@mui/icons-material/Add';
 import Select from '@mui/material/Select';
-import { TextArea, Icon, Dialog, Classes, Intent } from '@blueprintjs/core';
+import { TextArea, Icon, Dialog, Classes, Intent, ProgressBar } from '@blueprintjs/core';
 import Tooltip from '@mui/material/Tooltip';
 import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 import TextField from '@mui/material/TextField';
@@ -62,7 +62,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
     services?.filter(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => {
         let activityName = data?.activityType?.activityType;
         let activities = data?.activities?.map(data => data?.activity);
-        let result = `${activityName} (${activities?.map(data => data)?.join(', ')})`
+        let result = `${activityName} (${activities?.map(data => data)?.join('-')})`
         specificDedicatedHoursList.push(result);
     });
 
@@ -74,17 +74,20 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         totalSessionFrequency: 'NA',
         sessionAmount: '0',
         hourlyRate: '0',
-        sessionDuration: '0',
+        sessionDuration: '1',
+        serviceRate: '0',
+        serviceRateDuration: '0',
+        serviceRateFrequency: 'SESSION',
         serviceDays: {
-            tuesday: false,
-            wednesday: false,
-            thursday: false,
-            friday: false,
-            saturday: false,
-            sunday: false,
-            weekDays: false,
-            weekEnds: false,
-            monday: false
+            tuesday: true,
+            wednesday: true,
+            thursday: true,
+            friday: true,
+            saturday: true,
+            sunday: true,
+            weekDays: true,
+            weekEnds: true,
+            monday: true
         },
         selectedActivities: [],
         weekdaysCount: '0',
@@ -95,10 +98,10 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         contractTermPeriodFrom: null,
         contractTermPeriodTo: null,
         contractedServiceFiles: [],
+        workingTimeFrom: null,
+        workingTimeTo: null,
         serviceAgreementOnFile: false,
     })
-
-    console.log('Contract Term Period', contractTermPeriod)
 
     const [addOnWorkFlow, setAddOnWorkFlow] = useState([]);
 
@@ -139,11 +142,6 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
 
     useEffect(() => {
         getMetaData(metadata);
-        // let fileData = [];
-        //   contractDetail?.contractFiles?.map(data => {
-        //     fileData.push({ id: data?.id, type: data?.documentType, name: data?.documentName, desc: data?.documentDescription, fileName: data?.fileName, file: null, filePath: data?.fileURL })
-        //   })
-        //   setFileFields(fileData);
     }, [metadata])
 
     useEffect(() => {
@@ -173,6 +171,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
     }
 
     const addNewDocumentField = async () => {
+        setIsLoading(true);
         let temp = fullyExecutedContractData;
         temp.push(fileFieldData);
         setFileFields(temp);
@@ -202,13 +201,13 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
             .catch(error => {
                 ErrorToaster('File Upload Failed');
             })
+        setIsLoading(false);
+        setIsShowUploadDialog(false);
     }
 
     const handleFileChange = (e, name) => {
         setFileFieldData({ ...fileFieldData, [name]: e.target.value });
     }
-
-    console.log('File Field Data', fileFieldData);
 
     const getFileData = () => {
         let temp = [];
@@ -245,17 +244,20 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
             totalSessionFrequency: 'NA',
             sessionAmount: '0',
             hourlyRate: '0',
-            sessionDuration: '0',
+            sessionDuration: '1',
+            serviceRate: '0',
+            serviceRateDuration: '0',
+            serviceRateFrequency: 'SESSION',
             serviceDays: {
-                tuesday: false,
-                wednesday: false,
-                thursday: false,
-                friday: false,
-                saturday: false,
-                sunday: false,
-                weekDays: false,
-                weekEnds: false,
-                monday: false
+                tuesday: true,
+                wednesday: true,
+                thursday: true,
+                friday: true,
+                saturday: true,
+                sunday: true,
+                weekDays: true,
+                weekEnds: true,
+                monday: true
             },
             selectedActivities: [],
             weekdaysCount: '0',
@@ -287,7 +289,10 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                 serviceDays: serviceSelected?.serviceDays,
                 sessionAmount: serviceSelected?.payableAmount?.value,
                 hourlyRate: (serviceSelected?.payableAmount?.value / serviceSelected?.duration?.hours) || 0,
-                sessionDuration: serviceSelected?.duration?.hours || '0',
+                sessionDuration: serviceSelected?.duration?.hours || '1',
+                serviceRate: serviceSelected?.serviceRate?.rate || '0',
+                serviceRateDuration: serviceSelected?.serviceRate?.duration,
+                serviceRateFrequency: serviceSelected?.serviceRate?.rateFrequency,
                 workflowId: serviceSelected?.workFlow?.id,
                 workflowName: serviceSelected?.workFlow?.workFlowName?.name,
                 activityApprovalWFRequired: serviceSelected?.activityApprovalWFRequired,
@@ -327,10 +332,12 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
     const handleValueChange = (name, value) => {
         if (name === 'dedicatedHoursSpecified') {
             if (value) {
+                console.log('value', value)
                 setMetadata({ ...metadata, sessionDuration: '1', totalSession: '0', sessionAmount: '', totalSessionFrequency: 'NA', dedicatedHoursActivityType: '', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
             } else {
-                setMetadata({ ...metadata, sessionDuration: '0', dedicatedHoursActivityType: '', sessionAmount: '', totalSession: '0', totalSessionFrequency: 'NA', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
+                setMetadata({ ...metadata, sessionDuration: '1', dedicatedHoursActivityType: '', sessionAmount: '', totalSession: '0', totalSessionFrequency: 'NA', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
             }
+
         }
         if (name === 'totalSessionFrequency' && value === "NA") {
             setMetadata({ ...metadata, [name]: value, totalSession: 0 })
@@ -341,6 +348,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         if (name === 'sessionAmount') {
             setMetadata({ ...metadata, sessionAmount: value, hourlyRate: (value / metadata?.sessionDuration) || '0' })
         }
+        console.log('inside if metadata', metadata)
     }
 
     const activityToAdd = async () => {
@@ -382,15 +390,17 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         services?.filter(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => {
             let activityName = data?.activityType?.activityType;
             let activities = data?.activities?.map(data => data?.activity);
-            if (`${activityName} (${activities?.map(data => data)?.join(', ')})` === index) {
+            if (`${activityName} (${activities?.map(data => data)?.join('-')})` === index) {
                 let dedicatedHoursActivityType = data?.activityType?.activityType;
-                let dedicatedHoursPerformingActivity = data?.activities?.map(data => data?.activity)?.join(', ');
+                let dedicatedHoursPerformingActivity = data?.activities?.map(data => data?.activity)?.join('-');
                 console.log('data', data);
                 setMetadata({
                     ...metadata,
                     dedicatedHoursActivityType: dedicatedHoursActivityType,
                     dedicatedHoursPerformingActivity: dedicatedHoursPerformingActivity,
                     sessionDuration: data?.duration?.hours,
+                    serviceRate: data?.serviceRate?.rate,
+                    serviceRateFrequency: data?.serviceRate?.rateFrequency,
                     totalSession: data?.totalSessions?.value,
                     totalSessionFrequency: data?.totalSessions?.frequency,
                     sessionAmount: data?.payableAmount?.value,
@@ -421,7 +431,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         }
     }
 
-    console.log('metadata', metadata);
+    console.log('metadata', metadata?.sessionDuration);
 
     const editActivitySelected = () => {
         let editableData = metadata?.selectedActivities?.filter(data => data?.id === adminActivity?.id)?.map(data => data)[0];
@@ -541,6 +551,60 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                                 disabledList={[false, false]} />
                         </div>
                     </div>
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <CommonLabel value='Service Rate' />
+                        <div className={`${style.displayInRow}`}>
+                            <div className={`${style.threeFieldWidth}`}>
+                                <CommonTextField
+                                    type="number"
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
+                                    }}
+                                    value={metadata?.serviceRate}
+                                    onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, serviceRateDuration: metadata?.serviceRateFrequency === "SESSION" ? metadata?.serviceRateDuration : 1, serviceRate: parseFloat(e.target.value.slice(0, 9)), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? (parseFloat(e.target.value.slice(0, 9)) * (metadata?.totalSession / metadata?.serviceRateDuration)) : (parseFloat(e.target.value || '0') * (metadata?.totalSession || 1)) })}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    {metadata?.serviceRateFrequency === 'SESSION' && <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <CommonLabel
+                            value="Service Rate Duration*"
+                        />
+                        <div className={style.grid3WithoutGap}>
+                            <div className={`${style.threeFieldWidth}`}>
+                                <CommonTextField
+                                    type="tel"
+                                    maxLength="3"
+                                    InputProps={{
+                                        endAdornment: (
+                                            <InputAdornment position="end" sx={{ fontSize: 10 }}>
+                                                Hours
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                    onChange={(e) =>
+                                        e.target.value >= 0 &&
+                                        setMetadata({ ...metadata, serviceRateDuration: metadata?.serviceRateFrequency === "SESSION" ? parseFloat(e.target.value || '0') : 1, sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? (metadata?.serviceRate * (metadata?.totalSession / parseFloat(e.target.value))) : (metadata?.serviceRate * parseFloat(e.target.value || '1')) })
+                                    }
+                                    value={metadata?.serviceRateDuration}
+                                />
+                            </div>
+                        </div>
+                    </div>}
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <CommonLabel value='Service Frequency' />
+                        <div className={`${style.displayInRow}`}>
+                            <div className={`${style.threeFieldWidth}`}>
+                                <CommonSelectField
+                                    value={metadata?.serviceRateFrequency || ''}
+                                    onChange={(e) => setMetadata({ ...metadata, serviceRateDuration: '1', serviceRateFrequency: e.target.value, sessionAmount: (e.target.value === 'SESSION') ? (metadata?.serviceRate * (metadata?.totalSession / metadata?.serviceRateDuration)) : (metadata?.serviceRate * (metadata?.totalSession || 1)) })}
+                                    firstOptionLabel={'Select Frequency'} firstOptionValue={''}
+                                    valueList={['SESSION', 'HOUR']}
+                                    labelList={['Per Session', 'Per Hour']}
+                                    disabledList={[false, false]} />
+                            </div>
+                        </div>
+                    </div>
 
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                         <CommonLabel value={metadata?.totalSessionFrequency === 'NA' ? 'Hourly Rate*' : 'Total Agreed to Compensation*'} />
@@ -551,12 +615,13 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                                     InputProps={{
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                     }}
+                                    disabled={true}
                                     onChange={(e) => e.target.value >= 0 && handleValueChange('sessionAmount', (e.target.value).slice(0, 6))}
                                     value={metadata?.sessionAmount}
                                 />
                             </div>
                             {metadata?.totalSessionFrequency !== 'NA' && <div className={style.verticalAlignCenter}>
-                                <CommonLabel className={` ${style.marginLeft20}`} value={metadata?.totalSession !== 0 && metadata?.totalSession !== '' && metadata?.totalSession !== NaN ? `${(metadata?.sessionAmount / metadata?.totalSession).toFixed(2)} per Hour` : ''} />
+                                <CommonLabel className={` ${style.marginLeft20}`} value={metadata?.totalSession !== 0 && metadata?.totalSession !== '' && metadata?.totalSession !== NaN ? `$ ${(metadata?.sessionAmount / metadata?.totalSession).toFixed(2)} per Hour` : ''} />
                             </div>}
                         </div>
                     </div>
@@ -601,7 +666,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                                     {data?.podRequired && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
                                 </>)}
 
-                                {metadata?.selectedActivities?.map(selectedActivity => selectedActivity?.activity)?.includes(data?.activity) && <EditOutlinedIcon style={{ color: '#7165E3' }} className={`${style.cursorPointer}`} onClick={() => {
+                                {metadata?.selectedActivities?.map(selectedActivity => selectedActivity?.activity)?.includes(data?.activity) && <EditOutlinedIcon style={{ color: '#7165E3', cursor: 'pointer' }} className={`${style.cursorPointer}`} onClick={() => {
                                     setEditAdminActivitySelected(true);
                                     let adminActivity = metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities)[0];
                                     setAdminActivity({
@@ -675,8 +740,8 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
 
                     <div>
                         <div className={` ${style.floatRight}`}>
-                            <button className={`${style.outlinedButton} ${style.cursorPointer}`} onClick={(e) => { setShowAdminActivity(false); setEditAdminActivitySelected(false); }}>CANCEL</button>
-                            <button className={`${style.buttonStyle}  ${style.marginLeft20} ${style.cursorPointer} ${isLoading ? style.disabled : ''}`} onClick={(e) => { submit() }}>SAVE</button>
+                            <button className={`${style.outlinedButton} ${style.cursorPointer} ${style.cursorPointer}`} onClick={(e) => { setShowAdminActivity(false); setEditAdminActivitySelected(false); }}>CANCEL</button>
+                            <button className={`${style.buttonStyle}  ${style.marginLeft20} ${style.cursorPointer} ${isLoading ? style.disabled : ''} ${style.cursorPointer}`} onClick={(e) => { submit() }}>SAVE</button>
                         </div>
                         <br /><br />
                     </div>
@@ -772,6 +837,31 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                <CommonLabel value='Allowable Working Day Hours For Service*' />
+                <div className={style.displayInRow}>
+                    <TimePicker
+                        useAmPm={false}
+                        onChange={(e) => {
+                            updateWorkingPeriod(e);
+                        }}
+                        disabled={contractStatus === "ACTIVE" ? true : false}
+                        value={metadata?.workingTimeFrom === null ? null : new Date(metadata?.workingTimeFrom)}
+                    />
+                    <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
+                    <TimePicker
+                        useAmPm={false}
+                        onChange={(e) => {
+                            handleValueChange('workingTimeTo', e);
+                        }}
+                        disabled={contractStatus === "ACTIVE" ? true : false}
+                        value={metadata?.workingTimeTo === null ? null : new Date(metadata?.workingTimeTo)}
+                    // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.totalSession * 60 * 60 * 1000))}
+                    />
+
+                </div>
+            </div>
+
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Effective Date*' />
                 <div className={style.termPeriodGrid}>
                     <div>
@@ -856,20 +946,22 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                             onChange={(e) => handleFileChange(e, 'name')} />
                         <TextArea rows={4} placeholder="Document Description" value={fileFieldData?.documentDescription}
                             maxLength={DESCLEN} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileChange(e, 'documentDescription')} />
-                        {/* <div>
-              <CommonInputField value={fileFieldData?.fileName !== '' ? fileFieldData?.fileName : ''} leftElement={leftElement()} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileUpload(e)} />
-            </div> */}
-                    </div>
-                    {/* )} */}
-                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
-                        <div></div>
-                        {(
-                            (fileFieldData?.documentType === '' || fileFieldData?.fileName === '' || fileFieldData?.file === null) ?
-                                <Tooltip title={'Enter All Values To Enable Upload'} arrow>
-                                    <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${style.disabledUploadButton}`} >UPLOAD</button>
-                                </Tooltip> :
-                                <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} `} disabled={false} onClick={() => { addNewDocumentField(); setIsShowUploadDialog(false) }}>UPLOAD</button>
-                        )}
+
+                        {
+                            isLoading && <div className={`${style.spaceBetween} ${style.marginTop}`}>
+                                <ProgressBar value={50} intent={Intent.PRIMARY} />
+                            </div>
+                        }
+                        <div className={`${style.spaceBetween} ${style.marginTop}`}>
+                            <div></div>
+                            {(
+                                (fileFieldData?.documentType === '' || fileFieldData?.fileName === '' || fileFieldData?.file === null) ?
+                                    <Tooltip title={'Enter All Values To Enable Upload'} arrow>
+                                        <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${style.disabledUploadButton}`} >UPLOAD</button>
+                                    </Tooltip> :
+                                    <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} `} disabled={false} onClick={() => { addNewDocumentField() }}>UPLOAD</button>
+                            )}
+                        </div>
                     </div>
                 </div>
             </Dialog>

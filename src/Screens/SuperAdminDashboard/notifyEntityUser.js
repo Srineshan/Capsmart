@@ -7,10 +7,10 @@ import { TenantID, GET } from "./../dataSaver";
 import style from "./index.module.scss";
 
 const NotifyEntityUser = () => {
-  const [userId, setUserId] = useState("");
+  const [userId, setUserId] = useState('');
 
   const notifyFunction = async () => {
-    await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/user-management-service/user/${userId}/notifyEntityUser`, {
+    await axios(`http://ec2-35-175-13-4.compute-1.amazonaws.com:8010/user-management-service/user/${userId}/notifyEntityUser`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -27,22 +27,12 @@ const NotifyEntityUser = () => {
 
   return (
     <div>
-      <InputGroup
-        type="text"
-        placeholder="Enter User Id"
-        value={userId}
-        className={`${style.marginLeft50} ${style.marginTop10} ${style.twoFieldWidth}`}
-        onChange={(e) => {
-          setUserId(e.target.value);
-        }}
-      />
-      <button
-        className={`${style.loginButton} ${style.marginTop30} ${style.twoFieldWidth}`}
+      <InputGroup type="text" placeholder="Enter User Id" value={userId} className={`${style.marginLeft50} ${style.marginTop10} ${style.twoFieldWidth}`} onChange={(e) => { setUserId(e.target.value) }} />
+      <button className={`${style.loginButton} ${style.marginTop30} ${style.twoFieldWidth}`}
         onClick={notifyFunction}
-      >
-        Notify User
-      </button>
+      >Notify User</button>
     </div>
-  );
-};
+
+  )
+}
 export default NotifyEntityUser;

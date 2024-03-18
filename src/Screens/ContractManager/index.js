@@ -21,7 +21,7 @@ const Contracts = () => {
     const [contractActivationDialog, setContractActivationDialog] = useState(false);
     const [cloneDialog, setCloneDialog] = useState(false);
     const [newContractFromClone, setNewContractFromClone] = useState(false);
-    const [contractType, setContractType] = useState('');
+    const [contractType, setContractType] = useState({ id: '', value: '' });
     const [selectedContractType, setSelectedContractType] = useState('');
     const [contracts, setContracts] = useState([]);
     const [contractId, setContractId] = useState('');
@@ -42,8 +42,7 @@ const Contracts = () => {
 
     useEffect(() => {
         getContracts();
-        setIsEditable(sessionStorage.getItem('isEditable') === 'true' ? true : false);
-    }, [selectedContract, searchKey, page, newContractFromClone])
+    }, [selectedContract, searchKey, page, newContractFromClone, totalCount])
 
     useEffect(() => {
         sessionStorage.setItem('isEditable', selectedContract !== 'draft' ? false : true)
@@ -54,6 +53,7 @@ const Contracts = () => {
     }, [sessionStorage?.getItem('isEditable')])
 
     const getSelectedContract = (value) => {
+        setSearchKey("");
         setSelectedContract(value);
         setPage(1);
     }
@@ -100,8 +100,8 @@ const Contracts = () => {
         setContractActivationDialog(value);
     }
 
-    const getContractType = (value) => {
-        setContractType(value);
+    const getContractType = (id, value) => {
+        setContractType({ id: id, value: value });
     }
 
     const getSelectedContractType = (value) => {
@@ -169,6 +169,7 @@ const Contracts = () => {
                     totalCount={totalCount}
                     page={page}
                     getActiveContractView={getActiveContractView}
+                    searchKey={searchKey}
                 />
 
                 {extensionDialog && (

@@ -48,7 +48,7 @@
 }
 
 .marginLeft20 {
-    margin-left: 10px;
+    margin-left: 20px;
 }
 
 .marginRight {
@@ -99,6 +99,12 @@
     display: grid;
     grid-template-columns: 5% 15% 15% 8% 10% 15% 8% 10% 5%;
     grid-gap: 10px;
+}
+
+.registeredUsersMultiSiteGrid {
+    display: grid;
+    grid-template-columns: 5% 15% 14% 5% 8% 10% 10% 9% 9% 5%;
+    grid-gap: 1%;
 }
 
 .invitedUsersGrid {
@@ -283,4 +289,9 @@
 .helpScrollStyle {
     height: calc(100vh - 495px);
     overflow: scroll;
+}
+
+.iconSize {
+    height: 30px;
+    width: 30px;
 }

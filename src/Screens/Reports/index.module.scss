@@ -167,7 +167,7 @@
 }
 
 .scrollStyle {
-    height: calc(100vh - 400px);
+    height: calc(100vh - 330px);
     overflow: scroll;
 }
 
@@ -507,6 +507,11 @@
     width: 15px;
 }
 
+.reportsActions {
+    height: 20px;
+    width: 20px;
+}
+
 .reduceMarginTop {
     margin-top: -5px;
 }
@@ -840,6 +845,12 @@
     display: grid;
     grid-template-columns: 12% 12% 12% 12% 12% 12% 12% 12%;
     grid-gap: 0.5%;
+}
+
+.remitToAddressGrid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1.5fr 1fr 0.5fr 0.5fr 1fr;
+    grid-gap: 20px;
 }
 
 .grid12 {
@@ -1556,4 +1567,10 @@
 
 .floatRight {
     float: right;
+}
+
+.multiProviderGrid {
+    display: grid;
+    grid-template-columns: 20% 15% 15% 23% 15% 7%;
+    grid-gap: 1%;
 }

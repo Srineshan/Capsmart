@@ -11,11 +11,12 @@ import { GET, DELETE } from "./../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import DeleteConfirmation from "../../Components/DeleteConfirmation";
 // import { format } from "date-fns";
-import { format } from "date-fns-tz";
+import { format, formatInTimeZone } from "date-fns-tz";
 import Navbar from "../../Components/Navbar";
 import SideBar from "../../Components/Sidebar";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import { index } from "d3";
+import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
 
 const IndustriesWithEntityTypes = () => {
   const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
@@ -71,7 +72,9 @@ const IndustriesWithEntityTypes = () => {
     );
 
     const date = new Date(lastModifiedDate.industries?.lastModified);
-    setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
+    setLastUpdatedDate(
+      `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
+    );
   };
 
   const getEntityData = async () => {
@@ -138,6 +141,7 @@ const IndustriesWithEntityTypes = () => {
               needHeader={true}
               getAddEntityDialog={getAddEntityDialog}
               Title={"ADD INDUSTRY"}
+              setIsEdit={setIsEdit}
             />
 
             <div className={style.marginTop35}>
@@ -234,8 +238,9 @@ const IndustriesWithEntityTypes = () => {
                                 </p>
                                 <p className={style.tableDataFontStyle}></p>
                                 <p className={style.tableDataFontStyle}>
-                                  {format(
+                                  {formatInTimeZone(
                                     new Date(`${data.lastModifiedDate}`),
+                                    siteTimeZone(),
                                     "MM-dd-yyyy"
                                   )}
                                 </p>

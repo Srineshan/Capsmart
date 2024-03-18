@@ -19,6 +19,8 @@ import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import { format } from "date-fns";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
+import { formatInTimeZone } from "date-fns-tz";
+import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
 
 const FunctionalTitleForCustomer = () => {
   const [showFunctionalTitlesDialog, setShowFunctionalTitleDialog] =
@@ -107,14 +109,21 @@ const FunctionalTitleForCustomer = () => {
       `entity-service/referenceList/entity/${entityId}`
     );
     const date = new Date(lastModifiedDate.functionalTitles?.lastModified);
-    setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
+    setLastUpdatedDate(
+      `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
+    );
   };
 
   const getEntityTypes = async () => {
-    const { data: entityTypes } = await GET(`entity-service/entity/entityType`);
-    if (entityTypes?.length !== 0) {
-      setSiteTypeId(entityTypes?.[0]?.siteTypeId);
+    // const { data: entityTypes } = await GET(`entity-service/entity/entityType`);
+    // if (entityTypes?.length !== 0) {
+    //   setSiteTypeId(entityTypes?.[0]?.siteTypeId);
+    // }
+    const { data: entityType } = await GET(`entity-service/entity/${TenantID}`);
+    if (entityType?.sites?.length !== 0) {
+      setSiteTypeId(entityType?.sites?.[0]?.siteType?.id);
     }
+
   };
 
   const getContractedServiceProviderMaster = async () => {
@@ -478,13 +487,13 @@ const FunctionalTitleForCustomer = () => {
                                   }
                                   alt="OpenFolder"
                                   className={`${style.colorFileStyle2} ${style.marginLeft5}`}
-                                  // onClick={() => {
-                                  //   setSelectedIndex(index);
-                                  //   setCSPTypeId(data?.id);
-                                  //   setCSPTypeName(
-                                  //     data?.contractedServiceProviderType
-                                  //   );
-                                  // }}
+                                // onClick={() => {
+                                //   setSelectedIndex(index);
+                                //   setCSPTypeId(data?.id);
+                                //   setCSPTypeName(
+                                //     data?.contractedServiceProviderType
+                                //   );
+                                // }}
                                 />
                               </div>
                               {selectedIndex === index &&

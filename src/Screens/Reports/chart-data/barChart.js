@@ -34,6 +34,8 @@ const ApexBarChart = ({ series, categories, reportingPeriod, yAxisTitle }) => {
                 labels: {
                     show: true,
                     rotate: 0,
+                    trim: true,
+                    hideOverlappingLabels: false,
                     style: {
                         colors: [],
                         fontSize: '10px',

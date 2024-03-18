@@ -4,7 +4,6 @@ import { TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Switch from '@mui/material/Switch';
 import Stack from '@mui/material/Stack';
-import { DateInput } from "@blueprintjs/datetime";
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -66,6 +65,7 @@ const AntSwitch = styled(Switch)(({ theme }) => ({
 
 const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
     const currentUserData = currentUser();
+    let myReportContent = JSON.parse(sessionStorage.getItem('myReportContent'))
     const [isPrivate, setIsPrivate] = useState(false);
     const [isDeliveryScheduled, setIsDeliveryScheduled] = useState(false);
     const [reportName, setReportName] = useState('');
@@ -76,6 +76,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
     const [scheduledFor, setScheduledFor] = useState('MYSELF');
     const [showDeliveryDialog, setShowDeliveryDialog] = useState(false);
     const [isAddRecipients, setIsAddRecipients] = useState(false);
+    const [isReadOnly, setIsReadOnly] = useState(false);
     const [userDetails, setUserDetails] = useState({});
     // const category = (reportType === 'activitiesOrServices' || reportType === 'addOnActivities' || reportType === 'scheduledActivity') ?
     //     'SERVICES_ACTIVITIES' :
@@ -104,7 +105,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
         'addOnActivities': 'SERVICES_ACTIVITIES',
         'scheduledActivity': 'SERVICES_ACTIVITIES',
         'upcomingContractRenewals': 'CONTRACT_MANAGEMENT',
-        'oneTimeContract': 'CONTRACT_COMPLIANCE',
+        'oneTimeContract': 'CONTRACT_MANAGEMENT',
         'complianceStatus': 'CONTRACT_COMPLIANCE',
         'nonCompliant': 'CONTRACT_COMPLIANCE',
         'paidConsultingHours': 'CONTRACT_PERFORMANCE',
@@ -115,7 +116,11 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
         'siteDepartmentSpecificContractorSummary': 'PAYMENT',
         'timesheetProcessingSummary': 'TIMESHEET',
         'listingOfTimesheetsNotPaid': 'TIMESHEET',
-        'submittedTimesheetsPaymentStatus': 'TIMESHEET'
+        'submittedTimesheetsPaymentStatus': 'TIMESHEET',
+        'contractDocumentsOnFile': 'CONTRACT_MANAGEMENT',
+        'contractsWithABusinessEntity': 'CONTRACT_MANAGEMENT',
+        'multiProviderContractsList': 'CONTRACT_MANAGEMENT',
+        'currentRemitToAddressForActiveContracts': 'TIMESHEET'
     }
 
     // const type = (reportType === 'activitiesOrServices' ?
@@ -129,7 +134,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
         'addOnActivities': 'ADDON_ACTIVITES_SERVICES_LOG_SUMMARY',
         'scheduledActivity': '',
         'upcomingContractRenewals': 'UPCOMING_CONTRACT_RENEWALS',
-        'oneTimeContract': '',
+        'oneTimeContract': 'ONE_TIME_CONTRACT',
         'complianceStatus': '',
         'nonCompliant': '',
         'paidConsultingHours': '',
@@ -140,7 +145,11 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
         'siteDepartmentSpecificContractorSummary': 'SITE_DEPARTMENT_SPECIFIC_CONTRACTOR_SUMMARY',
         'timesheetProcessingSummary': 'TIMESHEET_PROCESSING_SUMMARY',
         'listingOfTimesheetsNotPaid': 'LISTING_OF_TIMESHEETS_NOTPAID',
-        'submittedTimesheetsPaymentStatus': 'SUBMITTED_TIMESHEETS_PAYMENT_STATUS'
+        'submittedTimesheetsPaymentStatus': 'SUBMITTED_TIMESHEETS_PAYMENT_STATUS',
+        'contractDocumentsOnFile': 'CONTRACT_DOCUMENT_ON_FILE',
+        'contractsWithABusinessEntity': 'CONTRACT_WITH_BUSINESS_ENTITY',
+        'multiProviderContractsList': 'MULTI_PROVIDER_CONTRACT',
+        'currentRemitToAddressForActiveContracts': 'CURRENT_REMIT_TO_ADDRESS'
     }
 
     const filters = {
@@ -157,11 +166,32 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
         getUserDetail()
     }, [currentUserData?.id])
 
+    useEffect(() => {
+        if (myReportContent) {
+            setIsReadOnly(true)
+            setReportName(myReportContent?.title)
+            setIsPrivate(myReportContent?.private)
+            setIsDeliveryScheduled(myReportContent?.schedule?.isdeliveryScheduled)
+            setReportDescription(myReportContent?.description)
+            setDeliverySchedule(myReportContent?.schedule?.schedule)
+            setStartDate(myReportContent?.schedule?.startDate)
+            setDeliveryTime(`${myReportContent?.schedule?.startDate}T${myReportContent?.schedule?.deliveryTime}`)
+            setScheduledFor(myReportContent?.schedule?.scheduledFor)
+            // setShowDeliveryDialog(myReportContent?.)
+        }
+    }, [myReportContent])
+
+    console.log(reportName, reportDescription, myReportContent, deliveryTime, new Date(myReportContent?.schedule?.deliveryTime))
+
     const getUserDetail = async () => {
         const { data: user } = await GET(`user-management-service/user/${currentUserData?.id}`);
         setUserDetails(user);
     }
+
+    console.log(dataToUseInReport?.selectedContracts?.[0] !== '' ? dataToUseInReport?.selectedContracts : [], dataToUseInReport?.selectedContracts)
+
     const handleSave = async () => {
+        setIsReadOnly(true)
         let data = {
             "tenant": {
                 "id": TenantID
@@ -187,16 +217,23 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
                     'reportingTimePeriod': dataToUseInReport?.reportingTimePeriod,
                     'startDate': dataToUseInReport?.from,
                     'endDate': dataToUseInReport?.to,
-                    'contracts': dataToUseInReport?.selectedContracts,
-                    'users': [dataToUseInReport?.selectedContractedServiceProvider],
-                    'sites': dataToUseInReport?.selectedSites,
-                    'departments': dataToUseInReport?.selectedDepartments
+                    'contracts': dataToUseInReport?.selectedContracts?.[0] !== '' ? dataToUseInReport?.selectedContracts : [],
+                    'users': dataToUseInReport?.selectedContractedServiceProvider?.[0] !== '' ? dataToUseInReport?.selectedContractedServiceProvider : [],
+                    'sites': dataToUseInReport?.selectedSites?.[0] !== '' ? dataToUseInReport?.selectedSites : [],
+                    'departments': dataToUseInReport?.selectedDepartments?.[0] !== '' ? dataToUseInReport?.selectedDepartments : [],
+                    'contractPolicyType': dataToUseInReport?.contractContinuationPolicy !== 'ALL' ? dataToUseInReport?.contractContinuationPolicy : '',
+                    'contractStatus': dataToUseInReport?.contractStatus,
+                    "renewalDays": dataToUseInReport?.renewalreportingTimePeriod,
+                    "contractNames": ['']
                 },
                 "private": isPrivate
             }
         }
         if (reportName !== '' && reportDescription !== '' && deliverySchedule !== '') {
-            await POST('timesheet-management-service/report/myReport/', JSON.stringify(data))
+            await POST((reportType !== "upcomingContractRenewals" && reportType !== "oneTimeContract" &&
+                reportType !== "contractDocumentsOnFile" && reportType !== "multiProviderContractsList" &&
+                reportType !== "contractsWithABusinessEntity") ?
+                'timesheet-management-service/report/myReport/' : 'contract-managment-service/reports/myReport/', JSON.stringify(data))
                 .then(response => {
                     SuccessToaster('Report Saved Successfully');
                 })
@@ -338,12 +375,14 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
                             </Stack>
                         </div>
                     </div>
-                    <div className={`${style.justifyCenter} ${style.marginTop20}`}>
-                        <button className={`${style.saveStyle} ${style.cursorPointer}`}
-                            onClick={() => { handleSave() }}
-                        // onClick={() => { scheduledFor !== "MYSELF" && setShowDeliveryDialog(true); handleSave() }}
-                        >{"SAVE"}</button>
-                    </div>
+                    {!isReadOnly && (
+                        <div className={`${style.justifyCenter} ${style.marginTop20}`}>
+                            <button className={`${style.saveStyle} ${style.cursorPointer}`}
+                                onClick={() => { handleSave() }}
+                            // onClick={() => { scheduledFor !== "MYSELF" && setShowDeliveryDialog(true); handleSave() }}
+                            >{"SAVE"}</button>
+                        </div>
+                    )}
                 </div>
             </Dialog>
             <Dialog isOpen={showDeliveryDialog} onClose={() => setShowDeliveryDialog(false)} className={`${style.sendMailUserDialog} ${style.dialogPaddingBottom}`}>

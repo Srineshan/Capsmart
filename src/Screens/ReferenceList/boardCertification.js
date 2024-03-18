@@ -17,6 +17,8 @@ import format from "date-fns/format";
 import Navbar from "../../Components/Navbar";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import SideBar from "../../Components/Sidebar";
+import { formatInTimeZone } from "date-fns-tz";
+import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
 
 const BoardCertification = () => {
   const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
@@ -71,8 +73,10 @@ const BoardCertification = () => {
       `entity-service/referenceList/master`
     );
 
-    const date = new Date(lastModifiedDate.boardCertification?.lastModified);
-    setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
+    const date = new Date(lastModifiedDate?.boardCertification?.lastModified);
+    setLastUpdatedDate(
+      `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
+    );
   };
 
   const handleToggle = (index, data) => {
@@ -93,9 +97,9 @@ const BoardCertification = () => {
     setSelectedEntity(data.CSP[0]);
   };
 
-  const getBoardCertificationData = async (industryId, contractPID) => {
+  const getBoardCertificationData = async () => {
     const { data: boardData } = await GET(
-      `entity-service/boardCertificateSpecialtiesMaster?industry=${industryData.id}&contractedServiceProviderType=${selectedEntity.id}`
+      `entity-service/boardCertificateSpecialtiesMaster?industry=${industryData?.id}&contractedServiceProviderType=${selectedEntity.id}`
     );
     setBoardCertificationTable(boardData);
   };
@@ -200,6 +204,7 @@ const BoardCertification = () => {
               needHeader={true}
               getAddEntityDialog={getAddEntityDialog}
               Title={"ADD BOARD CERTIFICATION"}
+              setIsEdit={setIsEdit}
             />
 
             <div className={style.marginTop35}>
@@ -387,8 +392,9 @@ const BoardCertification = () => {
                                 </p>
                                 <p className={style.tableDataFontStyle}></p>
                                 <p className={style.tableDataFontStyle}>
-                                  {format(
+                                  {formatInTimeZone(
                                     new Date(`${data.lastModifiedDate}`),
+                                    siteTimeZone(),
                                     "MM-dd-yyyy"
                                   )}
                                 </p>
@@ -427,8 +433,9 @@ const BoardCertification = () => {
                                     </p>
                                     <p className={style.tableDataFontStyle}></p>
                                     <p className={style.tableDataFontStyle}>
-                                      {format(
+                                      {formatInTimeZone(
                                         new Date(`${data.lastModifiedDate}`),
+                                        siteTimeZone(),
                                         "MM-dd-yyyy"
                                       )}
                                     </p>
@@ -475,8 +482,9 @@ const BoardCertification = () => {
                                 </p>
                                 <p className={style.tableDataFontStyle}></p>
                                 <p className={style.tableDataFontStyle}>
-                                  {format(
+                                  {formatInTimeZone(
                                     new Date(`${data.lastModifiedDate}`),
+                                    siteTimeZone(),
                                     "MM-dd-yyyy"
                                   )}
                                 </p>

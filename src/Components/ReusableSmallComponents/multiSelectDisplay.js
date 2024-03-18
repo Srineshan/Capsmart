@@ -18,7 +18,7 @@ const MultiSelectDisplay = ({ values, removeItem }) => {
             <div className={`${style.siteDeptFieldCard} ${style.displayInRow} ${style.marginTop10}`}>
                 {list?.map((data, index) => (
                     <div className={`${style.deptCard} ${style.displayInRow} ${style.verticalAlignCenter}`} key={index}>
-                        <div className={`${style.siteDeptTextStyle} ${style.marginLeft10}`}>{data}</div>
+                        <div className={`${style.siteDeptTextStyle} ${style.marginLeft10}`} key={index}>{data}</div>
                         {contractStatus !== "ACTIVE" && (
                             <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => removeItem(index)} />
                         )}

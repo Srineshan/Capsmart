@@ -43,7 +43,7 @@ const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newSe
     if (contractId !== '') {
       const { data: userData } = await GET(`user-management-service/user?contractID=${contractID}`);
       if (userData) {
-        setUsers(userData?.filter(data => data?.roles?.map(role => role?.roleName)?.includes('Activity Logger')));
+        setUsers(userData?.filter(data => data?.roles?.map(role => role?.roleName)?.includes('Activity Logger') || data?.roles?.map(role => role?.roleName)?.includes('Aggregator') || data?.roles?.map(role => role?.roleName)?.includes('Passive Activity Logger')));
       }
     }
   }

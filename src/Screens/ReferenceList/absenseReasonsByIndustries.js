@@ -12,6 +12,8 @@ import format from "date-fns/format";
 import Navbar from "../../Components/Navbar";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import SideBar from "../../Components/Sidebar";
+import { formatInTimeZone } from "date-fns-tz";
+import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
 
 const AbsenseReasonsByIndustries = () => {
   const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
@@ -56,7 +58,9 @@ const AbsenseReasonsByIndustries = () => {
     );
 
     const date = new Date(lastModifiedDate.absenceResons?.lastModified);
-    setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
+    setLastUpdatedDate(
+      `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
+    );
   };
 
   const getEntityData = async () => {
@@ -130,6 +134,7 @@ const AbsenseReasonsByIndustries = () => {
               needHeader={true}
               getAddEntityDialog={getAddEntityDialog}
               Title={"ADD ABSENSE REASONS"}
+              setIsEdit={setIsEdit}
             />
 
             <div className={style.marginTop35}>
@@ -219,8 +224,9 @@ const AbsenseReasonsByIndustries = () => {
                                   {/* {`${data.notificationPeriod.numberOfDays}`} Days Prior */}
                                 </p>
                                 <p className={style.tableDataFontStyle}>
-                                  {format(
+                                  {formatInTimeZone(
                                     new Date(`${data.lastModifiedDate}`),
+                                    siteTimeZone(),
                                     "MM-dd-yyyy"
                                   )}
                                 </p>
@@ -289,8 +295,9 @@ const AbsenseReasonsByIndustries = () => {
                                   {/* {`${data.notificationPeriod.numberOfDays}`} Days Prior */}
                                 </p>
                                 <p className={style.tableDataFontStyle}>
-                                  {format(
+                                  {formatInTimeZone(
                                     new Date(`${data.lastModifiedDate}`),
+                                    siteTimeZone(),
                                     "MM-dd-yyyy"
                                   )}
                                 </p>

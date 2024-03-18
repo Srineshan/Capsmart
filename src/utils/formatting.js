@@ -46,3 +46,17 @@ export const GetDateFromHours = (time) => {
 }
 
 export const preventNegativeValues = (e) => ["e", "E", "+", "-"].includes(e.key) && e.preventDefault()
+
+export const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+export const siteTimeZone = () => { return sessionStorage.getItem('siteTimeZone') !== 'undefined' ? sessionStorage.getItem('siteTimeZone') : Intl.DateTimeFormat().resolvedOptions().timeZone }
+
+export const timeZoneAbbreviation = () => {
+  let timezoneName = sessionStorage.getItem('timeZoneAbbreviation');
+  return (timezoneName === 'null' || timezoneName === 'undefined') ? '' : sessionStorage.getItem('timeZoneAbbreviation');
+}
+
+console.log(timeZoneAbbreviation, siteTimeZone)
+export const corsUrl = 'https://app.mytimesmart.com/cors/'
+
+// export const corsUrl = 'https://app.timesmartai.com/cors/'

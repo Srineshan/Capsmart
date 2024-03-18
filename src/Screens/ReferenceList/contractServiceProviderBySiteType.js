@@ -19,6 +19,9 @@ import DeleteHcRow from "./../../images/deleteHcRow.png";
 import { format } from "date-fns";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
+import { formatInTimeZone } from "date-fns-tz";
+import { count } from "d3";
+import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
 
 const ContractServiceProviderBySite = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -49,6 +52,9 @@ const ContractServiceProviderBySite = () => {
 
   const [selectAllList, setSelectAllList] = useState([]);
   const [checkedAll, setCheckedAll] = useState(false);
+  const [multisiteEntity, setMultisiteEntity] = useState(false);
+  const [siteEntityCount, setSiteEntityCount] = useState("");
+
 
   useEffect(() => {
     getEntity();
@@ -85,6 +91,7 @@ const ContractServiceProviderBySite = () => {
     const { data: entity } = await GET(`entity-service/entity`);
     setEntityDetails(entity);
     setEntityId(entity?.[0]?.id);
+    setMultisiteEntity(entity?.[0]?.multiSiteEntity)
   };
 
   const getLastModifiedDate = async () => {
@@ -94,15 +101,17 @@ const ContractServiceProviderBySite = () => {
     const date = new Date(
       lastModifiedDate.contractedServiceProviders?.lastModified
     );
-    setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
+    setLastUpdatedDate(
+      `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
+    );
   };
 
   const getEntityTypes = async () => {
     const { data: entityTypes } = await GET(`entity-service/entity/entityType`);
     if (entityTypes?.length !== 0) {
-      console.log(entityTypes, entityTypes?.[0]?.entityType?.id);
       setSiteTypeId(entityTypes?.[0]?.siteTypeId);
       setSelectedEntityType(entityTypes?.[0]?.siteTypeName);
+      setSiteEntityCount(entityTypes?.[0]?.numberOfSites);
       setEntityTypes(entityTypes);
     }
   };
@@ -140,6 +149,7 @@ const ContractServiceProviderBySite = () => {
     setSelectedIndex(index);
     setSiteTypeId(data?.siteTypeId);
     setSelectedEntityType(data?.siteTypeName);
+    setSiteEntityCount(data?.numberOfSites)
   };
 
   const handleSelectContractedServiceProvider = (e, innerData) => {
@@ -276,7 +286,7 @@ const ContractServiceProviderBySite = () => {
                         {entityTypes?.map((data, index) => (
                           <>
                             <div
-                              className={`${style.boardCertificationSideRows1} ${style.displayInRow}`}
+                              className={`${style.boardCertificationSideRows2} ${style.displayInRow}`}
                               key={index}
                               onClick={() => handleClickSelected(index, data)}
                             >
@@ -288,7 +298,12 @@ const ContractServiceProviderBySite = () => {
                               <p
                                 className={`${style.tableHeaderIndustriesFontStyle} ${style.textUppercase} ${style.marginLeft10}`}
                               >
-                                {data?.siteTypeName}
+                                {`${data?.siteTypeName}`}
+                              </p>
+                              <p
+                                className={`${style.tableHeaderIndustriesFontStyle} ${style.textUppercase} ${style.marginLeft10}`}
+                              >
+                                {`${multisiteEntity === true ? "( " + data?.numberOfSites + " SITES )" : ""}`}
                               </p>
                               <img
                                 src={
@@ -421,7 +436,7 @@ const ContractServiceProviderBySite = () => {
                             <>
                               <div>
                                 <div
-                                  className={`${style.ContractedServiceProviderHeaderInsideContainer} ${style.displayInRow}`}
+                                  className={`${style.ContractedServiceProviderHeaderInsideContainer1} ${style.displayInRow}`}
                                 >
                                   <img
                                     src={IndustriesEntityFolder}
@@ -431,7 +446,12 @@ const ContractServiceProviderBySite = () => {
                                   <p
                                     className={`${style.tableHeaderIndustriesFontStyle} ${style.textUppercase} ${style.marginLeft10}`}
                                   >
-                                    {data?.siteTypeName}
+                                    {data?.siteTypeName}`}
+                                  </p>
+                                  <p
+                                    className={`${style.tableHeaderIndustriesFontStyle} ${style.textUppercase} ${style.marginLeft10}`}
+                                  >
+                                    {`${multisiteEntity === true ? "( " + data?.numberOfSites + " SITES )" : ""}`}
                                   </p>
                                   <img
                                     src={
@@ -445,6 +465,7 @@ const ContractServiceProviderBySite = () => {
                                       setSelectedIndex(index);
                                       setSiteTypeId(data?.siteTypeId);
                                       setSelectedEntityType(data?.siteTypeName);
+                                      setSiteEntityCount(data?.numberOfSites)
                                     }}
                                   />
                                 </div>
@@ -516,6 +537,8 @@ const ContractServiceProviderBySite = () => {
           entityType={selectedEntityType}
           siteTypeId={siteTypeId}
           getContractedServiceProvider={getContractedServiceProvider}
+          siteEntityCount={siteEntityCount}
+          multiSiteEntity={multisiteEntity}
         />
       )}
     </Fragment>

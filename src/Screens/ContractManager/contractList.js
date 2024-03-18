@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import Download from './../../images/downloadLightColor.png';
+import React, { useState, useEffect, createRef, useCallback, useRef } from 'react';
+import DownloadLight from './../../images/downloadLightColor.png';
+import Download from '../../images/download.png'
 import PrintIcon from './../../images/printIcon.png';
 import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
 import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
@@ -24,8 +25,9 @@ import UserCard from './userCard';
 import Table from '../../Components/TableDesign';
 import LeftStatsCard from '../../Components/LeftStatsCard';
 import LoadingScreen from '../../Components/LoadingScreen';
+import { toPDF } from '../../Components/ConvertToPdf';
+import { useReactToPrint } from "react-to-print";
 import CloseIcon from '@mui/icons-material/Close';
-
 import { validateTimesheetSubmission } from './contractValidation';
 
 import style from './index.module.scss';
@@ -33,7 +35,13 @@ import SideBar from '../../Components/Sidebar';
 import PreImplementationDataDialog from './preImplementationDataDialog';
 import ReviewAndApprovalStatusSummary from './reviewAndApprovalStatusSummary';
 
-const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts, getSelectedContract, getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page, getActiveContractView }) => {
+const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog, contracts, getSelectedContract, getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page, getActiveContractView }) => {
+  const PDFRef = createRef();
+  const componentRef = useRef(null);
+
+  const reactToPrintContent = useCallback(() => {
+    return componentRef.current;
+  }, [componentRef.current]);
   const [selectedContractId, setSelectedContractId] = useState();
   const activeHeaderValues = ["", "", "CONTRACT TYPE", "ID",
     "",
@@ -46,7 +54,7 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
   const draftHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "ACTIVATION STATUS", "LAST UPDATED", "REF DOCS", "LAST UPDATED BY", "MANAGER", "ACTION"];
   const activationPendingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "REVIEWS", "APPROVALS", "REF DOCS", "GO LIVE DATE", "EFFECTIVE DATE", "MANAGER", "ACTION"];
   const upcomingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "EXPIRATION DATE", "EXPIRING IN", "LAST UPDATE", "MANAGER", "ACTION"];
-  const expiredHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "TERMINATION DATE", "NEW CONTRACT ID", "LAST UPDATE", "MANAGER"];
+  const expiredHeaderValues = ["CHECKBOX", "CONTRACT TYPE", "ID", "NAME", "TERMINATION DATE", "NEW CONTRACT ID", "LAST UPDATE", "MANAGER"];
   const activeColSortValues = [false, false, false, false, true, true, false, false, false, false];
   const draftColSortValues = [false, false, true, true, false, false, false, false, false];
   const upcomingColSortValues = [false, false, true, true, false, false, false, false, false];
@@ -71,6 +79,7 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
   useEffect(() => {
     getContractsMetadata();
     getEntityData();
+    sessionStorage.removeItem('Selected Contract Status')
   }, []);
 
   const activateContracts = async (data, userData) => {
@@ -183,13 +192,26 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
     //   getActiveContractView(true);
     // } else {
     getNewContract(true);
-    getContractType(data?.contractType);
+    getContractType(data?.contractTypeId?.id, data?.contractType);
     getSelectedContractType('New Contract');
     // }
     getContractIdFromActive(data?.id);
     console.log(data, 'contract data')
     sessionStorage.setItem('Selected Contract Status', data?.contractStatus)
   }
+
+  const handleDownloadClicked = () => {
+    toPDF(".contractList", `ContractsList_${format(new Date(), 'MM_dd_yy')}`);
+  }
+
+  const handlePrint = useReactToPrint({
+    content: reactToPrintContent,
+    documentTitle: `ContractsList_${format(new Date(), 'MM_dd_yy')}`,
+    // onBeforeGetContent: handleOnBeforeGetContent,
+    // onBeforePrint: handleBeforePrint,
+    // onAfterPrint: handleAfterPrint,
+    removeAfterPrint: true
+  });
 
   let dot = [];
   let dotTooltipValues = [];
@@ -218,6 +240,7 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
   let lastUpdatedBy = [];
   let contractorHoverText = [];
   let contractorsIcon = [];
+  let newContractId = [];
 
   const getActiveContractsValues = () => {
     dot = [];
@@ -306,8 +329,8 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
       approvals.push('3/3');
       goLiveDate.push('07/19/2019');
       activationStatus.push(data?.contractStatus === 'ACTIVATION_READY' ? 'Activation pending' : 'Not Activated');
-      icon.push(<TextSnippetOutlinedIcon style={{ color: data?.contractDetail?.contractFiles?.length === 0 ? '#F94848' : '#14B15A' }} />);
-      iconHoverText.push(data?.contractDetail?.contractFiles?.length === 0 ? 'No Document Uploaded' : 'Document Uploaded');
+      icon.push(<TextSnippetOutlinedIcon style={{ color: (data?.contractDetail?.contractFiles?.length === 0 || data?.contractDetail?.contractFiles === null) ? '#F94848' : '#14B15A' }} />);
+      iconHoverText.push((data?.contractDetail?.contractFiles?.length === 0 || data?.contractDetail?.contractFiles === null) ? 'No Document Uploaded' : 'Document Uploaded');
       effectiveDate.push(format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy'));
       manager.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
       lastUpdated.push(format(new Date(data?.lastModifiedDate), 'MM-dd-yyyy'))
@@ -380,6 +403,41 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
     ];
   }
 
+  const getExpiredContractsValues = () => {
+    dot = [];
+    dotTooltipValues = [];
+    contractType = [];
+    contractId = [];
+    name = [];
+    expirationDate = [];
+    newContractId = [];
+    manager = [];
+    lastUpdated = [];
+
+    contracts?.map(data => {
+      dot.push(true);
+      dotTooltipValues.push('Selected');
+      contractType.push(data?.contractType === 'MULTIPLE' ? 'MULTI - PROVIDER' : data?.contractType);
+      contractId.push(data?.contractDetail?.contractId?.id);
+      name.push(data?.contractName?.contractName);
+      expirationDate.push(data?.contractDetail?.contractExpiryDate !== null ? format(new Date(data?.contractDetail?.contractExpiryDate), 'MM-dd-yyyy') : '-');
+      newContractId.push('-');
+      manager.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
+      lastUpdated.push(format(new Date(data?.lastModifiedDate), 'MM-dd-yyyy'))
+    })
+
+    return [
+      { "type": "checkbox", "value": dot, 'tooltipValue': dotTooltipValues },
+      { "type": "text", "value": contractType, "onClickFunction": onClickFunction },
+      { "type": "text", "value": contractId, "onClickFunction": onClickFunction },
+      { "type": "text", "value": name, "onClickFunction": onClickFunction },
+      { "type": "text", "value": expirationDate, "onClickFunction": onClickFunction },
+      { "type": "text", "value": newContractId, "onClickFunction": onClickFunction },
+      { "type": "text", "value": lastUpdated, "onClickFunction": onClickFunction },
+      { "type": "text", "value": manager, "onClickFunction": onClickFunction },
+    ];
+  }
+
   const activeActionsData = [
     // {'data': 'Contract Extension', 'onClick': contractExtension, 'requiredValue': 'boolean'},
     { 'data': 'Terminate Contract', 'onClick': contractTermination, 'requiredValue': 'boolean' },
@@ -425,8 +483,8 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
 
   let tableHeaderValues = selectedContract === 'activecontracts' ? activeHeaderValues : selectedContract === 'draft' ? (isDraft ? draftHeaderValues : activationPendingHeaderValues) : selectedContract === 'upcomingrenewals' ? upcomingHeaderValues : expiredHeaderValues;
   let tableSortValues = selectedContract === 'activecontracts' ? activeColSortValues : selectedContract === 'draft' ? (isDraft ? draftColSortValues : activationPendingColSortValues) : selectedContract === 'upcomingrenewals' ? upcomingColSortValues : expiredColSortValues;
-  let tableDataValues = selectedContract === 'activecontracts' ? getActiveContractsValues() : selectedContract === "draft" ? getDraftContractsValues() : getUpcomingContractsValues();
-  let actions = selectedContract === 'activecontracts' ? activeActionsData : selectedContract === 'draft' ? (isDraft ? draftActionsData : activationPendingActionsData) : draftActionsData;
+  let tableDataValues = selectedContract === 'activecontracts' ? getActiveContractsValues() : selectedContract === "draft" ? getDraftContractsValues() : selectedContract === 'upcomingrenewals' ? getUpcomingContractsValues() : getExpiredContractsValues();
+  let actions = selectedContract === 'activecontracts' ? activeActionsData : selectedContract === 'draft' ? (isDraft ? draftActionsData : activationPendingActionsData) : [];
   // let gridStyle = selectedContract === 'activecontracts' ? style.activeContractGridWithoutAction : selectedContract === "draft" ? (isDraft ? style.draftContractGrid : style.activationPendingContractGrid) : selectedContract === "upcomingrenewals" ? style.upcomingContractGrid : style.expiredContractGrid;
   let gridStyle = selectedContract === 'activecontracts' ? style.activeContractGrid : selectedContract === "draft" ? (isDraft ? style.draftContractGrid : style.activationPendingContractGrid) : selectedContract === "upcomingrenewals" ? style.upcomingContractGrid : style.expiredContractGrid;
 
@@ -466,34 +524,35 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
               </div>
               <div className={`${style.displayInRow} ${style.marginTop10} ${style.marginLeft} ${style.verticalAlignCenter}`}>
                 <div className={style.marginLeft}>
-                  <SearchBar getSearchKey={getSearchKey} />
+                  <SearchBar getSearchKey={getSearchKey} searchKey={searchKey} />
                 </div>
-                {
-                  //   <div className={`${isDownloadClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft}`} onClick={() => setIsDownloadClicked(!isDownloadClicked)}>
-                  //     <DownloadIcon sx={{ fontSize: isDownloadClicked ? 20 : 25, color: isDownloadClicked ? '#fff' : '#857AEF' }} />
-                  //   </div>
-                  //   <div className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft}`} onClick={() => setIsPrintClicked(!isPrintClicked)}>
-                  //     <PrintOutlinedIcon sx={{ fontSize: isPrintClicked ? 20 : 25, color: isPrintClicked ? '#fff' : '#857AEF' }} onClick={(e) => handleClick(e)} aria-describedby={id} />
-                  //     <Popover
-                  //       id={id}
-                  //       open={open}
-                  //       anchorEl={anchorEl}
-                  //       onClose={handleClose}
-                  //       anchorOrigin={{
-                  //         vertical: 'bottom',
-                  //         horizontal: 'left',
-                  //       }}
-                  //     >
-                  //       <div className={style.actionsCard}>
-                  //         <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { handleClose() }}>Contract Master List</div>
-                  //         <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { handleClose() }}>One Time Contracts With Termination Date</div>
-                  //         <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { handleClose() }}>Contracts With Written Continuation Policy</div>
-                  //         <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { handleClose() }}>Contracts In Auto-Renewal Mode</div>
-                  //       </div>
-                  //     </Popover>
-                  //   </div>
-                  //
-                }
+                <div className={`${isDownloadClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft}`} onClick={() => { setIsDownloadClicked(!isDownloadClicked); handleDownloadClicked() }}>
+                  <img src={contracts?.length !== 0 ? Download : DownloadLight} alt='' className={style.iconSize} />
+
+                  {/* <DownloadIcon sx={{ fontSize: isDownloadClicked ? 20 : 25, color: isDownloadClicked ? '#fff' : '#857AEF' }} /> */}
+                </div>
+                <div className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft}`} onClick={() => { setIsPrintClicked(!isPrintClicked); handlePrint() }}>
+                  <PrintOutlinedIcon sx={{ fontSize: isPrintClicked ? 20 : 25, color: isPrintClicked ? '#fff' : '#857AEF' }} onClick={(e) => handleClick(e)} aria-describedby={id} />
+                  {/* <Popover
+                    id={id}
+                    open={open}
+                    anchorEl={anchorEl}
+                    onClose={handleClose}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'left',
+                    }}
+                  >
+                    <div className={style.actionsCard}>
+                      <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { handleClose() }}>Contract Master List</div>
+                      <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { handleClose() }}>One Time Contracts With Termination Date</div>
+                      <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { handleClose() }}>Contracts With Written Continuation Policy</div>
+                      <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { handleClose() }}>Contracts In Auto-Renewal Mode</div>
+                    </div>
+                  </Popover> */}
+                </div>
+
+
                 <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft}`} onClick={() => { handleAddContract() }}>
                   <AddCircleOutlineIcon sx={{ fontSize: 20, color: 'white' }} />
                 </div>
@@ -546,29 +605,34 @@ const ContractList = ({ isLoading, getSearchKey, getDeleteDraftDialog, contracts
               <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
                 <CircularProgress sx={{ color: "#7165E3" }} />
               </div> :
-              <Table
-                tableHeaderValues={tableHeaderValues}
-                tableDataValues={tableDataValues}
-                tableData={contracts}
-                getNewContract={getNewContract}
-                getContractType={getContractType}
-                getSelectedContractType={getSelectedContractType}
-                getContractIdFromActive={getContractIdFromActive}
-                gridStyle={gridStyle}
-                actions={actions}
-                getSelectedPage={getSelectedPage}
-                totalCount={totalCount}
-                page={page}
-                scrollStyle={style.contractScrollStyle}
-                tableSortValues={tableSortValues}
-                heading={'There are no contracts for you to manage'}
-                subHeading={'To add a new contract click on'}
-                onClickText={'Click To View A Short Tutorial On How To Add A Contract'}
-                buttonComponent={<div className={`${style.addStyle} ${style.alignCenter} ${style.marginLeft20}`}>
-                  <AddCircleOutlineIcon sx={{ fontSize: 20, color: 'white' }} />
-                </div>}
-                onClickFunction={() => { }}
-              />}
+              <div ref={componentRef}>
+                <div className={`${style.reduceMarginTop10} contractList`} ref={PDFRef}>
+                  <Table
+                    tableHeaderValues={tableHeaderValues}
+                    tableDataValues={tableDataValues}
+                    tableData={contracts}
+                    getNewContract={getNewContract}
+                    getContractType={getContractType}
+                    getSelectedContractType={getSelectedContractType}
+                    getContractIdFromActive={getContractIdFromActive}
+                    gridStyle={gridStyle}
+                    actions={actions}
+                    getSelectedPage={getSelectedPage}
+                    totalCount={totalCount}
+                    page={page}
+                    scrollStyle={style.contractScrollStyle}
+                    tableSortValues={tableSortValues}
+                    heading={'There are no contracts for you to manage'}
+                    subHeading={'To add a new contract click on'}
+                    onClickText={'Click To View A Short Tutorial On How To Add A Contract'}
+                    buttonComponent={<div className={`${style.addStyle} ${style.alignCenter} ${style.marginLeft20}`}>
+                      <AddCircleOutlineIcon sx={{ fontSize: 20, color: 'white' }} />
+                    </div>}
+                    onClickFunction={() => { }}
+                  />
+                </div>
+              </div>
+            }
             {
               //   <div className={`${style.noContractsBox} ${style.alignCenter}`}>
               //   <div>

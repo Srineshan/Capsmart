@@ -15,6 +15,8 @@ import { format } from "date-fns";
 import Navbar from "../../Components/Navbar";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import SideBar from "../../Components/Sidebar";
+import { formatInTimeZone } from "date-fns-tz";
+import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
 
 const FunctionalTitles = () => {
   const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
@@ -76,7 +78,9 @@ const FunctionalTitles = () => {
     );
 
     const date = new Date(lastModifiedDate.functionalTitles.lastModified);
-    setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
+    setLastUpdatedDate(
+      `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
+    );
   };
 
   const handleToggle = (index, data) => {
@@ -201,6 +205,7 @@ const FunctionalTitles = () => {
               needHeader={true}
               getAddEntityDialog={getAddEntityDialog}
               Title={"ADD FUNCTIONAL TITLES"}
+              setIsEdit={setIsEdit}
             />
 
             <div className={style.marginTop35}>
@@ -384,8 +389,9 @@ const FunctionalTitles = () => {
                                 {data?.alias2}
                               </p>
                               <p className={style.tableDataFontStyle}>
-                                {format(
+                                {formatInTimeZone(
                                   new Date(`${data.lastModifiedDate}`),
+                                  siteTimeZone(),
                                   "MM-dd-yyyy"
                                 )}
                               </p>

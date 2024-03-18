@@ -7,18 +7,11 @@ import IdleTimer from "./Components/IdleTimer";
 import Cookie from "universal-cookie";
 import { Auth, GetEntityDetails, currentUser } from "./utils/auth";
 import { TenantID, GET, POST } from "./Screens/dataSaver";
-import {
-  browserName,
-  browserVersion,
-  osName,
-  osVersion,
-  isMobile,
-  isDesktop,
-  isTablet,
-} from "react-device-detect";
-import { SuccessToaster, ErrorToaster } from "./utils/toaster";
+import { browserName, browserVersion, osName, osVersion, isMobile, isDesktop, isTablet } from "react-device-detect";
+import { SuccessToaster, ErrorToaster } from './utils/toaster';
 import axios from "axios";
 import jwt from "jwt-decode";
+
 
 const ReportType = React.lazy(() => import("./Screens/Reports/reportType"));
 const ReportTypeOverview = React.lazy(() =>
@@ -37,15 +30,10 @@ const Welcome = React.lazy(() =>
 );
 const Login = React.lazy(() => import("./Screens/SuperAdminDashboard/login"));
 const Notify = React.lazy(() => import("./Screens/SuperAdminDashboard/notify"));
-const MoveToDraft = React.lazy(() =>
-  import("./Screens/ContractManager/moveToDraft")
-);
-const RemindContractors = React.lazy(() =>
-  import("./Screens/SuperAdminDashboard/remindContractors")
-);
-const NotifyEntityUser = React.lazy(() =>
-  import("./Screens/SuperAdminDashboard/notifyEntityUser")
-);
+const MoveToDraft = React.lazy(() => import("./Screens/ContractManager/moveToDraft"));
+const RemindContractors = React.lazy(() => import("./Screens/SuperAdminDashboard/remindContractors"));
+const TrackYourContracts = React.lazy(() => import("./Screens/ContractManager/trackYourContracts"));
+const NotifyEntityUser = React.lazy(() => import("./Screens/SuperAdminDashboard/notifyEntityUser"));
 const SetPassword = React.lazy(() =>
   import("./Screens/SuperAdminDashboard/setPassword")
 );
@@ -117,6 +105,9 @@ const AbsenseReasonsByIndustries = React.lazy(() =>
 const SuffixByIndustries = React.lazy(() =>
   import("./Screens/ReferenceList/suffixByIndustries")
 );
+const ContractByIndustries = React.lazy(() =>
+  import("./Screens/ReferenceList/contractByIndustries")
+);
 const TerminationReasons = React.lazy(() =>
   import("./Screens/ReferenceList/terminationReasons")
 );
@@ -163,6 +154,9 @@ const ContractDocumentUploadForCustomer = React.lazy(() =>
 const ContractServicesByEntityType = React.lazy(() =>
   import("./Screens/ReferenceList/contractedServicesByEntityType")
 );
+const ContractTypeForCustomer = React.lazy(() =>
+  import("./Screens/ReferenceList/contractTypeForCustomer")
+);
 const ContractServiceProviderBySiteType = React.lazy(() =>
   import("./Screens/ReferenceList/contractServiceProviderBySiteType")
 );
@@ -191,8 +185,13 @@ const App = ({ props }) => {
   const [logo, setLogo] = useState(null);
   const [title, setTitle] = useState("TimeSmartAI");
   const [entityId, setEntityId] = useState("");
+  const [currentUserDetails, setCurrentUserDetails] = useState();
+  const [entityDetails, setEntityDetails] = useState();
   var cookie = new Cookie();
+  const loggedInUser = currentUser();
+
   // const navigate = useNavigate();
+
 
   // useEffect(() => {
   //   getEntityId();
@@ -205,149 +204,121 @@ const App = ({ props }) => {
   // }, [entityId])
 
   useEffect(() => {
-    const reloadCount = sessionStorage.getItem("reloadCount");
+    const reloadCount = sessionStorage.getItem('reloadCount');
     if (reloadCount < 1) {
-      sessionStorage.setItem("reloadCount", String(reloadCount + 1));
+      sessionStorage.setItem('reloadCount', String(reloadCount + 1));
       window.location.reload();
     } else {
-      sessionStorage.removeItem("reloadCount");
+      sessionStorage.removeItem('reloadCount');
     }
-  }, []);
+  }, [])
 
-  axios.interceptors.request.use(
-    (request) => {
-      return request;
-    },
-    (error) => {
-      console.log("request error", error);
-      return error;
-    }
-  );
+  useEffect(() => {
+    setUserDetails()
+  }, [loggedInUser?.id])
 
-  axios.interceptors.response.use(
-    (response) => {
-      return response;
-    },
-    (error) => {
-      // logError(error);
-      console.log("response error", error);
-      return error;
-    }
-  );
+  useEffect(() => {
+    sessionStorage.setItem('timeZoneAbbreviation', entityDetails?.sites?.filter(data => data?.id === currentUserDetails?.sites?.sites?.[0]?.id)?.map(data => data)?.[0]?.timeZone?.abbrevation)
+    sessionStorage.setItem('siteTimeZone', entityDetails?.sites?.filter(data => data?.id === currentUserDetails?.sites?.sites?.[0]?.id)?.map(data => data)?.[0]?.timeZone?.id)
+  }, [entityDetails, currentUserDetails])
 
-  const loggedInUser = currentUser();
+  axios.interceptors.request.use((request) => {
+    return request;
+  }, (error) => {
+    console.log('request error', error);
+    return error;
+  })
+
+  axios.interceptors.response.use((response) => {
+    return response;
+  }, (error) => {
+    // logError(error);
+    console.log('response error', error);
+    return error;
+  })
 
   const logError = async (error) => {
-    let browser =
-      browserName === "Chrome"
-        ? "CHROME"
-        : browserName === "Firefox"
-          ? "FIREFOX"
-          : browserName === "Safari"
-            ? "SAFARI"
-            : browserName === "Opera"
-              ? "OPERA"
-              : browserName === "Edge"
-                ? "EDGE"
-                : browserName === "Internet Explorer"
-                  ? "INTERNETEXPLORER"
-                  : browserName === "Chromium"
-                    ? "CHROMIUM"
-                    : browserName === "Yandex"
-                      ? "YANDEX"
-                      : browserName === "IE"
-                        ? "IE"
-                        : browserName === "Mobile Safari"
-                          ? "MOBILESAFARI"
-                          : browserName === "Edge Chromium"
-                            ? "EDGECHROMIUM"
-                            : browserName === "MIUI Browser"
-                              ? "MIUIBROWSER"
-                              : browserName === "Samsung Browser"
-                                ? "SAMSUNGBROWSER"
-                                : "";
+    let browser = browserName === 'Chrome' ? 'CHROME' :
+      browserName === 'Firefox' ? 'FIREFOX' :
+        browserName === 'Safari' ? 'SAFARI' :
+          browserName === 'Opera' ? 'OPERA' :
+            browserName === 'Edge' ? 'EDGE' :
+              browserName === 'Internet Explorer' ? 'INTERNETEXPLORER' :
+                browserName === 'Chromium' ? 'CHROMIUM' :
+                  browserName === 'Yandex' ? 'YANDEX' :
+                    browserName === 'IE' ? 'IE' :
+                      browserName === 'Mobile Safari' ? 'MOBILESAFARI' :
+                        browserName === 'Edge Chromium' ? 'EDGECHROMIUM' :
+                          browserName === 'MIUI Browser' ? 'MIUIBROWSER' :
+                            browserName === 'Samsung Browser' ? 'SAMSUNGBROWSER' : '';
 
-    let os =
-      osName === "Windows"
-        ? "WINDOWS"
-        : osName === "Linux"
-          ? "LINUX"
-          : osName === "Mac OS"
-            ? "MAC"
-            : osName === "iOS"
-              ? "IOS"
-              : osName === "Android"
-                ? "ANDROID"
-                : osName === "Windows Phone"
-                  ? "WINDOWSPHONE"
-                  : "";
+    let os = osName === 'Windows' ? 'WINDOWS' :
+      osName === 'Linux' ? 'LINUX' :
+        osName === 'Mac OS' ? 'MAC' :
+          osName === 'iOS' ? 'IOS' :
+            osName === 'Android' ? 'ANDROID' :
+              osName === 'Windows Phone' ? 'WINDOWSPHONE' : '';
 
-    let deviceType = isDesktop
-      ? "DESKTOP"
-      : isMobile
-        ? "MOBILE"
-        : isTablet
-          ? "TABLET"
-          : "";
-    let interceptorsInfo = sessionStorage.getItem("interceptorsInfo");
+    let deviceType = isDesktop ? 'DESKTOP' : isMobile ? 'MOBILE' : isTablet ? 'TABLET' : '';
+    let interceptorsInfo = sessionStorage.getItem('interceptorsInfo');
 
     let data = {
-      subject: "Auto Ticket",
-      description: `${error?.response?.data?.error} ${error?.response?.data?.path}`,
-      createdBy: {
-        id: loggedInUser?.id,
-        name: {
+      "subject": 'Auto Ticket',
+      "description": `${error?.response?.data?.error} ${error?.response?.data?.path}`,
+      "createdBy": {
+        "id": loggedInUser?.id,
+        "name": {
           firstName: loggedInUser?.firstName,
           lastName: loggedInUser?.lastName,
-          middleName: "",
+          middleName: '',
           suffix: {
-            id: "",
-            suffix: "",
-          },
+            id: '',
+            suffix: '',
+          }
         },
-        email: { officialEmail: loggedInUser?.email },
-        communication: {
+        "email": { officialEmail: loggedInUser?.email },
+        "communication": {
           personalEmail: loggedInUser?.email,
-          mobileNumber: "",
-          landlineNumber: "",
-          mobileNumberNotApplicable: false,
-        },
+          mobileNumber: '',
+          landlineNumber: '',
+          mobileNumberNotApplicable: false
+        }
       },
-      assignedTo: {
-        id: "",
-        name: {
-          firstName: "",
-          lastName: "",
-          middleName: "",
+      "assignedTo": {
+        "id": '',
+        "name": {
+          firstName: '',
+          lastName: '',
+          middleName: '',
           suffix: {
-            id: "",
-            suffix: "",
-          },
+            id: '',
+            suffix: '',
+          }
         },
-        email: { officialEmail: "" },
-        communication: {
-          personalEmail: "",
-          mobileNumber: "",
-          landlineNumber: "",
-          mobileNumberNotApplicable: false,
-        },
+        "email": { officialEmail: '' },
+        "communication": {
+          personalEmail: '',
+          mobileNumber: '',
+          landlineNumber: '',
+          mobileNumberNotApplicable: false
+        }
       },
-      type: "APPLICATION",
-      impact: "HIGH",
-      status: "NEW",
-      generationMode: "SYSTEM",
-      bugTrackingId: "string",
-      site: {
-        id: "string",
-        siteName: {
-          siteName: "string",
-        },
+      "type": 'APPLICATION',
+      "impact": 'HIGH',
+      "status": 'NEW',
+      "generationMode": "SYSTEM",
+      "bugTrackingId": "string",
+      "site": {
+        "id": "string",
+        "siteName": {
+          "siteName": "string"
+        }
       },
-      tenant: {
-        tenantId: TenantID,
+      "tenant": {
+        "tenantId": TenantID
       },
-      ticketFile: {
-        fileName: "",
+      "ticketFile": {
+        "fileName": '',
         // ...(isEdit &&
         //     { 'id': ticketDetails?.ticketFile?.id }),
         // ...(isEdit &&
@@ -355,48 +326,45 @@ const App = ({ props }) => {
         // ...(isEdit &&
         //     { 'fileURL': ticketDetails?.ticketFile?.fileURL }),
       },
-      deviceDetails: {
-        browser: browser,
-        browserVersion: browserVersion,
-        os: os,
-        osVersion: osVersion,
-        componentInfo: `${error?.response?.data?.error} ${error?.response?.data?.path}`,
-        deviceType: deviceType,
-        screenResolution: `width: ${window.innerWidth}, height: ${window.innerHeight}`,
+      "deviceDetails": {
+        "browser": browser,
+        "browserVersion": browserVersion,
+        "os": os,
+        "osVersion": osVersion,
+        "componentInfo": `${error?.response?.data?.error} ${error?.response?.data?.path}`,
+        "deviceType": deviceType,
+        "screenResolution": `width: ${window.innerWidth}, height: ${window.innerHeight}`,
       },
-      dueDate: "2022-10-06",
-      screenCaptured: false,
-      externalBugTrackingSystem: true,
-    };
+      "dueDate": "2022-10-06",
+      "screenCaptured": false,
+      "externalBugTrackingSystem": true
+    }
 
     const formData = new FormData();
 
-    formData.append(
-      "ticketDetail",
-      new Blob([JSON.stringify(data)], {
-        type: "application/json",
-      })
-    );
-    if (
-      interceptorsInfo !==
-      `${error?.response?.data?.error} ${error?.response?.data?.path}`
-    ) {
+    formData.append('ticketDetail', new Blob([JSON.stringify(data)], {
+      type: "application/json"
+    }));
+    if (interceptorsInfo !== `${error?.response?.data?.error} ${error?.response?.data?.path}`) {
       await POST(`feedback-management-service/ticket`, formData)
-        .then((response) => {
-          sessionStorage.setItem(
-            "interceptorsInfo",
-            `${error?.response?.data?.error} ${error?.response?.data?.path}`
-          );
+        .then(response => {
+          sessionStorage.setItem('interceptorsInfo', `${error?.response?.data?.error} ${error?.response?.data?.path}`);
           // SuccessToaster('Error Logged Successfully');
         })
-        .catch((error) => {
+        .catch(error => {
           // ErrorToaster('Unexpected Error Occured');
-        });
+        })
     }
   };
 
+  const setUserDetails = async () => {
+    const { data: user } = await GET(`user-management-service/user/${loggedInUser?.id}`);
+    setCurrentUserDetails(user);
+  }
+
+
   const getEntityId = async () => {
-    await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/entity-service/entityID`, {
+    await axios(`http://ec2-35-175-13-4.compute-1.amazonaws.com:8010/entity-service/entityID`, {
       method: "GET",
       // headers: { "X-subdomain": "hopkins" },
     })
@@ -409,21 +377,23 @@ const App = ({ props }) => {
       });
   };
 
+
   const login = () => {
     const requestOptions = {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         "X-tenantID": entityId,
-      },
+      }
     };
     fetch(
-      `http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/user-management-service/auth/login`,
+      `http://ec2-35-175-13-4.compute-1.amazonaws.com:8010/user-management-service/auth/login`,
       requestOptions
     )
       .then((response) => response.json())
       .then((data) => {
         cookie.set("user", data?.accessToken);
+
       });
     return true;
   };
@@ -453,6 +423,7 @@ const App = ({ props }) => {
 
   const getLogo = async () => {
     const { data: data } = await GET(`entity-service/entity/${TenantID}`);
+    setEntityDetails(data);
     setLogo(data?.logoThumbnail?.file?.fileURL);
     setTitle(data?.entityName?.entityName);
     sessionStorage.setItem("entityTypeId", data?.entityType?.id);
@@ -461,6 +432,8 @@ const App = ({ props }) => {
     sessionStorage.setItem("logo", data?.logo?.file?.fileURL);
     sessionStorage.setItem("thumbnail", data?.logoThumbnail?.file?.fileURL);
     sessionStorage.setItem("title", data?.entityName?.entityName);
+    sessionStorage.setItem("isEmployeeContractNeeded", data?.isEmployeeContractIncluded);
+    sessionStorage.setItem("isMultiSiteEntity", data?.multiSiteEntity);
   };
 
   const changeFavicon = () => {
@@ -494,22 +467,22 @@ const App = ({ props }) => {
       window.location.href = "/";
       return <Login />;
     } else if (isContractManager) {
-      window.location.pathname = "/app/contracts";
+      window.location.pathname = '/app/contracts';
       // navigate("/contracts");
       // window.location.reload();
       return <ActiveContracts />;
     } else if (isEntityLevelAdmin) {
-      window.location.pathname = "/app/entitySitePortal";
+      window.location.pathname = '/app/entitySitePortal';
       // navigate("/entitySitePortal");
       // window.location.reload();
       return <Home />;
     } else {
-      window.location.pathname = "/app/entitySitePortal";
+      window.location.pathname = '/app/entitySitePortal';
       // navigate("/entitySitePortal");
       // window.location.reload();
       return <Home />;
     }
-  };
+  }
 
   return (
     <BrowserRouter basename="/app">
@@ -525,24 +498,16 @@ const App = ({ props }) => {
               <Route path="/contracts" element={<ActiveContracts />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/notifyUser" element={<Notify />} />
+              <Route path="/trackContracts/:trackType" element={<TrackYourContracts />} />
               <Route path="/contracts/moveToDraft" element={<MoveToDraft />} />
-              <Route
-                path="/remindContractors"
-                element={<RemindContractors />}
-              />
+              <Route path="/remindContractors" element={<RemindContractors />} />
               <Route path="notifyEntityUser" element={<NotifyEntityUser />} />
               {/* <Route path="/user" element={<Users />} /> */}
               <Route path="/pages" element={<EntryPage />} />
               <Route path="/user/ssoId/:userId" element={<GetSSOId />} />
               <Route path="/setPassword/:randomId" element={<SetPassword />} />
-              <Route
-                path="/activateAccess/:randomId"
-                element={<ActivateAccess />}
-              />
-              <Route
-                path="/setPassword"
-                element={<SetPasswordWithoutEmail />}
-              />
+              <Route path="/activateAccess/:randomId" element={<ActivateAccess />} />
+              <Route path="/setPassword" element={<SetPasswordWithoutEmail />} />
               <Route path="/welcome" element={<Welcome />} />
               <Route path="/entitySetup/:id/:page" element={<EntitySetup />} />
               <Route
@@ -566,7 +531,10 @@ const App = ({ props }) => {
               <Route path="/chart" element={<ChartPage />} />
               <Route path="/help" element={<HelpHome />} />
               <Route path="/partnerPortal" element={<TasksAndAlerts />} />
-              <Route path="/activeCustomers" element={<CustomerManagement />} />
+              <Route
+                path="/activeCustomers"
+                element={<CustomerManagement />}
+              />
               <Route path="/customerSetup" element={<CustomerSetup />} />
               <Route path="/referenceList" element={<ReferenceList />} />
               <Route
@@ -608,6 +576,10 @@ const App = ({ props }) => {
               <Route
                 path="/referenceList/suffixByIndustries"
                 element={<SuffixByIndustries />}
+              />
+              <Route
+                path="/referenceList/contractByIndustries"
+                element={<ContractByIndustries />}
               />
               <Route
                 path="/referenceList/contractedServiceProviderByIndustries"
@@ -652,6 +624,10 @@ const App = ({ props }) => {
               <Route
                 path="/referenceList/contractedServicesByEntityType"
                 element={<ContractServicesByEntityType />}
+              />
+              <Route
+                path="/referenceList/contractTypeForCustomer"
+                element={<ContractTypeForCustomer />}
               />
               <Route
                 path="/referenceList/contractServiceProviderBySiteType"

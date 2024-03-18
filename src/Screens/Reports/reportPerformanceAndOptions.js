@@ -15,11 +15,18 @@ import UserLogo2 from './../../images/userLogo4.png';
 import UserLogo3 from './../../images/userLogo5.png';
 import UserLogo4 from './../../images/userLogo6.png';
 import Search from './../../images/search.png';
+import ReportsRefresh from './../../images/reportsRefresh.png';
+import ReportsDownload from './../../images/reportsDownload.png';
+import ReportsSchedule from './../../images/reportsSchedule.png';
+import ReportsPrint from './../../images/reportsPrint.png';
+import ReportsFullScreen from './../../images/reportsFullScreen.png';
+import ReportsShare from './../../images/reportsShare.png';
+import Info from './../../images/info.png';
 import SaveReport from './saveReport';
 
 import style from './index.module.scss';
 
-const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpdated, dataToUseInReport, refToUse, getIsDownloadClicked, isNoData }) => {
+const ReportPerformanceAndOptions = ({ handle, handlePrint, isUpdated, dataToUseInReport, refToUse, getIsDownloadClicked, isNoData }) => {
     const { reportType } = useParams();
     const [showSaveReportOutput, setShowSaveReportOutput] = useState(false);
     const [showReportRefreshingDialog, setShowReportRefreshingDialog] = useState(false);
@@ -38,6 +45,28 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
     const openDownload = Boolean(anchorElDownload);
     const [anchorElFullscreen, setAnchorElFullscreen] = useState(null);
     const openFullscreen = Boolean(anchorElFullscreen);
+    const [anchorElInfo, setAnchorElInfo] = useState(null);
+    const openInfo = Boolean(anchorElInfo);
+
+    const reportTitleList = {
+        upcomingContractRenewals: 'Upcoming Contract Renewals',
+        oneTimeContract: "List of One Time Contracts that will Terminate on Expiration",
+        scheduledActivity: "Scheduled Activity/ Services - Forcasted To Actual",
+        scheduledActivityByContract: "Scheduled Activity/ Services - Forcasted To Actual By Contract",
+        complianceStatus: "Proof Of Documentation Status By Contractor",
+        nonCompliant: 'List of Contracts that are non compliant with proof of documentation requirement',
+        paymentsProcessingSummary: 'Payments Processing Summary',
+        compensationCostAnalysis: 'Compensation Cost Analysis',
+        timesheetProcessingSummary: 'Timesheet Processing Summary',
+        listingOfTimesheetsNotPaid: 'Listing Of Timesheets Not Paid',
+        submittedTimesheetsPaymentStatus: 'Submitted Timesheets Payment Status',
+        addOnActivities: 'Add On Activities/ Services Requests Status Summary',
+        activitiesOrServices: 'Activities/ Services Log Status Summary',
+        contractDocumentsOnFile: 'Contract Documents On File',
+        multiProviderContractsList: 'Multi Provider Contracts List',
+        contractsWithABusinessEntity: 'Contracts With A Business Entity',
+        currentRemitToAddressForActiveContracts: 'Current Remit To Address For Active Contracts',
+    }
 
     const getSaveReportDialog = (value) => {
         setShowSaveReport(value);
@@ -48,18 +77,26 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
             <div className={`${style.spaceBetween} ${style.alignCenter}`}>
                 <div className={`${style.displayInRow} ${style.cardPadding} ${style.alignCenter}`}>
                     <div className={style.reportTypeTextStyle}>
-                        {reportType === "upcomingContractRenewals" ? 'Upcoming Contract Renewals'
-                            : reportType === "oneTimeContract" ? "List of One Time Contracts that will Terminate on Expiration"
-                                : reportType === "scheduledActivity" ? "Scheduled Activity/ Services - Forcasted To Actual"
-                                    : reportType === "complianceStatus" ? "Proof Of Documentation Status By Contractor"
-                                        : reportType === "nonCompliant" ? 'List of Contracts that are non compliant with proof of documentation requirement'
-                                            : reportType === "paymentsProcessingSummary" ? 'Payments Processing Summary'
-                                                : reportType === "compensationCostAnalysis" ? 'Compensation Cost Analysis'
-                                                    : reportType === "timesheetProcessingSummary" ? 'Timesheet Processing Summary'
-                                                        : reportType === "listingOfTimesheetsNotPaid" ? 'Listing Of Timesheets Not Paid'
-                                                            : reportType === "submittedTimesheetsPaymentStatus" ? 'Submitted Timesheets Payment Status'
-                                                                : reportType === "addOnActivities" ? 'Add On Activities/ Services Requests Status Summary'
-                                                                    : 'Activities/ Services Log Status Summary'}
+                        {reportTitleList[reportType]}
+                    </div>
+                    <div onMouseEnter={(e) => setAnchorElInfo(e.currentTarget)} onMouseLeave={() => setAnchorElInfo(null)} aria-owns={openInfo ? 'mouse-over-popover' : undefined} aria-haspopup="true">
+                        <img src={Info} className={`${style.infoStyle} ${style.marginTop5} ${style.marginLeft10}`} />
+                        <Popover
+                            id={'mouse-over-popover'}
+                            sx={{
+                                pointerEvents: 'none',
+                            }}
+                            open={openInfo}
+                            anchorEl={anchorElInfo}
+                            onClose={() => setAnchorElInfo(null)}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'left',
+                            }}
+                            disableRestoreFocus
+                        >
+                            <div className={style.popoverStyle}>{reportTitleList[reportType]}</div>
+                        </Popover>
                     </div>
                 </div>
                 <div className={` ${style.margin20}`}>
@@ -75,7 +112,8 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
                         <div className={`${style.iconPadding} ${style.cursorPointer} ${style.marginLeft20}`}
                             onMouseEnter={(e) => setAnchorElRefresh(e.currentTarget)} onMouseLeave={() => setAnchorElRefresh(null)} aria-owns={openRefresh ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">
-                            <CachedOutlinedIcon style={{ color: isUpdated ? '#F46044' : '#52575D' }} onClick={() => { setShowReportRefreshingDialog(true); getIsRefresh(true) }} />
+                            <img src={ReportsRefresh} alt="" className={`${style.reportsActions} ${style.marginTop5}`} onClick={() => { setShowReportRefreshingDialog(true); window.location.reload() }} />
+                            {/* <CachedOutlinedIcon style={{ color: isUpdated ? '#F46044' : '#52575D' }} onClick={() => { setShowReportRefreshingDialog(true); window.location.reload() }} /> */}
                             <Popover
                                 id={'mouse-over-popover'}
                                 sx={{
@@ -99,7 +137,8 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
                         <div className={`${style.iconPadding} ${style.cursorPointer} ${isNoData && style.disabledCursor}`}
                             onMouseEnter={(e) => !isNoData ? setAnchorElSchedule(e.currentTarget) : {}} onMouseLeave={() => !isNoData ? setAnchorElSchedule(null) : {}} aria-owns={openSchedule ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">
-                            <CalendarTodayIcon style={{ color: "#52575D" }} onClick={() => !isNoData ? setShowSaveReport(true) : {}} />
+                            <img src={ReportsSchedule} alt="" className={`${style.reportsActions} ${style.marginTop5}`} onClick={() => !isNoData ? setShowSaveReport(true) : {}} />
+                            {/* <CalendarTodayIcon style={{ color: "#52575D" }} onClick={() => !isNoData ? setShowSaveReport(true) : {}} /> */}
                             <Popover
                                 id={'mouse-over-popover'}
                                 sx={{
@@ -141,7 +180,8 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
                         <div className={`${style.iconPadding} ${style.cursorPointer} ${isNoData && style.disabledCursor}`} onClick={() => !isNoData ? getIsDownloadClicked(true) : {}}
                             onMouseEnter={(e) => !isNoData ? setAnchorElDownload(e.currentTarget) : {}} onMouseLeave={() => !isNoData ? setAnchorElDownload(null) : {}} aria-owns={openDownload ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">
-                            <DownloadingOutlinedIcon style={{ color: "#52575D" }} />
+                            <img src={ReportsDownload} alt="" className={`${style.reportsActions} ${style.marginTop5}`} />
+                            {/* <DownloadingOutlinedIcon style={{ color: "#52575D" }} /> */}
                             <Popover
                                 id={'mouse-over-popover'}
                                 sx={{
@@ -162,7 +202,8 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
                         <div className={`${style.iconPadding} ${style.cursorPointer} ${isNoData && style.disabledCursor}`} onClick={!isNoData ? handlePrint : {}}
                             onMouseEnter={(e) => !isNoData ? setAnchorElPrint(e.currentTarget) : {}} onMouseLeave={() => !isNoData ? setAnchorElPrint(null) : {}} aria-owns={openPrint ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">
-                            <PrintOutlinedIcon style={{ color: "#52575D" }} />
+                            <img src={ReportsPrint} alt="" className={`${style.reportsActions} ${style.marginTop5}`} />
+                            {/* <PrintOutlinedIcon style={{ color: "#52575D" }} /> */}
                             <Popover
                                 id={'mouse-over-popover'}
                                 sx={{
@@ -183,7 +224,8 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
                         <div className={`${style.iconPadding} ${style.cursorPointer} ${isNoData && style.disabledCursor}`}
                             onMouseEnter={(e) => !isNoData ? setAnchorElFullscreen(e.currentTarget) : {}} onMouseLeave={() => !isNoData ? setAnchorElFullscreen(null) : {}} aria-owns={openFullscreen ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true" >
-                            <ZoomOutMapIcon style={{ color: "#52575D" }} onClick={!isNoData ? handle.enter : {}} />
+                            <img src={ReportsFullScreen} alt="" className={`${style.reportsActions} ${style.marginTop5}`} onClick={!isNoData ? handle.enter : {}} />
+                            {/* <ZoomOutMapIcon style={{ color: "#52575D" }} onClick={!isNoData ? handle.enter : {}} /> */}
                             <Popover
                                 id={'mouse-over-popover'}
                                 sx={{

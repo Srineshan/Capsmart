@@ -41,7 +41,7 @@
   margin: auto;
 }
 
-.marginTopZero{
+.marginTopZero {
   margin-top: 0px;
 }
 
@@ -267,11 +267,11 @@
   margin-top: 2px !important;
 }
 
-.textUppercase{
+.textUppercase {
   text-transform: uppercase;
 }
 
-.textCapitalize{
+.textCapitalize {
   text-transform: capitalize;
 }
 
@@ -620,10 +620,10 @@
   align-items: center;
   display: grid;
   grid-template-columns: 60% 20% 10% 5% 5%;
-  
+
 }
 
-.tableHeaderDepartment{
+.tableHeaderDepartment {
   background: #afa9ef 0% 0% no-repeat padding-box;
   font-weight: medium;
   //margin-left: 50px;
@@ -723,7 +723,7 @@
 .healthCareIndustriesHeader {
   background: #d3d0f6 0% 0% no-repeat padding-box;
   font-weight: normal;
-  height: 50px;
+  min-height: 50px;
   width: 100%;
   border-radius: 6px;
   margin-top: 2px;
@@ -819,7 +819,8 @@
   display: grid;
   align-items: center;
   margin-top: 5px;
-  grid-template-columns: 60% 15% 12% 6% 5%;;
+  grid-template-columns: 60% 15% 12% 6% 5%;
+  ;
 }
 
 .departmentTableData {
@@ -995,7 +996,8 @@
   display: grid;
   align-items: center;
   margin-top: 5px;
-  grid-template-columns: 4% 55% 8% 20% 6% 6%;;
+  grid-template-columns: 4% 55% 8% 20% 6% 6%;
+  ;
 }
 
 .terminationInnerFolderData {
@@ -1574,12 +1576,12 @@
 
 .holidayHeaderTextStyle {
   font: normal normal 600 16px/18px Montserrat;
-    letter-spacing: 0.05px;
-    color: #6d6d6d;
-    text-align: left;
-    margin-top: 10px;
-    margin-left: 10px;
-    text-transform: uppercase;
+  letter-spacing: 0.05px;
+  color: #6d6d6d;
+  text-align: left;
+  margin-top: 10px;
+  margin-left: 10px;
+  text-transform: uppercase;
 }
 
 
@@ -1660,7 +1662,7 @@
 .boardCertificationSideRows2 {
   background: #a097f5 0% 0% no-repeat padding-box;
   font-weight: normal;
-  height: 50px;
+  min-height: 50px;
   width: 92.5%;
   border-radius: 6px;
   margin-top: 1%;
@@ -1673,7 +1675,7 @@
 .boardCertificationSideRows1 {
   background: #a097f5 0% 0% no-repeat padding-box;
   font-weight: normal;
-  height: 50px;
+  min-height: 50px;
   width: 90%;
   border-radius: 6px;
   margin-top: 1%;
@@ -1683,10 +1685,23 @@
   grid-template-columns: 10% 75% 15%;
 }
 
+.boardCertificationSideRows2 {
+  background: #a097f5 0% 0% no-repeat padding-box;
+  font-weight: normal;
+  min-height: 50px;
+  width: 90%;
+  border-radius: 6px;
+  margin-top: 1%;
+  margin-left: 2%;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 10% 55% 25% 10%;
+}
+
 .ContractedServiceProviderHeaderInsideContainer {
   background: #a097f5 0% 0% no-repeat padding-box;
   font-weight: normal;
-  height: 50px;
+  min-height: 50px;
   border-radius: 6px;
   margin-top: 1%;
   margin-left: 2%;
@@ -1695,10 +1710,22 @@
   grid-template-columns: 7% 84% 5%;
 }
 
+.ContractedServiceProviderHeaderInsideContainer1 {
+  background: #a097f5 0% 0% no-repeat padding-box;
+  font-weight: normal;
+  min-height: 50px;
+  border-radius: 6px;
+  margin-top: 1%;
+  margin-left: 2%;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 7% 65% 20% 10%;
+}
+
 .boardCertificationSideRows {
   background: #cecaf5 0% 0% no-repeat padding-box;
   font-weight: normal;
-  height: 50px;
+  min-height: 50px;
   width: 90%;
   border-radius: 6px;
   margin-top: 1%;
@@ -1710,14 +1737,14 @@
 
 .terminationReasonSideRows {
   background: #928AE1 0% 0% no-repeat padding-box;
-    font-weight: normal;
-    height: 50px;
-    width: 98%;
-    border-radius: 6px;
-    margin-top: 1%;
-    align-items: center;
-    display: grid;
-    grid-template-columns: 10% 78% 5%;
+  font-weight: normal;
+  min-height: 50px;
+  width: 98%;
+  border-radius: 6px;
+  margin-top: 1%;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 10% 78% 5%;
 }
 
 .costCenterLeftCard {
@@ -1735,7 +1762,6 @@
 .boardCertificationInnerFolderRows {
   font-weight: normal;
   min-height: 50px;
-  height: 50px;
   width: 83%;
   border: 0.4000000059604645px solid #887ee7af;
   opacity: 1;
@@ -1745,10 +1771,9 @@
   align-items: center;
 }
 
-.terminationInnerFolderRows{
+.terminationInnerFolderRows {
   font-weight: normal;
   min-height: 50px;
-  height: 50px;
   width: 93%;
   border: 0.400000006px solid rgba(136, 126, 231, 0.6862745098);
   opacity: 1;
@@ -1773,7 +1798,6 @@
 .HolidayListInnerFolderRows {
   font-weight: normal;
   min-height: 50px;
-  height: 50px;
   width: 82%;
   border: 0.4000000059604645px solid #d7d4f7;
   opacity: 1;
@@ -1931,7 +1955,8 @@
   align-items: center;
   margin-top: 4px;
   // grid-template-columns: 3% 30% 15% 10% 15% 18% 5% 5%;
-  grid-template-columns: 1% 27% 24% 15% 10% 13% 5% 5%;;
+  grid-template-columns: 1% 27% 24% 15% 10% 13% 5% 5%;
+  ;
 }
 
 .holidayScheduleTableData1 {
@@ -1993,7 +2018,7 @@
   border: 0.4000000059604645px solid #7165e3;
   border-radius: 6px;
   opacity: 0.75;
-  height: 50px;
+  min-height: 50px;
   width: 100%;
 }
 
@@ -2065,7 +2090,6 @@
   background: #cecaf5 0% 0% no-repeat padding-box;
   font-weight: normal;
   min-height: 50px;
-  height: 50px;
   width: 90%;
   border: 0.4000000059604645px solid #887ee7af;
   border-radius: 6px;
@@ -2081,7 +2105,6 @@
 .customersAdminInnerRowsStyle1 {
   font-weight: normal;
   min-height: 50px;
-  height: 50px;
   width: 87%;
   border: 0.4000000059604645px solid #887ee7af;
   border-radius: 6px;
@@ -2098,7 +2121,6 @@
 .customersAdminInnerRowsStyle2 {
   font-weight: normal;
   min-height: 50px;
-  height: 50px;
   width: 95%;
   border: 0.4000000059604645px solid #887ee7af;
   border-radius: 6px;
@@ -2114,7 +2136,6 @@
 .customersAdminInnerRowsStyle3 {
   font-weight: normal;
   min-height: 50px;
-  height: 50px;
   width: 87%;
   border: 0.4000000059604645px solid #887ee7af;
   border-radius: 6px;
@@ -2132,7 +2153,6 @@
 .customersAdminInnerRowsStyle4 {
   font-weight: normal;
   min-height: 50px;
-  height: 50px;
   width: 87%;
   border: 0.4000000059604645px solid #887ee7af;
   border-radius: 6px;
@@ -2149,7 +2169,6 @@
 .customersAdminInnerRowsStyle5 {
   font-weight: normal;
   min-height: 50px;
-  height: 50px;
   width: 87%;
   border: 0.4000000059604645px solid #887ee7af;
   border-radius: 6px;
@@ -2166,7 +2185,6 @@
 .customersAdminInnerRowsStyle6 {
   font-weight: normal;
   min-height: 50px;
-  height: 50px;
   width: 90%;
   border: 0.4000000059604645px solid #887ee7af;
   border-radius: 6px;
@@ -2183,7 +2201,6 @@
 .holidayInnerRowsStyle1 {
   font-weight: normal;
   min-height: 50px;
-  height: 50px;
   width: 87%;
   border: 0.4000000059604645px solid #887ee7af;
   border-radius: 6px;
@@ -2200,7 +2217,6 @@
 .customersAdminInnerRowsStyleLightColor {
   font-weight: normal;
   min-height: 50px;
-  height: 50px;
   width: 87%;
   border: 0.4000000059604645px solid #887ee7af;
   border-radius: 6px;
@@ -2218,7 +2234,7 @@
   border: 0.4000000059604645px solid #c3bff3;
   opacity: 0.88;
   font-weight: normal;
-  height: 50px;
+  min-height: 50px;
   width: 87%;
   border-radius: 6px;
   margin-top: 1%;
@@ -2233,7 +2249,7 @@
   border: 0.4000000059604645px solid #c3bff3;
   opacity: 0.88;
   font-weight: normal;
-  height: 50px;
+  min-height: 50px;
   width: 90%;
   border-radius: 6px;
   margin-top: 1%;
@@ -2377,7 +2393,7 @@
 .customerAdminTableHeader2 {
   background: #d3d0f6 0% 0% no-repeat padding-box;
   font-weight: normal;
-  height: 50px;
+  min-height: 50px;
   width: 93%;
   border-radius: 6px;
   margin-top: 2px;
@@ -2463,7 +2479,7 @@
   display: grid;
   align-items: center;
   opacity: 0.75;
-  height: 50px;
+  min-height: 50px;
   width: 100%;
   grid-template-columns: 25% 45% 10%;
 }
@@ -2586,7 +2602,7 @@
 .boardCertificationSideRows3 {
   background: #8e86e1 0% 0% no-repeat padding-box;
   font-weight: normal;
-  height: 50px;
+  min-height: 50px;
   width: 90%;
   border-radius: 6px;
   margin-top: 1%;
@@ -2715,7 +2731,7 @@
   background-color: #EFEEFC;
 }
 
-.headerStyle{
+.headerStyle {
   align-items: center;
 }
 
@@ -2742,6 +2758,3 @@
   opacity: 1;
   margin-top: -2px;
 }
-
-
-

@@ -14,6 +14,8 @@ import format from "date-fns/format";
 import Navbar from "../../Components/Navbar";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import SideBar from "../../Components/Sidebar";
+import { formatInTimeZone } from "date-fns-tz";
+import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
 
 const ContractedServiceProvidedByIndustries = () => {
   const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
@@ -78,7 +80,9 @@ const ContractedServiceProvidedByIndustries = () => {
     const date = new Date(
       lastModifiedDate.contractedServiceProviders?.lastModified
     );
-    setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
+    setLastUpdatedDate(
+      `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
+    );
   };
 
   const getEntityData = async () => {
@@ -176,6 +180,7 @@ const ContractedServiceProvidedByIndustries = () => {
               needHeader={true}
               getAddEntityDialog={getAddEntityDialog}
               Title={"ADD CSP"}
+              setIsEdit={setIsEdit}
             />
 
             <div className={style.marginTop35}>
@@ -269,8 +274,9 @@ const ContractedServiceProvidedByIndustries = () => {
                           .join("-")} */}
                                 </p>
                                 <p className={style.tableDataFontStyle}>
-                                  {format(
+                                  {formatInTimeZone(
                                     new Date(`${i.lastModifiedDate}`),
+                                    siteTimeZone(),
                                     "MM-dd-yyyy"
                                   )}
                                 </p>

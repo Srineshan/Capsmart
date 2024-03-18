@@ -12,12 +12,15 @@ import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
 import CommonTextField from '../../Components/CommonFields/CommonTextField';
 import CommonLabel from '../../Components/CommonFields/CommonLabel';
 import { SpecifiedCountCalculator } from './specifiedCountCalculator';
+import FormControl from "@mui/material/FormControl";
+import { ONCALLSERVICE } from "../../Constants";
+import MultiSelectDisplay from "../../Components/ReusableSmallComponents/multiSelectDisplay";
 
 import style from './index.module.scss';
 import EditableTable from './editableTable';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
-const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, isReset, getIsReset, sites, contractId }) => {
+const OnCallCoverageFields = ({ servicesList, getMetaData, serviceSelected, timeCommitment, isReset, getIsReset, sites, contractId }) => {
   const [timesheetWorkFlow, setTimesheetWorkflow] = useState([]);
   const contractStatus = sessionStorage.getItem('Selected Contract Status');
   const [metadata, setMetadata] = useState({
@@ -63,6 +66,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
       friday: false,
     },
     serviceDaysArray: [],
+    overlap: false,
+    overlappingActivities: [],
     weekdaysCount: '0',
     weekendsCount: '0',
     dependantServiceIncluded: false,
@@ -72,10 +77,14 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
     dependencyPayableAmount: '0',
     dependencyFrequency: 'PER_DAY',
     patientMRNRequired: false,
+    serviceRate: '0',
+    serviceRateFrequency: 'SESSION',
     attendingDocRequired: false,
     customizedSchedule: false,
     weekdayFrom: null,
     weekdayTo: null,
+    weekdayDayServiceRate: '0',
+    weekdayDayServiceFrequency: 'SESSION',
     weekdayDuration: 0,
     weekdayMin: 0,
     weekdayMax: 99999999,
@@ -87,6 +96,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
     weekdayEndDate: new Date(),
     weekdayNightsFrom: null,
     weekdayNightsTo: null,
+    weekdayNightServiceRate: '0',
+    weekdayNightServiceFrequency: 'SESSION',
     weekdayNightsDuration: 0,
     weekdayNightsMin: 0,
     weekdayNightsMax: 99999999,
@@ -98,6 +109,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
     weekdayNightsEndDate: new Date(),
     weekendFrom: null,
     weekendTo: null,
+    weekendServiceRate: '0',
+    weekendServiceFrequency: 'SESSION',
     weekendStartday: '',
     weekendEndday: '',
     weekendDuration: 0,
@@ -111,6 +124,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
     weekendEndDate: new Date(),
     holidayFrom: null,
     holidayTo: null,
+    holidayServiceRate: '0',
+    holidayServiceFrequency: 'SESSION',
     holidayFrequency: 'WEEK',
     holidayTerm: 'PRIOR_DAY',
     holidayDuration: 0,
@@ -129,6 +144,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
       getIsReset(false);
     }
   }, [isReset])
+
+  console.log('servicesList', servicesList)
 
   const resetMetadata = () => {
     setMetadata({
@@ -174,6 +191,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         friday: false,
       },
       serviceDaysArray: [],
+      overlap: false,
+      overlappingActivities: [],
       weekdaysCount: '0',
       weekendsCount: '0',
       dependantServiceIncluded: false,
@@ -243,6 +262,47 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         rateType: 'HOURLY',
         sessionDuration: '0',
         sessionAmount: '0',
+        totalSession: '0',
+        totalSessionFrequency: 'YEAR',
+        workingTimeFrom: null,
+        workingTimeTo: null,
+        serviceDays: {
+          tuesday: false,
+          wednesday: false,
+          thursday: false,
+          friday: false,
+          saturday: false,
+          sunday: false,
+          weekDays: false,
+          weekEnds: false,
+          monday: false,
+          isholidays: false,
+        },
+        serviceWeekDaysDay: {
+          monday: false,
+          tuesday: false,
+          wednesday: false,
+          thursday: false,
+          friday: false,
+        },
+        serviceWeekDaysNight: {
+          monday: false,
+          tuesday: false,
+          wednesday: false,
+          thursday: false,
+          friday: false,
+        },
+        serviceDaysArray: [],
+        weekdaysCount: '0',
+        weekendsCount: '0',
+        dependantServiceIncluded: false,
+        additionalActivity: [{ activity: '', weekdayFrom: null, weekdayTo: null, weekendFrom: null, weekendTo: null, holidayFrom: null, holidayTo: null, patientMRNRequired: false, attendingDocRequired: false }],
+        additionalActivityBillable: false,
+        additionalActivityPaymentApprovalRequired: false,
+        dependencyPayableAmount: '0',
+        dependencyFrequency: 'PER_DAY',
+        patientMRNRequired: false,
+        attendingDocRequired: false,
         customizedSchedule: value,
         weekdayFrom: null,
         weekdayTo: null,
@@ -263,9 +323,9 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         weekdayNightActivity: '',
         weekdayNightsPayment: 0,
         weekdayNightsPaymentNa: false,
-        weekdayFrequency: 'WEEK',
-        weekdayStartDate: new Date(),
-        weekdayEndDate: new Date(),
+        weekdayNightsFrequency: 'WEEK',
+        weekdayNightsStartDate: new Date(),
+        weekdayNightsEndDate: new Date(),
         weekendFrom: null,
         weekendTo: null,
         weekendStartday: '',
@@ -284,6 +344,9 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         holidayFrequency: 'WEEK',
         holidayTerm: 'PRIOR_DAY',
         holidayDuration: 0,
+        holidayMin: 0,
+        holidayMax: 99999999,
+        holidayActivity: '',
         holidayPayment: 0,
         holidayPaymentNa: false,
         holidayMin: 0,
@@ -387,7 +450,11 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         additionalScheduleRequired: serviceSelected?.additionalSchedule?.scheduleRequired,
         billableService: serviceSelected?.billableService,
         rateType: serviceSelected?.rateType,
+        overlap: serviceSelected?.splitActivityTimeOnOverlap,
+        overlappingActivities: serviceSelected?.overlappingActivitiesForSplit?.map(data => data?.activityTypeTemplate) || [],
         sessionDuration: serviceSelected?.duration?.hours || '0',
+        serviceRate: serviceSelected?.serviceRate?.rate || '0',
+        serviceRateFrequency: serviceSelected?.serviceRate?.rateFrequency,
         sessionAmount: serviceSelected?.payableAmount?.value,
         totalSession: serviceSelected?.totalSessions?.value,
         totalSessionFrequency: serviceSelected?.totalSessions?.frequency,
@@ -409,6 +476,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         weekdayMax: serviceSelected?.customschedule?.weekdayDay?.target?.maximum?.value,
         weekdayActivity: serviceSelected?.customschedule?.weekdayDay?.activity?.activity,
         weekdayPayment: serviceSelected?.customschedule?.weekdayDay?.payableAmount?.value,
+        weekdayDayServiceRate: serviceSelected?.customschedule?.weekdayDay?.serviceRate?.rate,
+        weekdayDayServiceFrequency: serviceSelected?.customschedule?.weekdayDay?.serviceRate?.rateFrequency,
         weekdayPaymentNa: serviceSelected?.customschedule?.weekdayDay?.paymentNotApplicable,
         weekdayFrequency: serviceSelected?.customschedule?.weekdayDay?.target?.frequency,
         weekdayNightsFrom: GetDateFromHours(serviceSelected?.customschedule?.weekdayNight?.from?.toString() || ''),
@@ -418,6 +487,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         weekdayNightsMax: serviceSelected?.customschedule?.weekdayNight?.target?.maximum?.value,
         weekdayNightActivity: serviceSelected?.customschedule?.weekdayNight?.activity?.activity,
         weekdayNightsPayment: serviceSelected?.customschedule?.weekdayNight?.payableAmount?.value,
+        weekdayNightServiceRate: serviceSelected?.customschedule?.weekdayNight?.serviceRate?.rate,
+        weekdayNightServiceFrequency: serviceSelected?.customschedule?.weekdayNight?.serviceRate?.rateFrequency,
         weekdayNightsPaymentNa: serviceSelected?.customschedule?.weekdayNight?.paymentNotApplicable,
         weekdayNightsFrequency: serviceSelected?.customschedule?.weekdayNight?.target?.frequency,
         weekendFrom: GetDateFromHours(serviceSelected?.customschedule?.weekend?.from?.toString() || ''),
@@ -429,6 +500,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         weekendMax: serviceSelected?.customschedule?.weekend?.target?.maximum?.value,
         weekendActivity: serviceSelected?.customschedule?.weekend?.activity?.activity,
         weekendPayment: serviceSelected?.customschedule?.weekend?.payableAmount?.value,
+        weekendServiceRate: serviceSelected?.customschedule?.weekend?.serviceRate?.rate,
+        weekendServiceFrequency: serviceSelected?.customschedule?.weekend?.serviceRate?.rateFrequency,
         weekendPaymentNa: serviceSelected?.customschedule?.weekend?.paymentNotApplicable,
         weekendFrequency: serviceSelected?.customschedule?.weekend?.target?.frequency,
         holidayFrom: GetDateFromHours(serviceSelected?.customschedule?.holiday?.from?.toString() || ''),
@@ -440,6 +513,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         holidayMax: serviceSelected?.customschedule?.holiday?.target?.maximum?.value,
         holidayActivity: serviceSelected?.customschedule?.holiday?.activity?.activity,
         holidayPayment: serviceSelected?.customschedule?.holiday?.payableAmount?.value,
+        holidayServiceRate: serviceSelected?.customschedule?.holiday?.serviceRate?.rate,
+        holidayNightsServiceFrequency: serviceSelected?.customschedule?.holiday?.serviceRate?.rateFrequency,
         holidayPaymentNa: serviceSelected?.customschedule?.holiday?.paymentNotApplicable,
         patientMRNRequired: serviceSelected?.patientMRNRequired,
         attendingDocRequired: serviceSelected?.attendingDocRequired,
@@ -448,6 +523,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         workflowId: serviceSelected?.dependentService?.workFlow?.id,
         workflowName: serviceSelected?.dependentService?.workFlow?.workFlowName?.name,
         professionalServiceRequired: serviceSelected?.professionalServiceRequired,
+        serviceRate: serviceSelected?.serviceRate?.rate,
+        serviceRateFrequency: serviceSelected?.serviceRate?.rateFrequency,
         patientConsultRequired: serviceSelected?.patientConsultRequired,
       });
     }
@@ -562,8 +639,53 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
       }
     }
     else {
-      setMetadata({ ...metadata, [name]: value });
+      if (name === 'weekdayDuration') {
+        setMetadata({ ...metadata, [name]: value, weekdayPayment: metadata?.weekdayDayServiceFrequency === "SESSION" ? metadata?.weekdayDayServiceRate : (metadata?.weekdayDayServiceRate * parseFloat(value)) })
+      }
+      else if (name === 'weekdayDayServiceRate') {
+        setMetadata({ ...metadata, [name]: parseFloat(value), weekdayPayment: metadata?.weekdayDayServiceFrequency === "SESSION" ? parseFloat(value) : (parseFloat(value) * metadata?.weekdayDuration) })
+      } else if (name === 'weekdayDayServiceFrequency') {
+        setMetadata({ ...metadata, [name]: value, weekdayPayment: value === "SESSION" ? metadata?.weekdayDayServiceRate : (metadata?.weekdayDayServiceRate * metadata?.weekdayDuration) })
+      } else if (name === 'weekdayNightsDuration') {
+        setMetadata({ ...metadata, [name]: parseFloat(value), weekdayNightsPayment: metadata?.weekdayNightServiceFrequency === "SESSION" ? metadata?.weekdayNightServiceRate : (metadata?.weekdayNightServiceRate * parseFloat(value)) })
+      }
+      else if (name === 'weekdayNightServiceRate') {
+        setMetadata({ ...metadata, [name]: parseFloat(value), weekdayNightsPayment: metadata?.weekdayNightServiceFrequency === "SESSION" ? parseFloat(value) : (value * metadata?.weekdayNightsDuration) })
+      } else if (name === 'weekdayDayServiceFrequency') {
+        setMetadata({ ...metadata, [name]: value, weekdayNightsPayment: value === "SESSION" ? metadata?.weekdayNightServiceRate : (metadata?.weekdayNightServiceRate * metadata?.weekdayNightsDuration) })
+      } else if (name === 'weekendDuration') {
+        setMetadata({ ...metadata, [name]: parseFloat(value), weekendPayment: metadata?.weekendServiceFrequency === "SESSION" ? metadata?.weekendServiceRate : (metadata?.weekendServiceRate * parseFloat(value)) })
+      }
+      else if (name === 'weekendServiceRate') {
+        setMetadata({ ...metadata, [name]: parseFloat(value), weekendPayment: metadata?.weekendServiceFrequency === "SESSION" ? parseFloat(value) : (value * metadata?.weekendDuration) })
+      } else if (name === 'weekendServiceFrequency') {
+        setMetadata({ ...metadata, [name]: value, weekendPayment: value === "SESSION" ? metadata?.weekendServiceRate : (metadata?.weekendServiceRate * metadata?.weekendDuration) })
+      } else if (name === 'holidayDuration') {
+        setMetadata({ ...metadata, [name]: parseFloat(value), holidayPayment: metadata?.holidayServiceFrequency === "SESSION" ? metadata?.holidayServiceRate : (metadata?.holidayServiceRate * parseFloat(value)) })
+      }
+      else if (name === 'holidayServiceRate') {
+        setMetadata({ ...metadata, [name]: parseFloat(value), holidayPayment: metadata?.holidayServiceFrequency === "SESSION" ? parseFloat(value) : (parseFloat(value) * metadata?.holidayDuration) })
+      } else if (name === 'holidayServiceFrequency') {
+        setMetadata({ ...metadata, [name]: value, holidayPayment: value === "SESSION" ? metadata?.holidayServiceRate : (metadata?.holidayServiceRate * metadata?.holidayDuration) })
+      } else {
+        setMetadata({ ...metadata, [name]: value });
+      }
     }
+  }
+
+  const handleOverLapActivitySelection = (value) => {
+    console.log('inside function', value);
+    let temp = metadata?.overlappingActivities;
+    if (!temp?.includes(value)) {
+      console.log('inside if condition')
+      temp.push(value)
+      console.log('temp value', temp)
+      setMetadata({ ...metadata, overlappingActivities: temp });
+    }
+  }
+
+  const removeOverlappingActivity = (index) => {
+    setMetadata({ ...metadata, overlappingActivities: metadata?.overlappingActivities?.filter((data, indexValue) => index !== indexValue)?.map(data => data) })
   }
 
   return (
@@ -584,13 +706,42 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         </div>
       </div>
 
-            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <CommonLabel value='Patient Consult Required' />
-                <div className={style.onCallBillableGrid}>
-                    <CommonSwitch checked={metadata?.patientConsultRequired} label={metadata?.patientConsultRequired ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} onChange={(e) => setMetadata({ ...metadata, patientConsultRequired: !metadata?.patientConsultRequired })} />
-                </div>
-            </div>
+      <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+        <CommonLabel value='Patient Consult Required' />
+        <div className={style.onCallBillableGrid}>
+          <CommonSwitch checked={metadata?.patientConsultRequired} label={metadata?.patientConsultRequired ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} onChange={(e) => setMetadata({ ...metadata, patientConsultRequired: !metadata?.patientConsultRequired })} />
+        </div>
+      </div>
 
+      <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+        <CommonLabel value='Exclude Payment for On Call Coverage with Overlapping Activity*' />
+        <div>
+          <div className={`${style.displayInRow} `}>
+            <CommonSwitch className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} label={metadata?.overlap ? 'YES' : 'NO'} checked={metadata?.overlap} onChange={(e) => handleValueChange('overlap', !metadata?.overlap)} />
+            {metadata?.overlap && (
+              <FormControl sx={{ width: 480 }}>
+                <CommonSelectField className={`${style.fullWidth}`}
+                  // value={metadata?.overlappingActivities}
+                  onChange={(e) => { handleOverLapActivitySelection(e.target.value) }}
+                  firstOptionLabel={servicesList?.map(data => data)?.length !== 0 ? 'Select Service to Overlap' : 'Possible Overlapping Service Not Found'} firstOptionValue={''}
+                  valueList={servicesList?.map(data => data?.activityTypeTemplate?.activityTypeTemplate)}
+                  labelList={servicesList?.map(data => data?.activityType?.activityType)}
+                  disabledList={servicesList?.map(data => false)}
+                />
+              </FormControl>
+            )}
+          </div>
+          {
+            metadata?.overlappingActivities?.length !== 0 && <MultiSelectDisplay
+              values={metadata?.overlappingActivities?.map(
+                (data) => data
+              )}
+              removeItem={removeOverlappingActivity}
+            />
+          }
+
+        </div>
+      </div>
 
 
 
@@ -635,13 +786,12 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                   />
                   <div className={` ${style.marginLeft20} ${style.durationWidth}`}>
                     <CommonTextField
-                      type="tel"
-                      maxLength="3"
+                      type="number"
                       InputProps={{
                         endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                       }}
                       value={metadata?.weekdayDuration}
-                      onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(e.target.value, 'weekdayDuration')}
+                      onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'weekdayDuration')}
                     />
                   </div>
                 </div>
@@ -716,30 +866,60 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
             </div>
           </div >
           <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-            <div className={style.marginLeft30}>
-              <CommonLabel value='Payment Amount*' />
+            <div className={`${style.marginLeft30}`}>
+              <CommonLabel value='Weekday Day Service Rate' />
             </div>
-            <div className={style.displayInRow}>
-              <div className={`${style.threeFieldWidth}`}>
-                <CommonTextField
-                  type="number"
-                  min="0"
-                  disabled={metadata?.weekdayPaymentNa}
-                  value={metadata?.weekdayPayment}
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
-                  }}
-                  onChange={(e) => setMetadata({
-                    ...metadata, weekdayPayment: parseFloat(e.target.value), weekdayPaymentNa: false
-                  })}
-                />
-              </div>
-              {/* <div className={style.verticalAlignCenter}> */}
-              <CommonLabel className={`${style.marginLeft20} ${style.threeFieldWidth}`} value={`Per Weekday Days`} />
-              {/* </div> */}
-              <CommonCheckBox value="NA" className={`${style.marginLeft20} ${style.fullWidth}`} label="NA" checked={metadata?.weekdayPaymentNa} onChange={(e) => setMetadata({ ...metadata, weekdayPayment: 0, weekdayPaymentNa: e.target.checked })} />
+            <div >
+              <CommonTextField
+                type="number"
+                className={`${style.threeFieldWidth}`}
+                InputProps={{
+                  startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
+                }}
+                value={metadata?.weekdayDayServiceRate}
+                onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value), 'weekdayDayServiceRate')}
+              />
             </div>
           </div>
+          <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+            <div className={`${style.marginLeft30}`}>
+              <CommonLabel value='Weekday Day Service Frequency' />
+            </div>
+            <div>
+              <CommonSelectField
+                className={`${style.threeFieldWidth}`}
+                value={metadata?.weekdayDayServiceFrequency || ''}
+                onChange={(e) => onCustomizeFieldChange(e.target.value, 'weekdayDayServiceFrequency')}
+                firstOptionLabel={'Select Service Frequency'} firstOptionValue={''}
+                valueList={['SESSION', 'HOUR']}
+                labelList={['Per Session', 'Per Hour']}
+                disabledList={[false, false]} />
+            </div>
+
+          </div>
+          {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <div className={style.marginLeft30}>
+                            <CommonLabel value='Payment Amount*' />
+                        </div>
+                        <div className={style.displayInRow}>
+                            <div className={`${style.threeFieldWidth}`}>
+                                <CommonTextField
+                                    type="number"
+                                    min="0"
+                                    disabled={metadata?.weekdayPaymentNa}
+                                    value={metadata?.weekdayPayment}
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
+                                    }}
+                                    onChange={(e) => setMetadata({
+                                        ...metadata, weekdayPayment: parseFloat(e.target.value), weekdayPaymentNa: false
+                                    })}
+                                />
+                            </div>
+                            <CommonLabel className={`${style.marginLeft20} ${style.threeFieldWidth}`} value={`Per Weekday Days`} />
+                            <CommonCheckBox value="NA" className={`${style.marginLeft20} ${style.fullWidth}`} label="NA" checked={metadata?.weekdayPaymentNa} onChange={(e) => setMetadata({ ...metadata, weekdayPayment: 0, weekdayPaymentNa: e.target.checked })} />
+                        </div>
+                    </div> */}
           <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
             <CommonLabel value='Weekday Nights' />
             <div>
@@ -775,13 +955,12 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                   />
                   <div className={` ${style.marginLeft20} ${style.durationWidth}`}>
                     <CommonTextField
-                      type="tel"
-                      maxLength="3"
+                      type="number"
                       InputProps={{
                         endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                       }}
                       value={metadata?.weekdayNightsDuration}
-                      onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(e.target.value, 'weekdayNightsDuration')}
+                      onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'weekdayNightsDuration')}
                     />
                   </div>
                 </div>
@@ -861,30 +1040,60 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
             </div>
           </div>
           <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-            <div className={style.marginLeft30}>
-              <CommonLabel value='Payment Amount*' />
+            <div className={`${style.marginLeft30}`}>
+              <CommonLabel value='Weekday Night Service Rate' />
             </div>
-            <div className={style.displayInRow}>
-              <div className={style.threeFieldWidth}>
-                <CommonTextField
-                  type="number"
-                  min="0"
-                  disabled={metadata?.weekdayNightsPaymentNa}
-                  value={metadata?.weekdayNightsPayment}
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
-                  }}
-                  onChange={(e) => setMetadata({
-                    ...metadata, weekdayNightsPayment: parseFloat(e.target.value), weekdayNightsPaymentNa: false
-                  })}
-                />
-              </div>
-              {/* <div className={style.verticalAlignCenter}> */}
-              <CommonLabel className={`${style.marginLeft20} ${style.threeFieldWidth}`} value={`Per Weekday Nights`} />
-              {/* </div> */}
-              <CommonCheckBox className={`${style.marginLeft20} ${style.fullWidth}`} value="NA" label="NA" checked={metadata?.weekdayNightsPaymentNa} onChange={(e) => setMetadata({ ...metadata, weekdayNightsPayment: 0, weekdayNightsPaymentNa: e.target.checked })} />
+            <div >
+              <CommonTextField
+                type="number"
+                className={`${style.threeFieldWidth}`}
+                InputProps={{
+                  startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
+                }}
+                value={metadata?.weekdayNightServiceRate}
+                onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value), 'weekdayNightServiceRate')}
+              />
             </div>
           </div>
+          <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+            <div className={`${style.marginLeft30}`}>
+              <CommonLabel value='Weekday Night Service Frequency' />
+            </div>
+            <div>
+              <CommonSelectField
+                className={`${style.threeFieldWidth}`}
+                value={metadata?.weekdayNightServiceFrequency || ''}
+                onChange={(e) => onCustomizeFieldChange(e.target.value, 'weekdayNightServiceFrequency')}
+                firstOptionLabel={'Select Service Frequency'} firstOptionValue={''}
+                valueList={['SESSION', 'HOUR']}
+                labelList={['Per Session', 'Per Hour']}
+                disabledList={[false, false]} />
+            </div>
+
+          </div>
+          {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <div className={style.marginLeft30}>
+                            <CommonLabel value='Payment Amount*' />
+                        </div>
+                        <div className={style.displayInRow}>
+                            <div className={style.threeFieldWidth}>
+                                <CommonTextField
+                                    type="number"
+                                    min="0"
+                                    disabled={metadata?.weekdayNightsPaymentNa}
+                                    value={metadata?.weekdayNightsPayment}
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
+                                    }}
+                                    onChange={(e) => setMetadata({
+                                        ...metadata, weekdayNightsPayment: parseFloat(e.target.value), weekdayNightsPaymentNa: false
+                                    })}
+                                />
+                            </div>
+                            <CommonLabel className={`${style.marginLeft20} ${style.threeFieldWidth}`} value={`Per Weekday Nights`} />
+                            <CommonCheckBox className={`${style.marginLeft20} ${style.fullWidth}`} value="NA" label="NA" checked={metadata?.weekdayNightsPaymentNa} onChange={(e) => setMetadata({ ...metadata, weekdayNightsPayment: 0, weekdayNightsPaymentNa: e.target.checked })} />
+                        </div>
+                    </div> */}
           <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
             <CommonLabel value='Weekend' />
             <div>
@@ -927,13 +1136,12 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                 />
                 <div className={` ${style.marginLeft20} ${style.durationWidth}`}>
                   <CommonTextField
-                    type="tel"
-                    maxLength="3"
+                    type="number"
                     InputProps={{
                       endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                     }}
                     value={metadata?.weekendDuration}
-                    onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(e.target.value, 'weekendDuration')}
+                    onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'weekendDuration')}
                   />
                 </div>
               </div>
@@ -1004,30 +1212,60 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
             </div>
           </div>
           <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-            <div className={style.marginLeft30}>
-              <CommonLabel value='Payment Amount*' />
+            <div className={`${style.marginLeft30}`}>
+              <CommonLabel value='Weekend Service Rate' />
             </div>
-            <div className={style.displayInRow}>
-              <div className={style.threeFieldWidth}>
-                <CommonTextField
-                  type="number"
-                  min="0"
-                  disabled={metadata?.weekendPaymentNa}
-                  value={metadata?.weekendPayment}
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
-                  }}
-                  onChange={(e) => setMetadata({
-                    ...metadata, weekendPayment: parseFloat(e.target.value), weekendPaymentNa: false
-                  })}
-                />
-              </div>
-              {/* <div className={style.verticalAlignCenter}> */}
-              <CommonLabel className={`${style.marginLeft20} ${style.threeFieldWidth}`} value={`Per Weekend`} />
-              {/* </div> */}
-              <CommonCheckBox className={`${style.marginLeft20} ${style.fullWidth}`} value="NA" label="NA" checked={metadata?.weekendPaymentNa} onChange={(e) => setMetadata({ ...metadata, weekendPayment: 0, weekendPaymentNa: e.target.checked })} />
+            <div >
+              <CommonTextField
+                type="number"
+                className={`${style.threeFieldWidth}`}
+                InputProps={{
+                  startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
+                }}
+                value={metadata?.weekendServiceRate}
+                onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value), 'weekendServiceRate')}
+              />
             </div>
           </div>
+          <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+            <div className={`${style.marginLeft30}`}>
+              <CommonLabel value='Weekend Service Frequency' />
+            </div>
+            <div>
+              <CommonSelectField
+                className={`${style.threeFieldWidth}`}
+                value={metadata?.weekendServiceFrequency || ''}
+                onChange={(e) => onCustomizeFieldChange(e.target.value, 'weekendServiceFrequency')}
+                firstOptionLabel={'Select Service Frequency'} firstOptionValue={''}
+                valueList={['SESSION', 'HOUR']}
+                labelList={['Per Session', 'Per Hour']}
+                disabledList={[false, false]} />
+            </div>
+
+          </div>
+          {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <div className={style.marginLeft30}>
+                            <CommonLabel value='Payment Amount*' />
+                        </div>
+                        <div className={style.displayInRow}>
+                            <div className={style.threeFieldWidth}>
+                                <CommonTextField
+                                    type="number"
+                                    min="0"
+                                    disabled={metadata?.weekendPaymentNa}
+                                    value={metadata?.weekendPayment}
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
+                                    }}
+                                    onChange={(e) => setMetadata({
+                                        ...metadata, weekendPayment: parseFloat(e.target.value), weekendPaymentNa: false
+                                    })}
+                                />
+                            </div>
+                            <CommonLabel className={`${style.marginLeft20} ${style.threeFieldWidth}`} value={`Per Weekend`} />
+                            <CommonCheckBox className={`${style.marginLeft20} ${style.fullWidth}`} value="NA" label="NA" checked={metadata?.weekendPaymentNa} onChange={(e) => setMetadata({ ...metadata, weekendPayment: 0, weekendPaymentNa: e.target.checked })} />
+                        </div>
+                    </div> */}
           {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Prior To Holiday</div>
                     <div className={style.displayInRow}>
@@ -1087,13 +1325,12 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                 />
                 <div className={`${style.marginLeft20} ${style.durationWidth}`}>
                   <CommonTextField
-                    type="tel"
-                    maxLength="3"
+                    type="number"
                     InputProps={{
                       endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                     }}
                     value={metadata?.holidayDuration}
-                    onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(e.target.value, 'holidayDuration')}
+                    onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'holidayDuration')}
                   />
                 </div>
               </div>
@@ -1164,30 +1401,60 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
             </div>
           </div>
           <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-            <div className={style.marginLeft30}>
-              <CommonLabel value='Payment Amount*' />
+            <div className={`${style.marginLeft30}`}>
+              <CommonLabel value='Holiday Service Rate' />
             </div>
-            <div className={style.displayInRow}>
-              <div className={style.threeFieldWidth}>
-                <CommonTextField
-                  type="number"
-                  min="0"
-                  disabled={metadata?.holidayPaymentNa}
-                  value={metadata?.holidayPayment}
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
-                  }}
-                  onChange={(e) => setMetadata({
-                    ...metadata, holidayPayment: parseFloat(e.target.value), holidayPaymentNa: false
-                  })}
-                />
-              </div>
-              {/* <div className={style.verticalAlignCenter}> */}
-              <CommonLabel className={`${style.marginLeft20} ${style.threeFieldWidth}`} value={`Per Holiday`} />
-              {/* </div> */}
-              <CommonCheckBox value="NA" label="NA" checked={metadata?.holidayPaymentNa} onChange={(e) => setMetadata({ ...metadata, holidayPayment: 0, holidayPaymentNa: e.target.checked })} className={`${style.marginLeft20} ${style.fullWidth}`} />
+            <div >
+              <CommonTextField
+                type="number"
+                className={`${style.threeFieldWidth}`}
+                InputProps={{
+                  startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
+                }}
+                value={metadata?.holidayServiceRate}
+                onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value), 'holidayServiceRate')}
+              />
             </div>
           </div>
+          <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+            <div className={`${style.marginLeft30}`}>
+              <CommonLabel value='Holiday Service Frequency' />
+            </div>
+            <div>
+              <CommonSelectField
+                className={`${style.threeFieldWidth}`}
+                value={metadata?.holidayServiceFrequency || ''}
+                onChange={(e) => onCustomizeFieldChange(e.target.value, 'holidayServiceFrequency')}
+                firstOptionLabel={'Select Service Frequency'} firstOptionValue={''}
+                valueList={['SESSION', 'HOUR']}
+                labelList={['Per Session', 'Per Hour']}
+                disabledList={[false, false]} />
+            </div>
+
+          </div>
+          {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <div className={style.marginLeft30}>
+                            <CommonLabel value='Payment Amount*' />
+                        </div>
+                        <div className={style.displayInRow}>
+                            <div className={style.threeFieldWidth}>
+                                <CommonTextField
+                                    type="number"
+                                    min="0"
+                                    disabled={metadata?.holidayPaymentNa}
+                                    value={metadata?.holidayPayment}
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
+                                    }}
+                                    onChange={(e) => setMetadata({
+                                        ...metadata, holidayPayment: parseFloat(e.target.value), holidayPaymentNa: false
+                                    })}
+                                />
+                            </div>
+                            <CommonLabel className={`${style.marginLeft20} ${style.threeFieldWidth}`} value={`Per Holiday`} />
+                            <CommonCheckBox value="NA" label="NA" checked={metadata?.holidayPaymentNa} onChange={(e) => setMetadata({ ...metadata, holidayPayment: 0, holidayPaymentNa: e.target.checked })} className={`${style.marginLeft20} ${style.fullWidth}`} />
+                        </div>
+                    </div> */}
           {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                         <CommonLabel value='Require Patient MRN' />
                         <div className={style.onCallBillableGrid}>
@@ -1282,38 +1549,66 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
               <CommonLabel value='On Call Duty Duration' />
               <div className={`${style.threeFieldWidth}`}>
                 <CommonTextField
-                  type="tel"
-                  maxLength="3"
+                  type="number"
                   InputProps={{
                     endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                   }}
                   value={metadata?.sessionDuration}
-                  onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, sessionDuration: e.target.value, sessionAmount: '0' })}
+                  onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, sessionDuration: parseFloat(e.target.value.slice(0, 9)), sessionAmount: metadata?.serviceRateFrequency === 'SESSION' ? metadata?.serviceRate : (metadata?.serviceRate * e.target.value) })}
                 />
               </div>
             </div>
             {
-              metadata?.billableService &&
-              <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <CommonLabel value='On Call Payment Amount*' />
-                <div className={`${style.displayInRow}`}>
-                  <div className={`${style.threeFieldWidth}`}>
-                    <CommonTextField
-                      type="number"
-                      disabled={metadata?.sessionDuration === '' || metadata?.sessionDuration === '0' || metadata?.sessionDuration === undefined}
-                      InputProps={{
-                        startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
-                      }}
-                      value={metadata?.sessionAmount}
-                      onChange={(e) => e.target.value >= 0 && handleValueChange('sessionAmount', (e.target.value).slice(0, 7))}
-                    />
-                  </div>
-                  <div className={style.verticalAlignCenter}>
-                    <CommonLabel className={`${style.marginLeft20}`} value={`$ ${(metadata?.sessionAmount / metadata?.sessionDuration || 0).toFixed(2)} per Hour (Pro Rata)`} />
-                  </div>
+              // metadata?.billableService &&
+              // <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+              //     <CommonLabel value='On Call Payment Amount*' />
+              //     <div className={`${style.displayInRow}`}>
+              //         <div className={`${style.threeFieldWidth}`}>
+              //             <CommonTextField
+              //                 type="number"
+              //                 disabled={metadata?.sessionDuration === '' || metadata?.sessionDuration === '0' || metadata?.sessionDuration === undefined}
+              //                 InputProps={{
+              //                     startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
+              //                 }}
+              //                 value={metadata?.sessionAmount}
+              //                 onChange={(e) => e.target.value >= 0 && handleValueChange('sessionAmount', (e.target.value).slice(0, 7))}
+              //             />
+              //         </div>
+              //         <div className={style.verticalAlignCenter}>
+              //             <CommonLabel className={`${style.marginLeft20}`} value={`$ ${(metadata?.sessionAmount / metadata?.sessionDuration || 0).toFixed(2)} per Hour (Pro Rata)`} />
+              //         </div>
+              //     </div>
+              // </div>
+            }
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+              <CommonLabel value='On Call Service Rate' />
+              <div className={`${style.displayInRow}`}>
+                <div className={`${style.threeFieldWidth}`}>
+                  <CommonTextField
+                    type="number"
+                    InputProps={{
+                      startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
+                    }}
+                    value={metadata?.serviceRate}
+                    onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, serviceRate: parseFloat(e.target.value.slice(0, 9)), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? parseFloat(e.target.value) : (parseFloat(e.target.value) * metadata?.sessionDuration) })}
+                  />
                 </div>
               </div>
-            }
+            </div>
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+              <CommonLabel value='On Call Service Frequency' />
+              <div className={`${style.displayInRow}`}>
+                <div className={`${style.threeFieldWidth}`}>
+                  <CommonSelectField
+                    value={metadata?.serviceRateFrequency || ''}
+                    onChange={(e) => setMetadata({ ...metadata, serviceRateFrequency: e.target.value, sessionAmount: (e.target.value === 'SESSION') ? metadata?.serviceRate : (metadata?.serviceRate * metadata?.sessionDuration) })}
+                    firstOptionLabel={'Select Frequency'} firstOptionValue={''}
+                    valueList={['SESSION', 'HOUR']}
+                    labelList={['Per Session', 'Per Hour']}
+                    disabledList={[false, false]} />
+                </div>
+              </div>
+            </div>
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
               <CommonLabel value='Allowable Working Day Hours For Service*' />
               <div className={style.displayInRow}>

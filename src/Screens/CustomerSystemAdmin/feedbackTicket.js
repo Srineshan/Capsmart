@@ -33,13 +33,30 @@ const FeedbackTicket = ({ getSelectedOption }) => {
     const [pageOpenTickets, setPageOpenTickets] = useState(1);
     const [totalCountOpenTickets, setTotalCountOpenTickets] = useState(0);
     const [pageNewTickets, setPageNewTickets] = useState(1);
+    const [pageMessages, setPageMessages] = useState(1);
     const [totalCountNewTickets, setTotalCountNewTickets] = useState(0);
+    const [totalCountMessages, setTotalCountMessages] = useState(0);
     const [pageResolvedTickets, setPageResolvedTickets] = useState(1);
     const [totalCountResolvedTickets, setTotalCountResolvedTickets] = useState(0);
 
     var cookie = new Cookie();
     let authValue = cookie.get('user');
     const loggedUser = jwt(authValue);
+    const statusAvailableValues = {
+        NEW: 'New',
+        INPROGRESS: 'In-Progress',
+        ESCALATED: 'Escalated',
+        FIXINPROGRESS: 'Fix In-Progress',
+        FIXINDEVELOPMENT: 'Fix In-Developement',
+        ONHOLD: 'On-Hold',
+        FUTURERELEASE: 'Future Release',
+        FEATUREENHANCEMENT: 'Feature Enhancement',
+        FIXINQA: 'Fix In QA',
+        APPUPDATED: 'App Updated',
+        FIXCONFIRMATION: 'Fix Confirmation',
+        RESOLVED: 'resolved',
+        CLOSED: 'Closed'
+    };
     const ticketsTableHeaderValues = ["", "TKT ID", "TYPE", "SUBJECT", "OPEN DATE/TIME", "IMPACT", "APP IN USE", "SUBMITTED BY’", "MESSAGES", "LAST UPDATED", "ACTION"];
     const exceptionTableHeaderValues = ["", "TICKET ID", "EXCEPTION CODE", "DESCRIPTION", "DATE/TIME", "CONTRACTOR NAME", "USER NAME", "LAST UPDATED", "ACTION"];
     const messagesTableHeaderValues = ["", "TYPE", "RELATED TO", "MESSAGE / COMMENT", "LAST RESPONDED", "DATE / TIME", "ACTION"];
@@ -55,7 +72,23 @@ const FeedbackTicket = ({ getSelectedOption }) => {
 
     useEffect(() => {
         getTicket();
-    }, [showFeedbackTicketResolution, from, to, selectedOption, page, pageOpenTickets, pageNewTickets, pageResolvedTickets])
+    }, [showFeedbackTicketResolution, from, to, selectedOption])
+
+    useEffect(() => {
+        getOpenTicket();
+    }, [pageOpenTickets]);
+
+    useEffect(() => {
+        getNewTicket();
+    }, [pageNewTickets]);
+
+    useEffect(() => {
+        getResolvedTicket();
+    }, [pageResolvedTickets]);
+
+    useEffect(() => {
+        getExceptionTicket();
+    }, [page]);
 
     useEffect(() => {
         setCurrentUser(users?.filter(data => data?.id === loggedUser?.id)?.map(data => data));
@@ -68,7 +101,7 @@ const FeedbackTicket = ({ getSelectedOption }) => {
     useEffect(() => {
         getCommentMessages();
         getTicket();
-    }, [currentUser]);
+    }, [currentUser, pageMessages, selectedOption]);
 
     console.log(currentUser, currentUser?.[0]?.roles?.filter(data => data?.roleName === 'Entity Sys Admin')?.map(data => data)?.length !== 0)
 
@@ -86,41 +119,93 @@ const FeedbackTicket = ({ getSelectedOption }) => {
         if (selectedOption === 'EXCEPTION ERRORS') {
             setPage(value);
         }
+        if (selectedOption === 'MESSAGES') {
+            setPageMessages(value);
+        }
     }
 
     const getTicket = async () => {
         if (currentUser?.[0]?.roles?.filter(data => data?.roleName === 'Entity Sys Admin')?.map(data => data)?.length !== 0) {
-            const { data: ticket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&limit=${10}&offset=${selectedOption === 'OPEN TICKETS' ? pageOpenTickets - 1 : selectedOption === "RESOLVED TICKETS" ? pageResolvedTickets - 1 : selectedOption === "NEW TICKETS" ? pageNewTickets - 1 : 0}`);
+            const { data: newTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&limit=${10}&offset=${pageNewTickets - 1}&status=NEW`);
+            const { data: openTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&limit=${10}&offset=${pageOpenTickets - 1}&status=INPROGRESS`);
+            const { data: resolvedTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&limit=${10}&offset=${pageResolvedTickets - 1}&status=RESOLVED`);
             const { data: exceptionTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&generationMode=SYSTEM&limit=${10}&offset=${page - 1}`);
-            setOpenTicket(ticket?.tickets?.filter(data => (data?.status !== "NEW" && data?.status !== "RESOLVED"))?.map(data => data));
-            setNewTicket(ticket?.tickets?.filter(data => data?.status === "NEW")?.map(data => data));
-            setResolvedTicket(ticket?.tickets?.filter(data => data?.status === "RESOLVED")?.map(data => data));
+            setOpenTicket(openTicket?.tickets);
+            setNewTicket(newTicket?.tickets);
+            setResolvedTicket(resolvedTicket?.tickets);
             setExceptionErrors(exceptionTicket?.tickets);
-            setTotalCountOpenTickets(ticket?.tickets?.filter(data => (data?.status !== "NEW" && data?.status !== "RESOLVED"))?.map(data => data)?.length);
-            setTotalCountResolvedTickets(ticket?.tickets?.filter(data => data?.status === "RESOLVED")?.map(data => data)?.length);
-            setTotalCountNewTickets(ticket?.tickets?.filter(data => data?.status === "NEW")?.map(data => data)?.length);
+            setTotalCountOpenTickets(openTicket?.numberOfElements);
+            setTotalCountResolvedTickets(resolvedTicket?.numberOfElements);
+            setTotalCountNewTickets(newTicket?.numberOfElements);
             setTotalCount(exceptionTicket?.numberOfElements);
         } else {
-            const { data: ticket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&userId=${currentUser?.[0]?.id}&limit=${10}&offset=${selectedOption === 'OPEN TICKETS' ? pageOpenTickets - 1 : selectedOption === "RESOLVED TICKETS" ? pageResolvedTickets - 1 : selectedOption === "NEW TICKETS" ? pageNewTickets - 1 : 0}`);
+            const { data: newTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&userId=${currentUser?.[0]?.id}&limit=${10}&offset=${pageNewTickets - 1}&status=NEW`);
+            const { data: openTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&userId=${currentUser?.[0]?.id}&limit=${10}&offset=${pageOpenTickets - 1}&status=INPROGRESS`);
+            const { data: resolvedTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&userId=${currentUser?.[0]?.id}&limit=${10}&offset=${pageResolvedTickets - 1}&status=RESOLVED`);
             const { data: exceptionTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&userId=${currentUser?.[0]?.id}&generationMode=SYSTEM&limit=${10}&offset=${page - 1}`);
-            setOpenTicket(ticket?.tickets?.filter(data => (data?.status !== "NEW" && data?.status !== "RESOLVED"))?.map(data => data));
-            setNewTicket(ticket?.tickets?.filter(data => data?.status === "NEW")?.map(data => data));
-            setResolvedTicket(ticket?.tickets?.filter(data => data?.status === "RESOLVED")?.map(data => data));
+            setOpenTicket(openTicket?.tickets);
+            setNewTicket(newTicket?.tickets);
+            setResolvedTicket(resolvedTicket?.tickets);
             setExceptionErrors(exceptionTicket?.tickets);
-            setTotalCountOpenTickets(ticket?.tickets?.filter(data => (data?.status !== "NEW" && data?.status !== "RESOLVED"))?.map(data => data)?.length);
-            setTotalCountResolvedTickets(ticket?.tickets?.filter(data => data?.status === "RESOLVED")?.map(data => data)?.length);
-            setTotalCountNewTickets(ticket?.tickets?.filter(data => data?.status === "NEW")?.map(data => data)?.length);
+            setTotalCountOpenTickets(openTicket?.numberOfElements);
+            setTotalCountResolvedTickets(resolvedTicket?.numberOfElements);
+            setTotalCountNewTickets(newTicket?.numberOfElements);
             setTotalCount(exceptionTicket?.numberOfElements);
         }
-        // const { data: ticket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}`);
-        // setOpenTicket(ticket?.filter(data => (data?.status !== "NEW" && data?.status !== "RESOLVED"))?.map(data => data));
-        // setNewTicket(ticket?.filter(data => data?.status === "NEW")?.map(data => data));
-        // setResolvedTicket(ticket?.filter(data => data?.status === "RESOLVED")?.map(data => data));
+    };
+
+    const getNewTicket = async () => {
+        if (currentUser?.[0]?.roles?.filter(data => data?.roleName === 'Entity Sys Admin')?.map(data => data)?.length !== 0) {
+            const { data: newTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&limit=${10}&offset=${pageNewTickets - 1}&status=NEW`);
+            setNewTicket(newTicket?.tickets);
+            setTotalCountNewTickets(newTicket?.numberOfElements);
+        } else {
+            const { data: newTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&userId=${currentUser?.[0]?.id}&limit=${10}&offset=${pageNewTickets - 1}&status=NEW`);
+            setNewTicket(newTicket?.tickets);
+            setTotalCountNewTickets(newTicket?.numberOfElements);
+        }
+    };
+
+    const getOpenTicket = async () => {
+        if (currentUser?.[0]?.roles?.filter(data => data?.roleName === 'Entity Sys Admin')?.map(data => data)?.length !== 0) {
+            const { data: openTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&limit=${10}&offset=${pageOpenTickets - 1}&status=INPROGRESS`);
+            setOpenTicket(openTicket?.tickets);
+            setTotalCountOpenTickets(openTicket?.numberOfElements);
+        } else {
+            const { data: openTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&userId=${currentUser?.[0]?.id}&limit=${10}&offset=${pageOpenTickets - 1}&status=INPROGRESS`);
+            setOpenTicket(openTicket?.tickets);
+            setTotalCountOpenTickets(openTicket?.numberOfElements);
+        }
+    };
+
+    const getResolvedTicket = async () => {
+        if (currentUser?.[0]?.roles?.filter(data => data?.roleName === 'Entity Sys Admin')?.map(data => data)?.length !== 0) {
+            const { data: resolvedTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&limit=${10}&offset=${pageResolvedTickets - 1}&status=RESOLVED`);
+            setResolvedTicket(resolvedTicket?.tickets);
+            setTotalCountResolvedTickets(resolvedTicket?.numberOfElements);
+        } else {
+            const { data: resolvedTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&userId=${currentUser?.[0]?.id}&limit=${10}&offset=${pageResolvedTickets - 1}&status=RESOLVED`);
+            setResolvedTicket(resolvedTicket?.tickets);
+            setTotalCountResolvedTickets(resolvedTicket?.numberOfElements);
+        }
+    };
+
+    const getExceptionTicket = async () => {
+        if (currentUser?.[0]?.roles?.filter(data => data?.roleName === 'Entity Sys Admin')?.map(data => data)?.length !== 0) {
+            const { data: exceptionTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&generationMode=SYSTEM&limit=${10}&offset=${page - 1}`);
+            setExceptionErrors(exceptionTicket?.tickets);
+            setTotalCount(exceptionTicket?.numberOfElements);
+        } else {
+            const { data: exceptionTicket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&userId=${currentUser?.[0]?.id}&generationMode=SYSTEM&limit=${10}&offset=${page - 1}`);
+            setExceptionErrors(exceptionTicket?.tickets);
+            setTotalCount(exceptionTicket?.numberOfElements);
+        }
     };
 
     const getCommentMessages = async () => {
-        const { data: messages } = await GET(`feedback-management-service/ticket_comment/message?userId=${currentUser?.[0]?.id}`);
+        const { data: messages } = await GET(`feedback-management-service/ticket_comment/message?userId=${currentUser?.[0]?.id}&limit=${10}&offset=${pageMessages - 1}`);
         setAllMessages(messages);
+        setTotalCountMessages(messages?.numberOfElements)
     }
 
     const getUser = async () => {
@@ -200,7 +285,7 @@ const FeedbackTicket = ({ getSelectedOption }) => {
         messageDateOrTime = [];
         messageAction = [];
 
-        allMessages?.map(data => {
+        allMessages?.ticketComments?.map(data => {
             messageDot.push('green');
             messageDotTooltipValues.push('In-Progress');
             messageType.push('Comment');
@@ -254,8 +339,8 @@ const FeedbackTicket = ({ getSelectedOption }) => {
         action = [];
 
         ticket?.map(data => {
-            dot.push('green');
-            dotTooltipValues.push('In-Progress');
+            dot.push(data?.status === 'RESOLVED' ? 'green' : data?.status === 'INPROGRESS' ? 'yellow' : data?.status === 'NEW' ? 'purple' : data?.status === 'CLOSED' ? 'grey' : 'yellow');
+            dotTooltipValues.push(statusAvailableValues[data?.status]);
             // generationMode.push(data?.generationMode);
             tktId.push(data?.ticketId);
             type.push(data?.type);
@@ -280,7 +365,7 @@ const FeedbackTicket = ({ getSelectedOption }) => {
             { "type": "icon", "icon": impact },
             { "type": "text", "value": appInUse, "onClickFunction": onClickFunction },
             { "type": "text", "value": submittedBy, "onClickFunction": onClickFunction },
-            { "type": "iconWithCount", "value": messages, "icon": messagesIcon },
+            { "type": "iconWithCount", "value": messages, "icon": messagesIcon, 'isShowHoverText': false },
             { "type": "text", "value": lastUpdated, "onClickFunction": onClickFunction },
             { "type": "action", "value": action },
         ];
@@ -303,7 +388,7 @@ const FeedbackTicket = ({ getSelectedOption }) => {
 
         exceptionErrors?.map(data => {
             dot.push(data?.status === 'RESOLVED' ? 'green' : data?.status === 'INPROGRESS' ? 'yellow' : data?.status === 'NEW' ? 'grey' : '');
-            dotTooltipValues.push(data?.status === 'RESOLVED' ? 'Resolved' : data?.status === 'INPROGRESS' ? 'In-Progress' : data?.status === 'NEW' ? 'New' : '');
+            dotTooltipValues.push(statusAvailableValues[data?.status]);
             tktId.push(data?.ticketId);
             exceptionCode.push('-');
             description.push(data?.description);
@@ -343,7 +428,7 @@ const FeedbackTicket = ({ getSelectedOption }) => {
                 <div className={style.buttonGroupUsers}>
                     <button className={selectedOption === "OPEN TICKETS" && style.activeButton} onClick={() => setSelectedOption('OPEN TICKETS')}>Open Tickets ( {totalCountOpenTickets} )</button>
                     <button className={selectedOption === "EXCEPTION ERRORS" && style.activeButton} onClick={() => setSelectedOption('EXCEPTION ERRORS')}>Exception Error ( {totalCount} )</button>
-                    <button className={selectedOption === "MESSAGES" && style.activeButton} onClick={() => setSelectedOption('MESSAGES')}>Messages ( {allMessages?.length} )</button>
+                    <button className={selectedOption === "MESSAGES" && style.activeButton} onClick={() => setSelectedOption('MESSAGES')}>Messages ( {allMessages?.numberOfElements} )</button>
                     <button className={selectedOption === "RESOLVED TICKETS" && style.activeButton} onClick={() => setSelectedOption('RESOLVED TICKETS')}>Resolved Tickets ( {totalCountResolvedTickets} )</button>
                 </div>
                 <Table
@@ -352,7 +437,7 @@ const FeedbackTicket = ({ getSelectedOption }) => {
                         ? getTicketValues() : selectedOption === "EXCEPTION ERRORS" ? getExceptionTicketValues()
                             : getMessagesValues()}
                     tableData={(selectedOption === 'OPEN TICKETS' || selectedOption === "RESOLVED TICKETS" || selectedOption === "EXCEPTION ERRORS" || selectedOption === "NEW TICKETS")
-                        ? ticket : allMessages}
+                        ? ticket : allMessages?.ticketComments}
                     gridStyle={(selectedOption === 'OPEN TICKETS' || selectedOption === "RESOLVED TICKETS" || selectedOption === "NEW TICKETS")
                         ? style.ticketsGrid : selectedOption === "EXCEPTION ERRORS" ? style.exceptionGrid
                             : style.messageGrid}
@@ -361,8 +446,8 @@ const FeedbackTicket = ({ getSelectedOption }) => {
                             : messagesActionsData}
                     scrollStyle={style.helpScrollStyle}
                     getSelectedPage={getSelectedPage}
-                    totalCount={selectedOption === 'OPEN TICKETS' ? totalCountOpenTickets : selectedOption === "RESOLVED TICKETS" ? totalCountResolvedTickets : selectedOption === "EXCEPTION ERRORS" ? totalCount : selectedOption === "NEW TICKETS" ? totalCountNewTickets : 0}
-                    page={selectedOption === 'OPEN TICKETS' ? pageOpenTickets : selectedOption === "RESOLVED TICKETS" ? pageResolvedTickets : selectedOption === "EXCEPTION ERRORS" ? page : selectedOption === "NEW TICKETS" ? pageNewTickets : 1}
+                    totalCount={selectedOption === 'OPEN TICKETS' ? totalCountOpenTickets : selectedOption === "RESOLVED TICKETS" ? totalCountResolvedTickets : selectedOption === "EXCEPTION ERRORS" ? totalCount : selectedOption === "NEW TICKETS" ? totalCountNewTickets : totalCountMessages}
+                    page={selectedOption === 'OPEN TICKETS' ? pageOpenTickets : selectedOption === "RESOLVED TICKETS" ? pageResolvedTickets : selectedOption === "EXCEPTION ERRORS" ? page : selectedOption === "NEW TICKETS" ? pageNewTickets : pageMessages}
                     hidePagination={false}
                 />
                 {showFeedbackTicketResolution && (

@@ -17,6 +17,8 @@ import { format } from "date-fns";
 import Navbar from "../../Components/Navbar";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import SideBar from "../../Components/Sidebar";
+import { formatInTimeZone } from "date-fns-tz";
+import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
 
 const DepartmentsByEntityTypes = () => {
   const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
@@ -66,7 +68,9 @@ const DepartmentsByEntityTypes = () => {
     );
 
     const date = new Date(lastModifiedDate.departments?.lastModified);
-    setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
+    setLastUpdatedDate(
+      `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
+    );
   };
 
   const getDepartmentData = async () => {
@@ -136,6 +140,8 @@ const DepartmentsByEntityTypes = () => {
     EntityDefaultSet(allData);
   }, [allData]);
 
+  console.log("departmentList", departmentList)
+
   return (
     <Fragment>
       <Navbar />
@@ -159,6 +165,7 @@ const DepartmentsByEntityTypes = () => {
               needHeader={true}
               getAddEntityDialog={getAddEntityDialog}
               Title={"ADD DEPARTMENT"}
+              setIsEdit={setIsEdit}
             />
 
             <div className={style.marginTop35}>
@@ -314,16 +321,11 @@ const DepartmentsByEntityTypes = () => {
                                   <p className={style.tableDataFontStyle}>
                                     {data?.departmentName.name}
                                   </p>
+                                  <p className={style.tableDataFontStyle}></p>
                                   <p className={style.tableDataFontStyle}>
-                                    {/* {data.createdDate
-                          .split("T")[0]
-                          .split("-")
-                          .reverse()
-                          .join("-")} */}
-                                  </p>
-                                  <p className={style.tableDataFontStyle}>
-                                    {format(
+                                    {formatInTimeZone(
                                       new Date(`${data.lastModifiedDate}`),
+                                      siteTimeZone(),
                                       "MM-dd-yyyy"
                                     )}
                                   </p>
@@ -360,16 +362,11 @@ const DepartmentsByEntityTypes = () => {
                                       <p className={style.tableDataFontStyle}>
                                         {service?.name}
                                       </p>
+                                      <p className={style.tableDataFontStyle}> </p>
                                       <p className={style.tableDataFontStyle}>
-                                        {/* {data.createdDate
-                              .split("T")[0]
-                              .split("-")
-                              .reverse()
-                              .join("-")} */}
-                                      </p>
-                                      <p className={style.tableDataFontStyle}>
-                                        {format(
+                                        {formatInTimeZone(
                                           new Date(`${data.lastModifiedDate}`),
+                                          siteTimeZone(),
                                           "MM-dd-yyyy"
                                         )}
                                       </p>
@@ -414,16 +411,11 @@ const DepartmentsByEntityTypes = () => {
                                   <p className={style.tableDataFontStyle}>
                                     {data?.departmentName?.name}
                                   </p>
+                                  <p className={style.tableDataFontStyle}></p>
                                   <p className={style.tableDataFontStyle}>
-                                    {/* {data.createdDate
-                          .split("T")[0]
-                          .split("-")
-                          .reverse()
-                          .join("-")} */}
-                                  </p>
-                                  <p className={style.tableDataFontStyle}>
-                                    {format(
+                                    {formatInTimeZone(
                                       new Date(`${data.lastModifiedDate}`),
+                                      siteTimeZone(),
                                       "MM-dd-yyyy"
                                     )}
                                   </p>
@@ -440,9 +432,9 @@ const DepartmentsByEntityTypes = () => {
                                   <img
                                     src={DeleteHcRow}
                                     className={style.colorFileStyle}
-                                    onClick={() => {
-                                      deleteHandler(data);
-                                    }}
+                                    // onClick={() => {
+                                    //   deleteHandler(data);
+                                    // }}
                                     alt=""
                                   />
                                 </div>

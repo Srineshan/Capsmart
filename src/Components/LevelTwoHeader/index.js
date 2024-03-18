@@ -22,8 +22,10 @@ import AddNewEntity from "../../images/addEntity.png";
 import AddRefresh from "../../images/refreshEntity.png";
 import { Icon, Intent } from "@blueprintjs/core";
 import ArrowDown from "./../../images/arrowDown.png";
+import { siteTimeZone } from '../../utils/formatting';
 
 import style from "./index.module.scss";
+import { formatInTimeZone } from "date-fns-tz";
 
 const LevelTwoHeader = ({
   heading,
@@ -52,8 +54,8 @@ const LevelTwoHeader = ({
         timeFrame === "Last 60 days"
           ? 60
           : timeFrame === "Last 90 days"
-          ? 90
-          : 0;
+            ? 90
+            : 0;
       if (timeFrame === "This Week") {
         setFrom(startOfWeek(new Date()));
         setTo(endOfWeek(new Date()));
@@ -109,8 +111,13 @@ const LevelTwoHeader = ({
         {needDateFilter && (
           <>
             <div className={`${style.marginRight} ${style.dateRangeTextStyle}`}>
-              {`${format(new Date(from), "MM-dd-yyyy")} to ${format(
+              {`${formatInTimeZone(
+                new Date(from),
+                siteTimeZone(),
+                "MM-dd-yyyy"
+              )} to ${formatInTimeZone(
                 new Date(to),
+                siteTimeZone(),
                 "MM-dd-yyyy"
               )}`}
             </div>

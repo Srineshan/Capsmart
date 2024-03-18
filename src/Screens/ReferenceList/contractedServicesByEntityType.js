@@ -20,6 +20,8 @@ import AddContractedServices from "./addContractedServices";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import { format } from "date-fns";
 import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
+import { formatInTimeZone } from "date-fns-tz";
+import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
 
 const ContractServicesByEntityType = () => {
   const [contractedServiceTypeMaster, setContractedServiceTypeMaster] =
@@ -70,7 +72,9 @@ const ContractServicesByEntityType = () => {
       `entity-service/referenceList/entity/${entityId}`
     );
     const date = new Date(lastModifiedDate.contractedService?.lastModified);
-    setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
+    setLastUpdatedDate(
+      `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
+    );
   };
 
   const getContractedServiceTypeMaster = async () => {

@@ -126,14 +126,16 @@ const AddServiceProvided = ({
   const [activityItems, setActivityItems] = useState([]);
   const [reducedOffsetApplicable, setReducedOffsetApplicable] = useState(false);
   const [compensationPolicy, setCompensationPolicy] = useState("");
+  const [contractTypeId, setContractTypeId] = useState("");
   const contractStatus = sessionStorage.getItem('Selected Contract Status');
+
 
   useEffect(() => {
     getContractedServices();
     getUserData();
     getSites();
-    getServiceList();
-    // getActivityList();
+    // getContractType();
+    getActivityList();
     getLocations();
     getContractNotes();
   }, []);
@@ -174,9 +176,6 @@ const AddServiceProvided = ({
       );
     }
   }, [selectedService, serviceTypeList]);
-
-
-  console.log('selected Service', selectedService);
 
   useEffect(() => {
     if (siteData?.length !== 0) {
@@ -229,9 +228,21 @@ const AddServiceProvided = ({
     }
   }, [metadata, isWorkFlowUpdated]);
 
-  const getServiceList = async () => {
+  // const getContractType = async () => {
+  //   const { data: contactType } = await GET(
+  //     `entity-service/contractType`
+  //   );
+  //   if (contractType) {
+  //     let contractTypeId = contractType?.filter((data) => data?.contractTypeTemplate === selectContractInfo)?.map(data => data?.id)[0];
+  //     console.log('cotractTypeId', contractTypeId);
+  //     console.log('contactType', contactType, selectContractInfo)
+  //     getServiceList(contractTypeId);
+  //   }
+  // }
+
+  const getServiceList = async (contractTypeId) => {
     const { data: serviceList } = await GET(
-      `entity-service/contractedServiceType`
+      `entity-service/contractedServiceType?contractTypeId=${contractTypeId}`
     );
     setServiceTypeList(serviceList);
     if (!editService) {
@@ -482,11 +493,13 @@ const AddServiceProvided = ({
     contractDetail?.contractFiles?.map((data) => {
       temp.push({ name: data?.documentName, url: data?.fileURL });
     });
+    setContractTypeId(contractData?.contractTypeId?.id);
     setContractDocumentList(temp);
     let sites = contractDetail?.site?.sites;
     if (sites && siteList?.length === 0) {
       setSiteList(sites);
     }
+    getServiceList(contractData?.contractTypeId?.id)
   };
 
   console.log("metadata", metadata);
@@ -505,7 +518,7 @@ const AddServiceProvided = ({
       temp?.map((data, index) => {
         data.serviceLocations = data?.locationSpecified
           ? data?.locations
-          : locationItems;
+          : [];
         data.performingActivity = data?.activities
           ?.map((data) => data?.activity)
           ?.join("-");
@@ -577,9 +590,8 @@ const AddServiceProvided = ({
               .then((response) => {
                 data.workFlow = {
                   id: response?.data,
-                  workFlowName: {
-                    name: data?.performingActivity,
-                  },
+                  name: data?.performingActivity,
+                  workFlowMap: workFlowData?.workFlowMap,
                 };
                 dataValue.push(data);
                 if (temp?.length - 1 === index) {
@@ -598,9 +610,8 @@ const AddServiceProvided = ({
               .then((response) => {
                 data.workFlow = {
                   id: data?.workflowId,
-                  workFlowName: {
-                    name: data?.workflowName,
-                  },
+                  name: data?.workflowName,
+                  workFlowMap: workFlowData?.workFlowMap,
                 };
                 dataValue.push(data);
                 setMetadata(dataValue);
@@ -627,7 +638,7 @@ const AddServiceProvided = ({
       temp?.map((data, index) => {
         data.serviceLocations = data?.locationSpecified
           ? data?.locations
-          : locationItems;
+          : [];
         data.patientMRNRequired = data?.patientMRNRequired;
         data.cptcodeRequired = data?.cptcodeRequired;
         data.reasonRequired = data?.reasonRequired;
@@ -650,6 +661,10 @@ const AddServiceProvided = ({
         data.activityTypeTemplate = {
           activityTypeTemplate: serviceTypeTemplate,
         };
+        // data.serviceRate = {
+        //   rate: data?.serviceRate,
+        //   rateFrequency: data?.serviceRateFrequency,
+        // };
         data.performingActivity = data?.activities
           ?.map((data) => data?.activity)
           ?.join("-");
@@ -690,6 +705,9 @@ const AddServiceProvided = ({
                   step: 1,
                   userId: data?.approver?.id,
                   userName: approverName,
+                  firstName: data?.approver?.name?.firstName,
+                  middleName: data?.approver?.name?.middleName,
+                  lastName: data?.approver?.name?.lastName,
                   userTitle: {
                     title: data?.approverTitle?.title,
                     id: data?.approverTitle?.id,
@@ -721,9 +739,8 @@ const AddServiceProvided = ({
               .then((response) => {
                 data.workFlow = {
                   id: response?.data,
-                  workFlowName: {
-                    name: data?.performingActivity?.activity,
-                  },
+                  name: data?.performingActivity?.activity,
+                  workFlowMap: workFlowData?.workFlowMap,
                 };
                 dataValue.push(data);
                 if (temp?.length - 1 === index) {
@@ -752,6 +769,9 @@ const AddServiceProvided = ({
               step: 1,
               userId: data?.approver?.id,
               userName: name,
+              firstName: data?.approver?.name?.firstName,
+              middleName: data?.approver?.name?.middleName,
+              lastName: data?.approver?.name?.lastName,
               userTitle: {
                 title: data?.approverTitle?.title,
                 id: data?.approverTitle?.id,
@@ -773,9 +793,8 @@ const AddServiceProvided = ({
             .then((response) => {
               data.workFlow = {
                 id: response?.data,
-                workFlowName: {
-                  name: data?.performingActivity?.activity,
-                },
+                name: data?.performingActivity?.activity,
+                workFlowMap: workFlowData?.workFlowMap,
               };
               setMetadata(data);
               setIsWorkFlowUpdated(true);
@@ -791,9 +810,8 @@ const AddServiceProvided = ({
             .then((response) => {
               data.workFlow = {
                 id: data?.workflowId,
-                workFlowName: {
-                  name: data?.workflowName,
-                },
+                name: data?.workflowName,
+                workFlowMap: workFlowData?.workFlowMap,
               };
               setMetadata(data);
               setIsWorkFlowUpdated(true);
@@ -809,7 +827,7 @@ const AddServiceProvided = ({
       let data = metadata;
       if (data?.approver !== undefined) {
         let workFlowData;
-        let name = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`;
+        let name = `${data?.approver?.name?.firstName} + " " +${data?.approver?.name?.middleName} + " " + ${data?.approver?.name?.lastName}`;
         workFlowData = workFlowDataGenerator(
           "Administrative Service Workflow",
           [
@@ -817,6 +835,9 @@ const AddServiceProvided = ({
               step: 1,
               userId: data?.approver?.id,
               userName: name,
+              firstName: data?.approver?.name?.firstName,
+              middleName: data?.approver?.name?.middleName,
+              lastName: data?.approver?.name?.lastName,
               userTitle: {
                 title: data?.approverTitle?.title,
                 id: data?.approverTitle?.id,
@@ -838,9 +859,8 @@ const AddServiceProvided = ({
             .then((response) => {
               data.workFlow = {
                 id: response?.data,
-                workFlowName: {
-                  name: data?.performingActivity?.activity,
-                },
+                name: data?.performingActivity?.activity,
+                workFlowMap: workFlowData?.workFlowMap,
               };
               setMetadata(data);
               setIsWorkFlowUpdated(true);
@@ -856,9 +876,8 @@ const AddServiceProvided = ({
             .then((response) => {
               data.workFlow = {
                 id: data?.workflowId,
-                workFlowName: {
-                  name: data?.workflowName,
-                },
+                name: data?.workflowName,
+                workFlowMap: workFlowData?.workFlowMap,
               };
               setMetadata(data);
               setIsWorkFlowUpdated(true);
@@ -881,10 +900,6 @@ const AddServiceProvided = ({
       ErrorToaster("Activity Type Selection is Mandatory");
       return;
     }
-    // if ((serviceTypeTemplate === ADDON && metadata?.[0]?.locationSpecified && metadata?.[0]?.locations?.length === 0)) {
-    //   ErrorToaster('Atleast one location has to be selected if yes');
-    //   return;
-    // }
     if (
       (serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE) &&
       showLocation &&
@@ -949,6 +964,7 @@ const AddServiceProvided = ({
     var parentActivity = "";
     let activities = [];
     let dependentActivities = [];
+    let overlappingActivitiesForSplit = [];
     if (
       serviceTypeTemplate !== SUPPLEMENTAL &&
       serviceTypeTemplate !== ADDON &&
@@ -1027,9 +1043,13 @@ const AddServiceProvided = ({
           }
         }
         // }
-
         //   );
       }
+      let overlappingActivityTemp = [];
+      metadata?.overlappingActivities?.map(data => {
+        overlappingActivityTemp.push({ activityTypeTemplate: data })
+      });
+      overlappingActivitiesForSplit = overlappingActivityTemp;
       performingActivity = activities?.map(data => data?.activity)?.join("-");
       console.log('Performing Actiity', performingActivity, activities)
         ?.map((activity) => activity?.activity)
@@ -1066,6 +1086,7 @@ const AddServiceProvided = ({
     let data = [];
     if ((serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE) && !editService) {
       data = metadata;
+
       data.map((item, index) => {
         item.workingPeriod = metadata?.[index]?.workingPeriod;
         item.serviceLocations = metadata?.[index]?.serviceLocations
@@ -1074,7 +1095,11 @@ const AddServiceProvided = ({
         item.duration = {
           hours: parseInt(item?.sessionDuration),
         };
-        console.log("performing Activity", metadata?.[index]?.parentActivity);
+        item.serviceRate = {
+          rate: metadata?.[index]?.serviceRate?.rate,
+          rateFrequency: metadata?.[index]?.serviceRate?.rateFrequency,
+          duration: metadata?.[index]?.serviceRate?.rateFrequency === "SESSION" ? item?.sessionDuration : 1,
+        }
         item.addOnActivityType = {
           activityType: metadata?.[index]?.parentActivity,
         };
@@ -1093,6 +1118,7 @@ const AddServiceProvided = ({
       let dataValues = metadata;
       if (serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE) {
         dataValues = metadata?.[0];
+
         parentActivity = dataValues?.addOnActivityType;
         performingActivity = dataValues?.activities
           ?.map((data) => data?.activity)
@@ -1156,6 +1182,8 @@ const AddServiceProvided = ({
               },
             },
           }),
+          overlappingActivitiesForSplit: overlappingActivitiesForSplit || [],
+          splitActivityTimeOnOverlap: metadata?.overlap || false,
           contractedServiceFiles: dataValues?.contractedServiceFiles || [],
           baseServiceAvailable: serviceTypeTemplate === SUPPLEMENTAL ? dataValues?.baseServiceAvailable : false,
           baseServices:
@@ -1166,10 +1194,10 @@ const AddServiceProvided = ({
             (serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE)
               ? dataValues?.locationSpecified
                 ? dataValues?.locations
-                : locationItems
+                : []
               : showLocation
                 ? selectedLocation
-                : locationItems,
+                : [],
           ...((serviceTypeTemplate === CLINIC ||
             serviceTypeTemplate === PROCEDUREREADING) && {
             contractedSchedules: metadata?.contractedSchedules,
@@ -1267,6 +1295,9 @@ const AddServiceProvided = ({
           payableAmount: {
             value: parseFloat(dataValues?.sessionAmount),
           },
+          minSessionDuration: {
+            hours: parseInt(dataValues?.minimumSessionDuration || 1),
+          },
           patientConsultRequired: dataValues?.patientConsultRequired || false,
           professionalServiceRequired: dataValues?.professionalServiceRequired || false,
           ...((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ONCALLSERVICE ||
@@ -1279,7 +1310,7 @@ const AddServiceProvided = ({
                   ? Number(dataValues?.sessionAmount)?.toFixed(2) !== 'NaN' ? Number(dataValues?.sessionAmount)?.toFixed(2) : 0
                   : Number(
                     dataValues?.sessionAmount / dataValues?.totalSession
-                  )?.toFixed(2) !== "NaN" ? Number(
+                  )?.toFixed(2) !== "NaN" ? dataValues?.serviceRateFrequency === "SESSION" ? Number(dataValues?.serviceRate / dataValues?.serviceRateDuration) : Number(
                     dataValues?.sessionAmount / dataValues?.totalSession
                   )?.toFixed(2) : 0,
             },
@@ -1293,6 +1324,11 @@ const AddServiceProvided = ({
           }),
           ...((serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE) && {
             hourlyRate: dataValues?.hourlyRate,
+            serviceRate: {
+              rate: dataValues?.serviceRate,
+              rateFrequency: dataValues?.serviceRateFrequency,
+              duration: dataValues?.serviceRateFrequency === "SESSION" ? dataValues?.sessionDuration : 1,
+            },
           }),
           ...([CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(
             serviceTypeTemplate
@@ -1348,6 +1384,12 @@ const AddServiceProvided = ({
                   duration: {
                     hours: parseFloat(dataValues?.weekdayDuration),
                   },
+                  minSessionDuration: { hours: 1 },
+                  serviceRate: {
+                    rate: parseFloat(dataValues?.weekdayDayServiceRate),
+                    rateFrequency: dataValues?.weekdayDayServiceFrequency,
+                    duration: dataValues?.weekdayDayServiceFrequency === "SESSION" ? dataValues?.weekdayDuration : 1,
+                  },
                   activity: {
                     activity: dataValues?.weekdayActivity
                   },
@@ -1383,11 +1425,17 @@ const AddServiceProvided = ({
                   duration: {
                     hours: parseFloat(dataValues?.weekdayNightsDuration),
                   },
+                  minSessionDuration: { hours: 1 },
                   activity: {
                     activity: dataValues?.weekdayNightActivity
                   },
                   payableAmount: {
                     value: parseFloat(dataValues?.weekdayNightsPayment),
+                  },
+                  serviceRate: {
+                    rate: parseFloat(dataValues?.weekdayNightServiceRate),
+                    rateFrequency: dataValues?.weekdayNightServiceFrequency,
+                    duration: dataValues?.weekdayNightServiceFrequency === "SESSION" ? dataValues?.weekdayNightsDuration : 1,
                   },
                   hourlyRate: {
                     value: isNaN(
@@ -1426,11 +1474,17 @@ const AddServiceProvided = ({
                   duration: {
                     hours: parseFloat(dataValues?.weekendDuration),
                   },
+                  minSessionDuration: { hours: 1 },
                   activity: {
                     activity: dataValues?.weekendActivity,
                   },
                   payableAmount: {
                     value: parseFloat(dataValues?.weekendPayment),
+                  },
+                  serviceRate: {
+                    rate: parseFloat(dataValues?.weekendServiceRate),
+                    rateFrequency: dataValues?.weekendServiceFrequency,
+                    duration: dataValues?.weekendServiceFrequency === "SESSION" ? dataValues?.weekendDuration : 1,
                   },
                   hourlyRate: {
                     value: isNaN(
@@ -1461,6 +1515,12 @@ const AddServiceProvided = ({
                   duration: {
                     hours: parseFloat(dataValues?.holidayDuration),
                   },
+                  minSessionDuration: { hours: 1 },
+                  serviceRate: {
+                    rate: parseFloat(dataValues?.holidayServiceRate),
+                    rateFrequency: dataValues?.holidayServiceFrequency,
+                    duration: dataValues?.holidayServiceFrequency === "SESSION" ? dataValues?.holidayDuration : 1,
+                  },
                   activity: {
                     activity: dataValues?.holidayActivity
                   },
@@ -1474,6 +1534,9 @@ const AddServiceProvided = ({
                       dataValues?.holidayPayment / dataValues?.holidayDuration
                     )?.toFixed(2),
                   },
+                  serviceDays: {
+                    isholidays: dataValues?.holidayActivity === "" ? false : true,
+                  },
                   paymentNotApplicable: dataValues?.holidayPaymentNa,
                 },
               },
@@ -1482,10 +1545,10 @@ const AddServiceProvided = ({
           workingPeriod: {
             from: dataValues?.workingTimeFrom
               ?.toLocaleTimeString("it-IT")
-              .toString(),
+              .toString() || "00:00:00",
             to: dataValues?.workingTimeTo
               ?.toLocaleTimeString("it-IT")
-              .toString(),
+              .toString() || "23:59:00",
           },
           ...((serviceTypeTemplate === ADDON || serviceTypeTemplate === HOSPICE ||
             serviceTypeTemplate === ADMINISTRATIVE || serviceTypeTemplate === HIT) && {
@@ -1510,6 +1573,13 @@ const AddServiceProvided = ({
             ? dataValues?.dedicatedHoursSpecified
             : false,
           billableService: dataValues?.billableService,
+          ...((serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE && {
+            serviceRate: {
+              rate: dataValues?.serviceRate,
+              rateFrequency: dataValues?.serviceRateFrequency,
+              duration: !serviceTypeTemplate.includes([ADMINISTRATIVE, SUPPLEMENTAL, HIT, ONCALLSERVICE]) && dataValues?.dedicatedHoursSpecified ? dataValues?.serviceRateFrequency === 'SESSION' ? dataValues?.serviceRateDuration : 1 : dataValues?.serviceRateFrequency === 'SESSION' ? parseFloat(dataValues?.sessionDuration) : 1,
+            },
+          })),
           dependantServiceIncluded:
             dataValues?.dependantServiceIncluded || false,
           customizedSchedule: dataValues?.customizedSchedule || false,
@@ -2203,38 +2273,41 @@ const AddServiceProvided = ({
                             className={editService && (!selectedActivity || selectedActivity?.length === 0) ? style.redLable : ""}
                           />
                           <div>
-                            <div className={style.addGrid}>
-                              <DatalistInput
-                                value={value}
-                                setValue={setValue}
-                                items={activityItems || []}
-                                onSelect={onActivitySelect}
-                                className={style.fullWidth}
-                                onChange={(e) => setNewActivity(e.target.value)}
-                                inputProps={{ disabled: contractStatus === "ACTIVE" ? true : false }}
-                              />
-                              <div
-                                className={`${style.addStyle} ${style.alignCenter
-                                  } ${style.cursorPointer} ${newActivity === "" ||
-                                    activity?.some((data) =>
-                                      data?.activity?.activity
-                                        ?.replace(" ", "")
-                                        ?.toLowerCase()
-                                        ?.includes(
-                                          newActivity
-                                            ?.replace(" ", "")
-                                            ?.toLowerCase()
-                                        )
-                                    )
-                                    ? style.disabledUploadButton
-                                    : ""
-                                  }`}
-                              >
-                                <AddIcon
-                                  sx={{ fontSize: 25, color: "white" }}
-                                  onClick={contractStatus === "ACTIVE" ? {} : activityToAdd}
+                            <div>
+                              <div className={style.addGrid}>
+                                <DatalistInput
+                                  value={value}
+                                  setValue={setValue}
+                                  items={activityItems || []}
+                                  onSelect={onActivitySelect}
+                                  className={style.fullWidth}
+                                  onChange={(e) => setNewActivity(e.target.value)}
+                                  inputProps={{ disabled: contractStatus === "ACTIVE" ? true : false }}
                                 />
+                                <div
+                                  className={`${style.addStyle} ${style.alignCenter
+                                    } ${style.cursorPointer} ${newActivity === "" ||
+                                      activity?.some((data) =>
+                                        data?.activity?.activity
+                                          ?.replace(" ", "")
+                                          ?.toLowerCase()
+                                          ?.includes(
+                                            newActivity
+                                              ?.replace(" ", "")
+                                              ?.toLowerCase()
+                                          )
+                                      )
+                                      ? style.disabledUploadButton
+                                      : ""
+                                    }`}
+                                >
+                                  <AddIcon
+                                    sx={{ fontSize: 25, color: "white" }}
+                                    onClick={contractStatus === "ACTIVE" ? {} : activityToAdd}
+                                  />
+                                </div>
                               </div>
+
                             </div>
                             {selectedActivity?.length !== 0 && (
                               <MultiSelectDisplay
@@ -2330,6 +2403,7 @@ const AddServiceProvided = ({
                     />
                   ) : serviceTypeTemplate === ONCALL ? (
                     <OnCallCoverageFields
+                      servicesList={contractedServices}
                       getMetaData={getMetaData}
                       serviceSelected={selectedService}
                       timeCommitment={timeCommitment}
@@ -2401,8 +2475,7 @@ const AddServiceProvided = ({
                           contractId={contractId}
                           contractTermPeriod={contractTermPeriod}
                         />
-                      )
-                        :
+                      ) :
                         (
                           <AdministrativeFields
                             getMetaData={getMetaData}

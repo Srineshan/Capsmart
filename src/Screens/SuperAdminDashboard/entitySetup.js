@@ -51,7 +51,7 @@ const EntitySetup = () => {
   const [showSaveInProgress, setShowSaveInProgress] = useState(false);
   const [logo, setLogo] = useState({ name: '', url: '', file: null });
   const [thumbnail, setThumbnail] = useState({ name: '', url: '', file: null });
-  const [entity, setEntity] = useState({ id: '', customerType: '', npin: '', npinNA: false, name: '', type: { type: '', id: '' }, subdomain: '', multiSiteEntity: false, primarySiteToUseApp: false, canSetupDepartment: false, officialEmailDomain: '' });
+  const [entity, setEntity] = useState({ id: '', customerType: '', npin: '', npinNA: false, name: '', type: { type: '', id: '' }, subdomain: '', multiSiteEntity: false, primarySiteToUseApp: false, canSetupDepartment: false, officialEmailDomain: '', isEmployeeContractIncluded: false });
   const [address, setAddress] = useState({ addressLine: '', city: '', state: '', country: '', zipcode: '' });
   const [isUpdated, setIsUpdated] = useState(false);
   const [unassignedKeys, setUnassignedKeys] = useState([]);
@@ -114,7 +114,7 @@ const EntitySetup = () => {
     const { data: data } = await GET(`entity-service/entity/${id}`);
     setEntityData(data);
     let siteData = data?.sites?.filter(data => data.primarySite === true)?.map(data => data)[0];
-    setEntity({ id: '', customerType: data?.industryId?.id, name: data?.entityName?.entityName, type: { type: data?.entityType?.type, id: data?.entityType?.id }, subdomain: data?.subdomain, multiSiteEntity: data?.multiSiteEntity, primarySiteToUseApp: data.canPrimarySiteToUseApp, npin: data?.npin?.id, npinNA: data?.npin?.notApplicable, officialEmailDomain: data?.officialEmailDomain?.officialEmail });
+    setEntity({ id: '', customerType: data?.industryId?.id, name: data?.entityName?.entityName, type: { type: data?.entityType?.type, id: data?.entityType?.id }, subdomain: data?.subdomain, multiSiteEntity: data?.multiSiteEntity, primarySiteToUseApp: data.canPrimarySiteToUseApp, npin: data?.npin?.id, npinNA: data?.npin?.notApplicable, officialEmailDomain: data?.officialEmailDomain?.officialEmail, isEmployeeContractIncluded: data?.isEmployeeContractIncluded });
     setAddress({
       city: siteData?.address?.city ? siteData?.address?.city : '',
       state: siteData?.address?.state ? siteData?.address?.state : '',
@@ -353,6 +353,7 @@ const EntitySetup = () => {
         "appUserRoles": entityData?.appUserRoles,
         "logo": entityData?.logo,
         "logoThumbnail": entityData?.logoThumbnail,
+        "isEmployeeContractIncluded": entity?.isEmployeeContractIncluded,
       }
 
       const formData = new FormData();
@@ -671,6 +672,18 @@ const EntitySetup = () => {
                         />
                       </div>
                     )}
+
+                    {!isSuperAdminAccess && <div className={`${style.extentionGrid} ${style.marginTop20} ${style.verticalAlignCenter}`}>
+                      <div className={`${style.extentionLableStyle} `}>Allow Timesmart to also include Employed Staff*</div>
+                      <FormControlLabel
+                        control={
+                          <Switch checked={entity.isEmployeeContractIncluded} onChange={(e) => handleEntity('isEmployeeContractIncluded', e.target.checked)} className={` ${style.textAlignLeft}`} />
+                        }
+                        className={style.switchFontStyle}
+                        label={entity?.isEmployeeContractIncluded ? 'YES' : 'NO'}
+                      />
+                    </div>}
+
                     {/* </div>
                       </div> */}
                     {/* </div> */}
