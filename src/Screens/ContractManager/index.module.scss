@@ -2222,10 +2222,11 @@ input[type="number"] {
   border-radius: 10px;
   min-height: 15px;
   min-width: 70px;
+  padding: 3px;
 }
 
 .contractFiltersHeading {
-  font: normal normal normal 10px/12px Montserrat;
+  font: normal normal normal 13px/16px Montserrat;
   color: #525762;
 }
 
@@ -2718,4 +2719,9 @@ input[type="number"] {
 .iconSize {
   height: 30px;
   width: 30px;
+}
+
+.filterGrid {
+  display: flex;
+  flex-wrap: wrap;
 }

@@ -11,6 +11,7 @@ import ContractActivationRequest from './contractActivationRequest';
 import { GET, PUT, POST, TenantID } from './../dataSaver';
 import ContractList from './contractList';
 import ActiveContract from './activeContract';
+import { format, subYears } from "date-fns";
 
 const Contracts = () => {
     const [selectedContract, setSelectedContract] = useState('activecontracts');
@@ -33,6 +34,16 @@ const Contracts = () => {
     const [isEditable, setIsEditable] = useState(false);
     const [activeContractView, setActiveContractView] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [selectedContractTypeFilter, setSelectedContractTypeFilter] = useState([]);
+    const [selectedContractPolicyTypeFilter, setSelectedContractPolicyTypeFilter] = useState([]);
+    const [selectedCompensationPolicyFilter, setSelectedCompensationPolicyFilter] = useState([]);
+    const [selectedContractManagersFilter, setSelectedContractManagersFilter] = useState([]);
+    const [contractIdFilter, setContractIdFilter] = useState('');
+    const [minNumberOfContractors, setMinNumberOfContractors] = useState(0);
+    const [maxNumberOfContractors, setMaxNumberOfContractors] = useState(99999);
+    const [startDate, setStartDate] = useState(subYears(new Date(), 3));
+    const [endDate, setEndDate] = useState(new Date());
+    const [contractExpiresInDays, setContractExpiresInDays] = useState(0)
 
     useEffect(() => {
         getContracts();
@@ -42,7 +53,8 @@ const Contracts = () => {
 
     useEffect(() => {
         getContracts();
-    }, [selectedContract, searchKey, page, newContractFromClone, totalCount])
+    }, [selectedContract, searchKey, page, newContractFromClone, totalCount, selectedContractTypeFilter, selectedCompensationPolicyFilter, selectedContractPolicyTypeFilter, selectedContractManagersFilter, contractIdFilter,
+        minNumberOfContractors, maxNumberOfContractors, startDate, endDate, contractExpiresInDays])
 
     useEffect(() => {
         sessionStorage.setItem('isEditable', selectedContract !== 'draft' ? false : true)
@@ -114,7 +126,10 @@ const Contracts = () => {
 
     const getContracts = async () => {
         setIsLoading(true);
-        const { data: contracts } = await GET(`contract-managment-service/contracts?limit=${10}&offset=${page - 1}&searchText=${searchKey}&tab=${selectedContract}`);
+        // const { data: contracts } = await GET(`contract-managment-service/contracts?limit=${10}&offset=${page - 1}&searchText=${searchKey}&tab=${selectedContract}&contractType=${selectedContractTypeFilter}&compensationPolicy=${selectedCompensationPolicyFilter}&contractPolicyType=${selectedContractPolicyTypeFilter}&contractManagerId=${selectedContractManagersFilter}
+        // &contractId=${contractIdFilter !== undefined ? contractIdFilter : ''}&minimumNoOfContractors=${minNumberOfContractors !== undefined ? minNumberOfContractors : 0}&maximumNoOfContractors=${maxNumberOfContractors !== undefined ? maxNumberOfContractors : 99}
+        // &contractExpireInDays=${contractExpiresInDays !== undefined ? contractExpiresInDays : 0}`);
+        const { data: contracts } = await GET(`contract-managment-service/contracts?limit=${10}&offset=${page - 1}&searchText=${searchKey}&tab=${selectedContract}&contractType=${selectedContractTypeFilter}&compensationPolicy=${selectedCompensationPolicyFilter}&contractPolicyType=${selectedContractPolicyTypeFilter}&contractManagerId=${selectedContractManagersFilter}&contractId=${contractIdFilter !== undefined ? contractIdFilter : ''}&minimumNoOfContractors=${minNumberOfContractors !== undefined ? minNumberOfContractors : 0}&maximumNoOfContractors=${maxNumberOfContractors !== undefined ? maxNumberOfContractors : 99}&startDate=${format(new Date(startDate || new Date()), 'yyyy-MM-dd')}&endDate=${format(new Date(endDate || new Date()), 'yyyy-MM-dd')}&contractExpireInDays=${contractExpiresInDays !== undefined ? contractExpiresInDays : 0}`);
         setContracts(contracts?.contractList);
         setTotalCount(contracts?.numberOfElements);
         setIsLoading(false);
@@ -133,6 +148,20 @@ const Contracts = () => {
 
     const getSelectedPage = (value) => {
         setPage(value);
+    }
+
+    const getFilterValues = (value) => {
+        console.log('value', value)
+        setSelectedContractTypeFilter(value?.selectedContractType)
+        setSelectedContractPolicyTypeFilter(value?.selectedContractPolicyType)
+        setSelectedCompensationPolicyFilter(value?.selectedCompensationPolicy)
+        setSelectedContractManagersFilter(value?.selectedContractManagers)
+        setContractIdFilter(value?.contractId)
+        setMaxNumberOfContractors(value?.maxNumberOfContractors)
+        setMinNumberOfContractors(value?.minNumberOfContractors)
+        setStartDate(value?.startDate)
+        setEndDate(value?.endDate)
+        setContractExpiresInDays(value?.contractExpireInDays)
     }
 
     // if (isLoading) {
@@ -170,6 +199,7 @@ const Contracts = () => {
                     page={page}
                     getActiveContractView={getActiveContractView}
                     searchKey={searchKey}
+                    getFilterValues={getFilterValues}
                 />
 
                 {extensionDialog && (

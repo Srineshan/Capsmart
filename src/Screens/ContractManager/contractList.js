@@ -35,9 +35,10 @@ import SideBar from '../../Components/Sidebar';
 import PreImplementationDataDialog from './preImplementationDataDialog';
 import ReviewAndApprovalStatusSummary from './reviewAndApprovalStatusSummary';
 
-const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog, contracts, getSelectedContract, getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page, getActiveContractView }) => {
+const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog, contracts, getSelectedContract, getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page, getActiveContractView, getFilterValues }) => {
   const PDFRef = createRef();
   const componentRef = useRef(null);
+  const filterRef = useRef();
 
   const reactToPrintContent = useCallback(() => {
     return componentRef.current;
@@ -55,7 +56,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
   const activationPendingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "REVIEWS", "APPROVALS", "REF DOCS", "GO LIVE DATE", "EFFECTIVE DATE", "MANAGER", "ACTION"];
   const upcomingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "EXPIRATION DATE", "EXPIRING IN", "LAST UPDATE", "MANAGER", "ACTION"];
   const expiredHeaderValues = ["CHECKBOX", "CONTRACT TYPE", "ID", "NAME", "TERMINATION DATE", "NEW CONTRACT ID", "LAST UPDATE", "MANAGER"];
-  const activeColSortValues = [false, false, false, false, true, true, false, false, false, false];
+  const activeColSortValues = [false, false, false, false, false, false, false, false, false, false];
   const draftColSortValues = [false, false, true, true, false, false, false, false, false];
   const upcomingColSortValues = [false, false, true, true, false, false, false, false, false];
   const expiredColSortValues = [false, false, true, true, false, false, false, false];
@@ -75,6 +76,16 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
   const [metadata, setMetadata] = useState();
   const [CSPSubDomain, setCSPSubDomain] = useState("");
   const [contractFilterValues, setContractFilterValues] = useState();
+  const compensationPolicyAvailableValues = {
+    ACTIVITY_BASED: 'Activity Based',
+    FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITH_OFFSET: 'Fixed Amount For Timesheet Period With Offset'
+  }
+
+  const contractPolicyTypeAvailableValues = {
+    NEWCONTRACTONEXPIRATION: 'New Contract Expiration',
+    ONETIMECONTRACTTERMINATEONEXPIRATION: 'One Time Contract Termination Expiration',
+    WRITTENCONTRACTEXTENSIONFORFIXEDTERM: 'Written Contract Extension For Fixed Term'
+  }
   console.log(contractFilterValues)
   useEffect(() => {
     getContractsMetadata();
@@ -481,6 +492,10 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     setContractFilterValues(value);
   }
 
+  const updateFilter = (data, value) => {
+    filterRef.current.updateFilter(data, value);
+  }
+
   let tableHeaderValues = selectedContract === 'activecontracts' ? activeHeaderValues : selectedContract === 'draft' ? (isDraft ? draftHeaderValues : activationPendingHeaderValues) : selectedContract === 'upcomingrenewals' ? upcomingHeaderValues : expiredHeaderValues;
   let tableSortValues = selectedContract === 'activecontracts' ? activeColSortValues : selectedContract === 'draft' ? (isDraft ? draftColSortValues : activationPendingColSortValues) : selectedContract === 'upcomingrenewals' ? upcomingColSortValues : expiredColSortValues;
   let tableDataValues = selectedContract === 'activecontracts' ? getActiveContractsValues() : selectedContract === "draft" ? getDraftContractsValues() : selectedContract === 'upcomingrenewals' ? getUpcomingContractsValues() : getExpiredContractsValues();
@@ -493,7 +508,8 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
       <div className={isExpanded ? style.bigCardGrid : style.smallCardGrid}>
         <div>
           <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
-            <LeftStatsCard metadata={metadata} getContractFilterValues={getContractFilterValues} selectedContract={selectedContract} />
+            <LeftStatsCard metadata={metadata} getContractFilterValues={getContractFilterValues} selectedContract={selectedContract}
+              getFilterValues={getFilterValues} ref={filterRef} />
           </SideBar>
         </div>
         <div>
@@ -559,43 +575,75 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
               </div>
             </div>
             {(contractFilterValues !== undefined && (
-              contractFilterValues?.contractType !== '' ||
+              contractFilterValues?.contractTypeCount !== '' ||
               contractFilterValues?.contractId !== '' ||
               (contractFilterValues?.numberOfContract?.min !== 0 || contractFilterValues?.numberOfContract?.max !== 0) ||
               (contractFilterValues?.contractTimeCommitment?.from !== null || contractFilterValues?.contractTimeCommitment?.to !== null))) && (
-                <div className={`${style.displayInRow} ${style.marginTop} ${style.marginLeftRight20}`}>
-                  <div className={` ${style.verticalAlignCenter}`}>
-                    <div className={`${style.contractFiltersHeading} ${style.marginTop}`}>Filters Applied: </div>
+                <div className={`${style.displayInRow} ${style.marginTop} ${style.marginLeftRight20} ${style.filterGrid}`}>
+                  <div className={` ${style.verticalAlignCenter} ${style.marginTop}`}>
+                    <div className={`${style.contractFiltersHeading} ${style.marginTop10}`}>Filters Applied: </div>
                   </div>
-                  {contractFilterValues?.contractType !== '' && (
-                    <div className={` ${style.marginLeft10}`}>
+                  {contractFilterValues?.contractTypeCount?.map((data, index) => data?.selected && (
+                    <div className={` ${style.marginLeft10} ${style.marginTop10}`} key={index}>
                       <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
-                        <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${contractFilterValues?.contractType}(0)`}</div>
-                        <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => { }} />
+                        <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${data?.contractType} (${data?.count})`}</div>
+                        <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => updateFilter('contractTypeCount', data?.contractType)} />
+                      </div>
+                    </div>
+                  ))}
+                  {contractFilterValues?.compensationPolicyCount?.map((data, index) => data?.selected && (
+                    <div className={` ${style.marginLeft10} ${style.marginTop10}`} key={index}>
+                      <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
+                        <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${compensationPolicyAvailableValues[data?.compensationPolicy]} (${data?.count})`}</div>
+                        <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => updateFilter('compensationPolicyCount', data?.compensationPolicy)} />
+                      </div>
+                    </div>
+                  ))}
+                  {contractFilterValues?.contractPolicyTypeCount?.map((data, index) => data?.selected && (
+                    <div className={` ${style.marginLeft10} ${style.marginTop10}`} key={index}>
+                      <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
+                        <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${contractPolicyTypeAvailableValues[data?.contractPolicyType]} (${data?.count})`}</div>
+                        <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => updateFilter('contractPolicyTypeCount', data?.contractPolicyType)} />
+                      </div>
+                    </div>
+                  ))}
+                  {contractFilterValues?.contractManagers?.map((data, index) => data?.selected && (
+                    <div className={` ${style.marginLeft10} ${style.marginTop10}`} key={index}>
+                      <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
+                        <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${data?.name?.firstName} ${data?.name?.lastName}`}</div>
+                        <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => updateFilter('contractManagers', data?.userID)} />
+                      </div>
+                    </div>
+                  ))}
+                  {(contractFilterValues?.contractId !== '' && contractFilterValues?.contractId !== undefined) && (
+                    <div className={` ${style.marginLeft10} ${style.marginTop10}`}>
+                      <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
+                        <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${contractFilterValues?.contractId}`}</div>
+                        <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer} ${style.marginRight5}`} onClick={() => updateFilter('contractId')} />
                       </div>
                     </div>
                   )}
-                  {contractFilterValues?.contractId !== '' && (
-                    <div className={` ${style.marginLeft10}`}>
+                  {(contractFilterValues?.contractExpireInDays !== 0 && contractFilterValues?.contractExpireInDays !== undefined) && (
+                    <div className={` ${style.marginLeft10} ${style.marginTop10}`}>
                       <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
-                        <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${contractFilterValues?.contractId}(0)`}</div>
-                        <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer} ${style.marginRight5}`} onClick={() => { }} />
+                        <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`Expires in ${contractFilterValues?.contractExpireInDays} Days`}</div>
+                        <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer} ${style.marginRight5}`} onClick={() => updateFilter('contractExpireInDays')} />
                       </div>
                     </div>
                   )}
-                  {(contractFilterValues?.numberOfContract?.min !== 0 || contractFilterValues?.numberOfContract?.max !== 0) && (
-                    <div className={` ${style.marginLeft10}`}>
+                  {(contractFilterValues?.numberOfContract?.max !== 0) && (
+                    <div className={` ${style.marginLeft10} ${style.marginTop10}`}>
                       <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
-                        <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${contractFilterValues?.numberOfContract?.min} - ${contractFilterValues?.numberOfContract?.max}(0)`}</div>
-                        <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer} ${style.marginRight5}`} onClick={() => { }} />
+                        <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${contractFilterValues?.numberOfContract?.min} - ${contractFilterValues?.numberOfContract?.max}`}</div>
+                        <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer} ${style.marginRight5}`} onClick={() => updateFilter('numberOfContract')} />
                       </div>
                     </div>
                   )}
                   {(contractFilterValues?.contractTimeCommitment?.from !== null || contractFilterValues?.contractTimeCommitment?.to !== null) && (
-                    <div className={` ${style.marginLeft10}`}>
+                    <div className={` ${style.marginLeft10} ${style.marginTop10}`}>
                       <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
-                        <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${format(new Date(contractFilterValues?.contractTimeCommitment?.from), 'MM/dd/yyyy')} - ${format(new Date(contractFilterValues?.contractTimeCommitment?.to), 'MM/dd/yyyy')}(0)`}</div>
-                        <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer} ${style.marginRight5}`} onClick={() => { }} />
+                        <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${format(new Date(contractFilterValues?.contractTimeCommitment?.from || new Date()), 'MM/dd/yyyy')} - ${format(new Date(contractFilterValues?.contractTimeCommitment?.to || new Date()), 'MM/dd/yyyy')}`}</div>
+                        <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer} ${style.marginRight5}`} onClick={() => updateFilter('contractTimeCommitment')} />
                       </div>
                     </div>
                   )}

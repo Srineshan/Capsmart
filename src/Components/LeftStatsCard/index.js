@@ -1,57 +1,208 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 import ProgressBar from "@ramonak/react-progress-bar";
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import CommonInputField from '../CommonFields/CommonInputField';
 import CommonCheckBox from '../CommonFields/CommonCheckBox';
 import CommonDateField from '../CommonFields/CommonDateField';
-import { sub, add } from "date-fns";
+import { sub, add, subYears } from "date-fns";
 import TextField from '@mui/material/TextField';
 import { GET } from '../../Screens/dataSaver';
 
 import style from './index.module.scss';
 
-const LeftStatsCard = ({ metadata, getContractFilterValues, selectedContract }) => {
+const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedContract, getFilterValues, updatedFilter }, ref) => {
     let individualCount = metadata?.metaData?.individualContractCount;
     let multipleCount = metadata?.metaData?.multipleContractCount;
     let expiringDoc = metadata?.metaData?.contractWithExpiringDocCount;
     const month = new Date(Date.now());
     const year = new Date().getFullYear();
     const [contractTypeFilter, setContractTypeFilter] = useState(false);
+    const [compensationPolicyFilter, setCompensationPolicyFilter] = useState(false);
+    const [contractPolicyTypeFilter, setContractPolicyTypeFilter] = useState(false);
+    const [contractManagersFilter, setContractManagersFilter] = useState(false);
+    const [contractExpireInDaysFilter, setContractExpireInDaysFilter] = useState(false);
     const [contractIdFilter, setContractIdFilter] = useState(false);
     const [numberOfContractFilter, setNumberOfContractFilter] = useState(false);
     const [contractTimeCommitmentFilter, setContractTimeCommitmentFilter] = useState(false);
     const [calendarStart, setCalendarStart] = useState(false);
     const [calendarEnd, setCalendarEnd] = useState(false);
+    const [selectedContractType, setSelectedContractType] = useState([]);
+    const [selectedContractPolicyType, setSelectedContractPolicyType] = useState([]);
+    const [selectedCompensationPolicy, setSelectedCompensationPolicy] = useState([]);
+    const [selectedContractManagers, setSelectedContractManagers] = useState([]);
     const [contractFilter, setContractFilter] = useState({
         contractType: '',
         contractId: '',
         numberOfContract: { min: 0, max: 0 },
-        contractTimeCommitment: { from: null, to: null }
+        contractTimeCommitment: { from: new Date(subYears(new Date(), 3)), to: new Date() },
+        compensationPolicyCount: [],
+        contractManagers: [],
+        contractPolicyTypeCount: [],
+        contractTypeCount: [],
+        contractExpireInDays: 0
     })
+    const compensationPolicyAvailableValues = {
+        ACTIVITY_BASED: 'Activity Based',
+        FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITH_OFFSET: 'Fixed Amount For Timesheet Period With Offset'
+    }
+
+    const contractPolicyTypeAvailableValues = {
+        NEWCONTRACTONEXPIRATION: 'New Contract Expiration',
+        ONETIMECONTRACTTERMINATEONEXPIRATION: 'One Time Contract Termination Expiration',
+        WRITTENCONTRACTEXTENSIONFORFIXEDTERM: 'Written Contract Extension For Fixed Term'
+    }
 
     useEffect(() => {
-        // getFilterData();
+        getFilterData();
     }, [])
 
     useEffect(() => {
         getContractFilterValues(contractFilter)
     }, [contractFilter])
 
+    useEffect(() => {
+        getFilterValues({
+            selectedContractType: selectedContractType,
+            selectedContractPolicyType: selectedContractPolicyType,
+            selectedCompensationPolicy: selectedCompensationPolicy,
+            selectedContractManagers: selectedContractManagers,
+            contractId: contractFilter?.contractId,
+            maxNumberOfContractors: contractFilter?.numberOfContract?.max,
+            minNumberOfContractors: contractFilter?.numberOfContract?.min,
+            startDate: contractFilter?.contractTimeCommitment?.from,
+            endDate: contractFilter?.contractTimeCommitment?.to,
+            contractExpireInDays: contractFilter?.contractExpireInDays
+        })
+    }, [selectedContractType, selectedContractPolicyType, selectedCompensationPolicy, selectedContractManagers, contractFilter])
+
+    useImperativeHandle(ref, () => ({
+        updateFilter,
+    }));
+
+    const clearFilter = (data) => {
+        if (data === 'contractTypeCount') {
+            setSelectedContractType([]);
+            let temp = contractFilter?.contractTypeCount?.map(data => {
+                data.selected = false
+            })
+            setContractFilter({ ...contractFilter, temp })
+        } else if (data === 'compensationPolicyCount') {
+            setSelectedCompensationPolicy([]);
+            let temp = contractFilter?.compensationPolicyCount?.map(data => {
+                data.selected = false
+            })
+            setContractFilter({ ...contractFilter, temp })
+        } else if (data === 'contractPolicyTypeCount') {
+            setSelectedContractPolicyType([]);
+            let temp = contractFilter?.contractPolicyTypeCount?.map(data => {
+                data.selected = false
+            })
+            setContractFilter({ ...contractFilter, temp })
+        } else if (data === 'contractManagers') {
+            setSelectedContractManagers([]);
+            let temp = contractFilter?.contractManagers?.map(data => {
+                data.selected = false
+            })
+            setContractFilter({ ...contractFilter, temp })
+        }
+    }
+
+    const updateFilter = (data, value) => {
+        if (data === 'contractTypeCount') {
+            setSelectedContractType(selectedContractType?.filter(data => data !== value)?.map(data => data));
+            let temp = contractFilter?.contractTypeCount?.filter(data => data?.contractType === value)?.map(data => {
+                data.selected = false
+            })
+            setContractFilter({ ...contractFilter, temp })
+        } else if (data === 'compensationPolicyCount') {
+            setSelectedCompensationPolicy(selectedCompensationPolicy?.filter(data => data !== value)?.map(data => data));
+            let temp = contractFilter?.compensationPolicyCount?.filter(data => data?.compensationPolicy === value)?.map(data => {
+                data.selected = false
+            })
+            setContractFilter({ ...contractFilter, temp })
+        } else if (data === 'contractPolicyTypeCount') {
+            setSelectedContractPolicyType(selectedContractPolicyType?.filter(data => data !== value)?.map(data => data));
+            let temp = contractFilter?.contractPolicyTypeCount?.filter(data => data?.contractPolicyType === value)?.map(data => {
+                data.selected = false
+            })
+            setContractFilter({ ...contractFilter, temp })
+        } else if (data === 'contractManagers') {
+            setSelectedContractManagers(selectedContractManagers?.filter(data => data !== value)?.map(data => data));
+            let temp = contractFilter?.contractManagers?.filter(data => data?.userID === value)?.map(data => {
+                data.selected = false
+            })
+            setContractFilter({ ...contractFilter, temp })
+        } else if (data === 'contractId') {
+            setContractFilter({ ...contractFilter, contractId: '' })
+        } else if (data === 'contractExpireInDays') {
+            setContractFilter({ ...contractFilter, contractExpireInDays: 0 })
+        } else if (data === 'numberOfContract') {
+            setContractFilter({ ...contractFilter, numberOfContract: { min: 0, max: 99 } })
+        } else if (data === 'contractTimeCommitment') {
+            setContractFilter({ ...contractFilter, contractTimeCommitment: { from: subYears(new Date(), 3), to: new Date() } })
+        }
+    }
+
     const getFilterData = async () => {
         const { data: filterData } = await GET(`contract-managment-service/contracts/filters?tab=${selectedContract}`);
-        setContractFilter(filterData);
+        setContractFilter({ ...contractFilter, ...filterData });
     };
 
     const reset = () => {
-        setContractFilter({
-            contractType: '',
-            contractId: '',
-            numberOfContract: { min: 0, max: 0 },
-            contractTimeCommitment: { from: null, to: null }
+        setSelectedContractType([]);
+        let temp = contractFilter?.contractTypeCount?.map(data => {
+            data.selected = false
         })
+        setContractFilter({ ...contractFilter, temp })
+        setSelectedCompensationPolicy([]);
+        temp = contractFilter?.compensationPolicyCount?.map(data => {
+            data.selected = false
+        })
+        setContractFilter({ ...contractFilter, temp })
+        setSelectedContractPolicyType([]);
+        temp = contractFilter?.contractPolicyTypeCount?.map(data => {
+            data.selected = false
+        })
+        setContractFilter({ ...contractFilter, temp })
+        setSelectedContractManagers([]);
+        temp = contractFilter?.contractManagers?.map(data => {
+            data.selected = false
+        })
+        setContractFilter({ ...contractFilter, temp })
+        setContractFilter({ ...contractFilter, contractId: '', contractExpireInDays: 0, numberOfContract: { min: 0, max: 0 }, contractTimeCommitment: { from: subYears(new Date(), 3), to: new Date() } })
     }
-    console.log(contractFilter)
+
+    const handleFilterSelect = (checked, index, filterName, contractType) => {
+        console.log(checked, index, filterName)
+        if (filterName === 'contractTypeCount') {
+            let temp = contractFilter?.contractTypeCount;
+            temp[index]['selected'] = checked
+            setContractFilter({ ...contractFilter, temp })
+            let tempSelected = temp?.filter(data => data?.selected)?.map(data => data?.contractType)
+            setSelectedContractType(tempSelected)
+        } else if (filterName === 'compensationPolicyCount') {
+            let tempCompensationPolicyCount = contractFilter?.compensationPolicyCount
+            tempCompensationPolicyCount[index]['selected'] = checked
+            setContractFilter({ ...contractFilter, tempCompensationPolicyCount })
+            let tempSelected = tempCompensationPolicyCount?.filter(data => data?.selected)?.map(data => data?.compensationPolicy)
+            setSelectedCompensationPolicy(tempSelected)
+        } else if (filterName === 'contractPolicyTypeCount') {
+            let tempContractPolicyTypeCount = contractFilter?.contractPolicyTypeCount
+            tempContractPolicyTypeCount[index]['selected'] = checked
+            setContractFilter({ ...contractFilter, tempContractPolicyTypeCount })
+            let tempSelected = tempContractPolicyTypeCount?.filter(data => data?.selected)?.map(data => data?.contractPolicyType)
+            setSelectedContractPolicyType(tempSelected)
+        } else if (filterName === 'contractManagers') {
+            let tempContractManagers = contractFilter?.contractManagers
+            tempContractManagers[index]['selected'] = checked
+            setContractFilter({ ...contractFilter, tempContractManagers })
+            let tempSelected = tempContractManagers?.filter(data => data?.selected)?.map(data => data?.userID)
+            setSelectedContractManagers(tempSelected)
+        }
+        console.log(contractFilter)
+    }
+    console.log(contractFilter, selectedContractType, selectedCompensationPolicy, selectedContractPolicyType, selectedContractManagers, contractFilter?.contractTimeCommitment?.from)
     return (
         <div className={`${style.bigCardStyle} ${style.bigCalendarLeftCardWidth}`}>
             {/* <h5 className={style.statisticsHeading}>{month.toLocaleString('en-US', { month: 'long' })} {year} Summary</h5>
@@ -103,9 +254,9 @@ const LeftStatsCard = ({ metadata, getContractFilterValues, selectedContract }) 
                 </div>
                 <div>
                     <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
-                        <div className={`${style.filterType} ${(contractFilter?.contractType !== '' && !contractTypeFilter) ? style.purpleText : ''}`}>Contract Type</div>
+                        <div className={`${style.filterType} ${(contractFilter?.contractTypeCount?.filter(data => data?.selected)?.length !== 0 && !contractTypeFilter) ? style.purpleText : ''}`}>Contract Type</div>
                         <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
-                            <div className={`${style.clearText} ${contractFilter?.contractType !== '' ? style.purpleText : ''}`} onClick={() => setContractFilter({ ...contractFilter, contractType: '' })}>Clear </div>
+                            <div className={`${style.clearText} ${contractFilter?.contractTypeCount?.filter(data => data?.selected)?.length !== 0 ? style.purpleText : ''}`} onClick={() => clearFilter('contractTypeCount')}>Clear </div>
                             {!contractTypeFilter ? (
                                 <AddIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setContractTypeFilter(!contractTypeFilter)} />
                             ) : (
@@ -116,16 +267,80 @@ const LeftStatsCard = ({ metadata, getContractFilterValues, selectedContract }) 
                     <div className={style.marginTop10}>
                         {contractTypeFilter && (
                             <>
-                                <CommonInputField
+                                {/* <CommonInputField
                                     // className={style.fullWidth}
                                     placeholder="Search"
                                     value={contractFilter?.contractId}
                                     onChange={(e) =>
                                         setContractFilter({ ...contractFilter, contractId: e.target.value })
                                     }
-                                />
-                                <CommonCheckBox value={`INDIVIDUAL`} checked={contractFilter?.contractType === 'INDIVIDUAL'} onChange={(e) => setContractFilter({ ...contractFilter, contractType: 'INDIVIDUAL' })} label={`INDIVIDUAL(0)`} />
-                                <CommonCheckBox value={`MULTIPLE`} checked={contractFilter?.contractType === 'MULTIPLE'} onChange={(e) => setContractFilter({ ...contractFilter, contractType: 'MULTIPLE' })} label={`MULTIPLE(0)`} />
+                                /> */}
+                                {contractFilter?.contractTypeCount?.map((data, index) => (
+                                    <CommonCheckBox checked={data?.selected === true ? true : false} onChange={(e) => handleFilterSelect(e.target.checked, index, 'contractTypeCount', data?.contractType)} label={`${data?.contractType}(${data?.count})`} key={index} />
+                                ))}
+                            </>
+                        )}
+                    </div>
+                    <div className={style.dividerStyle}></div>
+                    <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
+                        <div className={`${style.filterType} ${(contractFilter?.compensationPolicyCount?.filter(data => data?.selected)?.length !== 0 && !compensationPolicyFilter) ? style.purpleText : ''}`}>Compensation Policy</div>
+                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
+                            <div className={`${style.clearText} ${contractFilter?.compensationPolicyCount?.filter(data => data?.selected)?.length !== 0 ? style.purpleText : ''}`} onClick={() => clearFilter('compensationPolicyCount')}>Clear </div>
+                            {!compensationPolicyFilter ? (
+                                <AddIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setCompensationPolicyFilter(!compensationPolicyFilter)} />
+                            ) : (
+                                <RemoveIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setCompensationPolicyFilter(!compensationPolicyFilter)} />
+                            )}
+                        </div>
+                    </div>
+                    <div className={style.marginTop10}>
+                        {compensationPolicyFilter && (
+                            <>
+                                {contractFilter?.compensationPolicyCount?.map((data, index) => (
+                                    <CommonCheckBox checked={data?.selected === true ? true : false} onChange={(e) => handleFilterSelect(e.target.checked, index, 'compensationPolicyCount', data?.compensationPolicy)} label={`${compensationPolicyAvailableValues[data?.compensationPolicy]} (${data?.count})`} key={index} />
+                                ))}
+                            </>
+                        )}
+                    </div>
+                    <div className={style.dividerStyle}></div>
+                    <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
+                        <div className={`${style.filterType} ${(contractFilter?.contractPolicyTypeCount?.filter(data => data?.selected)?.length !== 0 && !contractPolicyTypeFilter) ? style.purpleText : ''}`}>Contract Policy Type</div>
+                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
+                            <div className={`${style.clearText} ${contractFilter?.contractPolicyTypeCount?.filter(data => data?.selected)?.length !== 0 ? style.purpleText : ''}`} onClick={() => clearFilter('contractPolicyTypeCount')}>Clear </div>
+                            {!contractPolicyTypeFilter ? (
+                                <AddIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setContractPolicyTypeFilter(!contractPolicyTypeFilter)} />
+                            ) : (
+                                <RemoveIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setContractPolicyTypeFilter(!contractPolicyTypeFilter)} />
+                            )}
+                        </div>
+                    </div>
+                    <div className={style.marginTop10}>
+                        {contractPolicyTypeFilter && (
+                            <>
+                                {contractFilter?.contractPolicyTypeCount?.map((data, index) => (
+                                    <CommonCheckBox checked={data?.selected === true ? true : false} onChange={(e) => handleFilterSelect(e.target.checked, index, 'contractPolicyTypeCount', data?.contractPolicyType)} label={`${contractPolicyTypeAvailableValues[data?.contractPolicyType]} (${data?.count})`} key={index} />
+                                ))}
+                            </>
+                        )}
+                    </div>
+                    <div className={style.dividerStyle}></div>
+                    <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
+                        <div className={`${style.filterType} ${(contractFilter?.contractManagers?.filter(data => data?.selected)?.length !== 0 && !contractManagersFilter) ? style.purpleText : ''}`}>Contract Managers</div>
+                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
+                            <div className={`${style.clearText} ${contractFilter?.contractManagers?.filter(data => data?.selected)?.length !== 0 ? style.purpleText : ''}`} onClick={() => clearFilter('contractManagers')}>Clear </div>
+                            {!contractManagersFilter ? (
+                                <AddIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setContractManagersFilter(!contractManagersFilter)} />
+                            ) : (
+                                <RemoveIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setContractManagersFilter(!contractManagersFilter)} />
+                            )}
+                        </div>
+                    </div>
+                    <div className={style.marginTop10}>
+                        {contractManagersFilter && (
+                            <>
+                                {contractFilter?.contractManagers?.map((data, index) => (
+                                    <CommonCheckBox checked={data?.selected === true ? true : false} onChange={(e) => handleFilterSelect(e.target.checked, index, 'contractManagers', data?.contractManagers)} label={`${data?.name?.firstName} ${data?.name?.lastName}`} key={index} />
+                                ))}
                             </>
                         )}
                     </div>
@@ -149,6 +364,29 @@ const LeftStatsCard = ({ metadata, getContractFilterValues, selectedContract }) 
                                 value={contractFilter?.contractId}
                                 onChange={(e) =>
                                     setContractFilter({ ...contractFilter, contractId: e.target.value })
+                                }
+                            />
+                        )}
+                    </div>
+                    <div className={style.dividerStyle}></div>
+                    <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
+                        <div className={`${style.filterType}  ${(contractFilter?.contractExpireInDays !== 0 && !contractExpireInDaysFilter) ? style.purpleText : ''}`}>Contract Expire In Days</div>
+                        <div className={`${style.displayInRow}  ${style.verticalAlignCenter}`}>
+                            <div className={`${style.clearText} ${contractFilter?.contractExpireInDays !== 0 ? style.purpleText : ''}`} onClick={() => setContractFilter({ ...contractFilter, contractExpireInDays: 0 })}>Clear </div>
+                            {!contractExpireInDaysFilter ? (
+                                <AddIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setContractExpireInDaysFilter(!contractExpireInDaysFilter)} />
+                            ) : (
+                                <RemoveIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setContractExpireInDaysFilter(!contractExpireInDaysFilter)} />
+                            )}
+                        </div>
+                    </div>
+                    <div className={style.marginTop10}>
+                        {contractExpireInDaysFilter && (
+                            <CommonInputField
+                                // className={style.fullWidth}
+                                value={contractFilter?.contractExpireInDays}
+                                onChange={(e) =>
+                                    setContractFilter({ ...contractFilter, contractExpireInDays: e.target.value })
                                 }
                             />
                         )}
@@ -202,7 +440,7 @@ const LeftStatsCard = ({ metadata, getContractFilterValues, selectedContract }) 
                     <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
                         <div className={`${style.filterType} ${((contractFilter?.contractTimeCommitment?.to !== null || contractFilter?.contractTimeCommitment?.from !== null) && !contractTimeCommitmentFilter) ? style.purpleText : ''}`}>Contract Time Commitment</div>
                         <div className={`${style.displayInRow}  ${style.verticalAlignCenter}`}>
-                            <div className={`${style.clearText} ${(contractFilter?.contractTimeCommitment?.to !== null || contractFilter?.contractTimeCommitment?.from !== null) ? style.purpleText : ''}`} onClick={() => setContractFilter({ ...contractFilter, contractTimeCommitment: { to: null, from: null } })}>Clear </div>
+                            <div className={`${style.clearText} ${(contractFilter?.contractTimeCommitment?.to !== null || contractFilter?.contractTimeCommitment?.from !== null) ? style.purpleText : ''}`} onClick={() => setContractFilter({ ...contractFilter, contractTimeCommitment: { from: subYears(new Date(), 3), to: new Date() } })}>Clear </div>
                             {!contractTimeCommitmentFilter ? (
                                 <AddIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setContractTimeCommitmentFilter(!contractTimeCommitmentFilter)} />
                             ) : (
@@ -274,10 +512,11 @@ const LeftStatsCard = ({ metadata, getContractFilterValues, selectedContract }) 
                             </div>
                         )}
                     </div>
+                    <div className={style.dividerStyle}></div>
                 </div>
             </div>
         </div>
     )
-}
+})
 
 export default LeftStatsCard;
