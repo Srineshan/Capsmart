@@ -11,6 +11,8 @@ import { browserName, browserVersion, osName, osVersion, isMobile, isDesktop, is
 import { SuccessToaster, ErrorToaster } from './utils/toaster';
 import axios from "axios";
 import jwt from "jwt-decode";
+import MileageRateForCustomers from "./Screens/ReferenceList/mileageRateForCustomers";
+import GeneralConfigurationForCustomers from "./Screens/ReferenceList/generalConfigurationForCustomers";
 
 
 const ReportType = React.lazy(() => import("./Screens/Reports/reportType"));
@@ -18,9 +20,7 @@ const ReportTypeOverview = React.lazy(() =>
   import("./Screens/Reports/reportTypeOverview")
 );
 const Home = React.lazy(() => import("./Screens/CustomerSystemAdmin"));
-const ReferenceListMainPage = React.lazy(() =>
-  import("./Screens/ReferenceList/ReferenceListMainPage")
-);
+
 const FunctionalTitleForCustomer = React.lazy(() =>
   import("./Screens/ReferenceList/functionalTitleForCustomer")
 );
@@ -660,6 +660,14 @@ const App = ({ props }) => {
               <Route
                 path="/referenceList/departmentsForCustomers"
                 element={<DepartmentsForCustomers />}
+              />
+              <Route
+                path="/referenceList/mileageRateForCustomers"
+                element={<MileageRateForCustomers />}
+              />
+              <Route
+                path="/referenceList/generalConfigurationForCustomers"
+                element={<GeneralConfigurationForCustomers/>}
               />
               <Route path="/entitySitePortal" element={<Home />} />
               <Route path="/thankyou" element={<Thankyou />} />
