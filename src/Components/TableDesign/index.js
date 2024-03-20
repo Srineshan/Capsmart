@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-const Table = ({ tableHeaderValues, tableDataValues, tableData, hidePagination, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, onClickText, onClickFunction, buttonComponent }) => {
+const Table = ({ tableHeaderValues, tableDataValues, tableData, hidePagination, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, onClickText, onClickFunction, buttonComponent, getHandleSort, sortValue }) => {
     const [showOptions, setShowOptions] = useState(false);
     const [selectedMenuIndex, setSelectedMenuIndex] = useState(-1);
     const [selectedMenuColIndex, setSelectedMenuColIndex] = useState(-1);
@@ -52,6 +52,16 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, hidePagination, 
     useOptionsHide(menuRef);
     useOptionsHide(countHoverRef);
     useOptionsHide(textHoverRef);
+
+    const availableSortValue = {
+        CONTRACT_NAME: 'NAME',
+        CONTRACT_ID: 'ID'
+    }
+
+    const availableSortValueEnum = {
+        NAME: 'CONTRACT_NAME',
+        ID: 'CONTRACT_ID'
+    }
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -145,8 +155,12 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, hidePagination, 
                 <div className={`${style.tableHeader} ${gridStyle} ${style.marginTop10}`}>
                     {tableHeaderValues?.map((data, index) => (
                         <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} key={index}>
-                            {tableSortValues?.[index] && (
-                                <img src={AscendingSort} alt="" className={`${style.sortImgStyle} ${style.cursorPointer}`} />
+                            {tableSortValues?.[index] && (data === availableSortValue[sortValue?.sortByField] && sortValue?.sortBy === 'ASCENDING') ? (
+                                <img src={AscendingSort} alt="" className={`${style.sortImgStyle} ${style.cursorPointer}`} onClick={() => getHandleSort(availableSortValueEnum[data], 'ASCENDING')} />
+                            ) : tableSortValues?.[index] && (data === availableSortValue[sortValue?.sortByField] && sortValue?.sortBy === 'DESCENDING') ? (
+                                <img src={DescendingSort} alt="" className={`${style.sortImgStyle} ${style.cursorPointer}`} onClick={() => getHandleSort(availableSortValueEnum[data], 'DESCENDING')} />
+                            ) : tableSortValues?.[index] && (
+                                <img src={Sort} alt="" className={`${style.sortImgStyle} ${style.cursorPointer}`} onClick={() => getHandleSort(availableSortValueEnum[data], 'NONE')} />
                             )
                                 //  : (
                                 //     <img src={DescendingSort} alt="" className={style.sortImgStyle} />

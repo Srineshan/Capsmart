@@ -35,7 +35,7 @@ import SideBar from '../../Components/Sidebar';
 import PreImplementationDataDialog from './preImplementationDataDialog';
 import ReviewAndApprovalStatusSummary from './reviewAndApprovalStatusSummary';
 
-const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog, contracts, getSelectedContract, getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page, getActiveContractView, getFilterValues }) => {
+const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog, contracts, getSelectedContract, getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page, getActiveContractView, getFilterValues, getHandleSort, sortValue }) => {
   const PDFRef = createRef();
   const componentRef = useRef(null);
   const filterRef = useRef();
@@ -56,7 +56,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
   const activationPendingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "REVIEWS", "APPROVALS", "REF DOCS", "GO LIVE DATE", "EFFECTIVE DATE", "MANAGER", "ACTION"];
   const upcomingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "EXPIRATION DATE", "EXPIRING IN", "LAST UPDATE", "MANAGER", "ACTION"];
   const expiredHeaderValues = ["CHECKBOX", "CONTRACT TYPE", "ID", "NAME", "TERMINATION DATE", "NEW CONTRACT ID", "LAST UPDATE", "MANAGER"];
-  const activeColSortValues = [false, false, false, false, false, false, false, false, false, false];
+  const activeColSortValues = [false, false, false, true, false, true, false, false, false, false];
   const draftColSortValues = [false, false, true, true, false, false, false, false, false];
   const upcomingColSortValues = [false, false, true, true, false, false, false, false, false];
   const expiredColSortValues = [false, false, true, true, false, false, false, false];
@@ -677,6 +677,8 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
                       <AddCircleOutlineIcon sx={{ fontSize: 20, color: 'white' }} />
                     </div>}
                     onClickFunction={() => { }}
+                    getHandleSort={getHandleSort}
+                    sortValue={sortValue}
                   />
                 </div>
               </div>

@@ -44,6 +44,8 @@ const Contracts = () => {
     const [startDate, setStartDate] = useState(subYears(new Date(), 3));
     const [endDate, setEndDate] = useState(new Date());
     const [contractExpiresInDays, setContractExpiresInDays] = useState(0)
+    const [sortField, setSortField] = useState('DEFAULT');
+    const [sortValue, setSortValue] = useState('ASCENDING');
 
     useEffect(() => {
         getContracts();
@@ -54,7 +56,7 @@ const Contracts = () => {
     useEffect(() => {
         getContracts();
     }, [selectedContract, searchKey, page, newContractFromClone, totalCount, selectedContractTypeFilter, selectedCompensationPolicyFilter, selectedContractPolicyTypeFilter, selectedContractManagersFilter, contractIdFilter,
-        minNumberOfContractors, maxNumberOfContractors, startDate, endDate, contractExpiresInDays])
+        minNumberOfContractors, maxNumberOfContractors, startDate, endDate, contractExpiresInDays, sortField, sortValue])
 
     useEffect(() => {
         sessionStorage.setItem('isEditable', selectedContract !== 'draft' ? false : true)
@@ -126,10 +128,7 @@ const Contracts = () => {
 
     const getContracts = async () => {
         setIsLoading(true);
-        // const { data: contracts } = await GET(`contract-managment-service/contracts?limit=${10}&offset=${page - 1}&searchText=${searchKey}&tab=${selectedContract}&contractType=${selectedContractTypeFilter}&compensationPolicy=${selectedCompensationPolicyFilter}&contractPolicyType=${selectedContractPolicyTypeFilter}&contractManagerId=${selectedContractManagersFilter}
-        // &contractId=${contractIdFilter !== undefined ? contractIdFilter : ''}&minimumNoOfContractors=${minNumberOfContractors !== undefined ? minNumberOfContractors : 0}&maximumNoOfContractors=${maxNumberOfContractors !== undefined ? maxNumberOfContractors : 99}
-        // &contractExpireInDays=${contractExpiresInDays !== undefined ? contractExpiresInDays : 0}`);
-        const { data: contracts } = await GET(`contract-managment-service/contracts?limit=${10}&offset=${page - 1}&searchText=${searchKey}&tab=${selectedContract}&contractType=${selectedContractTypeFilter}&compensationPolicy=${selectedCompensationPolicyFilter}&contractPolicyType=${selectedContractPolicyTypeFilter}&contractManagerId=${selectedContractManagersFilter}&contractId=${contractIdFilter !== undefined ? contractIdFilter : ''}&minimumNoOfContractors=${minNumberOfContractors !== undefined ? minNumberOfContractors : 0}&maximumNoOfContractors=${maxNumberOfContractors !== undefined ? maxNumberOfContractors : 99}&startDate=${format(new Date(startDate || new Date()), 'yyyy-MM-dd')}&endDate=${format(new Date(endDate || new Date()), 'yyyy-MM-dd')}&contractExpireInDays=${contractExpiresInDays !== undefined ? contractExpiresInDays : 0}`);
+        const { data: contracts } = await GET(`contract-managment-service/contracts?limit=${10}&offset=${page - 1}&searchText=${searchKey}&tab=${selectedContract}&contractType=${selectedContractTypeFilter}&compensationPolicy=${selectedCompensationPolicyFilter}&contractPolicyType=${selectedContractPolicyTypeFilter}&contractManagerId=${selectedContractManagersFilter}&contractId=${contractIdFilter !== undefined ? contractIdFilter : ''}&minimumNoOfContractors=${minNumberOfContractors !== undefined ? minNumberOfContractors : 0}&maximumNoOfContractors=${maxNumberOfContractors !== undefined ? maxNumberOfContractors : 99}&startDate=${format(new Date(startDate || new Date()), 'yyyy-MM-dd')}&endDate=${format(new Date(endDate || new Date()), 'yyyy-MM-dd')}&contractExpireInDays=${contractExpiresInDays !== undefined ? contractExpiresInDays : 0}&sortBy=${sortValue}&sortByField=${sortField}`);
         setContracts(contracts?.contractList);
         setTotalCount(contracts?.numberOfElements);
         setIsLoading(false);
@@ -163,6 +162,20 @@ const Contracts = () => {
         setEndDate(value?.endDate)
         setContractExpiresInDays(value?.contractExpireInDays)
     }
+
+    const getHandleSort = (value, sortBy) => {
+        if (sortBy === 'ASCENDING') {
+            setSortField(value)
+            setSortValue('DESCENDING')
+        } else if (sortBy === 'DESCENDING') {
+            setSortField('DEFAULT')
+            setSortValue('ASCENDING')
+        } else if (sortBy === 'NONE') {
+            setSortField(value)
+            setSortValue('ASCENDING')
+        }
+    }
+
 
     // if (isLoading) {
     //     return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />;
@@ -200,6 +213,8 @@ const Contracts = () => {
                     getActiveContractView={getActiveContractView}
                     searchKey={searchKey}
                     getFilterValues={getFilterValues}
+                    getHandleSort={getHandleSort}
+                    sortValue={{ sortBy: sortValue, sortByField: sortField }}
                 />
 
                 {extensionDialog && (
