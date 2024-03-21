@@ -321,7 +321,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                 "tenantId": TenantID
             },
             "ticketFile": {
-                "fileName": fileName,
+                "fileName": isEdit ? ticketDetails?.ticketFile?.fileName : fileName,
                 ...(isEdit &&
                     { 'id': ticketDetails?.ticketFile?.id }),
                 ...(isEdit &&
@@ -456,7 +456,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
 
     return (
         <>
-            <Dialog isOpen={getShowFeedbackTicketResolution} onClose={() => handleClose()} className={`${style.addManagerDialogBackground} ${style.feedbackDialog}`} ref={componentRef}>
+            <Dialog isOpen={getShowFeedbackTicketResolution} onClose={() => handleClose()} className={`${style.addManagerDialogBackground} ${style.feedbackDialog}`} ref={componentRef} canOutsideClickClose={false}>
                 <div className={`${Classes.DIALOG_BODY} `}>
                     <div className={style.alignRight}>
                         <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle}`} onClick={() => handleClose()} />

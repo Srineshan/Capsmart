@@ -470,7 +470,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                     value={renewalreportingTimePeriod}
                                     onChange={(e) => { setRenewalreportingTimePeriod(e.target.value) }}
                                     label="Renewal Time Frame"
-                                    readOnly={isMyReport}
+                                    disabled={isMyReport}
                                 >
                                     <MenuItem value={30}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 30 days</MenuItem>
                                     <MenuItem value={60}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 60 days</MenuItem>
@@ -487,7 +487,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 value={selectedSites}
                                 onChange={handleChangeSites}
                                 MenuProps={MenuProps}
-                                readOnly={isMyReport}
+                                disabled={isMyReport}
                             >
                                 {sites?.length >= 2 && (
                                     <MenuItem value={defaultOption}>All Sites</MenuItem>
@@ -511,7 +511,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 value={selectedDepartments}
                                 onChange={handleChangeDepartments}
                                 MenuProps={MenuProps}
-                                readOnly={isMyReport}
+                                disabled={isMyReport}
                             >
                                 {departments?.length >= 2 && (
                                     <MenuItem value={defaultOption}>All Departments</MenuItem>
@@ -540,7 +540,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 multiple
                                 value={selectedContracts}
                                 onChange={handleChangeContracts}
-                                readOnly={isMyReport}
+                                disabled={isMyReport}
                             // MenuProps={MenuProps}
                             >
                                 {contracts?.length >= 2 && (
@@ -566,7 +566,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                     value={selectedContractedServiceProvider}
                                     onChange={handleChangeContractedServiceProviders}
                                     MenuProps={MenuProps}
-                                    readOnly={isMyReport}
+                                    disabled={isMyReport}
                                 >
                                     {contractedServiceProviders?.length >= 2 && (
                                         <MenuItem value={defaultOption}>All Contracted Service Providers</MenuItem>
@@ -592,7 +592,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                         value={contractStatus}
                                         onChange={(e) => { setContractStatus(e.target.value) }}
                                         MenuProps={MenuProps}
-                                        readOnly={isMyReport}
+                                        disabled={isMyReport}
                                     >
                                         <MenuItem value={'ACTIVE'}>Active</MenuItem>
                                         <MenuItem value={'DRAFT'}>Draft</MenuItem>
@@ -612,7 +612,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                     onChange={(e) => { setContractContinuationPolicy(e.target.value) }}
                                     label="Contract Continuation Policy"
                                     MenuProps={MenuProps}
-                                    readOnly={isMyReport}
+                                    disabled={isMyReport}
                                 >
                                     <MenuItem value={'ALL'}>All Contract Continuation Policy</MenuItem>
                                     <MenuItem value={'AUTORENEWAL'}>Auto Renewal</MenuItem>
@@ -632,7 +632,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                     onChange={(e) => { setPodType(e.target.value) }}
                                     label="Proof of Documentation"
                                     MenuProps={MenuProps}
-                                    readOnly={isMyReport}
+                                    disabled={isMyReport}
                                 >
                                     {podTypes?.map((data, index) => (
                                         <MenuItem value={data} key={index}>{data}</MenuItem>
@@ -651,7 +651,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 MenuProps={MenuProps}
                                 value={reportingTimePeriod}
                                 onChange={(e) => { setReportingTimePeriod(e.target.value) }}
-                                readOnly={isMyReport}
+                                disabled={isMyReport}
                             >
                                 <MenuItem value={'Current Week'}>Current Week</MenuItem>
                                 <MenuItem value={'Last Week'}>Last Week</MenuItem>
@@ -739,7 +739,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 value={selectedSites}
                                 onChange={handleChangeSites}
                                 MenuProps={MenuProps}
-                                readOnly={isMyReport}
+                                disabled={isMyReport}
                             >
                                 {sites?.length >= 2 && (
                                     <MenuItem value={defaultOption}>All Sites</MenuItem>
@@ -765,7 +765,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 value={selectedDepartments}
                                 onChange={handleChangeDepartments}
                                 MenuProps={MenuProps}
-                                readOnly={isMyReport}
+                                disabled={isMyReport}
                             >
                                 {departments?.length >= 2 && (
                                     <MenuItem value={defaultOption}>All Departments</MenuItem>
@@ -796,7 +796,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 value={selectedContracts}
                                 onChange={handleChangeContracts}
                                 // MenuProps={MenuProps}
-                                readOnly={isMyReport}
+                                disabled={isMyReport}
                             >
                                 {contracts?.length >= 2 && (
                                     <MenuItem value={defaultOption}>All Contracts</MenuItem>
@@ -821,7 +821,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                     value={selectedContractedServiceProvider}
                                     onChange={handleChangeContractedServiceProviders}
                                     MenuProps={MenuProps}
-                                    readOnly={isMyReport}
+                                    disabled={isMyReport}
                                 >
                                     <MenuItem
                                         value={currentUserDetails?.id}
@@ -840,7 +840,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                     value={selectedContractedServiceProvider}
                                     onChange={handleChangeContractedServiceProviders}
                                     MenuProps={MenuProps}
-                                    readOnly={isMyReport}
+                                    disabled={isMyReport}
                                 >
                                     {contractedServiceProviders?.length >= 2 && (
                                         <MenuItem value={defaultOption}>All Contracted Service Providers</MenuItem>
@@ -888,7 +888,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 value={selectedContracts}
                                 onChange={handleChangeContracts}
                                 MenuProps={MenuProps}
-                                readOnly={isMyReport}
+                                disabled={isMyReport}
                             >
                                 {contracts?.length >= 2 && (
                                     <MenuItem value={defaultOption}>All Contracts</MenuItem>
