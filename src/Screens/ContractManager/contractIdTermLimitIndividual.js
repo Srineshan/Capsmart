@@ -560,7 +560,11 @@ const ContractIdTermLimitIndividual = ({
       setContinueLoading(false);
       return;
     }
-
+    if (contractedTimeCommitment?.value === 0 && contractedTimeCommitment?.frequency !== "NA") {
+      ErrorToaster("Enter Contract Time Commitment");
+      setContinueLoading(false);
+      return;
+    }
     // let contractFiles = [];
     // fullyExecutedContract && fullyExecutedContractData?.filter(data => data?.file !== null)?.map(data => {
     //   contractFiles?.push({
