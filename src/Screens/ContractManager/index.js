@@ -41,7 +41,7 @@ const Contracts = () => {
     const [contractIdFilter, setContractIdFilter] = useState('');
     const [minNumberOfContractors, setMinNumberOfContractors] = useState(0);
     const [maxNumberOfContractors, setMaxNumberOfContractors] = useState(99999);
-    const [startDate, setStartDate] = useState(subYears(new Date(), 3));
+    const [startDate, setStartDate] = useState(subYears(new Date(), 5));
     const [endDate, setEndDate] = useState(new Date());
     const [contractExpiresInDays, setContractExpiresInDays] = useState(0)
     const [sortField, setSortField] = useState('DEFAULT');

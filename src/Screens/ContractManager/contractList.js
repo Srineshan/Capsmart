@@ -78,13 +78,16 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
   const [contractFilterValues, setContractFilterValues] = useState();
   const compensationPolicyAvailableValues = {
     ACTIVITY_BASED: 'Activity Based',
-    FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITH_OFFSET: 'Fixed Amount For Timesheet Period With Offset'
+    FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITH_OFFSET: 'Fixed Amount For Timesheet Period With Offset',
+    SHIFT_OR_PER_DAY_BASED: 'Shift Or Per Day Based',
+    FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET: 'Fixed Amount For Timesheet Period Without Offset'
   }
 
   const contractPolicyTypeAvailableValues = {
     NEWCONTRACTONEXPIRATION: 'New Contract Expiration',
     ONETIMECONTRACTTERMINATEONEXPIRATION: 'One Time Contract Termination Expiration',
-    WRITTENCONTRACTEXTENSIONFORFIXEDTERM: 'Written Contract Extension For Fixed Term'
+    WRITTENCONTRACTEXTENSIONFORFIXEDTERM: 'Written Contract Extension For Fixed Term',
+    AUTORENEWAL: 'Auto Renewal'
   }
   console.log(contractFilterValues)
   useEffect(() => {

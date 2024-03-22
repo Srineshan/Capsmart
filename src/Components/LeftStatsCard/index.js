@@ -35,7 +35,7 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
         contractType: '',
         contractId: '',
         numberOfContract: { min: 0, max: 0 },
-        contractTimeCommitment: { from: new Date(subYears(new Date(), 3)), to: new Date() },
+        contractTimeCommitment: { from: new Date(subYears(new Date(), 5)), to: new Date() },
         compensationPolicyCount: [],
         contractManagers: [],
         contractPolicyTypeCount: [],
@@ -44,18 +44,21 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
     })
     const compensationPolicyAvailableValues = {
         ACTIVITY_BASED: 'Activity Based',
-        FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITH_OFFSET: 'Fixed Amount For Timesheet Period With Offset'
+        FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITH_OFFSET: 'Fixed Amount For Timesheet Period With Offset',
+        SHIFT_OR_PER_DAY_BASED: 'Shift Or Per Day Based',
+        FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET: 'Fixed Amount For Timesheet Period Without Offset'
     }
 
     const contractPolicyTypeAvailableValues = {
         NEWCONTRACTONEXPIRATION: 'New Contract Expiration',
         ONETIMECONTRACTTERMINATEONEXPIRATION: 'One Time Contract Termination Expiration',
-        WRITTENCONTRACTEXTENSIONFORFIXEDTERM: 'Written Contract Extension For Fixed Term'
+        WRITTENCONTRACTEXTENSIONFORFIXEDTERM: 'Written Contract Extension For Fixed Term',
+        AUTORENEWAL: 'Auto Renewal'
     }
 
     useEffect(() => {
         getFilterData();
-    }, [])
+    }, [selectedContract])
 
     useEffect(() => {
         getContractFilterValues(contractFilter)
@@ -140,7 +143,7 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
         } else if (data === 'numberOfContract') {
             setContractFilter({ ...contractFilter, numberOfContract: { min: 0, max: 99 } })
         } else if (data === 'contractTimeCommitment') {
-            setContractFilter({ ...contractFilter, contractTimeCommitment: { from: subYears(new Date(), 3), to: new Date() } })
+            setContractFilter({ ...contractFilter, contractTimeCommitment: { from: subYears(new Date(), 5), to: new Date() } })
         }
     }
 
@@ -170,7 +173,7 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
             data.selected = false
         })
         setContractFilter({ ...contractFilter, temp })
-        setContractFilter({ ...contractFilter, contractId: '', contractExpireInDays: 0, numberOfContract: { min: 0, max: 0 }, contractTimeCommitment: { from: subYears(new Date(), 3), to: new Date() } })
+        setContractFilter({ ...contractFilter, contractId: '', contractExpireInDays: 0, numberOfContract: { min: 0, max: 0 }, contractTimeCommitment: { from: subYears(new Date(), 5), to: new Date() } })
     }
 
     const handleFilterSelect = (checked, index, filterName, contractType) => {
@@ -297,7 +300,7 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
                         {compensationPolicyFilter && (
                             <>
                                 {contractFilter?.compensationPolicyCount?.map((data, index) => (
-                                    <CommonCheckBox checked={data?.selected === true ? true : false} onChange={(e) => handleFilterSelect(e.target.checked, index, 'compensationPolicyCount', data?.compensationPolicy)} label={`${compensationPolicyAvailableValues[data?.compensationPolicy]} (${data?.count})`} key={index} />
+                                    <CommonCheckBox checked={data?.selected === true ? true : false} onChange={(e) => handleFilterSelect(e.target.checked, index, 'compensationPolicyCount', data?.compensationPolicy)} label={`${compensationPolicyAvailableValues[data?.compensationPolicy]} (${data?.count})`} key={index} className={style.textAlignLeft} />
                                 ))}
                             </>
                         )}
@@ -440,7 +443,7 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
                     <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
                         <div className={`${style.filterType} ${((contractFilter?.contractTimeCommitment?.to !== null || contractFilter?.contractTimeCommitment?.from !== null) && !contractTimeCommitmentFilter) ? style.purpleText : ''}`}>Contract Time Commitment</div>
                         <div className={`${style.displayInRow}  ${style.verticalAlignCenter}`}>
-                            <div className={`${style.clearText} ${(contractFilter?.contractTimeCommitment?.to !== null || contractFilter?.contractTimeCommitment?.from !== null) ? style.purpleText : ''}`} onClick={() => setContractFilter({ ...contractFilter, contractTimeCommitment: { from: subYears(new Date(), 3), to: new Date() } })}>Clear </div>
+                            <div className={`${style.clearText} ${(contractFilter?.contractTimeCommitment?.to !== null || contractFilter?.contractTimeCommitment?.from !== null) ? style.purpleText : ''}`} onClick={() => setContractFilter({ ...contractFilter, contractTimeCommitment: { from: subYears(new Date(), 5), to: new Date() } })}>Clear </div>
                             {!contractTimeCommitmentFilter ? (
                                 <AddIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setContractTimeCommitmentFilter(!contractTimeCommitmentFilter)} />
                             ) : (
