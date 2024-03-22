@@ -126,7 +126,7 @@ const TrackTable = ({ heading, columnHeading, tableHead, tableHeadTop, tableHead
                                                         </div>
                                                         <div className={style.marginTop20}>
                                                             <div className={style.nteTextStyle}>NTE BALANCE</div>
-                                                            <div className={`${style.nteAmountCardGreen} ${style.verticalAlignCenter} ${style.alignCenter} ${style.marginTop5}`}>$ {arrayData?.values?.contractYearBalance?.toLocaleString("en-US")}</div>
+                                                            <div className={`${arrayData?.values?.contractYearBalanceStatus === "SUFFICIENT" ? style.nteAmountCardGreen : style.nteAmountCardYellow} ${style.verticalAlignCenter} ${style.alignCenter} ${style.marginTop5}`}>$ {arrayData?.values?.contractYearBalance?.toLocaleString("en-US")}</div>
                                                         </div>
                                                     </div>
                                                 </div>

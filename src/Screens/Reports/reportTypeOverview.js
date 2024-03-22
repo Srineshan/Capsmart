@@ -664,8 +664,15 @@ const ReportTypeOverview = () => {
     }
 
     const getContractTrackValues = async () => {
-        const { data: data } = await GET(`timesheet-management-service/activity/track/services?userIds=${dataToUseInReport?.selectedContractedServiceProvider}`);
-        setActivityTrackServices(data);
+        if (!isMyReport) {
+            if (dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.selectedContractedServiceProvider !== undefined && dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
+                const { data: data } = await GET(`timesheet-management-service/report/trackServices?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
+                setActivityTrackServices(data);
+            }
+        } else {
+            const { data: data } = await GET(`timesheet-management-service/report/myReport/trackServices?id=${myReportId}`);
+            setActivityTrackServices(data);
+        }
     }
 
     console.log(activityTrackServices)
@@ -2275,27 +2282,29 @@ const ReportTypeOverview = () => {
                                                                 ) : reportType === "activityStatusTracker" ? (
                                                                     <>
                                                                         {activityTrackServices?.length !== 0 ? activityTrackServices?.map((data, index) => data?.activityStatsByContract?.map((innerData, innerIndex) => (
-                                                                            <TrackTable
-                                                                                heading={`${innerData?.contract?.contractName?.contractName} - ${innerData?.contract?.contractId?.id}`}
-                                                                                columnHeading={[
-                                                                                    `Compensation Policy: ${compensationPolicy[innerData?.contract?.compensationPolicy]}`,
-                                                                                    `Contract Period:  ${format(new Date(innerData?.contract?.contractTerm?.startDate), 'MMM d, yyyy')} - ${format(new Date(innerData?.contract?.contractTerm?.endDate), 'MMM d, yyyy')}`,
-                                                                                    entityName
-                                                                                ]}
-                                                                                tableHead={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? ['CONTRACTED ACTIVITY / SERVICES', 'COMPLETED', 'TO BE PROCESSED', ''] : ['CONTRACTED ACTIVITY / SERVICES', 'EXPECTED', 'COMPLETED', 'TO BE PROCESSED', 'BALANCE', '']}
-                                                                                // tableHead={['CONTRACTED ACTIVITY / SERVICES', 'COMPLETED', 'TO BE PROCESSED', 'BALANCE', '']}
-                                                                                tableHeadTop={['', `Contract Year:  ${format(new Date(innerData?.activityStatsMeta?.contractYearInterval?.startDate), 'MMM d, yyyy')} - ${format(new Date(innerData?.activityStatsMeta?.contractYearInterval?.endDate), 'MMM d, yyyy')}`]}
-                                                                                tableHeadBottom={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? ['', 'UNITS', 'HOURS', 'UNITS', 'HOURS', ''] : ['', 'UNITS', 'UNITS', 'HOURS', 'UNITS', 'HOURS', 'UNITS', 'HOURS', '']}
-                                                                                // tableHeadBottom={['', 'UNITS', 'HOURS', 'UNITS', 'HOURS', 'UNITS', 'HOURS', '']}
-                                                                                tableData={getTrackTableValue(data)}
-                                                                                headerGrid={style.trackTableHeaderGrid}
-                                                                                dataGrid={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableDataGridForActivityBased : style.trackTableDataGrid}
-                                                                                tableHeadGrid={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableHeaderMiddleGridForActivityBased : style.trackTableHeaderMiddleGrid}
-                                                                                tableHeadTopGrid={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableHeaderTopGridForActivityBased : style.trackTableHeaderTopGrid}
-                                                                                tableHeadBottomGrid={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableHeaderBottomGridForActivityBased : style.trackTableHeaderBottomGrid}
-                                                                                header={true}
-                                                                                directionRow={false}
-                                                                            />
+                                                                            <div key={innerIndex}>
+                                                                                <TrackTable
+                                                                                    heading={`${innerData?.contract?.contractName?.contractName} - ${innerData?.contract?.contractId?.id}`}
+                                                                                    columnHeading={[
+                                                                                        `Compensation Policy: ${compensationPolicy[innerData?.contract?.compensationPolicy]}`,
+                                                                                        `Contract Period:  ${format(new Date(innerData?.contract?.contractTerm?.startDate), 'MMM d, yyyy')} - ${format(new Date(innerData?.contract?.contractTerm?.endDate), 'MMM d, yyyy')}`,
+                                                                                        entityName
+                                                                                    ]}
+                                                                                    tableHead={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? ['CONTRACTED ACTIVITY / SERVICES', 'COMPLETED', 'TO BE PROCESSED', ''] : ['CONTRACTED ACTIVITY / SERVICES', 'EXPECTED', 'COMPLETED', 'TO BE PROCESSED', 'BALANCE', '']}
+                                                                                    // tableHead={['CONTRACTED ACTIVITY / SERVICES', 'COMPLETED', 'TO BE PROCESSED', 'BALANCE', '']}
+                                                                                    tableHeadTop={['', `Contract Year:  ${format(new Date(innerData?.activityStatsMeta?.contractYearInterval?.startDate), 'MMM d, yyyy')} - ${format(new Date(innerData?.activityStatsMeta?.contractYearInterval?.endDate), 'MMM d, yyyy')}`]}
+                                                                                    tableHeadBottom={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? ['', 'UNITS', 'HOURS', 'UNITS', 'HOURS', ''] : ['', 'UNITS', 'UNITS', 'HOURS', 'UNITS', 'HOURS', 'UNITS', 'HOURS', '']}
+                                                                                    // tableHeadBottom={['', 'UNITS', 'HOURS', 'UNITS', 'HOURS', 'UNITS', 'HOURS', '']}
+                                                                                    tableData={getTrackTableValue(data)}
+                                                                                    headerGrid={style.trackTableHeaderGrid}
+                                                                                    dataGrid={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableDataGridForActivityBased : style.trackTableDataGrid}
+                                                                                    tableHeadGrid={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableHeaderMiddleGridForActivityBased : style.trackTableHeaderMiddleGrid}
+                                                                                    tableHeadTopGrid={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableHeaderTopGridForActivityBased : style.trackTableHeaderTopGrid}
+                                                                                    tableHeadBottomGrid={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableHeaderBottomGridForActivityBased : style.trackTableHeaderBottomGrid}
+                                                                                    header={true}
+                                                                                    directionRow={false}
+                                                                                />
+                                                                            </div>
                                                                         ))) : (
                                                                             <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
                                                                                 subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
