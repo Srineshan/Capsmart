@@ -1378,8 +1378,8 @@ const ReportTypeOverview = () => {
                     if (activityData?.contract?.compensationPolicy !== 'ACTIVITY_BASED') {
                         expectedUnits?.push({ type: 'number', values: filteredServiceValues?.[data]?.map(data => data?.contractYearExpected?.units) })
                         // expectedHours?.push({ type: 'text', values: filteredServiceValues?.[data]?.map(data => data?.contractYearExpected?.hours) })
-                        balanceUnits?.push({ type: 'number', values: filteredServiceValues?.[data]?.map(data => data?.balance?.units), color: filteredServiceValues?.[data]?.map(data => data?.balanceUnitsStatus === 'SUFFICIENT' ? style.greenBigNumber : data?.balanceUnitsStatus === 'DEFICIT' ? style.yellowBigNumber : style.redBigNumber) })
-                        balanceHours?.push({ type: 'number', values: filteredServiceValues?.[data]?.map(data => data?.balance?.hours), color: filteredServiceValues?.[data]?.map(data => data?.balanceUnitsStatus === 'SUFFICIENT' ? style.greenBigNumber : data?.balanceUnitsStatus === 'DEFICIT' ? style.yellowBigNumber : style.redBigNumber) })
+                        balanceUnits?.push({ type: 'number', values: filteredServiceValues?.[data]?.map(data => data?.balanceUnitsStatus === 'NIL' ? '-' : data?.balance?.units), color: filteredServiceValues?.[data]?.map(data => data?.balanceUnitsStatus === 'SUFFICIENT' ? style.greenBigNumber : data?.balanceUnitsStatus === 'DEFICIT' ? style.yellowBigNumber : data?.balanceUnitsStatus === 'NIL' ? style.redBigNumber : style.redBigNumber) })
+                        balanceHours?.push({ type: 'number', values: filteredServiceValues?.[data]?.map(data => data?.balanceUnitsStatus === 'NIL' ? '-' : data?.balance?.hours), color: filteredServiceValues?.[data]?.map(data => data?.balanceUnitsStatus === 'SUFFICIENT' ? style.greenBigNumber : data?.balanceUnitsStatus === 'DEFICIT' ? style.yellowBigNumber : data?.balanceUnitsStatus === 'NIL' ? style.redBigNumber : style.redBigNumber) })
                     }
                 }
             })
@@ -2292,7 +2292,7 @@ const ReportTypeOverview = () => {
                                                                                     ]}
                                                                                     tableHead={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? ['CONTRACTED ACTIVITY / SERVICES', 'COMPLETED', 'TO BE PROCESSED', ''] : ['CONTRACTED ACTIVITY / SERVICES', 'EXPECTED', 'COMPLETED', 'TO BE PROCESSED', 'BALANCE', '']}
                                                                                     // tableHead={['CONTRACTED ACTIVITY / SERVICES', 'COMPLETED', 'TO BE PROCESSED', 'BALANCE', '']}
-                                                                                    tableHeadTop={['', `Contract Year:  ${format(new Date(innerData?.activityStatsMeta?.contractYearInterval?.startDate), 'MMM d, yyyy')} - ${format(new Date(innerData?.activityStatsMeta?.contractYearInterval?.endDate), 'MMM d, yyyy')}`]}
+                                                                                    tableHeadTop={['', `Contract Year:  ${format(new Date(innerData?.activityStatsMeta?.contractYearInterval?.startDate || new Date()), 'MMM d, yyyy')} - ${format(new Date(innerData?.activityStatsMeta?.contractYearInterval?.endDate || new Date()), 'MMM d, yyyy')}`]}
                                                                                     tableHeadBottom={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? ['', 'UNITS', 'HOURS', 'UNITS', 'HOURS', ''] : ['', 'UNITS', 'UNITS', 'HOURS', 'UNITS', 'HOURS', 'UNITS', 'HOURS', '']}
                                                                                     // tableHeadBottom={['', 'UNITS', 'HOURS', 'UNITS', 'HOURS', 'UNITS', 'HOURS', '']}
                                                                                     tableData={getTrackTableValue(data)}
