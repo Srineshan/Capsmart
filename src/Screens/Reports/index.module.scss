@@ -98,7 +98,6 @@
     box-shadow: 0px 10px 20px #C4C8D066;
     border-radius: 8px;
     opacity: 1;
-    cursor: pointer;
     padding: 10px;
 }
 
@@ -1573,4 +1572,61 @@
     display: grid;
     grid-template-columns: 20% 15% 15% 23% 15% 7%;
     grid-gap: 1%;
+}
+
+.trackTableHeaderGrid {
+    display: grid;
+    grid-template-columns: .9fr .7fr .4fr;
+}
+
+.trackTableHeaderMiddleGrid {
+    display: grid;
+    grid-template-columns: 32.5% 7.5% 15% 15% 15% 15%;
+}
+
+.trackTableHeaderMiddleGridForActivityBased {
+    display: grid;
+    grid-template-columns: 40% 20% 20% 20%;
+}
+
+.trackTableHeaderTopGrid {
+    display: grid;
+    grid-template-columns: 32.5% 67.5%;
+}
+
+.trackTableHeaderTopGridForActivityBased {
+    display: grid;
+    grid-template-columns: 40% 60%;
+}
+
+.trackTableHeaderBottomGrid {
+    display: grid;
+    grid-template-columns: 32.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 15%;
+}
+
+.trackTableHeaderBottomGridForActivityBased {
+    display: grid;
+    grid-template-columns: 40% 10% 10% 10% 10% 20%;
+}
+
+.trackTableDataGrid {
+    display: grid;
+    grid-template-columns: 32.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 15%;
+}
+
+.trackTableDataGridForActivityBased {
+    display: grid;
+    grid-template-columns: 40% 10% 10% 10% 10% 20%;
+}
+
+.greenBigNumber {
+    color: #14b15a !important;
+}
+
+.yellowBigNumber {
+    color: #fec106 !important;
+}
+
+.redBigNumber {
+    color: #f94848 !important;
 }

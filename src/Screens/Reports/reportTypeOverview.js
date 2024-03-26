@@ -31,11 +31,13 @@ import ReportsTable from '../../Components/ReportsTable';
 import ReportNoDataBox from '../../Components/ReusableSmallComponents/reportNoDataBox';
 import { formatInTimeZone } from 'date-fns-tz';
 import { siteTimeZone } from '../../utils/formatting';
+import TrackTable from '../../Components/TrackTable';
 
 const ReportTypeOverview = () => {
     const { reportType } = useParams();
     const isMyReport = window.location.pathname.includes("/myReport");
     const myReportId = sessionStorage.getItem('myReportId')
+    const entityName = sessionStorage.getItem('title');
     const handle = useFullScreenHandle();
     const componentRef = useRef(null);
     const PDFRef = createRef();
@@ -81,6 +83,7 @@ const ReportTypeOverview = () => {
     const [timesheetProcessingSummaryData, setTimesheetProcessingSummaryData] = useState();
     const [submittedTimesheetsPaymentStatusData, setSubmittedTimesheetsPaymentStatusData] = useState();
     const [isNonCompliantReportTileClicked, setIsNonCompliantReportTileClicked] = useState(false);
+    const [activityTrackServices, setActivityTrackServices] = useState([]);
     const [apexStackedBarChartDisplay, setApexStackedBarChartDisplay] = useState(
         <ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} />
     )
@@ -113,6 +116,13 @@ const ReportTypeOverview = () => {
         EXPIRED: 'Expired',
         TERMINATED: 'Terminated',
         ACTIVATION_READY: 'Ready To Activate',
+    }
+
+    const compensationPolicy = {
+        ACTIVITY_BASED: 'Activity Based',
+        SHIFT_OR_PER_DAY_BASED: 'Shift Or Per Day Based',
+        FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITH_OFFSET: 'Fixed Amount For Timesheet Period With Offset',
+        FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET: 'Fixed Amount For Timesheet Period Without Offset',
     }
 
     useEffect(() => {
@@ -212,6 +222,9 @@ const ReportTypeOverview = () => {
         if (reportType === 'submittedTimesheetsPaymentStatus') {
             getSubmittedTimesheetsPaymentStatus('withParameter');
         }
+        if (reportType === 'activityStatusTracker') {
+            getContractTrackValues()
+        }
     }
 
     useEffect(() => {
@@ -280,6 +293,7 @@ const ReportTypeOverview = () => {
         multiProviderContractsList: 'Multi Provider Contracts List',
         contractsWithABusinessEntity: 'Contracts With A Business Entity',
         currentRemitToAddressForActiveContracts: 'Current Remit To Address For Active Contracts',
+        activityStatusTracker: `Status Of Activities/ Services By Service Provider For ${format(new Date(), 'MMMM yyyy')}`
     }
 
     const handlePrint = useReactToPrint({
@@ -648,6 +662,20 @@ const ReportTypeOverview = () => {
             setUsers(user);
         }
     }
+
+    const getContractTrackValues = async () => {
+        if (!isMyReport) {
+            if (dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.selectedContractedServiceProvider !== undefined && dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
+                const { data: data } = await GET(`timesheet-management-service/report/trackServices?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
+                setActivityTrackServices(data);
+            }
+        } else {
+            const { data: data } = await GET(`timesheet-management-service/report/myReport/trackServices?id=${myReportId}`);
+            setActivityTrackServices(data);
+        }
+    }
+
+    console.log(activityTrackServices)
 
     const getDataToUseInReport = (value) => {
         setDataToUseInReport(value);
@@ -1308,6 +1336,81 @@ const ReportTypeOverview = () => {
         ];
     }
 
+    let service = [];
+    let expectedUnits = [];
+    let expectedHours = [];
+    let completedUnits = [];
+    let completedHours = [];
+    let toBeProposedUnits = [];
+    let toBeProposedHours = [];
+    let balanceUnits = [];
+    let balanceHours = [];
+    let nteValues = [];
+    const getTrackTableValue = (serviceValues) => {
+        console.log(serviceValues);
+
+        service = [];
+        expectedUnits = [];
+        expectedHours = [];
+        completedUnits = [];
+        completedHours = [];
+        toBeProposedUnits = [];
+        toBeProposedHours = [];
+        balanceUnits = [];
+        balanceHours = [];
+        nteValues = [];
+        serviceValues?.activityStatsByContract?.map((activityData, index) => {
+            let typesToFilter = ['array']
+            let filteredServiceValues = Object.fromEntries(
+                Object.entries(activityData?.activityStatsMeta).filter(([key, value]) => {
+                    const valueType = Array.isArray(value) ? 'array' : typeof value;
+                    return typesToFilter.includes(valueType);
+                })
+            )
+            console.log(filteredServiceValues)
+            Object.keys(filteredServiceValues)?.map(data => {
+                if (filteredServiceValues?.[data]?.length !== 0) {
+                    service?.push({ type: 'parentChildService', name: data, values: filteredServiceValues?.[data]?.map(data => `${(data?.activityType.length > 25 && activityData?.contract?.compensationPolicy !== 'ACTIVITY_BASED') ? data?.activityType.slice(0, 25) + '...' : data?.activityType} (${data?.timeBlock})`) })
+                    completedUnits?.push({ type: 'number', values: filteredServiceValues?.[data]?.map(data => data?.complated?.units) })
+                    completedHours?.push({ type: 'number', values: filteredServiceValues?.[data]?.map(data => data?.complated?.hours) })
+                    toBeProposedUnits?.push({ type: 'number', values: filteredServiceValues?.[data]?.map(data => data?.inprogress?.units) })
+                    toBeProposedHours?.push({ type: 'number', values: filteredServiceValues?.[data]?.map(data => data?.inprogress?.hours) })
+                    if (activityData?.contract?.compensationPolicy !== 'ACTIVITY_BASED') {
+                        expectedUnits?.push({ type: 'number', values: filteredServiceValues?.[data]?.map(data => data?.contractYearExpected?.units) })
+                        // expectedHours?.push({ type: 'text', values: filteredServiceValues?.[data]?.map(data => data?.contractYearExpected?.hours) })
+                        balanceUnits?.push({ type: 'number', values: filteredServiceValues?.[data]?.map(data => data?.balanceUnitsStatus === 'NIL' ? '-' : data?.balance?.units), color: filteredServiceValues?.[data]?.map(data => data?.balanceUnitsStatus === 'SUFFICIENT' ? style.greenBigNumber : data?.balanceUnitsStatus === 'DEFICIT' ? style.yellowBigNumber : data?.balanceUnitsStatus === 'NIL' ? style.redBigNumber : style.redBigNumber) })
+                        balanceHours?.push({ type: 'number', values: filteredServiceValues?.[data]?.map(data => data?.balanceUnitsStatus === 'NIL' ? '-' : data?.balance?.hours), color: filteredServiceValues?.[data]?.map(data => data?.balanceUnitsStatus === 'SUFFICIENT' ? style.greenBigNumber : data?.balanceUnitsStatus === 'DEFICIT' ? style.yellowBigNumber : data?.balanceUnitsStatus === 'NIL' ? style.redBigNumber : style.redBigNumber) })
+                    }
+                }
+            })
+
+        })
+        nteValues?.push({ type: 'nteAmount', values: serviceValues?.activityStatsByContract?.[0]?.activityStatsMeta?.contractBalancePaymentSummary })
+
+
+        return serviceValues?.activityStatsByContract?.[0]?.contract?.compensationPolicy !== 'ACTIVITY_BASED' ?
+            [
+                service,
+                expectedUnits,
+                // expectedHours,
+                completedUnits,
+                completedHours,
+                toBeProposedUnits,
+                toBeProposedHours,
+                balanceUnits,
+                balanceHours,
+                nteValues
+            ] : [
+                service,
+                completedUnits,
+                completedHours,
+                toBeProposedUnits,
+                toBeProposedHours,
+                nteValues
+            ]
+
+    }
+
     const getHeaderValues = () => {
         let headerValues = [];
         headerValues.push('');
@@ -1420,6 +1523,7 @@ const ReportTypeOverview = () => {
                                                 {(reportType !== "upcomingContractRenewals" && reportType !== "oneTimeContract" &&
                                                     reportType !== "contractDocumentsOnFile" && reportType !== "multiProviderContractsList" &&
                                                     reportType !== "contractsWithABusinessEntity" && reportType !== "currentRemitToAddressForActiveContracts" &&
+                                                    reportType !== "activityStatusTracker" &&
                                                     dataToUseInReport?.reportingTimePeriod !== "") && (
                                                         <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5} `}>Reporting Period used for this report : {dataToUseInReport?.reportingTimePeriod} ({dataToUseInReport?.fromToDisplay} to {dataToUseInReport?.toToDisplay}) </div>
                                                     )}
@@ -1433,7 +1537,8 @@ const ReportTypeOverview = () => {
                                             <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Reporting Parameters Applied</div>
                                             {(reportType === "upcomingContractRenewals" || reportType === "oneTimeContract" ||
                                                 reportType === "contractDocumentsOnFile" || reportType === "multiProviderContractsList" ||
-                                                reportType === "contractsWithABusinessEntity" || reportType === "currentRemitToAddressForActiveContracts") ? (
+                                                reportType === "contractsWithABusinessEntity" || reportType === "currentRemitToAddressForActiveContracts" ||
+                                                reportType === "activityStatusTracker") ? (
                                                 <div className={`${style.grid2} ${style.marginTop20} `}>
                                                     {reportType === "upcomingContractRenewals" && (
                                                         <div>
@@ -1460,7 +1565,7 @@ const ReportTypeOverview = () => {
                                                                 <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{getContractStatusValue[dataToUseInReport?.contractStatus]}</div>
                                                             </div>
                                                         )}
-                                                    {(reportType === "contractDocumentsOnFile" || reportType === "currentRemitToAddressForActiveContracts") && (
+                                                    {(reportType === "contractDocumentsOnFile" || reportType === "currentRemitToAddressForActiveContracts" || reportType === "activityStatusTracker") && (
                                                         <div>
                                                             <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Contracted Service Provider </div>
                                                             <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedContractedServiceProviderToSend?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`).join(', ') || 'All Contracted Service Providers'}</div>
@@ -2174,6 +2279,37 @@ const ReportTypeOverview = () => {
                                                                 ) : (
                                                                     <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
                                                                         subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
+                                                                ) : reportType === "activityStatusTracker" ? (
+                                                                    <>
+                                                                        {activityTrackServices?.length !== 0 ? activityTrackServices?.map((data, index) => data?.activityStatsByContract?.map((innerData, innerIndex) => (
+                                                                            <div key={innerIndex}>
+                                                                                <TrackTable
+                                                                                    heading={`${innerData?.contract?.contractName?.contractName} - ${innerData?.contract?.contractId?.id}`}
+                                                                                    columnHeading={[
+                                                                                        `Compensation Policy: ${compensationPolicy[innerData?.contract?.compensationPolicy]}`,
+                                                                                        `Contract Period:  ${format(new Date(innerData?.contract?.contractTerm?.startDate), 'MMM d, yyyy')} - ${format(new Date(innerData?.contract?.contractTerm?.endDate), 'MMM d, yyyy')}`,
+                                                                                        entityName
+                                                                                    ]}
+                                                                                    tableHead={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? ['CONTRACTED ACTIVITY / SERVICES', 'COMPLETED', 'TO BE PROCESSED', ''] : ['CONTRACTED ACTIVITY / SERVICES', 'EXPECTED', 'COMPLETED', 'TO BE PROCESSED', 'BALANCE', '']}
+                                                                                    // tableHead={['CONTRACTED ACTIVITY / SERVICES', 'COMPLETED', 'TO BE PROCESSED', 'BALANCE', '']}
+                                                                                    tableHeadTop={['', `Contract Year:  ${format(new Date(innerData?.activityStatsMeta?.contractYearInterval?.startDate || new Date()), 'MMM d, yyyy')} - ${format(new Date(innerData?.activityStatsMeta?.contractYearInterval?.endDate || new Date()), 'MMM d, yyyy')}`]}
+                                                                                    tableHeadBottom={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? ['', 'UNITS', 'HOURS', 'UNITS', 'HOURS', ''] : ['', 'UNITS', 'UNITS', 'HOURS', 'UNITS', 'HOURS', 'UNITS', 'HOURS', '']}
+                                                                                    // tableHeadBottom={['', 'UNITS', 'HOURS', 'UNITS', 'HOURS', 'UNITS', 'HOURS', '']}
+                                                                                    tableData={getTrackTableValue(data)}
+                                                                                    headerGrid={style.trackTableHeaderGrid}
+                                                                                    dataGrid={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableDataGridForActivityBased : style.trackTableDataGrid}
+                                                                                    tableHeadGrid={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableHeaderMiddleGridForActivityBased : style.trackTableHeaderMiddleGrid}
+                                                                                    tableHeadTopGrid={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableHeaderTopGridForActivityBased : style.trackTableHeaderTopGrid}
+                                                                                    tableHeadBottomGrid={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableHeaderBottomGridForActivityBased : style.trackTableHeaderBottomGrid}
+                                                                                    header={true}
+                                                                                    directionRow={false}
+                                                                                />
+                                                                            </div>
+                                                                        ))) : (
+                                                                            <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
+                                                                                subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
+                                                                        )}
+                                                                    </>
                                                                 ) : reportType === "complianceStatus" ? (
                                                                     <>
                                                                         <div className={style.marginTop40}>
