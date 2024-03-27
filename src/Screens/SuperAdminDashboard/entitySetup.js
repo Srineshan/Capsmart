@@ -509,7 +509,7 @@ const EntitySetup = () => {
 
   return (
 
-    (!entityData?.hideWelcomeScreen && !isSuperAdminAccess) ? (
+    (entityData !== undefined && !entityData?.hideWelcomeScreen && !isSuperAdminAccess) ? (
       <Welcome getIsContinue={getIsContinue} />
     ) : (
       <>

@@ -464,6 +464,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
 
 
   const handleAddContract = () => {
+    sessionStorage.setItem('Selected Contract Status', "DRAFT")
     getAddContract(true);
   }
 

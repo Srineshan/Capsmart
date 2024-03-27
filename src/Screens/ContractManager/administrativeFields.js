@@ -392,7 +392,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                     InputProps={{
                                         endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                                     }}
-                                    onChange={(e) => e.target.value >= 0 && handleValueChange('totalSession', e.target.value.slice(0, 4))}
+                                    onChange={(e) => e.target.value >= 0 && handleValueChange('totalSession', e.target.value.slice(0, 9))}
                                     value={metadata?.totalSession}
                                     disabled={metadata?.totalSessionFrequency === "NA"}
                                 />
@@ -430,7 +430,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                             <div className={`${style.threeFieldWidth}`}>
                                 <CommonTextField
                                     type="tel"
-                                    maxLength="3"
+                                    maxLength="9"
                                     InputProps={{
                                         endAdornment: (
                                             <InputAdornment position="end" sx={{ fontSize: 10 }}>
@@ -440,7 +440,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                     }}
                                     onChange={(e) =>
                                         e.target.value >= 0 &&
-                                        setMetadata({ ...metadata, serviceRateDuration: parseFloat(e.target.value || '0'), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? (metadata?.serviceRate * (metadata?.totalSession / parseFloat(e.target.value))) : (metadata?.serviceRate * parseFloat(e.target.value || '1')) })
+                                        setMetadata({ ...metadata, serviceRateDuration: e.target.value.slice(0, 9) || '0', sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? (metadata?.serviceRate * (metadata?.totalSession / e.target.value.slice(0, 9))) : (metadata?.serviceRate * e.target.value.slice(0, 9) || '1') })
                                     }
                                     value={metadata?.serviceRateDuration}
                                 />

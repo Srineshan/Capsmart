@@ -235,7 +235,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             ErrorToaster('All Fields are Mandatory');
             return;
         }
-        if (accessLevelNeeded === true && selectedAccessLevelToShow === null) {
+        if (accessLevelNeeded === true && (selectedAccessLevelToShow === null || selectedAccessLevelToShow === "")) {
             ErrorToaster('Access Level is Mandatory');
             return;
         }
@@ -264,7 +264,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                 "landlineNumber": "string",
                 "mobileNumberNotApplicable": true
             },
-            "accessLevel": selectedAccessLevelToShow,
+            "accessLevel": (selectedAccessLevelToShow === null || selectedAccessLevelToShow === "") ? "USER" : selectedAccessLevelToShow,
             "executiveAccessLevelNeeded": accessLevelNeeded,
             "roles": addUser?.roles,
             ...(isEdit && { "address": userDataById?.address }),

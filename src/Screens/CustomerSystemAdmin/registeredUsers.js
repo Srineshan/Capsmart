@@ -55,7 +55,7 @@ const RegisteredUsers = ({ getSelectedOption }) => {
 
     useEffect(() => {
         userTileValues();
-    }, [from, to]);
+    }, [from, to, showAddUserDialog]);
 
     const getUser = async () => {
         if (selectedOption === 'ENTITY REGISTERED USERS') {

@@ -88,6 +88,7 @@ const ContractorBusinessEntity = ({
   const [showSaveInProgress, setShowSaveInProgress] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [buttonName, setButtonName] = useState("");
+  const contractStatus = sessionStorage.getItem("Selected Contract Status");
 
   useEffect(() => {
     getUserData();
@@ -1064,7 +1065,7 @@ const ContractorBusinessEntity = ({
               </div>
             )}
           </div>
-          {isEditable && (
+          {contractStatus === "DRAFT" && (
             <div className={`${style.spaceBetween} ${style.marginTop20}`}>
               <button
                 className={`${style.newContractButtonStyle}  ${style.cursorPointer}`}
