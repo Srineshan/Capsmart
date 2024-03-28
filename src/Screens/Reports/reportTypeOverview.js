@@ -43,7 +43,7 @@ const ReportTypeOverview = () => {
     const componentRef = useRef(null);
     const PDFRef = createRef();
     const onBeforeGetContentResolve = useRef(null);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [isWaiting, setIsWaiting] = useState(false);
     const [isNoData, setIsNoData] = useState(false);
     const [contractRenewalReport, setContractRenewalReport] = useState([]);
@@ -169,9 +169,11 @@ const ReportTypeOverview = () => {
     }, [])
 
     useEffect(() => {
-        getUpdatedValuesWithParams();
+        if (dataToUseInReport?.initialValueSet && (dataToUseInReport?.selectedSites?.length !== 1 ? !dataToUseInReport?.selectedSites.includes('') : true) && (dataToUseInReport?.selectedDepartments?.length !== 1 ? !dataToUseInReport?.selectedDepartments.includes('') : true) && (dataToUseInReport?.selectedContractedServiceProvider?.length !== 1 ? !dataToUseInReport?.selectedContractedServiceProvider.includes('') : true) && (dataToUseInReport?.selectedContracts?.length !== 1 ? !dataToUseInReport?.selectedContracts.includes('') : true)) {
+            getUpdatedValuesWithParams();
+        }
         // }, [selectedPodTypeFromTile, dataToUseInReport])
-    }, [selectedPodTypeFromTile, dataToUseInReport?.from, dataToUseInReport?.to, dataToUseInReport?.selectedContracts, dataToUseInReport?.selectedContractedServiceProvider, dataToUseInReport?.selectedSites, dataToUseInReport?.selectedDepartments, dataToUseInReport?.renewalreportingTimePeriod, dataToUseInReport?.contractContinuationPolicy, dataToUseInReport?.contractStatus])
+    }, [selectedPodTypeFromTile, dataToUseInReport?.from, dataToUseInReport?.to, dataToUseInReport?.selectedContracts, dataToUseInReport?.selectedContractedServiceProvider, dataToUseInReport?.selectedSites, dataToUseInReport?.selectedDepartments, dataToUseInReport?.renewalreportingTimePeriod, dataToUseInReport?.contractContinuationPolicy, dataToUseInReport?.contractStatus, dataToUseInReport?.initialValueSet])
 
     useEffect(() => {
         setApexStackedBarChartDisplay(<ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} />);

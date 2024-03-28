@@ -77,6 +77,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     const [currentUserDetails, setCurrentUserDetails] = useState();
     const [userId, setUserId] = useState(userDetail?.id);
     const [contractedServiceProviders, setContractedServiceProviders] = useState([]);
+    const [initialValueSet, setInitialValueSet] = useState(false);
 
     let dataToUseInReport = {
         renewalreportingTimePeriod: renewalreportingTimePeriod,
@@ -97,6 +98,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         toToDisplay: format(new Date(to), 'MM-dd-yyyy'),
         selectedContractedServiceProvider: selectedContractedServiceProvider,
         selectedContractedServiceProviderToSend: selectedContractedServiceProviderToSend,
+        initialValueSet: initialValueSet,
     };
 
     useEffect(() => {
@@ -224,7 +226,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         getDataToUseInReport(dataToUseInReport);
     }, [renewalreportingTimePeriod, selectedSites, selectedDepartments, contractContinuationPolicy, selectedContracts,
         podType, contractStatus, reportingTimePeriod, selectedContractedServiceProvider,
-        selectedContractedServiceProviderToSend, from, to]);
+        selectedContractedServiceProviderToSend, from, to, initialValueSet]);
 
     useEffect(() => {
         let tempDept = [];
@@ -321,6 +323,11 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         } else if (selectedContracts?.length >= 2 && selectedContracts.includes(defaultOption)) {
             setSelectedContracts(selectedContracts.filter(value => value !== defaultOption))
         }
+        const timer = setTimeout(() => {
+            setInitialValueSet(true);
+        }, 2000);
+        return () => clearTimeout(timer);
+
     }, [defaultOption, selectedSites, selectedDepartments, selectedContractedServiceProvider, selectedContracts]);
 
     const handleChange = (event) => {
