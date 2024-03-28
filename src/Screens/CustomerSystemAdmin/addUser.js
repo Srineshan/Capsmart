@@ -221,6 +221,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
         return siteData;
     }
 
+    console.log(accessLevelNeeded, selectedAccessLevelToShow)
     const submitUserDetails = async () => {
         console.log('roles', addUser?.roles);
         if (addUser?.firstName === '') {
@@ -239,6 +240,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             ErrorToaster('Access Level is Mandatory');
             return;
         }
+
         const user = {
             ...(isEdit && { 'id': userId }),
             "name": {
