@@ -895,6 +895,7 @@ const ContractIdTermLimitIndividual = ({
   };
 
   const addNewDocumentField = async () => {
+    console.log(fileFieldData, fileFieldData?.file?.type)
     setContinueLoading(true);
     changeContractFile(true);
     let temp = fullyExecutedContractData;
@@ -909,7 +910,7 @@ const ContractIdTermLimitIndividual = ({
     formData.append('contractFiles', new Blob([JSON.stringify(contractFiles)], {
       type: "application/json"
     }));
-    formData.append('documents', fileFieldData?.file);
+    formData.append('documents', fileFieldData?.file, { filename: fileFieldData?.file?.name, type: 'inline' });
     await POST(`contract-managment-service/contracts/contractFile`, formData)
       .then(response => {
         SuccessToaster('File Uploaded Successfully');
@@ -1107,7 +1108,7 @@ const ContractIdTermLimitIndividual = ({
                   })
                 }
                 className={` ${style.marginLeft20}`}
-                disabled={isEditable ? false : true}
+                disabled={contractStatus === "DRAFT" ? false : true}
               />
             </div>
           </div>
@@ -1717,7 +1718,7 @@ const ContractIdTermLimitIndividual = ({
           </div>
         </div>
       </div>
-      {isEditable &&
+      {contractStatus === "DRAFT" &&
         (<div className={`${style.floatRight} ${style.marginTop20}`}>
           <button className={`${style.newContractOutlinedButton} ${style.cursorPointer} ${continueLoading ? style.continueDisabled : ''}`} onClick={!continueLoading ? () => checkAndUpdateDate('SaveInProgress') : () => { }}>SAVE IN-PROGRESS</button>
           <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.continueDisabled : ''}`} onClick={!continueLoading ? () => checkAndUpdateDate('Continue') : () => { }}>CONTINUE</button>

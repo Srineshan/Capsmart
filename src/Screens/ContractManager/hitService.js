@@ -574,7 +574,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                             <div className={`${style.threeFieldWidth}`}>
                                 <CommonTextField
                                     type="tel"
-                                    maxLength="3"
+                                    maxLength="9"
                                     InputProps={{
                                         endAdornment: (
                                             <InputAdornment position="end" sx={{ fontSize: 10 }}>
@@ -584,7 +584,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                                     }}
                                     onChange={(e) =>
                                         e.target.value >= 0 &&
-                                        setMetadata({ ...metadata, serviceRateDuration: metadata?.serviceRateFrequency === "SESSION" ? parseFloat(e.target.value || '0') : 1, sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? (metadata?.serviceRate * (metadata?.totalSession / parseFloat(e.target.value))) : (metadata?.serviceRate * parseFloat(e.target.value || '1')) })
+                                        setMetadata({ ...metadata, serviceRateDuration: metadata?.serviceRateFrequency === "SESSION" ? e.target.value.slice(0, 9) || '0' : 1, sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? (metadata?.serviceRate * (metadata?.totalSession / e.target.value.slice(0, 9))) : (metadata?.serviceRate * e.target.value.slice(0, 9) || '1') })
                                     }
                                     value={metadata?.serviceRateDuration}
                                 />

@@ -108,13 +108,13 @@ const TrackTable = ({ heading, columnHeading, tableHead, tableHeadTop, tableHead
                                     </div>
                                 ) : arrayData?.type === 'number' ?
                                     arrayData?.values?.map((data, indexForColor) => (
-                                        <div className={`${style.tableDataTextStyle} ${arrayData?.color?.[indexForColor]} ${(indexForColor === 0) ? style.marginDifferenceFromPrevIndex : style.marginTop} ${style.textAlignCenter}`}>{data < 0 ? `(${data})` : data}</div>
+                                        <div className={`${style.tableDataTextStyle} ${arrayData?.color?.[indexForColor]} ${(indexForColor === 0) ? style.marginDifferenceFromPrevIndex : style.marginTop} ${style.textAlignCenter}`}>{data === -1 ? '-' : data < 0 ? `(${data})` : data}</div>
                                     )) : arrayData?.type === 'text' ?
                                         arrayData?.values?.map((data, indexForColor) => (
                                             <div className={`${style.tableDataNormalTextStyle}  ${style.marginTop} ${style.textAlignCenter}`}>{data !== undefined ? data : '-'}</div>
                                         )) : arrayData?.type === 'nteAmount' ?
                                             (
-                                                <div className={`${style.alignCenter} ${style.verticalAlignCenter}`}>
+                                                <div className={`${style.alignCenter} ${style.verticalAlignCenter} `}>
                                                     <div>
                                                         <div className={style.marginTop20}>
                                                             <div className={style.nteTextStyle}>CY NTE AMOUNT</div>
@@ -125,8 +125,24 @@ const TrackTable = ({ heading, columnHeading, tableHead, tableHeadTop, tableHead
                                                             <div className={`${style.nteAmountCard} ${style.verticalAlignCenter} ${style.alignCenter} ${style.marginTop5}`}>$ {(arrayData?.values?.maxContractYearPayment - arrayData?.values?.contractYearBalance)?.toLocaleString("en-US")}</div>
                                                         </div>
                                                         <div className={style.marginTop20}>
+                                                            <div className={style.nteTextStyle}>NTE AVERAGE PAYMENT PER TIMESHEET</div>
+                                                            <div className={`${style.nteAmountCard} ${style.verticalAlignCenter} ${style.alignCenter} ${style.marginTop5}`}>$ {arrayData?.values?.averagePaymentPerTimesheet?.toLocaleString("en-US")}</div>
+                                                        </div>
+                                                        <div className={style.marginTop20}>
                                                             <div className={style.nteTextStyle}>NTE BALANCE</div>
                                                             <div className={`${arrayData?.values?.contractYearBalanceStatus === "SUFFICIENT" ? style.nteAmountCardGreen : style.nteAmountCardYellow} ${style.verticalAlignCenter} ${style.alignCenter} ${style.marginTop5}`}>$ {arrayData?.values?.contractYearBalance?.toLocaleString("en-US")}</div>
+                                                        </div>
+                                                        <div className={style.marginTop20}>
+                                                            <div className={style.nteTextStyle}>NTE PROJECTED BALANCE</div>
+                                                            <div className={`${arrayData?.values?.contractYearProjectedBalanceStatus === "SUFFICIENT" ? style.nteAmountCardGreen : style.nteAmountCardYellow} ${style.verticalAlignCenter} ${style.alignCenter} ${style.marginTop5}`}>$ {arrayData?.values?.contractYearProjectedBalance?.toLocaleString("en-US")}</div>
+                                                        </div>
+                                                        <div className={style.marginTop20}>
+                                                            <div className={style.nteTextStyle}>NTE CONTRACT PERIOD BALANCE</div>
+                                                            <div className={`${arrayData?.values?.contractPeriodBalanceStatus === "SUFFICIENT" ? style.nteAmountCardGreen : style.nteAmountCardYellow} ${style.verticalAlignCenter} ${style.alignCenter} ${style.marginTop5}`}>$ {arrayData?.values?.contractPeriodBalance?.toLocaleString("en-US")}</div>
+                                                        </div>
+                                                        <div className={style.marginTop20}>
+                                                            <div className={style.nteTextStyle}>NTE CONTRACT PERIOD PROJECTED BALANCE</div>
+                                                            <div className={`${arrayData?.values?.contractPeriodProjectedBalanceStatus === "SUFFICIENT" ? style.nteAmountCardGreen : style.nteAmountCardYellow} ${style.verticalAlignCenter} ${style.alignCenter} ${style.marginTop5}`}>$ {arrayData?.values?.contractPeriodProjectedBalance?.toLocaleString("en-US")}</div>
                                                         </div>
                                                     </div>
                                                 </div>

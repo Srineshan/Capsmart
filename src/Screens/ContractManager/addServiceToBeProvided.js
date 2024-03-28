@@ -1296,7 +1296,7 @@ const AddServiceProvided = ({
             value: parseFloat(dataValues?.sessionAmount),
           },
           minSessionDuration: {
-            hours: parseInt(dataValues?.minimumSessionDuration || 1),
+            hours: parseInt(dataValues?.minimumSessionDuration || 0),
           },
           patientConsultRequired: dataValues?.patientConsultRequired || false,
           professionalServiceRequired: dataValues?.professionalServiceRequired || false,
@@ -1374,10 +1374,10 @@ const AddServiceProvided = ({
                     .toString(),
                   target: {
                     minimum: {
-                      value: parseInt(dataValues?.weekdayMin),
+                      value: parseFloat(dataValues?.weekdayMin),
                     },
                     maximum: {
-                      value: parseInt(dataValues?.weekdayMax),
+                      value: parseFloat(dataValues?.weekdayMax),
                     },
                     frequency: dataValues?.weekdayFrequency,
                   },
@@ -1415,10 +1415,10 @@ const AddServiceProvided = ({
                     .toString(),
                   target: {
                     minimum: {
-                      value: parseInt(dataValues?.weekdayNightsMin),
+                      value: parseFloat(dataValues?.weekdayNightsMin),
                     },
                     maximum: {
-                      value: parseInt(dataValues?.weekdayNightsMax),
+                      value: parseFloat(dataValues?.weekdayNightsMax),
                     },
                     frequency: dataValues?.weekdayNightsFrequency,
                   },
@@ -1464,10 +1464,10 @@ const AddServiceProvided = ({
                   }),
                   target: {
                     minimum: {
-                      value: parseInt(dataValues?.weekendMin),
+                      value: parseFloat(dataValues?.weekendMin),
                     },
                     maximum: {
-                      value: parseInt(dataValues?.weekendMax),
+                      value: parseFloat(dataValues?.weekendMax),
                     },
                     frequency: dataValues?.weekendFrequency,
                   },
@@ -1505,10 +1505,10 @@ const AddServiceProvided = ({
                   holidayTerm: dataValues?.holidayTerm,
                   target: {
                     minimum: {
-                      value: parseInt(dataValues?.holidayMin),
+                      value: parseFloat(dataValues?.holidayMin),
                     },
                     maximum: {
-                      value: parseInt(dataValues?.holidayMax),
+                      value: parseFloat(dataValues?.holidayMax),
                     },
                     frequency: dataValues?.holidayFrequency,
                   },
@@ -2523,7 +2523,7 @@ const AddServiceProvided = ({
                 updateConflict={updateConflict}
               />
             }
-            {isEditable && !isShowPDF && (
+            {contractStatus === "DRAFT" && !isShowPDF && (
               <div className={`${style.floatRight} `}>
                 {!editService && (
                   <button

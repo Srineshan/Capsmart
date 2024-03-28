@@ -68,6 +68,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
     const [unassignedKeys, setUnassignedKeys] = useState([]);
     const [showSaveInProgress, setShowSaveInProgress] = useState(false);
     const [buttonName, setButtonName] = useState("");
+    const contractStatus = sessionStorage.getItem('Selected Contract Status');
 
     const getContractDetail = async () => {
         const { data: contractData } = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
@@ -632,7 +633,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                             </div>
                             {paymentFields}
                         </div>
-                        {isEditable &&
+                        {contractStatus === "DRAFT" &&
                             <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                                 <button className={`${style.newContractButtonStyle}  ${style.cursorPointer}`} onClick={() => { getCurrentPage('Timesheet Submission Terms') }}>BACK</button>
                                 <div>
