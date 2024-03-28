@@ -10,6 +10,7 @@ import { useReactToPrint } from "react-to-print";
 import { format } from 'date-fns';
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
 import { toPDF } from '../../Components/ConvertToPdf';
+import LoadingScreen from '../../Components/LoadingScreen';
 import ProgressBar from "@ramonak/react-progress-bar";
 import Pie from './d3-chart/pieGraph';
 import Watermark from 'react-awesome-watermark';
@@ -43,7 +44,7 @@ const ReportTypeOverview = () => {
     const PDFRef = createRef();
     const onBeforeGetContentResolve = useRef(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [isUpdated, setIsUpdated] = useState(false);
+    const [isWaiting, setIsWaiting] = useState(false);
     const [isNoData, setIsNoData] = useState(false);
     const [contractRenewalReport, setContractRenewalReport] = useState([]);
     const [oneTimeContract, setOneTimeContract] = useState([]);
@@ -472,28 +473,35 @@ const ReportTypeOverview = () => {
     const getAddOnServicesWithParameter = async () => {
         if (!isMyReport) {
             if (dataToUseInReport?.from !== undefined && dataToUseInReport?.to !== undefined && dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.selectedContractedServiceProvider !== undefined && dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
+                setIsLoading(true)
                 const { data: chartDataValues } = await GET(`timesheet-management-service/report/addOnActivityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
                 setAddOnServicesValues(chartDataValues);
             }
         } else {
+            setIsLoading(true)
             const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/addOnActivityServiceReport?id=${myReportId}`);
             setAddOnServicesValues(chartDataValues);
         }
+        setIsLoading(false)
     }
 
     const getAcvityAndServicesWithParameter = async () => {
         if (!isMyReport) {
             if (dataToUseInReport?.from !== undefined && dataToUseInReport?.to !== undefined && dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.selectedContractedServiceProvider !== undefined && dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
+                setIsLoading(true)
                 const { data: chartDataValues } = await GET(`timesheet-management-service/report/activityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts || []}&users=${dataToUseInReport?.selectedContractedServiceProvider || []}&sites=${dataToUseInReport?.selectedSites || []}&departments=${dataToUseInReport?.selectedDepartments || []}`);
                 setActivitiesOrServicesValues(chartDataValues);
             }
         } else {
+            setIsLoading(true)
             const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/activityServiceReport?id=${myReportId}`);
             setActivitiesOrServicesValues(chartDataValues);
         }
+        setIsLoading(false)
     }
 
     const getCompensationCostAnalysis = async () => {
+        setIsLoading(true)
         const { data: chartData } = await GET(`timesheet-management-service/timesheet/compensationCostAnalysis?contractId=${dataToUseInReport?.selectedContracts}`);
         setCompensationCostAnalysis(chartData);
         setIsLoading(false);
@@ -503,13 +511,16 @@ const ReportTypeOverview = () => {
         let chartData;
         if (!isMyReport) {
             if (dataToUseInReport?.from !== undefined && dataToUseInReport?.to !== undefined && dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.selectedContractedServiceProvider !== undefined && dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
+                setIsLoading(true)
                 const { data: chartDataValues } = await GET(`timesheet-management-service/report/paymentProcessingSummary?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts || []}&users=${dataToUseInReport?.selectedContractedServiceProvider || []}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
                 chartData = chartDataValues;
             }
         } else {
+            setIsLoading(true)
             const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/paymentProcessingSummary?id=${myReportId}`);
             chartData = chartDataValues;
         }
+        setIsLoading(false)
         setPaymentsReportLog(chartData);
         if ((chartData?.paymentStats?.avgPayment !== 0 ||
             chartData?.paymentStats?.count !== 0 ||
@@ -534,7 +545,6 @@ const ReportTypeOverview = () => {
             setBarChartSeries([]);
             setBarChartCategories([]);
         }
-        setIsLoading(false);
     }
 
     const getTimesheetProcessingSummary = async (filter) => {
@@ -542,10 +552,12 @@ const ReportTypeOverview = () => {
             let chartData;
             if (!isMyReport) {
                 if (dataToUseInReport?.from !== undefined && dataToUseInReport?.to !== undefined && dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.selectedContractedServiceProvider !== undefined && dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
+                    setIsLoading(true)
                     const { data: chartDataValues } = await GET(`timesheet-management-service/report/timesheetProcessingSummary?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
                     chartData = chartDataValues;
                 }
             } else {
+                setIsLoading(true)
                 const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/timesheetProcessingSummary?id=${myReportId}`);
                 chartData = chartDataValues;
             }
@@ -554,10 +566,12 @@ const ReportTypeOverview = () => {
             let chartData;
             if (!isMyReport) {
                 if (dataToUseInReport?.from !== undefined && dataToUseInReport?.to !== undefined && dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.selectedContractedServiceProvider !== undefined && dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
+                    setIsLoading(true)
                     const { data: chartDataValues } = await GET(`timesheet-management-service/report/timesheetProcessingSummary?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
                     chartData = chartDataValues;
                 }
             } else {
+                setIsLoading(true)
                 const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/timesheetProcessingSummary?id=${myReportId}`);
                 chartData = chartDataValues;
             }
@@ -595,10 +609,12 @@ const ReportTypeOverview = () => {
             let chartData;
             if (!isMyReport) {
                 if (dataToUseInReport?.from !== undefined && dataToUseInReport?.to !== undefined && dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.selectedContractedServiceProvider !== undefined && dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
+                    setIsLoading(true)
                     const { data: chartDataValues } = await GET(`timesheet-management-service/report/notPaidTimesheets?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
                     chartData = chartDataValues;
                 }
             } else {
+                setIsLoading(true)
                 const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/notPaidTimesheets?id=${myReportId}`);
                 chartData = chartDataValues;
             }
@@ -609,10 +625,12 @@ const ReportTypeOverview = () => {
             let chartData;
             if (!isMyReport) {
                 if (dataToUseInReport?.from !== undefined && dataToUseInReport?.to !== undefined && dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.selectedContractedServiceProvider !== undefined && dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
+                    setIsLoading(true)
                     const { data: chartDataValues } = await GET(`timesheet-management-service/report/notPaidTimesheets?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
                     chartData = chartDataValues;
                 }
             } else {
+                setIsLoading(true)
                 const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/notPaidTimesheets?id=${myReportId}`);
                 chartData = chartDataValues;
             }
@@ -628,10 +646,12 @@ const ReportTypeOverview = () => {
             let chartData;
             if (!isMyReport) {
                 if (dataToUseInReport?.from !== undefined && dataToUseInReport?.to !== undefined && dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.selectedContractedServiceProvider !== undefined && dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
+                    setIsLoading(true)
                     const { data: chartDataValues } = await GET(`timesheet-management-service/report/submittedTimesheetsPaymentStatus?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
                     chartData = chartDataValues;
                 }
             } else {
+                setIsLoading(true)
                 const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/submittedTimesheetsPaymentStatus?id=${myReportId}`);
                 chartData = chartDataValues;
             }
@@ -642,10 +662,12 @@ const ReportTypeOverview = () => {
             let chartData;
             if (!isMyReport) {
                 if (dataToUseInReport?.from !== undefined && dataToUseInReport?.to !== undefined && dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.selectedContractedServiceProvider !== undefined && dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
+                    setIsLoading(true)
                     const { data: chartDataValues } = await GET(`timesheet-management-service/report/submittedTimesheetsPaymentStatus?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
                     chartData = chartDataValues;
                 }
             } else {
+                setIsLoading(true)
                 const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/submittedTimesheetsPaymentStatus?id=${myReportId}`);
                 chartData = chartDataValues;
             }
@@ -666,16 +688,24 @@ const ReportTypeOverview = () => {
     const getContractTrackValues = async () => {
         if (!isMyReport) {
             if (dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.selectedContractedServiceProvider !== undefined && dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
+                setIsLoading(true)
                 const { data: data } = await GET(`timesheet-management-service/report/trackServices?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
                 setActivityTrackServices(data);
             }
         } else {
+            setIsLoading(true)
             const { data: data } = await GET(`timesheet-management-service/report/myReport/trackServices?id=${myReportId}`);
             setActivityTrackServices(data);
         }
+        setIsLoading(false)
+        if (isWaiting) {
+            console.log('waiting calling again')
+            setIsWaiting(false);
+            getContractTrackValues();
+        }
     }
 
-    console.log(activityTrackServices)
+    console.log(activityTrackServices, isLoading, isWaiting)
 
     const getDataToUseInReport = (value) => {
         setDataToUseInReport(value);
@@ -691,11 +721,13 @@ const ReportTypeOverview = () => {
     const getContractRenewalReportWithParameters = async () => {
         if (dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined && dataToUseInReport?.renewalreportingTimePeriod !== undefined && dataToUseInReport?.contractContinuationPolicy !== undefined) {
             if (!isMyReport) {
+                setIsLoading(true)
                 const { data: contractRenewalReport } = await GET(`contract-managment-service/reports/contractRenewalReport?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&contracts=${dataToUseInReport?.selectedContracts}&renewalDays=${dataToUseInReport?.renewalreportingTimePeriod}&contractPolicyType=${dataToUseInReport?.contractContinuationPolicy !== 'ALL' ? dataToUseInReport?.contractContinuationPolicy : ''}`);
                 if (contractRenewalReport) {
                     setContractRenewalReport(contractRenewalReport);
                 }
             } else {
+                setIsLoading(true)
                 const { data: contractRenewalReport } = await GET(`contract-managment-service/reports/myReport/contractRenewalReport?id=${myReportId}`);
                 setContractRenewalReport(contractRenewalReport);
             }
@@ -714,11 +746,13 @@ const ReportTypeOverview = () => {
     const getOneTimeContractWithParameters = async () => {
         if (dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
             if (!isMyReport) {
+                setIsLoading(true)
                 const { data: oneTimeContract } = await GET(`contract-managment-service/reports/oneTimeContractReport?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&contracts=${dataToUseInReport?.selectedContracts}`);
                 if (oneTimeContract) {
                     setOneTimeContract(oneTimeContract);
                 }
             } else {
+                setIsLoading(true)
                 const { data: oneTimeContract } = await GET(`contract-managment-service/reports/myReport/oneTimeContractReport?id=${myReportId}`);
                 setOneTimeContract(oneTimeContract);
             }
@@ -729,11 +763,13 @@ const ReportTypeOverview = () => {
     const getContractDocumentsOnFile = async () => {
         if (dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
             if (!isMyReport) {
+                setIsLoading(true)
                 const { data: contractDocumentsOnFile } = await GET(`contract-managment-service/reports/contractDocumentsOnFile?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&contractStatus=${dataToUseInReport?.contractStatus}`);
                 if (contractDocumentsOnFile) {
                     setContractDocumentsOnFileValues(contractDocumentsOnFile);
                 }
             } else {
+                setIsLoading(true)
                 const { data: contractDocumentsOnFile } = await GET(`contract-managment-service/reports/myReport/contractDocumentsOnFile?id=${myReportId}`);
                 setContractDocumentsOnFileValues(contractDocumentsOnFile);
             }
@@ -744,11 +780,13 @@ const ReportTypeOverview = () => {
     const getMultiProviderContractsList = async () => {
         if (dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
             if (!isMyReport) {
+                setIsLoading(true)
                 const { data: multiProviderContract } = await GET(`contract-managment-service/reports/multiProviderContract?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&contracts=${dataToUseInReport?.selectedContracts}&contractStatus=${dataToUseInReport?.contractStatus}`);
                 if (multiProviderContract) {
                     setMultiProviderContractValues(multiProviderContract);
                 }
             } else {
+                setIsLoading(true)
                 const { data: multiProviderContract } = await GET(`contract-managment-service/reports/myReport/multiProviderContract?id=${myReportId}`);
                 setMultiProviderContractValues(multiProviderContract);
             }
@@ -759,11 +797,13 @@ const ReportTypeOverview = () => {
     const getContractsWithABusinessEntity = async () => {
         if (dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
             if (!isMyReport) {
+                setIsLoading(true)
                 const { data: contractsWithBusinessEntity } = await GET(`contract-managment-service/reports/contractsWithBusinessEntity?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&contracts=${dataToUseInReport?.selectedContracts}&contractStatus=${dataToUseInReport?.contractStatus}`);
                 if (contractsWithBusinessEntity) {
                     setContractsWithBusinessEntityValues(contractsWithBusinessEntity);
                 }
             } else {
+                setIsLoading(true)
                 const { data: contractsWithBusinessEntity } = await GET(`contract-managment-service/reports/myReport/contractsWithBusinessEntity?id=${myReportId}`);
                 setContractsWithBusinessEntityValues(contractsWithBusinessEntity);
             }
@@ -774,11 +814,13 @@ const ReportTypeOverview = () => {
     const getCurrentRemitToAddressForActiveContracts = async () => {
         if (dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
             if (!isMyReport) {
+                setIsLoading(true)
                 const { data: currentRemitToAddress } = await GET(`timesheet-management-service/report/currentRemitToAddress?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
                 if (currentRemitToAddress) {
                     setCurrentRemitToAddressValues(currentRemitToAddress);
                 }
             } else {
+                setIsLoading(true)
                 const { data: currentRemitToAddress } = await GET(`timesheet-management-service/report/myReport/currentRemitToAddress?id=${myReportId}`);
                 setCurrentRemitToAddressValues(currentRemitToAddress);
             }
@@ -788,6 +830,7 @@ const ReportTypeOverview = () => {
 
     const getNonCompliantContractReportTile = async () => {
         if (dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined && dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.contractStatus !== undefined) {
+            setIsLoading(true)
             const { data: nonCompliantContract } = await GET(`contract-managment-service/reports/documentProofReport?contractNames=${dataToUseInReport?.selectedContracts}&contractStatus=${dataToUseInReport?.contractStatus}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
             if (nonCompliantContract) {
                 setNonCompliantContractTile(nonCompliantContract);
@@ -798,6 +841,7 @@ const ReportTypeOverview = () => {
 
     const getNonCompliantContractReport = async () => {
         if (dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined && dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.contractStatus !== undefined) {
+            setIsLoading(true)
             const { data: nonCompliantContract } = await GET(`contract-managment-service/reports/nonCompliantContractReport?podType=${encodeURIComponent(selectedPodTypeFromTile)}&contractStatus=${dataToUseInReport?.contractStatus}&contractNames=${dataToUseInReport?.selectedContracts}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
             if (nonCompliantContract) {
                 setNonCompliantContract(nonCompliantContract);
@@ -1491,17 +1535,21 @@ const ReportTypeOverview = () => {
         )
     }
 
+    // if (isLoading) {
+    //     return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Report']} />
+    // }
+
     return (
         <Fragment>
             <Navbar />
             <div className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid} ${style.margin20WithoutTop} ${style.marginTop10} `}>
                 <div>
                     <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
-                        <SampleReportLeftCard getDataToUseInReport={getDataToUseInReport} />
+                        <SampleReportLeftCard getDataToUseInReport={getDataToUseInReport} isLoading={isLoading} />
                     </SideBar>
                 </div>
                 <div>
-                    <ReportPerformanceAndOptions handle={handle} handlePrint={handlePrint} isUpdated={isLoading} dataToUseInReport={dataToUseInReport} refToUse={PDFRef} getIsDownloadClicked={getIsDownloadClicked} isNoData={isNoData} />
+                    <ReportPerformanceAndOptions handle={handle} handlePrint={handlePrint} dataToUseInReport={dataToUseInReport} refToUse={PDFRef} getIsDownloadClicked={getIsDownloadClicked} isNoData={isNoData} />
                     <FullScreen handle={handle} className={handle.active ? style.scroll : ''}>
                         <div className={`Report`} ref={PDFRef}>
                             <div className={`${style.reportBackgroundCard} ${style.marginTop20} `} ref={componentRef}>
@@ -1669,805 +1717,809 @@ const ReportTypeOverview = () => {
                                                     </div>
                                                 )}
                                             <div className={`${style.headerBorderStyle} ${style.marginTop40} `}></div>
-                                            {reportType === "activitiesOrServices" ? (
-                                                <>
-                                                    {(activitiesOrServicesValues?.activities?.length !== 0 ||
-                                                        activitiesOrServicesValues?.activityServiceReports?.length !== 0 ||
-                                                        activitiesOrServicesValues?.activityStatusByCategorys?.length !== 0 ||
-                                                        activitiesOrServicesValues?.completedActivitiesByDate?.length !== 0 ||
-                                                        activitiesOrServicesValues?.completedActivitiesBycategoryAndMonth?.length !== 0) ? (
-                                                        // <>
-                                                        //     <div className={style.grid2}>
-                                                        //         <div>
-                                                        //             <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>Activity / Services Status</div>
-                                                        //             <ApexPieChart pieData={pieData} />
-                                                        //         </div>
-
-                                                        //         <div>
-                                                        //             <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>By Category Of Service Performed</div>
-                                                        //             <div className={style.marginTop20}>
-                                                        //                 <ApexGroupedBarChart series={series} categories={categories} />
-                                                        //             </div>
-                                                        //         </div>
-                                                        //     </div>
-                                                        //     <div className={`${style.headerBorderStyle} ${style.marginTop40} `}></div>
-                                                        //     <div className={style.marginTop40}>
-                                                        //         <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20} `}>Trend For Activities / Services Completed</div>
-                                                        //         <div className={style.reportWidthToFitFullScreen}>
-                                                        //             <ApexLineChart lineData={lineData} />
-                                                        //         </div>
-                                                        //     </div>
-                                                        //     <div className={`${style.headerBorderStyle} ${style.marginTop40} `}></div>
-                                                        //     <div className={style.marginTop40}>
-                                                        //         <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20} `}>Percentage Of Activities / Services Completed By Category Type</div>
-                                                        //         <div className={style.reportWidthToFitFullScreen}>
-                                                        //             {/* <ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} /> */}
-                                                        //             {apexStackedBarChartDisplay}
-                                                        //         </div>
-                                                        //     </div>
-                                                        //     <div className={`${style.mildBorderStyle} ${style.marginTop20} `}></div>
-                                                        //     {reportLog?.filter(data => data?.activityStatus === "DONE")?.length !== 0 && (
-                                                        //         <>
-                                                        //             <ReportsTable
-                                                        //                 tableType={'Completed Activity / Service Log'}
-                                                        //                 tableHeader={['Activity/ Services', 'Scheduled Date/ Time', 'Completion Date/ Time', 'Contracted Provider', 'Site']}
-                                                        //                 tableValue={reportLog?.filter(data => data?.activityStatus === "DONE")}
-                                                        //                 activitiesServicesValues={getActivitiesServicesValues('DONE')}
-                                                        //                 styleName={style.grid5}
-                                                        //             />
-                                                        //             <div className={`${style.mildBorderStyle} ${style.marginTop20} `}></div>
-                                                        //         </>
-                                                        //     )}
-                                                        //     {reportLog?.filter(data => data?.activityStatus === "TODO")?.length !== 0 && (
-                                                        //         <>
-                                                        //             <ReportsTable
-                                                        //                 tableType={'To Do Activity/ Services'}
-                                                        //                 tableHeader={['Activity/ Services', 'Scheduled Date/ Time', 'Contracted Provider', 'Site']}
-                                                        //                 tableValue={reportLog?.filter(data => data?.activityStatus === "TODO")}
-                                                        //                 activitiesServicesValues={getActivitiesServicesValues('TODO')}
-                                                        //                 styleName={style.grid5}
-                                                        //             />
-                                                        //             <div className={`${style.mildBorderStyle} ${style.marginTop20} `}></div>
-                                                        //         </>
-                                                        //     )}
-                                                        //     {reportLog?.filter(data => data?.activityStatus === "NOTDONE")?.length !== 0 && (
-                                                        //         <>
-                                                        //             <ReportsTable
-                                                        //                 tableType={'Not Done Activity / Service Log'}
-                                                        //                 tableHeader={['Activity/ Services', 'Scheduled Date/ Time', 'Contracted Provider', 'Site', 'Reason Not Done']}
-                                                        //                 tableValue={reportLog?.filter(data => data?.activityStatus === "NOTDONE")}
-                                                        //                 activitiesServicesValues={getActivitiesServicesValues('NOTDONE')}
-                                                        //                 styleName={style.grid5}
-                                                        //             />
-                                                        //         </>
-                                                        //     )}
-                                                        // </>
-                                                        <>{showActivitiesOrServicesReport()}</>
-                                                    ) : (
-                                                        <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
-                                                            subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
-                                                    )}
-                                                </>
-                                            ) : reportType === "addOnActivities" ? (
-                                                <>
-                                                    {(addOnServicesValues?.addOnActivityServiceReports?.length !== 0 ||
-                                                        addOnServicesValues?.addOnActivityStatusByCategorys?.length !== 0 ||
-                                                        addOnServicesValues?.approvedActivities?.length !== 0 ||
-                                                        addOnServicesValues?.approvedAddOnActivitiesByCategoryAndMonth?.length !== 0 ||
-                                                        addOnServicesValues?.approvedAddOnActivityByDate?.length !== 0 ||
-                                                        addOnServicesValues?.rejectedActivities?.length !== 0) ? (
+                                            <>
+                                                {
+                                                    // isLoading ? <LoadingScreen text={['Sit Back And Relax', 'Loading Your Report']} /> : 
+                                                    reportType === "activitiesOrServices" ? (
                                                         <>
-                                                            <div className={style.grid2}>
-                                                                <div>
-                                                                    <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>Activity / Services Status</div>
-                                                                    <ApexPieChart pieData={pieData} />
-                                                                </div>
-                                                                <div>
-                                                                    <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>By Add On Activity/ Service Type</div>
-                                                                    <div className={style.marginTop20}>
-                                                                        <ApexGroupedBarChart series={series} categories={categories} />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div className={`${style.headerBorderStyle} ${style.marginTop40} `}></div>
-                                                            <div className={style.marginTop40}>
-                                                                <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20} `}>Percentage Of Add On Activities / Services Requests Approved</div>
-                                                                <div className={style.addOnReportWidthToFitFullScreen}>
-                                                                    {apexStackedBarChartDisplay}
-                                                                </div>
-                                                            </div>
-                                                            <div className={`${style.mildBorderStyle} ${style.marginTop20} `}></div>
-                                                            {addOnRejectedReportLog?.length !== 0 && (
-                                                                <>
-                                                                    <ReportsTable
-                                                                        tableType={'List Of Request Rejected For Add On Activity / Services'}
-                                                                        tableHeader={['Add on Activity/ Services', 'Request Date/ Time', 'Rejected Date/ Time', 'Requesting Provider', 'Request Reviewer', 'Site']}
-                                                                        tableValue={addOnRejectedReportLog}
-                                                                        activitiesServicesValues={getAddOnActivitiesServicesValues('Rejected')}
-                                                                        styleName={style.grid6}
-                                                                    />
-                                                                    <div className={`${style.mildBorderStyle} ${style.marginTop20} `}></div>
-                                                                </>
-                                                            )}
-                                                            {addOnAcceptedReportLog?.length !== 0 && (
-                                                                <>
-                                                                    <ReportsTable
-                                                                        tableType={'List Of Approved Add On Activity / Services Requests'}
-                                                                        tableHeader={['Add on Activity/ Services', 'Request Date/ Time', 'Approved Date/ Time', 'Requesting Provider', 'Request Reviewer', 'Site']}
-                                                                        tableValue={addOnAcceptedReportLog}
-                                                                        activitiesServicesValues={getAddOnActivitiesServicesValues('Approved')}
-                                                                        styleName={style.grid6}
-                                                                    />
-                                                                    <div className={`${style.mildBorderStyle} ${style.marginTop20} `}></div>
-                                                                </>
+                                                            {(activitiesOrServicesValues?.activities?.length !== 0 ||
+                                                                activitiesOrServicesValues?.activityServiceReports?.length !== 0 ||
+                                                                activitiesOrServicesValues?.activityStatusByCategorys?.length !== 0 ||
+                                                                activitiesOrServicesValues?.completedActivitiesByDate?.length !== 0 ||
+                                                                activitiesOrServicesValues?.completedActivitiesBycategoryAndMonth?.length !== 0) ? (
+                                                                // <>
+                                                                //     <div className={style.grid2}>
+                                                                //         <div>
+                                                                //             <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>Activity / Services Status</div>
+                                                                //             <ApexPieChart pieData={pieData} />
+                                                                //         </div>
+
+                                                                //         <div>
+                                                                //             <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>By Category Of Service Performed</div>
+                                                                //             <div className={style.marginTop20}>
+                                                                //                 <ApexGroupedBarChart series={series} categories={categories} />
+                                                                //             </div>
+                                                                //         </div>
+                                                                //     </div>
+                                                                //     <div className={`${style.headerBorderStyle} ${style.marginTop40} `}></div>
+                                                                //     <div className={style.marginTop40}>
+                                                                //         <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20} `}>Trend For Activities / Services Completed</div>
+                                                                //         <div className={style.reportWidthToFitFullScreen}>
+                                                                //             <ApexLineChart lineData={lineData} />
+                                                                //         </div>
+                                                                //     </div>
+                                                                //     <div className={`${style.headerBorderStyle} ${style.marginTop40} `}></div>
+                                                                //     <div className={style.marginTop40}>
+                                                                //         <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20} `}>Percentage Of Activities / Services Completed By Category Type</div>
+                                                                //         <div className={style.reportWidthToFitFullScreen}>
+                                                                //             {/* <ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} /> */}
+                                                                //             {apexStackedBarChartDisplay}
+                                                                //         </div>
+                                                                //     </div>
+                                                                //     <div className={`${style.mildBorderStyle} ${style.marginTop20} `}></div>
+                                                                //     {reportLog?.filter(data => data?.activityStatus === "DONE")?.length !== 0 && (
+                                                                //         <>
+                                                                //             <ReportsTable
+                                                                //                 tableType={'Completed Activity / Service Log'}
+                                                                //                 tableHeader={['Activity/ Services', 'Scheduled Date/ Time', 'Completion Date/ Time', 'Contracted Provider', 'Site']}
+                                                                //                 tableValue={reportLog?.filter(data => data?.activityStatus === "DONE")}
+                                                                //                 activitiesServicesValues={getActivitiesServicesValues('DONE')}
+                                                                //                 styleName={style.grid5}
+                                                                //             />
+                                                                //             <div className={`${style.mildBorderStyle} ${style.marginTop20} `}></div>
+                                                                //         </>
+                                                                //     )}
+                                                                //     {reportLog?.filter(data => data?.activityStatus === "TODO")?.length !== 0 && (
+                                                                //         <>
+                                                                //             <ReportsTable
+                                                                //                 tableType={'To Do Activity/ Services'}
+                                                                //                 tableHeader={['Activity/ Services', 'Scheduled Date/ Time', 'Contracted Provider', 'Site']}
+                                                                //                 tableValue={reportLog?.filter(data => data?.activityStatus === "TODO")}
+                                                                //                 activitiesServicesValues={getActivitiesServicesValues('TODO')}
+                                                                //                 styleName={style.grid5}
+                                                                //             />
+                                                                //             <div className={`${style.mildBorderStyle} ${style.marginTop20} `}></div>
+                                                                //         </>
+                                                                //     )}
+                                                                //     {reportLog?.filter(data => data?.activityStatus === "NOTDONE")?.length !== 0 && (
+                                                                //         <>
+                                                                //             <ReportsTable
+                                                                //                 tableType={'Not Done Activity / Service Log'}
+                                                                //                 tableHeader={['Activity/ Services', 'Scheduled Date/ Time', 'Contracted Provider', 'Site', 'Reason Not Done']}
+                                                                //                 tableValue={reportLog?.filter(data => data?.activityStatus === "NOTDONE")}
+                                                                //                 activitiesServicesValues={getActivitiesServicesValues('NOTDONE')}
+                                                                //                 styleName={style.grid5}
+                                                                //             />
+                                                                //         </>
+                                                                //     )}
+                                                                // </>
+                                                                <>{showActivitiesOrServicesReport()}</>
+                                                            ) : (
+                                                                <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
+                                                                    subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
                                                             )}
                                                         </>
-                                                    ) : (
-                                                        <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
-                                                            subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
-                                                    )}
-                                                </>
-                                            ) : reportType === "paymentsProcessingSummary" ? (
-                                                (paymentsReportLog?.paymentContracts?.length === 0 && paymentsReportLog?.rejected?.length === 0 && paymentsReportLog?.paymentPastDue?.length === 0 && paymentsReportLog?.paymentNotDone?.length === 0 && paymentsReportLog?.paymentDelayed?.length === 0 && paymentsReportLog?.paidOnTime?.length === 0) ? (
-                                                    <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
-                                                        subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
-                                                ) : (
-                                                    <>
-                                                        <div className={style.grid2}>
-                                                            <div>
-                                                                <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>Timesheets Processing Status</div>
-                                                                <ApexPieChart pieData={pieData} />
-                                                            </div>
-                                                            <div>
-                                                                <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>Payments Made Summary Statistics</div>
-                                                                <div className={`${style.summaryGrid} ${style.marginTop40} `}>
+                                                    ) : reportType === "addOnActivities" ? (
+                                                        <>
+                                                            {(addOnServicesValues?.addOnActivityServiceReports?.length !== 0 ||
+                                                                addOnServicesValues?.addOnActivityStatusByCategorys?.length !== 0 ||
+                                                                addOnServicesValues?.approvedActivities?.length !== 0 ||
+                                                                addOnServicesValues?.approvedAddOnActivitiesByCategoryAndMonth?.length !== 0 ||
+                                                                addOnServicesValues?.approvedAddOnActivityByDate?.length !== 0 ||
+                                                                addOnServicesValues?.rejectedActivities?.length !== 0) ? (
+                                                                <>
+                                                                    <div className={style.grid2}>
+                                                                        <div>
+                                                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>Activity / Services Status</div>
+                                                                            <ApexPieChart pieData={pieData} />
+                                                                        </div>
+                                                                        <div>
+                                                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>By Add On Activity/ Service Type</div>
+                                                                            <div className={style.marginTop20}>
+                                                                                <ApexGroupedBarChart series={series} categories={categories} />
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className={`${style.headerBorderStyle} ${style.marginTop40} `}></div>
+                                                                    <div className={style.marginTop40}>
+                                                                        <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20} `}>Percentage Of Add On Activities / Services Requests Approved</div>
+                                                                        <div className={style.addOnReportWidthToFitFullScreen}>
+                                                                            {apexStackedBarChartDisplay}
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className={`${style.mildBorderStyle} ${style.marginTop20} `}></div>
+                                                                    {addOnRejectedReportLog?.length !== 0 && (
+                                                                        <>
+                                                                            <ReportsTable
+                                                                                tableType={'List Of Request Rejected For Add On Activity / Services'}
+                                                                                tableHeader={['Add on Activity/ Services', 'Request Date/ Time', 'Rejected Date/ Time', 'Requesting Provider', 'Request Reviewer', 'Site']}
+                                                                                tableValue={addOnRejectedReportLog}
+                                                                                activitiesServicesValues={getAddOnActivitiesServicesValues('Rejected')}
+                                                                                styleName={style.grid6}
+                                                                            />
+                                                                            <div className={`${style.mildBorderStyle} ${style.marginTop20} `}></div>
+                                                                        </>
+                                                                    )}
+                                                                    {addOnAcceptedReportLog?.length !== 0 && (
+                                                                        <>
+                                                                            <ReportsTable
+                                                                                tableType={'List Of Approved Add On Activity / Services Requests'}
+                                                                                tableHeader={['Add on Activity/ Services', 'Request Date/ Time', 'Approved Date/ Time', 'Requesting Provider', 'Request Reviewer', 'Site']}
+                                                                                tableValue={addOnAcceptedReportLog}
+                                                                                activitiesServicesValues={getAddOnActivitiesServicesValues('Approved')}
+                                                                                styleName={style.grid6}
+                                                                            />
+                                                                            <div className={`${style.mildBorderStyle} ${style.marginTop20} `}></div>
+                                                                        </>
+                                                                    )}
+                                                                </>
+                                                            ) : (
+                                                                <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
+                                                                    subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
+                                                            )}
+                                                        </>
+                                                    ) : reportType === "paymentsProcessingSummary" ? (
+                                                        (paymentsReportLog?.paymentContracts?.length === 0 && paymentsReportLog?.rejected?.length === 0 && paymentsReportLog?.paymentPastDue?.length === 0 && paymentsReportLog?.paymentNotDone?.length === 0 && paymentsReportLog?.paymentDelayed?.length === 0 && paymentsReportLog?.paidOnTime?.length === 0) ? (
+                                                            <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
+                                                                subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
+                                                        ) : (
+                                                            <>
+                                                                <div className={style.grid2}>
                                                                     <div>
-                                                                        <div className={`${style.summaryTextStyle} ${style.textAlignLeft} ${style.marginTop20} `}>Minimum Payment</div>
-                                                                        <div className={`${style.summaryTextStyle} ${style.textAlignLeft} ${style.marginTop20} `}>Maximum Payment</div>
-                                                                        <div className={`${style.summaryTextStyle} ${style.textAlignLeft} ${style.marginTop20} `}>Average Payment Per Timesheet</div>
-                                                                        <div className={`${style.summaryTextStyle} ${style.textAlignLeft} ${style.marginTop20} `}>Median Payment ( 50TH Percentile )</div>
+                                                                        <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>Timesheets Processing Status</div>
+                                                                        <ApexPieChart pieData={pieData} />
                                                                     </div>
                                                                     <div>
-                                                                        <div className={`${style.summaryTextStyle} ${style.marginTop20} `}>$ {paymentsReportLog?.paymentStats?.minPayment}</div>
-                                                                        <div className={`${style.summaryTextStyle} ${style.marginTop20} `}>$ {paymentsReportLog?.paymentStats?.maxPayment}</div>
-                                                                        <div className={`${style.summaryTextStyle} ${style.marginTop20} `}>$ {paymentsReportLog?.paymentStats?.avgPayment}</div>
-                                                                        <div className={`${style.summaryTextStyle} ${style.marginTop20} `}>$ {paymentsReportLog?.paymentStats?.medianPayment}</div>
+                                                                        <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>Payments Made Summary Statistics</div>
+                                                                        <div className={`${style.summaryGrid} ${style.marginTop40} `}>
+                                                                            <div>
+                                                                                <div className={`${style.summaryTextStyle} ${style.textAlignLeft} ${style.marginTop20} `}>Minimum Payment</div>
+                                                                                <div className={`${style.summaryTextStyle} ${style.textAlignLeft} ${style.marginTop20} `}>Maximum Payment</div>
+                                                                                <div className={`${style.summaryTextStyle} ${style.textAlignLeft} ${style.marginTop20} `}>Average Payment Per Timesheet</div>
+                                                                                <div className={`${style.summaryTextStyle} ${style.textAlignLeft} ${style.marginTop20} `}>Median Payment ( 50TH Percentile )</div>
+                                                                            </div>
+                                                                            <div>
+                                                                                <div className={`${style.summaryTextStyle} ${style.marginTop20} `}>$ {paymentsReportLog?.paymentStats?.minPayment}</div>
+                                                                                <div className={`${style.summaryTextStyle} ${style.marginTop20} `}>$ {paymentsReportLog?.paymentStats?.maxPayment}</div>
+                                                                                <div className={`${style.summaryTextStyle} ${style.marginTop20} `}>$ {paymentsReportLog?.paymentStats?.avgPayment}</div>
+                                                                                <div className={`${style.summaryTextStyle} ${style.marginTop20} `}>$ {paymentsReportLog?.paymentStats?.medianPayment}</div>
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className={`${style.headerBorderStyle} ${style.marginTop40} `}></div>
-                                                        <div>
-                                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>Payment For Services Performed By Contract</div>
-                                                            <div className={style.marginTop20}>
-                                                                <ApexBarChart series={barChartSeries} categories={barChartCategories} reportingPeriod={`${format(new Date(dataToUseInReport?.from || new Date()), 'MMM d')} to ${format(new Date(dataToUseInReport?.to || new Date()), 'MMM d')} `} yAxisTitle="Dollars Paid" />
-                                                            </div>
-                                                        </div>
-                                                        <div className={`${style.headerBorderStyle} ${style.marginTop40} `}></div>
-                                                        {/* <div className={style.marginTop40}>
+                                                                <div className={`${style.headerBorderStyle} ${style.marginTop40} `}></div>
+                                                                <div>
+                                                                    <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>Payment For Services Performed By Contract</div>
+                                                                    <div className={style.marginTop20}>
+                                                                        <ApexBarChart series={barChartSeries} categories={barChartCategories} reportingPeriod={`${format(new Date(dataToUseInReport?.from || new Date()), 'MMM d')} to ${format(new Date(dataToUseInReport?.to || new Date()), 'MMM d')} `} yAxisTitle="Dollars Paid" />
+                                                                    </div>
+                                                                </div>
+                                                                <div className={`${style.headerBorderStyle} ${style.marginTop40} `}></div>
+                                                                {/* <div className={style.marginTop40}>
                                                         <div className={`${ style.entityNameBolderStyle } ${ style.textAlignLeft } ${ style.marginTop20 } ${ style.marginBottom20 } `}>Percentage Of Activities / Services Completed By Category Type</div>
                                                         <div className={style.reportWidthToFitFullScreen}>
                                                             <ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} />
                                                         </div>
                                                     </div> */}
-                                                        {/* <div className={`${ style.mildBorderStyle } ${ style.marginTop20 } `}></div> */}
-                                                        {paymentsReportLog?.paymentPastDue?.length !== 0 && (
-                                                            <>
-                                                                <ReportsTable
-                                                                    tableType={'Timesheets With Payment Past Due'}
-                                                                    tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Paid Amount', 'Billed Amount']}
-                                                                    tableValue={paymentsReportLog?.paymentPastDue}
-                                                                    activitiesServicesValues={getPaymentsValues('paymentPastDue')}
-                                                                    styleName={style.grid6}
-                                                                />
-                                                            </>
-                                                        )}
-                                                        {paymentsReportLog?.paymentDelayed?.length !== 0 && (
-                                                            <>
-                                                                <ReportsTable
-                                                                    tableType={'Timesheets With Delayed Payments'}
-                                                                    tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Paid Amount', 'Billed Amount']}
-                                                                    tableValue={paymentsReportLog?.paymentDelayed}
-                                                                    activitiesServicesValues={getPaymentsValues('delayedTimesheetPayments')}
-                                                                    styleName={style.grid6}
-                                                                />
-                                                            </>
-                                                        )}
-                                                        {paymentsReportLog?.rejected?.length !== 0 && (
-                                                            <>
-                                                                <ReportsTable
-                                                                    tableType={'Timesheets With Rejected Payments'}
-                                                                    tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Paid Amount', 'Billed Amount']}
-                                                                    tableValue={paymentsReportLog?.rejected}
-                                                                    activitiesServicesValues={getPaymentsValues('rejectedTimesheetPayments')}
-                                                                    styleName={style.grid6}
-                                                                />
-                                                            </>
-                                                        )}
-                                                        {paymentsReportLog?.paymentNotDone?.length !== 0 && (
-                                                            <>
-                                                                <ReportsTable
-                                                                    tableType={'Timesheets Without Payment'}
-                                                                    tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Paid Amount', 'Billed Amount']}
-                                                                    tableValue={paymentsReportLog?.paymentNotDone}
-                                                                    activitiesServicesValues={getPaymentsValues('timesheetNotPaid')}
-                                                                    styleName={style.grid6}
-                                                                />
-                                                            </>
-                                                        )}
-                                                        {paymentsReportLog?.paidOnTime?.length !== 0 && (
-                                                            <>
-                                                                <ReportsTable
-                                                                    tableType={'Timesheets With Payment On Time'}
-                                                                    tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Paid Amount', 'Billed Amount']}
-                                                                    tableValue={paymentsReportLog?.paidOnTime}
-                                                                    activitiesServicesValues={getPaymentsValues('paidOnTime')}
-                                                                    styleName={style.grid6}
-                                                                />
-                                                            </>
-                                                        )}
-                                                    </>
-                                                )
-                                            ) : reportType === "compensationCostAnalysis" ? (
-                                                <>
-                                                    {compensationCostAnalysis?.length !== 0 ? (
-                                                        <>
-                                                            <ReportsTable
-                                                                tableType={'Compensation Cost Analysis'}
-                                                                tableHeader={getHeaderValues()}
-                                                                tableValue={['Obligated Expected', 'Obligated (Actual)', 'Add-ON', 'Obligated Variance', 'Contract Year Balance', 'Contract Year Projected Balance', 'Contract Period Balance', 'Contract Period Projected Balance', 'Additional Services', 'Reduced Services', 'Actual', 'Invoice By Contractor', 'Fixed (Budgeted)']}
-                                                                activitiesServicesValues={getCompensationCostAnalysisValues()}
-                                                                styleName={style.gridAuto}
-                                                            />
-                                                        </>
-                                                    ) : (
-                                                        <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
-                                                            subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
-                                                    )}
-                                                </>
-                                            ) : reportType === "timesheetProcessingSummary" ? (
-                                                <>
-                                                    {totalSubmittedTimesheets !== 0 ? (
-                                                        <div>
-                                                            <div className={style.timeSheetProcessingSummaryCalendarGrid}>
-                                                                <div>
-                                                                    <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>Submitted Timesheets</div>
-                                                                    <div className={style.calendarBoxBorderStyle}></div>
-                                                                    <div className={style.calendarBoxTopStyle}></div>
-                                                                    <div className={`${style.calendarBoxBottomStyle} ${style.alignCenter} ${style.justifyCenter} `}>
-                                                                        <div>
-                                                                            <div className={style.calendarDateStyle}>{totalSubmittedTimesheets}</div>
-                                                                            {/* <div className={style.calendarMonthYearStyle}>June 2023</div> */}
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div>
-                                                                    <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>Timesheet Processing Status Summary</div>
-                                                                    <div>
-                                                                        {/* <ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} /> */}
-                                                                        {apexStackedBarChartDisplay}
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div className={`${style.headerBorderStyle} ${style.marginTop40} `}></div>
-                                                            <div className={style.grid2}>
-                                                                <div>
-                                                                    <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>Payment Status</div>
-                                                                    {(pieData[0]?.value !== 0 || pieData[1]?.value !== 0) && (
-                                                                        <ApexPieChart pieData={pieData} />
-                                                                    )}
-                                                                </div>
-                                                                <div>
-                                                                    <div className={style.spaceBetween}>
-                                                                        <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>Timesheets Rejected</div>
-                                                                        <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>{totalTimesheetRejectedCount}</div>
-                                                                    </div>
-                                                                    <div className={style.marginTop20}>
-                                                                        {Object?.keys(rejectedTimesheetCountBreakUp || {})?.map((data, index) => (
-                                                                            <div className={`${style.progressbarStyle} `} key={index}>
-                                                                                <div className={style.spaceBetween}>
-                                                                                    <p className={style.statisticsProgress}>{getProgressValue[data]}</p>
-                                                                                    <p className={style.progressCountStyle}>{Object?.values(rejectedTimesheetCountBreakUp)?.[index]}</p>
-                                                                                </div>
-                                                                                <ProgressBar completed={Object?.values(rejectedTimesheetCountBreakUp)?.[index] !== 0 ? (Object?.values(rejectedTimesheetCountBreakUp)?.[index] / totalTimesheetRejectedCount) * 100 : 0} isLabelVisible={false} height='5px' bgColor='#4791FF' baseBgColor="#EBEBEB" className={style.progressMargin} />
-                                                                            </div>
-                                                                        ))}
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div className={`${style.headerBorderStyle} ${style.marginTop40} `}></div>
-                                                            {timesheetProcessingSummaryData?.notPaidTimesheets?.length !== 0 && (
-                                                                <>
-                                                                    <ReportsTable
-                                                                        tableType={'Timesheet Approved But Not Paid'}
-                                                                        tableHeader={['Timesheet', 'Period', 'Approval Date', 'Approved by', 'Service Provider']}
-                                                                        tableValue={timesheetProcessingSummaryData?.notPaidTimesheets}
-                                                                        activitiesServicesValues={getTimesheetProcessingSummaryValues('Not Paid')}
-                                                                        styleName={style.grid5}
-                                                                    />
-                                                                </>
-                                                            )}
-                                                            {timesheetProcessingSummaryData?.rejectedTimesheets?.length !== 0 && (
-                                                                <>
-                                                                    <ReportsTable
-                                                                        tableType={'Timesheets Rejected'}
-                                                                        tableHeader={['Timesheet', 'Period', 'Rejected Date', 'Rejected by', 'Service Provider']}
-                                                                        tableValue={timesheetProcessingSummaryData?.rejectedTimesheets}
-                                                                        activitiesServicesValues={getTimesheetProcessingSummaryValues('Rejected')}
-                                                                        styleName={style.grid5}
-                                                                    />
-                                                                </>
-                                                            )}
-                                                        </div>
-                                                    ) : (
-                                                        <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
-                                                            subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
-                                                    )}
-                                                </>
-                                            ) : reportType === "listingOfTimesheetsNotPaid" ? (
-                                                <>
-                                                    {(notPaidTimesheetsData?.unpaidTimesheetsCount !== 0 ||
-                                                        notPaidTimesheetsData?.usersCount !== 0 ||
-                                                        notPaidTimesheetsData?.contractCount !== 0 ||
-                                                        notPaidTimesheetsData?.unpaidAmount !== 0 ||
-                                                        notPaidTimesheetsData?.unPaidTimesheetsByContract?.length !== 0) ? (
-                                                        <div className={style.marginTop20}>
-                                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>Summary Statistic</div>
-                                                            <div className={`${style.grid4} ${style.marginTop20} `}>
-                                                                <div>
-                                                                    <div className={`${style.timesheetsNotPaidCountContainer} ${style.alignCenter} ${style.justifyCenter} `}>{notPaidTimesheetsData?.unpaidTimesheetsCount}</div>
-                                                                    <div className={`${style.timesheetsNotPaidTitleContainer} ${style.alignCenter} ${style.justifyCenter} `}>Timesheets Not Paid</div>
-                                                                </div>
-                                                                <div>
-                                                                    <div className={`${style.timesheetsNotPaidCountContainer} ${style.alignCenter} ${style.justifyCenter} `}>{notPaidTimesheetsData?.usersCount}</div>
-                                                                    <div className={`${style.timesheetsNotPaidTitleContainer} ${style.alignCenter} ${style.justifyCenter} `}>Service Providers Impacted</div>
-                                                                </div>
-                                                                <div>
-                                                                    <div className={`${style.timesheetsNotPaidCountContainer} ${style.alignCenter} ${style.justifyCenter} `}>{notPaidTimesheetsData?.contractCount}</div>
-                                                                    <div className={`${style.timesheetsNotPaidTitleContainer} ${style.alignCenter} ${style.justifyCenter} `}>Contracts Affected</div>
-                                                                </div>
-                                                                <div>
-                                                                    <div className={`${style.timesheetsNotPaidCountContainer} ${style.alignCenter} ${style.justifyCenter} `}>${notPaidTimesheetsData?.unpaidAmount >= 1000 ? `${(notPaidTimesheetsData?.unpaidAmount / 1000).toFixed(2)}K` : notPaidTimesheetsData?.unpaidAmount}</div>
-                                                                    <div className={`${style.timesheetsNotPaidTitleContainer} ${style.alignCenter} ${style.justifyCenter} `}>Dollars Not Paid</div>
-                                                                </div>
-                                                            </div>
-                                                            <div className={`${style.headerBorderStyle} ${style.marginTop40} `}></div>
-                                                            {notPaidTimesheetsData?.unPaidTimesheetsByContract?.length !== 0 && (
-                                                                <>
-                                                                    {notPaidTimesheetsData?.unPaidTimesheetsByContract?.map(data => (
+                                                                {/* <div className={`${ style.mildBorderStyle } ${ style.marginTop20 } `}></div> */}
+                                                                {paymentsReportLog?.paymentPastDue?.length !== 0 && (
+                                                                    <>
                                                                         <ReportsTable
-                                                                            tableType={data?.contractName}
-                                                                            tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Current Status', 'Invoice Amount']}
-                                                                            tableValue={data?.timesheets}
-                                                                            activitiesServicesValues={getNotPaidTimesheetsValues(data)}
+                                                                            tableType={'Timesheets With Payment Past Due'}
+                                                                            tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Paid Amount', 'Billed Amount']}
+                                                                            tableValue={paymentsReportLog?.paymentPastDue}
+                                                                            activitiesServicesValues={getPaymentsValues('paymentPastDue')}
                                                                             styleName={style.grid6}
                                                                         />
-                                                                    ))}
-                                                                </>
-                                                            )}
-
-                                                        </div>
-                                                    ) : (
-                                                        <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
-                                                            subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
-                                                    )}
-                                                </>
-                                            ) : reportType === "submittedTimesheetsPaymentStatus" ? (
-                                                <div className={style.marginTop20}>
-                                                    {submittedTimesheetsPaymentStatusData?.timesheetPayment?.length !== 0 ? (
-                                                        <>
-                                                            <ReportsTable
-                                                                tableType={''}
-                                                                tableHeader={['Timesheet Name', 'Period', 'Contractor', 'Site/ Dept', 'Billable Hours', 'Non Billable Hours', 'Submission Date', 'Current Status', 'Status Date', 'Payment Status', 'Payment Amount', 'Payment Date']}
-                                                                tableValue={submittedTimesheetsPaymentStatusData?.timesheetPayment}
-                                                                activitiesServicesValues={getSubmittedTimesheetsPaymentStatusValues()}
-                                                                styleName={style.grid12}
-                                                            />
-                                                        </>
-                                                    ) : (
-                                                        <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
-                                                            subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
-                                                    )}
-
-                                                </div>
-                                            )
-                                                // : (reportType === "scheduledActivity" || reportType === "scheduledActivityByContract") ? (
-                                                //     <>
-                                                //         <div className={style.grid2}>
-                                                //             <div>
-                                                //                 <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20} `}>Hours Completed Summary</div>
-                                                //                 <div className={style.marginTop20}>
-                                                //                     <StackedBarChartBaseLayout2 />
-                                                //                 </div>
-                                                //             </div>
-                                                //             <div>
-                                                //                 <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter} ${style.marginTop20} ${style.marginBottom20} `}>Dollars Paid Summary</div>
-                                                //                 <Pie data={pieSampleData} width={200} height={200} innerRadius={0} outerRadius={100} />
-                                                //             </div>
-                                                //         </div>
-                                                //         <div className={`${style.headerBorderStyle} `}></div>
-                                                //         <div className={style.contractNameCardStyle}>Contract Name 1 - Individual Contractor Contract</div>
-                                                //         <div className={`${style.grid2} ${style.marginTop40} `}>
-                                                //             <div>
-                                                //                 <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20} `}>Hours Completed Summary</div>
-                                                //                 <div className={style.marginTop20}>
-                                                //                     <StackedBarChartBaseLayout2 />
-                                                //                 </div>
-                                                //             </div>
-                                                //             <div>
-                                                //                 <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter} ${style.marginTop20} ${style.marginBottom20} `}>Dollars Paid Summary</div>
-                                                //                 <Pie data={pieSampleData} width={200} height={200} innerRadius={0} outerRadius={100} />
-                                                //             </div>
-                                                //         </div>
-                                                //         <div className={`${style.mildBorderStyle} ${style.marginTop20} `}></div>
-                                                //         <div className={style.marginTop40}>
-                                                //             <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Scheduled Activity/ Services Completion Status</div>
-                                                //             <div className={`${style.grid6} ${style.marginTop20} `}>
-                                                //                 <div></div>
-                                                //                 <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Total To do</div>
-                                                //                 <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Completed</div>
-                                                //                 <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Not Verified</div>
-                                                //                 <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Not Completed</div>
-                                                //                 <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Yet to Complete</div>
-                                                //             </div>
-                                                //             <div className={`${style.grid6} ${style.marginTop20} `}>
-                                                //                 <div className={`${style.reportTypeValueBoldTextStyle} ${style.marginTop5} `}>Medical Services</div>
-                                                //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>12 ($ xxx)</div>
-                                                //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>2</div>
-                                                //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>1</div>
-                                                //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>7 ($ xxx)</div>
-                                                //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>2 ($ xxx)</div>
-                                                //             </div>
-                                                //             <div className={`${style.grid6} ${style.marginTop20} `}>
-                                                //                 <div className={`${style.reportTypeValueBoldTextStyle} ${style.marginTop5} `}>Administrative Services</div>
-                                                //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>12 ($ xxx)</div>
-                                                //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>2</div>
-                                                //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>1</div>
-                                                //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>7 ($ xxx)</div>
-                                                //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>2 ($ xxx)</div>
-                                                //             </div>
-                                                //             <div className={`${style.grid6} ${style.marginTop20} `}>
-                                                //                 <div className={`${style.reportTypeValueBoldTextStyle} ${style.marginTop5} `}>Supplemental Services</div>
-                                                //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>12 ($ xxx)</div>
-                                                //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>2</div>
-                                                //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>1</div>
-                                                //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>7 ($ xxx)</div>
-                                                //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>2 ($ xxx)</div>
-                                                //             </div>
-                                                //         </div>
-                                                //         <div className={`${style.mildBorderStyle} ${style.marginTop20} `}></div>
-                                                //         <div className={style.contractNameCardStyle}>Contract Name 2 - Multiple Contractor Contract - 5 Service Providers</div>
-                                                //         <div className={`${style.grid2} ${style.marginTop20} `}>
-                                                //             <div>
-                                                //                 <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20} `}>Hours Completed Summary</div>
-                                                //                 <div className={style.marginTop20}>
-                                                //                     <StackedBarChartBaseLayout2 />
-                                                //                 </div>
-                                                //             </div>
-                                                //             <div>
-                                                //                 <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter} ${style.marginTop20} ${style.marginBottom20} `}>Dollars Paid Summary</div>
-                                                //                 <Pie data={pieSampleData} width={200} height={200} innerRadius={0} outerRadius={100} />
-                                                //             </div>
-                                                //         </div>
-                                                //         <div className={`${style.mildBorderStyle} ${style.marginTop20} `}></div>
-                                                //         <div className={style.marginTop40}>
-                                                //             <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Scheduled Activity/ Services Completion Status</div>
-                                                //             <div className={`${style.grid6} ${style.marginTop20} `}>
-                                                //                 <div></div>
-                                                //                 <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Total To do</div>
-                                                //                 <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Completed</div>
-                                                //                 <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Not Verified</div>
-                                                //                 <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Not Completed</div>
-                                                //                 <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Yet to Complete</div>
-                                                //             </div>
-                                                //             <div className={`${style.grid6} ${style.marginTop20} `}>
-                                                //                 <div className={`${style.reportTypeValueBoldTextStyle} ${style.marginTop5} `}>Medical Services</div>
-                                                //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>12 ($ xxx)</div>
-                                                //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>2</div>
-                                                //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>1</div>
-                                                //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>7 ($ xxx)</div>
-                                                //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>2 ($ xxx)</div>
-                                                //             </div>
-                                                //             <div className={`${style.grid6} ${style.marginTop20} `}>
-                                                //                 <div className={`${style.reportTypeValueBoldTextStyle} ${style.marginTop5} `}>Administrative Services</div>
-                                                //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>12 ($ xxx)</div>
-                                                //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>2</div>
-                                                //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>1</div>
-                                                //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>7 ($ xxx)</div>
-                                                //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>2 ($ xxx)</div>
-                                                //             </div>
-                                                //             <div className={`${style.grid6} ${style.marginTop20} `}>
-                                                //                 <div className={`${style.reportTypeValueBoldTextStyle} ${style.marginTop5} `}>Supplemental Services</div>
-                                                //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>12 ($ xxx)</div>
-                                                //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>2</div>
-                                                //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>1</div>
-                                                //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>7 ($ xxx)</div>
-                                                //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>2 ($ xxx)</div>
-                                                //             </div>
-                                                //         </div>
-                                                //     </>
-                                                // ) 
-                                                : (reportType === "upcomingContractRenewals" || reportType === "oneTimeContract") ? (
-                                                    (individualContract?.length !== 0 || multipleContract?.length !== 0) ? (
-                                                        <>
-                                                            {individualContract?.length !== 0 && (
-                                                                <ReportsTable
-                                                                    tableType={`Individual Service Provider Contract Renewals Within ${dataToUseInReport?.renewalreportingTimePeriod} Days`}
-                                                                    tableHeader={['Contract Name', 'Contract ID', 'Contract Expiration Date', 'Contracting Entity', 'Point of Contact', 'Point of Contact Number', 'Email Address']}
-                                                                    tableValue={individualContract}
-                                                                    activitiesServicesValues={getContractManagementUpcomingValues('INDIVIDUAL')}
-                                                                    styleName={style.individualServiceReportGrid}
-                                                                />
-                                                            )}
-                                                            {multipleContract?.length !== 0 && (
-                                                                <ReportsTable
-                                                                    tableType={`Multiple Service Provider Contract Renewals Within ${dataToUseInReport?.renewalreportingTimePeriod} Days`}
-                                                                    tableHeader={['Contract Name', 'Contract ID', 'Contract Expiration Date', 'Contracting Entity', 'Point of Contact', 'Point of Contact Number', 'Email Address', 'Service Providers']}
-                                                                    tableValue={multipleContract}
-                                                                    activitiesServicesValues={getContractManagementUpcomingValues('MULTIPLE')}
-                                                                    styleName={style.multipleServiceReportGrid}
-                                                                />
-                                                            )}
-                                                        </>
-                                                    ) : reportType === "upcomingContractRenewals" ? (
-
-                                                        <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
-                                                            subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
-                                                    ) : (
-
-                                                        <ReportNoDataBox heading={'You do not have any One Time Contracts that will terminate on expiration'}
-                                                            subHeading={''} />
-                                                    )) : (reportType === "contractDocumentsOnFile") ?
-                                                    contractDocumentsOnFileValues?.length !== 0 ? (
-                                                        <>
-                                                            {contractDocumentsOnFileValues?.map((data, index) => (
-                                                                <ReportsTable
-                                                                    tableType={`${data?.contractName?.contractName} - ${format(new Date(data?.contractDetail?.contractTerm?.startDate), 'MMM d, yyyy')} - ${format(new Date(data?.contractDetail?.contractTerm?.endDate), 'MMM d, yyyy')} (${dataToUseInReport?.contractStatus})`}
-                                                                    tableHeader={['Document Name', 'Document Type', 'Description', 'Uploaded By', 'Uploaded Date']}
-                                                                    tableValue={data?.contractDetail?.contractFiles}
-                                                                    activitiesServicesValues={getContractDocumentsOnFileValues(data)}
-                                                                    styleName={style.grid5}
-                                                                    clickable={true}
-                                                                    directionList={fileURL}
-                                                                />
-                                                            ))}
-                                                        </>
-                                                    ) : (
-                                                        <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
-                                                            subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
-                                                    ) : (reportType === "multiProviderContractsList") ?
-                                                        multiProviderContractValues?.length !== 0 ? (
-                                                            <>
-                                                                {multiProviderContractValues?.map(data => (
-                                                                    <ReportsTable
-                                                                        tableType={`${data?.contract?.contractName?.contractName} - ${format(new Date(data?.contract?.contractDetail?.contractTerm?.startDate || new Date()), 'MMM d, yyyy')} - ${format(new Date(data?.contractDetail?.contractTerm?.endDate || new Date()), 'MMM d, yyyy')}  (${dataToUseInReport?.contractStatus})`}
-                                                                        tableHeader={['Service Provider Name', 'Service Provider Type', 'Cell Phone', 'Email', 'City', 'State']}
-                                                                        tableValue={data?.users}
-                                                                        activitiesServicesValues={getMultipleContractsListValues(data)}
-                                                                        styleName={style.multiProviderGrid}
-                                                                    />
-                                                                ))}
+                                                                    </>
+                                                                )}
+                                                                {paymentsReportLog?.paymentDelayed?.length !== 0 && (
+                                                                    <>
+                                                                        <ReportsTable
+                                                                            tableType={'Timesheets With Delayed Payments'}
+                                                                            tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Paid Amount', 'Billed Amount']}
+                                                                            tableValue={paymentsReportLog?.paymentDelayed}
+                                                                            activitiesServicesValues={getPaymentsValues('delayedTimesheetPayments')}
+                                                                            styleName={style.grid6}
+                                                                        />
+                                                                    </>
+                                                                )}
+                                                                {paymentsReportLog?.rejected?.length !== 0 && (
+                                                                    <>
+                                                                        <ReportsTable
+                                                                            tableType={'Timesheets With Rejected Payments'}
+                                                                            tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Paid Amount', 'Billed Amount']}
+                                                                            tableValue={paymentsReportLog?.rejected}
+                                                                            activitiesServicesValues={getPaymentsValues('rejectedTimesheetPayments')}
+                                                                            styleName={style.grid6}
+                                                                        />
+                                                                    </>
+                                                                )}
+                                                                {paymentsReportLog?.paymentNotDone?.length !== 0 && (
+                                                                    <>
+                                                                        <ReportsTable
+                                                                            tableType={'Timesheets Without Payment'}
+                                                                            tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Paid Amount', 'Billed Amount']}
+                                                                            tableValue={paymentsReportLog?.paymentNotDone}
+                                                                            activitiesServicesValues={getPaymentsValues('timesheetNotPaid')}
+                                                                            styleName={style.grid6}
+                                                                        />
+                                                                    </>
+                                                                )}
+                                                                {paymentsReportLog?.paidOnTime?.length !== 0 && (
+                                                                    <>
+                                                                        <ReportsTable
+                                                                            tableType={'Timesheets With Payment On Time'}
+                                                                            tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Paid Amount', 'Billed Amount']}
+                                                                            tableValue={paymentsReportLog?.paidOnTime}
+                                                                            activitiesServicesValues={getPaymentsValues('paidOnTime')}
+                                                                            styleName={style.grid6}
+                                                                        />
+                                                                    </>
+                                                                )}
                                                             </>
-                                                        ) : (
-                                                            <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
-                                                                subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
-                                                        ) : (reportType === "contractsWithABusinessEntity") ?
-                                                            contractsWithBusinessEntityValues?.length !== 0 ? (
+                                                        )
+                                                    ) : reportType === "compensationCostAnalysis" ? (
+                                                        <>
+                                                            {compensationCostAnalysis?.length !== 0 ? (
                                                                 <>
                                                                     <ReportsTable
-                                                                        tableType={`Contracts With A Business Entity  (${dataToUseInReport?.contractStatus})`}
-                                                                        tableHeader={['Contract Name', 'Contract Type', 'Business Entity', 'Address', 'City', 'State', 'Point Of Contact', 'Email']}
-                                                                        tableValue={contractsWithBusinessEntityValues}
-                                                                        activitiesServicesValues={getContractsWithBusinessEntityValues()}
-                                                                        styleName={style.grid8}
+                                                                        tableType={'Compensation Cost Analysis'}
+                                                                        tableHeader={getHeaderValues()}
+                                                                        tableValue={['Obligated Expected', 'Obligated (Actual)', 'Add-ON', 'Obligated Variance', 'Contract Year Balance', 'Contract Year Projected Balance', 'Contract Period Balance', 'Contract Period Projected Balance', 'Additional Services', 'Reduced Services', 'Actual', 'Invoice By Contractor', 'Fixed (Budgeted)']}
+                                                                        activitiesServicesValues={getCompensationCostAnalysisValues()}
+                                                                        styleName={style.gridAuto}
                                                                     />
                                                                 </>
                                                             ) : (
                                                                 <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
                                                                     subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
-                                                            ) : (reportType === "currentRemitToAddressForActiveContracts") ?
-                                                                currentRemitToAddressValues?.length !== 0 ? (
-                                                                    <>
+                                                            )}
+                                                        </>
+                                                    ) : reportType === "timesheetProcessingSummary" ? (
+                                                        <>
+                                                            {totalSubmittedTimesheets !== 0 ? (
+                                                                <div>
+                                                                    <div className={style.timeSheetProcessingSummaryCalendarGrid}>
+                                                                        <div>
+                                                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>Submitted Timesheets</div>
+                                                                            <div className={style.calendarBoxBorderStyle}></div>
+                                                                            <div className={style.calendarBoxTopStyle}></div>
+                                                                            <div className={`${style.calendarBoxBottomStyle} ${style.alignCenter} ${style.justifyCenter} `}>
+                                                                                <div>
+                                                                                    <div className={style.calendarDateStyle}>{totalSubmittedTimesheets}</div>
+                                                                                    {/* <div className={style.calendarMonthYearStyle}>June 2023</div> */}
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div>
+                                                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>Timesheet Processing Status Summary</div>
+                                                                            <div>
+                                                                                {/* <ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} /> */}
+                                                                                {apexStackedBarChartDisplay}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className={`${style.headerBorderStyle} ${style.marginTop40} `}></div>
+                                                                    <div className={style.grid2}>
+                                                                        <div>
+                                                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>Payment Status</div>
+                                                                            {(pieData[0]?.value !== 0 || pieData[1]?.value !== 0) && (
+                                                                                <ApexPieChart pieData={pieData} />
+                                                                            )}
+                                                                        </div>
+                                                                        <div>
+                                                                            <div className={style.spaceBetween}>
+                                                                                <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>Timesheets Rejected</div>
+                                                                                <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>{totalTimesheetRejectedCount}</div>
+                                                                            </div>
+                                                                            <div className={style.marginTop20}>
+                                                                                {Object?.keys(rejectedTimesheetCountBreakUp || {})?.map((data, index) => (
+                                                                                    <div className={`${style.progressbarStyle} `} key={index}>
+                                                                                        <div className={style.spaceBetween}>
+                                                                                            <p className={style.statisticsProgress}>{getProgressValue[data]}</p>
+                                                                                            <p className={style.progressCountStyle}>{Object?.values(rejectedTimesheetCountBreakUp)?.[index]}</p>
+                                                                                        </div>
+                                                                                        <ProgressBar completed={Object?.values(rejectedTimesheetCountBreakUp)?.[index] !== 0 ? (Object?.values(rejectedTimesheetCountBreakUp)?.[index] / totalTimesheetRejectedCount) * 100 : 0} isLabelVisible={false} height='5px' bgColor='#4791FF' baseBgColor="#EBEBEB" className={style.progressMargin} />
+                                                                                    </div>
+                                                                                ))}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className={`${style.headerBorderStyle} ${style.marginTop40} `}></div>
+                                                                    {timesheetProcessingSummaryData?.notPaidTimesheets?.length !== 0 && (
+                                                                        <>
+                                                                            <ReportsTable
+                                                                                tableType={'Timesheet Approved But Not Paid'}
+                                                                                tableHeader={['Timesheet', 'Period', 'Approval Date', 'Approved by', 'Service Provider']}
+                                                                                tableValue={timesheetProcessingSummaryData?.notPaidTimesheets}
+                                                                                activitiesServicesValues={getTimesheetProcessingSummaryValues('Not Paid')}
+                                                                                styleName={style.grid5}
+                                                                            />
+                                                                        </>
+                                                                    )}
+                                                                    {timesheetProcessingSummaryData?.rejectedTimesheets?.length !== 0 && (
+                                                                        <>
+                                                                            <ReportsTable
+                                                                                tableType={'Timesheets Rejected'}
+                                                                                tableHeader={['Timesheet', 'Period', 'Rejected Date', 'Rejected by', 'Service Provider']}
+                                                                                tableValue={timesheetProcessingSummaryData?.rejectedTimesheets}
+                                                                                activitiesServicesValues={getTimesheetProcessingSummaryValues('Rejected')}
+                                                                                styleName={style.grid5}
+                                                                            />
+                                                                        </>
+                                                                    )}
+                                                                </div>
+                                                            ) : (
+                                                                <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
+                                                                    subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
+                                                            )}
+                                                        </>
+                                                    ) : reportType === "listingOfTimesheetsNotPaid" ? (
+                                                        <>
+                                                            {(notPaidTimesheetsData?.unpaidTimesheetsCount !== 0 ||
+                                                                notPaidTimesheetsData?.usersCount !== 0 ||
+                                                                notPaidTimesheetsData?.contractCount !== 0 ||
+                                                                notPaidTimesheetsData?.unpaidAmount !== 0 ||
+                                                                notPaidTimesheetsData?.unPaidTimesheetsByContract?.length !== 0) ? (
+                                                                <div className={style.marginTop20}>
+                                                                    <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>Summary Statistic</div>
+                                                                    <div className={`${style.grid4} ${style.marginTop20} `}>
+                                                                        <div>
+                                                                            <div className={`${style.timesheetsNotPaidCountContainer} ${style.alignCenter} ${style.justifyCenter} `}>{notPaidTimesheetsData?.unpaidTimesheetsCount}</div>
+                                                                            <div className={`${style.timesheetsNotPaidTitleContainer} ${style.alignCenter} ${style.justifyCenter} `}>Timesheets Not Paid</div>
+                                                                        </div>
+                                                                        <div>
+                                                                            <div className={`${style.timesheetsNotPaidCountContainer} ${style.alignCenter} ${style.justifyCenter} `}>{notPaidTimesheetsData?.usersCount}</div>
+                                                                            <div className={`${style.timesheetsNotPaidTitleContainer} ${style.alignCenter} ${style.justifyCenter} `}>Service Providers Impacted</div>
+                                                                        </div>
+                                                                        <div>
+                                                                            <div className={`${style.timesheetsNotPaidCountContainer} ${style.alignCenter} ${style.justifyCenter} `}>{notPaidTimesheetsData?.contractCount}</div>
+                                                                            <div className={`${style.timesheetsNotPaidTitleContainer} ${style.alignCenter} ${style.justifyCenter} `}>Contracts Affected</div>
+                                                                        </div>
+                                                                        <div>
+                                                                            <div className={`${style.timesheetsNotPaidCountContainer} ${style.alignCenter} ${style.justifyCenter} `}>${notPaidTimesheetsData?.unpaidAmount >= 1000 ? `${(notPaidTimesheetsData?.unpaidAmount / 1000).toFixed(2)}K` : notPaidTimesheetsData?.unpaidAmount}</div>
+                                                                            <div className={`${style.timesheetsNotPaidTitleContainer} ${style.alignCenter} ${style.justifyCenter} `}>Dollars Not Paid</div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className={`${style.headerBorderStyle} ${style.marginTop40} `}></div>
+                                                                    {notPaidTimesheetsData?.unPaidTimesheetsByContract?.length !== 0 && (
+                                                                        <>
+                                                                            {notPaidTimesheetsData?.unPaidTimesheetsByContract?.map(data => (
+                                                                                <ReportsTable
+                                                                                    tableType={data?.contractName}
+                                                                                    tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Current Status', 'Invoice Amount']}
+                                                                                    tableValue={data?.timesheets}
+                                                                                    activitiesServicesValues={getNotPaidTimesheetsValues(data)}
+                                                                                    styleName={style.grid6}
+                                                                                />
+                                                                            ))}
+                                                                        </>
+                                                                    )}
+
+                                                                </div>
+                                                            ) : (
+                                                                <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
+                                                                    subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
+                                                            )}
+                                                        </>
+                                                    ) : reportType === "submittedTimesheetsPaymentStatus" ? (
+                                                        <div className={style.marginTop20}>
+                                                            {submittedTimesheetsPaymentStatusData?.timesheetPayment?.length !== 0 ? (
+                                                                <>
+                                                                    <ReportsTable
+                                                                        tableType={''}
+                                                                        tableHeader={['Timesheet Name', 'Period', 'Contractor', 'Site/ Dept', 'Billable Hours', 'Non Billable Hours', 'Submission Date', 'Current Status', 'Status Date', 'Payment Status', 'Payment Amount', 'Payment Date']}
+                                                                        tableValue={submittedTimesheetsPaymentStatusData?.timesheetPayment}
+                                                                        activitiesServicesValues={getSubmittedTimesheetsPaymentStatusValues()}
+                                                                        styleName={style.grid12}
+                                                                    />
+                                                                </>
+                                                            ) : (
+                                                                <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
+                                                                    subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
+                                                            )}
+
+                                                        </div>
+                                                    )
+                                                        // : (reportType === "scheduledActivity" || reportType === "scheduledActivityByContract") ? (
+                                                        //     <>
+                                                        //         <div className={style.grid2}>
+                                                        //             <div>
+                                                        //                 <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20} `}>Hours Completed Summary</div>
+                                                        //                 <div className={style.marginTop20}>
+                                                        //                     <StackedBarChartBaseLayout2 />
+                                                        //                 </div>
+                                                        //             </div>
+                                                        //             <div>
+                                                        //                 <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter} ${style.marginTop20} ${style.marginBottom20} `}>Dollars Paid Summary</div>
+                                                        //                 <Pie data={pieSampleData} width={200} height={200} innerRadius={0} outerRadius={100} />
+                                                        //             </div>
+                                                        //         </div>
+                                                        //         <div className={`${style.headerBorderStyle} `}></div>
+                                                        //         <div className={style.contractNameCardStyle}>Contract Name 1 - Individual Contractor Contract</div>
+                                                        //         <div className={`${style.grid2} ${style.marginTop40} `}>
+                                                        //             <div>
+                                                        //                 <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20} `}>Hours Completed Summary</div>
+                                                        //                 <div className={style.marginTop20}>
+                                                        //                     <StackedBarChartBaseLayout2 />
+                                                        //                 </div>
+                                                        //             </div>
+                                                        //             <div>
+                                                        //                 <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter} ${style.marginTop20} ${style.marginBottom20} `}>Dollars Paid Summary</div>
+                                                        //                 <Pie data={pieSampleData} width={200} height={200} innerRadius={0} outerRadius={100} />
+                                                        //             </div>
+                                                        //         </div>
+                                                        //         <div className={`${style.mildBorderStyle} ${style.marginTop20} `}></div>
+                                                        //         <div className={style.marginTop40}>
+                                                        //             <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Scheduled Activity/ Services Completion Status</div>
+                                                        //             <div className={`${style.grid6} ${style.marginTop20} `}>
+                                                        //                 <div></div>
+                                                        //                 <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Total To do</div>
+                                                        //                 <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Completed</div>
+                                                        //                 <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Not Verified</div>
+                                                        //                 <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Not Completed</div>
+                                                        //                 <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Yet to Complete</div>
+                                                        //             </div>
+                                                        //             <div className={`${style.grid6} ${style.marginTop20} `}>
+                                                        //                 <div className={`${style.reportTypeValueBoldTextStyle} ${style.marginTop5} `}>Medical Services</div>
+                                                        //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>12 ($ xxx)</div>
+                                                        //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>2</div>
+                                                        //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>1</div>
+                                                        //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>7 ($ xxx)</div>
+                                                        //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>2 ($ xxx)</div>
+                                                        //             </div>
+                                                        //             <div className={`${style.grid6} ${style.marginTop20} `}>
+                                                        //                 <div className={`${style.reportTypeValueBoldTextStyle} ${style.marginTop5} `}>Administrative Services</div>
+                                                        //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>12 ($ xxx)</div>
+                                                        //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>2</div>
+                                                        //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>1</div>
+                                                        //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>7 ($ xxx)</div>
+                                                        //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>2 ($ xxx)</div>
+                                                        //             </div>
+                                                        //             <div className={`${style.grid6} ${style.marginTop20} `}>
+                                                        //                 <div className={`${style.reportTypeValueBoldTextStyle} ${style.marginTop5} `}>Supplemental Services</div>
+                                                        //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>12 ($ xxx)</div>
+                                                        //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>2</div>
+                                                        //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>1</div>
+                                                        //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>7 ($ xxx)</div>
+                                                        //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>2 ($ xxx)</div>
+                                                        //             </div>
+                                                        //         </div>
+                                                        //         <div className={`${style.mildBorderStyle} ${style.marginTop20} `}></div>
+                                                        //         <div className={style.contractNameCardStyle}>Contract Name 2 - Multiple Contractor Contract - 5 Service Providers</div>
+                                                        //         <div className={`${style.grid2} ${style.marginTop20} `}>
+                                                        //             <div>
+                                                        //                 <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20} `}>Hours Completed Summary</div>
+                                                        //                 <div className={style.marginTop20}>
+                                                        //                     <StackedBarChartBaseLayout2 />
+                                                        //                 </div>
+                                                        //             </div>
+                                                        //             <div>
+                                                        //                 <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter} ${style.marginTop20} ${style.marginBottom20} `}>Dollars Paid Summary</div>
+                                                        //                 <Pie data={pieSampleData} width={200} height={200} innerRadius={0} outerRadius={100} />
+                                                        //             </div>
+                                                        //         </div>
+                                                        //         <div className={`${style.mildBorderStyle} ${style.marginTop20} `}></div>
+                                                        //         <div className={style.marginTop40}>
+                                                        //             <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Scheduled Activity/ Services Completion Status</div>
+                                                        //             <div className={`${style.grid6} ${style.marginTop20} `}>
+                                                        //                 <div></div>
+                                                        //                 <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Total To do</div>
+                                                        //                 <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Completed</div>
+                                                        //                 <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Not Verified</div>
+                                                        //                 <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Not Completed</div>
+                                                        //                 <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Yet to Complete</div>
+                                                        //             </div>
+                                                        //             <div className={`${style.grid6} ${style.marginTop20} `}>
+                                                        //                 <div className={`${style.reportTypeValueBoldTextStyle} ${style.marginTop5} `}>Medical Services</div>
+                                                        //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>12 ($ xxx)</div>
+                                                        //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>2</div>
+                                                        //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>1</div>
+                                                        //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>7 ($ xxx)</div>
+                                                        //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>2 ($ xxx)</div>
+                                                        //             </div>
+                                                        //             <div className={`${style.grid6} ${style.marginTop20} `}>
+                                                        //                 <div className={`${style.reportTypeValueBoldTextStyle} ${style.marginTop5} `}>Administrative Services</div>
+                                                        //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>12 ($ xxx)</div>
+                                                        //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>2</div>
+                                                        //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>1</div>
+                                                        //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>7 ($ xxx)</div>
+                                                        //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>2 ($ xxx)</div>
+                                                        //             </div>
+                                                        //             <div className={`${style.grid6} ${style.marginTop20} `}>
+                                                        //                 <div className={`${style.reportTypeValueBoldTextStyle} ${style.marginTop5} `}>Supplemental Services</div>
+                                                        //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>12 ($ xxx)</div>
+                                                        //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>2</div>
+                                                        //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>1</div>
+                                                        //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>7 ($ xxx)</div>
+                                                        //                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>2 ($ xxx)</div>
+                                                        //             </div>
+                                                        //         </div>
+                                                        //     </>
+                                                        // ) 
+                                                        : (reportType === "upcomingContractRenewals" || reportType === "oneTimeContract") ? (
+                                                            (individualContract?.length !== 0 || multipleContract?.length !== 0) ? (
+                                                                <>
+                                                                    {individualContract?.length !== 0 && (
                                                                         <ReportsTable
-                                                                            tableType={'Current Remit To Address For Active Contracts'}
-                                                                            tableHeader={['Contract Name', 'Contract Type', 'Remit To Address', 'City', 'State', 'ZIP Code', 'Last Updated Date']}
-                                                                            tableValue={currentRemitToAddressValues}
-                                                                            activitiesServicesValues={getCurrentRemitToAddressForActiveContractsValues()}
-                                                                            styleName={style.remitToAddressGrid}
+                                                                            tableType={`Individual Service Provider Contract Renewals Within ${dataToUseInReport?.renewalreportingTimePeriod} Days`}
+                                                                            tableHeader={['Contract Name', 'Contract ID', 'Contract Expiration Date', 'Contracting Entity', 'Point of Contact', 'Point of Contact Number', 'Email Address']}
+                                                                            tableValue={individualContract}
+                                                                            activitiesServicesValues={getContractManagementUpcomingValues('INDIVIDUAL')}
+                                                                            styleName={style.individualServiceReportGrid}
                                                                         />
+                                                                    )}
+                                                                    {multipleContract?.length !== 0 && (
+                                                                        <ReportsTable
+                                                                            tableType={`Multiple Service Provider Contract Renewals Within ${dataToUseInReport?.renewalreportingTimePeriod} Days`}
+                                                                            tableHeader={['Contract Name', 'Contract ID', 'Contract Expiration Date', 'Contracting Entity', 'Point of Contact', 'Point of Contact Number', 'Email Address', 'Service Providers']}
+                                                                            tableValue={multipleContract}
+                                                                            activitiesServicesValues={getContractManagementUpcomingValues('MULTIPLE')}
+                                                                            styleName={style.multipleServiceReportGrid}
+                                                                        />
+                                                                    )}
+                                                                </>
+                                                            ) : reportType === "upcomingContractRenewals" ? (
+
+                                                                <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
+                                                                    subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
+                                                            ) : (
+
+                                                                <ReportNoDataBox heading={'You do not have any One Time Contracts that will terminate on expiration'}
+                                                                    subHeading={''} />
+                                                            )) : (reportType === "contractDocumentsOnFile") ?
+                                                            contractDocumentsOnFileValues?.length !== 0 ? (
+                                                                <>
+                                                                    {contractDocumentsOnFileValues?.map((data, index) => (
+                                                                        <ReportsTable
+                                                                            tableType={`${data?.contractName?.contractName} - ${format(new Date(data?.contractDetail?.contractTerm?.startDate), 'MMM d, yyyy')} - ${format(new Date(data?.contractDetail?.contractTerm?.endDate), 'MMM d, yyyy')} (${dataToUseInReport?.contractStatus})`}
+                                                                            tableHeader={['Document Name', 'Document Type', 'Description', 'Uploaded By', 'Uploaded Date']}
+                                                                            tableValue={data?.contractDetail?.contractFiles}
+                                                                            activitiesServicesValues={getContractDocumentsOnFileValues(data)}
+                                                                            styleName={style.grid5}
+                                                                            clickable={true}
+                                                                            directionList={fileURL}
+                                                                        />
+                                                                    ))}
+                                                                </>
+                                                            ) : (
+                                                                <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
+                                                                    subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
+                                                            ) : (reportType === "multiProviderContractsList") ?
+                                                                multiProviderContractValues?.length !== 0 ? (
+                                                                    <>
+                                                                        {multiProviderContractValues?.map(data => (
+                                                                            <ReportsTable
+                                                                                tableType={`${data?.contract?.contractName?.contractName} - ${format(new Date(data?.contract?.contractDetail?.contractTerm?.startDate || new Date()), 'MMM d, yyyy')} - ${format(new Date(data?.contractDetail?.contractTerm?.endDate || new Date()), 'MMM d, yyyy')}  (${dataToUseInReport?.contractStatus})`}
+                                                                                tableHeader={['Service Provider Name', 'Service Provider Type', 'Cell Phone', 'Email', 'City', 'State']}
+                                                                                tableValue={data?.users}
+                                                                                activitiesServicesValues={getMultipleContractsListValues(data)}
+                                                                                styleName={style.multiProviderGrid}
+                                                                            />
+                                                                        ))}
                                                                     </>
                                                                 ) : (
                                                                     <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
                                                                         subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
-                                                                ) : reportType === "activityStatusTracker" ? (
-                                                                    <>
-                                                                        {activityTrackServices?.length !== 0 ? activityTrackServices?.map((data, index) => data?.activityStatsByContract?.map((innerData, innerIndex) => (
-                                                                            <div key={innerIndex}>
-                                                                                <TrackTable
-                                                                                    heading={`${innerData?.contract?.contractName?.contractName} - ${innerData?.contract?.contractId?.id}`}
-                                                                                    columnHeading={[
-                                                                                        `Compensation Policy: ${compensationPolicy[innerData?.contract?.compensationPolicy]}`,
-                                                                                        `Contract Period:  ${format(new Date(innerData?.contract?.contractTerm?.startDate), 'MMM d, yyyy')} - ${format(new Date(innerData?.contract?.contractTerm?.endDate), 'MMM d, yyyy')}`,
-                                                                                        entityName
-                                                                                    ]}
-                                                                                    tableHead={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? ['CONTRACTED ACTIVITY / SERVICES', 'COMPLETED', 'TO BE PROCESSED', ''] : ['CONTRACTED ACTIVITY / SERVICES', 'EXPECTED', 'COMPLETED', 'TO BE PROCESSED', 'BALANCE', '']}
-                                                                                    // tableHead={['CONTRACTED ACTIVITY / SERVICES', 'COMPLETED', 'TO BE PROCESSED', 'BALANCE', '']}
-                                                                                    tableHeadTop={['', `Contract Year:  ${format(new Date(innerData?.activityStatsMeta?.contractYearInterval?.startDate || new Date()), 'MMM d, yyyy')} - ${format(new Date(innerData?.activityStatsMeta?.contractYearInterval?.endDate || new Date()), 'MMM d, yyyy')}`]}
-                                                                                    tableHeadBottom={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? ['', 'UNITS', 'HOURS', 'UNITS', 'HOURS', ''] : ['', 'UNITS', 'UNITS', 'HOURS', 'UNITS', 'HOURS', 'UNITS', 'HOURS', '']}
-                                                                                    // tableHeadBottom={['', 'UNITS', 'HOURS', 'UNITS', 'HOURS', 'UNITS', 'HOURS', '']}
-                                                                                    tableData={getTrackTableValue(data)}
-                                                                                    headerGrid={style.trackTableHeaderGrid}
-                                                                                    dataGrid={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableDataGridForActivityBased : style.trackTableDataGrid}
-                                                                                    tableHeadGrid={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableHeaderMiddleGridForActivityBased : style.trackTableHeaderMiddleGrid}
-                                                                                    tableHeadTopGrid={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableHeaderTopGridForActivityBased : style.trackTableHeaderTopGrid}
-                                                                                    tableHeadBottomGrid={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableHeaderBottomGridForActivityBased : style.trackTableHeaderBottomGrid}
-                                                                                    header={true}
-                                                                                    directionRow={false}
+                                                                ) : (reportType === "contractsWithABusinessEntity") ?
+                                                                    contractsWithBusinessEntityValues?.length !== 0 ? (
+                                                                        <>
+                                                                            <ReportsTable
+                                                                                tableType={`Contracts With A Business Entity  (${dataToUseInReport?.contractStatus})`}
+                                                                                tableHeader={['Contract Name', 'Contract Type', 'Business Entity', 'Address', 'City', 'State', 'Point Of Contact', 'Email']}
+                                                                                tableValue={contractsWithBusinessEntityValues}
+                                                                                activitiesServicesValues={getContractsWithBusinessEntityValues()}
+                                                                                styleName={style.grid8}
+                                                                            />
+                                                                        </>
+                                                                    ) : (
+                                                                        <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
+                                                                            subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
+                                                                    ) : (reportType === "currentRemitToAddressForActiveContracts") ?
+                                                                        currentRemitToAddressValues?.length !== 0 ? (
+                                                                            <>
+                                                                                <ReportsTable
+                                                                                    tableType={'Current Remit To Address For Active Contracts'}
+                                                                                    tableHeader={['Contract Name', 'Contract Type', 'Remit To Address', 'City', 'State', 'ZIP Code', 'Last Updated Date']}
+                                                                                    tableValue={currentRemitToAddressValues}
+                                                                                    activitiesServicesValues={getCurrentRemitToAddressForActiveContractsValues()}
+                                                                                    styleName={style.remitToAddressGrid}
                                                                                 />
-                                                                            </div>
-                                                                        ))) : (
+                                                                            </>
+                                                                        ) : (
                                                                             <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
                                                                                 subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
-                                                                        )}
-                                                                    </>
-                                                                ) : reportType === "complianceStatus" ? (
-                                                                    <>
-                                                                        <div className={style.marginTop40}>
-                                                                            <StackedBarChartBaseLayout3 />
-                                                                        </div>
-                                                                        <div className={`${style.mildBorderStyle} ${style.marginTop20} `}></div>
-                                                                        <div className={style.marginTop40}>
-                                                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Non Compliant Providers With Required Documents</div>
-                                                                            <div className={`${style.grid7} ${style.marginTop20} `}>
-                                                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Service Provider Name</div>
-                                                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Title</div>
-                                                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Department</div>
-                                                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Site</div>
-                                                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Non Compliant PODs</div>
-                                                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Non Compliant days</div>
-                                                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Open Tasks</div>
-                                                                            </div>
-                                                                            <div className={`${style.grid7} ${style.marginTop20} `}>
-                                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>John Doe</div>
-                                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Chief Medical Officer</div>
-                                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>--</div>
-                                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Good Samaritan Hospital</div>
-                                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>3</div>
-                                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>20</div>
-                                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>2</div>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div className={style.marginTop40}>
-                                                                            <div>
-                                                                                <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Providers With Required Documents Needing Compliance Within Next 30 Days</div>
-                                                                                <div className={`${style.grid7} ${style.marginTop20} `}>
-                                                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Service Provider Name</div>
-                                                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Title</div>
-                                                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Department</div>
-                                                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Site</div>
-                                                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Non Compliant PODs</div>
-                                                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Non Compliant days</div>
-                                                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Open Tasks</div>
-                                                                                </div>
-                                                                                <div className={`${style.grid7} ${style.marginTop20} `}>
-                                                                                    <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>John Doe</div>
-                                                                                    <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Chief Medical Officer</div>
-                                                                                    <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>--</div>
-                                                                                    <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Good Samaritan Hospital</div>
-                                                                                    <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>3</div>
-                                                                                    <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>20</div>
-                                                                                    <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>2</div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div className={style.marginTop40}>
-                                                                            <div>
-                                                                                <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Providers In Compliance With Required Documents</div>
-                                                                                <div className={`${style.grid7} ${style.marginTop20} `}>
-                                                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Service Provider Name</div>
-                                                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Title</div>
-                                                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Department</div>
-                                                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Site</div>
-                                                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Non Compliant PODs</div>
-                                                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Non Compliant days</div>
-                                                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Open Tasks</div>
-                                                                                </div>
-                                                                                <div className={`${style.grid7} ${style.marginTop20} `}>
-                                                                                    <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>John Doe</div>
-                                                                                    <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Chief Medical Officer</div>
-                                                                                    <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>--</div>
-                                                                                    <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Good Samaritan Hospital</div>
-                                                                                    <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>3</div>
-                                                                                    <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>20</div>
-                                                                                    <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>2</div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </>
-                                                                ) : reportType === "nonCompliant" ? (
-                                                                    <>
-                                                                        {isNonCompliantReportTileClicked ? (
+                                                                        ) : reportType === "activityStatusTracker" ? (
                                                                             <>
-                                                                                {nonCompliantContract?.documentNotUploadedContracts?.length !== 0 && (
-                                                                                    <ReportsTable
-                                                                                        tableType={`Contracts With No ${selectedPodTypeFromTile} Proof Of Documentation`}
-                                                                                        tableHeader={['Contract Name', 'Contract ID', 'Contract Manager', 'Contract Effective Date', 'Contracting Entity', 'Point of Contact', 'Phone Number', 'Email Address']}
-                                                                                        tableValue={nonCompliantContract?.documentNotUploadedContracts}
-                                                                                        activitiesServicesValues={getContractComplianceValues('documentNotUploadedContracts')}
-                                                                                        styleName={style.individualServiceReportGrid}
-                                                                                    />
+                                                                                {activityTrackServices?.length !== 0 ? activityTrackServices?.map((data, index) => data?.activityStatsByContract?.map((innerData, innerIndex) => (
+                                                                                    <div key={innerIndex}>
+                                                                                        <TrackTable
+                                                                                            heading={`${innerData?.contract?.contractName?.contractName} - ${innerData?.contract?.contractId?.id}`}
+                                                                                            columnHeading={[
+                                                                                                `Compensation Policy: ${compensationPolicy[innerData?.contract?.compensationPolicy]}`,
+                                                                                                `Contract Period:  ${format(new Date(`${innerData?.contract?.contractTerm?.startDate}T00:00`), 'MMM d, yyyy')} - ${format(new Date(`${innerData?.contract?.contractTerm?.endDate}T00:00`), 'MMM d, yyyy')}`,
+                                                                                                entityName
+                                                                                            ]}
+                                                                                            tableHead={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? ['CONTRACTED ACTIVITY / SERVICES', 'COMPLETED', 'TO BE PROCESSED', ''] : ['CONTRACTED ACTIVITY / SERVICES', 'EXPECTED', 'COMPLETED', 'TO BE PROCESSED', 'BALANCE', '']}
+                                                                                            // tableHead={['CONTRACTED ACTIVITY / SERVICES', 'COMPLETED', 'TO BE PROCESSED', 'BALANCE', '']}
+                                                                                            tableHeadTop={['', innerData?.activityStatsMeta?.contractYearInterval !== null ? `Contract Year:  ${format(new Date(`${innerData?.activityStatsMeta?.contractYearInterval?.startDate}T00:00`), 'MMM d, yyyy')} - ${format(new Date(`${innerData?.activityStatsMeta?.contractYearInterval?.endDate}T00:00`), 'MMM d, yyyy')}` : '-']}
+                                                                                            tableHeadBottom={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? ['', 'UNITS', 'HOURS', 'UNITS', 'HOURS', ''] : ['', 'UNITS', 'UNITS', 'HOURS', 'UNITS', 'HOURS', 'UNITS', 'HOURS', '']}
+                                                                                            // tableHeadBottom={['', 'UNITS', 'HOURS', 'UNITS', 'HOURS', 'UNITS', 'HOURS', '']}
+                                                                                            tableData={getTrackTableValue(data)}
+                                                                                            headerGrid={style.trackTableHeaderGrid}
+                                                                                            dataGrid={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableDataGridForActivityBased : style.trackTableDataGrid}
+                                                                                            tableHeadGrid={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableHeaderMiddleGridForActivityBased : style.trackTableHeaderMiddleGrid}
+                                                                                            tableHeadTopGrid={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableHeaderTopGridForActivityBased : style.trackTableHeaderTopGrid}
+                                                                                            tableHeadBottomGrid={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableHeaderBottomGridForActivityBased : style.trackTableHeaderBottomGrid}
+                                                                                            header={true}
+                                                                                            directionRow={false}
+                                                                                        />
+                                                                                    </div>
+                                                                                ))) : (
+                                                                                    <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
+                                                                                        subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
                                                                                 )}
-                                                                                {nonCompliantContract?.expiredContracts?.length !== 0 && (
-                                                                                    <ReportsTable
-                                                                                        tableType={`Contracts With Expired ${selectedPodTypeFromTile} `}
-                                                                                        tableHeader={['Contract Name', 'Contract ID', 'Contract Manager', 'Contract Effective Date', 'Contracting Entity', 'Point of Contact', 'Phone Number', 'Email Address']}
-                                                                                        tableValue={nonCompliantContract?.expiredContracts}
-                                                                                        activitiesServicesValues={getContractComplianceValues('expiredContracts')}
-                                                                                        styleName={style.individualServiceReportGrid}
-                                                                                    />
-                                                                                )}
-                                                                                {nonCompliantContract?.renewalContracts?.length !== 0 && (
-                                                                                    <ReportsTable
-                                                                                        tableType={`Contracts With Renewals in next 30 days ${selectedPodTypeFromTile} `}
-                                                                                        tableHeader={['Contract Name', 'Contract ID', 'Contract Manager', 'Contract Effective Date', 'Contracting Entity', 'Point of Contact', 'Phone Number', 'Email Address']}
-                                                                                        tableValue={nonCompliantContract?.renewalContracts}
-                                                                                        activitiesServicesValues={getContractComplianceValues('renewalContracts')}
-                                                                                        styleName={style.individualServiceReportGrid}
-                                                                                    />
-                                                                                )}
-                                                                                {nonCompliantContract?.notExpiredContracts?.length !== 0 && (
-                                                                                    <ReportsTable
-                                                                                        tableType={`Contracts With Not Expired ${selectedPodTypeFromTile} `}
-                                                                                        tableHeader={['Contract Name', 'Contract ID', 'Contract Manager', 'Contract Effective Date', 'Contracting Entity', 'Point of Contact', 'Phone Number', 'Email Address']}
-                                                                                        tableValue={nonCompliantContract?.notExpiredContracts}
-                                                                                        activitiesServicesValues={getContractComplianceValues('notExpiredContracts')}
-                                                                                        styleName={style.individualServiceReportGrid}
-                                                                                    />
+                                                                            </>
+                                                                        ) : reportType === "complianceStatus" ? (
+                                                                            <>
+                                                                                <div className={style.marginTop40}>
+                                                                                    <StackedBarChartBaseLayout3 />
+                                                                                </div>
+                                                                                <div className={`${style.mildBorderStyle} ${style.marginTop20} `}></div>
+                                                                                <div className={style.marginTop40}>
+                                                                                    <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Non Compliant Providers With Required Documents</div>
+                                                                                    <div className={`${style.grid7} ${style.marginTop20} `}>
+                                                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Service Provider Name</div>
+                                                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Title</div>
+                                                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Department</div>
+                                                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Site</div>
+                                                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Non Compliant PODs</div>
+                                                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Non Compliant days</div>
+                                                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Open Tasks</div>
+                                                                                    </div>
+                                                                                    <div className={`${style.grid7} ${style.marginTop20} `}>
+                                                                                        <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>John Doe</div>
+                                                                                        <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Chief Medical Officer</div>
+                                                                                        <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>--</div>
+                                                                                        <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Good Samaritan Hospital</div>
+                                                                                        <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>3</div>
+                                                                                        <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>20</div>
+                                                                                        <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>2</div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div className={style.marginTop40}>
+                                                                                    <div>
+                                                                                        <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Providers With Required Documents Needing Compliance Within Next 30 Days</div>
+                                                                                        <div className={`${style.grid7} ${style.marginTop20} `}>
+                                                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Service Provider Name</div>
+                                                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Title</div>
+                                                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Department</div>
+                                                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Site</div>
+                                                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Non Compliant PODs</div>
+                                                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Non Compliant days</div>
+                                                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Open Tasks</div>
+                                                                                        </div>
+                                                                                        <div className={`${style.grid7} ${style.marginTop20} `}>
+                                                                                            <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>John Doe</div>
+                                                                                            <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Chief Medical Officer</div>
+                                                                                            <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>--</div>
+                                                                                            <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Good Samaritan Hospital</div>
+                                                                                            <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>3</div>
+                                                                                            <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>20</div>
+                                                                                            <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>2</div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div className={style.marginTop40}>
+                                                                                    <div>
+                                                                                        <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Providers In Compliance With Required Documents</div>
+                                                                                        <div className={`${style.grid7} ${style.marginTop20} `}>
+                                                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Service Provider Name</div>
+                                                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Title</div>
+                                                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Department</div>
+                                                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Site</div>
+                                                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Non Compliant PODs</div>
+                                                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Non Compliant days</div>
+                                                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Open Tasks</div>
+                                                                                        </div>
+                                                                                        <div className={`${style.grid7} ${style.marginTop20} `}>
+                                                                                            <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>John Doe</div>
+                                                                                            <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Chief Medical Officer</div>
+                                                                                            <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>--</div>
+                                                                                            <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Good Samaritan Hospital</div>
+                                                                                            <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>3</div>
+                                                                                            <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>20</div>
+                                                                                            <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>2</div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </>
+                                                                        ) : reportType === "nonCompliant" ? (
+                                                                            <>
+                                                                                {isNonCompliantReportTileClicked ? (
+                                                                                    <>
+                                                                                        {nonCompliantContract?.documentNotUploadedContracts?.length !== 0 && (
+                                                                                            <ReportsTable
+                                                                                                tableType={`Contracts With No ${selectedPodTypeFromTile} Proof Of Documentation`}
+                                                                                                tableHeader={['Contract Name', 'Contract ID', 'Contract Manager', 'Contract Effective Date', 'Contracting Entity', 'Point of Contact', 'Phone Number', 'Email Address']}
+                                                                                                tableValue={nonCompliantContract?.documentNotUploadedContracts}
+                                                                                                activitiesServicesValues={getContractComplianceValues('documentNotUploadedContracts')}
+                                                                                                styleName={style.individualServiceReportGrid}
+                                                                                            />
+                                                                                        )}
+                                                                                        {nonCompliantContract?.expiredContracts?.length !== 0 && (
+                                                                                            <ReportsTable
+                                                                                                tableType={`Contracts With Expired ${selectedPodTypeFromTile} `}
+                                                                                                tableHeader={['Contract Name', 'Contract ID', 'Contract Manager', 'Contract Effective Date', 'Contracting Entity', 'Point of Contact', 'Phone Number', 'Email Address']}
+                                                                                                tableValue={nonCompliantContract?.expiredContracts}
+                                                                                                activitiesServicesValues={getContractComplianceValues('expiredContracts')}
+                                                                                                styleName={style.individualServiceReportGrid}
+                                                                                            />
+                                                                                        )}
+                                                                                        {nonCompliantContract?.renewalContracts?.length !== 0 && (
+                                                                                            <ReportsTable
+                                                                                                tableType={`Contracts With Renewals in next 30 days ${selectedPodTypeFromTile} `}
+                                                                                                tableHeader={['Contract Name', 'Contract ID', 'Contract Manager', 'Contract Effective Date', 'Contracting Entity', 'Point of Contact', 'Phone Number', 'Email Address']}
+                                                                                                tableValue={nonCompliantContract?.renewalContracts}
+                                                                                                activitiesServicesValues={getContractComplianceValues('renewalContracts')}
+                                                                                                styleName={style.individualServiceReportGrid}
+                                                                                            />
+                                                                                        )}
+                                                                                        {nonCompliantContract?.notExpiredContracts?.length !== 0 && (
+                                                                                            <ReportsTable
+                                                                                                tableType={`Contracts With Not Expired ${selectedPodTypeFromTile} `}
+                                                                                                tableHeader={['Contract Name', 'Contract ID', 'Contract Manager', 'Contract Effective Date', 'Contracting Entity', 'Point of Contact', 'Phone Number', 'Email Address']}
+                                                                                                tableValue={nonCompliantContract?.notExpiredContracts}
+                                                                                                activitiesServicesValues={getContractComplianceValues('notExpiredContracts')}
+                                                                                                styleName={style.individualServiceReportGrid}
+                                                                                            />
+                                                                                        )}
+                                                                                    </>
+                                                                                ) : (
+                                                                                    <div className={`${style.complianceGrid2} ${style.marginTop20} `}>
+                                                                                        {podTypes?.map((data, index) => (
+                                                                                            <div className={`${style.complianceCardStyle} ${style.cursorPointer} `} key={index} onClick={() => { setIsNonCompliantReportTileClicked(true); setSelectedPodTypeFromTile(data) }}>
+                                                                                                <div className={style.complianceLeftCardStyle}>
+                                                                                                    <div className={style.complianPercentageStyle}>
+                                                                                                        {`${nonCompliantContractTile?.podTypePercentage?.[data] || 0}% `}
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                <div className={style.complianceRightCardStyle}>
+                                                                                                    <div className={style.fullWidth}>
+                                                                                                        <div className={style.complianceHeadingStyle}>{data}</div>
+                                                                                                        <div className={`${style.complianceListGrid} ${style.marginTop20} `}>
+                                                                                                            <div className={style.redDotStyle}></div>
+                                                                                                            <div className={`${style.reportRunByTextStyle} `}>Expired</div>
+                                                                                                            <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} `}>{nonCompliantContractTile?.podTypeTileCountMap?.[data]?.expiredDocumentCount}</div>
+                                                                                                        </div>
+                                                                                                        <div className={`${style.complianceListGrid} ${style.marginTop10} `}>
+                                                                                                            <div className={style.yellowDotStyle}></div>
+                                                                                                            <div className={`${style.reportRunByTextStyle} `}>Renewals in next 30 days</div>
+                                                                                                            <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} `}>{nonCompliantContractTile?.podTypeTileCountMap?.[data]?.renewalIn30DaysDocumentCount}</div>
+                                                                                                        </div>
+                                                                                                        <div className={`${style.complianceListGrid} ${style.marginTop10} `}>
+                                                                                                            <div className={style.greenDotStyle}></div>
+                                                                                                            <div className={`${style.reportRunByTextStyle} `}>Not expired</div>
+                                                                                                            <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} `}>{nonCompliantContractTile?.podTypeTileCountMap?.[data]?.notExpiredDocumentCount}</div>
+                                                                                                        </div>
+                                                                                                        <div className={`${style.complianceListGrid} ${style.marginTop10} `}>
+                                                                                                            <div className={style.blueDotStyle}></div>
+                                                                                                            <div className={`${style.reportRunByTextStyle} `}>Document copy not on file</div>
+                                                                                                            <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} `}>{nonCompliantContractTile?.podTypeTileCountMap?.[data]?.documentFileNotFoundCount}</div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        ))}
+                                                                                    </div>
                                                                                 )}
                                                                             </>
                                                                         ) : (
-                                                                            <div className={`${style.complianceGrid2} ${style.marginTop20} `}>
-                                                                                {podTypes?.map((data, index) => (
-                                                                                    <div className={`${style.complianceCardStyle} ${style.cursorPointer} `} key={index} onClick={() => { setIsNonCompliantReportTileClicked(true); setSelectedPodTypeFromTile(data) }}>
-                                                                                        <div className={style.complianceLeftCardStyle}>
-                                                                                            <div className={style.complianPercentageStyle}>
-                                                                                                {`${nonCompliantContractTile?.podTypePercentage?.[data] || 0}% `}
-                                                                                            </div>
-                                                                                        </div>
-                                                                                        <div className={style.complianceRightCardStyle}>
-                                                                                            <div className={style.fullWidth}>
-                                                                                                <div className={style.complianceHeadingStyle}>{data}</div>
-                                                                                                <div className={`${style.complianceListGrid} ${style.marginTop20} `}>
-                                                                                                    <div className={style.redDotStyle}></div>
-                                                                                                    <div className={`${style.reportRunByTextStyle} `}>Expired</div>
-                                                                                                    <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} `}>{nonCompliantContractTile?.podTypeTileCountMap?.[data]?.expiredDocumentCount}</div>
-                                                                                                </div>
-                                                                                                <div className={`${style.complianceListGrid} ${style.marginTop10} `}>
-                                                                                                    <div className={style.yellowDotStyle}></div>
-                                                                                                    <div className={`${style.reportRunByTextStyle} `}>Renewals in next 30 days</div>
-                                                                                                    <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} `}>{nonCompliantContractTile?.podTypeTileCountMap?.[data]?.renewalIn30DaysDocumentCount}</div>
-                                                                                                </div>
-                                                                                                <div className={`${style.complianceListGrid} ${style.marginTop10} `}>
-                                                                                                    <div className={style.greenDotStyle}></div>
-                                                                                                    <div className={`${style.reportRunByTextStyle} `}>Not expired</div>
-                                                                                                    <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} `}>{nonCompliantContractTile?.podTypeTileCountMap?.[data]?.notExpiredDocumentCount}</div>
-                                                                                                </div>
-                                                                                                <div className={`${style.complianceListGrid} ${style.marginTop10} `}>
-                                                                                                    <div className={style.blueDotStyle}></div>
-                                                                                                    <div className={`${style.reportRunByTextStyle} `}>Document copy not on file</div>
-                                                                                                    <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} `}>{nonCompliantContractTile?.podTypeTileCountMap?.[data]?.documentFileNotFoundCount}</div>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                ))}
-                                                                            </div>
+                                                                            <>
+                                                                            </>
                                                                         )}
-                                                                    </>
-                                                                ) : (
-                                                                    <>
-                                                                    </>
-                                                                )}
+                                            </>
                                         </div>
                                     </tbody>
                                     <tfoot>
