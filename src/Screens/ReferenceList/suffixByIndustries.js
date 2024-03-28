@@ -15,6 +15,7 @@ import Navbar from "../../Components/Navbar";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import SideBar from "../../Components/Sidebar";
 import { formatInTimeZone } from "date-fns-tz";
+import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
 
 const SuffixByIndustries = () => {
   const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
@@ -59,7 +60,7 @@ const SuffixByIndustries = () => {
 
     const date = new Date(lastModifiedDate.nameSuffix?.lastModified);
     setLastUpdatedDate(
-      formatInTimeZone(date, "America/New_York", "MMM d, yyyy HH:mm zzz")
+      `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
     );
   };
 
@@ -138,6 +139,7 @@ const SuffixByIndustries = () => {
               needHeader={true}
               getAddEntityDialog={getAddEntityDialog}
               Title={"ADD SUFFIX"}
+              setIsEdit={setIsEdit}
             />
 
             <div className={style.marginTop35}>
@@ -218,7 +220,7 @@ const SuffixByIndustries = () => {
                             <p className={style.tableDataFontStyle}>
                               {formatInTimeZone(
                                 new Date(`${data.lastModifiedDate}`),
-                                "America/New_York",
+                                siteTimeZone(),
                                 "MM-dd-yyyy"
                               )}
                             </p>

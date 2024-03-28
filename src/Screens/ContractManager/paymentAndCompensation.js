@@ -68,6 +68,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
     const [unassignedKeys, setUnassignedKeys] = useState([]);
     const [showSaveInProgress, setShowSaveInProgress] = useState(false);
     const [buttonName, setButtonName] = useState("");
+    const contractStatus = sessionStorage.getItem('Selected Contract Status');
 
     const getContractDetail = async () => {
         const { data: contractData } = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
@@ -84,7 +85,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
     };
 
     const saveInProgresscheck = (buttonType) => {
-        var keys = [];
+        const keys = [];
 
         if (compensation === "RVUBASED" && valueCheck(rvuQuantity?.quantity)) {
             keys.push("RVU Quantity");
@@ -105,10 +106,27 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
             keys.push("Dollar Hourly Rate");
         }
 
+        timesheetPayments?.forEach((value, index) => {
+            console.log(value, compensationPolicy)
+            if (valueCheck(value?.maxPaymentPerContract) || isNaN(value?.maxPaymentPerContract)) {
+                keys.push(`Max. Compensation Value For Contract Period ${index + 1}`);
+            }
+            if (compensationPolicy !== 'ACTIVITY_BASED' && (valueCheck(value?.maxPaymentPerTimesheetSubmission) || isNaN(value?.maxPaymentPerTimesheetSubmission))) {
+                keys.push(`Fixed Compensation Value Per Timesheet Submission ${index + 1}`);
+            }
+            if (compensationPolicy !== 'ACTIVITY_BASED' && compensationPolicy !== 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET' && (valueCheck(value?.reducedNumberOfServices) || value?.reducedNumberOfServices === 'NA')) {
+                keys.push(`Reduced Number Of Agreed To Services ${index + 1}`);
+            }
+            if (compensationPolicy !== 'ACTIVITY_BASED' && compensationPolicy !== 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET' && (valueCheck(value?.providingAdditionalServices) || value?.providingAdditionalServices === 'NA')) {
+                keys.push(`Providing Additional Services To The Agreed To Services ${index + 1}`);
+            }
+        });
+
         setUnassignedKeys(keys);
         if (keys?.length !== 0) {
             setShowSaveInProgress(true);
             setContinueLoading(true)
+            setIsLoading(false)
         } else {
             handleContinue(buttonType);
         }
@@ -125,37 +143,36 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
     };
 
     const handleContinue = async (buttonType) => {
-        if (!continueLoading) {
-            setContinueLoading(true);
-            const data = {
-                compensationBasis: compensation,
-                rvuQuantity: rvuQuantity,
-                frequency: frequency,
-                fteEquivalent: fteEquivalent,
-                rvuReferenceUsed: rvuReferenceUsed,
-                rvuQuantityVariance: rvuQuantityVariance,
-                rvuQuantityPeriod: rvuQuantityPeriod,
-                compensationOffsetCriteria: compensationOffsetCriteria,
-                dollarRate: dollarRate,
-                dollarValue: dollarValue,
-                timesheetPayments: timesheetPayments,
-            }
-            const response = await PUT(`contract-managment-service/contracts/${contractId}/paymentAndCompensation`, JSON.stringify(data));
-            if (response) {
-                SuccessToaster('Payment And Compensation Updated Successfully');
-            }
-            else {
-                ErrorToaster('Unexpected Error');
-            }
-            setContinueLoading(false);
-            if (buttonType !== 'Continue') {
-                getShowAlert(true);
-            } else {
-                getViewPage8(true);
-                getCurrentPage('Timesheet Processing Workflow')
-            }
-            getTabDataStatus();
+        setContinueLoading(true);
+        const data = {
+            compensationBasis: compensation,
+            rvuQuantity: rvuQuantity,
+            frequency: frequency,
+            fteEquivalent: fteEquivalent,
+            rvuReferenceUsed: rvuReferenceUsed,
+            rvuQuantityVariance: rvuQuantityVariance,
+            rvuQuantityPeriod: rvuQuantityPeriod,
+            compensationOffsetCriteria: compensationOffsetCriteria,
+            dollarRate: dollarRate,
+            dollarValue: dollarValue,
+            timesheetPayments: timesheetPayments,
         }
+        const response = await PUT(`contract-managment-service/contracts/${contractId}/paymentAndCompensation`, JSON.stringify(data));
+        if (response) {
+            SuccessToaster('Payment And Compensation Updated Successfully');
+        }
+        else {
+            ErrorToaster('Unexpected Error');
+        }
+        setContinueLoading(false);
+        if (buttonType !== 'Continue') {
+            getShowAlert(true);
+        } else {
+            getViewPage8(true);
+            getCurrentPage('Timesheet Processing Workflow')
+        }
+        getTabDataStatus();
+
     }
 
     const getPaymentAndCompensation = async () => {
@@ -358,7 +375,9 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                             {compensationPolicy !== 'ACTIVITY_BASED' && (
                                 <>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                        <CommonLabel value='Fixed Compensation Value Per Timesheet Submission*' />
+                                        <CommonLabel value='Fixed Compensation Value Per Timesheet Submission*'
+                                            className={(isNaN(timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission) && paymentAndCompensation) || dataCheck(timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission)
+                                                ? style.redLable : ""} />
                                         <CommonTextField
                                             className={style.twoFieldWidth}
                                             // type="number"
@@ -376,7 +395,9 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                     </div>
                                     {compensationPolicy !== 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET' &&
                                         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                            <CommonLabel value='Compensation Offset Criteria For Reduced Number Of Agreed To Services*' />
+                                            <CommonLabel value='Compensation Offset Criteria For Reduced Number Of Agreed To Services*'
+                                                className={((dataCheck(timesheetPayments?.[i]?.reducedNumberOfServices) || timesheetPayments?.[i]?.reducedNumberOfServices === "NA") && paymentAndCompensation) || dataCheck(timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission)
+                                                    ? style.redLable : ""} />
                                             <CommonSelectField
                                                 value={timesheetPayments?.[i]?.reducedNumberOfServices}
                                                 onChange={(e) => updateTimesheetPayment(e.target.value, 'reducedNumberOfServices', i)}
@@ -387,11 +408,13 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                         </div>}
                                 </>)}
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                <CommonLabel value='Max. Compensation Value for Contract Period*' />
+                                <CommonLabel value='Max. Compensation Value for Contract Period*'
+                                    className={(isNaN(timesheetPayments?.[i]?.maxPaymentPerContract) && paymentAndCompensation) || dataCheck(timesheetPayments?.[i]?.maxPaymentPerContract) ? style.redLable : ""}
+                                />
                                 <div className={style.displayInRow}>
                                     <CommonTextField
                                         className={style.twoFieldWidth}
-                                        // type="number"
+                                        type="text"
                                         min="0"
                                         InputProps={{
                                             startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
@@ -425,7 +448,9 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                             </div>
                             {compensationPolicy !== 'ACTIVITY_BASED' && compensationPolicy !== 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET' && (
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                    <CommonLabel value='Compensation Offset Criteria For Providing Additional Services To The Agreed To Services*' />
+                                    <CommonLabel value='Compensation Offset Criteria For Providing Additional Services To The Agreed To Services*'
+                                        className={((dataCheck(timesheetPayments?.[i]?.providingAdditionalServices) || timesheetPayments?.[i]?.providingAdditionalServices === "NA") && paymentAndCompensation) || dataCheck(timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission)
+                                            ? style.redLable : ""} />
                                     <CommonSelectField
                                         value={timesheetPayments?.[i]?.providingAdditionalServices}
                                         onChange={(e) => updateTimesheetPayment(e.target.value, 'providingAdditionalServices', i)}
@@ -608,13 +633,15 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                             </div>
                             {paymentFields}
                         </div>
-                        {isEditable &&
+                        {contractStatus === "DRAFT" &&
                             <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                                 <button className={`${style.newContractButtonStyle}  ${style.cursorPointer}`} onClick={() => { getCurrentPage('Timesheet Submission Terms') }}>BACK</button>
                                 <div>
-                                    <button className={`${style.newContractOutlinedButton}  ${style.cursorPointer} ${continueLoading ? style.disabled : ''}`} onClick={() => handleContinue('Save In Progress')}>SAVE IN-PROGRESS</button>
                                     <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`}
-                                        onClick={() => handleContinue('Continue')}
+                                        onClick={!continueLoading ? () => mandatoryFieldCheck('SaveInProgress') : null}
+                                    >SAVE IN PROGRESS</button>
+                                    <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`}
+                                        onClick={!continueLoading ? () => mandatoryFieldCheck('Continue') : null}
                                     >CONTINUE</button>
                                 </div>
                             </div>

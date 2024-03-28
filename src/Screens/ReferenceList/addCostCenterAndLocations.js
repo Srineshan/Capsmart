@@ -5,6 +5,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
 import { POST, PUT, TenantID } from "./../dataSaver";
 import { index } from "d3";
+import DeleteHcRow from "./../../images/deleteHcRow.png";
 
 const AddCostCenterAndLocations = ({
   getAddCostCenterDialog,
@@ -18,7 +19,6 @@ const AddCostCenterAndLocations = ({
   const [costCenterName, setCostCenterName] = useState("");
   const [costCenterCode, setCostCenterCode] = useState("");
   const [createdDate, setCreatedDate] = useState("");
-  const [serviceLocationFields, setServiceLocationFields] = useState([""]);
   const [serviceLocations, setServiceLocations] = useState([
     { entityId: { id: TenantID }, status: "ACTIVE", location: "", code: "" },
   ]);
@@ -34,37 +34,22 @@ const AddCostCenterAndLocations = ({
         selectedCostCenterLocation?.serviceLocations?.length !== 0
           ? selectedCostCenterLocation?.serviceLocations
           : [
-              {
-                entityId: { id: TenantID },
-                status: "ACTIVE",
-                location: "",
-                code: "",
-              },
-            ]
+            {
+              entityId: { id: TenantID },
+              status: "ACTIVE",
+              location: "",
+              code: "",
+            },
+          ]
       );
     }
   }, [selectedCostCenterLocation]);
-
-  //   useEffect(() => {
-  //     getSubReasons();
-  //   }, [serviceLocations]);
 
   const handleInputChange = (e, index) => {
     const { name, value } = e.target;
     const list = [...serviceLocations];
     list[index][name] = value;
     setServiceLocations(list);
-  };
-
-  const handleLocationValue = (i, value, locationOrCode) => {
-    let temp = serviceLocations;
-    if (locationOrCode === "location") {
-      temp[i].location = value;
-    } else {
-      temp[i].code = value;
-    }
-    setServiceLocations(temp);
-    console.log(temp, value, serviceLocations);
   };
 
   //   const getSubReasons = () => {
@@ -106,26 +91,15 @@ const AddCostCenterAndLocations = ({
   //     setServiceLocationFields(temp);
   //   };
 
-  const SaveSubmitHandler = async (type) => {
+  const SaveSubmitHandler = async () => {
     if (costCenterCode === "" || costCenterName === "") {
       ErrorToaster("Enter All Mandatory Data");
       return;
     }
 
-    if (
-      !serviceLocations?.[0]?.location &&
-      serviceLocations?.[0]?.location === ""
-    ) {
-      ErrorToaster("Enter Location Name");
-      document.getElementById("locationName").focus();
-      return;
-    }
-
-    if (!serviceLocations?.[0]?.code && serviceLocations?.[0]?.code === "") {
-      ErrorToaster("Enter Location Code");
-      document.getElementById("locationCode").focus();
-      return;
-    }
+    const nonEmptyLocations = serviceLocations.filter((location, index) => {
+      return location.location.trim() !== '' && location.code.trim() !== '';
+    });
 
     const data = {
       ...(isEdit && { id: costCenterId }),
@@ -136,9 +110,10 @@ const AddCostCenterAndLocations = ({
       entityId: {
         id: TenantID,
       },
-      serviceLocations: serviceLocations,
+      serviceLocations: nonEmptyLocations,
     };
 
+    // console.log("location Data", data)
     if (!isEdit) {
       await POST("entity-service/costCenter", JSON.stringify([data]))
         .then((response) => {
@@ -170,6 +145,12 @@ const AddCostCenterAndLocations = ({
       ...serviceLocations,
       { entityId: { id: TenantID }, status: "ACTIVE", location: "", code: "" },
     ]);
+  };
+
+  const handleRemoveClick = (index) => {
+    const rows = [...serviceLocations];
+    rows.splice(index, 1);
+    setServiceLocations(rows);
   };
 
   return (
@@ -230,31 +211,32 @@ const AddCostCenterAndLocations = ({
                   <InputGroup
                     name="location"
                     value={data?.location}
-                    // defaultValue={serviceLocations?.[i]?.location}
                     placeholder="Service Location"
                     className={`${style.fullWidth}`}
-                    // onChange={(e) =>
-                    //   handleLocationValue(i, e.target.value, "location")
-                    // }
                     onChange={(e) => handleInputChange(e, i)}
-                    id="locationName"
+                    id={`locationName`}
                   />
                   <InputGroup
                     name="code"
                     value={data?.code}
-                    // defaultValue={serviceLocations?.[i]?.code}
                     placeholder="Location Code"
                     className={`${style.fullWidth}`}
                     onChange={(e) => handleInputChange(e, i)}
-                    // onChange={(e) =>
-                    //   handleLocationValue(i, e.target.value, "code")
-                    // }
-                    id="locationCode"
+                    id={`locationCode`}
                   />
+
+                  {i + 1 !== serviceLocations?.length && !isEdit ? <div className={`${style.marginRight20} ${style.alignCenter} ${style.cursorPointer}`}>
+                    <img
+                      src={DeleteHcRow}
+                      alt=""
+                      className={`${style.colorFileStyle}`}
+                      onClick={() => handleRemoveClick(i)}
+                    />
+                  </div> : null
+                  }
+
                   {i + 1 === serviceLocations?.length && (
-                    <div
-                      className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}
-                    >
+                    <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
                       <AddIcon
                         sx={{ fontSize: 25, color: "white" }}
                         onClick={() => handleAddMoreClick()}

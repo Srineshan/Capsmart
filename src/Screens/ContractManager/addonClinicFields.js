@@ -1243,6 +1243,7 @@ const AddonClinicFields = ({
                 onChange={(e) => {
                   handleNewServiceChange("name", e.target.value);
                 }}
+                maxLength={TEXTFIELDLEN50}
               />
             </div>
 
@@ -1275,7 +1276,7 @@ const AddonClinicFields = ({
                   }}
                   onChange={(e) =>
                     e.target.value >= 0 &&
-                    handleNewServiceChange("sessionDuration", parseFloat(e.target.value))
+                    handleNewServiceChange("sessionDuration", parseFloat(e.target.value = Math.max(0, Number(e.target.value)).toString().slice(0, 9)))
                   }
                   value={newServices?.sessionDuration || '0'}
                 />
@@ -1293,7 +1294,7 @@ const AddonClinicFields = ({
                           startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
                         }}
                         value={newServices?.serviceRate}
-                        onChange={(e) => e.target.value >= 0 && handleNewServiceChange('serviceRate', parseFloat(e.target.value))}
+                        onChange={(e) => e.target.value >= 0 && handleNewServiceChange('serviceRate', parseFloat(e.target.value.slice(0, 9)))}
                       />
                     </div>
                   </div>

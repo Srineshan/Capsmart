@@ -1235,7 +1235,7 @@ const ProcedureReading = ({
               e.target.value >= 0 &&
               setMetadata({
                 ...metadata,
-                sessionDuration: parseFloat(e.target.value.slice(0, 3)),
+                sessionDuration: parseFloat(e.target.value.slice(0, 9)),
                 sessionAmount: metadata?.serviceRateFrequency === 'SESSION' ? metadata?.serviceRate || 0 : (metadata?.serviceRate || 0) * (parseFloat(e.target.value.slice(0, 3)) || 0),
               })
             }
@@ -1255,7 +1255,7 @@ const ProcedureReading = ({
                     startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
                   }}
                   value={metadata?.serviceRate}
-                  onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, serviceRate: parseFloat(e.target.value), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? parseFloat(e.target.value) : (parseFloat(e.target.value) * metadata?.sessionDuration) })}
+                  onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, serviceRate: parseFloat(e.target.value.slice(0, 9)), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? parseFloat(e.target.value) : (parseFloat(e.target.value) * metadata?.sessionDuration) })}
                 />
               </div>
             </div>

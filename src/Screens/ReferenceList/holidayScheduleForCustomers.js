@@ -21,6 +21,7 @@ import style from "./index.module.scss";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
 import { formatInTimeZone } from "date-fns-tz";
+import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
 
 const HolidayScheduleForCustomers = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -83,7 +84,7 @@ const HolidayScheduleForCustomers = () => {
     );
     const date = new Date(lastModifiedDate.holidayList?.lastModified);
     setLastUpdatedDate(
-      formatInTimeZone(date, "America/New_York", "MMM d, yyyy HH:mm zzz")
+      `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
     );
   };
 
@@ -373,10 +374,7 @@ const HolidayScheduleForCustomers = () => {
                                       <p
                                         className={`${style.TextStyle4} ${style.marginLeft5}`}
                                       >
-                                        {format(
-                                          new Date(`${data?.eventDate}T00:00`),
-                                          "MMMM d, yyyy"
-                                        )}
+                                        {format(new Date(`${data?.eventDate}T00:00`), "MMMM d, yyyy")}
                                       </p>
                                     </div>
                                   ))}
@@ -465,13 +463,8 @@ const HolidayScheduleForCustomers = () => {
                                           className={`${style.holidayScheduleTableData1} ${style.healthCareTableDataColor1} ${style.spaceBetween}`}
                                           key={index}
                                         >
-                                          <p
-                                            className={style.tableDataFontStyle}
-                                          >
-                                            {format(
-                                              new Date(`${data?.eventDate}T00:00`),
-                                              "MMMM d"
-                                            )}{" "}
+                                          <p className={style.tableDataFontStyle}>
+                                            {format(new Date(`${data?.eventDate}T00:00`), "MMMM d")}
                                           </p>
                                           <p
                                             className={style.tableDataFontStyle}

@@ -12,12 +12,15 @@ import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
 import CommonTextField from '../../Components/CommonFields/CommonTextField';
 import CommonLabel from '../../Components/CommonFields/CommonLabel';
 import { SpecifiedCountCalculator } from './specifiedCountCalculator';
+import FormControl from "@mui/material/FormControl";
+import { ONCALLSERVICE } from "../../Constants";
+import MultiSelectDisplay from "../../Components/ReusableSmallComponents/multiSelectDisplay";
 
 import style from './index.module.scss';
 import EditableTable from './editableTable';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
-const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, isReset, getIsReset, sites, contractId }) => {
+const OnCallCoverageFields = ({ servicesList, getMetaData, serviceSelected, timeCommitment, isReset, getIsReset, sites, contractId }) => {
   const [timesheetWorkFlow, setTimesheetWorkflow] = useState([]);
   const contractStatus = sessionStorage.getItem('Selected Contract Status');
   const [metadata, setMetadata] = useState({
@@ -63,6 +66,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
       friday: false,
     },
     serviceDaysArray: [],
+    overlap: false,
+    overlappingActivities: [],
     weekdaysCount: '0',
     weekendsCount: '0',
     dependantServiceIncluded: false,
@@ -140,6 +145,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
     }
   }, [isReset])
 
+  console.log('servicesList', servicesList)
+
   const resetMetadata = () => {
     setMetadata({
       min: 0,
@@ -184,6 +191,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         friday: false,
       },
       serviceDaysArray: [],
+      overlap: false,
+      overlappingActivities: [],
       weekdaysCount: '0',
       weekendsCount: '0',
       dependantServiceIncluded: false,
@@ -441,6 +450,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         additionalScheduleRequired: serviceSelected?.additionalSchedule?.scheduleRequired,
         billableService: serviceSelected?.billableService,
         rateType: serviceSelected?.rateType,
+        overlap: serviceSelected?.splitActivityTimeOnOverlap,
+        overlappingActivities: serviceSelected?.overlappingActivitiesForSplit?.map(data => data?.activityTypeTemplate) || [],
         sessionDuration: serviceSelected?.duration?.hours || '0',
         serviceRate: serviceSelected?.serviceRate?.rate || '0',
         serviceRateFrequency: serviceSelected?.serviceRate?.rateFrequency,
@@ -597,7 +608,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
 
   const onTotalSessionChange = (e) => {
     if (e >= 0) {
-      let value = e.slice(0, 5);
+      let value = e.slice(0, 6);
       handleValueChange('totalSession', value);
     }
   }
@@ -662,6 +673,21 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
     }
   }
 
+  const handleOverLapActivitySelection = (value) => {
+    console.log('inside function', value);
+    let temp = metadata?.overlappingActivities;
+    if (!temp?.includes(value)) {
+      console.log('inside if condition')
+      temp.push(value)
+      console.log('temp value', temp)
+      setMetadata({ ...metadata, overlappingActivities: temp });
+    }
+  }
+
+  const removeOverlappingActivity = (index) => {
+    setMetadata({ ...metadata, overlappingActivities: metadata?.overlappingActivities?.filter((data, indexValue) => index !== indexValue)?.map(data => data) })
+  }
+
   return (
     <div>
       <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -687,6 +713,35 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         </div>
       </div>
 
+      <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+        <CommonLabel value='Exclude Payment for On Call Coverage with Overlapping Activity*' />
+        <div>
+          <div className={`${style.displayInRow} `}>
+            <CommonSwitch className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} label={metadata?.overlap ? 'YES' : 'NO'} checked={metadata?.overlap} onChange={(e) => handleValueChange('overlap', !metadata?.overlap)} />
+            {metadata?.overlap && (
+              <FormControl sx={{ width: 480 }}>
+                <CommonSelectField className={`${style.fullWidth}`}
+                  // value={metadata?.overlappingActivities}
+                  onChange={(e) => { handleOverLapActivitySelection(e.target.value) }}
+                  firstOptionLabel={servicesList?.map(data => data)?.length !== 0 ? 'Select Service to Overlap' : 'Possible Overlapping Service Not Found'} firstOptionValue={''}
+                  valueList={servicesList?.map(data => data?.activityTypeTemplate?.activityTypeTemplate)}
+                  labelList={servicesList?.map(data => data?.activityType?.activityType)}
+                  disabledList={servicesList?.map(data => false)}
+                />
+              </FormControl>
+            )}
+          </div>
+          {
+            metadata?.overlappingActivities?.length !== 0 && <MultiSelectDisplay
+              values={metadata?.overlappingActivities?.map(
+                (data) => data
+              )}
+              removeItem={removeOverlappingActivity}
+            />
+          }
+
+        </div>
+      </div>
 
 
 
@@ -736,7 +791,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                         endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                       }}
                       value={metadata?.weekdayDuration}
-                      onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 3)), 'weekdayDuration')}
+                      onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'weekdayDuration')}
                     />
                   </div>
                 </div>
@@ -774,7 +829,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                   startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>MIN</InputAdornment>,
                 }}
                 className={style.threeFieldWidth}
-                onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'weekdayMin')}
+                onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(e.target.value.slice(0, 5), 'weekdayMin')}
                 value={metadata?.weekdayMin === 0 ? '' : metadata?.weekdayMin}
                 type='number'
                 disabled={metadata?.weekdayFrequency === 'NA'}
@@ -905,7 +960,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                         endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                       }}
                       value={metadata?.weekdayNightsDuration}
-                      onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 3)), 'weekdayNightsDuration')}
+                      onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'weekdayNightsDuration')}
                     />
                   </div>
                 </div>
@@ -1086,7 +1141,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                       endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                     }}
                     value={metadata?.weekendDuration}
-                    onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 3)), 'weekendDuration')}
+                    onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'weekendDuration')}
                   />
                 </div>
               </div>
@@ -1275,7 +1330,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                       endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                     }}
                     value={metadata?.holidayDuration}
-                    onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 3)), 'holidayDuration')}
+                    onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'holidayDuration')}
                   />
                 </div>
               </div>
@@ -1499,7 +1554,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                     endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                   }}
                   value={metadata?.sessionDuration}
-                  onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, sessionDuration: parseFloat(e.target.value.slice(0, 3)), sessionAmount: metadata?.serviceRateFrequency === 'SESSION' ? metadata?.serviceRate : (metadata?.serviceRate * e.target.value) })}
+                  onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, sessionDuration: parseFloat(e.target.value.slice(0, 9)), sessionAmount: metadata?.serviceRateFrequency === 'SESSION' ? metadata?.serviceRate : (metadata?.serviceRate * e.target.value) })}
                 />
               </div>
             </div>
@@ -1535,7 +1590,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                       startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
                     }}
                     value={metadata?.serviceRate}
-                    onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, serviceRate: parseFloat(e.target.value), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? parseFloat(e.target.value) : (parseFloat(e.target.value) * metadata?.sessionDuration) })}
+                    onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, serviceRate: parseFloat(e.target.value.slice(0, 9)), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? parseFloat(e.target.value) : (parseFloat(e.target.value) * metadata?.sessionDuration) })}
                   />
                 </div>
               </div>
@@ -1622,7 +1677,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         <CommonLabel value='Total Contracted Service Sessions*' />
         <div className={style.twoCol}>
           <div className={`${style.spaceBetween} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
-            <EditableText placeholder='' value={metadata?.totalSession} type='tel' maxLength="5"
+            <EditableText placeholder='' value={metadata?.totalSession} type='tel' maxLength="6"
               className={style.editableSessionTextStyle}
               onChange={(e) => onTotalSessionChange(e)} disabled={contractStatus === "ACTIVE" ? true : false} />
             <div className={`${style.textElement} ${parseFloat(metadata?.totalSession) === parseFloat(specified) ? style.greenBase : style.redBase}`}>{specified} Minimum Specified</div>

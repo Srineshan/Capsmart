@@ -16,6 +16,7 @@ import Navbar from "../../Components/Navbar";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import SideBar from "../../Components/Sidebar";
 import { formatInTimeZone } from "date-fns-tz";
+import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
 
 const FunctionalTitles = () => {
   const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
@@ -78,7 +79,7 @@ const FunctionalTitles = () => {
 
     const date = new Date(lastModifiedDate.functionalTitles.lastModified);
     setLastUpdatedDate(
-      formatInTimeZone(date, "America/New_York", "MMM d, yyyy HH:mm zzz")
+      `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
     );
   };
 
@@ -204,6 +205,7 @@ const FunctionalTitles = () => {
               needHeader={true}
               getAddEntityDialog={getAddEntityDialog}
               Title={"ADD FUNCTIONAL TITLES"}
+              setIsEdit={setIsEdit}
             />
 
             <div className={style.marginTop35}>
@@ -280,7 +282,7 @@ const FunctionalTitles = () => {
                                           <div
                                             className={
                                               siteType?.contractedServiceProviderType ===
-                                              selectedTitle
+                                                selectedTitle
                                                 ? `${style.healthCareListCardStyle}  ${style.marginTop10} ${style.HealthCareListBackground2} ${style.spaceBetween}`
                                                 : `${style.healthCareListCardStyle}  ${style.marginTop10}  ${style.spaceBetween}`
                                             }
@@ -389,7 +391,7 @@ const FunctionalTitles = () => {
                               <p className={style.tableDataFontStyle}>
                                 {formatInTimeZone(
                                   new Date(`${data.lastModifiedDate}`),
-                                  "America/New_York",
+                                  siteTimeZone(),
                                   "MM-dd-yyyy"
                                 )}
                               </p>

@@ -24,10 +24,13 @@ import CommonLabel from "../../Components/CommonFields/CommonLabel";
 import style from "./index.module.scss";
 import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
 
+const TEXTFIELDLEN50 = 50;
+const TEXTFIELDLEN100 = 100;
+const MAXZIPCODELEN = 10;
+
 const NewServiceProvider = ({
   getNewServiceProviderDialog,
   contractId,
-  contractType,
 }) => {
   const [selectedContract, setSelectedContract] = useState(
     "Written Contract Extension For Fixed Term"
@@ -103,10 +106,10 @@ const NewServiceProvider = ({
   };
 
   useEffect(() => {
+    getContractUserData();
     getRolesData();
     getUsersData();
     getContractDetail();
-    getContractUserData();
     getEntityData();
   }, []);
 
@@ -174,17 +177,27 @@ const NewServiceProvider = ({
 
   const handleRoles = (value) => {
     if (value !== "0") {
-      const selectedValue = roles
-        .filter((data) => data?.roleName === value)
-        .map((data) => data)[0];
-      if (!selectedRoles.map((data) => data?.roleName).includes(value)) {
-        setSelectedRoles([...selectedRoles, selectedValue]);
+      let selectedValue = [];
+      if (value === "Aggregator" || value === "Activity Logger") {
+        selectedValue = selectedRoles?.filter(data => data?.roleName !== "Passive Activity Logger")?.map(data => data);
+        roles?.filter((data) => data?.roleName === "Aggregator" || data?.roleName === "Activity Logger")?.map(data => selectedValue.push(data))
+      } else if (value === "Passive Activity Logger") {
+        selectedValue = selectedRoles?.filter(data => data?.roleName !== "Activity Logger" && data?.roleName !== "Aggregator")?.map(data => data);;
+        roles?.filter((data) => data?.roleName === "Passive Activity Logger")?.map(data => selectedValue.push(data))
+      } else {
+        selectedValue = [...selectedRoles];
+        selectedValue.push(roles
+          .filter((data) => data?.roleName === value)
+          .map((data) => data)[0])
+      }
+      if (!selectedRoles?.map((data) => data?.roleName).includes(value)) {
+        setSelectedRoles(selectedValue)
       }
     }
   };
 
   const rolesTags = selectedRoles
-    ?.filter((data) => roles.map((role) => role).includes(data))
+    ?.filter((data) => roles.map((role) => role?.id === data?.id))
     ?.map((tag, index) => {
       const onRemove = () => {
         setSelectedRoles(
@@ -193,8 +206,8 @@ const NewServiceProvider = ({
       };
       return (
         <Tag
-          key={index}
-          onRemove={tag?.roleName !== "Activity Logger" && tag?.roleName !== "Passive Activity Logger" && onRemove}
+          key={`${tag?.roleName} - ${index}`}
+          onRemove={tag?.roleName !== "Activity Logger" && tag?.roleName !== "Passive Activity Logger" && tag?.roleName !== "Aggregator" && onRemove}
           large={true}
           className={style.tagStyle}
         >
@@ -211,17 +224,22 @@ const NewServiceProvider = ({
       setRoles(roles);
     }
     let temp = selectedRoles;
-    // if (
-    //   !selectedRoles?.map((data) => data?.roleName)?.includes("Activity Logger")
-    // ) {
-    //   temp.push(
-    //     roles
-    //       ?.filter((role) => role?.roleName === "Activity Logger")
-    //       ?.map((data) => data)[0]
-    //   );
+    if (
+      contractUsers?.length === 0
+    ) {
+      roles
+        ?.filter((role) => role?.roleName === "Activity Logger" || role?.roleName === "Aggregator")
+        ?.map((data) => temp.push(data));
+
+    } else {
+      roles
+        ?.filter((role) => role?.roleName === "Passive Activity Logger")
+        ?.map((data) => temp.push(data));
+    }
     setSelectedRoles(temp);
-    // }
-  };
+  }
+
+  console.log('selected Roles', selectedRoles, roles);
 
   const getContractDetail = async () => {
     const { data: contractData } = await GET(
@@ -338,6 +356,18 @@ const NewServiceProvider = ({
     }
     if (roles?.length === 0) {
       ErrorToaster("Select User Role");
+      setContinueLoading(false);
+      return;
+    }
+
+    if (siteLevel && siteTitleValues?.length === 0) {
+      ErrorToaster("Select Sites for all the Fields");
+      setContinueLoading(false);
+      return;
+    }
+
+    if (departmentLevel && departmentTitleValues?.length === 0) {
+      ErrorToaster("Select Departments for all the Fields");
       setContinueLoading(false);
       return;
     }
@@ -815,6 +845,7 @@ const NewServiceProvider = ({
                 className={style.fullWidth}
                 placeholder="Street"
                 value={address?.addressLine}
+                maxLength={TEXTFIELDLEN100}
                 onChange={(e) =>
                   setAddress({ ...address, addressLine: e.target.value })
                 }
@@ -824,18 +855,21 @@ const NewServiceProvider = ({
                   className={style.fullWidth}
                   placeholder="City"
                   value={address.city}
+                  maxLength={TEXTFIELDLEN50}
                   onChange={(e) => handleAddress("city", e.target.value)}
                 />
                 <CommonInputField
                   className={style.fullWidth}
                   placeholder="State"
                   value={address.state}
+                  maxLength={TEXTFIELDLEN50}
                   onChange={(e) => handleAddress("state", e.target.value)}
                 />
                 <CommonInputField
                   className={style.fullWidth}
                   placeholder="Zipcode"
                   value={address.zipcode}
+                  maxLength={MAXZIPCODELEN}
                   onChange={(e) => handleAddress("zipcode", e.target.value)}
                 />
               </div>
@@ -1012,7 +1046,8 @@ const NewServiceProvider = ({
                 firstOptionValue={"0"}
                 valueList={
                   contractUsers?.length === 0
-                    ? roles?.map((data) => data?.roleName)
+                    ?
+                    roles?.map((data) => data?.roleName)
                     : roles
                       ?.filter((data) => data?.roleName !== "Aggregator" && data?.roleName !== "Activity Logger")
                       ?.map((data) => data?.roleName)

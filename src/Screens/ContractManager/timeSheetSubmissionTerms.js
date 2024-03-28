@@ -988,7 +988,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
         </div>
       </div>
       {
-        isEditable &&
+        contractStatus === "DRAFT" &&
         <div className={`${style.spaceBetween} ${style.marginTop20}`}>
           <button className={`${style.newContractButtonStyle}  ${style.cursorPointer}`} onClick={() => { getCurrentPage('Contracted Services Specification') }}>BACK</button>
           <div>

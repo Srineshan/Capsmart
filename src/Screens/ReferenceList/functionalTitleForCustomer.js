@@ -20,6 +20,7 @@ import { format } from "date-fns";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
 import { formatInTimeZone } from "date-fns-tz";
+import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
 
 const FunctionalTitleForCustomer = () => {
   const [showFunctionalTitlesDialog, setShowFunctionalTitleDialog] =
@@ -34,6 +35,9 @@ const FunctionalTitleForCustomer = () => {
     []
   );
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [clicked, setClicked] = useState(0);
+  const [isClicked, setIsClicked] = useState(0);
+
   const [CSPTypeId, setCSPTypeId] = useState("");
   const [CusCSPTypeId, setCusCSPTypeId] = useState("");
 
@@ -58,6 +62,10 @@ const FunctionalTitleForCustomer = () => {
 
   const [selectAllList, setSelectAllList] = useState([]);
   const [checkedAll, setCheckedAll] = useState(false);
+  const [selectedEntityType, setSelectedEntityType] = useState("");
+  const [siteEntityCount, setSiteEntityCount] = useState("");
+  const [multisiteEntity, setMultisiteEntity] = useState(false);
+  const [entityTypes, setEntityTypes] = useState([]);
 
   const getAddFunctionalTitlesDialog = (value) => {
     setShowFunctionalTitleDialog(value);
@@ -101,6 +109,7 @@ const FunctionalTitleForCustomer = () => {
     const { data: entity } = await GET(`entity-service/entity`);
     setEntityDetails(entity);
     setEntityId(entity?.[0]?.id);
+    setMultisiteEntity(entity?.[0]?.multiSiteEntity)
   };
 
   const getLastModifiedDate = async () => {
@@ -109,7 +118,7 @@ const FunctionalTitleForCustomer = () => {
     );
     const date = new Date(lastModifiedDate.functionalTitles?.lastModified);
     setLastUpdatedDate(
-      formatInTimeZone(date, "America/New_York", "MMM d, yyyy HH:mm zzz")
+      `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
     );
   };
 
@@ -117,6 +126,9 @@ const FunctionalTitleForCustomer = () => {
     const { data: entityTypes } = await GET(`entity-service/entity/entityType`);
     if (entityTypes?.length !== 0) {
       setSiteTypeId(entityTypes?.[0]?.siteTypeId);
+      setSelectedEntityType(entityTypes?.[0]?.siteTypeName);
+      setSiteEntityCount(entityTypes?.[0]?.numberOfSites);
+      setEntityTypes(entityTypes);
     }
   };
 
@@ -153,6 +165,16 @@ const FunctionalTitleForCustomer = () => {
     setFunctionalTitlesForCSPTypeCustomerData(
       functionalTitlesForCSPTypeCustomerData
     );
+  };
+
+  const handleToggle = (index, data) => {
+    if (clicked === index) {
+      return setClicked("0");
+    }
+    setClicked(index);
+    setSiteTypeId(data?.siteTypeId);
+    setSelectedEntityType(data?.siteTypeName);
+    setSiteEntityCount(data?.numberOfSites)
   };
 
   const handleClickSelected = (index, data) => {
@@ -312,111 +334,266 @@ const FunctionalTitleForCustomer = () => {
                         </p>
                       </div>
                       <div className={style.customersAdminCardStyle1}>
-                        {contractedServiceProviderMaster?.map((data, index) => (
-                          <>
-                            <div
-                              className={`${style.boardCertificationSideRows1} ${style.displayInRow}`}
-                              key={index}
-                              onClick={() => handleClickSelected(index, data)}
-                            >
-                              <img
-                                src={IndustriesEntityFolder}
-                                alt=""
-                                className={`${style.colorFileStyle} ${style.marginLeft5}`}
-                              />
-                              <p
-                                className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft10}`}
-                              >
-                                {data?.contractedServiceProviderType.toUpperCase()}
-                              </p>
-                              <img
-                                src={
-                                  selectedIndex === index
-                                    ? CloseFolderBlue
-                                    : OpenFolderBlue
-                                }
-                                alt="OpenFolder"
-                                className={`${style.colorFileStyle2} ${style.marginLeft5}`}
-                              />
-                            </div>
-
-                            <div
-                              className={
-                                selectedIndex === index
-                                  ? `${style.listWrapper} ${style.open}`
-                                  : `${style.listWrapper}`
-                              }
-                            >
-                              {functionalTitlesForCSPTypeMaster?.filter(
-                                (data) =>
-                                  !functionalTitlesForCSPTypeCustomerData.some(
-                                    (customerData) =>
-                                      customerData?.title === data?.title
-                                  )
-                              )?.length > 1 ? (
+                        {
+                          multisiteEntity === true ?
+                            <div>
+                              {entityTypes?.map((data, idx) => (
                                 <>
                                   <div
-                                    className={`${style.customersAdminInnerRowsStyle5}  ${style.customersAdminBackground1} ${style.displayInRow}`}
+                                    className={`${style.boardCertificationSideRows2} ${style.displayInRow}`}
+                                    key={idx}
+                                    onClick={() => handleToggle(idx, data)}
                                   >
-                                    <CommonPurpleCheckBox
-                                      name="allSelect"
-                                      onChange={(event) =>
-                                        selectAll(event.target.checked)
-                                      }
-                                      checked={
-                                        selectAllList.length !== 0
-                                          ? checkedAll
-                                          : false
-                                      }
+                                    <img
+                                      src={IndustriesEntityFolder}
+                                      alt=""
+                                      className={`${style.colorFileStyle} ${style.marginLeft5}`}
                                     />
                                     <p
-                                      className={`${style.TextStyle4} ${style.marginLeft10}`}
+                                      className={`${style.tableHeaderIndustriesFontStyle} ${style.textUppercase} ${style.marginLeft10}`}
                                     >
-                                      SELECT ALL
+                                      {`${data?.siteTypeName}`}
                                     </p>
+                                    <p
+                                      className={`${style.tableHeaderIndustriesFontStyle} ${style.textUppercase} ${style.marginLeft10}`}
+                                    >
+                                      {`${multisiteEntity === true ? "( " + data?.numberOfSites + " SITES )" : ""}`}
+                                    </p>
+                                    <img
+                                      src={
+                                        clicked === idx
+                                          ? CloseFolderBlue
+                                          : OpenFolderBlue
+                                      }
+                                      alt="OpenFolder"
+                                      className={`${style.colorFileStyle2} ${style.marginLeft5}`}
+                                    />
+                                  </div>
+
+                                  <div
+                                    className={
+                                      clicked === idx
+                                        ? `${style.listWrapper} ${style.open}`
+                                        : `${style.listWrapper}`
+                                    }
+                                  >
+                                    {contractedServiceProviderMaster?.map((data, index) => (
+                                      <>
+                                        <div
+                                          className={`${style.boardCertificationSideRows1} ${style.displayInRow}`}
+                                          key={index}
+                                          onClick={() => handleClickSelected(index, data)}
+                                        >
+                                          <img
+                                            src={IndustriesEntityFolder}
+                                            alt=""
+                                            className={`${style.colorFileStyle} ${style.marginLeft5}`}
+                                          />
+                                          <p
+                                            className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft10}`}
+                                          >
+                                            {data?.contractedServiceProviderType.toUpperCase()}
+                                          </p>
+                                          <img
+                                            src={
+                                              selectedIndex === index
+                                                ? CloseFolderBlue
+                                                : OpenFolderBlue
+                                            }
+                                            alt="OpenFolder"
+                                            className={`${style.colorFileStyle2} ${style.marginLeft5}`}
+                                          />
+                                        </div>
+
+                                        <div
+                                          className={
+                                            selectedIndex === index
+                                              ? `${style.listWrapper} ${style.open}`
+                                              : `${style.listWrapper}`
+                                          }
+                                        >
+                                          {functionalTitlesForCSPTypeMaster?.filter(
+                                            (data) =>
+                                              !functionalTitlesForCSPTypeCustomerData.some(
+                                                (customerData) =>
+                                                  customerData?.title === data?.title
+                                              )
+                                          )?.length > 1 ? (
+                                            <>
+                                              <div
+                                                className={`${style.customersAdminInnerRowsStyle5}  ${style.customersAdminBackground1} ${style.displayInRow}`}
+                                              >
+                                                <CommonPurpleCheckBox
+                                                  name="allSelect"
+                                                  onChange={(event) =>
+                                                    selectAll(event.target.checked)
+                                                  }
+                                                  checked={
+                                                    selectAllList.length !== 0
+                                                      ? checkedAll
+                                                      : false
+                                                  }
+                                                />
+                                                <p
+                                                  className={`${style.TextStyle4} ${style.marginLeft10}`}
+                                                >
+                                                  SELECT ALL
+                                                </p>
+                                              </div>
+                                            </>
+                                          ) : (
+                                            <></>
+                                          )}
+
+                                          {functionalTitlesForCSPTypeMaster
+                                            ?.filter(
+                                              (data) =>
+                                                !functionalTitlesForCSPTypeCustomerData.some(
+                                                  (customerData) =>
+                                                    customerData?.title === data?.title
+                                                )
+                                            )
+                                            ?.map((data, index) => (
+                                              <div
+                                                className={`${style.customersAdminInnerRowsStyle5} ${style.customersAdminBackground1} ${style.displayInRow}`}
+                                                key={index}
+                                              >
+                                                <CommonPurpleCheckBox
+                                                  checked={
+                                                    selectedFunctionalTitlesCSPType?.filter(
+                                                      (innerData) =>
+                                                        innerData?.id === data?.id
+                                                    )?.length !== 0
+                                                  }
+                                                  onChange={(e) =>
+                                                    handleSelectFunctionalTitleCSPType(
+                                                      e,
+                                                      data
+                                                    )
+                                                  }
+                                                />
+                                                <p
+                                                  className={`${style.TextStyle4} ${style.marginLeft5}`}
+                                                >
+                                                  {data?.title}
+                                                </p>
+                                              </div>
+                                            ))}
+                                        </div>
+                                      </>
+                                    ))}
                                   </div>
                                 </>
-                              ) : (
-                                <></>
-                              )}
-
-                              {functionalTitlesForCSPTypeMaster
-                                ?.filter(
-                                  (data) =>
-                                    !functionalTitlesForCSPTypeCustomerData.some(
-                                      (customerData) =>
-                                        customerData?.title === data?.title
-                                    )
-                                )
-                                ?.map((data, index) => (
+                              ))}
+                            </div> :
+                            <div>
+                              {contractedServiceProviderMaster?.map((data, index) => (
+                                <>
                                   <div
-                                    className={`${style.customersAdminInnerRowsStyle5} ${style.customersAdminBackground1} ${style.displayInRow}`}
+                                    className={`${style.boardCertificationSideRows1} ${style.displayInRow}`}
                                     key={index}
+                                    onClick={() => handleClickSelected(index, data)}
                                   >
-                                    <CommonPurpleCheckBox
-                                      checked={
-                                        selectedFunctionalTitlesCSPType?.filter(
-                                          (innerData) =>
-                                            innerData?.id === data?.id
-                                        )?.length !== 0
-                                      }
-                                      onChange={(e) =>
-                                        handleSelectFunctionalTitleCSPType(
-                                          e,
-                                          data
-                                        )
-                                      }
+                                    <img
+                                      src={IndustriesEntityFolder}
+                                      alt=""
+                                      className={`${style.colorFileStyle} ${style.marginLeft5}`}
                                     />
                                     <p
-                                      className={`${style.TextStyle4} ${style.marginLeft5}`}
+                                      className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft10}`}
                                     >
-                                      {data?.title}
+                                      {data?.contractedServiceProviderType.toUpperCase()}
                                     </p>
+                                    <img
+                                      src={
+                                        selectedIndex === index
+                                          ? CloseFolderBlue
+                                          : OpenFolderBlue
+                                      }
+                                      alt="OpenFolder"
+                                      className={`${style.colorFileStyle2} ${style.marginLeft5}`}
+                                    />
                                   </div>
-                                ))}
+
+                                  <div
+                                    className={
+                                      selectedIndex === index
+                                        ? `${style.listWrapper} ${style.open}`
+                                        : `${style.listWrapper}`
+                                    }
+                                  >
+                                    {functionalTitlesForCSPTypeMaster?.filter(
+                                      (data) =>
+                                        !functionalTitlesForCSPTypeCustomerData.some(
+                                          (customerData) =>
+                                            customerData?.title === data?.title
+                                        )
+                                    )?.length > 1 ? (
+                                      <>
+                                        <div
+                                          className={`${style.customersAdminInnerRowsStyle5}  ${style.customersAdminBackground1} ${style.displayInRow}`}
+                                        >
+                                          <CommonPurpleCheckBox
+                                            name="allSelect"
+                                            onChange={(event) =>
+                                              selectAll(event.target.checked)
+                                            }
+                                            checked={
+                                              selectAllList.length !== 0
+                                                ? checkedAll
+                                                : false
+                                            }
+                                          />
+                                          <p
+                                            className={`${style.TextStyle4} ${style.marginLeft10}`}
+                                          >
+                                            SELECT ALL
+                                          </p>
+                                        </div>
+                                      </>
+                                    ) : (
+                                      <></>
+                                    )}
+
+                                    {functionalTitlesForCSPTypeMaster
+                                      ?.filter(
+                                        (data) =>
+                                          !functionalTitlesForCSPTypeCustomerData.some(
+                                            (customerData) =>
+                                              customerData?.title === data?.title
+                                          )
+                                      )
+                                      ?.map((data, index) => (
+                                        <div
+                                          className={`${style.customersAdminInnerRowsStyle5} ${style.customersAdminBackground1} ${style.displayInRow}`}
+                                          key={index}
+                                        >
+                                          <CommonPurpleCheckBox
+                                            checked={
+                                              selectedFunctionalTitlesCSPType?.filter(
+                                                (innerData) =>
+                                                  innerData?.id === data?.id
+                                              )?.length !== 0
+                                            }
+                                            onChange={(e) =>
+                                              handleSelectFunctionalTitleCSPType(
+                                                e,
+                                                data
+                                              )
+                                            }
+                                          />
+                                          <p
+                                            className={`${style.TextStyle4} ${style.marginLeft5}`}
+                                          >
+                                            {data?.title}
+                                          </p>
+                                        </div>
+                                      ))}
+                                  </div>
+                                </>
+                              ))}
                             </div>
-                          </>
-                        ))}
+                        }
                       </div>
                     </div>
                     <div
@@ -481,13 +658,13 @@ const FunctionalTitleForCustomer = () => {
                                   }
                                   alt="OpenFolder"
                                   className={`${style.colorFileStyle2} ${style.marginLeft5}`}
-                                  // onClick={() => {
-                                  //   setSelectedIndex(index);
-                                  //   setCSPTypeId(data?.id);
-                                  //   setCSPTypeName(
-                                  //     data?.contractedServiceProviderType
-                                  //   );
-                                  // }}
+                                // onClick={() => {
+                                //   setSelectedIndex(index);
+                                //   setCSPTypeId(data?.id);
+                                //   setCSPTypeName(
+                                //     data?.contractedServiceProviderType
+                                //   );
+                                // }}
                                 />
                               </div>
                               {selectedIndex === index &&

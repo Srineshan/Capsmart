@@ -14,6 +14,8 @@ import { currentUser } from './../../utils/auth';
 import { SuccessToaster, ErrorToaster } from './../../utils/toaster';
 import { GET, PUT } from './../dataSaver';
 import style from './index.module.scss';
+import { formatInTimeZone } from 'date-fns-tz'
+import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
 
 const ContractTermination = ({ getTerminationDialog, contracts, contractId, getContracts }) => {
   const [reason, setReason] = useState('violation of contract terms');
@@ -45,7 +47,11 @@ const ContractTermination = ({ getTerminationDialog, contracts, contractId, getC
     }
   }
 
-  console.log('terminate file contracts data', contracts)
+  // console.log('terminate file contracts data', contracts, contractId)
+
+  const contractData = contracts.find(item => item.id === contractId);
+
+  // console.log(contractData, users)
 
   const submit = async () => {
     let status = 'TERMINATED';
@@ -114,14 +120,29 @@ const ContractTermination = ({ getTerminationDialog, contracts, contractId, getC
             </div> */}
         <div className={`${style.dialogAdditionalDetailBoxStyle}`}>
           <div>
-            <div className={`${style.dialogAdditionalDetailTextStyle}`}>New Contract with No Prior Contract(s) with Entity</div>
-            <div className={`${style.dialogAdditionalDetailTextStyle} ${style.marginTop10}`}>PAMF CONTRACT ({selectedContract?.contractId?.id})</div>
-            <div className={`${style.dialogAdditionalDetailTextStyle} ${style.marginTop10}`}>MULTIPLE CONTRACTORS (23)</div>
+            {/* <div className={`${style.dialogAdditionalDetailTextStyle}`}>New Contract with No Prior Contract(s) with Entity</div> */}
+            <div className={`${style.dialogAdditionalDetailTextStyle}`}> {contractData?.newContract === true
+              ? "New Contract With No Prior Contract(s) With Entity"
+              : contractData?.newContract === false
+                ? "Existing Active Contract"
+                : "Contracted Services Continuation Renewal Contract"}</div>
+            <div className={`${style.dialogAdditionalDetailTextStyle} ${style.marginTop10}`}>PAMF CONTRACT ({`${contractData?.contractDetail?.contractId?.id
+              ? contractData?.contractDetail?.contractId?.id
+              : " - "
+              }`})</div>
+            <div className={`${style.dialogAdditionalDetailTextStyle} ${style.marginTop10}`}>CONTRACT NAME - {contractData?.contractName?.contractName}
+              {contractData?.contractType === "MULTIPLE" && users.length > 0 ? ` - ( ${users.length} ) ` : ""}</div>
           </div>
           <div>
-            <div className={`${style.dialogAdditionalDetailTextStyle}`}>{`Ranjith T { contract manager }`}</div>
-            <div className={`${style.dialogAdditionalDetailTextStyle} ${style.marginTop10}`}>SITE NAME ONLY IF MULTISITE</div>
-            <div className={`${style.dialogAdditionalDetailTextStyle} ${style.marginTop10}`}>EXPIRING IN 20 DAYS ( 10-23-2022 )</div>
+            <div className={`${style.dialogAdditionalDetailTextStyle}`}> {`${contractData?.contractDetail?.contractManager?.name
+              ?.firstName || ""
+              } ${contractData?.contractDetail?.contractManager?.name?.lastName ||
+              ""
+              }  `}
+              (Contract Manager)</div>
+            <div className={`${style.dialogAdditionalDetailTextStyle} ${style.marginTop10}`}>{`${contractData?.contractType === "MULTIPLE" ? " SITE NAME - ( " + contractData?.contractDetail?.site?.sites?.[0]?.siteName?.siteName + " ) " : ""}`}
+            </div>
+            <div className={`${style.dialogAdditionalDetailTextStyle} ${style.marginTop10}`}>EXPIRING IN 20 DAYS ( {contractData.lastModifiedDate && formatInTimeZone(new Date(contractData.lastModifiedDate) || new Date(), siteTimeZone(), 'MM-dd-yyyy HH:mm a')} {timeZoneAbbreviation()} )</div>
           </div>
         </div>
         <div className={style.extensionBorder}></div>

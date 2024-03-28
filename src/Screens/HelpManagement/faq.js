@@ -13,6 +13,7 @@ import NewFAQPost from './newFAQPost';
 import RequestFAQPost from './requestFaqPost';
 import { formatInTimeZone } from 'date-fns-tz';
 import SearchBar from './../../Components/SearchBar';
+import { siteTimeZone, timeZoneAbbreviation } from '../../utils/formatting';
 
 const FAQ = ({ getSelectedHelp }) => {
     const [selectedRow, setSelectedRow] = useState('');
@@ -123,7 +124,7 @@ const FAQ = ({ getSelectedHelp }) => {
                     </div> */}
                     <div className={`${style.bigCardStyle} ${style.marginTop20}`}>
                         <div className={style.spaceBetween}>
-                            <p className={`${style.activeContractsWidth}`}>{formatInTimeZone(new Date(), 'America/New_York', 'MMM d, yyyy H:m zzz')}</p>
+                            <p className={`${style.activeContractsWidth}`}>{formatInTimeZone(new Date(), siteTimeZone(), 'MMM d, yyyy H:m')} {timeZoneAbbreviation()}</p>
                             <div className={`${style.displayInRow} ${style.marginTop20}`}>
                                 <SearchBar />
                                 {/* <img src={UploadUser} alt="UploadUser" className={style.uploadIcon} onClick={()=> getMailTemplate(true)} />

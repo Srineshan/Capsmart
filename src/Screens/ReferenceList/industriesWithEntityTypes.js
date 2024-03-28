@@ -16,6 +16,7 @@ import Navbar from "../../Components/Navbar";
 import SideBar from "../../Components/Sidebar";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import { index } from "d3";
+import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
 
 const IndustriesWithEntityTypes = () => {
   const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
@@ -72,7 +73,7 @@ const IndustriesWithEntityTypes = () => {
 
     const date = new Date(lastModifiedDate.industries?.lastModified);
     setLastUpdatedDate(
-      formatInTimeZone(date, "America/New_York", "MMM d, yyyy HH:mm zzz")
+      `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
     );
   };
 
@@ -140,6 +141,7 @@ const IndustriesWithEntityTypes = () => {
               needHeader={true}
               getAddEntityDialog={getAddEntityDialog}
               Title={"ADD INDUSTRY"}
+              setIsEdit={setIsEdit}
             />
 
             <div className={style.marginTop35}>
@@ -238,7 +240,7 @@ const IndustriesWithEntityTypes = () => {
                                 <p className={style.tableDataFontStyle}>
                                   {formatInTimeZone(
                                     new Date(`${data.lastModifiedDate}`),
-                                    "America/New_York",
+                                    siteTimeZone(),
                                     "MM-dd-yyyy"
                                   )}
                                 </p>

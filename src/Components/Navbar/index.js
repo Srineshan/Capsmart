@@ -84,7 +84,7 @@ const Navbar = () => {
       currentUserRoles?.includes("Reviewer") ||
       currentUserRoles?.includes("Approver")
     ) {
-      // setIsActivityServiceLogAvailable(true);
+      setIsActivityServiceLogAvailable(true);
       setIsContractComplianceAvailable(true);
       setIsContractPerformanceAvailable(true);
       setIsPaymentsAvailable(true);
@@ -337,158 +337,161 @@ const Navbar = () => {
             // )
           }
           {
-            // isContractManager && (
-            // <div>
-            //   <div
-            //     className={`${style.menuStyle} ${window.location.pathname.includes("/trackContracts") ?
-            //       style.activeMenuColor : ''}`}
-            //     ref={popoverAnchorTracker}
-            //     onMouseEnter={(e) => handleClickTracker(e)}
-            //     onMouseLeave={() => handleCloseTracker()}
-            //     aria-owns={openTracker ? "mouse-over-popover" : undefined}
-            //     aria-haspopup="true"
-            //   >
-            //     <p>TRACK YOUR CONTRACTS</p>
-            //     <Popover
-            //       id={"mouse-over-popover"}
-            //       open={openTracker}
-            //       anchorEl={popoverAnchorTracker.current}
-            //       onClose={handleCloseTracker}
-            //       anchorOrigin={{
-            //         vertical: "bottom",
-            //         horizontal: "left",
-            //       }}
-            //       classes={{
-            //         paper: classes.popoverContent,
-            //       }}
-            //       PaperProps={{
-            //         onMouseEnter: handleClickTracker,
-            //         onMouseLeave: handleCloseTracker,
-            //       }}
-            //     >
-            //       <div
-            //         className={style.optionsCardStyle}
-            //         onClick={() => handleCloseTracker()}
-            //       >
-            //         <Link
-            //           to={"/trackContracts/compensationTracker"}
-            //           className={style.noFontStyle}
-            //         >
-            //           <div className={style.options}>
-            //             Compensation Tracker
-            //           </div>
-            //         </Link>
-            //         <Link
-            //           to={"/trackContracts/activityStatusTracker"}
-            //           className={style.noFontStyle}
-            //         >
-            //           <div className={style.options}>Activity Status Tracker</div>
-            //         </Link>
-            //         <Link
-            //           to={"/trackContracts/timesheetAndInvoiceApprovalsStatusTracker"}
-            //           className={style.noFontStyle}
-            //         >
-            //           <div className={style.options}>Timesheet And Invoice Approvals Status Tracker</div>
-            //         </Link>
-            //       </div>
-            //     </Popover>
-            //   </div>
-            // </div>
-            // )
-          }
-          <div>
-            <div
-              className={`${style.menuStyle} ${(window.location.pathname.includes("/reports") ||
-                window.location.pathname.includes("/reportTypeOverview")) &&
-                style.activeMenuColor
-                }`}
-              ref={popoverAnchor}
-              onMouseEnter={(e) => handleClick(e)}
-              onMouseLeave={() => handleClose()}
-              aria-owns={open ? "mouse-over-popover" : undefined}
-              aria-haspopup="true"
-            >
-              <p>REPORTS</p>
-              <Popover
-                id={"mouse-over-popover"}
-                open={open}
-                anchorEl={popoverAnchor.current}
-                onClose={handleClose}
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "left",
-                }}
-                classes={{
-                  paper: classes.popoverContent,
-                }}
-                PaperProps={{
-                  onMouseEnter: handleClick,
-                  onMouseLeave: handleClose,
-                }}
-              >
+            isContractManager && (
+              <div>
                 <div
-                  className={style.optionsCardStyle}
-                  onClick={() => handleClose()}
+                  className={`${style.menuStyle} ${window.location.pathname.includes("/trackContracts") ?
+                    style.activeMenuColor : ''}`}
+                  ref={popoverAnchorTracker}
+                  onMouseEnter={(e) => handleClickTracker(e)}
+                  onMouseLeave={() => handleCloseTracker()}
+                  aria-owns={openTracker ? "mouse-over-popover" : undefined}
+                  aria-haspopup="true"
                 >
-                  {isActivityServiceLogAvailable && (
-                    <Link
-                      to={"/reports/servicesOrActivities"}
-                      className={style.noFontStyle}
+                  <p>TRACK YOUR CONTRACTS</p>
+                  <Popover
+                    id={"mouse-over-popover"}
+                    open={openTracker}
+                    anchorEl={popoverAnchorTracker.current}
+                    onClose={handleCloseTracker}
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "left",
+                    }}
+                    classes={{
+                      paper: classes.popoverContent,
+                    }}
+                    PaperProps={{
+                      onMouseEnter: handleClickTracker,
+                      onMouseLeave: handleCloseTracker,
+                    }}
+                  >
+                    <div
+                      className={style.optionsCardStyle}
+                      onClick={() => handleCloseTracker()}
                     >
-                      <div className={style.options}>
-                        Services/ Activities Logs
-                      </div>
-                    </Link>
-                  )}
-                  {isTimesheetsAvailable && (
-                    <Link
-                      to={"/reports/timesheets"}
-                      className={style.noFontStyle}
-                    >
-                      <div className={style.options}>Timesheets</div>
-                    </Link>
-                  )}
-                  {/* <Link to={'/reports/reviewsAndApprovals'} className={style.noFontStyle}>
+                      <Link
+                        to={"/trackContracts/compensationTracker"}
+                        className={style.noFontStyle}
+                      >
+                        <div className={style.options}>
+                          Compensation Tracker
+                        </div>
+                      </Link>
+                      <Link
+                        to={"/trackContracts/activityStatusTracker"}
+                        className={style.noFontStyle}
+                      >
+                        <div className={style.options}>Activity Status Tracker</div>
+                      </Link>
+                      <Link
+                        to={"/trackContracts/timesheetAndInvoiceApprovalsStatusTracker"}
+                        className={style.noFontStyle}
+                      >
+                        <div className={style.options}>Timesheet And Invoice Approvals Status Tracker</div>
+                      </Link>
+                    </div>
+                  </Popover>
+                </div>
+              </div>
+            )
+          }
+          {(isActivityServiceLogAvailable || isTimesheetsAvailable || isPaymentsAvailable || isContractManagementAvailable || isContractComplianceAvailable) && (
+            <div>
+              <div
+                className={`${style.menuStyle} ${(window.location.pathname.includes("/reports") ||
+                  window.location.pathname.includes("/reportTypeOverview") ||
+                  window.location.pathname.includes("/myReport")) &&
+                  style.activeMenuColor
+                  }`}
+                ref={popoverAnchor}
+                onMouseEnter={(e) => handleClick(e)}
+                onMouseLeave={() => handleClose()}
+                aria-owns={open ? "mouse-over-popover" : undefined}
+                aria-haspopup="true"
+              >
+                <p>REPORTS</p>
+                <Popover
+                  id={"mouse-over-popover"}
+                  open={open}
+                  anchorEl={popoverAnchor.current}
+                  onClose={handleClose}
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "left",
+                  }}
+                  classes={{
+                    paper: classes.popoverContent,
+                  }}
+                  PaperProps={{
+                    onMouseEnter: handleClick,
+                    onMouseLeave: handleClose,
+                  }}
+                >
+                  <div
+                    className={style.optionsCardStyle}
+                    onClick={() => handleClose()}
+                  >
+                    {isActivityServiceLogAvailable && (
+                      <Link
+                        to={"/reports/servicesOrActivities"}
+                        className={style.noFontStyle}
+                      >
+                        <div className={style.options}>
+                          Services/ Activities Logs
+                        </div>
+                      </Link>
+                    )}
+                    {isContractManagementAvailable && (
+                      <Link
+                        to={"/reports/contractManagement"}
+                        className={style.noFontStyle}
+                      >
+                        <div className={style.options}>Contract Management</div>
+                      </Link>
+                    )}
+                    {isTimesheetsAvailable && (
+                      <Link
+                        to={"/reports/timesheets"}
+                        className={style.noFontStyle}
+                      >
+                        <div className={style.options}>Timesheets</div>
+                      </Link>
+                    )}
+                    {/* <Link to={'/reports/reviewsAndApprovals'} className={style.noFontStyle}>
                                     <div className={style.options}>Reviews & Approvals</div>
                                 </Link>
                                 <Link to={'/reports/taskManagement'} className={style.noFontStyle}>
                                     <div className={style.options}>Task Management</div>
                                 </Link> */}
-                  {isPaymentsAvailable && (
-                    <Link
-                      to={"/reports/payments"}
-                      className={style.noFontStyle}
-                    >
-                      <div className={style.options}>Payments</div>
-                    </Link>
-                  )}
-                  {isContractManagementAvailable && (
-                    <Link
-                      to={"/reports/contractManagement"}
-                      className={style.noFontStyle}
-                    >
-                      <div className={style.options}>Contract Management</div>
-                    </Link>
-                  )}
-                  {/*
-                  {isContractComplianceAvailable && (
-                    <Link
-                      to={"/reports/contractCompliance"}
-                      className={style.noFontStyle}
-                    >
-                      <div className={style.options}>Contract Compliance</div>
-                    </Link>
-                  )} */}
-                  {/* <Link to={'/reports/contractPerformance'} className={style.noFontStyle}>
+                    {isPaymentsAvailable && (
+                      <Link
+                        to={"/reports/payments"}
+                        className={style.noFontStyle}
+                      >
+                        <div className={style.options}>Payments</div>
+                      </Link>
+                    )}
+
+                    {/* {isContractComplianceAvailable && (
+                      <Link
+                        to={"/reports/contractCompliance"}
+                        className={style.noFontStyle}
+                      >
+                        <div className={style.options}>Contract Compliance</div>
+                      </Link>
+                    )} */}
+                    {/* <Link to={'/reports/contractPerformance'} className={style.noFontStyle}>
                                     <div className={style.options}>Contract Performance</div>
                                 </Link>
                                 <Link to={'/reports/systemAdministration'} className={style.noFontStyle}>
                                     <div className={style.options}>System Administration</div>
                                 </Link> */}
-                </div>
-              </Popover>
+                  </div>
+                </Popover>
+              </div>
             </div>
-          </div>
+          )}
           {isEntityLevelAdmin && (
             <div>
               <div

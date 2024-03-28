@@ -465,7 +465,7 @@ const ClinicBlocksFields = ({
       name === "withoutNurse"
     ) {
       temp[0][name] = {
-        value: value || 0,
+        value: name === "maximum" ? value || 99999999 : value || 0,
       };
       console.log("data", temp);
     } else if (name === "frequency" && value === "NA") {
@@ -490,14 +490,6 @@ const ClinicBlocksFields = ({
     console.log("temp after value ", temp);
     setMetadata({ ...metadata, [targetName]: temp });
   };
-
-  const limit5 = 5;
-
-  console.log(
-    "selected",
-    format(new Date(contractTermPeriod?.start), "MMMM d, yyyy"),
-    GetDateFromHours(serviceSelected?.workingPeriod?.from?.toString() || "")
-  );
 
   const deleteRow = (index) => {
     let contractSchedule = metadata?.contractedSchedules
@@ -524,8 +516,6 @@ const ClinicBlocksFields = ({
       return false;
     }
   };
-
-  console.log(metadata)
 
   return (
     <div>
@@ -1159,7 +1149,7 @@ const ClinicBlocksFields = ({
         <div className={`${style.threeFieldWidth}`}>
           <CommonTextField
             type="tel"
-            maxLength="3"
+            maxLength="9"
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end" sx={{ fontSize: 10 }}>
@@ -1171,7 +1161,7 @@ const ClinicBlocksFields = ({
               e.target.value >= 0 &&
               setMetadata({
                 ...metadata,
-                sessionDuration: e.target.value,
+                sessionDuration: e.target.value.slice(0, 9),
                 sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? metadata?.serviceRate : metadata?.serviceRate * metadata?.sessionDuration,
               })
             }
@@ -1191,7 +1181,10 @@ const ClinicBlocksFields = ({
                     startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
                   }}
                   value={metadata?.serviceRate}
-                  onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, serviceRate: parseFloat(e.target.value), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? parseFloat(e.target.value) : (parseFloat(e.target.value) * metadata?.sessionDuration) })}
+                  onChange={(e) => e.target.value >= 0 && setMetadata({
+                    ...metadata, serviceRate: parseFloat(e.target.value.slice(0, 9)),
+                    sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? parseFloat(e.target.value) : (parseFloat(e.target.value) * metadata?.sessionDuration)
+                  })}
                 />
               </div>
             </div>

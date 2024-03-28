@@ -126,14 +126,16 @@ const AddServiceProvided = ({
   const [activityItems, setActivityItems] = useState([]);
   const [reducedOffsetApplicable, setReducedOffsetApplicable] = useState(false);
   const [compensationPolicy, setCompensationPolicy] = useState("");
+  const [contractTypeId, setContractTypeId] = useState("");
   const contractStatus = sessionStorage.getItem('Selected Contract Status');
+
 
   useEffect(() => {
     getContractedServices();
     getUserData();
     getSites();
-    getServiceList();
-    // getActivityList();
+    // getContractType();
+    getActivityList();
     getLocations();
     getContractNotes();
   }, []);
@@ -174,9 +176,6 @@ const AddServiceProvided = ({
       );
     }
   }, [selectedService, serviceTypeList]);
-
-
-  console.log('selected Service', selectedService);
 
   useEffect(() => {
     if (siteData?.length !== 0) {
@@ -229,9 +228,21 @@ const AddServiceProvided = ({
     }
   }, [metadata, isWorkFlowUpdated]);
 
-  const getServiceList = async () => {
+  // const getContractType = async () => {
+  //   const { data: contactType } = await GET(
+  //     `entity-service/contractType`
+  //   );
+  //   if (contractType) {
+  //     let contractTypeId = contractType?.filter((data) => data?.contractTypeTemplate === selectContractInfo)?.map(data => data?.id)[0];
+  //     console.log('cotractTypeId', contractTypeId);
+  //     console.log('contactType', contactType, selectContractInfo)
+  //     getServiceList(contractTypeId);
+  //   }
+  // }
+
+  const getServiceList = async (contractTypeId) => {
     const { data: serviceList } = await GET(
-      `entity-service/contractedServiceType`
+      `entity-service/contractedServiceType?contractTypeId=${contractTypeId}`
     );
     setServiceTypeList(serviceList);
     if (!editService) {
@@ -482,11 +493,13 @@ const AddServiceProvided = ({
     contractDetail?.contractFiles?.map((data) => {
       temp.push({ name: data?.documentName, url: data?.fileURL });
     });
+    setContractTypeId(contractData?.contractTypeId?.id);
     setContractDocumentList(temp);
     let sites = contractDetail?.site?.sites;
     if (sites && siteList?.length === 0) {
       setSiteList(sites);
     }
+    getServiceList(contractData?.contractTypeId?.id)
   };
 
   console.log("metadata", metadata);
@@ -887,10 +900,6 @@ const AddServiceProvided = ({
       ErrorToaster("Activity Type Selection is Mandatory");
       return;
     }
-    // if ((serviceTypeTemplate === ADDON && metadata?.[0]?.locationSpecified && metadata?.[0]?.locations?.length === 0)) {
-    //   ErrorToaster('Atleast one location has to be selected if yes');
-    //   return;
-    // }
     if (
       (serviceTypeTemplate !== ADDON && serviceTypeTemplate !== HOSPICE) &&
       showLocation &&
@@ -955,6 +964,7 @@ const AddServiceProvided = ({
     var parentActivity = "";
     let activities = [];
     let dependentActivities = [];
+    let overlappingActivitiesForSplit = [];
     if (
       serviceTypeTemplate !== SUPPLEMENTAL &&
       serviceTypeTemplate !== ADDON &&
@@ -1033,9 +1043,13 @@ const AddServiceProvided = ({
           }
         }
         // }
-
         //   );
       }
+      let overlappingActivityTemp = [];
+      metadata?.overlappingActivities?.map(data => {
+        overlappingActivityTemp.push({ activityTypeTemplate: data })
+      });
+      overlappingActivitiesForSplit = overlappingActivityTemp;
       performingActivity = activities?.map(data => data?.activity)?.join("-");
       console.log('Performing Actiity', performingActivity, activities)
         ?.map((activity) => activity?.activity)
@@ -1083,9 +1097,8 @@ const AddServiceProvided = ({
         item.serviceRate = {
           rate: metadata?.[index]?.serviceRate?.rate,
           rateFrequency: metadata?.[index]?.serviceRate?.rateFrequency,
-          duration: item?.sessionDuration,
+          duration: metadata?.[index]?.serviceRate?.rateFrequency === "SESSION" ? item?.sessionDuration : 1,
         }
-        console.log("performing Activity", metadata?.[index]?.parentActivity);
         item.addOnActivityType = {
           activityType: metadata?.[index]?.parentActivity,
         };
@@ -1168,6 +1181,8 @@ const AddServiceProvided = ({
               },
             },
           }),
+          overlappingActivitiesForSplit: overlappingActivitiesForSplit || [],
+          splitActivityTimeOnOverlap: metadata?.overlap || false,
           contractedServiceFiles: dataValues?.contractedServiceFiles || [],
           baseServiceAvailable: serviceTypeTemplate === SUPPLEMENTAL ? dataValues?.baseServiceAvailable : false,
           baseServices:
@@ -1279,6 +1294,9 @@ const AddServiceProvided = ({
           payableAmount: {
             value: parseFloat(dataValues?.sessionAmount),
           },
+          minSessionDuration: {
+            hours: parseInt(dataValues?.minimumSessionDuration || 0),
+          },
           patientConsultRequired: dataValues?.patientConsultRequired || false,
           professionalServiceRequired: dataValues?.professionalServiceRequired || false,
           ...((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ONCALLSERVICE ||
@@ -1291,7 +1309,7 @@ const AddServiceProvided = ({
                   ? Number(dataValues?.sessionAmount)?.toFixed(2) !== 'NaN' ? Number(dataValues?.sessionAmount)?.toFixed(2) : 0
                   : Number(
                     dataValues?.sessionAmount / dataValues?.totalSession
-                  )?.toFixed(2) !== "NaN" ? Number(
+                  )?.toFixed(2) !== "NaN" ? dataValues?.serviceRateFrequency === "SESSION" ? Number(dataValues?.serviceRate / dataValues?.serviceRateDuration) : Number(
                     dataValues?.sessionAmount / dataValues?.totalSession
                   )?.toFixed(2) : 0,
             },
@@ -1308,7 +1326,7 @@ const AddServiceProvided = ({
             serviceRate: {
               rate: dataValues?.serviceRate,
               rateFrequency: dataValues?.serviceRateFrequency,
-              duration: dataValues?.sessionDuration,
+              duration: dataValues?.serviceRateFrequency === "SESSION" ? dataValues?.sessionDuration : 1,
             },
           }),
           ...([CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(
@@ -1355,20 +1373,21 @@ const AddServiceProvided = ({
                     .toString(),
                   target: {
                     minimum: {
-                      value: parseInt(dataValues?.weekdayMin),
+                      value: parseFloat(dataValues?.weekdayMin),
                     },
                     maximum: {
-                      value: parseInt(dataValues?.weekdayMax),
+                      value: parseFloat(dataValues?.weekdayMax),
                     },
                     frequency: dataValues?.weekdayFrequency,
                   },
                   duration: {
                     hours: parseFloat(dataValues?.weekdayDuration),
                   },
+                  minSessionDuration: { hours: 1 },
                   serviceRate: {
                     rate: parseFloat(dataValues?.weekdayDayServiceRate),
                     rateFrequency: dataValues?.weekdayDayServiceFrequency,
-                    duration: dataValues?.weekdayDuration,
+                    duration: dataValues?.weekdayDayServiceFrequency === "SESSION" ? dataValues?.weekdayDuration : 1,
                   },
                   activity: {
                     activity: dataValues?.weekdayActivity
@@ -1395,16 +1414,17 @@ const AddServiceProvided = ({
                     .toString(),
                   target: {
                     minimum: {
-                      value: parseInt(dataValues?.weekdayNightsMin),
+                      value: parseFloat(dataValues?.weekdayNightsMin),
                     },
                     maximum: {
-                      value: parseInt(dataValues?.weekdayNightsMax),
+                      value: parseFloat(dataValues?.weekdayNightsMax),
                     },
                     frequency: dataValues?.weekdayNightsFrequency,
                   },
                   duration: {
                     hours: parseFloat(dataValues?.weekdayNightsDuration),
                   },
+                  minSessionDuration: { hours: 1 },
                   activity: {
                     activity: dataValues?.weekdayNightActivity
                   },
@@ -1414,7 +1434,7 @@ const AddServiceProvided = ({
                   serviceRate: {
                     rate: parseFloat(dataValues?.weekdayNightServiceRate),
                     rateFrequency: dataValues?.weekdayNightServiceFrequency,
-                    duration: dataValues?.weekdayNightsDuration,
+                    duration: dataValues?.weekdayNightServiceFrequency === "SESSION" ? dataValues?.weekdayNightsDuration : 1,
                   },
                   hourlyRate: {
                     value: isNaN(
@@ -1443,16 +1463,17 @@ const AddServiceProvided = ({
                   }),
                   target: {
                     minimum: {
-                      value: parseInt(dataValues?.weekendMin),
+                      value: parseFloat(dataValues?.weekendMin),
                     },
                     maximum: {
-                      value: parseInt(dataValues?.weekendMax),
+                      value: parseFloat(dataValues?.weekendMax),
                     },
                     frequency: dataValues?.weekendFrequency,
                   },
                   duration: {
                     hours: parseFloat(dataValues?.weekendDuration),
                   },
+                  minSessionDuration: { hours: 1 },
                   activity: {
                     activity: dataValues?.weekendActivity,
                   },
@@ -1462,7 +1483,7 @@ const AddServiceProvided = ({
                   serviceRate: {
                     rate: parseFloat(dataValues?.weekendServiceRate),
                     rateFrequency: dataValues?.weekendServiceFrequency,
-                    duration: dataValues?.weekendDuration,
+                    duration: dataValues?.weekendServiceFrequency === "SESSION" ? dataValues?.weekendDuration : 1,
                   },
                   hourlyRate: {
                     value: isNaN(
@@ -1483,20 +1504,21 @@ const AddServiceProvided = ({
                   holidayTerm: dataValues?.holidayTerm,
                   target: {
                     minimum: {
-                      value: parseInt(dataValues?.holidayMin),
+                      value: parseFloat(dataValues?.holidayMin),
                     },
                     maximum: {
-                      value: parseInt(dataValues?.holidayMax),
+                      value: parseFloat(dataValues?.holidayMax),
                     },
                     frequency: dataValues?.holidayFrequency,
                   },
                   duration: {
                     hours: parseFloat(dataValues?.holidayDuration),
                   },
+                  minSessionDuration: { hours: 1 },
                   serviceRate: {
                     rate: parseFloat(dataValues?.holidayServiceRate),
                     rateFrequency: dataValues?.holidayServiceFrequency,
-                    duration: dataValues?.holidayDuration,
+                    duration: dataValues?.holidayServiceFrequency === "SESSION" ? dataValues?.holidayDuration : 1,
                   },
                   activity: {
                     activity: dataValues?.holidayActivity
@@ -1554,7 +1576,7 @@ const AddServiceProvided = ({
             serviceRate: {
               rate: dataValues?.serviceRate,
               rateFrequency: dataValues?.serviceRateFrequency,
-              duration: !serviceTypeTemplate.includes([ADMINISTRATIVE, SUPPLEMENTAL, HIT]) && dataValues?.dedicatedHoursSpecified ? parseFloat(dataValues?.totalSession) : parseFloat(dataValues?.sessionDuration),
+              duration: !serviceTypeTemplate.includes([ADMINISTRATIVE, SUPPLEMENTAL, HIT, ONCALLSERVICE]) && dataValues?.dedicatedHoursSpecified ? dataValues?.serviceRateFrequency === 'SESSION' ? dataValues?.serviceRateDuration : 1 : dataValues?.serviceRateFrequency === 'SESSION' ? parseFloat(dataValues?.sessionDuration) : 1,
             },
           })),
           dependantServiceIncluded:
@@ -2250,38 +2272,41 @@ const AddServiceProvided = ({
                             className={editService && (!selectedActivity || selectedActivity?.length === 0) ? style.redLable : ""}
                           />
                           <div>
-                            <div className={style.addGrid}>
-                              <DatalistInput
-                                value={value}
-                                setValue={setValue}
-                                items={activityItems || []}
-                                onSelect={onActivitySelect}
-                                className={style.fullWidth}
-                                onChange={(e) => setNewActivity(e.target.value)}
-                                inputProps={{ disabled: contractStatus === "ACTIVE" ? true : false }}
-                              />
-                              <div
-                                className={`${style.addStyle} ${style.alignCenter
-                                  } ${style.cursorPointer} ${newActivity === "" ||
-                                    activity?.some((data) =>
-                                      data?.activity?.activity
-                                        ?.replace(" ", "")
-                                        ?.toLowerCase()
-                                        ?.includes(
-                                          newActivity
-                                            ?.replace(" ", "")
-                                            ?.toLowerCase()
-                                        )
-                                    )
-                                    ? style.disabledUploadButton
-                                    : ""
-                                  }`}
-                              >
-                                <AddIcon
-                                  sx={{ fontSize: 25, color: "white" }}
-                                  onClick={contractStatus === "ACTIVE" ? {} : activityToAdd}
+                            <div>
+                              <div className={style.addGrid}>
+                                <DatalistInput
+                                  value={value}
+                                  setValue={setValue}
+                                  items={activityItems || []}
+                                  onSelect={onActivitySelect}
+                                  className={style.fullWidth}
+                                  onChange={(e) => setNewActivity(e.target.value)}
+                                  inputProps={{ disabled: contractStatus === "ACTIVE" ? true : false }}
                                 />
+                                <div
+                                  className={`${style.addStyle} ${style.alignCenter
+                                    } ${style.cursorPointer} ${newActivity === "" ||
+                                      activity?.some((data) =>
+                                        data?.activity?.activity
+                                          ?.replace(" ", "")
+                                          ?.toLowerCase()
+                                          ?.includes(
+                                            newActivity
+                                              ?.replace(" ", "")
+                                              ?.toLowerCase()
+                                          )
+                                      )
+                                      ? style.disabledUploadButton
+                                      : ""
+                                    }`}
+                                >
+                                  <AddIcon
+                                    sx={{ fontSize: 25, color: "white" }}
+                                    onClick={contractStatus === "ACTIVE" ? {} : activityToAdd}
+                                  />
+                                </div>
                               </div>
+
                             </div>
                             {selectedActivity?.length !== 0 && (
                               <MultiSelectDisplay
@@ -2377,6 +2402,7 @@ const AddServiceProvided = ({
                     />
                   ) : serviceTypeTemplate === ONCALL ? (
                     <OnCallCoverageFields
+                      servicesList={contractedServices}
                       getMetaData={getMetaData}
                       serviceSelected={selectedService}
                       timeCommitment={timeCommitment}
@@ -2496,7 +2522,7 @@ const AddServiceProvided = ({
                 updateConflict={updateConflict}
               />
             }
-            {isEditable && !isShowPDF && (
+            {contractStatus === "DRAFT" && !isShowPDF && (
               <div className={`${style.floatRight} `}>
                 {!editService && (
                   <button

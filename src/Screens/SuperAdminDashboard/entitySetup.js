@@ -28,6 +28,7 @@ import SaveInProgress from './saveInProgressAlert';
 import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
 import ContractAndBillingDetails from './contractAndBillingDetails';
 import Welcome from './welcome';
+import Timezone from "./timeZone";
 import CommonInputField from '../../Components/CommonFields/CommonInputField';
 
 const EntitySetup = () => {
@@ -51,14 +52,15 @@ const EntitySetup = () => {
   const [showSaveInProgress, setShowSaveInProgress] = useState(false);
   const [logo, setLogo] = useState({ name: '', url: '', file: null });
   const [thumbnail, setThumbnail] = useState({ name: '', url: '', file: null });
-  const [entity, setEntity] = useState({ id: '', customerType: '', npin: '', npinNA: false, name: '', type: { type: '', id: '' }, subdomain: '', multiSiteEntity: false, primarySiteToUseApp: false, canSetupDepartment: false, officialEmailDomain: '' });
+  const [entity, setEntity] = useState({ id: '', customerType: '', npin: '', npinNA: false, name: '', type: { type: '', id: '' }, subdomain: '', multiSiteEntity: false, primarySiteToUseApp: false, canSetupDepartment: false, officialEmailDomain: '', isEmployeeContractIncluded: false });
   const [address, setAddress] = useState({ addressLine: '', city: '', state: '', country: '', zipcode: '' });
   const [isUpdated, setIsUpdated] = useState(false);
   const [unassignedKeys, setUnassignedKeys] = useState([]);
   const Fields = { customerType: 'Customer Type', npin: 'NPIN', name: 'Entity Name', type: 'Entity Type', addressLine: 'Mailing Address', city: 'City', state: 'State', country: 'Country', zipcode: 'Zipcode', subdomain: 'Subdomain', officialEmailDomain: 'Official Email Domain' };
   const role = '';
   const accessToken = Auth();
-
+  const [selectedTimezone, setSelectedTimezone] = useState({ value: '', abbrev: '' })
+  console.log(selectedTimezone)
   useEffect(() => {
     getEntityData();
     getDepartmentData();
@@ -71,6 +73,12 @@ const EntitySetup = () => {
   useEffect(() => {
     getDepartmentData();
   }, [departmentSpecific])
+
+  useEffect(() => {
+    if (selectedTimezone?.value !== entityData?.sites?.filter(data => data.primarySite === true)?.map(data => data)[0]?.timeZone?.id) {
+      setIsUpdated(true);
+    }
+  }, [selectedTimezone])
 
   // useEffect(()=>{
   //   if(entity.npin?.length === 10){
@@ -114,7 +122,7 @@ const EntitySetup = () => {
     const { data: data } = await GET(`entity-service/entity/${id}`);
     setEntityData(data);
     let siteData = data?.sites?.filter(data => data.primarySite === true)?.map(data => data)[0];
-    setEntity({ id: '', customerType: data?.industryId?.id, name: data?.entityName?.entityName, type: { type: data?.entityType?.type, id: data?.entityType?.id }, subdomain: data?.subdomain, multiSiteEntity: data?.multiSiteEntity, primarySiteToUseApp: data.canPrimarySiteToUseApp, npin: data?.npin?.id, npinNA: data?.npin?.notApplicable, officialEmailDomain: data?.officialEmailDomain?.officialEmail });
+    setEntity({ id: '', customerType: data?.industryId?.id, name: data?.entityName?.entityName, type: { type: data?.entityType?.type, id: data?.entityType?.id }, subdomain: data?.subdomain, multiSiteEntity: data?.multiSiteEntity, primarySiteToUseApp: data.canPrimarySiteToUseApp, npin: data?.npin?.id, npinNA: data?.npin?.notApplicable, officialEmailDomain: data?.officialEmailDomain?.officialEmail, isEmployeeContractIncluded: data?.isEmployeeContractIncluded });
     setAddress({
       city: siteData?.address?.city ? siteData?.address?.city : '',
       state: siteData?.address?.state ? siteData?.address?.state : '',
@@ -126,6 +134,7 @@ const EntitySetup = () => {
     setDepartmentSpecific(siteData?.canSetupDepartment);
     setLogo({ ...logo, url: data?.logo?.file?.fileURL || '' });
     setThumbnail({ ...thumbnail, url: data?.logoThumbnail?.file?.fileURL || '' });
+    setSelectedTimezone({ ...selectedTimezone, value: siteData?.timeZone?.id, abbrev: siteData?.timeZone?.abbrevation })
     console.log('entered', entityData)
   }
 
@@ -233,6 +242,10 @@ const EntitySetup = () => {
         ErrorToaster('Official Email Domain Is Mandatory');
         return;
       }
+      if (selectedTimezone?.value === "" || selectedTimezone?.value === null || selectedTimezone?.value === undefined) {
+        ErrorToaster("Timezone is Mandatory");
+        return;
+      }
     }
     if (buttonType === 'SaveInProgress') {
       // saveInProgressCheck();
@@ -243,7 +256,7 @@ const EntitySetup = () => {
     }
   }
 
-  console.log(entity)
+  console.log(entityData, selectedTimezone)
 
   const saveInProgressCheck = () => {
     var keys = Object.keys(entity)?.filter(key => entity[key] === '' && key !== 'id' && key !== 'type' && key !== 'npin' || entity[key] === null)?.map(data => Fields[data]);
@@ -311,6 +324,10 @@ const EntitySetup = () => {
           "zipcode": address.zipcode,
           "country": address.country,
         },
+        "timeZone": {
+          "id": selectedTimezone?.value,
+          "abbrevation": selectedTimezone?.abbrev
+        },
         "primarySite": true
       }
       filteredValue.push(temp);
@@ -353,6 +370,7 @@ const EntitySetup = () => {
         "appUserRoles": entityData?.appUserRoles,
         "logo": entityData?.logo,
         "logoThumbnail": entityData?.logoThumbnail,
+        "isEmployeeContractIncluded": entity?.isEmployeeContractIncluded,
       }
 
       const formData = new FormData();
@@ -491,7 +509,7 @@ const EntitySetup = () => {
 
   return (
 
-    (!entityData?.hideWelcomeScreen && !isSuperAdminAccess) ? (
+    (entityData !== undefined && !entityData?.hideWelcomeScreen && !isSuperAdminAccess) ? (
       <Welcome getIsContinue={getIsContinue} />
     ) : (
       <>
@@ -671,6 +689,27 @@ const EntitySetup = () => {
                         />
                       </div>
                     )}
+
+                    {!isSuperAdminAccess && <div className={`${style.extentionGrid} ${style.marginTop20} ${style.verticalAlignCenter}`}>
+                      <div className={`${style.extentionLableStyle} `}>Allow Timesmart to also include Employed Staff*</div>
+                      <FormControlLabel
+                        control={
+                          <Switch checked={entity.isEmployeeContractIncluded} onChange={(e) => handleEntity('isEmployeeContractIncluded', e.target.checked)} className={` ${style.textAlignLeft}`} />
+                        }
+                        className={style.switchFontStyle}
+                        label={entity?.isEmployeeContractIncluded ? 'YES' : 'NO'}
+                      />
+                    </div>}
+                    <div
+                      className={`${style.extentionGrid} ${style.marginTop20}`}
+                    >
+                      <div className={style.extentionLableStyle}>
+                        Time Zone*
+                      </div>
+                      <div className={`${style.leftAlign} `}>
+                        <Timezone selectedTimezone={selectedTimezone} setSelectedTimezone={setSelectedTimezone} />
+                      </div>
+                    </div>
                     {/* </div>
                       </div> */}
                     {/* </div> */}

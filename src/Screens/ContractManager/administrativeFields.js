@@ -53,6 +53,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         totalSessionFrequency: 'NA',
         sessionAmount: '0',
         sessionDuration: '1',
+        serviceRateDuration: '0',
         serviceRate: '0',
         serviceRateFrequency: 'SESSION',
         serviceDays: {
@@ -84,7 +85,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     }, [isReset])
 
     useEffect(() => {
-        if (serviceSelected !== {}) {
+        if (JSON.stringify(serviceSelected) !== '{}') {
             setSelectedValues();
         }
     }, [serviceSelected, addOnWorkFlow, user]);
@@ -115,6 +116,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             totalSessionFrequency: 'NA',
             sessionAmount: '0',
             sessionDuration: '1',
+            serviceRateDuation: '0',
             serviceRate: '0',
             serviceRateFrequency: 'SESSION',
             serviceDays: {
@@ -158,6 +160,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                 sessionAmount: serviceSelected?.payableAmount?.value,
                 sessionDuration: serviceSelected?.duration?.hours || '1',
                 serviceRate: serviceSelected?.serviceRate?.rate || '0',
+                serviceRateDuration: serviceSelected?.serviceRate?.duration,
                 serviceRateFrequency: serviceSelected?.serviceRate?.rateFrequency,
                 workflowId: serviceSelected?.workFlow?.id,
                 workflowName: serviceSelected?.workFlow?.workFlowName?.name,
@@ -335,7 +338,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         setMetadata({ ...metadata, workingTimeFrom: e });
     }
 
-    console.log('Metadata', metadata);
+    console.log('Activity', activity);
 
 
     return (
@@ -389,7 +392,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                     InputProps={{
                                         endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                                     }}
-                                    onChange={(e) => e.target.value >= 0 && handleValueChange('totalSession', e.target.value.slice(0, 4))}
+                                    onChange={(e) => e.target.value >= 0 && handleValueChange('totalSession', e.target.value.slice(0, 9))}
                                     value={metadata?.totalSession}
                                     disabled={metadata?.totalSessionFrequency === "NA"}
                                 />
@@ -414,18 +417,43 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
                                     }}
                                     value={metadata?.serviceRate}
-                                    onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, serviceRate: parseFloat(e.target.value), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? parseFloat(e.target.value) : (parseFloat(e.target.value) * metadata?.totalSession) })}
+                                    onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, serviceRate: parseFloat(e.target.value.slice(0, 9)), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? (parseFloat(e.target.value.slice(0, 9)) * (metadata?.totalSession / metadata?.serviceRateDuration)) : (parseFloat(e.target.value || '0') * (metadata?.totalSession || 1)) })}
                                 />
                             </div>
                         </div>
                     </div>
+                    {metadata?.serviceRateFrequency === 'SESSION' && <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <CommonLabel
+                            value="Service Rate Duration*"
+                        />
+                        <div className={style.grid3WithoutGap}>
+                            <div className={`${style.threeFieldWidth}`}>
+                                <CommonTextField
+                                    type="tel"
+                                    maxLength="9"
+                                    InputProps={{
+                                        endAdornment: (
+                                            <InputAdornment position="end" sx={{ fontSize: 10 }}>
+                                                Hours
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                    onChange={(e) =>
+                                        e.target.value >= 0 &&
+                                        setMetadata({ ...metadata, serviceRateDuration: e.target.value.slice(0, 9) || '0', sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? (metadata?.serviceRate * (metadata?.totalSession / e.target.value.slice(0, 9))) : (metadata?.serviceRate * e.target.value.slice(0, 9) || '1') })
+                                    }
+                                    value={metadata?.serviceRateDuration}
+                                />
+                            </div>
+                        </div>
+                    </div>}
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                         <CommonLabel value='Service Frequency' />
                         <div className={`${style.displayInRow}`}>
                             <div className={`${style.threeFieldWidth}`}>
                                 <CommonSelectField
                                     value={metadata?.serviceRateFrequency || ''}
-                                    onChange={(e) => setMetadata({ ...metadata, serviceRateFrequency: e.target.value, sessionAmount: (e.target.value === 'SESSION') ? metadata?.serviceRate : (metadata?.serviceRate * metadata?.totalSession) })}
+                                    onChange={(e) => setMetadata({ ...metadata, serviceRateDuration: '1', serviceRateFrequency: e.target.value, sessionAmount: (e.target.value === 'SESSION') ? (metadata?.serviceRate * (metadata?.totalSession / metadata?.serviceRateDuration)) : (metadata?.serviceRate * (metadata?.totalSession || 1)) })}
                                     firstOptionLabel={'Select Frequency'} firstOptionValue={''}
                                     valueList={['SESSION', 'HOUR']}
                                     labelList={['Per Session', 'Per Hour']}
@@ -444,38 +472,61 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                     }}
                                     disabled={true}
-                                    onChange={(e) => e.target.value >= 0 && handleValueChange('sessionAmount', (e.target.value).slice(0, 6))}
+                                    // onChange={(e) => e.target.value >= 0 && handleValueChange('sessionAmount', (e.target.value).slice(0, 6))}
                                     value={metadata?.sessionAmount}
                                 />
                             </div>
                             {metadata?.totalSessionFrequency !== "NA" && <div className={style.verticalAlignCenter}>
-                                <CommonLabel className={` ${style.marginLeft20}`} value={metadata?.totalSession !== 0 && metadata?.totalSession !== '' && metadata?.totalSession !== '0' && metadata?.totalSession !== NaN ? `${(metadata?.sessionAmount / metadata?.totalSession).toFixed(2)} per Hour` : ''} />
+                                <CommonLabel className={` ${style.marginLeft20}`} value={metadata?.totalSession !== 0 && metadata?.totalSession !== '' && metadata?.totalSession !== '0' && metadata?.totalSession !== NaN ? `$ ${(metadata?.sessionAmount / metadata?.totalSession).toFixed(2)} per Hour` : ''} />
                             </div>}
                         </div>
                     </div>
                 </>
             }
 
+            {activity?.length !== 0 && <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                <CommonLabel value='Allowable Administrative Duties & Function To Perform*' />
+
+                <CommonSelectField
+                    // value={serviceType}
+                    onChange={(e) => { e.target.value !== "" && onSelectActivity(e.target.value, true) }}
+                    className={`${style.fullWidth} `}
+                    firstOptionLabel={"Select Admin Activity"}
+                    firstOptionValue={""}
+                    valueList={activity?.length !== 0 && activity?.map(
+                        (data) => data?.id
+                    )}
+                    labelList={activity?.length !== 0 && activity?.map(
+                        (data) => data?.activity
+                    )}
+                    disabledList={activity?.length !== 0 && activity?.map(data => false)}
+                />
+
+            </div>}
+
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <CommonLabel value='Allowable Administrative Duties & Function To Perform' />
+                <CommonLabel value='' />
+
                 <div>
                     {
                         activity?.map((data, index) => (
-                            <div className={`${style.displayInRow} ${style.marginBottom10}`}>
-                                {metadata?.selectedActivities?.map(activities => activities?.id)?.includes(data?.id) ? (
+                            <div className={`${style.displayInRow}`}>
+                                {metadata?.selectedActivities?.map(activities => activities?.id)?.includes(data?.id) && (
                                     <>
                                         <CommonCheckBox checked={metadata?.selectedActivities?.map(activities => activities?.id)?.includes(data?.id)} className={`${style.marginLeft10}`} onChange={(e) => onSelectActivity(data?.id, e.target.checked)} label={metadata?.selectedActivities?.filter(activity => activity?.id === data?.id)?.map(activity => activity?.activity)?.[0]} />
                                         <div className={`${style.chipStyle} ${style.redChip}`}>{metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities?.schedule)[0]}</div>
                                         {metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities?.billable)[0] && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
                                         {metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities?.podRequired)[0] && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
                                     </>
-                                ) : (<>
-                                    <CommonCheckBox checked={metadata?.selectedActivities?.map(activities => activities?.id)?.includes(data?.id)} className={`${style.marginLeft10}`} onChange={(e) => onSelectActivity(data?.id, e.target.checked)} label={data?.activity} />
+                                )
+                                    // : (<>
+                                    //     <CommonCheckBox checked={metadata?.selectedActivities?.map(activities => activities?.id)?.includes(data?.id)} className={`${style.marginLeft10}`} onChange={(e) => onSelectActivity(data?.id, e.target.checked)} label={data?.activity} />
 
-                                    <div className={`${style.chipStyle} ${style.redChip}`}>{data?.schedule}</div>
-                                    {data?.billable && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
-                                    {data?.podRequired && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
-                                </>)}
+                                    //     <div className={`${style.chipStyle} ${style.redChip}`}>{data?.schedule}</div>
+                                    //     {data?.billable && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
+                                    //     {data?.podRequired && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
+                                    // </>)
+                                }
 
                                 {
                                     // metadata?.selectedActivities?.map(data => data?.id).includes(data?.id) ? <>

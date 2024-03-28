@@ -20,12 +20,12 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
   const [activeTab, setActiveTab] = useState('');
   const [selectTimesheetToDefineProcess, setSelectTimesheetToDefineProcess] = useState('');
   const [customWorkFlow, setCustomWorkFlow] = useState(false);
-  const [workflowExisting, setWorkflowExisting] = useState([]);
   const [workflowTemplateToUse, setWorkflowTemplateToUse] = useState('');
   const [timesheetProcessingWorkflow, setTimesheetProcessingWorkflow] = useState([]);
   const [timeSheetTabs, setTimeSheetTabs] = useState([]);
   const [timesheetWorkFlow, setTimeSheetWorkFlow] = useState([]);
   const [users, setUsers] = useState([]);
+  const [workflowExisting, setWorkflowExisting] = useState([]);
   const [provider, setProvider] = useState([]);
   const [tabIndex, setTabIndex] = useState(0);
   const [isShowValidationCheck, setIsShowValidationCheck] = useState(false);
@@ -36,6 +36,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
   const [unassignedKeys, setUnassignedKeys] = useState([]);
   const [showSaveInProgress, setShowSaveInProgress] = useState(false);
   const [buttonName, setButtonName] = useState("");
+  const contractStatus = sessionStorage.getItem('Selected Contract Status');
 
   useEffect(() => {
     setSelectTimesheetToDefineProcess(timesheetProcessingWorkflow[0]?.timesheetLabel?.label);
@@ -461,7 +462,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
   }
 
   const handleContinue = async (workflowId, workFlowMap, method) => {
-    let temp = workflowExisting;
+    let temp = workflowExisting;;
     if (method === 'post') {
       temp?.push({
         "timesheetLabel": {
@@ -581,7 +582,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 <ReviewerApproverField data={users} label="Timesheet Approver*" onValueChange={(value, title) => { setTimesheet({ ...timesheet, approver: value, approverTitle: title }) }} selectLabel="Select Approver" value={timesheet?.approver || '0'} approverReviewer='approver' />
               </div>
               {
-                tabIndex < timeSheetTabs?.length - 1 && isEditable &&
+                tabIndex < timeSheetTabs?.length - 1 && contractStatus === "DRAFT" &&
                 <div>
                   <button className={`${style.timesheetNextButtonStyle}  ${style.cursorPointer} ${style.floatRight}`}
                     // onClick={() => { submit('Next') }}
@@ -590,7 +591,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 </div>
               }
             </div>
-            {isEditable &&
+            {contractStatus === "DRAFT" &&
               <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                 <button className={`${style.newContractButtonStyle} ${style.cursorPointer} `} onClick={() => { getCurrentPage('Payment & Compensation') }}>BACK</button>
                 <div>

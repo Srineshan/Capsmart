@@ -137,7 +137,7 @@
 }
 
 .purple {
-    color: #7165E3;
+    color: #7165E3 !important;
 }
 
 .optionsStyle {
@@ -201,10 +201,10 @@
 .alignLeft {
     display: flex;
     align-items: center;
-    justify-content:flex-end;
+    justify-content: flex-end;
 }
 
-.displayInGrid{
+.displayInGrid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     // display: flex;
@@ -212,7 +212,7 @@
     // justify-content: flex-end;
 }
 
-.counterHeight{
+.counterHeight {
     height: fit-content;
     min-height: 35px;
 }

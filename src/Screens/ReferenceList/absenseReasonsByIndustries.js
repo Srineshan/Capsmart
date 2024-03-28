@@ -13,6 +13,7 @@ import Navbar from "../../Components/Navbar";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import SideBar from "../../Components/Sidebar";
 import { formatInTimeZone } from "date-fns-tz";
+import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
 
 const AbsenseReasonsByIndustries = () => {
   const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
@@ -58,7 +59,7 @@ const AbsenseReasonsByIndustries = () => {
 
     const date = new Date(lastModifiedDate.absenceResons?.lastModified);
     setLastUpdatedDate(
-      formatInTimeZone(date, "America/New_York", "MMM d, yyyy HH:mm zzz")
+      `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
     );
   };
 
@@ -133,6 +134,7 @@ const AbsenseReasonsByIndustries = () => {
               needHeader={true}
               getAddEntityDialog={getAddEntityDialog}
               Title={"ADD ABSENSE REASONS"}
+              setIsEdit={setIsEdit}
             />
 
             <div className={style.marginTop35}>
@@ -224,7 +226,7 @@ const AbsenseReasonsByIndustries = () => {
                                 <p className={style.tableDataFontStyle}>
                                   {formatInTimeZone(
                                     new Date(`${data.lastModifiedDate}`),
-                                    "America/New_York",
+                                    siteTimeZone(),
                                     "MM-dd-yyyy"
                                   )}
                                 </p>
@@ -295,7 +297,7 @@ const AbsenseReasonsByIndustries = () => {
                                 <p className={style.tableDataFontStyle}>
                                   {formatInTimeZone(
                                     new Date(`${data.lastModifiedDate}`),
-                                    "America/New_York",
+                                    siteTimeZone(),
                                     "MM-dd-yyyy"
                                   )}
                                 </p>

@@ -12,6 +12,7 @@ import {
 import { GET } from "../dataSaver";
 import style from "./index.module.scss";
 import { formatInTimeZone } from 'date-fns-tz'
+import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
 
 const SaveInProgressDialog = ({
   getSaveInProgressDialog,
@@ -79,24 +80,24 @@ const SaveInProgressDialog = ({
         <div className={style.extensionBorder}></div>
         <div className={`${style.popUpHeaderBlock} ${style.marginTop}`}>
           <div>
-            <p className={style.extentionLableStyle}>{contractType} CONTRACT</p>
+            <p className={style.extentionLableStyle}>{contractType?.value}</p>
             <p className={style.extentionLableStyle}>
-              CONTRACT ID - (
+              PAMF CONTRACT (
               {`${contractData?.contractDetail?.contractId?.id
-                  ? contractData?.contractDetail?.contractId?.id
-                  : " - "
+                ? contractData?.contractDetail?.contractId?.id
+                : " - "
                 }`}
               )
             </p>
             <p className={style.extentionLableStyle}>
               CONTRACT NAME - {contractData?.contractName?.contractName}
-              {`${contractType === "MULTIPLE" ? " - ( " + multipleContractCount + " ) " : ""}`}
+              {contractType === "MULTIPLE" && multipleContractCount.length > 0 ? ` - ( ${multipleContractCount} ) ` : ""}
             </p>
           </div>
           <div>
             <p className={style.extentionLableStyle}>
               {`${contractData?.contractDetail?.contractManager?.name
-                  ?.firstName || ""
+                ?.firstName || ""
                 } ${contractData?.contractDetail?.contractManager?.name?.lastName ||
                 ""
                 }  `}
@@ -107,7 +108,7 @@ const SaveInProgressDialog = ({
             </p>
             <p className={style.extentionLableStyle}>
               {/* LAST UPDATED ON 10-23-2023 11:23 AM EST */}
-              LAST UPDATED ON {contractData.lastModifiedDate && formatInTimeZone(new Date(contractData.lastModifiedDate) || new Date(), 'America/New_York', 'MM-dd-yyyy HH:mm a zzz')}
+              LAST UPDATED ON {contractData.lastModifiedDate && formatInTimeZone(new Date(contractData.lastModifiedDate) || new Date(), siteTimeZone(), 'MM-dd-yyyy HH:mm a')} {timeZoneAbbreviation()}
             </p>
           </div>
         </div>

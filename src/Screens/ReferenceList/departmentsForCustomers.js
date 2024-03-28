@@ -29,6 +29,7 @@ import CommonCheckBox from "../../Components/CommonFields/CommonCheckBox";
 import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
 import SearchBar from "../../Components/SearchBar";
 import { formatInTimeZone } from "date-fns-tz";
+import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
 
 const DepartmentsForCustomers = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -54,7 +55,6 @@ const DepartmentsForCustomers = () => {
 
   const [selectAllList, setSelectAllList] = useState([]);
   const [checkedAll, setCheckedAll] = useState(false);
-  const [searchText, setSearchText] = useState("");
   const [searchKey, setSearchKey] = useState("");
 
   useEffect(() => {
@@ -83,16 +83,17 @@ const DepartmentsForCustomers = () => {
     );
     const date = new Date(lastModifiedDate.departments?.lastModified);
     setLastUpdatedDate(
-      formatInTimeZone(date, "America/New_York", "MMM d, yyyy HH:mm zzz")
+      `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
     );
   };
 
   const getEntityTypes = async () => {
-    const { data: entityTypes } = await GET(`entity-service/entity/entityType`);
-    if (entityTypes?.length !== 0) {
-      setSiteTypeId(entityTypes?.[0]?.siteTypeId);
-      setSelectedEntityType(entityTypes?.[0]?.siteTypeName);
-      setEntityTypes(entityTypes);
+    const { data: entityType } = await GET(`entity-service/entity/${TenantID}`);
+    // console.log(entityType?.sites)
+    if (entityType?.sites?.length !== 0) {
+      setSiteTypeId(entityType?.sites?.[0]?.siteType?.id);
+      setSelectedEntityType(entityType?.sites?.[0]?.siteType?.type);
+      setEntityTypes(entityType?.sites);
     }
   };
 
@@ -111,7 +112,6 @@ const DepartmentsForCustomers = () => {
   };
 
   const getSearchKey = (value) => {
-    console.log("search text", value);
     setSearchKey(value);
   };
 
@@ -185,8 +185,8 @@ const DepartmentsForCustomers = () => {
       return setSelectedIndex("0");
     }
     setSelectedIndex(index);
-    setSiteTypeId(data?.siteTypeId);
-    setSelectedEntityType(data?.siteTypeName);
+    setSiteTypeId(data?.siteType?.id);
+    setSelectedEntityType(data?.siteType?.type);
   };
 
   const handlePostDepartmentServiceArea = async () => {
@@ -288,7 +288,7 @@ const DepartmentsForCustomers = () => {
                               <p
                                 className={`${style.tableHeaderIndustriesFontStyle6} ${style.textUppercase} ${style.marginLeft10}`}
                               >
-                                {data?.siteTypeName}
+                                {`${data?.siteName?.siteName} (${data?.siteType.type})`}
                               </p>
                               <img
                                 src={
@@ -298,11 +298,6 @@ const DepartmentsForCustomers = () => {
                                 }
                                 alt="OpenFolder"
                                 className={`${style.colorFileStyle2} ${style.marginLeft5}`}
-                                // onClick={() => {
-                                //   setSelectedIndex(index);
-                                //   setSiteTypeId(data?.siteTypeId);
-                                //   setSelectedEntityType(data?.siteTypeName);
-                                // }}
                               />
                             </div>
                             <div
@@ -448,7 +443,7 @@ const DepartmentsForCustomers = () => {
                                     <p
                                       className={`${style.tableHeaderIndustriesFontStyle} ${style.textUppercase} ${style.marginLeft10}`}
                                     >
-                                      {data?.siteTypeName}
+                                      {`${data?.siteName?.siteName} (${data?.siteType.type})`}
                                     </p>
                                     <img
                                       src={
@@ -460,9 +455,9 @@ const DepartmentsForCustomers = () => {
                                       className={`${style.colorFileStyle2} ${style.marginLeft5}`}
                                       onClick={() => {
                                         setSelectedIndex(index);
-                                        setSiteTypeId(data?.siteTypeId);
+                                        setSiteTypeId(data?.siteType.id);
                                         setSelectedEntityType(
-                                          data?.siteTypeName
+                                          data?.siteType.type
                                         );
                                       }}
                                     />
@@ -510,11 +505,11 @@ const DepartmentsForCustomers = () => {
                                                   src={DeleteHcFolder}
                                                   alt=""
                                                   className={`${style.colorFileStyle} ${style.marginLeft20}`}
-                                                  // onClick={() =>
-                                                  //   handleDeleteDepartmentService(
-                                                  //     data?.id
-                                                  //   )
-                                                  // }
+                                                // onClick={() =>
+                                                //   handleDeleteDepartmentService(
+                                                //     data?.id
+                                                //   )
+                                                // }
                                                 />
                                               </div>
                                             </div>
@@ -565,11 +560,11 @@ const DepartmentsForCustomers = () => {
                                                           src={DeleteHcRow}
                                                           alt=""
                                                           className={`${style.colorFileStyle} ${style.marginLeft20}`}
-                                                          // onClick={() =>
-                                                          //   handleDeleteDepartmentService(
-                                                          //     data?.id
-                                                          //   )
-                                                          // }
+                                                        // onClick={() =>
+                                                        //   handleDeleteDepartmentService(
+                                                        //     data?.id
+                                                        //   )
+                                                        // }
                                                         />
                                                       </div>
                                                     </div>
@@ -619,11 +614,11 @@ const DepartmentsForCustomers = () => {
                                                                 }
                                                                 alt=""
                                                                 className={`${style.colorFileStyle} ${style.marginLeft20}`}
-                                                                // onClick={() =>
-                                                                //   handleDeleteDepartmentService(
-                                                                //     data?.id
-                                                                //   )
-                                                                // }
+                                                              // onClick={() =>
+                                                              //   handleDeleteDepartmentService(
+                                                              //     data?.id
+                                                              //   )
+                                                              // }
                                                               />
                                                             </div>
                                                           </div>
@@ -672,11 +667,11 @@ const DepartmentsForCustomers = () => {
                                                   src={DeleteHcRow}
                                                   alt=""
                                                   className={`${style.colorFileStyle} ${style.marginLeft20}`}
-                                                  // onClick={() =>
-                                                  //   handleDeleteDepartmentService(
-                                                  //     data?.id
-                                                  //   )
-                                                  // }
+                                                // onClick={() =>
+                                                //   handleDeleteDepartmentService(
+                                                //     data?.id
+                                                //   )
+                                                // }
                                                 />
                                               </div>
                                             </div>
@@ -720,11 +715,11 @@ const DepartmentsForCustomers = () => {
                                                         src={DeleteHcRow}
                                                         alt=""
                                                         className={`${style.colorFileStyle} ${style.marginLeft20}`}
-                                                        // onClick={() =>
-                                                        //   handleDeleteDepartmentService(
-                                                        //     data?.id
-                                                        //   )
-                                                        // }
+                                                      // onClick={() =>
+                                                      //   handleDeleteDepartmentService(
+                                                      //     data?.id
+                                                      //   )
+                                                      // }
                                                       />
                                                     </div>
                                                   </div>
@@ -785,8 +780,7 @@ const DepartmentsForCustomers = () => {
             selectedDepart={selectedDepartmentService}
             selectedTitle={selectedEntityType}
             siteTypeId={siteTypeId}
-            // isService={isService}
-            DepartmentService={departmentService}
+            departmentList={departmentService}
           />
         )}
 

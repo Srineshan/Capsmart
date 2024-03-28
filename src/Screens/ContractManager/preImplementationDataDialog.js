@@ -10,6 +10,7 @@ import CommonInputField from "../../Components/CommonFields/CommonInputField";
 import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
 import { addDays, format } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
+import { siteTimeZone } from "../../utils/formatting";
 
 const PreImplementationDataDialog = ({
   showPreImplementationDialog,
@@ -166,13 +167,12 @@ const PreImplementationDataDialog = ({
       temp[i] = (
         <div className={`${style.marginTop20}`} key={i}>
           <CommonLabel
-            value={`${obligatedActivities?.[i]?.activityType?.activityType} ${
-              obligatedActivities?.[i]?.activityTypeTemplate
-                ?.activityTypeTemplate !==
+            value={`${obligatedActivities?.[i]?.activityType?.activityType} ${obligatedActivities?.[i]?.activityTypeTemplate
+              ?.activityTypeTemplate !==
               "Administrative / Miscellaneous Service"
-                ? `(${obligatedActivities?.[i]?.performingActivity?.activity})`
-                : ""
-            }`}
+              ? `(${obligatedActivities?.[i]?.performingActivity?.activity})`
+              : ""
+              }`}
           />
           <CommonInputField
             className={style.fullWidth}
@@ -207,8 +207,8 @@ const PreImplementationDataDialog = ({
               value={
                 contractPayments?.[i]?.amount?.value
                   ? Number(
-                      contractPayments?.[i]?.amount?.value
-                    )?.toLocaleString()
+                    contractPayments?.[i]?.amount?.value
+                  )?.toLocaleString()
                   : null
               }
               onChange={(e) =>
@@ -274,7 +274,7 @@ const PreImplementationDataDialog = ({
                   <span className={style.purpleText}>
                     {formatInTimeZone(
                       new Date(goLiveDate || new Date()),
-                      "America/New_York",
+                      siteTimeZone(),
                       "MMM d, yyyy"
                     )}
                   </span>
@@ -283,13 +283,13 @@ const PreImplementationDataDialog = ({
                   For The Period -{" "}
                   {formatInTimeZone(
                     new Date(datePeriod?.startDate || new Date()),
-                    "America/New_York",
+                    siteTimeZone(),
                     "MMM d, yyyy"
                   )}{" "}
                   -{" "}
                   {formatInTimeZone(
                     new Date(datePeriod?.endDate || new Date()),
-                    "America/New_York",
+                    siteTimeZone(),
                     "MMM d, yyyy"
                   )}
                 </p>

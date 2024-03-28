@@ -33,7 +33,6 @@ const ContractedServicesProviderIndividual = ({
   getViewPage3,
   getCurrentPage,
   contractId,
-  contractType,
   contractName,
   checkFieldAndPopAlert,
   getShowAlert,
@@ -1408,7 +1407,7 @@ const ContractedServicesProviderIndividual = ({
           </div>
         </div>
       </div>
-      {isEditable && (
+      {contractStatus === "DRAFT" && (
         <div className={`${style.spaceBetween} ${style.marginTop20}`}>
           <button
             className={`${style.newContractButtonStyle}  ${style.cursorPointer}`}

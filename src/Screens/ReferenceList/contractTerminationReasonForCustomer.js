@@ -21,6 +21,7 @@ import { format } from "date-fns";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
 import { formatInTimeZone } from "date-fns-tz";
+import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
 
 const TerminationReasonForCustomer = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -79,7 +80,7 @@ const TerminationReasonForCustomer = () => {
     );
     const date = new Date(lastModifiedDate.terminationReason?.lastModified);
     setLastUpdatedDate(
-      formatInTimeZone(date, "America/New_York", "MMM d, yyyy HH:mm zzz")
+      `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
     );
   };
 
@@ -269,11 +270,11 @@ const TerminationReasonForCustomer = () => {
       )?.secondary_reasons;
       let response = currentTerminationReason
         ? data.secondary_reasons
-            .map((secReason) => !currentTerminationReason.includes(secReason))
-            .some(Boolean)
+          .map((secReason) => !currentTerminationReason.includes(secReason))
+          .some(Boolean)
         : !terminationReason?.find((reason) => reason.id == data.id)
-        ? true
-        : false;
+          ? true
+          : false;
 
       return response;
     }
@@ -287,11 +288,11 @@ const TerminationReasonForCustomer = () => {
       )?.secondary_reasons;
       let response = currentTerminationReason
         ? data.secondary_reasons
-            .map((secReason) => !currentTerminationReason.includes(secReason))
-            .some(Boolean)
+          .map((secReason) => !currentTerminationReason.includes(secReason))
+          .some(Boolean)
         : !terminationReason?.find((reason) => reason.id == data.id)
-        ? true
-        : false;
+          ? true
+          : false;
 
       return response;
     }
@@ -347,7 +348,7 @@ const TerminationReasonForCustomer = () => {
                                 className={`${style.colorFileStyle} ${style.marginLeft5}`}
                               />
                               <p
-                                className={`${style.tableHeaderIndustriesFontStyle} ${style.textUppercase} ${style.marginLeft10}`}
+                                className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft20} ${style.textUppercase} ${style.marginLeft10}`}
                               >
                                 {data?.siteTypeName}
                               </p>
@@ -359,10 +360,10 @@ const TerminationReasonForCustomer = () => {
                                 }
                                 alt="OpenFolder"
                                 className={`${style.colorFileStyle2} ${style.marginLeft5}`}
-                                // onClick={() => {
-                                //   setSelectedIndex(index);
-                                //   setSiteTypeId(data?.siteTypeId);
-                                // }}
+                              // onClick={() => {
+                              //   setSelectedIndex(index);
+                              //   setSiteTypeId(data?.siteTypeId);
+                              // }}
                               />
                             </div>
                             <div
@@ -382,7 +383,7 @@ const TerminationReasonForCustomer = () => {
                                     className={`${style.colorFileStyle} ${style.marginLeft5}`}
                                   />
                                   <p
-                                    className={`${style.TextStyle2} ${style.marginLeft10}`}
+                                    className={`${style.TextStyle2} ${style.marginLeft20}`}
                                   >
                                     FOR CAUSE BY CONTRACTOR
                                   </p>
@@ -478,7 +479,7 @@ const TerminationReasonForCustomer = () => {
                                     className={`${style.colorFileStyle} ${style.marginLeft5}`}
                                   />
                                   <p
-                                    className={`${style.TextStyle2} ${style.marginLeft10}`}
+                                    className={`${style.TextStyle2} ${style.marginLeft20}`}
                                   >
                                     FOR CAUSE BY ENTITY
                                   </p>
@@ -611,7 +612,7 @@ const TerminationReasonForCustomer = () => {
                                     className={`${style.colorFileStyle} ${style.marginLeft10}`}
                                   />
                                   <p
-                                    className={`${style.tableHeaderIndustriesFontStyle} ${style.textUppercase} `}
+                                    className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft20} ${style.textUppercase} `}
                                   >
                                     {data?.siteTypeName}
                                   </p>
@@ -633,10 +634,10 @@ const TerminationReasonForCustomer = () => {
                                 <>
                                   {/* Contrator */}
                                   {selectedIndex === index &&
-                                  terminationReason?.filter(
-                                    (data) =>
-                                      data.terminationBy === "CONTRACTOR"
-                                  ).length !== 0 ? (
+                                    terminationReason?.filter(
+                                      (data) =>
+                                        data.terminationBy === "CONTRACTOR"
+                                    ).length !== 0 ? (
                                     <div
                                       className={
                                         style.customListHeaderTermiantionLevel2
@@ -648,10 +649,7 @@ const TerminationReasonForCustomer = () => {
                                         className={`${style.colorFileStyle} ${style.marginLeft10}`}
                                       />
                                       <p
-                                        className={
-                                          style.tableHeaderIndustriesFontStyle
-                                        }
-                                      >
+                                        className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft20}`}>
                                         FOR CAUSE BY CONTRACTOR
                                       </p>
                                       <img
@@ -769,9 +767,9 @@ const TerminationReasonForCustomer = () => {
 
                                   {/* //Entity */}
                                   {selectedIndex === index &&
-                                  terminationReason?.filter(
-                                    (data) => data.terminationBy === "ENTITY"
-                                  ).length !== 0 ? (
+                                    terminationReason?.filter(
+                                      (data) => data.terminationBy === "ENTITY"
+                                    ).length !== 0 ? (
                                     <div
                                       className={
                                         style.customListHeaderTermiantionLevel2
@@ -782,11 +780,7 @@ const TerminationReasonForCustomer = () => {
                                         alt="IndustriesEntityFolder"
                                         className={`${style.colorFileStyle} ${style.marginLeft10}`}
                                       />
-                                      <p
-                                        className={
-                                          style.tableHeaderIndustriesFontStyle
-                                        }
-                                      >
+                                      <p className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft20}`}>
                                         FOR CAUSE BY ENTITY
                                       </p>
                                       <img

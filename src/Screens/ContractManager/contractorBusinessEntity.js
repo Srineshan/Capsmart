@@ -88,6 +88,7 @@ const ContractorBusinessEntity = ({
   const [showSaveInProgress, setShowSaveInProgress] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [buttonName, setButtonName] = useState("");
+  const contractStatus = sessionStorage.getItem("Selected Contract Status");
 
   useEffect(() => {
     getUserData();
@@ -264,118 +265,119 @@ const ContractorBusinessEntity = ({
     ) {
       return;
     }
-    if (!continueLoading) {
-      setContinueLoading(true);
+    // if (!continueLoading) {
+    //   setContinueLoading(true);
 
-      if (allowBEM || allowAggregator) {
-        if (
-          businessEntityUser?.email?.officialEmail ===
-          contractUser?.email?.officialEmail
-        ) {
-          ErrorToaster("Enter Different Email to register with App User Role");
-          return;
-        }
-        const userData = {
-          ...(userId !== "0" && { id: userId }),
-          name: {
-            firstName: businessEntityUser?.name?.firstName,
-            lastName: businessEntityUser?.name?.lastName,
-            suffix: {},
-          },
-          userType: "REGISTERED_USER",
-          contracts: [
-            {
-              id: contractId,
-              contractName: {
-                contractName: contractName,
-              },
-              roles: selectedRoles,
-              sites: {
-                sites: [],
-              },
-              siteLevelResponsible: true,
-              departmentLevelResponsible: true,
-            },
-          ],
-          email: {
-            officialEmail: businessEntityUser?.email?.officialEmail,
-          },
-          ...((userId === undefined || userId === "0") && {
-            password: {
-              password: "admin123",
-            },
-          }),
-          communication: {
-            personalEmail: businessEntityUser?.email?.officialEmail,
-            mobileNumber: businessEntityUser?.contactNumber?.number,
-            landlineNumber: "",
-          },
-          roles: selectedRoles,
-          tenant: {
-            tenantId: TenantID,
-          },
-          ssoId: { id: businessEntityUser?.email?.officialEmail },
-        };
-
-        if (userId === "0") {
-          await POST(
-            "user-management-service/user/register",
-            JSON.stringify(userData)
-          )
-            .then((response) => {
-              SuccessToaster("Business Entity Manager Added Successfully");
-            })
-            .catch((error) => {
-              ErrorToaster("Unexpected Error");
-            });
-        } else {
-          await PUT("user-management-service/user", JSON.stringify(userData))
-            .then((response) => {
-              SuccessToaster("Business Entity Manager Updated Successfully");
-            })
-            .catch((error) => {
-              ErrorToaster("Unexpected Error");
-            });
-        }
+    if (allowBEM || allowAggregator) {
+      if (
+        businessEntityUser?.email?.officialEmail ===
+        contractUser?.email?.officialEmail
+      ) {
+        ErrorToaster("Enter Different Email to register with App User Role");
+        return;
       }
-
-      const data = {
-        contractorNPIN: contractorNPIN,
-        contractorEntityTaxId: contractorEntityTaxId,
-        businessEntity: businessEntity,
-        businessEntityUser: businessEntityUser,
-        roles: roles
-          ?.filter(
-            (data) => data?.roleName === "Contract Business Entity Manager"
-          )
-          ?.map((data) => data),
-        mailingAddress: mailingAddress,
-        contractorContact: sameAsContractor,
-        appRoleRequired: appRoleRequired,
-        accessAllowedForBusinessEntityUser: allowBEM,
-        paymentDataConfidential: keepConfidential,
+      const userData = {
+        ...(userId !== "0" && { id: userId }),
+        name: {
+          firstName: businessEntityUser?.name?.firstName,
+          lastName: businessEntityUser?.name?.lastName,
+          suffix: {},
+        },
+        userType: "REGISTERED_USER",
+        contracts: [
+          {
+            id: contractId,
+            contractName: {
+              contractName: contractName,
+            },
+            roles: selectedRoles,
+            sites: {
+              sites: [],
+            },
+            siteLevelResponsible: true,
+            departmentLevelResponsible: true,
+          },
+        ],
+        email: {
+          officialEmail: businessEntityUser?.email?.officialEmail,
+        },
+        ...((userId === undefined || userId === "0") && {
+          password: {
+            password: "admin123",
+          },
+        }),
+        communication: {
+          personalEmail: businessEntityUser?.email?.officialEmail,
+          mobileNumber: businessEntityUser?.contactNumber?.number,
+          landlineNumber: "",
+        },
+        roles: selectedRoles,
+        tenant: {
+          tenantId: TenantID,
+        },
+        ssoId: { id: businessEntityUser?.email?.officialEmail },
       };
-      const response = await PUT(
-        `contract-managment-service/contracts/${contractId}/contractorBusinessEntity`,
-        JSON.stringify(data)
-      );
-      if (response) {
-        SuccessToaster("Business Entity Updated Successfully");
-      } else {
-        ErrorToaster("Unexpected Error");
-      }
-      setContinueLoading(false);
 
-      if (buttonText === "Continue") {
-        getViewPage5(true);
-        getCurrentPage("Contracted Services Specification");
+      if (userId === "0") {
+        await POST(
+          "user-management-service/user/register",
+          JSON.stringify(userData)
+        )
+          .then((response) => {
+            SuccessToaster("Business Entity Manager Added Successfully");
+          })
+          .catch((error) => {
+            ErrorToaster("Unexpected Error");
+          });
       } else {
-        getShowAlert(true);
+        await PUT("user-management-service/user", JSON.stringify(userData))
+          .then((response) => {
+            SuccessToaster("Business Entity Manager Updated Successfully");
+          })
+          .catch((error) => {
+            ErrorToaster("Unexpected Error");
+          });
       }
-      setUnassignedKeys([]);
-
-      getTabDataStatus();
     }
+
+    const data = {
+      contractorNPIN: contractorNPIN,
+      contractorEntityTaxId: contractorEntityTaxId,
+      businessEntity: businessEntity,
+      businessEntityUser: businessEntityUser,
+      roles: roles
+        ?.filter(
+          (data) => data?.roleName === "Contract Business Entity Manager"
+        )
+        ?.map((data) => data),
+      mailingAddress: mailingAddress,
+      contractorContact: sameAsContractor,
+      appRoleRequired: appRoleRequired,
+      accessAllowedForBusinessEntityUser: allowBEM,
+      paymentDataConfidential: keepConfidential,
+    };
+
+    const response = await PUT(
+      `contract-managment-service/contracts/${contractId}/contractorBusinessEntity`,
+      JSON.stringify(data)
+    );
+    if (response) {
+      SuccessToaster("Business Entity Updated Successfully");
+    } else {
+      ErrorToaster("Unexpected Error");
+    }
+    setContinueLoading(false);
+
+    if (buttonText === "Continue") {
+      getViewPage5(true);
+      getCurrentPage("Contracted Services Specification");
+    } else {
+      getShowAlert(true);
+    }
+    setUnassignedKeys([]);
+
+    getTabDataStatus();
+    // }
   };
 
   const getRoles = async () => {
@@ -855,6 +857,7 @@ const ContractorBusinessEntity = ({
                 className={style.fullWidth}
                 value={businessEntityUser?.email?.officialEmail}
                 placeholder="Enter Email"
+                maxLength={TEXTFIELDLEN50}
                 onFocus={() => {
                   checkFieldAndPopAlert(
                     businessEntityUser?.email?.officialEmail,
@@ -927,7 +930,7 @@ const ContractorBusinessEntity = ({
               <CommonLabel
                 value="Mailing Address*"
                 className={
-                  dataCheck(mailingAddress?.addressLine && mailingAddress?.city && mailingAddress?.state && mailingAddress?.zipcode ) ? style.redLable : ""
+                  dataCheck(mailingAddress?.addressLine && mailingAddress?.city && mailingAddress?.state && mailingAddress?.zipcode) ? style.redLable : ""
                 }
               />
               <div>
@@ -1062,7 +1065,7 @@ const ContractorBusinessEntity = ({
               </div>
             )}
           </div>
-          {isEditable && (
+          {contractStatus === "DRAFT" && (
             <div className={`${style.spaceBetween} ${style.marginTop20}`}>
               <button
                 className={`${style.newContractButtonStyle}  ${style.cursorPointer}`}
