@@ -1296,7 +1296,7 @@ const AddServiceProvided = ({
             value: parseFloat(dataValues?.sessionAmount),
           },
           minSessionDuration: {
-            hours: parseInt(dataValues?.minimumSessionDuration || 1),
+            hours: parseInt(dataValues?.minimumSessionDuration || 0),
           },
           patientConsultRequired: dataValues?.patientConsultRequired || false,
           professionalServiceRequired: dataValues?.professionalServiceRequired || false,

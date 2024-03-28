@@ -667,7 +667,7 @@ const App = ({ props }) => {
               />
               <Route
                 path="/referenceList/generalConfigurationForCustomers"
-                element={<GeneralConfigurationForCustomers/>}
+                element={<GeneralConfigurationForCustomers />}
               />
               <Route path="/entitySitePortal" element={<Home />} />
               <Route path="/thankyou" element={<Thankyou />} />
