@@ -12,7 +12,6 @@ import jwt from 'jwt-decode';
 import { differenceInCalendarDays, format } from 'date-fns';
 import Select from '@mui/material/Select';
 import { DataGrid, GridToolbarContainer, GridToolbarExport } from '@mui/x-data-grid';
-
 import 'react-data-grid/lib/styles.css';
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
 import SquareIcon from '@mui/icons-material/Square';
@@ -44,12 +43,14 @@ const TrackYourContracts = () => {
     const [currentUserDetails, setCurrentUserDetails] = useState();
     const [userId, setUserId] = useState(userDetail?.id);
     const [selectedContracts, setSelectedContracts] = useState([]);
+    const [selectedTimesheetInterval, setSelectedTimesheetInterval] = useState([]);
+    const defaultOption = ''
     const [activityTrackServices, setActivityTrackServices] = useState([]);
     const [timesheetTrackValues, setTimesheetTrackValues] = useState([]);
     const [timesheetIntervals, setTimesheetIntervals] = useState([]);
     const [timesheetIntervalsStartDate, setTimesheetIntervalsStartDate] = useState('');
     const [timesheetIntervalsEndDate, setTimesheetIntervalsEndDate] = useState('');
-    const [showTimesheetInterval, setShowTimesheetInterval] = useState(false);
+    const [initialValueSet, setInitialValueSet] = useState(false);
     const [contractTrackCompensationValues, setContractTrackCompensationValues] = useState([]);
     let months = { 1: 'Jan', 2: 'Feb', 3: 'March', 4: 'April', 5: 'May', 6: 'June', 7: 'July', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec' };
     // const columns = [
@@ -69,8 +70,9 @@ const TrackYourContracts = () => {
     });
 
     const dollarFormatter = (cell) => {
+        console.log(cell)
         return (
-            <span>${cell}</span>
+            <span>{cell === undefined ? '' : cell !== '-' ? `$ ${cell}` : cell}</span>
         );
     };
 
@@ -78,17 +80,22 @@ const TrackYourContracts = () => {
     const getColumns = (data, index) => {
         let tempCol = [
             { field: 'service', headerName: '', width: 280 },
-            { field: 'hourlyRate', headerName: 'Pro-Rata Hourly Rate', width: 140 },
-            { field: 'cyExpectedHours', headerName: 'Expected (Hours)', width: 140 },
             {
-                field: 'cyExpectedAmount', headerName: 'Expected (Amount)', width: 140,
+                field: 'hourlyRate', headerName: 'Pro-Rata Hourly Rate', width: 140,
                 renderCell: (params) => {
                     return dollarFormatter(params.value?.toLocaleString());
                 }
             },
-            { field: 'cymExpectedHours', headerName: 'Expected (Hours)', width: 140 },
+            { field: 'cyExpectedHours', headerName: 'Hours', width: 140 },
             {
-                field: 'cymExpectedAmount', headerName: 'Expected (Amount)', width: 140,
+                field: 'cyExpectedAmount', headerName: '$$', width: 140,
+                renderCell: (params) => {
+                    return dollarFormatter(params.value?.toLocaleString());
+                }
+            },
+            { field: 'cymExpectedHours', headerName: 'Hours', width: 140 },
+            {
+                field: 'cymExpectedAmount', headerName: '$$', width: 140,
                 renderCell: (params) => {
                     return dollarFormatter(params.value?.toLocaleString());
                 }
@@ -97,9 +104,9 @@ const TrackYourContracts = () => {
 
         // contractTrackCompensationValues?.map((data, index) => {
         data?.timesheetActivitiesWithActualValuesList?.map((actualValue, actualIndex) => {
-            tempCol.push({ field: `cy${index + 1}m${actualIndex + 1}ActualHours`, headerName: `Actual (Hours)`, width: 140 })
+            tempCol.push({ field: `cy${index + 1}m${actualIndex + 1}ActualHours`, headerName: `Hours`, width: 140 })
             tempCol.push({
-                field: `cy${index + 1}m${actualIndex + 1}ActualAmount`, headerName: `Actual (Amount)`, width: 140,
+                field: `cy${index + 1}m${actualIndex + 1}ActualAmount`, headerName: `$$`, width: 140,
                 renderCell: (params) => {
                     return dollarFormatter(params.value?.toLocaleString());
                 }
@@ -120,18 +127,25 @@ const TrackYourContracts = () => {
                 id: `${index}${expectedIndex}`,
                 service: `${expectedValue?.activityType} - ${expectedValue?.performingActivity}`,
                 hourlyRate: expectedValue?.hourlyRate,
-                cyExpectedHours: expectedValue?.expectedHoursInYear,
-                cyExpectedAmount: expectedValue?.expectedAmountInYear,
-                cymExpectedHours: expectedValue?.expectedHoursInMonth,
-                cymExpectedAmount: expectedValue?.expectedAmountInMonth
+                cyExpectedHours: expectedValue?.activityType === "Add-On Service" ? '-' : expectedValue?.expectedHoursInYear,
+                cyExpectedAmount: expectedValue?.activityType === "Add-On Service" ? '-' : expectedValue?.expectedAmountInYear,
+                cymExpectedHours: expectedValue?.activityType === "Add-On Service" ? '-' : expectedValue?.expectedHoursInMonth,
+                cymExpectedAmount: expectedValue?.activityType === "Add-On Service" ? '-' : expectedValue?.expectedAmountInMonth
             })
+        })
+        tempRow.push({
+            id: `${index}${data?.activityWithExpectedValuesList?.length}`,
+            service: 'Total',
         })
         data?.timesheetActivitiesWithActualValuesList?.map((timesheetData, timesheetIndex) => {
             timesheetData?.activityWithActualValuesList?.map((actualValue, actualIndex) => {
                 let tempIndex = tempRow.findIndex(obj => obj['service'] === `${actualValue?.activityType} - ${actualValue?.performingActivity}`)
-                tempRow[tempIndex][`cy${index + 1}m${timesheetIndex + 1}ActualHours`] = actualValue?.actualHours
-                tempRow[tempIndex][`cy${index + 1}m${timesheetIndex + 1}ActualAmount`] = actualValue?.actualAmount
+                tempRow[tempIndex][`cy${index + 1}m${timesheetIndex + 1}ActualHours`] = actualValue?.actualHours !== -1 ? actualValue?.actualHours : '-'
+                tempRow[tempIndex][`cy${index + 1}m${timesheetIndex + 1}ActualAmount`] = actualValue?.actualAmount !== -1 ? actualValue?.actualAmount : '-'
             })
+        })
+        data?.timesheetActivitiesWithActualValuesList?.map((timesheetData, timesheetIndex) => {
+            tempRow[tempRow?.length - 1][`cy${index + 1}m${timesheetIndex + 1}ActualAmount`] = timesheetData?.policyBasedPayment
         })
         // });
 
@@ -142,7 +156,6 @@ const TrackYourContracts = () => {
 
     const getColumnGroupingModel = (data, index) => {
         if (contractTrackCompensationValues?.length !== 0) {
-            console.log(contractTrackCompensationValues?.[0]?.contractYearInterval?.startDate)
             let columnGroupingModel = [
                 {
                     groupId: `Service Name`,
@@ -158,12 +171,12 @@ const TrackYourContracts = () => {
                     children: [{ field: 'hourlyRate' }],
                 },
                 {
-                    groupId: `CY ${format(new Date(contractTrackCompensationValues?.[0]?.contractYearInterval?.startDate), 'yyyy')}`,
+                    groupId: `Expected ${contractTrackCompensationValues?.[0]?.contractYearInterval !== null ? format(new Date(contractTrackCompensationValues?.[0]?.contractYearInterval?.startDate), 'yyyy') : '-'}`,
                     description: '',
                     children: [{ field: 'cyExpectedHours' }, { field: 'cyExpectedAmount' }],
                 },
                 {
-                    groupId: `CY Monthly (${format(new Date(contractTrackCompensationValues?.[0]?.contractYearInterval?.startDate), 'yyyy')})`,
+                    groupId: `Expected Monthly (${contractTrackCompensationValues?.[0]?.contractYearInterval !== null ? format(new Date(contractTrackCompensationValues?.[0]?.contractYearInterval?.startDate), 'yyyy') : '-'})`,
                     description: '',
                     children: [{ field: 'cymExpectedHours' }, { field: 'cymExpectedAmount' }],
                 },
@@ -172,7 +185,7 @@ const TrackYourContracts = () => {
             data?.timesheetActivitiesWithActualValuesList?.length !== 0 &&
                 data?.timesheetActivitiesWithActualValuesList?.map((actualValue, actualIndex) => {
                     columnGroupingModel?.push({
-                        groupId: `CY M${actualIndex + 1} (${months[actualValue?.month]} ${actualValue?.year})`,
+                        groupId: `Actual M${actualIndex + 1} (${months[actualValue?.month]} ${actualValue?.year})`,
                         description: '',
                         children: [{ field: `cy${index + 1}m${actualIndex + 1}ActualHours` }, { field: `cy${index + 1}m${actualIndex + 1}ActualAmount` }],
                     })
@@ -225,6 +238,7 @@ const TrackYourContracts = () => {
             getContractTrackValues()
         }
         if (trackType === 'timesheetAndInvoiceApprovalsStatusTracker') {
+            setSelectedTimesheetInterval(selectedContractedServiceProvider !== '' ? [defaultOption] : [`${timesheetIntervals?.[0]?.startDate}%23${timesheetIntervals?.[0]?.endDate}`])
             getTimesheetTrackValues()
         }
     }, [selectedContractedServiceProvider])
@@ -246,8 +260,26 @@ const TrackYourContracts = () => {
     }, [trackType])
 
     useEffect(() => {
-        getTimesheetTrackValues()
-    }, [timesheetIntervalsStartDate, timesheetIntervalsEndDate])
+        if (initialValueSet) {
+            getTimesheetTrackValues()
+        }
+    }, [selectedTimesheetInterval, initialValueSet])
+
+    useEffect(() => {
+        setInitialValueSet(false);
+        if (selectedTimesheetInterval?.length === 0) {
+            if (timesheetIntervals?.length !== 1) {
+                setSelectedTimesheetInterval([defaultOption]);
+            }
+        } else if (selectedTimesheetInterval?.length >= 2 && selectedTimesheetInterval.includes(defaultOption)) {
+            setSelectedTimesheetInterval(selectedTimesheetInterval.filter(value => value !== defaultOption))
+        }
+        const timer = setTimeout(() => {
+            setInitialValueSet(true);
+        }, 2000);
+        return () => clearTimeout(timer);
+    }, [defaultOption, selectedTimesheetInterval])
+
 
     const getIsExpanded = (value) => {
         setIsExpanded(value);
@@ -270,7 +302,7 @@ const TrackYourContracts = () => {
 
     const getTimesheetTrackValues = async () => {
         if (timesheetIntervalsStartDate !== '' && timesheetIntervalsEndDate !== '') {
-            const { data: data } = await GET(`timesheet-management-service/timesheet/track/workflow?startDate=${timesheetIntervalsStartDate}&endDate=${timesheetIntervalsEndDate}&userIds=${[selectedContractedServiceProvider]}`);
+            const { data: data } = await GET(`timesheet-management-service/timesheet/track/workflow?interval=${selectedTimesheetInterval}&userIds=${[selectedContractedServiceProvider]}`);
             setTimesheetTrackValues(data);
         }
     }
@@ -281,6 +313,7 @@ const TrackYourContracts = () => {
         if (data?.length !== 0) {
             setTimesheetIntervalsStartDate(data?.[0]?.startDate)
             setTimesheetIntervalsEndDate(data?.[0]?.endDate)
+            setSelectedTimesheetInterval(selectedContractedServiceProvider !== '' ? [defaultOption] : [`${data?.[0]?.startDate}%23${data?.[0]?.endDate}`])
         }
     }
 
@@ -297,6 +330,22 @@ const TrackYourContracts = () => {
             typeof value === 'string' ? value.split(',') : value
         );
     };
+
+    const handleChangeTimesheetInterval = (event) => {
+        const {
+            target: { value },
+        } = event;
+        console.log(event, value)
+
+        if (value?.length >= 2 && value[value?.length - 1] === defaultOption) {
+            setSelectedTimesheetInterval([defaultOption]);
+        } else {
+            setSelectedTimesheetInterval(
+                typeof value === 'string' ? value.split(',') : value
+            );
+        }
+    };
+    console.log(selectedTimesheetInterval)
 
     let service = [];
     let expectedUnits = [];
@@ -332,7 +381,7 @@ const TrackYourContracts = () => {
             console.log(filteredServiceValues)
             Object.keys(filteredServiceValues)?.map(data => {
                 if (filteredServiceValues?.[data]?.length !== 0) {
-                    service?.push({ type: 'parentChildService', name: data, values: filteredServiceValues?.[data]?.map(data => `${(data?.activityType.length > 25 && activityData?.contract?.compensationPolicy !== 'ACTIVITY_BASED') ? data?.activityType.slice(0, 25) + '...' : data?.activityType} (${data?.timeBlock})`) })
+                    service?.push({ type: 'parentChildService', name: data, values: filteredServiceValues?.[data]?.map(data => `${(`${data?.activityType} - ${data?.performingActivity}`.length > 35 && activityData?.contract?.compensationPolicy !== 'ACTIVITY_BASED') ? `${data?.activityType} - ${data?.performingActivity}`.slice(0, 32) + '...' : (`${data?.activityType} - ${data?.performingActivity}`.length > 50) ? `${data?.activityType} - ${data?.performingActivity}`.slice(0, 47) + '...' : `${data?.activityType} - ${data?.performingActivity}`} (${data?.timeBlock})`) })
                     completedUnits?.push({ type: 'number', values: filteredServiceValues?.[data]?.map(data => data?.complated?.units) })
                     completedHours?.push({ type: 'number', values: filteredServiceValues?.[data]?.map(data => data?.complated?.hours) })
                     toBeProposedUnits?.push({ type: 'number', values: filteredServiceValues?.[data]?.map(data => data?.inprogress?.units) })
@@ -375,7 +424,7 @@ const TrackYourContracts = () => {
 
     let timesheetTrackerTableValues = [];
     let timesheetName = [];
-    let timesheetCompensationPolicy = [];
+    let timesheetContractName = [];
     let submissionStatusAndDate = [];
     let reviewAndApprovalStatusAndDate = [];
     let reviewAndApprovalApprovalDays = [];
@@ -386,7 +435,7 @@ const TrackYourContracts = () => {
     const getTimesheetTableValue = () => {
         timesheetTrackerTableValues = [];
         timesheetName = [];
-        timesheetCompensationPolicy = [];
+        timesheetContractName = [];
         submissionStatusAndDate = [];
         reviewAndApprovalStatusAndDate = [];
         reviewAndApprovalApprovalDays = [];
@@ -416,30 +465,11 @@ const TrackYourContracts = () => {
                     icon: <SquareIcon className={` ${style.cursorPointer}`} sx={{ color: timesheetData?.paymentProcessingStausLog?.status === "PENDING" ? "#FEC106" : timesheetData?.paymentProcessingStausLog?.status === "PAST_DUE " ? "#F94848" : "#14B15A", fontSize: 14 }} />
                 } : []),
                 paymentProcessingApprovalDays: data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.paymentProcessingStausLog !== null ? timesheetData?.paymentProcessingStausLog?.daysToApprove : ['']),
-                timesheetCompensationPolicy: data?.timesheetsWithLogs?.map(timesheetData => compensationPolicy[data?.contract?.compensationPolicy]),
+                timesheetContractName: data?.timesheetsWithLogs?.map(timesheetData => data?.contract?.contractName?.contractName),
                 remainingTerm: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => data?.remainingTerm) : ['']
             });
-            // timesheetName.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.timesheetLabel?.label) : [''] })
-            // submissionStatusAndDate.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.submissionStausLog !== null ? format(new Date(timesheetData?.submissionStausLog?.date), 'MMM dd, yyyy') : []) : [''] })
-            // reviewAndApprovalStatusAndDate.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.reviewApprovalStausLog !== null ? format(new Date(timesheetData?.reviewApprovalStausLog?.dueDate), 'MMM dd, yyyy') : []) : [''] })
-            // reviewAndApprovalApprovalDays.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.reviewApprovalStausLog !== null ? timesheetData?.reviewApprovalStausLog?.daysToApprove : []) : [''] })
-            // paymentProcessingStatusAndDate.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.paymentProcessingStausLog !== null ? format(new Date(timesheetData?.paymentProcessingStausLog?.date), 'MMM dd, yyyy') : ['']) : [''] })
-            // paymentProcessingApprovalDays.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.paymentProcessingStausLog !== null ? timesheetData?.paymentProcessingStausLog?.daysToApprove : ['']) : [''] })
-            // timesheetCompensationPolicy.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => compensationPolicy[data?.contract?.compensationPolicy]) : [''] });
-            // remainingTerm.push({ type: 'text', values: data?.timesheetsWithLogs !== null ? data?.timesheetsWithLogs?.map(timesheetData => data?.remainingTerm) : [''] })
         })
         return timesheetTrackerTableValues
-        // [
-        //     // timesheetServiceProvider,
-        //     timesheetName,
-        //     timesheetCompensationPolicy,
-        //     submissionStatusAndDate,
-        //     reviewAndApprovalStatusAndDate,
-        //     reviewAndApprovalApprovalDays,
-        //     paymentProcessingStatusAndDate,
-        //     paymentProcessingApprovalDays,
-        //     remainingTerm
-        // ]
     }
 
     return (
@@ -545,7 +575,7 @@ const TrackYourContracts = () => {
                                     <div className={style.trackServiceProviderName}>{`TIMESHEET SUBMITTED PROCESSING STATUS BY SERVICE PROVIDER`}</div>
                                     <PrintOutlinedIcon className={`${style.headerPrintIcon} ${style.cursorPointer}`} style={{ color: "#7165E3" }} onClick={handlePrint} />
                                 </div>
-                                {timesheetIntervals?.length !== 0 && (
+                                {/* {timesheetIntervals?.length !== 0 && (
                                     <>
                                         <div className={`${style.trackPeriodCard} ${style.marginTop20} ${style.spaceBetween} ${style.padding20} ${style.cursorPointer}`} onClick={() => setShowTimesheetInterval(!showTimesheetInterval)}>
                                             <div className={style.trackContractUserAndPeriod}>{`Timesheets for ${format(new Date(timesheetIntervalsStartDate || timesheetIntervals?.[0]?.startDate), 'MMMM yyyy')}`}</div>
@@ -565,10 +595,88 @@ const TrackYourContracts = () => {
                                             </div>
                                         )}
                                     </>
+                                )} */}
+                                {selectedContractedServiceProvider !== '' ? (
+                                    <FormControl sx={{ width: isExpanded ? 'calc(80vw - 80px)' : 'calc(100vw - 160px)', marginTop: '20px' }}>
+                                        <Select
+                                            labelId="demo-multiple-name-label2"
+                                            id="demo-multiple-name2"
+                                            multiple
+                                            value={selectedTimesheetInterval}
+                                            onChange={handleChangeTimesheetInterval}
+                                            className={style.timesheetIntervalSelectStyle}
+                                            sx={{
+                                                '& .MuiInputBase-input': {
+                                                    backgroundColor: "#F1EFFC",
+                                                    font: ' normal normal bold 15px/18px Montserrat',
+                                                    color: '#52575D',
+                                                    textAlign: 'left'
+                                                }
+                                            }}
+                                            MenuProps={{
+                                                PaperProps: {
+                                                    sx: {
+                                                        bgcolor: '#F1EFFC',
+                                                        '& .MuiMenuItem-root': {
+                                                            padding: 2,
+                                                        },
+                                                    },
+                                                },
+                                            }}
+                                        // disabled={isMyReport || isLoading}
+                                        >
+                                            <MenuItem value={defaultOption}>All Timesheets</MenuItem>
+                                            {timesheetIntervals?.map((data) => (
+                                                <MenuItem
+                                                    key={data?.startDate}
+                                                    value={`${data?.startDate}%23${data?.endDate}`}
+                                                >
+                                                    {`Timesheets for ${format(new Date(data?.startDate), 'MMMM yyyy')}`}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                ) : (
+                                    <FormControl sx={{ width: isExpanded ? 'calc(80vw - 80px)' : 'calc(100vw - 160px)', marginTop: '20px' }}>
+                                        <Select
+                                            labelId="demo-multiple-name-label2"
+                                            id="demo-multiple-name2"
+                                            value={selectedTimesheetInterval}
+                                            onChange={(e) => setSelectedTimesheetInterval([e.target.value])}
+                                            MenuProps={{
+                                                PaperProps: {
+                                                    sx: {
+                                                        bgcolor: '#F1EFFC',
+                                                        '& .MuiMenuItem-root': {
+                                                            padding: 2,
+                                                        },
+                                                    },
+                                                },
+                                            }}
+                                            sx={{
+                                                '& .MuiInputBase-input': {
+                                                    backgroundColor: "#F1EFFC",
+                                                    font: ' normal normal bold 15px/18px Montserrat',
+                                                    color: '#52575D',
+                                                    textAlign: 'left'
+                                                }
+                                            }}
+                                        // disabled={isMyReport || isLoading}
+                                        >
+                                            {timesheetIntervals?.map((data) => (
+                                                <MenuItem
+                                                    key={data?.startDate}
+                                                    value={`${data?.startDate}%23${data?.endDate}`}
+                                                >
+                                                    {`Timesheets for ${format(new Date(data?.startDate), 'MMMM yyyy')}`}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
                                 )}
                                 {timesheetTrackValues?.length !== 0 ? (
                                     <TrackTable
-                                        tableHead={['TIMESHEET NAME', 'COMPENSATION POLICY', 'SUBMISSION', 'REVIEW & APPROVAL', 'PAYMENT PROCESSING', 'REMAINING TERM']}
+                                        tableHead={['TIMESHEET', 'CONTRACT', 'SUBMISSION', 'REVIEW & APPROVAL', 'PAYMENT PROCESSING', 'REMAINING TERM']}
                                         tableHeadBottom={['', '', 'STATUS & DATE', 'STATUS & DATE', 'APPROVAL DAYS', 'STATUS & DATE', 'APPROVAL DAYS', '', '']}
                                         tableData={getTimesheetTableValue()}
                                         dataGrid={style.timesheetTableDataGrid}
@@ -637,7 +745,7 @@ const TrackYourContracts = () => {
                     </div>
                 </div>
             </div>
-        </Fragment>
+        </Fragment >
     )
 }
 

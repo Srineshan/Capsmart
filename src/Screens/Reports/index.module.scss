@@ -1586,7 +1586,7 @@
 
 .trackTableHeaderMiddleGridForActivityBased {
     display: grid;
-    grid-template-columns: 40% 20% 20% 20%;
+    grid-template-columns: 45% 20% 20% 15%;
 }
 
 .trackTableHeaderTopGrid {
@@ -1596,7 +1596,7 @@
 
 .trackTableHeaderTopGridForActivityBased {
     display: grid;
-    grid-template-columns: 40% 60%;
+    grid-template-columns: 45% 55%;
 }
 
 .trackTableHeaderBottomGrid {
@@ -1606,7 +1606,7 @@
 
 .trackTableHeaderBottomGridForActivityBased {
     display: grid;
-    grid-template-columns: 40% 10% 10% 10% 10% 20%;
+    grid-template-columns: 45% 10% 10% 10% 10% 15%;
 }
 
 .trackTableDataGrid {
@@ -1616,7 +1616,7 @@
 
 .trackTableDataGridForActivityBased {
     display: grid;
-    grid-template-columns: 40% 10% 10% 10% 10% 20%;
+    grid-template-columns: 45% 10% 10% 10% 10% 15%;
 }
 
 .greenBigNumber {

@@ -2636,7 +2636,7 @@ input[type="number"] {
 
 .trackTableHeaderMiddleGridForActivityBased {
   display: grid;
-  grid-template-columns: 40% 20% 20% 20%;
+  grid-template-columns: 45% 20% 20% 15%;
 }
 
 .trackTableHeaderTopGrid {
@@ -2646,7 +2646,7 @@ input[type="number"] {
 
 .trackTableHeaderTopGridForActivityBased {
   display: grid;
-  grid-template-columns: 40% 60%;
+  grid-template-columns: 45% 55%;
 }
 
 .trackTableHeaderBottomGrid {
@@ -2656,7 +2656,7 @@ input[type="number"] {
 
 .trackTableHeaderBottomGridForActivityBased {
   display: grid;
-  grid-template-columns: 40% 10% 10% 10% 10% 20%;
+  grid-template-columns: 45% 10% 10% 10% 10% 15%;
 }
 
 .trackTableDataGrid {
@@ -2666,7 +2666,7 @@ input[type="number"] {
 
 .trackTableDataGridForActivityBased {
   display: grid;
-  grid-template-columns: 40% 10% 10% 10% 10% 20%;
+  grid-template-columns: 45% 10% 10% 10% 10% 15%;
 }
 
 .whiteBackground {
