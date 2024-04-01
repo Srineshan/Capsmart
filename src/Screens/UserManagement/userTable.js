@@ -27,6 +27,7 @@ import SendEmail from './sendEmail';
 import SearchBar from './../../Components/SearchBar';
 
 import SendEmailUserList from './sendMailUserList';
+import { siteTimeZone, timeZoneAbbreviation } from '../../utils/formatting';
 
 const UserTable = ({ getSelectedContract, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog }) => {
     const [selectedRow, setSelectedRow] = useState('');
@@ -148,7 +149,7 @@ const UserTable = ({ getSelectedContract, getAddContract, getExtensionDialog, ge
                     </div>
                     <div className={`${style.bigCardStyle} ${style.marginTop20}`}>
                         <div className={style.spaceBetween}>
-                            <p className={`${style.activeContractsWidth} ${style.uppercase}`}>{formatInTimeZone(new Date(), 'America/New_York', 'MMM d, yyyy HH:mm zzz')}</p>
+                            <p className={`${style.activeContractsWidth} ${style.uppercase}`}>{formatInTimeZone(new Date(), siteTimeZone(), 'MMM d, yyyy HH:mm')} {timeZoneAbbreviation()}</p>
                             <div className={`${style.displayInRow} ${style.marginTop20}`}>
                                 <SearchBar />
                                 <img src={UploadUser} alt="UploadUser" className={style.uploadIcon} onClick={() => getMailTemplate(true)} />

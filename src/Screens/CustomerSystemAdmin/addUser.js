@@ -160,7 +160,11 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             setAccessLevelNeeded(user?.executiveAccessLevelNeeded);
             setSelectedAccessLevelToShow(user?.accessLevel);
             setSiteTitle(user?.sites?.sites?.[0]?.siteResponsibility);
-            setDeptTitle(user?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.departmentResponsibility)
+            user?.sites?.sites?.map((data, index) => {
+                if (data?.departmentList?.departments?.length !== 0) {
+                    setDeptTitle(user?.sites?.sites?.[index]?.departmentList?.departments?.[0]?.departmentResponsibility)
+                }
+            })
             setSuffix(user?.name?.suffix);
             let rolesToShow = [];
             user?.roles?.map(data => {
@@ -213,10 +217,11 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
         //     })
         //     data.departmentList.departments = departments;
         // })
+        console.log(siteData)
         return siteData;
     }
 
-
+    console.log(accessLevelNeeded, selectedAccessLevelToShow)
     const submitUserDetails = async () => {
         console.log('roles', addUser?.roles);
         if (addUser?.firstName === '') {
@@ -231,6 +236,11 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             ErrorToaster('All Fields are Mandatory');
             return;
         }
+        if (accessLevelNeeded === true && (selectedAccessLevelToShow === null || selectedAccessLevelToShow === "")) {
+            ErrorToaster('Access Level is Mandatory');
+            return;
+        }
+
         const user = {
             ...(isEdit && { 'id': userId }),
             "name": {
@@ -256,7 +266,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                 "landlineNumber": "string",
                 "mobileNumberNotApplicable": true
             },
-            "accessLevel": selectedAccessLevelToShow,
+            "accessLevel": (selectedAccessLevelToShow === null || selectedAccessLevelToShow === "") ? "USER" : selectedAccessLevelToShow,
             "executiveAccessLevelNeeded": accessLevelNeeded,
             "roles": addUser?.roles,
             ...(isEdit && { "address": userDataById?.address }),
@@ -362,12 +372,12 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
 
                     <div className={`${style.marginTop20} ${style.twoCol}`}>
                         <div>
-                            <div className={style.extentionLableStyle}>Is Executive Access Level Needed*</div>
+                            <div className={style.extentionLableStyle}>IS EXECUTIVE ACCESS LEVEL NEEDED*</div>
                             <CommonSwitch label={accessLevelNeeded ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} checked={accessLevelNeeded}
                                 onChange={(e) => setAccessLevelNeeded(e.target.checked)} />
                         </div>
                         <div>
-                            <div className={style.extentionLableStyle}>Type of Access*</div>
+                            <div className={style.extentionLableStyle}>TYPE OF ACCESS*</div>
                             <FormControl sx={{ maxWidth: '300px' }} className={style.fullWidth} size="small">
                                 <Select
                                     labelId="demo-multiple-checkbox-label"
@@ -406,7 +416,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                             </FormControl>
                         </div>
                         <div >
-                            <CommonLabel value='Suffix*' />
+                            <CommonLabel value='SUFFIX*' />
                             <div className={style.grid3}>
                                 <SuffixList value={suffix?.id || ''} onChangeFunc={(id, value) => { setSuffix({ id: id, suffix: value }) }} className={[style.fullWidth]} />
                             </div>
@@ -443,7 +453,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                     onChange={(e) => handleSiteTitle(e.target.value)}
                                     SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                                 >
-                                    {functionalTitle?.map((data, index) =>
+                                    {selectedSites?.length !== 0 && functionalTitle?.map((data, index) =>
                                         <MenuItem value={data?.id} key={index}>{data?.title}</MenuItem>
                                     )}
                                 </Select>
@@ -482,7 +492,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                     selected={deptTitle?.id}
                                     SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                                 >
-                                    {functionalTitle?.map((data, index) =>
+                                    {selectedDepartments?.length !== 0 && functionalTitle?.map((data, index) =>
                                         <MenuItem value={data?.id} key={index}>{data?.title}</MenuItem>
                                     )}
                                 </Select>
@@ -497,7 +507,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                     </div>
                 </div>
                 <div className={`${style.floatRight} ${style.marginTop10}`}>
-                    <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => submitUserDetails()} >SAVE & EXIT</button>
+                    <button className={`${style.buttonStyle} ${style.marginLeft10}`} onClick={() => submitUserDetails()} >SAVE & EXIT</button>
                 </div>
             </div>
         </Dialog >

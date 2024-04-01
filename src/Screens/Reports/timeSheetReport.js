@@ -10,7 +10,7 @@ import { GET } from '../dataSaver';
 import { format } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
 import { currentUser } from '../../utils/auth';
-import { userTimeZone } from '../../utils/formatting';
+import { siteTimeZone } from '../../utils/formatting';
 import ReportNoDataBox from '../../Components/ReusableSmallComponents/reportNoDataBox';
 
 export const Run = ({ link }) => {
@@ -76,7 +76,6 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         UPCOMING_CONTRACT_RENEWALS: 'upcomingContractRenewals',
         ONE_TIME_CONTRACT: 'oneTimeContract',
         // key: 'complianceStatus',
-        // key: 'nonCompliant',
         PAID_CONSULTING_HOURS_BILLING_PRODUCTIVITY_INDEX_BY_CONTRACTOR: 'paidConsultingHours',
         // key: 'scheduledActivityByContract',
         PAYMENT_PROCESSING_SUMMARY: 'paymentsProcessingSummary',
@@ -89,7 +88,9 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         CURRENT_REMIT_TO_ADDRESS: 'currentRemitToAddressForActiveContracts',
         CONTRACT_DOCUMENT_ON_FILE: 'contractDocumentsOnFile',
         CONTRACT_WITH_BUSINESS_ENTITY: 'contractsWithABusinessEntity',
-        MULTI_PROVIDER_CONTRACT: 'multiProviderContractsList'
+        MULTI_PROVIDER_CONTRACT: 'multiProviderContractsList',
+        PROOF_OF_DOCUMENTATION_COMPLIANCE_FOR_CONTRACT_BASED_REQUIREMENTS: 'nonCompliant',
+        ACTIVITY_STATUS_TRACKER: 'activityStatusTracker'
     }
     const descriptionList = {
         ACTIVITES_SERVICES_LOG_SUMMARY: 'Activities/ Services Log Status Summary',
@@ -98,7 +99,6 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         UPCOMING_CONTRACT_RENEWALS: 'Upcoming Contract Renewals',
         ONE_TIME_CONTRACT: 'List of One Time Contracts that will Terminate on Expiration',
         // key: 'Contract Based Proof of Documentation Compliance Status Summary',
-        // key: 'List Of Contracts That Are Non Compliant With Proof Of Documentation Requirement',
         PAID_CONSULTING_HOURS_BILLING_PRODUCTIVITY_INDEX_BY_CONTRACTOR: 'Paid Consulting Hours & Billing Productivity Index by Contractor',
         // key: 'Scheduled Activity/ Services - forecasted to actual by contract',
         PAYMENT_PROCESSING_SUMMARY: 'Payments Processing Summary',
@@ -111,7 +111,9 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         CURRENT_REMIT_TO_ADDRESS: 'Current Remit To Address For Active Contracts',
         CONTRACT_DOCUMENT_ON_FILE: 'Contract Documents On File',
         CONTRACT_WITH_BUSINESS_ENTITY: 'Contracts With A Business Entity',
-        MULTI_PROVIDER_CONTRACT: 'Multi Provider Contracts List'
+        MULTI_PROVIDER_CONTRACT: 'Multi Provider Contracts List',
+        PROOF_OF_DOCUMENTATION_COMPLIANCE_FOR_CONTRACT_BASED_REQUIREMENTS: 'Proof of documentation compliance for contract based requirments',
+        ACTIVITY_STATUS_TRACKER: `Status Of Activities/ Services By Service Provider For ${format(new Date(), 'MMMM yyyy')}`
     }
 
     const titleList = {
@@ -121,7 +123,6 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         UPCOMING_CONTRACT_RENEWALS: 'Upcoming Contract Renewals',
         ONE_TIME_CONTRACT: 'List of One Time Contracts that will Terminate on Expiration',
         // key: 'Contract Based Proof of Documentation Compliance Status Summary',
-        // key: 'List Of Contracts That Are Non Compliant With Proof Of Documentation Requirement',
         // key: 'Paid Consulting Hours & Billing Productivity Index by Contractor',
         // key: 'Scheduled Activity/ Services - forecasted to actual by contract',
         PAYMENT_PROCESSING_SUMMARY: 'Payments Processing Summary',
@@ -134,7 +135,9 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         CURRENT_REMIT_TO_ADDRESS: 'Current Remit To Address For Active Contracts',
         CONTRACT_DOCUMENT_ON_FILE: 'Contract Documents On File',
         CONTRACT_WITH_BUSINESS_ENTITY: 'Contracts With A Business Entity',
-        MULTI_PROVIDER_CONTRACT: 'Multi Provider Contracts List'
+        MULTI_PROVIDER_CONTRACT: 'Multi Provider Contracts List',
+        PROOF_OF_DOCUMENTATION_COMPLIANCE_FOR_CONTRACT_BASED_REQUIREMENTS: 'Proof of documentation compliance for contract based requirments',
+        ACTIVITY_STATUS_TRACKER: `Status Of Activities/ Services By Service Provider For ${format(new Date(), 'MMMM yyyy')}`
     }
 
     useEffect(() => {
@@ -181,6 +184,9 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
             const { data: myReportContract } = await GET(`contract-managment-service/reports/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
             myReportContract?.map(data => { temp.push(data) })
             setMyReports(temp);
+        } else if (reportType === "contractCompliance") {
+            const { data: myReport } = await GET(`contract-managment-service/reports/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+            setMyReports(myReport);
         } else {
             const { data: myReport } = await GET(`timesheet-management-service/report/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
             setMyReports(myReport);
@@ -204,6 +210,9 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
             })
             console.log(temp)
             setStandardTemplates(temp);
+        } else if (reportType === "contractCompliance") {
+            const { data: standardTemplates } = await GET(`contract-managment-service/reports/standardTemplates?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+            setStandardTemplates(standardTemplates);
         } else {
             const { data: standardTemplates } = await GET(`timesheet-management-service/report/standardTemplates?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
             setStandardTemplates(standardTemplates);
@@ -321,9 +330,9 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                         <Link to={`/reportTypeOverview/${routeList[data?.subCategory]}`} className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>{titleList[data?.title]}</div></Link>
                                         <div className={style.tableDataReportsFontStyle}>{descriptionList[data?.description]}</div>
                                         {/* <div className={style.tableDataReportsFontStyle}>{data?.lastRun !== null ? format(getZonedTime(new Date(data?.lastRun)), 'd MMM yyyy HH:mm z') : '-'} </div> */}
-                                        <div className={style.tableDataReportsFontStyle}>{data?.lastRun !== null ? formatInTimeZone(new Date(data?.lastRun), userTimeZone, 'd MMM yyyy HH:mm') : '-'} </div>
+                                        <div className={style.tableDataReportsFontStyle}>{data?.lastRun !== null ? formatInTimeZone(new Date(data?.lastRun), siteTimeZone(), 'd MMM yyyy HH:mm') : '-'} </div>
                                         {/* <div className={style.tableDataReportsFontStyle}>{currentUserDetails?.fullName}</div> */}
-                                        <div className={style.tableDataReportsFontStyle}>{data?.lastUpdate !== null ? format(new Date(data?.lastUpdate), 'd MMM yyyy') : '-'}</div>
+                                        <div className={style.tableDataReportsFontStyle}>{data?.lastUpdate !== null ? format(new Date(`${data?.lastUpdate}T00:00`), 'd MMM yyyy') : '-'}</div>
                                         <Link to={`/reportTypeOverview/${routeList[data?.subCategory]}`} className={style.linkStyle}>
                                             <Run />
                                         </Link>

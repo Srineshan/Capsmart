@@ -1100,7 +1100,6 @@ const AddServiceProvided = ({
           rateFrequency: metadata?.[index]?.serviceRate?.rateFrequency,
           duration: metadata?.[index]?.serviceRate?.rateFrequency === "SESSION" ? item?.sessionDuration : 1,
         }
-        console.log("performing Activity", metadata?.[index]?.parentActivity);
         item.addOnActivityType = {
           activityType: metadata?.[index]?.parentActivity,
         };
@@ -1375,16 +1374,17 @@ const AddServiceProvided = ({
                     .toString(),
                   target: {
                     minimum: {
-                      value: parseInt(dataValues?.weekdayMin),
+                      value: parseFloat(dataValues?.weekdayMin),
                     },
                     maximum: {
-                      value: parseInt(dataValues?.weekdayMax),
+                      value: parseFloat(dataValues?.weekdayMax),
                     },
                     frequency: dataValues?.weekdayFrequency,
                   },
                   duration: {
                     hours: parseFloat(dataValues?.weekdayDuration),
                   },
+                  minSessionDuration: { hours: 1 },
                   serviceRate: {
                     rate: parseFloat(dataValues?.weekdayDayServiceRate),
                     rateFrequency: dataValues?.weekdayDayServiceFrequency,
@@ -1415,16 +1415,17 @@ const AddServiceProvided = ({
                     .toString(),
                   target: {
                     minimum: {
-                      value: parseInt(dataValues?.weekdayNightsMin),
+                      value: parseFloat(dataValues?.weekdayNightsMin),
                     },
                     maximum: {
-                      value: parseInt(dataValues?.weekdayNightsMax),
+                      value: parseFloat(dataValues?.weekdayNightsMax),
                     },
                     frequency: dataValues?.weekdayNightsFrequency,
                   },
                   duration: {
                     hours: parseFloat(dataValues?.weekdayNightsDuration),
                   },
+                  minSessionDuration: { hours: 1 },
                   activity: {
                     activity: dataValues?.weekdayNightActivity
                   },
@@ -1463,16 +1464,17 @@ const AddServiceProvided = ({
                   }),
                   target: {
                     minimum: {
-                      value: parseInt(dataValues?.weekendMin),
+                      value: parseFloat(dataValues?.weekendMin),
                     },
                     maximum: {
-                      value: parseInt(dataValues?.weekendMax),
+                      value: parseFloat(dataValues?.weekendMax),
                     },
                     frequency: dataValues?.weekendFrequency,
                   },
                   duration: {
                     hours: parseFloat(dataValues?.weekendDuration),
                   },
+                  minSessionDuration: { hours: 1 },
                   activity: {
                     activity: dataValues?.weekendActivity,
                   },
@@ -1503,16 +1505,17 @@ const AddServiceProvided = ({
                   holidayTerm: dataValues?.holidayTerm,
                   target: {
                     minimum: {
-                      value: parseInt(dataValues?.holidayMin),
+                      value: parseFloat(dataValues?.holidayMin),
                     },
                     maximum: {
-                      value: parseInt(dataValues?.holidayMax),
+                      value: parseFloat(dataValues?.holidayMax),
                     },
                     frequency: dataValues?.holidayFrequency,
                   },
                   duration: {
                     hours: parseFloat(dataValues?.holidayDuration),
                   },
+                  minSessionDuration: { hours: 1 },
                   serviceRate: {
                     rate: parseFloat(dataValues?.holidayServiceRate),
                     rateFrequency: dataValues?.holidayServiceFrequency,
@@ -1574,7 +1577,7 @@ const AddServiceProvided = ({
             serviceRate: {
               rate: dataValues?.serviceRate,
               rateFrequency: dataValues?.serviceRateFrequency,
-              duration: !serviceTypeTemplate.includes([ADMINISTRATIVE, SUPPLEMENTAL, HIT, ONCALLSERVICE]) && dataValues?.dedicatedHoursSpecified ? dataValues?.serviceRateFrequency === 'SESSION' ? dataValues?.serviceRateDuration : dataValues?.totalSession : dataValues?.serviceRateFrequency === 'SESSION' ? parseFloat(dataValues?.sessionDuration) : 1,
+              duration: !serviceTypeTemplate.includes([ADMINISTRATIVE, SUPPLEMENTAL, HIT, ONCALLSERVICE]) && dataValues?.dedicatedHoursSpecified ? dataValues?.serviceRateFrequency === 'SESSION' ? dataValues?.serviceRateDuration : 1 : dataValues?.serviceRateFrequency === 'SESSION' ? parseFloat(dataValues?.sessionDuration) : 1,
             },
           })),
           dependantServiceIncluded:
@@ -2520,7 +2523,7 @@ const AddServiceProvided = ({
                 updateConflict={updateConflict}
               />
             }
-            {isEditable && !isShowPDF && (
+            {contractStatus === "DRAFT" && !isShowPDF && (
               <div className={`${style.floatRight} `}>
                 {!editService && (
                   <button

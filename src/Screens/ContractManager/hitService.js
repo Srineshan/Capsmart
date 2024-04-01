@@ -6,7 +6,7 @@ import FormControl from '@mui/material/FormControl';
 import InputAdornment from '@mui/material/InputAdornment';
 import AddIcon from '@mui/icons-material/Add';
 import Select from '@mui/material/Select';
-import { TextArea, Icon, Dialog, Classes, Intent } from '@blueprintjs/core';
+import { TextArea, Icon, Dialog, Classes, Intent, ProgressBar } from '@blueprintjs/core';
 import Tooltip from '@mui/material/Tooltip';
 import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 import TextField from '@mui/material/TextField';
@@ -103,8 +103,6 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         serviceAgreementOnFile: false,
     })
 
-    console.log('Contract Term Period', contractTermPeriod)
-
     const [addOnWorkFlow, setAddOnWorkFlow] = useState([]);
 
     useEffect(() => {
@@ -144,11 +142,6 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
 
     useEffect(() => {
         getMetaData(metadata);
-        // let fileData = [];
-        //   contractDetail?.contractFiles?.map(data => {
-        //     fileData.push({ id: data?.id, type: data?.documentType, name: data?.documentName, desc: data?.documentDescription, fileName: data?.fileName, file: null, filePath: data?.fileURL })
-        //   })
-        //   setFileFields(fileData);
     }, [metadata])
 
     useEffect(() => {
@@ -178,6 +171,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
     }
 
     const addNewDocumentField = async () => {
+        setIsLoading(true);
         let temp = fullyExecutedContractData;
         temp.push(fileFieldData);
         setFileFields(temp);
@@ -207,6 +201,8 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
             .catch(error => {
                 ErrorToaster('File Upload Failed');
             })
+        setIsLoading(false);
+        setIsShowUploadDialog(false);
     }
 
     const handleFileChange = (e, name) => {
@@ -336,10 +332,12 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
     const handleValueChange = (name, value) => {
         if (name === 'dedicatedHoursSpecified') {
             if (value) {
+                console.log('value', value)
                 setMetadata({ ...metadata, sessionDuration: '1', totalSession: '0', sessionAmount: '', totalSessionFrequency: 'NA', dedicatedHoursActivityType: '', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
             } else {
                 setMetadata({ ...metadata, sessionDuration: '1', dedicatedHoursActivityType: '', sessionAmount: '', totalSession: '0', totalSessionFrequency: 'NA', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
             }
+
         }
         if (name === 'totalSessionFrequency' && value === "NA") {
             setMetadata({ ...metadata, [name]: value, totalSession: 0 })
@@ -350,6 +348,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         if (name === 'sessionAmount') {
             setMetadata({ ...metadata, sessionAmount: value, hourlyRate: (value / metadata?.sessionDuration) || '0' })
         }
+        console.log('inside if metadata', metadata)
     }
 
     const activityToAdd = async () => {
@@ -432,7 +431,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
         }
     }
 
-    console.log('metadata', metadata);
+    console.log('metadata', metadata?.sessionDuration);
 
     const editActivitySelected = () => {
         let editableData = metadata?.selectedActivities?.filter(data => data?.id === adminActivity?.id)?.map(data => data)[0];
@@ -562,7 +561,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
                                     }}
                                     value={metadata?.serviceRate}
-                                    onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, serviceRate: parseFloat(e.target.value.slice(0, 9)), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? (parseFloat(e.target.value.slice(0, 9)) * (metadata?.totalSession / metadata?.serviceRateDuration)) : (parseFloat(e.target.value || '0') * (metadata?.totalSession || 1)) })}
+                                    onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, serviceRateDuration: metadata?.serviceRateFrequency === "SESSION" ? metadata?.serviceRateDuration : 1, serviceRate: parseFloat(e.target.value.slice(0, 9)), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? (parseFloat(e.target.value.slice(0, 9)) * (metadata?.totalSession / metadata?.serviceRateDuration)) : (parseFloat(e.target.value || '0') * (metadata?.totalSession || 1)) })}
                                 />
                             </div>
                         </div>
@@ -575,7 +574,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                             <div className={`${style.threeFieldWidth}`}>
                                 <CommonTextField
                                     type="tel"
-                                    maxLength="3"
+                                    maxLength="9"
                                     InputProps={{
                                         endAdornment: (
                                             <InputAdornment position="end" sx={{ fontSize: 10 }}>
@@ -585,7 +584,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                                     }}
                                     onChange={(e) =>
                                         e.target.value >= 0 &&
-                                        setMetadata({ ...metadata, serviceRateDuration: parseFloat(e.target.value || '0'), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? (metadata?.serviceRate * (metadata?.totalSession / parseFloat(e.target.value))) : (metadata?.serviceRate * parseFloat(e.target.value || '1')) })
+                                        setMetadata({ ...metadata, serviceRateDuration: metadata?.serviceRateFrequency === "SESSION" ? e.target.value.slice(0, 9) || '0' : 1, sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? (metadata?.serviceRate * (metadata?.totalSession / e.target.value.slice(0, 9))) : (metadata?.serviceRate * e.target.value.slice(0, 9) || '1') })
                                     }
                                     value={metadata?.serviceRateDuration}
                                 />
@@ -947,20 +946,22 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                             onChange={(e) => handleFileChange(e, 'name')} />
                         <TextArea rows={4} placeholder="Document Description" value={fileFieldData?.documentDescription}
                             maxLength={DESCLEN} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileChange(e, 'documentDescription')} />
-                        {/* <div>
-              <CommonInputField value={fileFieldData?.fileName !== '' ? fileFieldData?.fileName : ''} leftElement={leftElement()} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileUpload(e)} />
-            </div> */}
-                    </div>
-                    {/* )} */}
-                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
-                        <div></div>
-                        {(
-                            (fileFieldData?.documentType === '' || fileFieldData?.fileName === '' || fileFieldData?.file === null) ?
-                                <Tooltip title={'Enter All Values To Enable Upload'} arrow>
-                                    <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${style.disabledUploadButton}`} >UPLOAD</button>
-                                </Tooltip> :
-                                <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} `} disabled={false} onClick={() => { addNewDocumentField(); setIsShowUploadDialog(false) }}>UPLOAD</button>
-                        )}
+
+                        {
+                            isLoading && <div className={`${style.spaceBetween} ${style.marginTop}`}>
+                                <ProgressBar value={50} intent={Intent.PRIMARY} />
+                            </div>
+                        }
+                        <div className={`${style.spaceBetween} ${style.marginTop}`}>
+                            <div></div>
+                            {(
+                                (fileFieldData?.documentType === '' || fileFieldData?.fileName === '' || fileFieldData?.file === null) ?
+                                    <Tooltip title={'Enter All Values To Enable Upload'} arrow>
+                                        <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${style.disabledUploadButton}`} >UPLOAD</button>
+                                    </Tooltip> :
+                                    <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} `} disabled={false} onClick={() => { addNewDocumentField() }}>UPLOAD</button>
+                            )}
+                        </div>
                     </div>
                 </div>
             </Dialog>

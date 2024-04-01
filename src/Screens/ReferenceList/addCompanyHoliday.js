@@ -57,7 +57,7 @@ const AddCompanyHoliday = ({
 
     const isPresent = holidayData.find((p) => p.eventName === eventName);
 
-    if (isPresent) {
+    if (isPresent && !isEdit) {
       ErrorToaster("Already This Name Exists");
       document.getElementById("eventName").focus();
       getAddHolidayDialog(true);

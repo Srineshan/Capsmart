@@ -25,6 +25,7 @@ import { GET } from "../dataSaver";
 import { formatInTimeZone } from "date-fns-tz";
 import style from "./index.module.scss";
 import PartnerPortalTiles from "./partnerPortalTiles";
+import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
 
 const TasksAndAlerts = () => {
   const [viewToDo, setViewToDo] = useState(true);
@@ -229,7 +230,7 @@ const TasksAndAlerts = () => {
                   </div>
                 </div>
               </Link>
-              <Link to={"/user"} className={style.linkStyle}>
+              <Link to={"/entitySitePortal"} className={style.linkStyle}>
                 <div className={style.cardStyle}>
                   <h5 className={`${style.headingForContracts}`}>
                     REGISTERED USERS
@@ -266,71 +267,75 @@ const TasksAndAlerts = () => {
                   </div>
                 </div>
               </Link>
-              <div className={style.cardStyle}>
-                <h5 className={style.headingForContracts}>
-                  AT RISK SUBSCRIPTIONS
-                </h5>
-                <div
-                  className={`${style.spaceBetween} ${style.marginTop20} ${style.marginRight}`}
-                >
+              <Link to={"/entitySitePortal"} className={style.linkStyle}>
+                <div className={style.cardStyle}>
+                  <h5 className={style.headingForContracts}>
+                    AT RISK SUBSCRIPTIONS
+                  </h5>
                   <div
-                    className={`${style.optionsStyle} ${style.displayInCol}`}
+                    className={`${style.spaceBetween} ${style.marginTop20} ${style.marginRight}`}
                   >
-                    <span className={style.displayInRow}>
-                      <p
-                        className={`${style.headingCountForContracts} ${style.red}`}
-                      >
-                        5{" "}
-                      </p>{" "}
-                      EXPIRED
-                    </span>
-                    <span className={style.displayInRow}>
-                      <p
-                        className={`${style.yellow} ${style.headingCountForContracts}`}
-                      >
-                        14{" "}
-                      </p>
-                      NO ACTIVITY IN LAST 30 DAYS
-                    </span>
-                  </div>
-                  <div
-                    className={`${style.optionsStyle} ${style.displayInColRev}`}
-                  >
-                    <span>AT RISK</span>
-                    <span className={`${style.red} ${style.displayInRow}`}>
-                      <span className={style.marginRight}>$ </span>30,050
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className={style.cardStyle}>
-                <h5 className={`${style.headingForContracts}`}>
-                  PRIORITY FEEDBACK TICKETS
-                </h5>
-                <div className={`${style.spaceBetween} ${style.marginTop30}`}>
-                  <div
-                    className={`${style.optionsStyle} ${style.displayInColRev}`}
-                  >
-                    <span className={style.displayInRow}>
-                      <p className={style.headingCountForContracts}>25 </p>{" "}
-                      TOTAL TICKETS
-                    </span>
-                  </div>
-                  <div
-                    className={`${style.optionsStyle} ${style.displayInColRev} ${style.marginLeft30}`}
-                  >
-                    <span>
-                      <span className={style.red}>8 </span> PAST DUE
-                    </span>
-                    <span>
-                      <span className={style.red}>9 </span> HIGH PRIORITY
-                    </span>
-                    <span>
-                      <span className={style.red}>13 </span> EXCEPTION ERRORS
-                    </span>
+                    <div
+                      className={`${style.optionsStyle} ${style.displayInCol}`}
+                    >
+                      <span className={style.displayInRow}>
+                        <p
+                          className={`${style.headingCountForContracts} ${style.red}`}
+                        >
+                          5{" "}
+                        </p>{" "}
+                        EXPIRED
+                      </span>
+                      <span className={style.displayInRow}>
+                        <p
+                          className={`${style.yellow} ${style.headingCountForContracts}`}
+                        >
+                          14{" "}
+                        </p>
+                        NO ACTIVITY IN LAST 30 DAYS
+                      </span>
+                    </div>
+                    <div
+                      className={`${style.optionsStyle} ${style.displayInColRev}`}
+                    >
+                      <span>AT RISK</span>
+                      <span className={`${style.red} ${style.displayInRow}`}>
+                        <span className={style.marginRight}>$ </span>30,050
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </Link>
+              <Link to={"/help"} className={style.linkStyle}>
+                <div className={style.cardStyle}>
+                  <h5 className={`${style.headingForContracts}`}>
+                    PRIORITY FEEDBACK TICKETS
+                  </h5>
+                  <div className={`${style.spaceBetween} ${style.marginTop30}`}>
+                    <div
+                      className={`${style.optionsStyle} ${style.displayInColRev}`}
+                    >
+                      <span className={style.displayInRow}>
+                        <p className={style.headingCountForContracts}>25 </p>{" "}
+                        TOTAL TICKETS
+                      </span>
+                    </div>
+                    <div
+                      className={`${style.optionsStyle} ${style.displayInColRev} ${style.marginLeft30}`}
+                    >
+                      <span>
+                        <span className={style.red}>8 </span> PAST DUE
+                      </span>
+                      <span>
+                        <span className={style.red}>9 </span> HIGH PRIORITY
+                      </span>
+                      <span>
+                        <span className={style.red}>13 </span> EXCEPTION ERRORS
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </Link>
             </div>
             <div
               className={`${style.bigCardStyleEntryPage} ${style.marginTop20}`}
@@ -341,9 +346,9 @@ const TasksAndAlerts = () => {
                 >
                   {formatInTimeZone(
                     new Date(),
-                    "America/New_York",
-                    "MMM d, yyyy H:m zzz"
-                  )}
+                    siteTimeZone(),
+                    "MMM d, yyyy H:m"
+                  )} {timeZoneAbbreviation()}
                 </p>
                 <div className={`${style.displayInRow}`}>
                   <SearchBar />

@@ -28,6 +28,8 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
   const [isLoading, setIsLoading] = useState(true);
   const [servicesValid, setServicesValid] = useState([]);
   const [serviceToDelete, setServiceToDelete] = useState('');
+  const contractStatus = sessionStorage.getItem('Selected Contract Status');
+
   let tableHeaderValues = selectContractInfo === 'INDIVIDUAL' ? ['', 'ACTIVITY TYPE', 'SPECIFIC ACTIVITY', 'BILLABLE', ''] : ['', 'ACTIVITY TYPE', 'SPECIFIC ACTIVITY', 'APPLIES TO', 'BILLABLE', ''];
 
   useEffect(() => {
@@ -217,7 +219,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
       {userLength !== 0 ? (
         <div className={style.cloneBlockStyle}>
           <div className={style.tableHeight}>
-            {isEditable && <button className={`${style.addCotractorButton} ${style.selectedColor} ${style.cursorPointer} ${style.floatRight} ${style.marginBottom}`} onClick={() => setAddService(true)}>ADD SERVICE</button>}
+            {contractStatus === "DRAFT" && <button className={`${style.addCotractorButton} ${style.selectedColor} ${style.cursorPointer} ${style.floatRight} ${style.marginBottom}`} onClick={() => setAddService(true)}>ADD SERVICE</button>}
             {/* <div className={`${style.serviceSpecificationTableHeader} ${style.marginTop20}`}>
               <p className={style.documentProofTextWidth}></p>
               <p className={`${style.documentProofTextWidth}`}>ACTIVITIES TYPE</p>
@@ -245,7 +247,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
               />
             </div>
           </div>
-          {isEditable &&
+          {contractStatus === "DRAFT" &&
             <div className={`${style.spaceBetween} ${style.marginTop20}`}>
               <button className={`${style.newContractButtonStyle}  ${style.cursorPointer}`} onClick={() => { getCurrentPage('Contractor Business Entity') }}>BACK</button>
               <div>

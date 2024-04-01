@@ -2275,7 +2275,7 @@ const OnCallCoverageFieldsBackup = ({
               placeholder=""
               value={metadata?.totalSession}
               type="tel"
-              //   maxLength="5"
+              maxLength="6"
               className={style.editableSessionTextStyle}
               onChange={(e) => onTotalSessionChange(e.slice(0, 6))}
             />

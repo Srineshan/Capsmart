@@ -608,7 +608,7 @@ const OnCallCoverageFields = ({ servicesList, getMetaData, serviceSelected, time
 
   const onTotalSessionChange = (e) => {
     if (e >= 0) {
-      let value = e.slice(0, 5);
+      let value = e.slice(0, 6);
       handleValueChange('totalSession', value);
     }
   }
@@ -791,7 +791,7 @@ const OnCallCoverageFields = ({ servicesList, getMetaData, serviceSelected, time
                         endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                       }}
                       value={metadata?.weekdayDuration}
-                      onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 3)), 'weekdayDuration')}
+                      onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'weekdayDuration')}
                     />
                   </div>
                 </div>
@@ -829,7 +829,7 @@ const OnCallCoverageFields = ({ servicesList, getMetaData, serviceSelected, time
                   startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>MIN</InputAdornment>,
                 }}
                 className={style.threeFieldWidth}
-                onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'weekdayMin')}
+                onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(e.target.value.slice(0, 5), 'weekdayMin')}
                 value={metadata?.weekdayMin === 0 ? '' : metadata?.weekdayMin}
                 type='number'
                 disabled={metadata?.weekdayFrequency === 'NA'}
@@ -960,7 +960,7 @@ const OnCallCoverageFields = ({ servicesList, getMetaData, serviceSelected, time
                         endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                       }}
                       value={metadata?.weekdayNightsDuration}
-                      onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 3)), 'weekdayNightsDuration')}
+                      onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'weekdayNightsDuration')}
                     />
                   </div>
                 </div>
@@ -1141,7 +1141,7 @@ const OnCallCoverageFields = ({ servicesList, getMetaData, serviceSelected, time
                       endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                     }}
                     value={metadata?.weekendDuration}
-                    onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 3)), 'weekendDuration')}
+                    onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'weekendDuration')}
                   />
                 </div>
               </div>
@@ -1330,7 +1330,7 @@ const OnCallCoverageFields = ({ servicesList, getMetaData, serviceSelected, time
                       endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                     }}
                     value={metadata?.holidayDuration}
-                    onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 3)), 'holidayDuration')}
+                    onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'holidayDuration')}
                   />
                 </div>
               </div>
@@ -1677,7 +1677,7 @@ const OnCallCoverageFields = ({ servicesList, getMetaData, serviceSelected, time
         <CommonLabel value='Total Contracted Service Sessions*' />
         <div className={style.twoCol}>
           <div className={`${style.spaceBetween} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
-            <EditableText placeholder='' value={metadata?.totalSession} type='tel' maxLength="5"
+            <EditableText placeholder='' value={metadata?.totalSession} type='tel' maxLength="6"
               className={style.editableSessionTextStyle}
               onChange={(e) => onTotalSessionChange(e)} disabled={contractStatus === "ACTIVE" ? true : false} />
             <div className={`${style.textElement} ${parseFloat(metadata?.totalSession) === parseFloat(specified) ? style.greenBase : style.redBase}`}>{specified} Minimum Specified</div>

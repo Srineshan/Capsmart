@@ -57,6 +57,8 @@
     "react-konva-utils": "^0.3.0",
     "react-router-dom": "^6.3.0",
     "react-scripts": "^5.0.1",
+    "react-select": "^5.8.0",
+    "react-timezone-select": "^3.2.3",
     "react-to-print": "^2.14.10",
     "sass": "^1.51.0",
     "styled-components": "^5.3.5",

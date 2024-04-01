@@ -120,7 +120,8 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
         'contractDocumentsOnFile': 'CONTRACT_MANAGEMENT',
         'contractsWithABusinessEntity': 'CONTRACT_MANAGEMENT',
         'multiProviderContractsList': 'CONTRACT_MANAGEMENT',
-        'currentRemitToAddressForActiveContracts': 'TIMESHEET'
+        'currentRemitToAddressForActiveContracts': 'TIMESHEET',
+        'activityStatusTracker': 'TIMESHEET'
     }
 
     // const type = (reportType === 'activitiesOrServices' ?
@@ -149,7 +150,8 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
         'contractDocumentsOnFile': 'CONTRACT_DOCUMENT_ON_FILE',
         'contractsWithABusinessEntity': 'CONTRACT_WITH_BUSINESS_ENTITY',
         'multiProviderContractsList': 'MULTI_PROVIDER_CONTRACT',
-        'currentRemitToAddressForActiveContracts': 'CURRENT_REMIT_TO_ADDRESS'
+        'currentRemitToAddressForActiveContracts': 'CURRENT_REMIT_TO_ADDRESS',
+        'activityStatusTracker': 'ACTIVITY_STATUS_TRACKER'
     }
 
     const filters = {
@@ -188,6 +190,8 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
         setUserDetails(user);
     }
 
+    console.log(dataToUseInReport?.selectedContracts?.[0] !== '' ? dataToUseInReport?.selectedContracts : [], dataToUseInReport?.selectedContracts)
+
     const handleSave = async () => {
         setIsReadOnly(true)
         let data = {
@@ -215,12 +219,14 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
                     'reportingTimePeriod': dataToUseInReport?.reportingTimePeriod,
                     'startDate': dataToUseInReport?.from,
                     'endDate': dataToUseInReport?.to,
-                    'contracts': dataToUseInReport?.selectedContracts,
-                    'users': dataToUseInReport?.selectedContractedServiceProvider,
-                    'sites': dataToUseInReport?.selectedSites,
-                    'departments': dataToUseInReport?.selectedDepartments,
-                    'contractPolicyType': dataToUseInReport?.contractContinuationPolicy,
-                    'contractStatus': dataToUseInReport?.contractStatus
+                    'contracts': dataToUseInReport?.selectedContracts?.[0] !== '' ? dataToUseInReport?.selectedContracts : [],
+                    'users': dataToUseInReport?.selectedContractedServiceProvider?.[0] !== '' ? dataToUseInReport?.selectedContractedServiceProvider : [],
+                    'sites': dataToUseInReport?.selectedSites?.[0] !== '' ? dataToUseInReport?.selectedSites : [],
+                    'departments': dataToUseInReport?.selectedDepartments?.[0] !== '' ? dataToUseInReport?.selectedDepartments : [],
+                    'contractPolicyType': dataToUseInReport?.contractContinuationPolicy !== 'ALL' ? dataToUseInReport?.contractContinuationPolicy : '',
+                    'contractStatus': dataToUseInReport?.contractStatus,
+                    "renewalDays": dataToUseInReport?.renewalreportingTimePeriod,
+                    "contractNames": ['']
                 },
                 "private": isPrivate
             }

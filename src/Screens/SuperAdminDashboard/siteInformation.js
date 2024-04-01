@@ -31,6 +31,8 @@ import CommonCheckBox from "../../Components/CommonFields/CommonCheckBox";
 import CommonInputField from "../../Components/CommonFields/CommonInputField";
 import { format } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
+import Timezone from "./timeZone";
+import { siteTimeZone } from "../../utils/formatting";
 
 // const VALUES = ['Department 1', "Department 2"];
 
@@ -42,7 +44,7 @@ const SiteInformation = ({ getActiveStep }) => {
   const [siteList, setSiteList] = useState([]);
   const [showSiteTable, setShowSiteTable] = useState(true);
   const [selectDepartment, setSelectDepartment] = useState("");
-  const [siteID, setSiteID] = useState("3578689");
+  const [siteID, setSiteID] = useState("");
   const [alertDialog, setAlertDialog] = useState(false);
   const [item, setItem] = useState();
   const [departmentValue, setDepartmentValue] = useState([]);
@@ -52,6 +54,8 @@ const SiteInformation = ({ getActiveStep }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [selectedSite, setSelectedSite] = useState({});
   const [selectedSiteIndex, setSelectedSiteIndex] = useState({});
+  const [selectedTimezone, setSelectedTimezone] = useState("")
+
   const [address, setAddress] = useState({
     addressLine: "",
     city: "",
@@ -81,9 +85,13 @@ const SiteInformation = ({ getActiveStep }) => {
     zipcode: "Zipcode",
     officialEmailDomain: "Official Email Domain",
   };
+  const [logo, setLogo] = useState({ name: '', url: '', file: null });
+  const [createdDate, setCreatedDate] = useState("");
+
   let options = [];
   const accessToken = Auth();
   const role = "";
+
 
   useEffect(() => {
     getDepartmentData();
@@ -124,8 +132,12 @@ const SiteInformation = ({ getActiveStep }) => {
       ErrorToaster("Site Type is Mandatory");
       return;
     }
-    if (site?.officialEmailDomain === "") {
+    if (site?.officialEmailDomain === "" || site?.officialEmailDomain === null || site?.officialEmailDomain === undefined) {
       ErrorToaster("Official Email Domain is Mandatory");
+      return;
+    }
+    if (selectedTimezone?.value === "" || selectedTimezone?.value === null || selectedTimezone?.value === undefined) {
+      ErrorToaster("Timezone is Mandatory");
       return;
     }
     if (
@@ -161,6 +173,9 @@ const SiteInformation = ({ getActiveStep }) => {
     var addressKeys = Object.keys(address)
       ?.filter((key) => address[key] === "")
       ?.map((data) => Fields[data]);
+    if (logo?.url === '') {
+      keys.push('Logo');
+    }
     keys.push(...addressKeys);
     setUnassignedKeys(keys);
     if (keys?.length !== 0) {
@@ -179,127 +194,219 @@ const SiteInformation = ({ getActiveStep }) => {
   };
 
   const updateEntitySite = async (buttonText) => {
-    let temp = entityData?.sites;
-    if (!isEdit) {
-      temp.push({
-        siteName: {
-          siteName: site?.name,
-        },
-        siteAdmin: {
-          id: "",
-        },
-        siteDisplayId: {
-          id: "",
-        },
-        siteType: {
-          type: site?.type?.type,
-          id: site?.type?.id,
-        },
-        npin: {
-          id: site?.npin,
-          notApplicable: site?.npinNA,
-        },
-        canSetupDepartment: site?.canSetupDepartment,
-        departmentList: {
-          departments: departmentSpecific
-            ? selectedDepartment || []
-            : departmentValue || [],
-        },
-        address: {
-          addressLine: address?.addressLine,
-          city: address?.city,
-          state: address?.state,
-          zipcode: address?.zipcode,
-          country: address?.country,
-        },
-        primarySite: false,
-      });
-    } else {
-      temp[selectedSiteIndex] = {
-        id: selectedSite?.id,
-        siteName: {
-          siteName: site?.name,
-        },
-        siteAdmin: {
-          id: "",
-        },
-        siteDisplayId: {
-          id: "",
-        },
-        siteType: {
-          type: site?.type?.type,
-          id: site?.type?.id,
-        },
-        npin: {
-          id: site?.npin,
-          notApplicable: site?.npinNA,
-        },
-        canSetupDepartment: site?.canSetupDepartment,
-        departmentList: {
-          departments: departmentSpecific
-            ? selectedDepartment || []
-            : departmentValue || [],
-        },
-        address: {
-          addressLine: address?.addressLine,
-          city: address?.city,
-          state: address?.state,
-          zipcode: address?.zipcode,
-          country: address?.country,
-        },
-        createdDate: selectedSite?.createdDate,
-        lastModifiedDate: selectedSite?.lastModifiedDate,
-        primarySite: selectedSite?.primarySite,
-      };
-    }
-    const updatedValue = {
-      id: entityData?.id,
-      entityName: entityData?.entityName,
-      entityType: entityData?.entityType,
-      entityDisplayId: entityData?.entityDisplayId,
-      entityAbbrevation: entityData?.entityAbbrevation,
-      partner: entityData?.partner,
-      industryId: entityData?.industryId,
-      npin: entityData?.npin,
-      mailingAddress: entityData?.mailingAddress,
-      officialEmailDomain: entityData?.officialEmailDomain,
-      sites: temp,
-      subscriptionPlan: entityData?.subscriptionPlan,
-      billingDetails: entityData?.billingDetails,
-      contractDetails: entityData?.contractDetails,
-      accountManager: entityData?.accountManager,
-      appUserRoles: entityData?.appUserRoles,
-      subdomain: entityData?.subdomain,
-      canPrimarySiteToUseApp: entityData?.canPrimarySiteToUseApp,
-      multiSiteEntity: entityData?.multiSiteEntity,
-      logo: entityData?.logo,
-      logoThumbnail: entityData?.logoThumbnail,
-    };
+    // let temp = entityData?.sites;
+    // if (!isEdit) { //POST
+    //   temp.push({
+    //     "entityId": {
+    //       "id": entityData?.id
+    //     },
+    //     "entityName": {
+    //       "entityName": entityData?.entityName
+    //     },
+    //     "entityDisplayId": entityData?.entityDisplayId,
+    //     siteName: {
+    //       siteName: site?.name,
+    //     },
+    //     siteAdmin: {
+    //       id: "",
+    //     },
+    //     siteDisplayId: {
+    //       id: "",
+    //     },
+    //     siteType: {
+    //       type: site?.type?.type,
+    //       id: site?.type?.id,
+    //     },
+    //     npin: {
+    //       id: site?.npin,
+    //       notApplicable: site?.npinNA,
+    //     },
+    //     canSetupDepartment: site?.canSetupDepartment,
+    //     departmentList: {
+    //       departments: departmentSpecific
+    //         ? selectedDepartment || []
+    //         : departmentValue || [],
+    //     },
+    //     address: {
+    //       addressLine: address?.addressLine,
+    //       city: address?.city,
+    //       state: address?.state,
+    //       zipcode: address?.zipcode,
+    //       country: address?.country,
+    //     },
+    //     primarySite: true,
+    //     logo: site?.logo,
+    //   });
+    // } else {
+    //   temp[selectedSiteIndex] = {
+    //     id: selectedSite?.id,
+    //     "entityId": {
+    //       "id": entityData?.id
+    //     },
+    //     "entityName": {
+    //       "entityName": entityData?.entityName
+    //     },
+    //     "entityDisplayId": entityData?.entityDisplayId,
+    //     siteName: {
+    //       siteName: site?.name,
+    //     },
+    //     siteAdmin: {
+    //       id: "",
+    //     },
+    //     siteDisplayId: {
+    //       id: "",
+    //     },
+    //     siteType: {
+    //       type: site?.type?.type,
+    //       id: site?.type?.id,
+    //     },
+    //     npin: {
+    //       id: site?.npin,
+    //       notApplicable: site?.npinNA,
+    //     },
+    //     canSetupDepartment: site?.canSetupDepartment,
+    //     departmentList: {
+    //       departments: departmentSpecific
+    //         ? selectedDepartment || []
+    //         : departmentValue || [],
+    //     },
+    //     address: {
+    //       addressLine: address?.addressLine,
+    //       city: address?.city,
+    //       state: address?.state,
+    //       zipcode: address?.zipcode,
+    //       country: address?.country,
+    //     },
+    //     logo: selectedSite?.logo,
+    //     createdDate: selectedSite?.createdDate,
+    //     lastModifiedDate: selectedSite?.lastModifiedDate,
+    //     primarySite: selectedSite?.primarySite,
+    //   };
+    // }
+    // const updatedValue = {
+    //   id: entityData?.id,
+    //   entityName: entityData?.entityName,
+    //   entityType: entityData?.entityType,
+    //   entityDisplayId: entityData?.entityDisplayId,
+    //   entityAbbrevation: entityData?.entityAbbrevation,
+    //   partner: entityData?.partner,
+    //   industryId: entityData?.industryId,
+    //   npin: entityData?.npin,
+    //   mailingAddress: entityData?.mailingAddress,
+    //   officialEmailDomain: entityData?.officialEmailDomain,
+    //   sites: temp,
+    //   subscriptionPlan: entityData?.subscriptionPlan,
+    //   billingDetails: entityData?.billingDetails,
+    //   contractDetails: entityData?.contractDetails,
+    //   accountManager: entityData?.accountManager,
+    //   appUserRoles: entityData?.appUserRoles,
+    //   subdomain: entityData?.subdomain,
+    //   canPrimarySiteToUseApp: entityData?.canPrimarySiteToUseApp,
+    //   multiSiteEntity: entityData?.multiSiteEntity,
+    //   logo: entityData?.logo,
+    //   logoThumbnail: entityData?.logoThumbnail,
+    // };
 
-    const formData = new FormData();
-    formData.append(
-      "entity",
-      new Blob([JSON.stringify(updatedValue)], {
-        type: "application/json",
-      })
-    );
-    await PUT("entity-service/entity", formData)
-      .then((response) => {
-        SuccessToaster("Site Created Successfully");
-      })
-      .catch((error) => {
-        ErrorToaster("Unexpected Error Creating Site");
-      });
-    if (buttonText === "Continue") {
-      navigate(`/entitySetup/${id}/entitySystemAdmin`);
-      resetSiteValues();
-    } else if (buttonText === "Saveinprogress") {
-      resetSiteValues();
-      navigate(isSuperAdminAccess ? "/activeCustomers" : "/entitySitePortal");
-    } else {
-      resetSiteValues();
-      setShowSiteTable(false);
+    const data = {
+      ...(isEdit && { id: siteID }),
+      ...(isEdit && { createdDate: createdDate }),
+      ...(isEdit && { lastModifiedDate: new Date() }),
+      "entityId": {
+        "id": entityData?.id
+      },
+      "entityName": entityData?.entityName,
+      "entityDisplayId": entityData?.entityDisplayId?.id,
+      siteName: {
+        siteName: site?.name,
+      },
+      siteAdmin: {
+        id: "",
+      },
+      siteDisplayId: {
+        id: "",
+      },
+      siteType: {
+        type: site?.type?.type,
+        id: site?.type?.id,
+      },
+      npin: {
+        id: site?.npin,
+        notApplicable: site?.npinNA,
+      },
+      canSetupDepartment: site?.canSetupDepartment,
+      "officialEmailDomain": {
+        "officialEmail": site?.officialEmailDomain
+      },
+      departmentList: {
+        departments: departmentSpecific
+          ? selectedDepartment || []
+          : departmentValue || [],
+      },
+      address: {
+        addressLine: address?.addressLine,
+        city: address?.city,
+        state: address?.state,
+        zipcode: address?.zipcode,
+        country: address?.country,
+      },
+      "timeZone": {
+        "id": selectedTimezone?.value,
+        "abbrevation": selectedTimezone?.abbrev
+      },
+      "logo": selectedSite?.logo,
+      primarySite: true,
     }
+
+    if (isEdit) {
+      await PUT('entity-service/sites', JSON.stringify(data))
+        .then(response => {
+          SuccessToaster('Site Updated Successfully');
+          if (logo?.name !== '') {
+            handleLogoUpload(response?.data?.id);
+          }
+          if (buttonText === 'Continue') {
+            !isSuperAdminAccess
+              ? setIsCompleteSetup(true)
+              : navigate(`/entitySetup/${id}/entitySystemAdmin`);
+            // navigate(`/entitySetup/${id}/entitySystemAdmin`);
+            resetSiteValues();
+          } else if (buttonText === "Saveinprogress") {
+            resetSiteValues();
+            navigate(isSuperAdminAccess ? "/activeCustomers" : "/entitySitePortal");
+          } else {
+            resetSiteValues();
+            setShowSiteTable(false);
+          }
+        }).catch(error => {
+          ErrorToaster('Unexpected Error Updating Site');
+        });
+    } else {
+      await POST('entity-service/sites', JSON.stringify(data))
+        .then(response => {
+          SuccessToaster('Site Created Successfully');
+          if (logo?.name !== '') {
+            handleLogoUpload(response?.data?.id);
+          }
+          let newEntityId = response?.data?.id;
+          if (buttonText === 'Continue') {
+            window.location = `/app/entitySetup/${newEntityId}/entitySystemAdmin`
+            !isSuperAdminAccess
+              ? setIsCompleteSetup(true)
+              : navigate(`/entitySetup/${newEntityId}/entitySystemAdmin`);
+            // navigate(`/entitySetup/${newEntityId}/entitySystemAdmin`);
+            resetSiteValues();
+          } else if (buttonText === "Saveinprogress") {
+            resetSiteValues();
+            navigate(isSuperAdminAccess ? "/activeCustomers" : "/entitySitePortal");
+          } else {
+            resetSiteValues();
+            setShowSiteTable(false);
+          }
+        }).catch(error => {
+          ErrorToaster('Unexpected Error Creating Site');
+        });
+    }
+    setUnassignedKeys([]);
     getEntityData();
   };
 
@@ -398,10 +505,13 @@ const SiteInformation = ({ getActiveStep }) => {
       officialEmailDomain: "",
     });
     setSelectedDepartment([]);
+    setSelectedTimezone("")
   };
 
   const setSelectedSiteValues = () => {
     console.log(selectedSite);
+    setSiteID(selectedSite?.id)
+    setCreatedDate(selectedSite?.createdDate)
     setAddress({
       city: selectedSite?.address?.city || "",
       state: selectedSite?.address?.state || "",
@@ -418,16 +528,63 @@ const SiteInformation = ({ getActiveStep }) => {
       canSetupDepartment: selectedSite?.canSetupDepartment || true,
       npin: selectedSite?.npin?.id || "",
       npinNA: selectedSite?.npin?.notApplicable || false,
-      officialEmailDomain: "",
+      officialEmailDomain: selectedSite?.officialEmailDomain?.officialEmail,
+      timeZone: selectedTimezone?.timeZone?.id
     });
     setSelectedDepartment(selectedSite?.departmentList?.departments || []);
+    setLogo({ ...logo, name: selectedSite?.logo?.fileName || '', url: selectedSite?.logo?.file?.fileURL || '' });
+    setSelectedTimezone({ ...selectedTimezone, value: selectedSite?.timeZone?.id, abbrev: selectedSite?.timeZone?.abbrevation })
   };
+
+  console.log(selectedTimezone?.abbrev)
 
   const onSiteTypeChange = (id, value) => {
     setSite({ ...site, type: { type: value, id: id } });
   };
 
   console.log("site type", site?.type);
+
+  const handleLogoFile = (e) => {
+    setLogo({ ...logo, url: URL.createObjectURL(e.target.files[0]) || '', name: e.target?.files?.[0]?.name || '', file: e.target.files[0] });
+  }
+
+  const handleLogoUpload = async (siteId) => {
+    const formData = new FormData();
+    let data = {
+      "file": {
+        "fileName": logo?.name
+      }
+    }
+    if (logo === null) {
+      formData.append('logo', new Blob([JSON.stringify(data)], {
+        type: "application/json"
+      }));
+      formData.append('logoFile', logo?.file);
+
+      await POST(`entity-service/sites/${siteId}/logo`, formData)
+        .then(response => {
+          SuccessToaster('Sites Logo Updated Successfully');
+        })
+        .catch(error => {
+          ErrorToaster('Unexpected Error Occured');
+        })
+    } else {
+      data.id = selectedSite?.logo?.id;
+      formData.append('logo', new Blob([JSON.stringify(data)], {
+        type: "application/json"
+      }));
+      formData.append('logoFile', logo?.file);
+
+      await PUT(`entity-service/sites/${siteId}/logo`, formData)
+        .then(response => {
+          SuccessToaster('Sites Logo Updated Successfully');
+        })
+        .catch(error => {
+          ErrorToaster('Unexpected Error Occured');
+        })
+    }
+
+  }
 
   return (
     <>
@@ -476,11 +633,10 @@ const SiteInformation = ({ getActiveStep }) => {
                   </div>
                 </div>
                 <p
-                  className={`${
-                    isSuperAdminAccess
-                      ? style.entityTextColor
-                      : style.entityTextColor4grid
-                  } ${style.activeEntityTextColor}`}
+                  className={`${isSuperAdminAccess
+                    ? style.entityTextColor
+                    : style.entityTextColor4grid
+                    } ${style.activeEntityTextColor}`}
                 >
                   SUBSCRIPTION PLAN
                 </p>
@@ -502,11 +658,10 @@ const SiteInformation = ({ getActiveStep }) => {
                   </div>
                 </div>
                 <p
-                  className={`${
-                    isSuperAdminAccess
-                      ? style.entityTextColor
-                      : style.entityTextColor4grid
-                  } ${style.activeEntityTextColor}`}
+                  className={`${isSuperAdminAccess
+                    ? style.entityTextColor
+                    : style.entityTextColor4grid
+                    } ${style.activeEntityTextColor}`}
                 >
                   CONTRACT & BILLING
                 </p>
@@ -524,11 +679,10 @@ const SiteInformation = ({ getActiveStep }) => {
                   </div>
                 </div>
                 <p
-                  className={`${
-                    isSuperAdminAccess
-                      ? style.entityTextColor
-                      : style.entityTextColor4grid
-                  } ${style.activeEntityTextColor}`}
+                  className={`${isSuperAdminAccess
+                    ? style.entityTextColor
+                    : style.entityTextColor4grid
+                    } ${style.activeEntityTextColor}`}
                 >
                   ENTITY SETUP
                 </p>
@@ -548,11 +702,10 @@ const SiteInformation = ({ getActiveStep }) => {
                   </div>
                 </div>
                 <p
-                  className={`${
-                    isSuperAdminAccess
-                      ? style.entityTextColor
-                      : style.entityTextColor4grid
-                  } ${style.activeEntityTextColor}`}
+                  className={`${isSuperAdminAccess
+                    ? style.entityTextColor
+                    : style.entityTextColor4grid
+                    } ${style.activeEntityTextColor}`}
                 >
                   SITES FOR APP USE
                 </p>
@@ -573,11 +726,10 @@ const SiteInformation = ({ getActiveStep }) => {
                     </div>
                   </div>
                   <p
-                    className={`${
-                      isSuperAdminAccess
-                        ? style.entityTextColor
-                        : style.entityTextColor4grid
-                    } ${style.activeEntityTextColor}`}
+                    className={`${isSuperAdminAccess
+                      ? style.entityTextColor
+                      : style.entityTextColor4grid
+                      } ${style.activeEntityTextColor}`}
                   >
                     ENTITY SYSTEM ADMIN
                   </p>
@@ -615,18 +767,30 @@ const SiteInformation = ({ getActiveStep }) => {
               </p>
               <div className={style.greyBorder}></div>
               <div className={style.entityDescription}>
-                Help lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                {/* Help lorem ipsum dolor sit amet, consectetur adipiscing elit.
                 sed finibus quam nec tellus dictum, vitae ultrices urna
                 porttitor. donec commodo tellus dapibus semper mattis. aenean ut
                 massa vitae tortor consequat tristique. etiam eget condimentum
                 sapien. morbi est ante, sagittis ac rhoncus eget, faucibus ut
                 felis. pellentesque iaculis aliquam massa. lorem ipsum dolor sit
                 amet, consectetur adipiscing elit. sed finibus quam nec tellus
-                dictum.
+                dictum. */}
               </div>
               <div>
                 <div className={style.cloneBlockStyle}>
                   <div className={`${style.newContractFromCloneBoxStyle}`}>
+                    <div className={`${style.spaceBetween}${style.marginBottom20}`}>
+                      <div className={`${style.displayInRow} ${style.marginBottom20}`}>
+                        <label for="logo-upload">
+                          <div className={style.displayInRow}>
+                            <img src={logo?.url || UploadImg} alt="Upload" className={`${style.companyLogoUpload} ${style.cursor}`} />
+
+                            <input id="logo-upload" type="file" onChange={handleLogoFile} className={style.hidden} />
+                            <p className={style.uploadText}>Click To Upload Company Logo</p>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
                     <div className={`${style.extentionGrid}`}>
                       <div className={style.extentionLableStyle}>NPIN*</div>
                       <div className={style.displayInRow}>
@@ -754,6 +918,16 @@ const SiteInformation = ({ getActiveStep }) => {
                             }
                           />
                         </div>
+                      </div>
+                    </div>
+                    <div
+                      className={`${style.extentionGrid} ${style.marginTop20}`}
+                    >
+                      <div className={style.extentionLableStyle}>
+                        Time Zone*
+                      </div>
+                      <div className={`${style.leftAlign} `}>
+                        <Timezone selectedTimezone={selectedTimezone} setSelectedTimezone={setSelectedTimezone} />
                       </div>
                     </div>
                     {!isSuperAdminAccess && (
@@ -913,7 +1087,7 @@ const SiteInformation = ({ getActiveStep }) => {
                       <p className={style.tableDataFontStyle}>
                         {formatInTimeZone(
                           new Date(data?.createdDate),
-                          "America/New_York",
+                          siteTimeZone(),
                           "MM/dd/yyyy"
                         )}
                       </p>
@@ -964,7 +1138,7 @@ const SiteInformation = ({ getActiveStep }) => {
             fieldData={unassignedKeys?.join(", ")}
             saveInProgressFunction={saveInProgressFunction}
           />
-        </div>
+        </div >
       )}
     </>
   );

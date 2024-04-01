@@ -338,7 +338,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         setMetadata({ ...metadata, workingTimeFrom: e });
     }
 
-    console.log('Metadata', metadata);
+    console.log('Activity', activity);
 
 
     return (
@@ -392,7 +392,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                     InputProps={{
                                         endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                                     }}
-                                    onChange={(e) => e.target.value >= 0 && handleValueChange('totalSession', e.target.value.slice(0, 4))}
+                                    onChange={(e) => e.target.value >= 0 && handleValueChange('totalSession', e.target.value.slice(0, 9))}
                                     value={metadata?.totalSession}
                                     disabled={metadata?.totalSessionFrequency === "NA"}
                                 />
@@ -430,7 +430,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                             <div className={`${style.threeFieldWidth}`}>
                                 <CommonTextField
                                     type="tel"
-                                    maxLength="3"
+                                    maxLength="9"
                                     InputProps={{
                                         endAdornment: (
                                             <InputAdornment position="end" sx={{ fontSize: 10 }}>
@@ -440,7 +440,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                     }}
                                     onChange={(e) =>
                                         e.target.value >= 0 &&
-                                        setMetadata({ ...metadata, serviceRateDuration: parseFloat(e.target.value || '0'), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? (metadata?.serviceRate * (metadata?.totalSession / parseFloat(e.target.value))) : (metadata?.serviceRate * parseFloat(e.target.value || '1')) })
+                                        setMetadata({ ...metadata, serviceRateDuration: e.target.value.slice(0, 9) || '0', sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? (metadata?.serviceRate * (metadata?.totalSession / e.target.value.slice(0, 9))) : (metadata?.serviceRate * e.target.value.slice(0, 9) || '1') })
                                     }
                                     value={metadata?.serviceRateDuration}
                                 />
@@ -484,26 +484,49 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                 </>
             }
 
+            {activity?.length !== 0 && <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                <CommonLabel value='Allowable Administrative Duties & Function To Perform*' />
+
+                <CommonSelectField
+                    // value={serviceType}
+                    onChange={(e) => { e.target.value !== "" && onSelectActivity(e.target.value, true) }}
+                    className={`${style.fullWidth} `}
+                    firstOptionLabel={"Select Admin Activity"}
+                    firstOptionValue={""}
+                    valueList={activity?.length !== 0 && activity?.map(
+                        (data) => data?.id
+                    )}
+                    labelList={activity?.length !== 0 && activity?.map(
+                        (data) => data?.activity
+                    )}
+                    disabledList={activity?.length !== 0 && activity?.map(data => false)}
+                />
+
+            </div>}
+
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <CommonLabel value='Allowable Administrative Duties & Function To Perform' />
+                <CommonLabel value='' />
+
                 <div>
                     {
                         activity?.map((data, index) => (
-                            <div className={`${style.displayInRow} ${style.marginBottom10}`}>
-                                {metadata?.selectedActivities?.map(activities => activities?.id)?.includes(data?.id) ? (
+                            <div className={`${style.displayInRow}`}>
+                                {metadata?.selectedActivities?.map(activities => activities?.id)?.includes(data?.id) && (
                                     <>
                                         <CommonCheckBox checked={metadata?.selectedActivities?.map(activities => activities?.id)?.includes(data?.id)} className={`${style.marginLeft10}`} onChange={(e) => onSelectActivity(data?.id, e.target.checked)} label={metadata?.selectedActivities?.filter(activity => activity?.id === data?.id)?.map(activity => activity?.activity)?.[0]} />
                                         <div className={`${style.chipStyle} ${style.redChip}`}>{metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities?.schedule)[0]}</div>
                                         {metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities?.billable)[0] && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
                                         {metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities?.podRequired)[0] && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
                                     </>
-                                ) : (<>
-                                    <CommonCheckBox checked={metadata?.selectedActivities?.map(activities => activities?.id)?.includes(data?.id)} className={`${style.marginLeft10}`} onChange={(e) => onSelectActivity(data?.id, e.target.checked)} label={data?.activity} />
+                                )
+                                    // : (<>
+                                    //     <CommonCheckBox checked={metadata?.selectedActivities?.map(activities => activities?.id)?.includes(data?.id)} className={`${style.marginLeft10}`} onChange={(e) => onSelectActivity(data?.id, e.target.checked)} label={data?.activity} />
 
-                                    <div className={`${style.chipStyle} ${style.redChip}`}>{data?.schedule}</div>
-                                    {data?.billable && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
-                                    {data?.podRequired && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
-                                </>)}
+                                    //     <div className={`${style.chipStyle} ${style.redChip}`}>{data?.schedule}</div>
+                                    //     {data?.billable && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
+                                    //     {data?.podRequired && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
+                                    // </>)
+                                }
 
                                 {
                                     // metadata?.selectedActivities?.map(data => data?.id).includes(data?.id) ? <>

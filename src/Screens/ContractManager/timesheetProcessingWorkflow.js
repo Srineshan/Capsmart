@@ -25,6 +25,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
   const [timeSheetTabs, setTimeSheetTabs] = useState([]);
   const [timesheetWorkFlow, setTimeSheetWorkFlow] = useState([]);
   const [users, setUsers] = useState([]);
+  const [workflowExisting, setWorkflowExisting] = useState([]);
   const [provider, setProvider] = useState([]);
   const [tabIndex, setTabIndex] = useState(0);
   const [isShowValidationCheck, setIsShowValidationCheck] = useState(false);
@@ -35,6 +36,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
   const [unassignedKeys, setUnassignedKeys] = useState([]);
   const [showSaveInProgress, setShowSaveInProgress] = useState(false);
   const [buttonName, setButtonName] = useState("");
+  const contractStatus = sessionStorage.getItem('Selected Contract Status');
 
   useEffect(() => {
     setSelectTimesheetToDefineProcess(timesheetProcessingWorkflow[0]?.timesheetLabel?.label);
@@ -306,7 +308,37 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
           }
         }
       }
-    } else {
+    } else if ((isAggregationNeeded) && reviewer === approver) {
+      data = {
+        "name": {
+          "name": name
+        },
+        "workFlowMap": {
+          "workflow": {
+            "1": {
+              "workFlowUser": {
+                "id": reviewer,
+                "title": { id: timesheet?.reviewerTitle?.id, title: timesheet?.reviewerTitle?.title },
+                "name": {
+                  "name": reviewerFirstName + reviewerMiddleName + reviewerLastName,
+                  "firstName": reviewerFirstName,
+                  "middleName": reviewerMiddleName,
+                  "lastName": reviewerLastName,
+                },
+                "suffix": {
+                  "id": getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
+                  "suffix": getSelectedUserDetails(reviewer)?.name?.suffix?.suffix || '',
+                }
+              },
+              "workFlowStatus": {
+                "status": "APPROVED"
+              }
+            }
+          }
+        }
+      }
+    }
+    else {
       data = {
         "name": {
           "name": name
@@ -430,7 +462,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
   }
 
   const handleContinue = async (workflowId, workFlowMap, method) => {
-    let temp = timesheetProcessingWorkflow;
+    let temp = workflowExisting;;
     if (method === 'post') {
       temp?.push({
         "timesheetLabel": {
@@ -446,7 +478,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
         "customWorkFlow": false
       })
     } else {
-      let index = temp.findIndex(data => data.workFlow.id === workflowId);
+      let index = temp.findIndex(data => data?.workFlow?.id === workflowId);
       console.log('index value', index)
       temp[index] = {
         "timesheetLabel": {
@@ -476,6 +508,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
 
   const getTimeSheetSubmissionTerms = async () => {
     const { data: timesheetFlow } = await GET(`contract-managment-service/contracts/${contractId}/timesheetProcessingWorkFlow`);
+    setWorkflowExisting(timesheetFlow?.workFlowDetails);
     let id = timesheetFlow?.workFlowDetails?.filter(data => data?.workFlow?.name?.name === activeTab)?.map(data => data?.workFlow?.id)[0];
     if (timesheetFlow) {
       let workflowData = timesheetWorkFlow?.filter(data => data?.id === id)?.map(data => data?.workFlowMap?.workflow)[0];
@@ -549,7 +582,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 <ReviewerApproverField data={users} label="Timesheet Approver*" onValueChange={(value, title) => { setTimesheet({ ...timesheet, approver: value, approverTitle: title }) }} selectLabel="Select Approver" value={timesheet?.approver || '0'} approverReviewer='approver' />
               </div>
               {
-                tabIndex < timeSheetTabs?.length - 1 && isEditable &&
+                tabIndex < timeSheetTabs?.length - 1 && contractStatus === "DRAFT" &&
                 <div>
                   <button className={`${style.timesheetNextButtonStyle}  ${style.cursorPointer} ${style.floatRight}`}
                     // onClick={() => { submit('Next') }}
@@ -558,7 +591,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 </div>
               }
             </div>
-            {isEditable &&
+            {contractStatus === "DRAFT" &&
               <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                 <button className={`${style.newContractButtonStyle} ${style.cursorPointer} `} onClick={() => { getCurrentPage('Payment & Compensation') }}>BACK</button>
                 <div>

@@ -443,6 +443,8 @@ const SurgerySessionFields = ({
         />
         <div className={`${style.threeFieldWidth}`}>
           <CommonTextField
+            type="tel"
+            maxLength="9"
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end" sx={{ fontSize: 10 }}>
@@ -455,7 +457,7 @@ const SurgerySessionFields = ({
               e.target.value >= 0 &&
               setMetadata({
                 ...metadata,
-                sessionDuration: parseFloat(e.target.value.slice(0, 9)),
+                sessionDuration: e.target.value.slice(0, 9),
                 sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? metadata?.serviceRate : (metadata?.serviceRate * (parseFloat(e.target.value) || 0)),
               })
             }

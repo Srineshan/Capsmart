@@ -11,6 +11,8 @@ import { browserName, browserVersion, osName, osVersion, isMobile, isDesktop, is
 import { SuccessToaster, ErrorToaster } from './utils/toaster';
 import axios from "axios";
 import jwt from "jwt-decode";
+import MileageRateForCustomers from "./Screens/ReferenceList/mileageRateForCustomers";
+import GeneralConfigurationForCustomers from "./Screens/ReferenceList/generalConfigurationForCustomers";
 
 
 const ReportType = React.lazy(() => import("./Screens/Reports/reportType"));
@@ -18,9 +20,7 @@ const ReportTypeOverview = React.lazy(() =>
   import("./Screens/Reports/reportTypeOverview")
 );
 const Home = React.lazy(() => import("./Screens/CustomerSystemAdmin"));
-const ReferenceListMainPage = React.lazy(() =>
-  import("./Screens/ReferenceList/ReferenceListMainPage")
-);
+
 const FunctionalTitleForCustomer = React.lazy(() =>
   import("./Screens/ReferenceList/functionalTitleForCustomer")
 );
@@ -185,7 +185,11 @@ const App = ({ props }) => {
   const [logo, setLogo] = useState(null);
   const [title, setTitle] = useState("TimeSmartAI");
   const [entityId, setEntityId] = useState("");
+  const [currentUserDetails, setCurrentUserDetails] = useState();
+  const [entityDetails, setEntityDetails] = useState();
   var cookie = new Cookie();
+  const loggedInUser = currentUser();
+
   // const navigate = useNavigate();
 
 
@@ -209,6 +213,15 @@ const App = ({ props }) => {
     }
   }, [])
 
+  useEffect(() => {
+    setUserDetails()
+  }, [loggedInUser?.id])
+
+  useEffect(() => {
+    sessionStorage.setItem('timeZoneAbbreviation', entityDetails?.sites?.filter(data => data?.id === currentUserDetails?.sites?.sites?.[0]?.id)?.map(data => data)?.[0]?.timeZone?.abbrevation)
+    sessionStorage.setItem('siteTimeZone', entityDetails?.sites?.filter(data => data?.id === currentUserDetails?.sites?.sites?.[0]?.id)?.map(data => data)?.[0]?.timeZone?.id)
+  }, [entityDetails, currentUserDetails])
+
   axios.interceptors.request.use((request) => {
     return request;
   }, (error) => {
@@ -223,8 +236,6 @@ const App = ({ props }) => {
     console.log('response error', error);
     return error;
   })
-
-  const loggedInUser = currentUser();
 
   const logError = async (error) => {
     let browser = browserName === 'Chrome' ? 'CHROME' :
@@ -346,9 +357,14 @@ const App = ({ props }) => {
     }
   };
 
+  const setUserDetails = async () => {
+    const { data: user } = await GET(`user-management-service/user/${loggedInUser?.id}`);
+    setCurrentUserDetails(user);
+  }
+
 
   const getEntityId = async () => {
-    await axios(`http://ec2-35-175-13-4.compute-1.amazonaws.com:8010/entity-service/entityID`, {
+    await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/entity-service/entityID`, {
       method: "GET",
       // headers: { "X-subdomain": "hopkins" },
     })
@@ -371,7 +387,7 @@ const App = ({ props }) => {
       }
     };
     fetch(
-      `http://ec2-35-175-13-4.compute-1.amazonaws.com:8010/user-management-service/auth/login`,
+      `http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/user-management-service/auth/login`,
       requestOptions
     )
       .then((response) => response.json())
@@ -407,6 +423,7 @@ const App = ({ props }) => {
 
   const getLogo = async () => {
     const { data: data } = await GET(`entity-service/entity/${TenantID}`);
+    setEntityDetails(data);
     setLogo(data?.logoThumbnail?.file?.fileURL);
     setTitle(data?.entityName?.entityName);
     sessionStorage.setItem("entityTypeId", data?.entityType?.id);
@@ -416,6 +433,7 @@ const App = ({ props }) => {
     sessionStorage.setItem("thumbnail", data?.logoThumbnail?.file?.fileURL);
     sessionStorage.setItem("title", data?.entityName?.entityName);
     sessionStorage.setItem("isEmployeeContractNeeded", data?.isEmployeeContractIncluded);
+    sessionStorage.setItem("isMultiSiteEntity", data?.multiSiteEntity);
   };
 
   const changeFavicon = () => {
@@ -642,6 +660,14 @@ const App = ({ props }) => {
               <Route
                 path="/referenceList/departmentsForCustomers"
                 element={<DepartmentsForCustomers />}
+              />
+              <Route
+                path="/referenceList/mileageRateForCustomers"
+                element={<MileageRateForCustomers />}
+              />
+              <Route
+                path="/referenceList/generalConfigurationForCustomers"
+                element={<GeneralConfigurationForCustomers />}
               />
               <Route path="/entitySitePortal" element={<Home />} />
               <Route path="/thankyou" element={<Thankyou />} />

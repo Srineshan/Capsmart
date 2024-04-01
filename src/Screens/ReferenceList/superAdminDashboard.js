@@ -8,6 +8,7 @@ import NewPodTypeForHealthcare from "./newPodTypeForHealthCare";
 import { GET } from "../dataSaver";
 // import { format } from "date-fns";
 import { format, formatInTimeZone } from "date-fns-tz";
+import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
 
 const SuperAdminDashboard = () => {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -41,7 +42,7 @@ const SuperAdminDashboard = () => {
     console.log(date.toLocaleString());
     // console.log(format(date, "MMM d, yyyy HH:mm zzzz"));
     setLatestParentDate(
-      formatInTimeZone(date, "America/New_York", "MMM d, yyyy HH:mm zzz")
+      `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
     );
   };
 
