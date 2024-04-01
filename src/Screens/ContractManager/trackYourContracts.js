@@ -566,6 +566,34 @@ const TrackYourContracts = () => {
                                     </div>
                                 )}
                             </>
+                        ) : trackType === 'paymentProcessingStatusTracker' ? (
+                            <div>
+                                <div className={style.spaceBetween}>
+                                    <div className={style.trackServiceProviderName}>{`PAYMENT PROCESSING STATUS BY SERVICE PROVIDER`}</div>
+                                    <PrintOutlinedIcon className={`${style.headerPrintIcon} ${style.cursorPointer}`} style={{ color: "#7165E3" }} onClick={handlePrint} />
+                                </div>
+                                {timesheetIntervals?.length !== 0 && (
+                                    <>
+                                        <div className={`${style.trackPeriodCard} ${style.marginTop20} ${style.spaceBetween} ${style.padding20} ${style.cursorPointer}`} onClick={() => setShowTimesheetInterval(!showTimesheetInterval)}>
+                                            <div className={style.trackContractUserAndPeriod}>{`Timesheets for ${format(new Date(timesheetIntervalsStartDate || timesheetIntervals?.[0]?.startDate), 'MMMM yyyy')}`}</div>
+                                            {!showTimesheetInterval ? (
+                                                <div className={style.arrowDown}></div>
+                                            ) : (
+                                                <div className={style.arrowUp}></div>
+                                            )}
+                                        </div>
+                                        {showTimesheetInterval && (
+                                            <div className={style.intervalPeriodBorder}>
+                                                {timesheetIntervals?.map((data, index) => (
+                                                    <div className={`${style.trackPeriodOptionsCard} ${style.verticalAlignCenter} ${style.cursorPointer}`} onClick={() => { setTimesheetIntervalsStartDate(data?.startDate); setTimesheetIntervalsEndDate(data?.endDate); setShowTimesheetInterval(false) }} key={index}>
+                                                        <div className={style.timesheetIntervalListText}>{`Timesheets for ${format(new Date(data?.startDate), 'MMMM yyyy')}`}</div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </>
+                                )}
+                            </div>
                         ) : (
                             <>
                                 <div className={style.spaceBetween}>
