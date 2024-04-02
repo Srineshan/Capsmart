@@ -47,9 +47,11 @@ const TrackYourContracts = () => {
     const defaultOption = ''
     const [activityTrackServices, setActivityTrackServices] = useState([]);
     const [timesheetTrackValues, setTimesheetTrackValues] = useState([]);
+    const [paymentTrackValues, setPaymentTrackValues] = useState();
     const [timesheetIntervals, setTimesheetIntervals] = useState([]);
     const [timesheetIntervalsStartDate, setTimesheetIntervalsStartDate] = useState('');
     const [timesheetIntervalsEndDate, setTimesheetIntervalsEndDate] = useState('');
+    const [selectedPaymentTab, setSelectedPaymentTab] = useState('Payment Processed');
     const [initialValueSet, setInitialValueSet] = useState(false);
     const [contractTrackCompensationValues, setContractTrackCompensationValues] = useState([]);
     let months = { 1: 'Jan', 2: 'Feb', 3: 'March', 4: 'April', 5: 'May', 6: 'June', 7: 'July', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec' };
@@ -70,7 +72,6 @@ const TrackYourContracts = () => {
     });
 
     const dollarFormatter = (cell) => {
-        console.log(cell)
         return (
             <span>{cell === undefined ? '' : cell !== '-' ? `$ ${cell}` : cell}</span>
         );
@@ -237,9 +238,8 @@ const TrackYourContracts = () => {
         if (trackType === 'activityStatusTracker') {
             getContractTrackValues()
         }
-        if (trackType === 'timesheetAndInvoiceApprovalsStatusTracker') {
-            setSelectedTimesheetInterval(selectedContractedServiceProvider !== '' ? [defaultOption] : [`${timesheetIntervals?.[0]?.startDate}%23${timesheetIntervals?.[0]?.endDate}`])
-            getTimesheetTrackValues()
+        if (trackType === 'timesheetAndInvoiceApprovalsStatusTracker' || trackType === "paymentProcessingStatusTracker") {
+            setSelectedTimesheetInterval(selectedContractedServiceProvider !== '' && trackType !== "paymentProcessingStatusTracker" ? [defaultOption] : [`${timesheetIntervals?.[0]?.startDate}%23${timesheetIntervals?.[0]?.endDate}`])
         }
     }, [selectedContractedServiceProvider])
 
@@ -254,14 +254,19 @@ const TrackYourContracts = () => {
     useEffect(() => {
         setSelectedContractedServiceProvider('')
         setSelectedContracts([])
-        if (trackType === 'timesheetAndInvoiceApprovalsStatusTracker') {
+        if (trackType === 'timesheetAndInvoiceApprovalsStatusTracker' || trackType === "paymentProcessingStatusTracker") {
             getTimesheetIntervals()
         }
     }, [trackType])
 
     useEffect(() => {
         if (initialValueSet) {
-            getTimesheetTrackValues()
+            if (trackType === 'timesheetAndInvoiceApprovalsStatusTracker') {
+                getTimesheetTrackValues()
+            }
+            if (trackType === "paymentProcessingStatusTracker") {
+                getPaymentTrackValues()
+            }
         }
     }, [selectedTimesheetInterval, initialValueSet])
 
@@ -301,9 +306,16 @@ const TrackYourContracts = () => {
     }
 
     const getTimesheetTrackValues = async () => {
-        if (timesheetIntervalsStartDate !== '' && timesheetIntervalsEndDate !== '') {
+        if (selectedTimesheetInterval !== '') {
             const { data: data } = await GET(`timesheet-management-service/timesheet/track/workflow?interval=${selectedTimesheetInterval}&userIds=${[selectedContractedServiceProvider]}`);
             setTimesheetTrackValues(data);
+        }
+    }
+
+    const getPaymentTrackValues = async () => {
+        if (selectedTimesheetInterval !== '') {
+            const { data: data } = await GET(`timesheet-management-service/timesheet/track/usersByPeriod?interval=${selectedTimesheetInterval}&userIds=${[selectedContractedServiceProvider]}`);
+            setPaymentTrackValues(data);
         }
     }
 
@@ -313,7 +325,7 @@ const TrackYourContracts = () => {
         if (data?.length !== 0) {
             setTimesheetIntervalsStartDate(data?.[0]?.startDate)
             setTimesheetIntervalsEndDate(data?.[0]?.endDate)
-            setSelectedTimesheetInterval(selectedContractedServiceProvider !== '' ? [defaultOption] : [`${data?.[0]?.startDate}%23${data?.[0]?.endDate}`])
+            setSelectedTimesheetInterval(selectedContractedServiceProvider !== '' && trackType !== "paymentProcessingStatusTracker" ? [defaultOption] : [`${data?.[0]?.startDate}%23${data?.[0]?.endDate}`])
         }
     }
 
@@ -337,7 +349,7 @@ const TrackYourContracts = () => {
         } = event;
         console.log(event, value)
 
-        if (value?.length >= 2 && value[value?.length - 1] === defaultOption) {
+        if (value?.length >= 2 && value[value?.length - 1] === defaultOption && trackType !== "paymentProcessingStatusTracker") {
             setSelectedTimesheetInterval([defaultOption]);
         } else {
             setSelectedTimesheetInterval(
@@ -470,6 +482,71 @@ const TrackYourContracts = () => {
             });
         })
         return timesheetTrackerTableValues
+    }
+
+    let interval = [];
+    let approvalDate = [];
+    let approvalBy = [];
+    let paymentApprovalDate = [];
+    let paymentApprovalBy = [];
+    let payment = [];
+    let paymentTrackerTableValues = [];
+    const getPaymentTableValue = () => {
+        interval = [];
+        approvalDate = [];
+        approvalBy = [];
+        paymentApprovalDate = [];
+        paymentApprovalBy = [];
+        payment = [];
+        timesheetName = [];
+        timesheetContractName = [];
+        paymentTrackerTableValues = [];
+        console.log(paymentTrackValues)
+        if (selectedPaymentTab === "Approval Pending") {
+            paymentTrackerTableValues.push({
+                interval: paymentTrackValues?.approvalPending?.map(data => data?.interval !== null ? `${format(new Date(data?.interval?.startDate), 'MMM dd, yyyy')} - ${format(new Date(data?.interval?.endDate), 'MMM dd, yyyy')}` : '-'),
+                timesheetName: paymentTrackValues?.approvalPending?.map(data => data?.timesheetLabel !== null ? data?.timesheetLabel?.label : '-'),
+                timesheetContractName: paymentTrackValues?.approvalPending?.map(data => data?.contractName?.contractName),
+                approvalBy: paymentTrackValues?.approvalPending?.map(data => data?.approvedBy !== null ? data?.approvedBy?.name?.name : '-'),
+                approvalDate: paymentTrackValues?.approvalPending?.map(data => data?.approvedDate !== null ? format(new Date(data?.approvedDate), 'MMM dd, yyyy') : '-'),
+                order: ['timesheetContractName', 'timesheetName', 'interval', 'approvalDate', 'approvalBy']
+            })
+        } else if (selectedPaymentTab === "Payment Processed") {
+            paymentTrackerTableValues.push({
+                interval: paymentTrackValues?.paymentProcessed?.map(data => data?.interval !== null ? `${format(new Date(data?.interval?.startDate), 'MMM dd, yyyy')} - ${format(new Date(data?.interval?.endDate), 'MMM dd, yyyy')}` : '-'),
+                timesheetName: paymentTrackValues?.paymentProcessed?.map(data => data?.timesheetLabel !== null ? data?.timesheetLabel?.label : '-'),
+                timesheetContractName: paymentTrackValues?.paymentProcessed?.map(data => data?.contractName?.contractName),
+                approvalBy: paymentTrackValues?.paymentProcessed?.map(data => data?.approvedBy !== null ? data?.approvedBy?.name?.name : '-'),
+                approvalDate: paymentTrackValues?.paymentProcessed?.map(data => data?.approvedDate !== null ? format(new Date(data?.approvedDate), 'MMM dd, yyyy') : '-'),
+                paymentApprovalBy: paymentTrackValues?.paymentProcessed?.map(data => data?.paymentApprovedBy !== null ? data?.paymentApprovedBy?.name?.name : '-'),
+                paymentApprovalDate: paymentTrackValues?.paymentProcessed?.map(data => data?.paymentApprovedDate !== null ? format(new Date(data?.paymentApprovedDate), 'MMM dd, yyyy') : '-'),
+                payment: paymentTrackValues?.paymentProcessed?.map(data => `$ ${data?.payment.toFixed(2)}`),
+                order: ['timesheetContractName', 'timesheetName', 'interval', 'approvalDate', 'approvalBy', 'paymentApprovalDate', 'paymentApprovalBy', 'payment']
+            })
+        } else if (selectedPaymentTab === "Submission Pending") {
+            paymentTrackerTableValues.push({
+                interval: paymentTrackValues?.submissionPending?.map(data => data?.interval !== null ? `${format(new Date(data?.interval?.startDate), 'MMM dd, yyyy')} - ${format(new Date(data?.interval?.endDate), 'MMM dd, yyyy')}` : '-'),
+                timesheetName: paymentTrackValues?.submissionPending?.map(data => data?.timesheetLabel !== null ? data?.timesheetLabel?.label : '-'),
+                timesheetContractName: paymentTrackValues?.submissionPending?.map(data => data?.contractName?.contractName),
+
+                order: ['timesheetContractName', 'timesheetName', 'interval']
+            })
+        } else if (selectedPaymentTab === "Payment Pending") {
+            paymentTrackerTableValues.push({
+                interval: paymentTrackValues?.paymentPending?.map(data => data?.interval !== null ? `${format(new Date(data?.interval?.startDate), 'MMM dd, yyyy')} - ${format(new Date(data?.interval?.endDate), 'MMM dd, yyyy')}` : '-'),
+                timesheetName: paymentTrackValues?.paymentPending?.map(data => data?.timesheetLabel !== null ? data?.timesheetLabel?.label : '-'),
+                timesheetContractName: paymentTrackValues?.paymentPending?.map(data => data?.contractName?.contractName),
+                approvalBy: paymentTrackValues?.paymentPending?.map(data => data?.approvedBy !== null ? data?.approvedBy?.name?.name : '-'),
+                approvalDate: paymentTrackValues?.paymentPending?.map(data => data?.approvedDate !== null ? format(new Date(data?.approvedDate), 'MMM dd, yyyy') : '-'),
+                order: ['timesheetContractName', 'timesheetName', 'interval', 'approvalDate', 'approvalBy']
+            })
+        }
+        console.log(paymentTrackerTableValues)
+        return paymentTrackerTableValues;
+        // return selectedPaymentTab === "Payment Processed" ? [paymentTrackerTableValues?.[0]?.timesheetContractName, paymentTrackerTableValues?.[0]?.timesheetName, paymentTrackerTableValues?.[0]?.interval, paymentTrackerTableValues?.[0]?.approvalDate, paymentTrackerTableValues?.[0]?.approvalBy, paymentTrackerTableValues?.[0]?.paymentApprovalDate, paymentTrackerTableValues?.[0]?.paymentApprovalBy, paymentTrackerTableValues?.[0]?.payment] :
+        //     selectedPaymentTab === "Payment Pending" ? [paymentTrackerTableValues?.[0]?.timesheetContractName, paymentTrackerTableValues?.[0]?.timesheetName, paymentTrackerTableValues?.[0]?.interval, paymentTrackerTableValues?.[0]?.approvalDate, paymentTrackerTableValues?.[0]?.approvalBy] :
+        //         selectedPaymentTab === "Approval Pending" ? [paymentTrackerTableValues?.[0]?.timesheetContractName, paymentTrackerTableValues?.[0]?.timesheetName, paymentTrackerTableValues?.[0]?.interval, paymentTrackerTableValues?.[0]?.approvalDate, paymentTrackerTableValues?.[0]?.approvalBy] :
+        //             selectedPaymentTab === "Submission Pending" ? [paymentTrackerTableValues?.[0]?.timesheetContractName, paymentTrackerTableValues?.[0]?.timesheetName, paymentTrackerTableValues?.[0]?.interval] : [];
     }
 
     return (
@@ -684,6 +761,7 @@ const TrackYourContracts = () => {
                                         tableHeadBottomGrid={style.timesheetTableHeaderBottomGrid}
                                         header={false}
                                         directionRow={true}
+                                        directionRowCommonText={false}
                                     />
                                 ) : (
                                     <div className={style.verticalAlignCenter}>
@@ -702,26 +780,116 @@ const TrackYourContracts = () => {
                                     <div className={style.trackServiceProviderName}>{`PAYMENT PROCESSING STATUS BY SERVICE PROVIDER`}</div>
                                     <PrintOutlinedIcon className={`${style.headerPrintIcon} ${style.cursorPointer}`} style={{ color: "#7165E3" }} onClick={handlePrint} />
                                 </div>
-                                {timesheetIntervals?.length !== 0 && (
-                                    <>
-                                        <div className={`${style.trackPeriodCard} ${style.marginTop20} ${style.spaceBetween} ${style.padding20} ${style.cursorPointer}`} onClick={() => setShowTimesheetInterval(!showTimesheetInterval)}>
-                                            <div className={style.trackContractUserAndPeriod}>{`Timesheets for ${format(new Date(timesheetIntervalsStartDate || timesheetIntervals?.[0]?.startDate), 'MMMM yyyy')}`}</div>
-                                            {!showTimesheetInterval ? (
-                                                <div className={style.arrowDown}></div>
-                                            ) : (
-                                                <div className={style.arrowUp}></div>
-                                            )}
-                                        </div>
-                                        {showTimesheetInterval && (
-                                            <div className={style.intervalPeriodBorder}>
-                                                {timesheetIntervals?.map((data, index) => (
-                                                    <div className={`${style.trackPeriodOptionsCard} ${style.verticalAlignCenter} ${style.cursorPointer}`} onClick={() => { setTimesheetIntervalsStartDate(data?.startDate); setTimesheetIntervalsEndDate(data?.endDate); setShowTimesheetInterval(false) }} key={index}>
-                                                        <div className={style.timesheetIntervalListText}>{`Timesheets for ${format(new Date(data?.startDate), 'MMMM yyyy')}`}</div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </>
+                                {selectedContractedServiceProvider !== '' ? (
+                                    <FormControl sx={{ width: isExpanded ? 'calc(80vw - 80px)' : 'calc(100vw - 160px)', marginTop: '20px' }}>
+                                        <Select
+                                            labelId="demo-multiple-name-label2"
+                                            id="demo-multiple-name2"
+                                            multiple
+                                            value={selectedTimesheetInterval}
+                                            onChange={handleChangeTimesheetInterval}
+                                            className={style.timesheetIntervalSelectStyle}
+                                            sx={{
+                                                '& .MuiInputBase-input': {
+                                                    backgroundColor: "#F1EFFC",
+                                                    font: ' normal normal bold 15px/18px Montserrat',
+                                                    color: '#52575D',
+                                                    textAlign: 'left'
+                                                }
+                                            }}
+                                            MenuProps={{
+                                                PaperProps: {
+                                                    sx: {
+                                                        bgcolor: '#F1EFFC',
+                                                        '& .MuiMenuItem-root': {
+                                                            padding: 2,
+                                                        },
+                                                    },
+                                                },
+                                            }}
+                                        // disabled={isMyReport || isLoading}
+                                        >
+                                            {timesheetIntervals?.map((data) => (
+                                                <MenuItem
+                                                    key={data?.startDate}
+                                                    value={`${data?.startDate}%23${data?.endDate}`}
+                                                >
+                                                    {`Timesheets for ${format(new Date(data?.startDate), 'MMMM yyyy')}`}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                ) : (
+                                    <FormControl sx={{ width: isExpanded ? 'calc(80vw - 80px)' : 'calc(100vw - 160px)', marginTop: '20px' }}>
+                                        <Select
+                                            labelId="demo-multiple-name-label2"
+                                            id="demo-multiple-name2"
+                                            value={selectedTimesheetInterval}
+                                            onChange={(e) => setSelectedTimesheetInterval([e.target.value])}
+                                            MenuProps={{
+                                                PaperProps: {
+                                                    sx: {
+                                                        bgcolor: '#F1EFFC',
+                                                        '& .MuiMenuItem-root': {
+                                                            padding: 2,
+                                                        },
+                                                    },
+                                                },
+                                            }}
+                                            sx={{
+                                                '& .MuiInputBase-input': {
+                                                    backgroundColor: "#F1EFFC",
+                                                    font: ' normal normal bold 15px/18px Montserrat',
+                                                    color: '#52575D',
+                                                    textAlign: 'left'
+                                                }
+                                            }}
+                                        // disabled={isMyReport || isLoading}
+                                        >
+                                            {timesheetIntervals?.map((data) => (
+                                                <MenuItem
+                                                    key={data?.startDate}
+                                                    value={`${data?.startDate}%23${data?.endDate}`}
+                                                >
+                                                    {`Timesheets for ${format(new Date(data?.startDate), 'MMMM yyyy')}`}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                )}
+                                <div className={`${style.paymentTabGrid} ${style.marginTop20}`}>
+                                    <div className={`${style.paymentTabStyle} ${selectedPaymentTab === 'Payment Processed' ? style.selectedPaymentTabStyle : ''} ${style.verticalAlignCenter} ${style.alignCenter}`} onClick={() => setSelectedPaymentTab('Payment Processed')}>Payment Processed</div>
+                                    <div className={`${style.paymentTabStyle} ${selectedPaymentTab === 'Payment Pending' ? style.selectedPaymentTabStyle : ''} ${style.verticalAlignCenter} ${style.alignCenter}`} onClick={() => setSelectedPaymentTab('Payment Pending')}>Payment Pending</div>
+                                    <div className={`${style.paymentTabStyle} ${selectedPaymentTab === 'Approval Pending' ? style.selectedPaymentTabStyle : ''} ${style.verticalAlignCenter} ${style.alignCenter}`} onClick={() => setSelectedPaymentTab('Approval Pending')}>Approval Pending </div>
+                                    <div className={`${style.paymentTabStyle} ${selectedPaymentTab === 'Submission Pending' ? style.selectedPaymentTabStyle : ''} ${style.verticalAlignCenter} ${style.alignCenter}`} onClick={() => setSelectedPaymentTab('Submission Pending')}>Submission Pending</div>
+                                </div>
+                                {paymentTrackValues !== undefined && (selectedPaymentTab === "Approval Pending" ? paymentTrackValues?.approvalPending?.length !== 0 : selectedPaymentTab === "Submission Pending" ? paymentTrackValues?.submissionPending?.length !== 0 :
+                                    selectedPaymentTab === "Payment Pending" ? paymentTrackValues?.paymentPending?.length !== 0 : paymentTrackValues?.paymentProcessed?.length !== 0) ? (
+                                    <TrackTable
+                                        tableHead={selectedPaymentTab === "Approval Pending" ? ['CONTRACT NAME', 'TIMESHEET LABEL', 'INTERVAL', 'APPROVAL DATE', 'APPROVED BY'] :
+                                            selectedPaymentTab === "Submission Pending" ? ['CONTRACT NAME', 'TIMESHEET LABEL', 'INTERVAL'] :
+                                                selectedPaymentTab === "Payment Processed" ? ['CONTRACT NAME', 'TIMESHEET LABEL', 'INTERVAL', 'APPROVAL DATE', 'APPROVED BY', 'PAYMENT APPROVED DATE', 'PAYMENT APPROVED BY', 'PAYMENT'] :
+                                                    ['CONTRACT NAME', 'TIMESHEET LABEL', 'INTERVAL', 'APPROVAL DATE', 'APPROVED BY']}
+                                        tableHeadBottom={[]}
+                                        tableData={getPaymentTableValue()}
+                                        dataGrid={selectedPaymentTab === "Approval Pending" ? style.approvalPendingTableDataGrid : selectedPaymentTab === "Submission Pending" ? style.submissionPendingTableDataGrid
+                                            : selectedPaymentTab === "Payment Processed" ? style.paymentProcessedTableDataGrid : style.paymentPendingTableDataGrid}
+                                        tableHeadGrid={selectedPaymentTab === "Approval Pending" ? style.approvalPendingTableDataGrid : selectedPaymentTab === "Submission Pending" ? style.submissionPendingTableDataGrid
+                                            : selectedPaymentTab === "Payment Processed" ? style.paymentProcessedTableDataGrid : style.paymentPendingTableDataGrid}
+                                        tableHeadBottomGrid={''}
+                                        header={false}
+                                        directionRow={true}
+                                        directionRowCommonText={true}
+                                    />
+                                ) : (
+                                    <div className={style.verticalAlignCenter}>
+                                        <NoDataBox
+                                            heading={'Based on the parameters selected, there were NO RECORDS found.'}
+                                            subHeading={'Try again by changing the service provider on the left or the Timesheet Interval on the top.'}
+                                            onClickText={''}
+                                            onClickFunction={() => { }}
+                                        />
+                                    </div>
                                 )}
                             </div>
                         ) : (

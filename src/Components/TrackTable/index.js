@@ -13,8 +13,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const TrackTable = ({ heading, columnHeading, tableHead, tableHeadTop, tableHeadBottom, tableData, headerGrid, dataGrid, tableHeadGrid, tableHeadTopGrid, tableHeadBottomGrid, header, directionRow }) => {
-    console.log(tableData)
+const TrackTable = ({ heading, columnHeading, tableHead, tableHeadTop, tableHeadBottom, tableData, headerGrid, dataGrid, tableHeadGrid, tableHeadTopGrid, tableHeadBottomGrid, header, directionRow, directionRowCommonText }) => {
     const [anchorElTrackeReviewAndApproval, setAnchorElTrackeReviewAndApproval] = useState(null);
     const openTrackeReviewAndApproval = Boolean(anchorElTrackeReviewAndApproval);
     const [anchorElTrackePaymentProcessing, setAnchorElTrackePaymentProcessing] = useState(null);
@@ -152,6 +151,15 @@ const TrackTable = ({ heading, columnHeading, tableHead, tableHeadTop, tableHead
                     )
                     )}
                 </div>
+            ) : directionRowCommonText ? (
+                tableData?.[0][Object.keys(tableData?.[0])?.[0]]?.map((data, index) => (
+                    <div className={`${dataGrid} ${style.tableBodyStyle}  ${index % 2 === 0 && style.alternativeBackgroundColor}`} key={index}>
+                        {tableData?.[0]?.order?.map((innerData, innerIndex) => (
+                            <div className={`${style.tableDataNormalTextStyle} ${style.padding} ${style.textAlignCenter} ${tableData?.[0]?.order?.length - 1 !== innerIndex ? style.dividerRight : ''}`}>{tableData?.[0]?.[innerData][index]}</div>
+                        ))}
+                    </div>
+                ))
+                // <></>
             ) : tableData?.map((data, index) => (
                 <div className={`${dataGrid} ${style.tableBodyStyle}`} key={index}>
                     {data?.timesheetName?.map((innerData, innerIndex) => (
