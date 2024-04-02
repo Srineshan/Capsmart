@@ -1178,7 +1178,7 @@ const ReportTypeOverview = () => {
         mapValue?.map(data => {
             contractManagementContractName.push(data?.contractName?.contractName);
             contractManagementContractId.push(data?.contractDetail?.contractId?.id)
-            contractManagementExpirationDate.push(format(new Date(data?.contractDetail?.contractTerm?.endDate), 'MM-dd-yyyy'))
+            contractManagementExpirationDate.push(format(new Date(`${data?.contractDetail?.contractTerm?.endDate}T00:00`), 'MM-dd-yyyy'))
             contractManagementContractingEntity.push(!data?.contractorBusinessEntity?.businessEntity?.notApplicable ? data?.contractorBusinessEntity?.businessEntity?.name : '-');
             contractManagementPointOfContact.push(`${data?.contractorBusinessEntity?.businessEntityUser?.name?.firstName} ${data?.contractorBusinessEntity?.businessEntityUser?.name?.lastName} `);
             contractManagementPointOfContactNumber.push(data?.contractorBusinessEntity?.businessEntityUser?.contactNumber?.number);
