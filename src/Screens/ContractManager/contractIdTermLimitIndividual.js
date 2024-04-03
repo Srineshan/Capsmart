@@ -128,10 +128,15 @@ const ContractIdTermLimitIndividual = ({
   const [isAggregationNeeded, setIsAggregationNeeded] = useState(true);
   const contractStatus = sessionStorage.getItem("Selected Contract Status");
   const [buttonName, setButtonName] = useState("");
-
+  const existingContractId = sessionStorage.getItem('existingContractId')
+  console.log(existingContractId)
   useEffect(() => {
     if (method === "PUT" && createdContractId !== "") {
       getContractDetail();
+      // getContractUser();
+    }
+    if (method === "POST" && (existingContractId !== "" || existingContractId !== undefined)) {
+      getContractDetailFirstTime(existingContractId);
       // getContractUser();
     }
     getUserData();
@@ -312,35 +317,39 @@ const ContractIdTermLimitIndividual = ({
       setContractData(contractData?.contractDetail);
       setName(contractData?.contractName?.contractName || "");
       setContractName(contractData?.contractName?.contractName);
-      setContractId({
-        id: contractDetail?.contractId?.id,
-        missing: contractDetail?.contractIdMissing,
-      });
+      if (existingContractId === null) {
+        setContractId({
+          id: contractDetail?.contractId?.id,
+          missing: contractDetail?.contractIdMissing,
+        });
+        setContractTermPeriodFrom(
+          contractDetail?.contractTerm?.startDate !== null
+            ? new Date(contractDetail?.contractTerm?.startDate?.replace("-", "/"))
+            : null
+        );
+        setContractTermPeriodTo(
+          contractDetail?.contractTerm?.endDate !== null
+            ? new Date(contractDetail?.contractTerm?.endDate?.replace("-", "/"))
+            : null
+        );
+        setContractEffectiveDate(
+          contractDetail?.contractTerm?.effectiveDate !== null
+            ? new Date(
+              contractDetail?.contractTerm?.effectiveDate?.replace("-", "/")
+            )
+            : null
+        );
+        setFullyExecutedContractData(contractDetail?.contractFiles);
+        setFileFields(contractDetail?.contractFiles);
+      }
       setDepartmentSpecific(contractDetail?.departmentSpecificContract);
       setSiteSpecific(contractDetail?.siteSpecificContract);
       setContractTimeCommitment(contractDetail?.timeCommitment || {});
       setFullyExecutedContract(contractDetail?.fullyExecutedContract);
       setContractPriorId({
-        id: contractDetail?.priorContract?.id,
-        na: contractDetail?.priorContract?.notApplicable,
+        id: (existingContractId !== null || existingContractId !== '') ? existingContractId : contractDetail?.priorContract?.id,
+        na: (existingContractId !== null || existingContractId !== '') ? false : contractDetail?.priorContract?.notApplicable,
       });
-      setContractTermPeriodFrom(
-        contractDetail?.contractTerm?.startDate !== null
-          ? new Date(contractDetail?.contractTerm?.startDate?.replace("-", "/"))
-          : null
-      );
-      setContractTermPeriodTo(
-        contractDetail?.contractTerm?.endDate !== null
-          ? new Date(contractDetail?.contractTerm?.endDate?.replace("-", "/"))
-          : null
-      );
-      setContractEffectiveDate(
-        contractDetail?.contractTerm?.effectiveDate !== null
-          ? new Date(
-            contractDetail?.contractTerm?.effectiveDate?.replace("-", "/")
-          )
-          : null
-      );
       setCompensationPolicy(contractDetail?.compensationPolicy);
       setSelectedContractContinuationPolicy(
         contractDetail?.continuationPolicy?.contractPolicyType
@@ -354,8 +363,6 @@ const ContractIdTermLimitIndividual = ({
       // })
       setSiteSpecific(contractDetail?.siteSpecificContract);
       setDepartmentSpecific(contractDetail?.departmentSpecificContract);
-      setFullyExecutedContractData(contractDetail?.contractFiles);
-      setFileFields(contractDetail?.contractFiles);
       setSelectedSites(contractDetail?.site?.sites || []);
       setSelectedDepartmentSites(contractDetail?.site?.sites || []);
       setIsAggregationNeeded(contractDetail?.aggregationNeeded);

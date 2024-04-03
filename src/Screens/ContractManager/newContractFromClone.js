@@ -283,6 +283,7 @@ const NewContractFromClone = ({
       selectedContract !== "draft" ? false : true
     );
     sessionStorage.removeItem('Selected Contract Status')
+    sessionStorage.removeItem('existingContractId')
   };
 
   return (
