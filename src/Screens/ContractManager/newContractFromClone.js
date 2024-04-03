@@ -284,6 +284,7 @@ const NewContractFromClone = ({
     );
     sessionStorage.removeItem('Selected Contract Status')
     sessionStorage.removeItem('existingContractId')
+    sessionStorage.removeItem('priorContractId')
   };
 
   return (

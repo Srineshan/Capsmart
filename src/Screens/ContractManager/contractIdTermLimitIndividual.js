@@ -128,14 +128,16 @@ const ContractIdTermLimitIndividual = ({
   const [isAggregationNeeded, setIsAggregationNeeded] = useState(true);
   const contractStatus = sessionStorage.getItem("Selected Contract Status");
   const [buttonName, setButtonName] = useState("");
-  const existingContractId = sessionStorage.getItem('existingContractId')
-  console.log(existingContractId)
+  const existingContractId = sessionStorage.getItem('existingContractId');
+  const priorContractId = sessionStorage.getItem('priorContractId')
+
+  console.log(existingContractId, method)
   useEffect(() => {
     if (method === "PUT" && createdContractId !== "") {
       getContractDetail();
       // getContractUser();
     }
-    if (method === "POST" && (existingContractId !== "" || existingContractId !== undefined)) {
+    if (method === "POST" && (existingContractId !== "" && existingContractId !== null)) {
       getContractDetailFirstTime(existingContractId);
       // getContractUser();
     }
@@ -339,16 +341,16 @@ const ContractIdTermLimitIndividual = ({
             )
             : null
         );
+        setFullyExecutedContract(contractDetail?.fullyExecutedContract);
         setFullyExecutedContractData(contractDetail?.contractFiles);
         setFileFields(contractDetail?.contractFiles);
       }
       setDepartmentSpecific(contractDetail?.departmentSpecificContract);
       setSiteSpecific(contractDetail?.siteSpecificContract);
       setContractTimeCommitment(contractDetail?.timeCommitment || {});
-      setFullyExecutedContract(contractDetail?.fullyExecutedContract);
       setContractPriorId({
-        id: (existingContractId !== null || existingContractId !== '') ? existingContractId : contractDetail?.priorContract?.id,
-        na: (existingContractId !== null || existingContractId !== '') ? false : contractDetail?.priorContract?.notApplicable,
+        id: (priorContractId !== null || priorContractId !== '') ? priorContractId : contractDetail?.priorContract?.id,
+        na: (priorContractId !== null || priorContractId !== '') ? false : contractDetail?.priorContract?.notApplicable,
       });
       setCompensationPolicy(contractDetail?.compensationPolicy);
       setSelectedContractContinuationPolicy(
@@ -676,6 +678,8 @@ const ContractIdTermLimitIndividual = ({
     if (method === 'POST' && contractIdFromActive === '') {
       await POST('contract-managment-service/contracts/contractDetail', data)
         .then(response => {
+          sessionStorage.removeItem('existingContractId')
+          sessionStorage.removeItem('priorContractId')
           getContractId(response?.data);
           getContractDetailFirstTime(response?.data);
           SuccessToaster("Contract Draft Saved Successfully");

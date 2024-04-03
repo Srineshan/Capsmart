@@ -62,6 +62,8 @@ const AddContract = ({
     setContractType({ id: existingContract?.contractTypeId?.id, value: existingContract?.contractType });
     sessionStorage.setItem('contractType', existingContract?.contractType)
     sessionStorage.setItem('existingContractId', existingContract?.id)
+    sessionStorage.setItem('priorContractId', id)
+
   }
 
   console.log('contract type', contractType)
