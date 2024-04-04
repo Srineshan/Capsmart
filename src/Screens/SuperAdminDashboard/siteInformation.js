@@ -481,6 +481,7 @@ const SiteInformation = ({ getActiveStep }) => {
   };
 
   const handleAddress = (name, value) => {
+    console.log(name, value)
     setAddress({ ...address, [name]: value });
   };
 
@@ -927,7 +928,7 @@ const SiteInformation = ({ getActiveStep }) => {
                         Time Zone*
                       </div>
                       <div className={`${style.leftAlign} `}>
-                        <Timezone selectedTimezone={selectedTimezone} setSelectedTimezone={setSelectedTimezone} />
+                        <Timezone cityName={address.city} selectedTimezone={selectedTimezone} setSelectedTimezone={setSelectedTimezone} />
                       </div>
                     </div>
                     {!isSuperAdminAccess && (
