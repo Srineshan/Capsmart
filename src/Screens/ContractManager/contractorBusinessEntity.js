@@ -18,6 +18,7 @@ import { valueCheck } from "./../../utils/valueCheck";
 
 import style from "./index.module.scss";
 import MissedMandatoryFieldAlert from "./missedMandatoryFieldAlert";
+import AddressConfirmationAlert from "./addressConfirmation";
 
 const TEXTFIELDLEN50 = 50;
 const TEXTFIELDLEN100 = 100;
@@ -33,6 +34,7 @@ const ContractorBusinessEntity = ({
   getShowAlert,
   isEditable,
   getTabDataStatus,
+  priorContractId
 }) => {
   const [isUserUpdated, setIsUserUpdated] = useState(false);
   const [userCount, setUserCount] = useState(0);
@@ -89,7 +91,8 @@ const ContractorBusinessEntity = ({
   const [isFocused, setIsFocused] = useState(false);
   const [buttonName, setButtonName] = useState("");
   const contractStatus = sessionStorage.getItem("Selected Contract Status");
-
+  const [showAddressConfirmation, setShowAddressConfirmation] = useState(false);
+  const [showAddressConfirmationDialogWhenSubmit, setShowAddressConfirmationDialogWhenSubmit] = useState(false);
   useEffect(() => {
     getUserData();
   }, []);
@@ -220,17 +223,37 @@ const ContractorBusinessEntity = ({
       setShowSaveInProgress(true);
       setContinueLoading(true)
     } else {
-      handleContinue(buttonType);
+      if (!showAddressConfirmationDialogWhenSubmit) {
+        handleContinue(buttonType);
+      } else {
+        setShowAddressConfirmation(true)
+      }
     }
   };
 
   const saveInProgressFunction = (type) => {
-    handleContinue(type);
+    if (!showAddressConfirmationDialogWhenSubmit) {
+      handleContinue(type);
+    } else {
+      setShowAddressConfirmation(true)
+    }
     setShowSaveInProgress(false)
   };
 
   const getSaveInProgressAlert = (value) => {
     setShowSaveInProgress(value);
+    setContinueLoading(value)
+  };
+
+  const addressConfirmationFunction = (type) => {
+    setShowAddressConfirmationDialogWhenSubmit(false);
+    setShowAddressConfirmation(false)
+    handleContinue(type);
+  };
+
+  const getAddressConfirmation = (value) => {
+    console.log('AddressConfirmationAlert', value)
+    setShowAddressConfirmation(value);
     setContinueLoading(value)
   };
 
@@ -390,6 +413,13 @@ const ContractorBusinessEntity = ({
       `contract-managment-service/contracts/${contractId}/contractorBusinessEntity`
     );
     setContractorBusinessEntity(contractorBusinessEntity);
+    if (contractorBusinessEntity?.businessEntity === null && priorContractId !== undefined) {
+      setShowAddressConfirmationDialogWhenSubmit(true);
+      const { data: contractorBusinessEntityPriorContract } = await GET(
+        `contract-managment-service/contracts/${priorContractId}/contractorBusinessEntity`
+      );
+      setContractorBusinessEntity(contractorBusinessEntityPriorContract);
+    }
   };
 
   const setBusinessEntityData = () => {
@@ -1106,6 +1136,15 @@ const ContractorBusinessEntity = ({
           buttonText={"ADD CONTRACTOR"}
         />
       )}
+
+      <AddressConfirmationAlert
+        alert={showAddressConfirmation}
+        getAddressConfirmation={getAddressConfirmation}
+        fieldData={mailingAddress}
+        setContinueLoading={setContinueLoading}
+        addressConfirmationFunction={addressConfirmationFunction}
+        buttonName={buttonName}
+      />
 
       <MissedMandatoryFieldAlert
         alert={showSaveInProgress}
