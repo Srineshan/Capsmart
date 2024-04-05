@@ -21,7 +21,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
     const [userDataById, setUserDataById] = useState([]);
     const [roles, setRoles] = useState([]);
     const [selectedRolesToShow, setSelectedRolesToShow] = useState([]);
-    const [selectedAccessLevelToShow, setSelectedAccessLevelToShow] = useState("");
+    const [selectedAccessLevelToShow, setSelectedAccessLevelToShow] = useState("USER");
     const [sites, setSites] = useState([]);
     const [siteTitle, setSiteTitle] = useState();
     const [deptTitle, setDeptTitle] = useState();
