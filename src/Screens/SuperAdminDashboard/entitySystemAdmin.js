@@ -85,7 +85,7 @@ const EntitySystemAdmin = ({ getActiveStep }) => {
   };
 
   const getUserData = async () => {
-    // await axios(`http://ec2-35-175-13-4.compute-1.amazonaws.com:8010/user-management-service/user?partnerId=${partnerId}&userType=PARTNER_USER`, {
+    // await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/user-management-service/user?partnerId=${partnerId}&userType=PARTNER_USER`, {
     //   method: 'GET',
     //   headers: {
     //     'Content-Type': 'application/json',

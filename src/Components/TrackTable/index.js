@@ -13,8 +13,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const TrackTable = ({ heading, columnHeading, tableHead, tableHeadTop, tableHeadBottom, tableData, headerGrid, dataGrid, tableHeadGrid, tableHeadTopGrid, tableHeadBottomGrid, header, directionRow }) => {
-    console.log(tableData)
+const TrackTable = ({ heading, columnHeading, tableHead, tableHeadTop, tableHeadBottom, tableData, headerGrid, dataGrid, tableHeadGrid, tableHeadTopGrid, tableHeadBottomGrid, header, directionRow, directionRowCommonText }) => {
     const [anchorElTrackeReviewAndApproval, setAnchorElTrackeReviewAndApproval] = useState(null);
     const openTrackeReviewAndApproval = Boolean(anchorElTrackeReviewAndApproval);
     const [anchorElTrackePaymentProcessing, setAnchorElTrackePaymentProcessing] = useState(null);
@@ -121,27 +120,27 @@ const TrackTable = ({ heading, columnHeading, tableHead, tableHeadTop, tableHead
                                                             <div className={`${style.nteAmountCard} ${style.verticalAlignCenter} ${style.alignCenter} ${style.marginTop5}`}>$ {arrayData?.values?.maxContractYearPayment?.toLocaleString("en-US")}</div>
                                                         </div>
                                                         <div className={style.marginTop20}>
-                                                            <div className={style.nteTextStyle}>NTE USED</div>
+                                                            <div className={style.nteTextStyle}>CY NTE USED</div>
                                                             <div className={`${style.nteAmountCard} ${style.verticalAlignCenter} ${style.alignCenter} ${style.marginTop5}`}>$ {(arrayData?.values?.maxContractYearPayment - arrayData?.values?.contractYearBalance)?.toLocaleString("en-US")}</div>
                                                         </div>
                                                         <div className={style.marginTop20}>
-                                                            <div className={style.nteTextStyle}>NTE AVERAGE PAYMENT PER TIMESHEET</div>
+                                                            <div className={style.nteTextStyle}>AVERAGE PAYMENT PER TIMESHEET</div>
                                                             <div className={`${style.nteAmountCard} ${style.verticalAlignCenter} ${style.alignCenter} ${style.marginTop5}`}>$ {arrayData?.values?.averagePaymentPerTimesheet?.toLocaleString("en-US")}</div>
                                                         </div>
                                                         <div className={style.marginTop20}>
-                                                            <div className={style.nteTextStyle}>NTE BALANCE</div>
+                                                            <div className={style.nteTextStyle}>CY NTE BALANCE</div>
                                                             <div className={`${arrayData?.values?.contractYearBalanceStatus === "SUFFICIENT" ? style.nteAmountCardGreen : style.nteAmountCardYellow} ${style.verticalAlignCenter} ${style.alignCenter} ${style.marginTop5}`}>$ {arrayData?.values?.contractYearBalance?.toLocaleString("en-US")}</div>
                                                         </div>
                                                         <div className={style.marginTop20}>
-                                                            <div className={style.nteTextStyle}>NTE PROJECTED BALANCE</div>
+                                                            <div className={style.nteTextStyle}>CY NTE PROJECTED BALANCE</div>
                                                             <div className={`${arrayData?.values?.contractYearProjectedBalanceStatus === "SUFFICIENT" ? style.nteAmountCardGreen : style.nteAmountCardYellow} ${style.verticalAlignCenter} ${style.alignCenter} ${style.marginTop5}`}>$ {arrayData?.values?.contractYearProjectedBalance?.toLocaleString("en-US")}</div>
                                                         </div>
                                                         <div className={style.marginTop20}>
-                                                            <div className={style.nteTextStyle}>NTE CONTRACT PERIOD BALANCE</div>
+                                                            <div className={style.nteTextStyle}>CP NTE BALANCE</div>
                                                             <div className={`${arrayData?.values?.contractPeriodBalanceStatus === "SUFFICIENT" ? style.nteAmountCardGreen : style.nteAmountCardYellow} ${style.verticalAlignCenter} ${style.alignCenter} ${style.marginTop5}`}>$ {arrayData?.values?.contractPeriodBalance?.toLocaleString("en-US")}</div>
                                                         </div>
                                                         <div className={style.marginTop20}>
-                                                            <div className={style.nteTextStyle}>NTE CONTRACT PERIOD PROJECTED BALANCE</div>
+                                                            <div className={style.nteTextStyle}>CP NTE PROJECTED BALANCE</div>
                                                             <div className={`${arrayData?.values?.contractPeriodProjectedBalanceStatus === "SUFFICIENT" ? style.nteAmountCardGreen : style.nteAmountCardYellow} ${style.verticalAlignCenter} ${style.alignCenter} ${style.marginTop5}`}>$ {arrayData?.values?.contractPeriodProjectedBalance?.toLocaleString("en-US")}</div>
                                                         </div>
                                                     </div>
@@ -152,12 +151,21 @@ const TrackTable = ({ heading, columnHeading, tableHead, tableHeadTop, tableHead
                     )
                     )}
                 </div>
+            ) : directionRowCommonText ? (
+                tableData?.[0][Object.keys(tableData?.[0])?.[0]]?.map((data, index) => (
+                    <div className={`${dataGrid} ${style.tableBodyStyle}  ${index % 2 === 0 && style.alternativeBackgroundColor}`} key={index}>
+                        {tableData?.[0]?.order?.map((innerData, innerIndex) => (
+                            <div className={`${style.tableDataNormalTextStyle} ${style.padding} ${style.textAlignCenter} ${tableData?.[0]?.order?.length - 1 !== innerIndex ? style.dividerRight : ''}`}>{tableData?.[0]?.[innerData][index]}</div>
+                        ))}
+                    </div>
+                ))
+                // <></>
             ) : tableData?.map((data, index) => (
                 <div className={`${dataGrid} ${style.tableBodyStyle}`} key={index}>
                     {data?.timesheetName?.map((innerData, innerIndex) => (
                         <>
                             <div className={`${style.tableDataNormalTextStyle}  ${style.paddingTop} ${style.textAlignCenter} ${style.dividerRight}`}>{data?.timesheetName[innerIndex]}</div>
-                            <div className={`${style.tableDataNormalTextStyle}  ${style.paddingTop} ${style.textAlignCenter} ${style.dividerRight}`}>{data?.timesheetCompensationPolicy[innerIndex]}</div>
+                            <div className={`${style.tableDataNormalTextStyle}  ${style.paddingTop} ${style.textAlignCenter} ${style.dividerRight}`}>{data?.timesheetContractName[innerIndex]}</div>
                             <div className={`${style.tableDataNormalTextStyle}  ${style.paddingTop} ${style.textAlignCenter} ${style.dividerRight}`}
                                 onMouseEnter={(e) => handleClickTrackeSubmission(e, index, innerIndex)}
                                 onMouseLeave={() => handleCloseTrackeSubmission()}
