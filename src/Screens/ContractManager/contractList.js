@@ -192,7 +192,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     // } else {
     getNewContract(true);
     getContractType(data?.contractTypeId?.id, data?.contractType);
-    getSelectedContractType('New Contract');
+    getSelectedContractType(data?.newContract ? 'New Contract' : 'Existing Contract');
     // }
     getContractIdFromActive(data?.id);
     console.log(data, 'contract data')

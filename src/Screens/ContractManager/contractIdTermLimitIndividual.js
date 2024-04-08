@@ -325,6 +325,7 @@ const ContractIdTermLimitIndividual = ({
       setSelectedDepartmentSites(contractDetail?.site?.sites || []);
       if (contractDetail?.priorContractRefId !== null) {
         setExistingContractId(contractDetail?.priorContractRefId?.id)
+        getPriorContractId(contractDetail?.priorContractRefId?.id)
       }
       if (contractDetail?.site?.sites?.length === 0) {
         getSites();
@@ -499,6 +500,8 @@ const ContractIdTermLimitIndividual = ({
     }
   };
 
+  console.log(contractTermPeriodFrom)
+
   const saveInProgresscheck = (buttonType) => {
     var keys = [];
 
@@ -508,7 +511,7 @@ const ContractIdTermLimitIndividual = ({
     if (contractData?.contractManager?.name?.firstName === "") {
       keys.push("Assigned Contract Manager");
     }
-    if (contractTermPeriodFrom === "") {
+    if (contractTermPeriodFrom === null || contractTermPeriodTo === null) {
       keys.push("Contract Term Period");
     }
     if (contractedTimeCommitment?.value === "") {
