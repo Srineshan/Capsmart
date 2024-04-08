@@ -85,6 +85,8 @@ const ReportTypeOverview = () => {
     const [submittedTimesheetsPaymentStatusData, setSubmittedTimesheetsPaymentStatusData] = useState();
     const [isNonCompliantReportTileClicked, setIsNonCompliantReportTileClicked] = useState(false);
     const [activityTrackServices, setActivityTrackServices] = useState([]);
+    const [paymentTrackValues, setPaymentTrackValues] = useState();
+    const [selectedPaymentTab, setSelectedPaymentTab] = useState('Payment Processed');
     const [apexStackedBarChartDisplay, setApexStackedBarChartDisplay] = useState(
         <ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} />
     )
@@ -173,7 +175,7 @@ const ReportTypeOverview = () => {
             getUpdatedValuesWithParams();
         }
         // }, [selectedPodTypeFromTile, dataToUseInReport])
-    }, [selectedPodTypeFromTile, dataToUseInReport?.from, dataToUseInReport?.to, dataToUseInReport?.selectedContracts, dataToUseInReport?.selectedContractedServiceProvider, dataToUseInReport?.selectedSites, dataToUseInReport?.selectedDepartments, dataToUseInReport?.renewalreportingTimePeriod, dataToUseInReport?.contractContinuationPolicy, dataToUseInReport?.contractStatus, dataToUseInReport?.initialValueSet])
+    }, [selectedPodTypeFromTile, dataToUseInReport?.from, dataToUseInReport?.to, dataToUseInReport?.selectedContracts, dataToUseInReport?.selectedContractedServiceProvider, dataToUseInReport?.selectedSites, dataToUseInReport?.selectedDepartments, dataToUseInReport?.renewalreportingTimePeriod, dataToUseInReport?.contractContinuationPolicy, dataToUseInReport?.contractStatus, dataToUseInReport?.initialValueSet, dataToUseInReport?.selectedTimesheetInterval])
 
     useEffect(() => {
         setApexStackedBarChartDisplay(<ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} />);
@@ -228,6 +230,9 @@ const ReportTypeOverview = () => {
         }
         if (reportType === 'activityStatusTracker') {
             getContractTrackValues()
+        }
+        if (reportType === 'paymentProcessingStatusTracker') {
+            getPaymentTrackValues()
         }
     }
 
@@ -297,7 +302,8 @@ const ReportTypeOverview = () => {
         multiProviderContractsList: 'Multi Provider Contracts List',
         contractsWithABusinessEntity: 'Contracts With A Business Entity',
         currentRemitToAddressForActiveContracts: 'Current Remit To Address For Active Contracts',
-        activityStatusTracker: `Status Of Activities/ Services By Service Provider For ${format(new Date(), 'MMMM yyyy')}`
+        activityStatusTracker: `Status Of Activities/ Services By Service Provider For ${format(new Date(), 'MMMM yyyy')}`,
+        paymentProcessingStatusTracker: 'Payment Processing Status By Service Provider'
     }
 
     const handlePrint = useReactToPrint({
@@ -706,6 +712,23 @@ const ReportTypeOverview = () => {
             setIsWaiting(false);
             getContractTrackValues();
         }
+    }
+
+    const getPaymentTrackValues = async () => {
+        if (!isMyReport) {
+            if (dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.selectedContractedServiceProvider !== undefined && dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined && dataToUseInReport?.selectedTimesheetInterval !== undefined) {
+                setIsLoading(true)
+                if (dataToUseInReport?.selectedTimesheetInterval !== '') {
+                    const { data: data } = await GET(`timesheet-management-service/report/trackPayments?interval=${dataToUseInReport?.selectedTimesheetInterval}&userIds=${[dataToUseInReport?.selectedContractedServiceProvider]}`);
+                    setPaymentTrackValues(data);
+                }
+            }
+        } else {
+            setIsLoading(true)
+            const { data: data } = await GET(`timesheet-management-service/report/myReport/trackPayments?id=${myReportId}`);
+            setPaymentTrackValues(data);
+        }
+        setIsLoading(false)
     }
 
     console.log(activityTrackServices, isLoading, isWaiting)
@@ -1458,6 +1481,66 @@ const ReportTypeOverview = () => {
 
     }
 
+    let interval = [];
+    let approvalBy = [];
+    let paymentApprovalDate = [];
+    let paymentApprovalBy = [];
+    let payment = [];
+    let paymentTrackerTableValues = [];
+    let timesheetName = [];
+    let timesheetContractName = [];
+    const getPaymentTableValue = () => {
+        interval = [];
+        approvalDate = [];
+        approvalBy = [];
+        paymentApprovalDate = [];
+        paymentApprovalBy = [];
+        payment = [];
+        timesheetName = [];
+        timesheetContractName = [];
+        paymentTrackerTableValues = [];
+        if (selectedPaymentTab === "Approval Pending") {
+            paymentTrackerTableValues.push({
+                interval: paymentTrackValues?.approvalPending?.map(data => data?.interval !== null ? `${format(new Date(data?.interval?.startDate), 'MMM dd, yyyy')} - ${format(new Date(data?.interval?.endDate), 'MMM dd, yyyy')}` : '-'),
+                timesheetName: paymentTrackValues?.approvalPending?.map(data => data?.timesheetLabel !== null ? data?.timesheetLabel?.label : '-'),
+                timesheetContractName: paymentTrackValues?.approvalPending?.map(data => data?.contractName?.contractName),
+                approvalBy: paymentTrackValues?.approvalPending?.map(data => data?.approvedBy !== null ? data?.approvedBy?.name?.name : '-'),
+                approvalDate: paymentTrackValues?.approvalPending?.map(data => data?.approvedDate !== null ? format(new Date(data?.approvedDate), 'MMM dd, yyyy') : '-'),
+                order: ['timesheetContractName', 'timesheetName', 'interval', 'approvalDate', 'approvalBy']
+            })
+        } else if (selectedPaymentTab === "Payment Processed") {
+            paymentTrackerTableValues.push({
+                interval: paymentTrackValues?.paymentProcessed?.map(data => data?.interval !== null ? `${format(new Date(data?.interval?.startDate), 'MMM dd, yyyy')} - ${format(new Date(data?.interval?.endDate), 'MMM dd, yyyy')}` : '-'),
+                timesheetName: paymentTrackValues?.paymentProcessed?.map(data => data?.timesheetLabel !== null ? data?.timesheetLabel?.label : '-'),
+                timesheetContractName: paymentTrackValues?.paymentProcessed?.map(data => data?.contractName?.contractName),
+                approvalBy: paymentTrackValues?.paymentProcessed?.map(data => data?.approvedBy !== null ? data?.approvedBy?.name?.name : '-'),
+                approvalDate: paymentTrackValues?.paymentProcessed?.map(data => data?.approvedDate !== null ? format(new Date(data?.approvedDate), 'MMM dd, yyyy') : '-'),
+                paymentApprovalBy: paymentTrackValues?.paymentProcessed?.map(data => data?.paymentApprovedBy !== null ? data?.paymentApprovedBy?.name?.name : '-'),
+                paymentApprovalDate: paymentTrackValues?.paymentProcessed?.map(data => data?.paymentApprovedDate !== null ? format(new Date(data?.paymentApprovedDate), 'MMM dd, yyyy') : '-'),
+                payment: paymentTrackValues?.paymentProcessed?.map(data => `$ ${data?.payment.toFixed(2)}`),
+                order: ['timesheetContractName', 'timesheetName', 'interval', 'approvalDate', 'approvalBy', 'paymentApprovalDate', 'paymentApprovalBy', 'payment']
+            })
+        } else if (selectedPaymentTab === "Submission Pending") {
+            paymentTrackerTableValues.push({
+                interval: paymentTrackValues?.submissionPending?.map(data => data?.interval !== null ? `${format(new Date(data?.interval?.startDate), 'MMM dd, yyyy')} - ${format(new Date(data?.interval?.endDate), 'MMM dd, yyyy')}` : '-'),
+                timesheetName: paymentTrackValues?.submissionPending?.map(data => data?.timesheetLabel !== null ? data?.timesheetLabel?.label : '-'),
+                timesheetContractName: paymentTrackValues?.submissionPending?.map(data => data?.contractName?.contractName),
+
+                order: ['timesheetContractName', 'timesheetName', 'interval']
+            })
+        } else if (selectedPaymentTab === "Payment Pending") {
+            paymentTrackerTableValues.push({
+                interval: paymentTrackValues?.paymentPending?.map(data => data?.interval !== null ? `${format(new Date(data?.interval?.startDate), 'MMM dd, yyyy')} - ${format(new Date(data?.interval?.endDate), 'MMM dd, yyyy')}` : '-'),
+                timesheetName: paymentTrackValues?.paymentPending?.map(data => data?.timesheetLabel !== null ? data?.timesheetLabel?.label : '-'),
+                timesheetContractName: paymentTrackValues?.paymentPending?.map(data => data?.contractName?.contractName),
+                approvalBy: paymentTrackValues?.paymentPending?.map(data => data?.approvedBy !== null ? data?.approvedBy?.name?.name : '-'),
+                approvalDate: paymentTrackValues?.paymentPending?.map(data => data?.approvedDate !== null ? format(new Date(data?.approvedDate), 'MMM dd, yyyy') : '-'),
+                order: ['timesheetContractName', 'timesheetName', 'interval', 'approvalDate', 'approvalBy']
+            })
+        }
+        return paymentTrackerTableValues;
+    }
+
     const getHeaderValues = () => {
         let headerValues = [];
         headerValues.push('');
@@ -1574,10 +1657,15 @@ const ReportTypeOverview = () => {
                                                 {(reportType !== "upcomingContractRenewals" && reportType !== "oneTimeContract" &&
                                                     reportType !== "contractDocumentsOnFile" && reportType !== "multiProviderContractsList" &&
                                                     reportType !== "contractsWithABusinessEntity" && reportType !== "currentRemitToAddressForActiveContracts" &&
-                                                    reportType !== "activityStatusTracker" &&
+                                                    reportType !== "activityStatusTracker" && reportType !== 'paymentProcessingStatusTracker' &&
                                                     dataToUseInReport?.reportingTimePeriod !== "") && (
                                                         <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5} `}>Reporting Period used for this report : {dataToUseInReport?.reportingTimePeriod} ({dataToUseInReport?.fromToDisplay} to {dataToUseInReport?.toToDisplay}) </div>
                                                     )}
+                                                {(reportType === "paymentProcessingStatusTracker") && (
+                                                    <div>
+                                                        <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5} `}>Timesheet Interval used for this report : {dataToUseInReport?.selectedTimesheetInterval?.map(data => data.split("%23")?.map(innerData => `${format(new Date(innerData), 'MMM dd yyyy')}`)).join(', ') || 'All Timesheet Intervals'} </div>
+                                                    </div>
+                                                )}
                                                 {reportType === "upcomingContractRenewals" && (
                                                     <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5} `}>Within Next {dataToUseInReport?.renewalreportingTimePeriod} Days </div>
                                                 )}
@@ -1589,7 +1677,7 @@ const ReportTypeOverview = () => {
                                             {(reportType === "upcomingContractRenewals" || reportType === "oneTimeContract" ||
                                                 reportType === "contractDocumentsOnFile" || reportType === "multiProviderContractsList" ||
                                                 reportType === "contractsWithABusinessEntity" || reportType === "currentRemitToAddressForActiveContracts" ||
-                                                reportType === "activityStatusTracker") ? (
+                                                reportType === "activityStatusTracker" || reportType === "paymentProcessingStatusTracker") ? (
                                                 <div className={`${style.grid2} ${style.marginTop20} `}>
                                                     {reportType === "upcomingContractRenewals" && (
                                                         <div>
@@ -1616,7 +1704,7 @@ const ReportTypeOverview = () => {
                                                                 <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{getContractStatusValue[dataToUseInReport?.contractStatus]}</div>
                                                             </div>
                                                         )}
-                                                    {(reportType === "contractDocumentsOnFile" || reportType === "currentRemitToAddressForActiveContracts" || reportType === "activityStatusTracker") && (
+                                                    {(reportType === "contractDocumentsOnFile" || reportType === "currentRemitToAddressForActiveContracts" || reportType === "activityStatusTracker" || reportType === "paymentProcessingStatusTracker") && (
                                                         <div>
                                                             <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Contracted Service Provider </div>
                                                             <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedContractedServiceProviderToSend?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`).join(', ') || 'All Contracted Service Providers'}</div>
@@ -2362,6 +2450,39 @@ const ReportTypeOverview = () => {
                                                                                 ))) : (
                                                                                     <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
                                                                                         subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
+                                                                                )}
+                                                                            </>
+                                                                        ) : reportType === "paymentProcessingStatusTracker" ? (
+                                                                            <>
+                                                                                <div className={`${style.paymentTabGrid} ${style.marginTop20}`}>
+                                                                                    <div className={`${style.paymentTabStyle} ${selectedPaymentTab === 'Payment Processed' ? style.selectedPaymentTabStyle : ''} ${style.verticalAlignCenter} ${style.alignCenterJustify}`} onClick={() => setSelectedPaymentTab('Payment Processed')}>Payment Processed</div>
+                                                                                    <div className={`${style.paymentTabStyle} ${selectedPaymentTab === 'Payment Pending' ? style.selectedPaymentTabStyle : ''} ${style.verticalAlignCenter} ${style.alignCenterJustify}`} onClick={() => setSelectedPaymentTab('Payment Pending')}>Payment Pending</div>
+                                                                                    <div className={`${style.paymentTabStyle} ${selectedPaymentTab === 'Approval Pending' ? style.selectedPaymentTabStyle : ''} ${style.verticalAlignCenter} ${style.alignCenterJustify}`} onClick={() => setSelectedPaymentTab('Approval Pending')}>Approval Pending </div>
+                                                                                    <div className={`${style.paymentTabStyle} ${selectedPaymentTab === 'Submission Pending' ? style.selectedPaymentTabStyle : ''} ${style.verticalAlignCenter} ${style.alignCenterJustify}`} onClick={() => setSelectedPaymentTab('Submission Pending')}>Submission Pending</div>
+                                                                                </div>
+                                                                                {paymentTrackValues !== undefined && (selectedPaymentTab === "Approval Pending" ? paymentTrackValues?.approvalPending?.length !== 0 : selectedPaymentTab === "Submission Pending" ? paymentTrackValues?.submissionPending?.length !== 0 :
+                                                                                    selectedPaymentTab === "Payment Pending" ? paymentTrackValues?.paymentPending?.length !== 0 : paymentTrackValues?.paymentProcessed?.length !== 0) ? (
+                                                                                    <TrackTable
+                                                                                        tableHead={selectedPaymentTab === "Approval Pending" ? ['CONTRACT NAME', 'TIMESHEET LABEL', 'INTERVAL', 'APPROVAL DATE', 'APPROVED BY'] :
+                                                                                            selectedPaymentTab === "Submission Pending" ? ['CONTRACT NAME', 'TIMESHEET LABEL', 'INTERVAL'] :
+                                                                                                selectedPaymentTab === "Payment Processed" ? ['CONTRACT NAME', 'TIMESHEET LABEL', 'INTERVAL', 'APPROVAL DATE', 'APPROVED BY', 'PAYMENT APPROVED DATE', 'PAYMENT APPROVED BY', 'PAYMENT'] :
+                                                                                                    ['CONTRACT NAME', 'TIMESHEET LABEL', 'INTERVAL', 'APPROVAL DATE', 'APPROVED BY']}
+                                                                                        tableHeadBottom={[]}
+                                                                                        tableData={getPaymentTableValue()}
+                                                                                        dataGrid={selectedPaymentTab === "Approval Pending" ? style.approvalPendingTableDataGrid : selectedPaymentTab === "Submission Pending" ? style.submissionPendingTableDataGrid
+                                                                                            : selectedPaymentTab === "Payment Processed" ? style.paymentProcessedTableDataGrid : style.paymentPendingTableDataGrid}
+                                                                                        tableHeadGrid={selectedPaymentTab === "Approval Pending" ? style.approvalPendingTableDataGrid : selectedPaymentTab === "Submission Pending" ? style.submissionPendingTableDataGrid
+                                                                                            : selectedPaymentTab === "Payment Processed" ? style.paymentProcessedTableDataGrid : style.paymentPendingTableDataGrid}
+                                                                                        tableHeadBottomGrid={''}
+                                                                                        header={false}
+                                                                                        directionRow={true}
+                                                                                        directionRowCommonText={true}
+                                                                                    />
+                                                                                ) : (
+                                                                                    <div className={style.verticalAlignCenter}>
+                                                                                        <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
+                                                                                            subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
+                                                                                    </div>
                                                                                 )}
                                                                             </>
                                                                         ) : reportType === "complianceStatus" ? (

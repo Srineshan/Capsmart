@@ -49,6 +49,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     const [selectedContracts, setSelectedContracts] = useState([]);
     const [selectedContractedServiceProvider, setSelectedContractedServiceProvider] = useState([]);
     const [selectedContractedServiceProviderToSend, setSelectedContractedServiceProviderToSend] = useState([]);
+    const [selectedTimesheetInterval, setSelectedTimesheetInterval] = useState([]);
+    const [timesheetIntervals, setTimesheetIntervals] = useState([]);
     const [user, setUsers] = useState([]);
     const [from, setFrom] = useState(startOfMonth(new Date()));
     const [to, setTo] = useState(endOfMonth(new Date()));
@@ -67,7 +69,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         multiProviderContractsList: 'CONTRACT',
         currentRemitToAddressForActiveContracts: 'CONTRACT',
         nonCompliant: 'CONTRACT',
-        activityStatusTracker: 'CONTRACT'
+        activityStatusTracker: 'CONTRACT',
+        paymentProcessingStatusTracker: 'TIMESHEET'
     }
     const defaultOption = ''
 
@@ -99,6 +102,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         selectedContractedServiceProvider: selectedContractedServiceProvider,
         selectedContractedServiceProviderToSend: selectedContractedServiceProviderToSend,
         initialValueSet: initialValueSet,
+        selectedTimesheetInterval: selectedTimesheetInterval
     };
 
     useEffect(() => {
@@ -106,11 +110,22 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         setUserDetails();
         getActivityLogger();
         getContractAndUserList();
+        if (reportType === 'paymentProcessingStatusTracker') {
+            getTimesheetIntervals()
+        }
     }, [])
 
     const setUserDetails = async () => {
         const { data: user } = await GET(`user-management-service/user/${userId}`);
         setCurrentUserDetails(user);
+    }
+
+    const getTimesheetIntervals = async () => {
+        const { data: data } = await GET(`timesheet-management-service/timesheet/timesheetIntervals`);
+        setTimesheetIntervals(data);
+        if (data?.length !== 0) {
+            setSelectedTimesheetInterval(selectedContractedServiceProvider !== '' && reportType !== "paymentProcessingStatusTracker" ? [defaultOption] : [`${data?.[0]?.startDate}%23${data?.[0]?.endDate}`])
+        }
     }
 
     const getActivityLogger = async () => {
@@ -189,6 +204,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
             setContractContinuationPolicy(reportFilter?.contractPolicyType !== "" ? reportFilter?.contractPolicyType : 'ALL');
             setContractStatus(reportFilter?.contractStatus);
             setRenewalreportingTimePeriod(reportFilter?.renewalDays)
+            setSelectedTimesheetInterval(reportFilter?.intervals ? reportFilter?.intervals : [])
         }
     }, [currentUserDetails])
 
@@ -226,7 +242,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         getDataToUseInReport(dataToUseInReport);
     }, [renewalreportingTimePeriod, selectedSites, selectedDepartments, contractContinuationPolicy, selectedContracts,
         podType, contractStatus, reportingTimePeriod, selectedContractedServiceProvider,
-        selectedContractedServiceProviderToSend, from, to, initialValueSet]);
+        selectedContractedServiceProviderToSend, from, to, initialValueSet, selectedTimesheetInterval]);
 
     useEffect(() => {
         let tempDept = [];
@@ -459,6 +475,21 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         }
     };
 
+    const handleChangeTimesheetInterval = (event) => {
+        const {
+            target: { value },
+        } = event;
+        console.log(event, value)
+
+        if (value?.length >= 2 && value[value?.length - 1] === defaultOption && reportType !== "paymentProcessingStatusTracker") {
+            setSelectedTimesheetInterval([defaultOption]);
+        } else {
+            setSelectedTimesheetInterval(
+                typeof value === 'string' ? value.split(',') : value
+            );
+        }
+    };
+
     return (
         <div>
             <div className={`${style.leftCard} ${style.marginTop20} ${style.bigCalendarLeftCardWidth}`}>
@@ -466,7 +497,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                 {(reportType === "upcomingContractRenewals" || reportType === "oneTimeContract" ||
                     reportType === "contractDocumentsOnFile" || reportType === "multiProviderContractsList" ||
                     reportType === "contractsWithABusinessEntity" || reportType === "currentRemitToAddressForActiveContracts" ||
-                    reportType === 'nonCompliant' || reportType === "activityStatusTracker") ? (
+                    reportType === 'nonCompliant' || reportType === "activityStatusTracker" || reportType === "paymentProcessingStatusTracker") ? (
                     <>
                         {reportType === "upcomingContractRenewals" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
@@ -588,6 +619,77 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     ))}
                                 </Select>
                             </FormControl>
+                        )}
+                        {reportType === "paymentProcessingStatusTracker" && (
+                            <>
+                                <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                    <InputLabel id="demo-multiple-name-label5">Contracted Service Provider</InputLabel>
+                                    <Select
+                                        labelId="demo-multiple-name-label5"
+                                        id="demo-multiple-name5"
+                                        value={selectedContractedServiceProvider}
+                                        onChange={handleChangeContractedServiceProviders}
+                                        MenuProps={MenuProps}
+                                        disabled={isMyReport || isLoading}
+                                    >
+                                        {contractedServiceProviders?.length >= 2 && (
+                                            <MenuItem value={defaultOption}>All Contracted Service Providers</MenuItem>
+                                        )}
+                                        {contractedServiceProviders?.map((data, index) => (
+                                            <MenuItem
+                                                key={index}
+                                                value={data?.id}
+                                            >
+                                                {`${data?.name?.firstName} ${data?.name?.lastName}`}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                                {(selectedContractedServiceProvider?.length === 1 && selectedContractedServiceProvider[0] !== '') ? (
+                                    <FormControl variant="standard" sx={{ width: '250px', marginTop: '20px' }}>
+                                        <InputLabel id="demo-multiple-name-label5">Timesheet Interval</InputLabel>
+                                        <Select
+                                            labelId="demo-multiple-name-label2"
+                                            id="demo-multiple-name2"
+                                            multiple
+                                            value={selectedTimesheetInterval}
+                                            onChange={handleChangeTimesheetInterval}
+                                            MenuProps={{ MenuProps }}
+                                            disabled={isMyReport || isLoading}
+                                        >
+                                            {timesheetIntervals?.map((data) => (
+                                                <MenuItem
+                                                    key={data?.startDate}
+                                                    value={`${data?.startDate}%23${data?.endDate}`}
+                                                >
+                                                    {`Timesheets for ${format(new Date(data?.startDate), 'MMMM yyyy')}`}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                ) : (
+                                    <FormControl variant="standard" sx={{ width: '250px', marginTop: '20px' }}>
+                                        <InputLabel id="demo-multiple-name-label5">Timesheet Interval</InputLabel>
+                                        <Select
+                                            labelId="demo-multiple-name-label2"
+                                            id="demo-multiple-name2"
+                                            value={selectedTimesheetInterval}
+                                            onChange={(e) => setSelectedTimesheetInterval([e.target.value])}
+                                            MenuProps={{ MenuProps }}
+                                            disabled={isMyReport || isLoading}
+                                        >
+                                            {timesheetIntervals?.map((data) => (
+                                                <MenuItem
+                                                    key={data?.startDate}
+                                                    value={`${data?.startDate}%23${data?.endDate}`}
+                                                >
+                                                    {`Timesheets for ${format(new Date(data?.startDate), 'MMMM yyyy')}`}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                )}
+                            </>
                         )}
                         {(reportType === "contractDocumentsOnFile" || reportType === "multiProviderContractsList" ||
                             reportType === "contractsWithABusinessEntity" || reportType === 'nonCompliant') && (

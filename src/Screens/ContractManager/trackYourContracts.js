@@ -543,10 +543,6 @@ const TrackYourContracts = () => {
         }
         console.log(paymentTrackerTableValues)
         return paymentTrackerTableValues;
-        // return selectedPaymentTab === "Payment Processed" ? [paymentTrackerTableValues?.[0]?.timesheetContractName, paymentTrackerTableValues?.[0]?.timesheetName, paymentTrackerTableValues?.[0]?.interval, paymentTrackerTableValues?.[0]?.approvalDate, paymentTrackerTableValues?.[0]?.approvalBy, paymentTrackerTableValues?.[0]?.paymentApprovalDate, paymentTrackerTableValues?.[0]?.paymentApprovalBy, paymentTrackerTableValues?.[0]?.payment] :
-        //     selectedPaymentTab === "Payment Pending" ? [paymentTrackerTableValues?.[0]?.timesheetContractName, paymentTrackerTableValues?.[0]?.timesheetName, paymentTrackerTableValues?.[0]?.interval, paymentTrackerTableValues?.[0]?.approvalDate, paymentTrackerTableValues?.[0]?.approvalBy] :
-        //         selectedPaymentTab === "Approval Pending" ? [paymentTrackerTableValues?.[0]?.timesheetContractName, paymentTrackerTableValues?.[0]?.timesheetName, paymentTrackerTableValues?.[0]?.interval, paymentTrackerTableValues?.[0]?.approvalDate, paymentTrackerTableValues?.[0]?.approvalBy] :
-        //             selectedPaymentTab === "Submission Pending" ? [paymentTrackerTableValues?.[0]?.timesheetContractName, paymentTrackerTableValues?.[0]?.timesheetName, paymentTrackerTableValues?.[0]?.interval] : [];
     }
 
     return (

@@ -90,7 +90,8 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         CONTRACT_WITH_BUSINESS_ENTITY: 'contractsWithABusinessEntity',
         MULTI_PROVIDER_CONTRACT: 'multiProviderContractsList',
         PROOF_OF_DOCUMENTATION_COMPLIANCE_FOR_CONTRACT_BASED_REQUIREMENTS: 'nonCompliant',
-        ACTIVITY_STATUS_TRACKER: 'activityStatusTracker'
+        ACTIVITY_STATUS_TRACKER: 'activityStatusTracker',
+        PAYMENT_TRACKER: 'paymentProcessingStatusTracker'
     }
     const descriptionList = {
         ACTIVITES_SERVICES_LOG_SUMMARY: 'Activities/ Services Log Status Summary',
@@ -113,7 +114,8 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         CONTRACT_WITH_BUSINESS_ENTITY: 'Contracts With A Business Entity',
         MULTI_PROVIDER_CONTRACT: 'Multi Provider Contracts List',
         PROOF_OF_DOCUMENTATION_COMPLIANCE_FOR_CONTRACT_BASED_REQUIREMENTS: 'Proof of documentation compliance for contract based requirments',
-        ACTIVITY_STATUS_TRACKER: `Status Of Activities/ Services By Service Provider For ${format(new Date(), 'MMMM yyyy')}`
+        ACTIVITY_STATUS_TRACKER: `Status Of Activities/ Services By Service Provider For ${format(new Date(), 'MMMM yyyy')}`,
+        PAYMENT_TRACKER: 'Payment Processing Status By Service Provider'
     }
 
     const titleList = {
@@ -137,7 +139,8 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         CONTRACT_WITH_BUSINESS_ENTITY: 'Contracts With A Business Entity',
         MULTI_PROVIDER_CONTRACT: 'Multi Provider Contracts List',
         PROOF_OF_DOCUMENTATION_COMPLIANCE_FOR_CONTRACT_BASED_REQUIREMENTS: 'Proof of documentation compliance for contract based requirments',
-        ACTIVITY_STATUS_TRACKER: `Status Of Activities/ Services By Service Provider For ${format(new Date(), 'MMMM yyyy')}`
+        ACTIVITY_STATUS_TRACKER: `Status Of Activities/ Services By Service Provider For ${format(new Date(), 'MMMM yyyy')}`,
+        PAYMENT_TRACKER: 'Payment Processing Status By Service Provider'
     }
 
     useEffect(() => {
@@ -338,6 +341,20 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                         </Link>
                                     </div>
                                 ))}
+                                {reportType === 'payments' && (
+                                    <div className={style.scrollStyle}>
+                                        <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                            <div className={style.tableDataReportsFontStyle}>1</div>
+                                            <Link to="/reportTypeOverview/paymentProcessingStatusTracker" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Payment Processing Status Tracker</div></Link>
+                                            <div className={style.tableDataReportsFontStyle}>Upcoming Contract Renewals</div>
+                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy HH:mm')} </div>
+                                            <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'd MMM yyyy')}</div>
+                                            <Link to={"/reportTypeOverview/paymentProcessingStatusTracker"} className={style.linkStyle}>
+                                                <Run />
+                                            </Link>
+                                        </div>
+                                    </div>
+                                )}
                                 {/* {reportType === 'contractManagement' && (
                                     <div className={style.scrollStyle}>
                                         <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>

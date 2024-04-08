@@ -121,7 +121,8 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
         'contractsWithABusinessEntity': 'CONTRACT_MANAGEMENT',
         'multiProviderContractsList': 'CONTRACT_MANAGEMENT',
         'currentRemitToAddressForActiveContracts': 'TIMESHEET',
-        'activityStatusTracker': 'TIMESHEET'
+        'activityStatusTracker': 'TIMESHEET',
+        'paymentProcessingStatusTracker': 'PAYMENT'
     }
 
     // const type = (reportType === 'activitiesOrServices' ?
@@ -151,7 +152,8 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
         'contractsWithABusinessEntity': 'CONTRACT_WITH_BUSINESS_ENTITY',
         'multiProviderContractsList': 'MULTI_PROVIDER_CONTRACT',
         'currentRemitToAddressForActiveContracts': 'CURRENT_REMIT_TO_ADDRESS',
-        'activityStatusTracker': 'ACTIVITY_STATUS_TRACKER'
+        'activityStatusTracker': 'ACTIVITY_STATUS_TRACKER',
+        'paymentProcessingStatusTracker': 'PAYMENT_TRACKER'
     }
 
     const filters = {
@@ -226,7 +228,8 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
                     'contractPolicyType': dataToUseInReport?.contractContinuationPolicy !== 'ALL' ? dataToUseInReport?.contractContinuationPolicy : '',
                     'contractStatus': dataToUseInReport?.contractStatus,
                     "renewalDays": dataToUseInReport?.renewalreportingTimePeriod,
-                    "contractNames": ['']
+                    "contractNames": [''],
+                    "intervals": dataToUseInReport?.selectedTimesheetInterval
                 },
                 "private": isPrivate
             }
