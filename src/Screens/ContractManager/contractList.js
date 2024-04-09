@@ -528,11 +528,11 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
                   </>
                 ) : selectedContract === 'upcomingrenewals' ? (
                   <>
-                    <button className={style.myActiveContractsButton} >Upcoming Renewals ( - )</button>
+                    <button className={style.myActiveContractsButton} >Upcoming Renewals ({metadata?.upcomingRenewalsContract?.upcomingRenewalsCount})</button>
                   </>
                 ) : (
                   <>
-                    <button className={style.myActiveContractsButton} >Expired / Terminated ( - )</button>
+                    <button className={style.myActiveContractsButton} >Expired / Terminated ({metadata?.expiredOrTerminatedContract?.expiredOrTerminatedContractCount})</button>
                   </>
                 )}
               </div>
