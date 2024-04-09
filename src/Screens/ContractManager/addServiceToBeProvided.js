@@ -1165,7 +1165,7 @@ const AddServiceProvided = ({
           users:
             selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers,
           performingActivity: {
-            activity: performingActivity,
+            activity: serviceTypeTemplate === ADMINISTRATIVE ? dataValues?.performingActivity : performingActivity,
           },
           activities: activities,
           ...((((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ONCALLSERVICE) &&
