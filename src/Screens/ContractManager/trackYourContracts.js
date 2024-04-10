@@ -239,7 +239,7 @@ const TrackYourContracts = () => {
             getContractTrackValues()
         }
         if (trackType === 'timesheetAndInvoiceApprovalsStatusTracker' || trackType === "paymentProcessingStatusTracker") {
-            setSelectedTimesheetInterval(selectedContractedServiceProvider !== '' && trackType !== "paymentProcessingStatusTracker" ? [defaultOption] : [`${timesheetIntervals?.[0]?.startDate}%23${timesheetIntervals?.[0]?.endDate}`])
+            setSelectedTimesheetInterval(selectedContractedServiceProvider !== '' && trackType === "timesheetAndInvoiceApprovalsStatusTracker" ? [defaultOption] : [`${timesheetIntervals?.[0]?.startDate}%23${timesheetIntervals?.[0]?.endDate}`])
         }
     }, [selectedContractedServiceProvider])
 
@@ -325,7 +325,7 @@ const TrackYourContracts = () => {
         if (data?.length !== 0) {
             setTimesheetIntervalsStartDate(data?.[0]?.startDate)
             setTimesheetIntervalsEndDate(data?.[0]?.endDate)
-            setSelectedTimesheetInterval(selectedContractedServiceProvider !== '' && trackType !== "paymentProcessingStatusTracker" ? [defaultOption] : [`${data?.[0]?.startDate}%23${data?.[0]?.endDate}`])
+            setSelectedTimesheetInterval(selectedContractedServiceProvider !== '' && trackType === "timesheetAndInvoiceApprovalsStatusTracker" ? [defaultOption] : [`${data?.[0]?.startDate}%23${data?.[0]?.endDate}`])
         }
     }
 
