@@ -192,8 +192,6 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
         setUserDetails(user);
     }
 
-    console.log(dataToUseInReport?.selectedContracts?.[0] !== '' ? dataToUseInReport?.selectedContracts : [], dataToUseInReport?.selectedContracts)
-
     const handleSave = async () => {
         setIsReadOnly(true)
         let data = {
@@ -229,7 +227,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
                     'contractStatus': dataToUseInReport?.contractStatus,
                     "renewalDays": dataToUseInReport?.renewalreportingTimePeriod,
                     "contractNames": [''],
-                    "intervals": dataToUseInReport?.selectedTimesheetInterval
+                    "intervals": decodeURIComponent(dataToUseInReport?.selectedTimesheetInterval).split(',')
                 },
                 "private": isPrivate
             }

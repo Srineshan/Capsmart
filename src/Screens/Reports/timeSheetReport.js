@@ -341,20 +341,6 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                         </Link>
                                     </div>
                                 ))}
-                                {reportType === 'payments' && (
-                                    <div className={style.scrollStyle}>
-                                        <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
-                                            <div className={style.tableDataReportsFontStyle}>1</div>
-                                            <Link to="/reportTypeOverview/paymentProcessingStatusTracker" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Payment Processing Status Tracker</div></Link>
-                                            <div className={style.tableDataReportsFontStyle}>Upcoming Contract Renewals</div>
-                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy HH:mm')} </div>
-                                            <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'd MMM yyyy')}</div>
-                                            <Link to={"/reportTypeOverview/paymentProcessingStatusTracker"} className={style.linkStyle}>
-                                                <Run />
-                                            </Link>
-                                        </div>
-                                    </div>
-                                )}
                                 {/* {reportType === 'contractManagement' && (
                                     <div className={style.scrollStyle}>
                                         <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>

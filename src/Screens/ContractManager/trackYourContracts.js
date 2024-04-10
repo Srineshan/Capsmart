@@ -393,7 +393,7 @@ const TrackYourContracts = () => {
             console.log(filteredServiceValues)
             Object.keys(filteredServiceValues)?.map(data => {
                 if (filteredServiceValues?.[data]?.length !== 0) {
-                    service?.push({ type: 'parentChildService', name: data, values: filteredServiceValues?.[data]?.map(data => `${(`${data?.activityType} - ${data?.performingActivity}`.length > 35 && activityData?.contract?.compensationPolicy !== 'ACTIVITY_BASED') ? `${data?.activityType} - ${data?.performingActivity}`.slice(0, 32) + '...' : (`${data?.activityType} - ${data?.performingActivity}`.length > 50) ? `${data?.activityType} - ${data?.performingActivity}`.slice(0, 47) + '...' : `${data?.activityType} - ${data?.performingActivity}`} (${data?.timeBlock})`) })
+                    service?.push({ type: 'parentChildService', name: data, values: filteredServiceValues?.[data]?.map(data => `${(`${data?.activityType} - ${data?.performingActivity}`.length > 55 && activityData?.contract?.compensationPolicy !== 'ACTIVITY_BASED') ? `${data?.activityType} - ${data?.performingActivity}`.slice(0, 52) + '...' : (`${data?.activityType} - ${data?.performingActivity}`.length > 75) ? `${data?.activityType} - ${data?.performingActivity}`.slice(0, 72) + '...' : `${data?.activityType} - ${data?.performingActivity}`} (${data?.timeBlock})`) })
                     completedUnits?.push({ type: 'number', values: filteredServiceValues?.[data]?.map(data => data?.complated?.units) })
                     completedHours?.push({ type: 'number', values: filteredServiceValues?.[data]?.map(data => data?.complated?.hours) })
                     toBeProposedUnits?.push({ type: 'number', values: filteredServiceValues?.[data]?.map(data => data?.inprogress?.units) })

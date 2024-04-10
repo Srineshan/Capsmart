@@ -2652,42 +2652,42 @@ input[type="number"] {
 
 .trackTableHeaderMiddleGrid {
   display: grid;
-  grid-template-columns: 32.5% 7.5% 15% 15% 15% 15%;
+  grid-template-columns: 47.5% 7.5% 15% 15% 15%;
 }
 
 .trackTableHeaderMiddleGridForActivityBased {
   display: grid;
-  grid-template-columns: 45% 20% 20% 15%;
+  grid-template-columns: 60% 20% 20%;
 }
 
 .trackTableHeaderTopGrid {
   display: grid;
-  grid-template-columns: 32.5% 67.5%;
+  grid-template-columns: 47.5% 52.5%;
 }
 
 .trackTableHeaderTopGridForActivityBased {
   display: grid;
-  grid-template-columns: 45% 55%;
+  grid-template-columns: 60% 40%;
 }
 
 .trackTableHeaderBottomGrid {
   display: grid;
-  grid-template-columns: 32.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 15%;
+  grid-template-columns: 47.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5%;
 }
 
 .trackTableHeaderBottomGridForActivityBased {
   display: grid;
-  grid-template-columns: 45% 10% 10% 10% 10% 15%;
+  grid-template-columns: 60% 10% 10% 10% 10%;
 }
 
 .trackTableDataGrid {
   display: grid;
-  grid-template-columns: 32.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 15%;
+  grid-template-columns: 47.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5%;
 }
 
 .trackTableDataGridForActivityBased {
   display: grid;
-  grid-template-columns: 45% 10% 10% 10% 10% 15%;
+  grid-template-columns: 60% 10% 10% 10% 10%;
 }
 
 .whiteBackground {
