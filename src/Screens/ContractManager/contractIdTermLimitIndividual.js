@@ -148,7 +148,7 @@ const ContractIdTermLimitIndividual = ({
   }, []);
 
   useEffect(() => {
-    if (methodFinal === "POST" && (existingContractId !== "" && existingContractId !== null)) {
+    if (methodFinal === "POST" && (existingContractId !== "" && existingContractId !== null && createdContractId === "")) {
       getContractDetailFirstTime(existingContractId);
       // getContractUser();
     }

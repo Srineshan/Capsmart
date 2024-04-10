@@ -120,7 +120,7 @@ const AddContract = ({
                 firstOptionLabel={"Select..."}
                 firstOptionValue={"0"}
                 valueList={activeContractList?.map(data => data?.contractDetail?.contractId?.id)}
-                labelList={activeContractList?.map(data => data?.contractDetail?.contractId?.id)}
+                labelList={activeContractList?.map(data => `${data?.contractName?.contractName} - ${data?.contractDetail?.contractId?.id}`)}
                 disabledList={activeContractList?.map(data => false)}
                 widthValue={400}
               />
