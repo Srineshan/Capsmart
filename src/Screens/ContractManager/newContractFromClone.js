@@ -81,6 +81,7 @@ const NewContractFromClone = ({
     empty: false,
   });
   const [selectedFileURL, setSelectedFileURL] = useState("");
+  const [priorContractId, setPriorContractId] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const [isTabsValid, setIsTabsValid] = useState([]);
   const [contractSelected, setContractSelected] = useState(
@@ -118,6 +119,11 @@ const NewContractFromClone = ({
       });
     });
   };
+
+  const getPriorContractId = (value) => {
+    console.log('prior contract id', value)
+    setPriorContractId(value);
+  }
 
   const checkFieldAndPopAlert = (value, fieldName) => {
     if (value === null || value === 0 || value === '' || value === undefined || value === '0') {
@@ -283,6 +289,9 @@ const NewContractFromClone = ({
       selectedContract !== "draft" ? false : true
     );
     sessionStorage.removeItem('Selected Contract Status')
+    sessionStorage.removeItem('existingContractId')
+    sessionStorage.removeItem('priorContractId')
+    sessionStorage.removeItem('method')
   };
 
   return (
@@ -588,6 +597,7 @@ const NewContractFromClone = ({
             getShowAlert={getShowAlert}
             isEditable={isEditable}
             getTabDataStatus={getTabDataStatus}
+            priorContractId={priorContractId}
           />
         ) : selectContractInfo === "INDIVIDUAL" &&
           currentPage === "Contracted Services Provider(s)" ? (
@@ -601,6 +611,7 @@ const NewContractFromClone = ({
             getShowAlert={getShowAlert}
             isEditable={isEditable}
             getTabDataStatus={getTabDataStatus}
+            priorContractId={priorContractId}
           />
         ) : currentPage === "Contract ID & Term Limit" ? (
           <ContractIdTermLimitIndividual
@@ -621,6 +632,7 @@ const NewContractFromClone = ({
             getShowAlert={getShowAlert}
             isEditable={isEditable}
             getTabDataStatus={getTabDataStatus}
+            getPriorContractId={getPriorContractId}
           />
         ) : selectContractInfo === "MULTIPLE" &&
           currentPage === "Contracted Services Provider(s)" ? (
@@ -635,6 +647,7 @@ const NewContractFromClone = ({
             contractName={contractName}
             isEditable={isEditable}
             getTabDataStatus={getTabDataStatus}
+            priorContractId={priorContractId}
           />
         )
           : selectContractInfo === "EMPLOYEE" &&

@@ -416,8 +416,8 @@ body::-webkit-scrollbar {
 
 .expiredContractGrid {
   display: grid;
-  grid-template-columns: 10% 12% 10% 12% 12% 12% 10% 12%;
-  grid-gap: 10px;
+  grid-template-columns: 5% 12% 10% 15% 10% 12% 10% 12% 5%;
+  grid-gap: 1%;
 }
 
 .documentDataProof {
@@ -2629,6 +2629,27 @@ input[type="number"] {
   grid-template-columns: 20% 15% 15% 14% 7% 14% 7% 8%;
 }
 
+.paymentPendingTableDataGrid {
+  display: grid;
+  grid-template-columns: 25% 25% 20% 15% 15%;
+}
+
+.submissionPendingTableDataGrid {
+  display: grid;
+  grid-template-columns: 33% 33% 33%;
+}
+
+.approvalPendingTableDataGrid {
+  display: grid;
+  grid-template-columns: 25% 25% 20% 15% 15%;
+}
+
+.paymentProcessedTableDataGrid {
+  display: grid;
+  grid-template-columns: 15% 15% 13% 10% 13% 10% 13% 10%;
+}
+
+
 .trackTableHeaderMiddleGrid {
   display: grid;
   grid-template-columns: 32.5% 7.5% 15% 15% 15% 15%;
@@ -2636,7 +2657,7 @@ input[type="number"] {
 
 .trackTableHeaderMiddleGridForActivityBased {
   display: grid;
-  grid-template-columns: 40% 20% 20% 20%;
+  grid-template-columns: 45% 20% 20% 15%;
 }
 
 .trackTableHeaderTopGrid {
@@ -2646,7 +2667,7 @@ input[type="number"] {
 
 .trackTableHeaderTopGridForActivityBased {
   display: grid;
-  grid-template-columns: 40% 60%;
+  grid-template-columns: 45% 55%;
 }
 
 .trackTableHeaderBottomGrid {
@@ -2656,7 +2677,7 @@ input[type="number"] {
 
 .trackTableHeaderBottomGridForActivityBased {
   display: grid;
-  grid-template-columns: 40% 10% 10% 10% 10% 20%;
+  grid-template-columns: 45% 10% 10% 10% 10% 15%;
 }
 
 .trackTableDataGrid {
@@ -2666,7 +2687,7 @@ input[type="number"] {
 
 .trackTableDataGridForActivityBased {
   display: grid;
-  grid-template-columns: 40% 10% 10% 10% 10% 20%;
+  grid-template-columns: 45% 10% 10% 10% 10% 15%;
 }
 
 .whiteBackground {
@@ -2700,4 +2721,26 @@ input[type="number"] {
 .iconSize {
   height: 30px;
   width: 30px;
+}
+
+.paymentTabStyle {
+  text-align: center;
+  font: normal normal 600 15px/23px Montserrat;
+  letter-spacing: 0px;
+  text-transform: uppercase;
+  color: #A4A4A4;
+  border: 1px solid #52575D;
+  height: 45px;
+  cursor: pointer;
+}
+
+.selectedPaymentTabStyle {
+  color: #7165E3;
+  border: 1px solid #7165E3;
+  background-color: #F1EFFC;
+}
+
+.paymentTabGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
 }

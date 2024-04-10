@@ -8,7 +8,7 @@ import { validateTabs } from './contractValidation';
 
 import style from './index.module.scss';
 
-const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newServiceProviderDialog, getViewPage1, getViewPage2, getViewPage3, getCurrentPage, contractId, contractName, isEditable, getTabDataStatus }) => {
+const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newServiceProviderDialog, getViewPage1, getViewPage2, getViewPage3, getCurrentPage, contractId, contractName, isEditable, getTabDataStatus, priorContractId }) => {
   const contractID = contractId;
   const [users, setUsers] = useState([]);
   const [editServiceProviderDialog, setEditServiceProviderDialog] = useState(false);
@@ -16,6 +16,10 @@ const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newSe
   const tableHeaderValues = ['DATA STATUS', "CONTRACTOR'S NAME", 'CONTRACTOR TYPE', 'SITE LEVEL', 'DEPT LEVEL'];
   const [providerDataStatus, setProviderDataStatus] = useState([]);
   const [tabValidation, setTabValidation] = useState();
+  const [showAddressConfirmationDialogWhenSubmit, setShowAddressConfirmationDialogWhenSubmit] = useState(false);
+  const [isPriorContractDataInuse, setPriorContractDataInuse] = useState(false);
+
+  console.log(priorContractId)
 
   useEffect(() => {
     if (userProviderData !== {} && userProviderData !== undefined) {
@@ -42,14 +46,27 @@ const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newSe
   const getUserData = async () => {
     if (contractId !== '') {
       const { data: userData } = await GET(`user-management-service/user?contractID=${contractID}`);
-      if (userData) {
-        setUsers(userData?.filter(data => data?.roles?.map(role => role?.roleName)?.includes('Activity Logger') || data?.roles?.map(role => role?.roleName)?.includes('Aggregator') || data?.roles?.map(role => role?.roleName)?.includes('Passive Activity Logger')));
+      if (userData?.length === 0 && priorContractId !== undefined) {
+        setPriorContractDataInuse(true);
+        setShowAddressConfirmationDialogWhenSubmit(true)
+        const { data: priorContractUserData } = await GET(`user-management-service/user?contractID=${priorContractId}`);
+        if (priorContractUserData) {
+          setUsers(priorContractUserData?.filter(data => data?.roles?.map(role => role?.roleName)?.includes('Activity Logger') || data?.roles?.map(role => role?.roleName)?.includes('Aggregator') || data?.roles?.map(role => role?.roleName)?.includes('Passive Activity Logger')));
+        }
+      } else {
+        if (userData) {
+          setUsers(userData?.filter(data => data?.roles?.map(role => role?.roleName)?.includes('Activity Logger') || data?.roles?.map(role => role?.roleName)?.includes('Aggregator') || data?.roles?.map(role => role?.roleName)?.includes('Passive Activity Logger')));
+        }
       }
     }
   }
 
   const getEditServiceDialog = (value) => {
     setEditServiceProviderDialog(value);
+  }
+
+  const getShowAddressConfirmationDialogWhenSubmit = (value) => {
+    setShowAddressConfirmationDialogWhenSubmit(value)
   }
 
   const onClickFunction = (data) => {
@@ -163,7 +180,7 @@ const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newSe
         </div>
       }
       {editServiceProviderDialog && (
-        <EditServiceProvider getEditServiceDialog={getEditServiceDialog} userProviderData={userProviderData} contractId={contractId} isEditable={isEditable} users={users} />
+        <EditServiceProvider getEditServiceDialog={getEditServiceDialog} userProviderData={userProviderData} contractId={contractId} isEditable={isEditable} users={users} showAddressConfirmationDialogWhenSubmit={showAddressConfirmationDialogWhenSubmit} getShowAddressConfirmationDialogWhenSubmit={getShowAddressConfirmationDialogWhenSubmit} isPriorContractDataInuse={isPriorContractDataInuse} priorContractId={priorContractId} />
       )}
     </div>
   )

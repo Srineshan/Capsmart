@@ -390,6 +390,12 @@ const Navbar = () => {
                       >
                         <div className={style.options}>Timesheet And Invoice Approvals Status Tracker</div>
                       </Link>
+                      <Link
+                        to={"/trackContracts/paymentProcessingStatusTracker"}
+                        className={style.noFontStyle}
+                      >
+                        <div className={style.options}>Payment Processing Status Tracker</div>
+                      </Link>
                     </div>
                   </Popover>
                 </div>

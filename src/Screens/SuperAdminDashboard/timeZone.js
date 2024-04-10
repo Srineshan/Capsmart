@@ -1,24 +1,27 @@
 import React, { useState } from "react"
 import TimezoneSelect, { allTimezones, useTimezoneSelect } from "react-timezone-select"
+import cityTimezones from 'city-timezones';
 
-const timezones = {
-    ...allTimezones,
-}
-
-const Timezone = ({ selectedTimezone, setSelectedTimezone }) => {
+const Timezone = ({ selectedTimezone, setSelectedTimezone, cityName }) => {
     const [selectStyle, setSelectStyle] = useState("react-select")
     const [labelStyle, setLabelStyle] = useState("altName")
 
-    const handleSelectChange = event => {
-        setSelectStyle(event.target.value)
-    }
-    const handleLabelChange = event => {
-        setLabelStyle(event.target.value)
-    }
+    const cityLookup = cityTimezones.findFromCityStateProvince(cityName)
+
+    const allowedKey = cityLookup?.[0]?.timezone;
+
+    const filteredData = Object.keys(allTimezones)
+        .filter(key => key === allowedKey)
+        .reduce((obj, key) => {
+            obj[key] = allTimezones[key];
+            return obj;
+        }, {});
+
+    const timezones = cityName !== "" ? { ...filteredData } : { ...allTimezones }
 
     const selectOptions = {
         timezones,
-        labelStyle
+        labelStyle,
     }
 
     return (

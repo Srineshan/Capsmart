@@ -503,10 +503,10 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
                 "id": getSelectedUserDetails(reviewer)?.name?.suffix?.id,
                 "suffix": getSelectedUserDetails(reviewer)?.name?.suffix?.suffix,
               },
-              "workFlowStatus": {
-                "status": "APPROVED"
-              }
             },
+            "workFlowStatus": {
+              "status": "APPROVED"
+            }
           }
         }
       }

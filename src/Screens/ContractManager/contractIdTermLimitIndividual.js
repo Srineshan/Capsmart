@@ -66,6 +66,7 @@ const ContractIdTermLimitIndividual = ({
   getShowAlert,
   isEditable,
   getTabDataStatus,
+  getPriorContractId
 }) => {
   const [calendarStart, setCalendarStart] = useState(false);
   const [calendarEnd, setCalendarEnd] = useState(false);
@@ -93,6 +94,7 @@ const ContractIdTermLimitIndividual = ({
   const [user, setUsers] = useState([]);
   const [sites, setSites] = useState();
   const [selectedSites, setSelectedSites] = useState([]);
+  const [methodFinal, setMethodFinal] = useState(method);
   const [autoRenewal, setAutoRenewal] = useState({
     renewalTerm: "0",
     allowableRenewalTerm: "0",
@@ -128,9 +130,14 @@ const ContractIdTermLimitIndividual = ({
   const [isAggregationNeeded, setIsAggregationNeeded] = useState(true);
   const contractStatus = sessionStorage.getItem("Selected Contract Status");
   const [buttonName, setButtonName] = useState("");
+  const [existingContractId, setExistingContractId] = useState('');
+  const priorContractId = sessionStorage.getItem('priorContractId')
+  const methodFromSession = sessionStorage.getItem('method')
+  const existingContractIdFromSession = sessionStorage.getItem('existingContractId')
 
+  console.log(existingContractId, method, methodFinal, existingContractIdFromSession)
   useEffect(() => {
-    if (method === "PUT" && createdContractId !== "") {
+    if (methodFinal === "PUT" && createdContractId !== "") {
       getContractDetail();
       // getContractUser();
     }
@@ -139,6 +146,25 @@ const ContractIdTermLimitIndividual = ({
     getContractUser();
     getFileData();
   }, []);
+
+  useEffect(() => {
+    if (methodFinal === "POST" && (existingContractId !== "" && existingContractId !== null && createdContractId === "")) {
+      getContractDetailFirstTime(existingContractId);
+      // getContractUser();
+    }
+  }, [existingContractId])
+
+  useEffect(() => {
+    if (methodFromSession !== null && methodFromSession !== '' && methodFromSession !== undefined) {
+      setMethodFinal(methodFromSession)
+    } else {
+      setMethodFinal(method)
+    }
+  }, [methodFromSession])
+
+  useEffect(() => {
+    setExistingContractId(existingContractIdFromSession)
+  }, [existingContractIdFromSession])
 
   useEffect(() => {
     console.log("in useeffect above if", selectedSites, sites);
@@ -297,6 +323,10 @@ const ContractIdTermLimitIndividual = ({
       setSelectedSites(contractDetail?.site?.sites || []);
       setIsAggregationNeeded(contractDetail?.aggregationNeeded);
       setSelectedDepartmentSites(contractDetail?.site?.sites || []);
+      if (contractDetail?.priorContractRefId !== null) {
+        setExistingContractId(contractDetail?.priorContractRefId?.id)
+        getPriorContractId(contractDetail?.priorContractRefId?.id)
+      }
       if (contractDetail?.site?.sites?.length === 0) {
         getSites();
       }
@@ -304,6 +334,7 @@ const ContractIdTermLimitIndividual = ({
   };
 
   const getContractDetailFirstTime = async (id) => {
+    console.log('entered', existingContractId)
     const { data: contractData } = await GET(
       `contract-managment-service/contracts/${id}/contractDetail`
     );
@@ -312,35 +343,39 @@ const ContractIdTermLimitIndividual = ({
       setContractData(contractData?.contractDetail);
       setName(contractData?.contractName?.contractName || "");
       setContractName(contractData?.contractName?.contractName);
-      setContractId({
-        id: contractDetail?.contractId?.id,
-        missing: contractDetail?.contractIdMissing,
-      });
+      if (existingContractId === null) {
+        setContractId({
+          id: contractDetail?.contractId?.id,
+          missing: contractDetail?.contractIdMissing,
+        });
+        setContractTermPeriodFrom(
+          contractDetail?.contractTerm?.startDate !== null
+            ? new Date(contractDetail?.contractTerm?.startDate?.replace("-", "/"))
+            : null
+        );
+        setContractTermPeriodTo(
+          contractDetail?.contractTerm?.endDate !== null
+            ? new Date(contractDetail?.contractTerm?.endDate?.replace("-", "/"))
+            : null
+        );
+        setContractEffectiveDate(
+          contractDetail?.contractTerm?.effectiveDate !== null
+            ? new Date(
+              contractDetail?.contractTerm?.effectiveDate?.replace("-", "/")
+            )
+            : null
+        );
+        setFullyExecutedContract(contractDetail?.fullyExecutedContract);
+        setFullyExecutedContractData(contractDetail?.contractFiles);
+        setFileFields(contractDetail?.contractFiles);
+      }
       setDepartmentSpecific(contractDetail?.departmentSpecificContract);
       setSiteSpecific(contractDetail?.siteSpecificContract);
       setContractTimeCommitment(contractDetail?.timeCommitment || {});
-      setFullyExecutedContract(contractDetail?.fullyExecutedContract);
       setContractPriorId({
-        id: contractDetail?.priorContract?.id,
-        na: contractDetail?.priorContract?.notApplicable,
+        id: (priorContractId !== null || priorContractId !== '') ? priorContractId : contractDetail?.priorContract?.id,
+        na: (priorContractId !== null || priorContractId !== '') ? false : contractDetail?.priorContract?.notApplicable,
       });
-      setContractTermPeriodFrom(
-        contractDetail?.contractTerm?.startDate !== null
-          ? new Date(contractDetail?.contractTerm?.startDate?.replace("-", "/"))
-          : null
-      );
-      setContractTermPeriodTo(
-        contractDetail?.contractTerm?.endDate !== null
-          ? new Date(contractDetail?.contractTerm?.endDate?.replace("-", "/"))
-          : null
-      );
-      setContractEffectiveDate(
-        contractDetail?.contractTerm?.effectiveDate !== null
-          ? new Date(
-            contractDetail?.contractTerm?.effectiveDate?.replace("-", "/")
-          )
-          : null
-      );
       setCompensationPolicy(contractDetail?.compensationPolicy);
       setSelectedContractContinuationPolicy(
         contractDetail?.continuationPolicy?.contractPolicyType
@@ -354,8 +389,6 @@ const ContractIdTermLimitIndividual = ({
       // })
       setSiteSpecific(contractDetail?.siteSpecificContract);
       setDepartmentSpecific(contractDetail?.departmentSpecificContract);
-      setFullyExecutedContractData(contractDetail?.contractFiles);
-      setFileFields(contractDetail?.contractFiles);
       setSelectedSites(contractDetail?.site?.sites || []);
       setSelectedDepartmentSites(contractDetail?.site?.sites || []);
       setIsAggregationNeeded(contractDetail?.aggregationNeeded);
@@ -467,6 +500,8 @@ const ContractIdTermLimitIndividual = ({
     }
   };
 
+  console.log(contractTermPeriodFrom)
+
   const saveInProgresscheck = (buttonType) => {
     var keys = [];
 
@@ -476,7 +511,7 @@ const ContractIdTermLimitIndividual = ({
     if (contractData?.contractManager?.name?.firstName === "") {
       keys.push("Assigned Contract Manager");
     }
-    if (contractTermPeriodFrom === "") {
+    if (contractTermPeriodFrom === null || contractTermPeriodTo === null) {
       keys.push("Contract Term Period");
     }
     if (contractedTimeCommitment?.value === "") {
@@ -577,7 +612,7 @@ const ContractIdTermLimitIndividual = ({
 
     let data = {
       ...(createdContractId !== "" &&
-        method !== "POST" && { id: createdContractId }),
+        methodFinal !== "POST" && { id: createdContractId }),
       contractName: {
         contractName: contractName,
       },
@@ -592,6 +627,9 @@ const ContractIdTermLimitIndividual = ({
           id: contractPriorId?.id,
           notApplicable: contractPriorId?.na,
         },
+        priorContractRefId: existingContractId !== null ? {
+          id: existingContractId
+        } : null,
         contractManager: {
           userID: selectContractManager?.id,
           name: {
@@ -666,9 +704,12 @@ const ContractIdTermLimitIndividual = ({
       newContract: selectedContractType === "New Contract" ? true : false,
     };
 
-    if (method === 'POST' && contractIdFromActive === '') {
+    if (methodFinal === 'POST' && contractIdFromActive === '') {
       await POST('contract-managment-service/contracts/contractDetail', data)
         .then(response => {
+          sessionStorage.removeItem('existingContractId')
+          sessionStorage.removeItem('priorContractId')
+          getPriorContractId(data?.contractDetail?.priorContractRefId !== null ? data?.contractDetail?.priorContractRefId?.id : null)
           getContractId(response?.data);
           getContractDetailFirstTime(response?.data);
           SuccessToaster("Contract Draft Saved Successfully");
@@ -999,7 +1040,7 @@ const ContractIdTermLimitIndividual = ({
   }
 
   const dataCheck = (value) => {
-    console.log("method", method);
+    console.log("method", method, methodFinal);
     if (createdContractId !== "") {
       return valueCheck(value);
     } else {
