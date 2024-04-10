@@ -178,3 +178,8 @@
 .alternativeBackgroundColor {
     background-color: #ebe9fb !important;
 }
+
+.nteGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+}
