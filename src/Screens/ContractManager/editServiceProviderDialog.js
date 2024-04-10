@@ -35,7 +35,9 @@ const EditServiceProvider = ({
   isEditable,
   users,
   showAddressConfirmationDialogWhenSubmit,
-  getShowAddressConfirmationDialogWhenSubmit
+  getShowAddressConfirmationDialogWhenSubmit,
+  isPriorContractDataInuse,
+  priorContractId
 }) => {
   const [selectedContract, setSelectedContract] = useState(
     "Written Contract Extension For Fixed Term"
@@ -141,9 +143,11 @@ const EditServiceProvider = ({
       state: userProviderData?.address?.state || "",
       zipcode: userProviderData?.address?.zipcode || "",
     });
-    let contractData = userProviderData?.contracts
+    let contractData = !isPriorContractDataInuse ? userProviderData?.contracts
       ?.filter((data) => data?.id === contractId)
-      ?.map((data) => data)[0];
+      ?.map((data) => data)[0] : userProviderData?.contracts
+        ?.filter((data) => data?.id === priorContractId)
+        ?.map((data) => data)[0];
     setSiteList(contractData?.sites?.sites ? contractData?.sites?.sites : []);
     setSiteLevel(contractData?.siteLevelResponsible);
     setDepartmentLevel(contractData?.departmentLevelResponsible);
@@ -375,6 +379,7 @@ const EditServiceProvider = ({
         ?.map((data) => data?.name)[0],
     });
   };
+  console.log(sites)
 
   const deptTitleReset = () => {
     let temp = sites;
