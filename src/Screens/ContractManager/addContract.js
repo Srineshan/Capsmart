@@ -110,9 +110,9 @@ const AddContract = ({
               widthValue={400}
             />
           </div>
-          {selectedContract === "Existing Contract" ? (
+          {selectedContract === "Renewal Contract" ? (
             <div className={`${style.positionCenter} ${style.marginTop20}`}>
-              <p className={style.selectLable}>Select the Prior Contract Id</p>
+              <p className={style.selectLable}>Select the Prior Contract</p>
               <CommonSelectField
                 value={selectedPriorContractId || "0"}
                 onChange={(e) => handleExistingContract(e.target.value)}
