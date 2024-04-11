@@ -41,7 +41,7 @@ const AddContract = ({
 
   useEffect(() => {
     getContractTypeList();
-    getActiveContracts();
+    getRenewalContracts();
   }, [])
 
   const getContractTypeList = async () => {
@@ -51,9 +51,12 @@ const AddContract = ({
     setContractTypeList(contractType);
   };
 
-  const getActiveContracts = async () => {
-    const { data: contracts } = await GET(`contract-managment-service/contracts?limit=200&tab=activecontracts`);
-    setActiveContractList(contracts?.contractList);
+  const getRenewalContracts = async () => {
+    const { data: contracts } = await GET(`contract-managment-service/contracts?limit=200&tab=upcomingrenewals`);
+    let temp = [...contracts?.contractList] || [];
+    const { data: expiredContracts } = await GET(`contract-managment-service/contracts?limit=200&tab=expired/terminated`);
+    expiredContracts?.contractList?.map(data => { temp.push(data) })
+    setActiveContractList(temp);
   };
 
   const handleExistingContract = (id) => {
