@@ -475,6 +475,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     // {'data': 'Renew Existing Contract', 'onClick': deleteDraft, 'requiredValue': 'boolean'},
     { 'data': 'Extend Contract', 'onClick': activateContracts, 'requiredValue': 'id' },
     // {'data': 'Terminate Contract', 'onClick': activateContracts, 'requiredValue': 'id'}
+    { 'data': 'Renew Upcoming Contract', 'onClick': handleRenewalContracts, 'requiredValue': 'boolean' }
   ]
 
   const expiredActionsData = [
