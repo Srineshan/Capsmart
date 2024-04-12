@@ -1815,7 +1815,7 @@ const ReportTypeOverview = () => {
                                             <div className={`${style.headerBorderStyle} ${style.marginTop40} `}></div>
                                             {isLoading ? (
                                                 <div>
-                                                    <img src={Loader} alt="Loading" />
+                                                    <img src={Loader} alt="Loading" width={250} />
                                                 </div>
                                             ) : (
                                                 <>
