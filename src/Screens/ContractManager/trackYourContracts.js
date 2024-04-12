@@ -556,7 +556,7 @@ const TrackYourContracts = () => {
                                 <CommonSelectField
                                     value={selectedContractedServiceProvider || ""}
                                     onChange={(e) => setSelectedContractedServiceProvider(e.target.value)}
-                                    firstOptionLabel={trackType === 'timesheetAndInvoiceApprovalsStatusTracker' ? "All Service Providers" : "Select Service Provider"}
+                                    firstOptionLabel={(trackType === 'timesheetAndInvoiceApprovalsStatusTracker' || trackType === 'paymentProcessingStatusTracker ') ? "All Service Providers" : "Select Service Provider"}
                                     firstOptionValue={""}
                                     valueList={contractedServiceProviders?.map(data => data?.id)}
                                     labelList={contractedServiceProviders?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`)}
