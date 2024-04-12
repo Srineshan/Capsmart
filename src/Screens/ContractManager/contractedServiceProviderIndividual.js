@@ -92,6 +92,7 @@ const ContractedServicesProviderIndividual = ({
   const [contractData, setContractData] = useState([]);
   const [userProviderData, setUserProviderData] = useState({});
   const [isUserPresent, setIsUserPresent] = useState(false);
+  const [isPriorContractDataInuse, setPriorContractDataInuse] = useState(false);
   const [siteList, setSiteList] = useState([]);
   const [sites, setSites] = useState([]);
   const [selectedSitesDept, setSelectedSitesDepartment] = useState([]);
@@ -143,9 +144,11 @@ const ContractedServicesProviderIndividual = ({
       setAddress(userProviderData?.address);
       setSelectedRoles(userProviderData?.contracts?.filter(data => data?.id === contractId)?.map(data => data?.roles)[0] || []);
       setContracts(userProviderData?.contracts);
-      let contractData = userProviderData?.contracts
+      let contractData = !isPriorContractDataInuse ? userProviderData?.contracts
         ?.filter((data) => data?.id === contractId)
-        ?.map((data) => data)[0];
+        ?.map((data) => data)[0] : userProviderData?.contracts
+          ?.filter((data) => data?.id === priorContractId)
+          ?.map((data) => data)[0];
       setSiteList(contractData?.sites?.sites ? contractData?.sites?.sites : []);
       setSiteLevel(contractData?.siteLevelResponsible);
       setDepartmentLevel(contractData?.departmentLevelResponsible);
@@ -236,7 +239,9 @@ const ContractedServicesProviderIndividual = ({
     setDepartmentTitleValues(deptValue);
   };
 
-  console.log(showAddressConfirmationDialogWhenSubmit, priorContractId)
+  console.log(showAddressConfirmationDialogWhenSubmit, priorContractId, isUserPresent, userProviderData?.contracts?.filter((data) => data?.id === contractId)
+    ?.map((data) => data)[0], contractId)
+
 
   const getUserData = async () => {
     if (contractId !== "" && contractId !== undefined) {
@@ -254,6 +259,7 @@ const ContractedServicesProviderIndividual = ({
             `user-management-service/user?contractID=${priorContractId}`
           );
           if (priorContractUserData?.length !== 0) {
+            setPriorContractDataInuse(true);
             setShowAddressConfirmationDialogWhenSubmit(true);
             setUserProviderData(priorContractUserData[0]);
             setIsUserPresent(true);

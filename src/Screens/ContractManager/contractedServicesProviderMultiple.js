@@ -17,6 +17,7 @@ const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newSe
   const [providerDataStatus, setProviderDataStatus] = useState([]);
   const [tabValidation, setTabValidation] = useState();
   const [showAddressConfirmationDialogWhenSubmit, setShowAddressConfirmationDialogWhenSubmit] = useState(false);
+  const [isPriorContractDataInuse, setPriorContractDataInuse] = useState(false);
 
   console.log(priorContractId)
 
@@ -46,6 +47,7 @@ const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newSe
     if (contractId !== '') {
       const { data: userData } = await GET(`user-management-service/user?contractID=${contractID}`);
       if (userData?.length === 0 && priorContractId !== undefined) {
+        setPriorContractDataInuse(true);
         setShowAddressConfirmationDialogWhenSubmit(true)
         const { data: priorContractUserData } = await GET(`user-management-service/user?contractID=${priorContractId}`);
         if (priorContractUserData) {
@@ -178,7 +180,7 @@ const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newSe
         </div>
       }
       {editServiceProviderDialog && (
-        <EditServiceProvider getEditServiceDialog={getEditServiceDialog} userProviderData={userProviderData} contractId={contractId} isEditable={isEditable} users={users} showAddressConfirmationDialogWhenSubmit={showAddressConfirmationDialogWhenSubmit} getShowAddressConfirmationDialogWhenSubmit={getShowAddressConfirmationDialogWhenSubmit} />
+        <EditServiceProvider getEditServiceDialog={getEditServiceDialog} userProviderData={userProviderData} contractId={contractId} isEditable={isEditable} users={users} showAddressConfirmationDialogWhenSubmit={showAddressConfirmationDialogWhenSubmit} getShowAddressConfirmationDialogWhenSubmit={getShowAddressConfirmationDialogWhenSubmit} isPriorContractDataInuse={isPriorContractDataInuse} priorContractId={priorContractId} />
       )}
     </div>
   )

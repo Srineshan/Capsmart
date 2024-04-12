@@ -475,6 +475,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     // {'data': 'Renew Existing Contract', 'onClick': deleteDraft, 'requiredValue': 'boolean'},
     { 'data': 'Extend Contract', 'onClick': activateContracts, 'requiredValue': 'id' },
     // {'data': 'Terminate Contract', 'onClick': activateContracts, 'requiredValue': 'id'}
+    { 'data': 'Renew Upcoming Contract', 'onClick': handleRenewalContracts, 'requiredValue': 'boolean' }
   ]
 
   const expiredActionsData = [
@@ -528,11 +529,11 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
                   </>
                 ) : selectedContract === 'upcomingrenewals' ? (
                   <>
-                    <button className={style.myActiveContractsButton} >Upcoming Renewals ( - )</button>
+                    <button className={style.myActiveContractsButton} >Upcoming Renewals ({metadata?.upcomingRenewalsContract?.upcomingRenewalsCount})</button>
                   </>
                 ) : (
                   <>
-                    <button className={style.myActiveContractsButton} >Expired / Terminated ( - )</button>
+                    <button className={style.myActiveContractsButton} >Expired / Terminated ({metadata?.expiredOrTerminatedContract?.expiredOrTerminatedContractCount})</button>
                   </>
                 )}
               </div>

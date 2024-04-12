@@ -134,6 +134,7 @@ const ContractIdTermLimitIndividual = ({
   const priorContractId = sessionStorage.getItem('priorContractId')
   const methodFromSession = sessionStorage.getItem('method')
   const existingContractIdFromSession = sessionStorage.getItem('existingContractId')
+  const [isPreviousContractDataInUse, setIsPreviousContractDataInUse] = useState(false);
 
   console.log(existingContractId, method, methodFinal, existingContractIdFromSession)
   useEffect(() => {
@@ -148,7 +149,8 @@ const ContractIdTermLimitIndividual = ({
   }, []);
 
   useEffect(() => {
-    if (methodFinal === "POST" && (existingContractId !== "" && existingContractId !== null)) {
+    if (methodFinal === "POST" && (existingContractId !== "" && existingContractId !== null && createdContractId === "")) {
+      setIsPreviousContractDataInUse(true)
       getContractDetailFirstTime(existingContractId);
       // getContractUser();
     }
@@ -1079,12 +1081,12 @@ const ContractIdTermLimitIndividual = ({
         </div>
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <CommonLabel
-            value="Contract ID / Resolution No*"
+            value={isPreviousContractDataInUse ? "Renewal Contract ID / Resolution No*" : "Contract ID / Resolution No*"}
             className={dataCheck(contractId?.id) && contractId.missing === false ? style.redLable : ""}
           />
           <div className={style.displayInRow}>
             <CommonInputField
-              placeholder="Contract ID / Resolution No"
+              placeholder={isPreviousContractDataInUse ? "Renewal Contract ID / Resolution No" : "Contract ID / Resolution No"}
               value={contractId.id}
               disabled={contractId.missing}
               maxLength={TEXTFIELDLEN}
@@ -1130,7 +1132,7 @@ const ContractIdTermLimitIndividual = ({
                 className={style.selectFieldWidth}
                 maxLength={TEXTFIELDLEN}
                 inputProps={{
-                  disabled: contractStatus === "ACTIVE" ? true : false,
+                  disabled: isPreviousContractDataInUse ? true : contractStatus === "ACTIVE" ? true : false,
                 }}
                 onChange={(e) =>
                   setContractPriorId({ ...contractPriorId, id: e.target.value })
@@ -1138,19 +1140,21 @@ const ContractIdTermLimitIndividual = ({
                 placeholder="Search by CID / Name"
                 value={contractPriorId?.id}
               />
-              <CommonCheckBox
-                label="NA"
-                checked={contractPriorId.na}
-                onChange={(e) =>
-                  setContractPriorId({
-                    ...contractPriorId,
-                    id: "",
-                    na: e.target.checked,
-                  })
-                }
-                className={` ${style.marginLeft20}`}
-                disabled={contractStatus === "DRAFT" ? false : true}
-              />
+              {!isPreviousContractDataInUse && (
+                <CommonCheckBox
+                  label="NA"
+                  checked={contractPriorId.na}
+                  onChange={(e) =>
+                    setContractPriorId({
+                      ...contractPriorId,
+                      id: "",
+                      na: e.target.checked,
+                    })
+                  }
+                  className={` ${style.marginLeft20}`}
+                  disabled={contractStatus === "DRAFT" ? false : true}
+                />
+              )}
             </div>
           </div>
         )}
