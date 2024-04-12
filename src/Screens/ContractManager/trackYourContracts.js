@@ -80,23 +80,23 @@ const TrackYourContracts = () => {
 
     const getColumns = (data, index) => {
         let tempCol = [
-            { field: 'service', headerName: '', width: 280 },
+            { field: 'service', headerName: '', width: 280, align: 'center' },
             {
-                field: 'hourlyRate', headerName: 'Pro-Rata Hourly Rate', width: 140,
+                field: 'hourlyRate', headerName: 'Pro-Rata Hourly Rate', width: 140, align: 'center',
                 renderCell: (params) => {
                     return dollarFormatter(params.value?.toLocaleString());
                 }
             },
-            { field: 'cyExpectedHours', headerName: 'Hours', width: 140 },
+            { field: 'cyExpectedHours', headerName: 'Hours', width: 140, align: 'center' },
             {
-                field: 'cyExpectedAmount', headerName: '$$', width: 140,
+                field: 'cyExpectedAmount', headerName: '$$', width: 140, align: 'center',
                 renderCell: (params) => {
                     return dollarFormatter(params.value?.toLocaleString());
                 }
             },
-            { field: 'cymExpectedHours', headerName: 'Hours', width: 140 },
+            { field: 'cymExpectedHours', headerName: 'Hours', width: 140, align: 'center' },
             {
-                field: 'cymExpectedAmount', headerName: '$$', width: 140,
+                field: 'cymExpectedAmount', headerName: '$$', width: 140, align: 'center',
                 renderCell: (params) => {
                     return dollarFormatter(params.value?.toLocaleString());
                 }
@@ -105,9 +105,9 @@ const TrackYourContracts = () => {
 
         // contractTrackCompensationValues?.map((data, index) => {
         data?.timesheetActivitiesWithActualValuesList?.map((actualValue, actualIndex) => {
-            tempCol.push({ field: `cy${index + 1}m${actualIndex + 1}ActualHours`, headerName: `Hours`, width: 140 })
+            tempCol.push({ field: `cy${index + 1}m${actualIndex + 1}ActualHours`, headerName: `Hours`, width: 140, align: 'center' })
             tempCol.push({
-                field: `cy${index + 1}m${actualIndex + 1}ActualAmount`, headerName: `$$`, width: 140,
+                field: `cy${index + 1}m${actualIndex + 1}ActualAmount`, headerName: `$$`, width: 140, align: 'center',
                 renderCell: (params) => {
                     return dollarFormatter(params.value?.toLocaleString());
                 }
@@ -180,6 +180,7 @@ const TrackYourContracts = () => {
                     groupId: `Expected Monthly (${contractTrackCompensationValues?.[0]?.contractYearInterval !== null ? format(new Date(contractTrackCompensationValues?.[0]?.contractYearInterval?.startDate), 'yyyy') : '-'})`,
                     description: '',
                     children: [{ field: 'cymExpectedHours' }, { field: 'cymExpectedAmount' }],
+
                 },
             ];
             // contractTrackCompensationValues?.map((data, index) => {
@@ -556,7 +557,7 @@ const TrackYourContracts = () => {
                                 <CommonSelectField
                                     value={selectedContractedServiceProvider || ""}
                                     onChange={(e) => setSelectedContractedServiceProvider(e.target.value)}
-                                    firstOptionLabel={trackType === 'timesheetAndInvoiceApprovalsStatusTracker' ? "All Service Providers" : "Select Service Provider"}
+                                    firstOptionLabel={(trackType === 'timesheetAndInvoiceApprovalsStatusTracker' || trackType === 'paymentProcessingStatusTracker') ? "All Service Providers" : "Select Service Provider"}
                                     firstOptionValue={""}
                                     valueList={contractedServiceProviders?.map(data => data?.id)}
                                     labelList={contractedServiceProviders?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`)}
@@ -608,11 +609,15 @@ const TrackYourContracts = () => {
                                                 hideFooterPagination={true}
                                                 sx={{
                                                     "& .MuiDataGrid-withBorderColor": {
-                                                        borderColor: '#646D82'
+                                                        borderColor: '#646D82',
+                                                        borderWidth: '2px'
                                                     },
                                                     "& .MuiDataGrid-toolbarContainer": {
-                                                        borderBottom: "1px solid #646D82"
-                                                    }
+                                                        borderBottom: "2px solid #646D82",
+                                                    },
+                                                    // "& .MuiDataGrid-cell--textCenter": {
+                                                    //     borderLeft: "2px solid #646D82",
+                                                    // }
                                                 }}
                                                 experimentalFeatures={{ columnGrouping: true }}
                                                 className={`${style.whiteBackground} ${style.muiDataGridWithBorderColor}`}
@@ -624,6 +629,7 @@ const TrackYourContracts = () => {
                                                 showColumnVerticalBorder={true}
                                                 rowHeight={35}
                                                 columnHeaderHeight={35}
+                                                disableRowSelectionOnClick
                                             />
                                         </div>
                                     )) : (
