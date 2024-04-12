@@ -67,7 +67,8 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         multiProviderContractsList: 'Multi Provider Contracts List',
         contractsWithABusinessEntity: 'Contracts With A Business Entity',
         currentRemitToAddressForActiveContracts: 'Current Remit To Address For Active Contracts',
-        activityStatusTracker: `Status Of Activities/ Services By Service Provider For ${format(new Date(), 'MMMM yyyy')}`
+        activityStatusTracker: `Status Of Activities/ Services By Service Provider For ${format(new Date(), 'MMMM yyyy')}`,
+        paymentProcessingStatusTracker: 'Payment Processing Status By Service Provider'
     }
 
     const getSaveReportDialog = (value) => {
