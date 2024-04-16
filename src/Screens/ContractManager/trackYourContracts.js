@@ -9,7 +9,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
-import { differenceInCalendarDays, format } from 'date-fns';
+import { differenceInCalendarDays, endOfMonth, format, startOfMonth } from 'date-fns';
 import Select from '@mui/material/Select';
 import { DataGrid, GridToolbarContainer, GridToolbarExport } from '@mui/x-data-grid';
 import 'react-data-grid/lib/styles.css';
@@ -240,7 +240,7 @@ const TrackYourContracts = () => {
             getContractTrackValues()
         }
         if (trackType === 'timesheetAndInvoiceApprovalsStatusTracker' || trackType === "paymentProcessingStatusTracker") {
-            setSelectedTimesheetInterval(selectedContractedServiceProvider !== '' && trackType === "timesheetAndInvoiceApprovalsStatusTracker" ? [defaultOption] : [`${timesheetIntervals?.[0]?.startDate}%23${timesheetIntervals?.[0]?.endDate}`])
+            setSelectedTimesheetInterval(selectedContractedServiceProvider !== '' && trackType === "timesheetAndInvoiceApprovalsStatusTracker" ? [defaultOption] : [`${format(startOfMonth(new Date()), 'yyyy-MM-dd')}%23${format(endOfMonth(new Date()), 'yyyy-MM-dd')}`])
         }
     }, [selectedContractedServiceProvider])
 
@@ -326,7 +326,7 @@ const TrackYourContracts = () => {
         if (data?.length !== 0) {
             setTimesheetIntervalsStartDate(data?.[0]?.startDate)
             setTimesheetIntervalsEndDate(data?.[0]?.endDate)
-            setSelectedTimesheetInterval(selectedContractedServiceProvider !== '' && trackType === "timesheetAndInvoiceApprovalsStatusTracker" ? [defaultOption] : [`${data?.[0]?.startDate}%23${data?.[0]?.endDate}`])
+            setSelectedTimesheetInterval(selectedContractedServiceProvider !== '' && trackType === "timesheetAndInvoiceApprovalsStatusTracker" ? [defaultOption] : [`${format(startOfMonth(new Date()), 'yyyy-MM-dd')}%23${format(endOfMonth(new Date()), 'yyyy-MM-dd')}`])
         }
     }
 
@@ -506,7 +506,7 @@ const TrackYourContracts = () => {
         if (selectedPaymentTab === "Approval Pending") {
             paymentTrackerTableValues.push({
                 interval: paymentTrackValues?.approvalPending?.map(data => data?.interval !== null ? `${format(new Date(data?.interval?.startDate), 'MMM dd, yyyy')} - ${format(new Date(data?.interval?.endDate), 'MMM dd, yyyy')}` : '-'),
-                timesheetName: paymentTrackValues?.approvalPending?.map(data => data?.timesheetLabel !== null ? data?.timesheetLabel?.label : '-'),
+                timesheetName: paymentTrackValues?.approvalPending?.map(data => data?.timesheetLabel !== null ? data?.timesheetLabel?.label : 'Timesheet Not Entered'),
                 timesheetContractName: paymentTrackValues?.approvalPending?.map(data => data?.contractName?.contractName),
                 approvalBy: paymentTrackValues?.approvalPending?.map(data => data?.approvedBy !== null ? data?.approvedBy?.name?.name : '-'),
                 approvalDate: paymentTrackValues?.approvalPending?.map(data => data?.approvedDate !== null ? format(new Date(data?.approvedDate), 'MMM dd, yyyy') : '-'),
@@ -515,7 +515,7 @@ const TrackYourContracts = () => {
         } else if (selectedPaymentTab === "Payment Processed") {
             paymentTrackerTableValues.push({
                 interval: paymentTrackValues?.paymentProcessed?.map(data => data?.interval !== null ? `${format(new Date(data?.interval?.startDate), 'MMM dd, yyyy')} - ${format(new Date(data?.interval?.endDate), 'MMM dd, yyyy')}` : '-'),
-                timesheetName: paymentTrackValues?.paymentProcessed?.map(data => data?.timesheetLabel !== null ? data?.timesheetLabel?.label : '-'),
+                timesheetName: paymentTrackValues?.paymentProcessed?.map(data => data?.timesheetLabel !== null ? data?.timesheetLabel?.label : 'Timesheet Not Entered'),
                 timesheetContractName: paymentTrackValues?.paymentProcessed?.map(data => data?.contractName?.contractName),
                 approvalBy: paymentTrackValues?.paymentProcessed?.map(data => data?.approvedBy !== null ? data?.approvedBy?.name?.name : '-'),
                 approvalDate: paymentTrackValues?.paymentProcessed?.map(data => data?.approvedDate !== null ? format(new Date(data?.approvedDate), 'MMM dd, yyyy') : '-'),
@@ -527,7 +527,7 @@ const TrackYourContracts = () => {
         } else if (selectedPaymentTab === "Submission Pending") {
             paymentTrackerTableValues.push({
                 interval: paymentTrackValues?.submissionPending?.map(data => data?.interval !== null ? `${format(new Date(data?.interval?.startDate), 'MMM dd, yyyy')} - ${format(new Date(data?.interval?.endDate), 'MMM dd, yyyy')}` : '-'),
-                timesheetName: paymentTrackValues?.submissionPending?.map(data => data?.timesheetLabel !== null ? data?.timesheetLabel?.label : '-'),
+                timesheetName: paymentTrackValues?.submissionPending?.map(data => data?.timesheetLabel !== null ? data?.timesheetLabel?.label : 'Timesheet Not Entered'),
                 timesheetContractName: paymentTrackValues?.submissionPending?.map(data => data?.contractName?.contractName),
 
                 order: ['timesheetContractName', 'timesheetName', 'interval']
@@ -535,7 +535,7 @@ const TrackYourContracts = () => {
         } else if (selectedPaymentTab === "Payment Pending") {
             paymentTrackerTableValues.push({
                 interval: paymentTrackValues?.paymentPending?.map(data => data?.interval !== null ? `${format(new Date(data?.interval?.startDate), 'MMM dd, yyyy')} - ${format(new Date(data?.interval?.endDate), 'MMM dd, yyyy')}` : '-'),
-                timesheetName: paymentTrackValues?.paymentPending?.map(data => data?.timesheetLabel !== null ? data?.timesheetLabel?.label : '-'),
+                timesheetName: paymentTrackValues?.paymentPending?.map(data => data?.timesheetLabel !== null ? data?.timesheetLabel?.label : 'Timesheet Not Entered'),
                 timesheetContractName: paymentTrackValues?.paymentPending?.map(data => data?.contractName?.contractName),
                 approvalBy: paymentTrackValues?.paymentPending?.map(data => data?.approvedBy !== null ? data?.approvedBy?.name?.name : '-'),
                 approvalDate: paymentTrackValues?.paymentPending?.map(data => data?.approvedDate !== null ? format(new Date(data?.approvedDate), 'MMM dd, yyyy') : '-'),
