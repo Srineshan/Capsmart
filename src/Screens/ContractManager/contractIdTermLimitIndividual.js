@@ -262,7 +262,7 @@ const ContractIdTermLimitIndividual = ({
 
   const getContractTabsMetadata = async () => {
     const { data: contractTabsMetadata } = await GET(
-      `contract-managment-service/contracts/${createdContractId}/contractTabsMetadata`
+      `contract-managment-service/contracts/${createdContractId}/contractTabsMetaData`
     );
   }
 
@@ -292,17 +292,17 @@ const ContractIdTermLimitIndividual = ({
         na: contractDetail?.priorContract?.notApplicable,
       });
       setContractTermPeriodFrom(
-        contractDetail?.contractTerm?.startDate !== null
+        (contractDetail?.contractTerm !== null && contractDetail?.contractTerm?.startDate !== null)
           ? new Date(contractDetail?.contractTerm?.startDate?.replace("-", "/"))
           : null
       );
       setContractTermPeriodTo(
-        contractDetail?.contractTerm?.endDate !== null
+        (contractDetail?.contractTerm !== null && contractDetail?.contractTerm?.endDate !== null)
           ? new Date(contractDetail?.contractTerm?.endDate?.replace("-", "/"))
           : null
       );
       setContractEffectiveDate(
-        contractDetail?.contractTerm?.effectiveDate !== null
+        (contractDetail?.contractTerm !== null && contractDetail?.contractTerm?.effectiveDate !== null)
           ? new Date(
             contractDetail?.contractTerm?.effectiveDate?.replace("-", "/")
           )
@@ -349,6 +349,7 @@ const ContractIdTermLimitIndividual = ({
     );
     if (contractData) {
       let contractDetail = contractData?.contractDetail;
+      console.log(contractDetail)
       setContractData(contractData?.contractDetail);
       setName(contractData?.contractName?.contractName || "");
       setContractName(contractData?.contractName?.contractName);
@@ -358,17 +359,17 @@ const ContractIdTermLimitIndividual = ({
           missing: contractDetail?.contractIdMissing,
         });
         setContractTermPeriodFrom(
-          contractDetail?.contractTerm?.startDate !== null
+          (contractDetail?.contractTerm !== null && contractDetail?.contractTerm?.startDate !== null)
             ? new Date(contractDetail?.contractTerm?.startDate?.replace("-", "/"))
             : null
         );
         setContractTermPeriodTo(
-          contractDetail?.contractTerm?.endDate !== null
+          (contractDetail?.contractTerm !== null && contractDetail?.contractTerm?.endDate !== null)
             ? new Date(contractDetail?.contractTerm?.endDate?.replace("-", "/"))
             : null
         );
         setContractEffectiveDate(
-          contractDetail?.contractTerm?.effectiveDate !== null
+          (contractDetail?.contractTerm !== null && contractDetail?.contractTerm?.effectiveDate !== null)
             ? new Date(
               contractDetail?.contractTerm?.effectiveDate?.replace("-", "/")
             )
