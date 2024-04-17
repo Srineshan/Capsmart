@@ -59,6 +59,7 @@ const TrackTable = ({ heading, columnHeading, tableHead, tableHeadTop, tableHead
         adminActivity: 'Admin Activity',
         clinicalInformaticsActivity: 'Clinical Informatics Activity'
     }
+    console.log(tableData)
     return (
         <div className={`${style.trackTable} ${style.marginTop20}`}>
             {header && (
@@ -191,7 +192,7 @@ const TrackTable = ({ heading, columnHeading, tableHead, tableHeadTop, tableHead
                 tableData?.[0][Object.keys(tableData?.[0])?.[0]]?.map((data, index) => (
                     <div className={`${dataGrid} ${style.tableBodyStyle}  ${index % 2 === 0 && style.alternativeBackgroundColor}`} key={index}>
                         {tableData?.[0]?.order?.map((innerData, innerIndex) => (
-                            <div className={`${style.tableDataNormalTextStyle} ${style.padding} ${style.textAlignCenter} ${tableData?.[0]?.order?.length - 1 !== innerIndex ? style.dividerRight : ''}`}>{tableData?.[0]?.[innerData][index]}</div>
+                            <div className={`${style.tableDataNormalTextStyle} ${style.padding} ${tableData?.[0]?.order?.length - 1 !== innerIndex ? style.dividerRight : ''} ${tableData?.[0]?.[innerData][index] === "Timesheet Not Entered" ? style.redLabel : ''} ${innerData === 'interval' ? style.textAlignCenter : ''}`}>{tableData?.[0]?.[innerData][index]}</div>
                         ))}
                     </div>
                 ))

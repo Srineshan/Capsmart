@@ -124,7 +124,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         const { data: data } = await GET(`timesheet-management-service/timesheet/timesheetIntervals`);
         setTimesheetIntervals(data);
         if (data?.length !== 0) {
-            setSelectedTimesheetInterval(selectedContractedServiceProvider !== '' && reportType !== "paymentProcessingStatusTracker" ? [defaultOption] : [`${data?.[0]?.startDate}%23${data?.[0]?.endDate}`])
+            setSelectedTimesheetInterval(selectedContractedServiceProvider !== '' && reportType !== "paymentProcessingStatusTracker" ? [defaultOption] : [`${format(startOfMonth(new Date()), 'yyyy-MM-dd')}%23${format(endOfMonth(new Date()), 'yyyy-MM-dd')}`])
         }
     }
 
