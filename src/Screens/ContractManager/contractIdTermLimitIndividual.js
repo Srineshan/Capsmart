@@ -146,6 +146,7 @@ const ContractIdTermLimitIndividual = ({
     getSites();
     getContractUser();
     getFileData();
+    getContractTabsMetadata()
   }, []);
 
   useEffect(() => {
@@ -258,6 +259,12 @@ const ContractIdTermLimitIndividual = ({
   };
 
   console.log("contract Users", contractUsers);
+
+  const getContractTabsMetadata = async () => {
+    const { data: contractTabsMetadata } = await GET(
+      `contract-managment-service/contracts/${createdContractId}/contractTabsMetadata`
+    );
+  }
 
   const getContractDetail = async () => {
     const { data: contractData } = await GET(

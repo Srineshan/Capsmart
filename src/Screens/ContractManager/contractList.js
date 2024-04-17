@@ -199,16 +199,27 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     sessionStorage.setItem('Selected Contract Status', data?.contractStatus)
   }
 
-  const handleRenewalContracts = (data) => {
-    getNewContract(true);
-    getContractType(data?.contractTypeId?.id, data?.contractType);
-    getSelectedContractType('Existing Contract');
-    console.log(data, 'contract data')
-    sessionStorage.setItem('Selected Contract Status', "DRAFT")
-    sessionStorage.setItem('contractType', data?.contractType)
-    sessionStorage.setItem('existingContractId', data?.id)
-    sessionStorage.setItem('priorContractId', data?.contractDetail?.contractId?.id)
-    sessionStorage.setItem('method', 'POST')
+  const handleRenewalContracts = async (data) => {
+    // getNewContract(true);
+    // getContractType(data?.contractTypeId?.id, data?.contractType);
+    // getSelectedContractType('Existing Contract');
+    // console.log(data, 'contract data')
+    // sessionStorage.setItem('Selected Contract Status', "DRAFT")
+    // sessionStorage.setItem('contractType', data?.contractType)
+    // sessionStorage.setItem('existingContractId', data?.id)
+    // sessionStorage.setItem('priorContractId', data?.contractDetail?.contractId?.id)
+    // sessionStorage.setItem('method', 'POST')
+    if (!data?.contractDetail?.contractRenewed) {
+      const { data: userData } = await GET(
+        `contract-managment-service/contracts/${data?.id}/renewContract`
+      )
+
+      if (userData) {
+        SuccessToaster('Contract Renewed Successfully');
+      } else { ErrorToaster('Contract Renewal Failed'); };
+    } else {
+      ErrorToaster('Contract Already Renewed');
+    }
   }
 
   const handleDownloadClicked = () => {
@@ -290,7 +301,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
       name.push(data?.contractName?.contractName);
       contractors.push(contractorList?.length || '-');
       contractorsIcon.push(contractorList?.length > 1 ? <GroupOutlinedIcon style={{ fontSize: 20, color: '#857AEF' }} /> : contractorList?.length === 0 ? '' : <PersonOutlinedIcon style={{ fontSize: 20, color: '#857AEF' }} />);
-      effectiveDate.push(format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy'));
+      effectiveDate.push(data?.contractDetail?.contractTerm !== null ? format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy') : '-');
       // podStatus.push("3");
       manager.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
       lastUpdated.push(format(new Date(data?.lastModifiedDate), 'MM-dd-yyyy'))
@@ -342,7 +353,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
       activationStatus.push(data?.contractStatus === 'ACTIVATION_READY' ? 'Activation pending' : 'Not Activated');
       icon.push(<TextSnippetOutlinedIcon style={{ color: (data?.contractDetail?.contractFiles?.length === 0 || data?.contractDetail?.contractFiles === null) ? '#F94848' : '#14B15A' }} />);
       iconHoverText.push((data?.contractDetail?.contractFiles?.length === 0 || data?.contractDetail?.contractFiles === null) ? 'No Document Uploaded' : 'Document Uploaded');
-      effectiveDate.push(format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy'));
+      effectiveDate.push(data?.contractDetail?.contractTerm !== null ? format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy') : '-');
       manager.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
       lastUpdated.push(format(new Date(data?.lastModifiedDate), 'MM-dd-yyyy'))
       lastUpdatedBy.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
