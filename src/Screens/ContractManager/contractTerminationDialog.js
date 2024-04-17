@@ -241,8 +241,12 @@ const ContractTermination = ({ getTerminationDialog, contracts, contractId, getC
                 <div className={`${style.threeFieldWidth} ${!writtenNoticeServed && style.disabledOpacity}`}>
                   <div className={style.helperText}>Notice Period</div>
                   <TextField
+                    type="number"
                     disabled={!writtenNoticeServed}
                     size="small"
+                    onInput={e => {
+                      e.target.value = Math.max(0, parseInt(e.target.value)).toString().slice(0, 3);
+                    }}
                     InputProps={{
                       endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Days</InputAdornment>,
                     }}
@@ -251,8 +255,12 @@ const ContractTermination = ({ getTerminationDialog, contracts, contractId, getC
                 <div className={`${style.threeFieldWidth} ${style.marginLeft20} ${!writtenNoticeServed && style.disabledOpacity}`}>
                   <div className={style.helperText}>Cure Period</div>
                   <TextField
+                    type="number"
                     disabled={!writtenNoticeServed}
                     size="small"
+                    onInput={e => {
+                      e.target.value = Math.max(0, parseInt(e.target.value)).toString().slice(0, 3);
+                    }}
                     InputProps={{
                       endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Days</InputAdornment>,
                     }}
