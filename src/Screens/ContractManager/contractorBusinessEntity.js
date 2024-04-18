@@ -34,7 +34,8 @@ const ContractorBusinessEntity = ({
   getShowAlert,
   isEditable,
   getTabDataStatus,
-  priorContractId
+  priorContractId,
+  getShowPrevContractDataAlert
 }) => {
   const [isUserUpdated, setIsUserUpdated] = useState(false);
   const [userCount, setUserCount] = useState(0);
@@ -92,14 +93,33 @@ const ContractorBusinessEntity = ({
   const [buttonName, setButtonName] = useState("");
   const contractStatus = sessionStorage.getItem("Selected Contract Status");
   const [showAddressConfirmation, setShowAddressConfirmation] = useState(false);
+  const [contractTabsMetaData, setContractTabsMetaData] = useState();
   const [showAddressConfirmationDialogWhenSubmit, setShowAddressConfirmationDialogWhenSubmit] = useState(false);
   useEffect(() => {
     getUserData();
+    getContractTabsMetadata()
   }, []);
 
   // useEffect(() => {
   //   getContractorData();
   // }, [sameAsContractor])
+
+  const getContractTabsMetadata = async () => {
+    const { data: contractTabsMetaData } = await GET(
+      `contract-managment-service/contracts/${contractId}/contractTabsMetaData`
+    );
+    setContractTabsMetaData(contractTabsMetaData)
+    getShowPrevContractDataAlert(contractTabsMetaData?.contractorBusinessEntityUpdated)
+  }
+
+  const updateContractTabsMetaData = async () => {
+    console.log('entered', contractTabsMetaData)
+    if (!contractTabsMetaData?.contractorBusinessEntityUpdated) {
+      let data = contractTabsMetaData;
+      data.contractorBusinessEntityUpdated = true;
+      await PUT(`contract-managment-service/contracts/${contractId}/contractTabsMetaData`, data)
+    }
+  }
 
   const getUserData = async () => {
     setIsLoading(true);
@@ -385,12 +405,12 @@ const ContractorBusinessEntity = ({
       JSON.stringify(data)
     );
     if (response) {
+      updateContractTabsMetaData();
       SuccessToaster("Business Entity Updated Successfully");
     } else {
       ErrorToaster("Unexpected Error");
     }
     setContinueLoading(false);
-
     if (buttonText === "Continue") {
       getViewPage5(true);
       getCurrentPage("Contracted Services Specification");
@@ -398,7 +418,6 @@ const ContractorBusinessEntity = ({
       getShowAlert(true);
     }
     setUnassignedKeys([]);
-
     getTabDataStatus();
     // }
   };

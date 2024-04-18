@@ -14,7 +14,7 @@ import AddServiceProvided from './addServiceToBeProvided';
 import { CLINIC, SURGERY, ONCALL, SUPPLEMENTAL, ADDON, ADMINISTRATIVE, PROCEDUREREADING } from '../../Constants';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
-const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPage, selectContractInfo, isMultiSiteEntity, isEditable, getTabDataStatus }) => {
+const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPage, selectContractInfo, isMultiSiteEntity, isEditable, getTabDataStatus, getShowPrevContractDataAlert }) => {
   const [addService, setAddService] = useState(false);
   const [editService, setEditService] = useState(false);
   const [addOn, setAddOn] = useState(false);
@@ -29,6 +29,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
   const [servicesValid, setServicesValid] = useState([]);
   const [serviceToDelete, setServiceToDelete] = useState('');
   const contractStatus = sessionStorage.getItem('Selected Contract Status');
+  const [contractTabsMetaData, setContractTabsMetaData] = useState();
 
   let tableHeaderValues = selectContractInfo === 'INDIVIDUAL' ? ['', 'ACTIVITY TYPE', 'SPECIFIC ACTIVITY', 'BILLABLE', ''] : ['', 'ACTIVITY TYPE', 'SPECIFIC ACTIVITY', 'APPLIES TO', 'BILLABLE', ''];
 
@@ -39,6 +40,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
   useEffect(() => {
     getUserData();
     getDataStatus();
+    getContractTabsMetadata();
   }, [])
 
   useEffect(() => {
@@ -69,6 +71,22 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
   const getAddOn = (value) => {
     setAddOn(value);
     getAddon(value);
+  }
+
+  const getContractTabsMetadata = async () => {
+    const { data: contractTabsMetaData } = await GET(
+      `contract-managment-service/contracts/${contractId}/contractTabsMetaData`
+    );
+    setContractTabsMetaData(contractTabsMetaData)
+    getShowPrevContractDataAlert(contractTabsMetaData?.contractedServicesUpdated)
+  }
+
+  const updateContractTabsMetaData = async () => {
+    if (!contractTabsMetaData?.contractedServicesUpdated) {
+      let data = contractTabsMetaData;
+      data.contractedServicesUpdated = true;
+      await PUT(`contract-managment-service/contracts/${contractId}/contractTabsMetaData`, data)
+    }
   }
 
   const getContractedServices = async () => {
@@ -251,7 +269,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
             <div className={`${style.spaceBetween} ${style.marginTop20}`}>
               <button className={`${style.newContractButtonStyle}  ${style.cursorPointer}`} onClick={() => { getCurrentPage('Contractor Business Entity') }}>BACK</button>
               <div>
-                <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20}`} onClick={() => { getViewPage6(true); getCurrentPage('Timesheet Submission Terms'); }}>CONTINUE</button>
+                <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20}`} onClick={() => { updateContractTabsMetaData(); getViewPage6(true); getCurrentPage('Timesheet Submission Terms'); }}>CONTINUE</button>
               </div>
             </div>
           }

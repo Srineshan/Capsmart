@@ -66,7 +66,8 @@ const ContractIdTermLimitIndividual = ({
   getShowAlert,
   isEditable,
   getTabDataStatus,
-  getPriorContractId
+  getPriorContractId,
+  getShowPrevContractDataAlert
 }) => {
   const [calendarStart, setCalendarStart] = useState(false);
   const [calendarEnd, setCalendarEnd] = useState(false);
@@ -135,6 +136,7 @@ const ContractIdTermLimitIndividual = ({
   const methodFromSession = sessionStorage.getItem('method')
   const existingContractIdFromSession = sessionStorage.getItem('existingContractId')
   const [isPreviousContractDataInUse, setIsPreviousContractDataInUse] = useState(false);
+  const [contractTabsMetaData, setContractTabsMetaData] = useState();
 
   console.log(existingContractId, method, methodFinal, existingContractIdFromSession)
   useEffect(() => {
@@ -261,9 +263,19 @@ const ContractIdTermLimitIndividual = ({
   console.log("contract Users", contractUsers);
 
   const getContractTabsMetadata = async () => {
-    const { data: contractTabsMetadata } = await GET(
+    const { data: contractTabsMetaData } = await GET(
       `contract-managment-service/contracts/${createdContractId}/contractTabsMetaData`
     );
+    setContractTabsMetaData(contractTabsMetaData)
+    getShowPrevContractDataAlert(contractTabsMetaData?.contractDetailsUpdated)
+  }
+
+  const updateContractTabsMetaData = async () => {
+    if (!contractTabsMetaData?.contractDetailsUpdated) {
+      let data = contractTabsMetaData;
+      data.contractDetailsUpdated = true;
+      await PUT(`contract-managment-service/contracts/${createdContractId}/contractTabsMetaData`, data)
+    }
   }
 
   const getContractDetail = async () => {
@@ -768,6 +780,7 @@ const ContractIdTermLimitIndividual = ({
           ErrorToaster("Unexpected Error");
         });
     }
+    updateContractTabsMetaData();
     getTabDataStatus();
     // }
   };
@@ -1415,6 +1428,7 @@ const ContractIdTermLimitIndividual = ({
                       ...params.inputProps,
                       placeholder: "Start Date",
                     }}
+                    error={contractTermPeriodFrom === null ? true : false}
                   />
                 )}
               />
@@ -1455,6 +1469,7 @@ const ContractIdTermLimitIndividual = ({
                       ...params.inputProps,
                       placeholder: "End Date",
                     }}
+                    error={contractTermPeriodTo === null ? true : false}
                   />
                 )}
               />
@@ -1501,6 +1516,7 @@ const ContractIdTermLimitIndividual = ({
                     ...params.inputProps,
                     placeholder: "Effective Date",
                   }}
+                  error={contractEffectiveDate === null ? true : false}
                 />
               )}
             />

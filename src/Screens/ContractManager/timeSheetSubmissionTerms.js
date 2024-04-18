@@ -25,7 +25,7 @@ import { InputAdornment } from '@mui/material';
 import MissedMandatoryFieldAlert from './missedMandatoryFieldAlert';
 import { valueCheck } from "./../../utils/valueCheck";
 
-const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, isMultiSiteEntity, getShowAlert, isEditable, getTabDataStatus }) => {
+const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, isMultiSiteEntity, getShowAlert, isEditable, getTabDataStatus, getShowPrevContractDataAlert }) => {
   const [timeSheetCount, setTimeSheetCount] = useState(0);
   const [absence, setAbsence] = useState({ id: '', reviewer: '', reviewerTitle: {}, approver: '', approverTitle: {} });
   const [timesheetWorkFlow, setTimeSheetWorkFlow] = useState([]);
@@ -73,6 +73,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
   const [unassignedKeys, setUnassignedKeys] = useState([]);
   const [showSaveInProgress, setShowSaveInProgress] = useState(false);
   const [buttonName, setButtonName] = useState("");
+  const [contractTabsMetaData, setContractTabsMetaData] = useState();
 
   const menuRef = useRef(null);
   useOptionsHide(menuRef);
@@ -98,6 +99,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     getAbsenceRequestWorkFlow();
     getPaymentAndCompensation()
     setPaymentSource(new Array(timeSheetCount || 0));
+    getContractTabsMetadata();
   }, [])
 
   useEffect(() => {
@@ -124,6 +126,22 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
   useEffect(() => {
     getAbsenceRequestWorkFlow();
   }, [timesheetWorkFlow])
+
+  const getContractTabsMetadata = async () => {
+    const { data: contractTabsMetaData } = await GET(
+      `contract-managment-service/contracts/${contractId}/contractTabsMetaData`
+    );
+    setContractTabsMetaData(contractTabsMetaData)
+    getShowPrevContractDataAlert(contractTabsMetaData?.timesheetSubmissionTermsUpdated)
+  }
+
+  const updateContractTabsMetaData = async () => {
+    if (!contractTabsMetaData?.timesheetSubmissionTermsUpdated) {
+      let data = contractTabsMetaData;
+      data.timesheetSubmissionTermsUpdated = true;
+      await PUT(`contract-managment-service/contracts/${contractId}/contractTabsMetaData`, data)
+    }
+  }
 
   const getPaymentAndCompensation = async () => {
     const { data: paymentAndCompensation } = await GET(`contract-managment-service/contracts/${contractId}/paymentAndCompensation`);
@@ -731,6 +749,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     };
     const response = await PUT(`contract-managment-service/contracts/${contractId}/timesheetSubmissionTerms`, JSON.stringify(data));
     if (response) {
+      updateContractTabsMetaData()
       SuccessToaster('Timesheet Submission Terms Updated Successfully');
     }
     else {

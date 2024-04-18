@@ -8,7 +8,7 @@ import { validateTabs } from './contractValidation';
 
 import style from './index.module.scss';
 
-const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newServiceProviderDialog, getViewPage1, getViewPage2, getViewPage3, getCurrentPage, contractId, contractName, isEditable, getTabDataStatus, priorContractId }) => {
+const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newServiceProviderDialog, getViewPage1, getViewPage2, getViewPage3, getCurrentPage, contractId, contractName, isEditable, getTabDataStatus, priorContractId, getShowPrevContractDataAlert }) => {
   const contractID = contractId;
   const [users, setUsers] = useState([]);
   const [editServiceProviderDialog, setEditServiceProviderDialog] = useState(false);
@@ -18,8 +18,13 @@ const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newSe
   const [tabValidation, setTabValidation] = useState();
   const [showAddressConfirmationDialogWhenSubmit, setShowAddressConfirmationDialogWhenSubmit] = useState(false);
   const [isPriorContractDataInuse, setPriorContractDataInuse] = useState(false);
+  const [contractTabsMetaData, setContractTabsMetaData] = useState();
 
   console.log(priorContractId)
+
+  useEffect(() => {
+    getContractTabsMetadata()
+  }, [])
 
   useEffect(() => {
     if (userProviderData !== {} && userProviderData !== undefined) {
@@ -41,6 +46,22 @@ const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newSe
       })
     }
   }, [tabValidation])
+
+  const getContractTabsMetadata = async () => {
+    const { data: contractTabsMetaData } = await GET(
+      `contract-managment-service/contracts/${contractId}/contractTabsMetaData`
+    );
+    setContractTabsMetaData(contractTabsMetaData)
+    getShowPrevContractDataAlert(contractTabsMetaData?.contractUsersUpdated)
+  }
+
+  const updateContractTabsMetaData = async () => {
+    if (!contractTabsMetaData?.contractUsersUpdated) {
+      let data = contractTabsMetaData;
+      data.contractUsersUpdated = true;
+      await PUT(`contract-managment-service/contracts/${contractId}/contractTabsMetaData`, data)
+    }
+  }
 
 
   const getUserData = async () => {
@@ -175,7 +196,7 @@ const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newSe
         <div className={`${style.spaceBetween} ${style.marginTop20}`}>
           <button className={`${style.newContractButtonStyle}  ${style.cursorPointer}`} onClick={() => { getCurrentPage('Contract ID & Term Limit') }}>BACK</button>
           <div className={`${style.floatRight}`}>
-            <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20}`} onClick={() => { { getViewPage2(true) }; getViewPage1(false); getCurrentPage('Contractor Business Entity') }}>CONTINUE</button>
+            <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20}`} onClick={() => { updateContractTabsMetaData(); getViewPage2(true); getViewPage1(false); getCurrentPage('Contractor Business Entity') }}>CONTINUE</button>
           </div>
         </div>
       }
