@@ -18,24 +18,49 @@ const AddContract = ({
   getContractType,
   getSelectedContractType,
   getMethod,
+  getContractIdFromActive
 }) => {
   const [selectedContract, setSelectedContract] = useState("0");
   const [selectedPriorContractId, setSelectedPriorContractId] = useState("0");
+  const [selectedPriorContract, setSelectedPriorContract] = useState();
   const [contractTypeIfExisting, setContractTypeIfExisting] = useState({ id: '', value: '' });
   const [selectedContractOnClick, setSelectedContractOnClick] = useState("");
   const [contractType, setContractType] = useState({ id: '', value: '' });
   const [isEmployeeContractNeeded, setIsEmployeeContractNeeded] = useState(sessionStorage?.getItem('isEmployeeContractNeeded'))
   const [contractTypeList, setContractTypeList] = useState([]);
   const [activeContractList, setActiveContractList] = useState([]);
-  const handleNext = () => {
-    if (selectedContract === "0" || contractType === "") {
-      ErrorToaster("Select a contract type to add");
+  const handleNext = async () => {
+    if (selectedContract === "Renewal Contract") {
+      if (selectedPriorContractId === "0") {
+        ErrorToaster("Select a prior contract ID to Renew");
+      } else if (selectedPriorContract?.contractDetail?.contractRenewed) {
+        ErrorToaster("Contract Already Renewed");
+      } else {
+        await GET(
+          `contract-managment-service/contracts/${selectedPriorContract?.id}/renewContract`
+        ).then(response => {
+          getContractIdFromActive(response?.data?.id)
+          console.log(response?.data)
+          SuccessToaster('Contract Renewed Successfully');
+          getNewContract(true);
+          getAddContract(false, true);
+          getContractType(response?.data?.contractTypeId?.id, response?.data?.contractType)
+          getSelectedContractType(selectedContract);
+          sessionStorage.setItem('Selected Contract Status', "DRAFT")
+        }).catch(error => {
+          ErrorToaster('Contract Renewal Failed');
+        })
+      }
     } else {
-      getMethod("POST");
-      getNewContract(true);
-      getAddContract(false, true);
-      getContractType(contractType?.id, contractType?.value);
-      getSelectedContractType(selectedContract);
+      if (selectedContract === "0" || contractType === "") {
+        ErrorToaster("Select a contract type to add");
+      } else {
+        getMethod("POST");
+        getNewContract(true);
+        getAddContract(false, true);
+        getContractType(contractType?.id, contractType?.value);
+        getSelectedContractType(selectedContract);
+      }
     }
   };
 
@@ -56,12 +81,15 @@ const AddContract = ({
     let temp = [...contracts?.contractList] || [];
     const { data: expiredContracts } = await GET(`contract-managment-service/contracts?limit=200&tab=expired/terminated`);
     expiredContracts?.contractList?.map(data => { temp.push(data) })
+    const { data: activeContracts } = await GET(`contract-managment-service/contracts?limit=200&tab=activecontracts`);
+    activeContracts?.contractList?.map(data => { temp.push(data) })
     setActiveContractList(temp);
   };
 
   const handleExistingContract = (id) => {
     setSelectedPriorContractId(id);
     let existingContract = activeContractList?.filter(data => data?.contractDetail?.contractId?.id === id)?.map(data => data)[0]
+    setSelectedPriorContract(existingContract)
     setContractType({ id: existingContract?.contractTypeId?.id, value: existingContract?.contractType });
     sessionStorage.setItem('contractType', existingContract?.contractType)
     sessionStorage.setItem('existingContractId', existingContract?.id)
@@ -123,7 +151,7 @@ const AddContract = ({
                 firstOptionLabel={"Select..."}
                 firstOptionValue={"0"}
                 valueList={activeContractList?.map(data => data?.contractDetail?.contractId?.id)}
-                labelList={activeContractList?.map(data => `${data?.contractName?.contractName} - ${data?.contractDetail?.contractId?.id}`)}
+                labelList={activeContractList?.map(data => `${data?.contractName?.contractName} - ${data?.contractDetail?.contractId !== null ? data?.contractDetail?.contractId?.id : ''}`)}
                 disabledList={activeContractList?.map(data => false)}
                 widthValue={400}
               />
