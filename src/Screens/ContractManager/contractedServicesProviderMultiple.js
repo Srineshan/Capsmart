@@ -3,6 +3,7 @@ import { GET, PUT, POST, TenantID } from './../dataSaver';
 import EditServiceProvider from './editServiceProviderDialog';
 import TaskAltOutlinedIcon from '@mui/icons-material/TaskAltOutlined';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import ReportGmailerrorredIcon from '@mui/icons-material/ReportGmailerrorred';
 import Table from '../../Components/TableDesign';
 import { validateTabs } from './contractValidation';
 
@@ -13,7 +14,7 @@ const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newSe
   const [users, setUsers] = useState([]);
   const [editServiceProviderDialog, setEditServiceProviderDialog] = useState(false);
   const [userProviderData, setUserProviderData] = useState(undefined);
-  const tableHeaderValues = ['DATA STATUS', "CONTRACTOR'S NAME", 'CONTRACTOR TYPE', 'SITE LEVEL', 'DEPT LEVEL'];
+  const tableHeaderValues = ['DATA STATUS', "CONTRACTOR'S NAME", 'CONTRACTOR TYPE', 'SITE LEVEL', 'DEPT LEVEL', ''];
   const [providerDataStatus, setProviderDataStatus] = useState([]);
   const [tabValidation, setTabValidation] = useState();
   const [showAddressConfirmationDialogWhenSubmit, setShowAddressConfirmationDialogWhenSubmit] = useState(false);
@@ -123,6 +124,8 @@ const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newSe
   let siteLevelHoverText = [];
   let deptLevel = [];
   let deptLevelHoverText = [];
+  let firstTimeCheckIcon = [];
+  let firstTimeCheckIconText = [];
 
   const getServiceProviderValues = () => {
     dataStatus = [];
@@ -132,6 +135,8 @@ const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newSe
     siteLevelHoverText = [];
     deptLevel = [];
     deptLevelHoverText = [];
+    firstTimeCheckIcon = [];
+    firstTimeCheckIconText = [];
 
     users?.map((data, index) => {
       let siteLevelTitle = getSiteLevel(data?.contracts?.filter(contract => contract?.id === contractId)?.map(data => data?.sites?.sites)[0]);
@@ -143,6 +148,8 @@ const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newSe
       deptLevel.push(deptLevelTitle?.[0] || '-');
       siteLevelHoverText.push(siteLevelTitle);
       deptLevelHoverText.push(deptLevelTitle);
+      firstTimeCheckIcon.push(<ReportGmailerrorredIcon style={{ color: "#F94848" }} />);
+      firstTimeCheckIconText.push('Previous Contract Data Have Been Copied To This Contract. After Verifying The Data Press Continue In The Specific Service.');
     })
 
     return [
@@ -151,6 +158,7 @@ const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newSe
       { "type": "text", "value": contractType, "onClickFunction": onClickFunction },
       { "type": "textWithHover", "value": siteLevel, "hoverText": siteLevelHoverText, "onClickFunction": onClickFunction },
       { "type": "textWithHover", "value": deptLevel, "hoverText": deptLevelHoverText, "onClickFunction": onClickFunction },
+      { "type": "icon", "icon": firstTimeCheckIcon, "hoverText": firstTimeCheckIconText, 'isShowHoverText': true },
     ];
   }
 

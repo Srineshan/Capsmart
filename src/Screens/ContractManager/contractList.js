@@ -467,7 +467,8 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     // {'data': 'Contract Extension', 'onClick': contractExtension, 'requiredValue': 'boolean'},
     { 'data': 'Terminate Contract', 'onClick': contractTermination, 'requiredValue': 'boolean' },
     //   {'data': 'Clone Contract', 'onClick': contractClone, 'requiredValue': 'boolean'},
-    { 'data': 'Pre Implementation Data', 'onClick': getShowPreImplementationDialog, 'requiredValue': 'boolean' }
+    { 'data': 'Pre Implementation Data', 'onClick': getShowPreImplementationDialog, 'requiredValue': 'boolean' },
+    { 'data': 'Renew Upcoming Renewal Contract', 'onClick': handleRenewalContracts, 'requiredValue': 'boolean' }
   ]
 
   const draftActionsData = [
@@ -486,7 +487,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     // {'data': 'Renew Existing Contract', 'onClick': deleteDraft, 'requiredValue': 'boolean'},
     { 'data': 'Extend Contract', 'onClick': activateContracts, 'requiredValue': 'id' },
     // {'data': 'Terminate Contract', 'onClick': activateContracts, 'requiredValue': 'id'}
-    { 'data': 'Renew Upcoming Contract', 'onClick': handleRenewalContracts, 'requiredValue': 'boolean' }
+    { 'data': 'Renew Upcoming Renewal Contract', 'onClick': handleRenewalContracts, 'requiredValue': 'boolean' }
   ]
 
   const expiredActionsData = [

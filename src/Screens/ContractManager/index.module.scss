@@ -2284,8 +2284,8 @@ input[type="number"] {
 
 .multipleServiceProviderGrid {
   display: grid;
-  grid-template-columns: 12% 20% 20% 20% 15%;
-  grid-gap: 2%;
+  grid-template-columns: 8% 20% 20% 20% 18% 7%;
+  grid-gap: 1%;
   padding-left: 3%;
 }
 
@@ -2304,21 +2304,21 @@ input[type="number"] {
 
 .serviceSpecificationGridActive {
   display: grid;
-  grid-template-columns: 10% 22% 22% 22% 10% 8%;
+  grid-template-columns: 8% 22% 22% 19% 10% 6% 6%;
   grid-gap: 1%;
   padding-left: 10px;
 }
 
 .serviceSpecificationGridIndividual {
   display: grid;
-  grid-template-columns: 10% 30% 25% 20% 10%;
+  grid-template-columns: 10% 30% 25% 13% 8% 8%;
   grid-gap: 1%;
   padding-left: 10px;
 }
 
 .serviceSpecificationGridIndividualActive {
   display: grid;
-  grid-template-columns: 10% 30% 25% 20% 10%;
+  grid-template-columns: 10% 30% 25% 13% 8% 8%;
   grid-gap: 1%;
   padding-left: 10px;
 }

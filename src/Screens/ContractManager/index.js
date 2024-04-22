@@ -32,7 +32,9 @@ const Contracts = () => {
     const [totalCount, setTotalCount] = useState(0);
     const [isEditable, setIsEditable] = useState(false);
     const [activeContractView, setActiveContractView] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false)
+
+    console.log(isEditable, sessionStorage.getItem('isEditable') === 'true' ? true : false, sessionStorage.getItem('isEditable'))
 
     useEffect(() => {
         getContracts();

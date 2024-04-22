@@ -7,6 +7,7 @@ import RedirectingPopUp from './redirectingPopUp';
 import TaskAltOutlinedIcon from '@mui/icons-material/TaskAltOutlined';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
+import ReportGmailerrorredIcon from '@mui/icons-material/ReportGmailerrorred';
 import Table from '../../Components/TableDesign';
 import { validateTabs } from './contractValidation';
 import style from './index.module.scss';
@@ -31,7 +32,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
   const contractStatus = sessionStorage.getItem('Selected Contract Status');
   const [contractTabsMetaData, setContractTabsMetaData] = useState();
 
-  let tableHeaderValues = selectContractInfo === 'INDIVIDUAL' ? ['', 'ACTIVITY TYPE', 'SPECIFIC ACTIVITY', 'BILLABLE', ''] : ['', 'ACTIVITY TYPE', 'SPECIFIC ACTIVITY', 'APPLIES TO', 'BILLABLE', ''];
+  let tableHeaderValues = selectContractInfo === 'INDIVIDUAL' ? ['', 'ACTIVITY TYPE', 'SPECIFIC ACTIVITY', 'BILLABLE', '', ''] : ['', 'ACTIVITY TYPE', 'SPECIFIC ACTIVITY', 'APPLIES TO', 'BILLABLE', '', ''];
 
   useEffect(() => {
     getContractedServices();
@@ -169,7 +170,8 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
   let appliesToHoverText = [];
   let billable = [];
   let deleteIcon = [];
-
+  let firstTimeCheckIcon = [];
+  let firstTimeCheckIconText = [];
   const getDataStatus = () => {
     let tabsValid = validateTabs(contractId);
     tabsValid?.then(response => {
@@ -186,6 +188,8 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
     appliesToHoverText = [];
     billable = [];
     deleteIcon = [];
+    firstTimeCheckIcon = [];
+    firstTimeCheckIconText = [];
 
     contractedServices?.map((data, index) => {
       let billableValue = data?.billableService;
@@ -206,6 +210,8 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
       appliesToHoverText.push(data?.users?.map(user => user?.name?.firstName) || '-');
       billable.push(billableValue ? 'YES' : 'NO');
       deleteIcon.push(<CloseOutlinedIcon style={{ color: "#F94848" }} />);
+      firstTimeCheckIcon.push(<ReportGmailerrorredIcon style={{ color: "#F94848" }} />);
+      firstTimeCheckIconText.push('Previous Contract Data Have Been Copied To This Contract. After Verifying The Data Press Continue In The Specific Service.');
     })
 
     return selectContractInfo === 'INDIVIDUAL' ? [
@@ -214,7 +220,8 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
       { "type": "textWithHover", "value": specificActivity, "hoverText": specificActivityHoverText, "onClickFunction": onClickFunction },
       // { "type": "textWithHover", "value": appliesTo, "hoverText": appliesToHoverText, "onClickFunction": onClickFunction },
       { "type": "text", "value": billable, "onClickFunction": onClickFunction },
-      isEditable && { "type": "text", "value": deleteIcon, "onClickFunction": onClickCrossFunction },
+      { "type": "icon", "icon": firstTimeCheckIcon, "hoverText": firstTimeCheckIconText, 'isShowHoverText': true },
+      ...sessionStorage.getItem('isEditable') === 'true' ? [{ "type": "text", "value": deleteIcon, "onClickFunction": onClickCrossFunction }] : [],
 
     ] : [
       { "type": "icon", "icon": dataStatus },
@@ -222,11 +229,12 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
       { "type": "textWithHover", "value": specificActivity, "hoverText": specificActivityHoverText, "onClickFunction": onClickFunction },
       { "type": "textWithHover", "value": appliesTo, "hoverText": appliesToHoverText, "onClickFunction": onClickFunction },
       { "type": "text", "value": billable, "onClickFunction": onClickFunction },
-      isEditable && { "type": "text", "value": deleteIcon, "onClickFunction": onClickCrossFunction },
+      { "type": "icon", "icon": firstTimeCheckIcon, "hoverText": firstTimeCheckIconText, 'isShowHoverText': true },
+      ...sessionStorage.getItem('isEditable') === 'true' ? [{ "type": "text", "value": deleteIcon, "onClickFunction": onClickCrossFunction }] : [],
     ];
   }
 
-  console.log('servicesValid', servicesValid)
+  console.log('servicesValid', servicesValid, isEditable, sessionStorage.getItem('isEditable'))
 
   if (isLoading) {
     return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />

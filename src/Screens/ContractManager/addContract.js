@@ -154,6 +154,7 @@ const AddContract = ({
                 labelList={activeContractList?.map(data => `${data?.contractName?.contractName} - ${data?.contractDetail?.contractId !== null ? data?.contractDetail?.contractId?.id : ''}`)}
                 disabledList={activeContractList?.map(data => false)}
                 widthValue={400}
+                menuColor={activeContractList?.map(data => data?.contractStatus === "ACTIVE" ? '#d1fae3' : data?.contractStatus === "EXPIRED" ? "#fdcece" : '#fff2cc')}
               />
             </div>
           ) : (
