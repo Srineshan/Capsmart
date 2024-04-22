@@ -321,7 +321,7 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
                         {contractPolicyTypeFilter && (
                             <>
                                 {contractFilter?.contractPolicyTypeCount?.map((data, index) => (
-                                    <CommonCheckBox checked={data?.selected === true ? true : false} onChange={(e) => handleFilterSelect(e.target.checked, index, 'contractPolicyTypeCount', data?.contractPolicyType)} label={`${contractPolicyTypeAvailableValues[data?.contractPolicyType]} (${data?.count})`} key={index} />
+                                    <CommonCheckBox checked={data?.selected === true ? true : false} onChange={(e) => handleFilterSelect(e.target.checked, index, 'contractPolicyTypeCount', data?.contractPolicyType)} label={`${contractPolicyTypeAvailableValues[data?.contractPolicyType]} (${data?.count})`} key={index} className={style.textAlignLeft} />
                                 ))}
                             </>
                         )}
@@ -441,7 +441,7 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
                     </div>
                     <div className={style.dividerStyle}></div>
                     <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
-                        <div className={`${style.filterType} ${((contractFilter?.contractTimeCommitment?.to !== null || contractFilter?.contractTimeCommitment?.from !== null) && !contractTimeCommitmentFilter) ? style.purpleText : ''}`}>Contract Time Commitment</div>
+                        <div className={`${style.filterType} ${((contractFilter?.contractTimeCommitment?.to !== null || contractFilter?.contractTimeCommitment?.from !== null) && !contractTimeCommitmentFilter) ? style.purpleText : ''}`}>Contract Term Period</div>
                         <div className={`${style.displayInRow}  ${style.verticalAlignCenter}`}>
                             <div className={`${style.clearText} ${(contractFilter?.contractTimeCommitment?.to !== null || contractFilter?.contractTimeCommitment?.from !== null) ? style.purpleText : ''}`} onClick={() => setContractFilter({ ...contractFilter, contractTimeCommitment: { from: subYears(new Date(), 5), to: new Date() } })}>Clear </div>
                             {!contractTimeCommitmentFilter ? (
@@ -455,16 +455,16 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
                         {contractTimeCommitmentFilter && (
                             <div className={style.contractTimeCommitmentGrid}>
                                 <div>
-                                    <div className={style.labelText}>To</div>
+                                    <div className={style.labelText}>From</div>
                                     <CommonDateField
-                                        open={calendarStart}
-                                        onOpen={() => setCalendarStart(true)}
-                                        onClose={() => setCalendarStart(false)}
-                                        minDate={sub(new Date(), { years: 3 })}
+                                        open={calendarEnd}
+                                        onOpen={() => setCalendarEnd(true)}
+                                        onClose={() => setCalendarEnd(false)}
+                                        minDate={sub(new Date(), { years: 5 })}
                                         maxDate={add(new Date(), { months: 6 })}
-                                        value={contractFilter?.contractTimeCommitment?.to}
+                                        value={contractFilter?.contractTimeCommitment?.from}
                                         onChange={(newValue) => {
-                                            setContractFilter({ ...contractFilter, contractTimeCommitment: { to: newValue ? new Date(newValue) : null, from: contractFilter?.contractTimeCommitment?.from } })
+                                            setContractFilter({ ...contractFilter, contractTimeCommitment: { from: newValue ? new Date(newValue) : null, to: contractFilter?.contractTimeCommitment?.to } })
                                         }}
                                         InputProps={{
                                             style: {
@@ -484,16 +484,16 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
                                     />
                                 </div>
                                 <div>
-                                    <div className={style.labelText}>From</div>
+                                    <div className={style.labelText}>To</div>
                                     <CommonDateField
-                                        open={calendarEnd}
-                                        onOpen={() => setCalendarEnd(true)}
-                                        onClose={() => setCalendarEnd(false)}
+                                        open={calendarStart}
+                                        onOpen={() => setCalendarStart(true)}
+                                        onClose={() => setCalendarStart(false)}
                                         minDate={sub(new Date(), { years: 3 })}
-                                        maxDate={add(new Date(), { months: 6 })}
-                                        value={contractFilter?.contractTimeCommitment?.from}
+                                        maxDate={add(new Date(), { years: 3 })}
+                                        value={contractFilter?.contractTimeCommitment?.to}
                                         onChange={(newValue) => {
-                                            setContractFilter({ ...contractFilter, contractTimeCommitment: { from: newValue ? new Date(newValue) : null, to: contractFilter?.contractTimeCommitment?.to } })
+                                            setContractFilter({ ...contractFilter, contractTimeCommitment: { to: newValue ? new Date(newValue) : null, from: contractFilter?.contractTimeCommitment?.from } })
                                         }}
                                         InputProps={{
                                             style: {
