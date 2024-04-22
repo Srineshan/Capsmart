@@ -586,6 +586,7 @@ const NewContractFromClone = ({
             isEditable={isEditable}
             getTabDataStatus={getTabDataStatus}
             getShowPrevContractDataAlert={getShowPrevContractDataAlert}
+            isNewContract={contractSelected?.newContract}
           />
         ) : currentPage === "Documentation Proof Required" ? (
           <DocumentationProofRequired
@@ -664,6 +665,7 @@ const NewContractFromClone = ({
             getTabDataStatus={getTabDataStatus}
             priorContractId={priorContractId}
             getShowPrevContractDataAlert={getShowPrevContractDataAlert}
+            isNewContract={contractSelected?.newContract}
           />
         )
           : selectContractInfo === "EMPLOYEE" &&

@@ -37,7 +37,8 @@ const EditServiceProvider = ({
   showAddressConfirmationDialogWhenSubmit,
   getShowAddressConfirmationDialogWhenSubmit,
   isPriorContractDataInuse,
-  priorContractId
+  priorContractId,
+  contractTabsMetaData
 }) => {
   const [selectedContract, setSelectedContract] = useState(
     "Written Contract Extension For Fixed Term"
@@ -539,6 +540,25 @@ const EditServiceProvider = ({
     return value;
   };
 
+  const updateContractTabsMetaData = async () => {
+    let selectedUserUpdated = contractTabsMetaData?.users?.filter(data => data?.refId === userProviderData?.id)[0]
+    if (!selectedUserUpdated?.updated) {
+      let temp = contractTabsMetaData?.users?.map(item => {
+        if (item.refId === userProviderData?.id) {
+          return { ...item, updated: true };
+        }
+        return item;
+      });
+      let isAllUpdated = temp.every(obj => obj['updated'] === true)
+      let data = contractTabsMetaData;
+      data.users = temp;
+      if (isAllUpdated) {
+        data.contractUsersUpdated = true;
+      }
+      await PUT(`contract-managment-service/contracts/${contractId}/contractTabsMetaData`, data)
+    }
+  }
+
   const getUniqueRoles = () => {
     return Array.from(new Set(userProviderData?.contracts?.map(data => data?.roles)[0].concat(selectedRoles).map(obj => obj.id))).map(id => {
       return userProviderData?.contracts?.map(data => data?.roles)[0].concat(selectedRoles).find(obj => obj.id === id);
@@ -744,6 +764,7 @@ const EditServiceProvider = ({
       .catch((error) => {
         ErrorToaster("Unexpected Error");
       });
+    updateContractTabsMetaData();
     setContinueLoading(false);
     getEditServiceDialog(false);
   };
