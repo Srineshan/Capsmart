@@ -1153,7 +1153,7 @@ const ContractIdTermLimitIndividual = ({
                 className={style.selectFieldWidth}
                 maxLength={TEXTFIELDLEN}
                 inputProps={{
-                  disabled: isPreviousContractDataInUse ? true : contractStatus === "ACTIVE" ? true : false,
+                  disabled: !contractData?.newContract ? true : contractStatus === "ACTIVE" ? true : false,
                 }}
                 onChange={(e) =>
                   setContractPriorId({ ...contractPriorId, id: e.target.value })
@@ -1161,7 +1161,7 @@ const ContractIdTermLimitIndividual = ({
                 placeholder="Search by CID / Name"
                 value={contractPriorId?.id}
               />
-              {!isPreviousContractDataInUse && (
+              {contractData?.newContract && (
                 <CommonCheckBox
                   label="NA"
                   checked={contractPriorId.na}
