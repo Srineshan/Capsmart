@@ -216,6 +216,8 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
 
       if (userData) {
         SuccessToaster('Contract Renewed Successfully');
+        getContracts();
+        getContractsMetadata();
       } else { ErrorToaster('Contract Renewal Failed'); };
     } else {
       ErrorToaster('Contract Already Renewed');
