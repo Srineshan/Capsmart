@@ -197,7 +197,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
       }
       dataStatus.push(servicesValid?.[index]?.length === 0 ? <TaskAltOutlinedIcon style={{ color: "#14B15A" }} /> : <WarningAmberIcon style={{ color: "#FF6562" }} />);
       activityType.push(data?.activityType?.activityType);
-      specificActivity.push(data?.activities?.length > 1 ? `${data?.activities?.length} Activities` : data?.activities?.[0]?.activity || '-');
+      specificActivity.push(data?.activityTypeTemplate?.activityTypeTemplate === ADMINISTRATIVE ? data?.performingActivity?.activity : data?.activities?.length > 1 ? `${data?.activities?.length} Activities` : data?.activities?.[0]?.activity || '-');
       specificActivityHoverText.push(data?.activities?.map(data => data?.activity) || '-');
       appliesTo.push(data?.users?.[0]?.name?.firstName || '-');
       appliesToHoverText.push(data?.users?.map(user => user?.name?.firstName) || '-');
