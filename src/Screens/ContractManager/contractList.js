@@ -35,7 +35,7 @@ import SideBar from '../../Components/Sidebar';
 import PreImplementationDataDialog from './preImplementationDataDialog';
 import ReviewAndApprovalStatusSummary from './reviewAndApprovalStatusSummary';
 
-const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog, contracts, getSelectedContract, getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page, getActiveContractView, getFilterValues, getHandleSort, sortValue }) => {
+const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog, contracts, getSelectedContract, getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page, getActiveContractView, getFilterValues, getHandleSort, sortValue, getTabFilter }) => {
   const PDFRef = createRef();
   const componentRef = useRef(null);
   const filterRef = useRef();
@@ -517,7 +517,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
         </div>
         <div>
           <ContractTiles getSelectedContract={getSelectedContract} selectedContract={selectedContract}
-            metadata={metadata} />
+            metadata={metadata} getTabFilter={getTabFilter} />
           <div className={`${style.bigCardStyle} ${style.marginTop20}`}>
             <div className={`${style.spaceBetween} ${style.marginLeftRight20}`}>
               <div className={`${style.displayInRow} ${style.marginTop10}`}>

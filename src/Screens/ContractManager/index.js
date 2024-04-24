@@ -46,6 +46,7 @@ const Contracts = () => {
     const [contractExpiresInDays, setContractExpiresInDays] = useState(0)
     const [sortField, setSortField] = useState('DEFAULT');
     const [sortValue, setSortValue] = useState('ASCENDING');
+    const [bottomTextFilter, setBottomTextFilter] = useState('');
 
     useEffect(() => {
         getContracts();
@@ -70,6 +71,11 @@ const Contracts = () => {
         setSearchKey("");
         setSelectedContract(value);
         setPage(1);
+    }
+
+    const getTabFilter = (value) => {
+        console.log(value)
+        setBottomTextFilter(value)
     }
 
     const getContractIdFromActive = (value) => {
@@ -215,6 +221,7 @@ const Contracts = () => {
                     getFilterValues={getFilterValues}
                     getHandleSort={getHandleSort}
                     sortValue={{ sortBy: sortValue, sortByField: sortField }}
+                    getTabFilter={getTabFilter}
                 />
 
                 {extensionDialog && (

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import style from "./index.module.scss";
 
 const Tile = ({
@@ -26,7 +26,42 @@ const Tile = ({
   smallNum1SelectedColor,
   smallNum2SelectedColor,
   smallNum3SelectedColor,
+  getTabFilter
 }) => {
+
+
+  const [bottomTextFilter, setBottomTextFilter] = useState((bottomText?.length === 0 || bottomText === '' || bottomText === undefined) ? '' : bottomText[0])
+  const [smallTextSelected, setSmallTextSelected] = useState('')
+  console.log(smallTextSelected)
+
+  useEffect(() => {
+    if (typeof getTabFilter === 'function') {
+      getTabFilter({ bottomTextFilter: bottomTextFilter, smallTextSelected: smallTextSelected })
+    }
+  }, [bottomTextFilter, smallTextSelected])
+
+  useEffect(() => {
+    setSmallTextSelected('')
+  }, [selectedContract])
+
+  const handleGetBottomTextFilter = () => {
+    let index = bottomText.findIndex(str => str === bottomTextFilter)
+    if (bottomText?.length - 1 === index) {
+      setBottomTextFilter(bottomText[0])
+      if (bottomText?.length > 1) {
+        getTabFilter({ bottomTextFilter: bottomText[0] })
+      }
+    } else {
+      setBottomTextFilter(bottomText[index + 1])
+      if (bottomText?.length > 1) {
+        getTabFilter({ bottomTextFilter: bottomText[index + 1] })
+      }
+    }
+  }
+
+  const handleSmallTextSelected = (value) => {
+    setSmallTextSelected(value)
+  }
   return (
     <div
       className={`${style.cardStyle} ${selectedContract === currentTile && style.selectedContractBackground
@@ -38,7 +73,7 @@ const Tile = ({
         <div>
           <div className={`${style.headingForContracts}`}>{tileLabel}</div>
           {bottomText !== "" && (
-            <div className={style.bottomTextStyle}>{bottomText}</div>
+            <div className={style.bottomTextStyle} onClick={() => handleGetBottomTextFilter()}>{bottomTextFilter}</div>
           )}
         </div>
 
@@ -81,9 +116,9 @@ const Tile = ({
           >
             {smallNum3 !== "" && (
               <span
-                className={`${style.verticalAlignCenter}  ${style.alignRight}`}
+                className={`${style.verticalAlignCenter}  ${style.alignRight} `} onClick={() => handleSmallTextSelected(smallText3)}
               >
-                {smallText3}
+                <span className={(smallTextSelected === smallText3 && selectedContract === currentTile) ? style.smallTextSelected : ''}>{smallText3}</span>
                 <span
                   className={`${smallNum3 !== "-"
                     ? selectedContract === currentTile
@@ -98,9 +133,9 @@ const Tile = ({
             )}
             {smallNum1 !== "" && (
               <span
-                className={`${style.verticalAlignCenter} ${style.marginTop5} ${style.alignRight}`}
+                className={`${style.verticalAlignCenter} ${style.marginTop5} ${style.alignRight}`} onClick={() => handleSmallTextSelected(smallText1)}
               >
-                {smallText1}
+                <span className={(smallTextSelected === smallText1 && selectedContract === currentTile) ? style.smallTextSelected : ''}>{smallText1}</span>
                 <span
                   className={`${smallNum1 !== "-"
                     ? selectedContract === currentTile
@@ -115,9 +150,9 @@ const Tile = ({
             )}
             {smallNum2 !== "" && (
               <span
-                className={`${style.verticalAlignCenter} ${style.marginTop5} ${style.alignRight}`}
+                className={`${style.verticalAlignCenter} ${style.marginTop5} ${style.alignRight}`} onClick={() => handleSmallTextSelected(smallText2)}
               >
-                {smallText2}
+                <span className={(smallTextSelected === smallText2 && selectedContract === currentTile) ? style.smallTextSelected : ''}>{smallText2}</span>
                 <span
                   className={`${smallNum2 !== "-"
                     ? selectedContract === currentTile
