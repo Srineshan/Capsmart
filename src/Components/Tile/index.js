@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import style from "./index.module.scss";
+import { extractNumbersFromString } from "../../utils/formatting";
 
 const Tile = ({
   selectedContract,
@@ -36,25 +37,28 @@ const Tile = ({
 
   useEffect(() => {
     if (typeof getTabFilter === 'function') {
-      getTabFilter({ bottomTextFilter: bottomTextFilter, smallTextSelected: smallTextSelected })
+      getTabFilter({ bottomTextFilter: String(extractNumbersFromString(bottomTextFilter)[0]), smallTextSelected: smallTextSelected })
     }
   }, [bottomTextFilter, smallTextSelected])
 
   useEffect(() => {
     setSmallTextSelected('')
+    setBottomTextFilter((bottomText?.length === 0 || bottomText === '' || bottomText === undefined) ? '' : bottomText[0])
   }, [selectedContract])
+
+
 
   const handleGetBottomTextFilter = () => {
     let index = bottomText.findIndex(str => str === bottomTextFilter)
     if (bottomText?.length - 1 === index) {
       setBottomTextFilter(bottomText[0])
       if (bottomText?.length > 1) {
-        getTabFilter({ bottomTextFilter: bottomText[0] })
+        getTabFilter({ bottomTextFilter: String(extractNumbersFromString(bottomText[0])[0]) })
       }
     } else {
       setBottomTextFilter(bottomText[index + 1])
       if (bottomText?.length > 1) {
-        getTabFilter({ bottomTextFilter: bottomText[index + 1] })
+        getTabFilter({ bottomTextFilter: String(extractNumbersFromString(bottomText[index + 1])[0]) })
       }
     }
   }
