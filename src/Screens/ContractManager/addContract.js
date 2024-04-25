@@ -83,7 +83,7 @@ const AddContract = ({
     expiredContracts?.contractList?.map(data => { temp.push(data) })
     const { data: activeContracts } = await GET(`contract-managment-service/contracts?limit=200&tab=activecontracts`);
     activeContracts?.contractList?.map(data => { temp.push(data) })
-    setActiveContractList(temp);
+    setActiveContractList(temp?.filter(data => !data?.contractDetail?.contractRenewed)?.map(data => data));
   };
 
   const handleExistingContract = (id) => {
@@ -154,7 +154,7 @@ const AddContract = ({
                 labelList={activeContractList?.map(data => `${data?.contractName?.contractName} - ${data?.contractDetail?.contractId !== null ? data?.contractDetail?.contractId?.id : ''}`)}
                 disabledList={activeContractList?.map(data => false)}
                 widthValue={400}
-                menuColor={activeContractList?.map(data => data?.contractDetail?.contractRenewed ? "#e8e7fe" : data?.contractStatus === "ACTIVE" ? '#d1fae3' : data?.contractStatus === "EXPIRED" ? "#fdcece" : '#fff2cc')}
+                menuColor={activeContractList?.map(data => data?.contractStatus === "ACTIVE" ? '#d1fae3' : data?.contractStatus === "EXPIRED" ? "#fdcece" : '#fff2cc')}
               />
             </div>
           ) : (
