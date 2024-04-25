@@ -90,6 +90,8 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         CONTRACT_WITH_BUSINESS_ENTITY: 'contractsWithABusinessEntity',
         MULTI_PROVIDER_CONTRACT: 'multiProviderContractsList',
         PROOF_OF_DOCUMENTATION_COMPLIANCE_FOR_CONTRACT_BASED_REQUIREMENTS: 'nonCompliant',
+        ACTIVITY_STATUS_TRACKER: 'activityStatusTracker',
+        PAYMENT_TRACKER: 'paymentProcessingStatusTracker'
     }
     const descriptionList = {
         ACTIVITES_SERVICES_LOG_SUMMARY: 'Activities/ Services Log Status Summary',
@@ -111,7 +113,9 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         CONTRACT_DOCUMENT_ON_FILE: 'Contract Documents On File',
         CONTRACT_WITH_BUSINESS_ENTITY: 'Contracts With A Business Entity',
         MULTI_PROVIDER_CONTRACT: 'Multi Provider Contracts List',
-        PROOF_OF_DOCUMENTATION_COMPLIANCE_FOR_CONTRACT_BASED_REQUIREMENTS: 'Proof of documentation compliance for contract based requirments'
+        PROOF_OF_DOCUMENTATION_COMPLIANCE_FOR_CONTRACT_BASED_REQUIREMENTS: 'Proof of documentation compliance for contract based requirments',
+        ACTIVITY_STATUS_TRACKER: `Status Of Activities/ Services By Service Provider For ${format(new Date(), 'MMMM yyyy')}`,
+        PAYMENT_TRACKER: 'Payment Processing Status By Service Provider'
     }
 
     const titleList = {
@@ -134,7 +138,9 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         CONTRACT_DOCUMENT_ON_FILE: 'Contract Documents On File',
         CONTRACT_WITH_BUSINESS_ENTITY: 'Contracts With A Business Entity',
         MULTI_PROVIDER_CONTRACT: 'Multi Provider Contracts List',
-        PROOF_OF_DOCUMENTATION_COMPLIANCE_FOR_CONTRACT_BASED_REQUIREMENTS: 'Proof of documentation compliance for contract based requirments'
+        PROOF_OF_DOCUMENTATION_COMPLIANCE_FOR_CONTRACT_BASED_REQUIREMENTS: 'Proof of documentation compliance for contract based requirments',
+        ACTIVITY_STATUS_TRACKER: `Status Of Activities/ Services By Service Provider For ${format(new Date(), 'MMMM yyyy')}`,
+        PAYMENT_TRACKER: 'Payment Processing Status By Service Provider'
     }
 
     useEffect(() => {
@@ -329,7 +335,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                         {/* <div className={style.tableDataReportsFontStyle}>{data?.lastRun !== null ? format(getZonedTime(new Date(data?.lastRun)), 'd MMM yyyy HH:mm z') : '-'} </div> */}
                                         <div className={style.tableDataReportsFontStyle}>{data?.lastRun !== null ? formatInTimeZone(new Date(data?.lastRun), siteTimeZone(), 'd MMM yyyy HH:mm') : '-'} </div>
                                         {/* <div className={style.tableDataReportsFontStyle}>{currentUserDetails?.fullName}</div> */}
-                                        <div className={style.tableDataReportsFontStyle}>{data?.lastUpdate !== null ? format(new Date(data?.lastUpdate), 'd MMM yyyy') : '-'}</div>
+                                        <div className={style.tableDataReportsFontStyle}>{data?.lastUpdate !== null ? format(new Date(`${data?.lastUpdate}T00:00`), 'd MMM yyyy') : '-'}</div>
                                         <Link to={`/reportTypeOverview/${routeList[data?.subCategory]}`} className={style.linkStyle}>
                                             <Run />
                                         </Link>

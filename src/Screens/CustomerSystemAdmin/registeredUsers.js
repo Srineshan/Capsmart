@@ -55,7 +55,7 @@ const RegisteredUsers = ({ getSelectedOption }) => {
 
     useEffect(() => {
         userTileValues();
-    }, [from, to]);
+    }, [from, to, showAddUserDialog]);
 
     const getUser = async () => {
         if (selectedOption === 'ENTITY REGISTERED USERS') {
@@ -281,7 +281,7 @@ const RegisteredUsers = ({ getSelectedOption }) => {
             { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
             { "type": "text", "value": userName },
             { "type": "text", "value": title },
-            { "type": "site", "value": siteName },
+            ...(isMultiSiteEntity ? [{ "type": "site", "value": siteName }] : []),
             { "type": "text", "value": proxy },
             { "type": "text", "value": surrogate },
             { "type": "text", "value": lastLoginDateOrTime },

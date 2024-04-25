@@ -21,7 +21,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
     const [userDataById, setUserDataById] = useState([]);
     const [roles, setRoles] = useState([]);
     const [selectedRolesToShow, setSelectedRolesToShow] = useState([]);
-    const [selectedAccessLevelToShow, setSelectedAccessLevelToShow] = useState("");
+    const [selectedAccessLevelToShow, setSelectedAccessLevelToShow] = useState("USER");
     const [sites, setSites] = useState([]);
     const [siteTitle, setSiteTitle] = useState();
     const [deptTitle, setDeptTitle] = useState();
@@ -221,6 +221,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
         return siteData;
     }
 
+    console.log(accessLevelNeeded, selectedAccessLevelToShow)
     const submitUserDetails = async () => {
         console.log('roles', addUser?.roles);
         if (addUser?.firstName === '') {
@@ -235,10 +236,11 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             ErrorToaster('All Fields are Mandatory');
             return;
         }
-        if (accessLevelNeeded === true && selectedAccessLevelToShow === null) {
+        if (accessLevelNeeded === true && (selectedAccessLevelToShow === null || selectedAccessLevelToShow === "")) {
             ErrorToaster('Access Level is Mandatory');
             return;
         }
+
         const user = {
             ...(isEdit && { 'id': userId }),
             "name": {
@@ -264,7 +266,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                 "landlineNumber": "string",
                 "mobileNumberNotApplicable": true
             },
-            "accessLevel": selectedAccessLevelToShow,
+            "accessLevel": (selectedAccessLevelToShow === null || selectedAccessLevelToShow === "") ? "USER" : selectedAccessLevelToShow,
             "executiveAccessLevelNeeded": accessLevelNeeded,
             "roles": addUser?.roles,
             ...(isEdit && { "address": userDataById?.address }),

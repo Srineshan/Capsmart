@@ -55,7 +55,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
   const draftHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "ACTIVATION STATUS", "LAST UPDATED", "REF DOCS", "LAST UPDATED BY", "MANAGER", "ACTION"];
   const activationPendingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "REVIEWS", "APPROVALS", "REF DOCS", "GO LIVE DATE", "EFFECTIVE DATE", "MANAGER", "ACTION"];
   const upcomingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "EXPIRATION DATE", "EXPIRING IN", "LAST UPDATE", "MANAGER", "ACTION"];
-  const expiredHeaderValues = ["CHECKBOX", "CONTRACT TYPE", "ID", "NAME", "TERMINATION DATE", "NEW CONTRACT ID", "LAST UPDATE", "MANAGER"];
+  const expiredHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "TERMINATION DATE", "NEW CONTRACT ID", "LAST UPDATE", "MANAGER", "ACTION"];
   const activeColSortValues = [false, false, false, true, false, true, false, false, false, false];
   const draftColSortValues = [false, false, true, true, false, false, false, false, false];
   const upcomingColSortValues = [false, false, true, true, false, false, false, false, false];
@@ -207,11 +207,36 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     // } else {
     getNewContract(true);
     getContractType(data?.contractTypeId?.id, data?.contractType);
-    getSelectedContractType('New Contract');
+    getSelectedContractType(data?.newContract ? 'New Contract' : 'Existing Contract');
     // }
     getContractIdFromActive(data?.id);
     console.log(data, 'contract data')
     sessionStorage.setItem('Selected Contract Status', data?.contractStatus)
+  }
+
+  const handleRenewalContracts = async (data) => {
+    // getNewContract(true);
+    // getContractType(data?.contractTypeId?.id, data?.contractType);
+    // getSelectedContractType('Existing Contract');
+    // console.log(data, 'contract data')
+    // sessionStorage.setItem('Selected Contract Status', "DRAFT")
+    // sessionStorage.setItem('contractType', data?.contractType)
+    // sessionStorage.setItem('existingContractId', data?.id)
+    // sessionStorage.setItem('priorContractId', data?.contractDetail?.contractId?.id)
+    // sessionStorage.setItem('method', 'POST')
+    if (!data?.contractDetail?.contractRenewed) {
+      const { data: userData } = await GET(
+        `contract-managment-service/contracts/${data?.id}/renewContract`
+      )
+
+      if (userData) {
+        SuccessToaster('Contract Renewed Successfully');
+        getContracts();
+        getContractsMetadata();
+      } else { ErrorToaster('Contract Renewal Failed'); };
+    } else {
+      ErrorToaster('Contract Already Renewed');
+    }
   }
 
   const handleDownloadClicked = () => {
@@ -293,7 +318,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
       name.push(data?.contractName?.contractName);
       contractors.push(contractorList?.length || '-');
       contractorsIcon.push(contractorList?.length > 1 ? <GroupOutlinedIcon style={{ fontSize: 20, color: '#857AEF' }} /> : contractorList?.length === 0 ? '' : <PersonOutlinedIcon style={{ fontSize: 20, color: '#857AEF' }} />);
-      effectiveDate.push(format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy'));
+      effectiveDate.push(data?.contractDetail?.contractTerm !== null ? format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy') : '-');
       // podStatus.push("3");
       manager.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
       lastUpdated.push(format(new Date(data?.lastModifiedDate), 'MM-dd-yyyy'))
@@ -345,7 +370,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
       activationStatus.push(data?.contractStatus === 'ACTIVATION_READY' ? 'Activation pending' : 'Not Activated');
       icon.push(<TextSnippetOutlinedIcon style={{ color: (data?.contractDetail?.contractFiles?.length === 0 || data?.contractDetail?.contractFiles === null) ? '#F94848' : '#14B15A' }} />);
       iconHoverText.push((data?.contractDetail?.contractFiles?.length === 0 || data?.contractDetail?.contractFiles === null) ? 'No Document Uploaded' : 'Document Uploaded');
-      effectiveDate.push(format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy'));
+      effectiveDate.push(data?.contractDetail?.contractTerm !== null ? format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy') : '-');
       manager.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
       lastUpdated.push(format(new Date(data?.lastModifiedDate), 'MM-dd-yyyy'))
       lastUpdatedBy.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
@@ -427,6 +452,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     newContractId = [];
     manager = [];
     lastUpdated = [];
+    action = [];
 
     contracts?.map(data => {
       dot.push(true);
@@ -435,9 +461,10 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
       contractId.push(data?.contractDetail?.contractId?.id);
       name.push(data?.contractName?.contractName);
       expirationDate.push(data?.contractDetail?.contractExpiryDate !== null ? format(new Date(data?.contractDetail?.contractExpiryDate), 'MM-dd-yyyy') : '-');
-      newContractId.push('-');
+      newContractId.push(data?.contractDetail?.renewedContractId !== null ? data?.contractDetail?.renewedContractId?.id : '-');
       manager.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
       lastUpdated.push(format(new Date(data?.lastModifiedDate), 'MM-dd-yyyy'))
+      action.push(true)
     })
 
     return [
@@ -449,6 +476,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
       { "type": "text", "value": newContractId, "onClickFunction": onClickFunction },
       { "type": "text", "value": lastUpdated, "onClickFunction": onClickFunction },
       { "type": "text", "value": manager, "onClickFunction": onClickFunction },
+      { "type": "action", "value": action },
     ];
   }
 
@@ -456,7 +484,8 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     // {'data': 'Contract Extension', 'onClick': contractExtension, 'requiredValue': 'boolean'},
     { 'data': 'Terminate Contract', 'onClick': contractTermination, 'requiredValue': 'boolean' },
     //   {'data': 'Clone Contract', 'onClick': contractClone, 'requiredValue': 'boolean'},
-    { 'data': 'Pre Implementation Data', 'onClick': getShowPreImplementationDialog, 'requiredValue': 'boolean' }
+    { 'data': 'Pre Implementation Data', 'onClick': getShowPreImplementationDialog, 'requiredValue': 'boolean' },
+    { 'data': 'Renew Upcoming Renewal Contract', 'onClick': handleRenewalContracts, 'requiredValue': 'boolean' }
   ]
 
   const draftActionsData = [
@@ -475,10 +504,15 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     // {'data': 'Renew Existing Contract', 'onClick': deleteDraft, 'requiredValue': 'boolean'},
     { 'data': 'Extend Contract', 'onClick': activateContracts, 'requiredValue': 'id' },
     // {'data': 'Terminate Contract', 'onClick': activateContracts, 'requiredValue': 'id'}
+    { 'data': 'Renew Upcoming Renewal Contract', 'onClick': handleRenewalContracts, 'requiredValue': 'boolean' }
   ]
 
+  const expiredActionsData = [
+    { 'data': 'Renew Expired Contract', 'onClick': handleRenewalContracts, 'requiredValue': 'boolean' }
+  ]
 
   const handleAddContract = () => {
+    sessionStorage.setItem('Selected Contract Status', "DRAFT")
     getAddContract(true);
   }
 
@@ -502,7 +536,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
   let tableHeaderValues = selectedContract === 'activecontracts' ? activeHeaderValues : selectedContract === 'draft' ? (isDraft ? draftHeaderValues : activationPendingHeaderValues) : selectedContract === 'upcomingrenewals' ? upcomingHeaderValues : expiredHeaderValues;
   let tableSortValues = selectedContract === 'activecontracts' ? activeColSortValues : selectedContract === 'draft' ? (isDraft ? draftColSortValues : activationPendingColSortValues) : selectedContract === 'upcomingrenewals' ? upcomingColSortValues : expiredColSortValues;
   let tableDataValues = selectedContract === 'activecontracts' ? getActiveContractsValues() : selectedContract === "draft" ? getDraftContractsValues() : selectedContract === 'upcomingrenewals' ? getUpcomingContractsValues() : getExpiredContractsValues();
-  let actions = selectedContract === 'activecontracts' ? activeActionsData : selectedContract === 'draft' ? (isDraft ? draftActionsData : activationPendingActionsData) : [];
+  let actions = selectedContract === 'activecontracts' ? activeActionsData : selectedContract === 'draft' ? (isDraft ? draftActionsData : activationPendingActionsData) : selectedContract === "upcomingrenewals" ? upcomingActionsData : expiredActionsData;
   // let gridStyle = selectedContract === 'activecontracts' ? style.activeContractGridWithoutAction : selectedContract === "draft" ? (isDraft ? style.draftContractGrid : style.activationPendingContractGrid) : selectedContract === "upcomingrenewals" ? style.upcomingContractGrid : style.expiredContractGrid;
   let gridStyle = selectedContract === 'activecontracts' ? style.activeContractGrid : selectedContract === "draft" ? (isDraft ? style.draftContractGrid : style.activationPendingContractGrid) : selectedContract === "upcomingrenewals" ? style.upcomingContractGrid : style.expiredContractGrid;
 
@@ -533,11 +567,11 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
                   </>
                 ) : selectedContract === 'upcomingrenewals' ? (
                   <>
-                    <button className={style.myActiveContractsButton} >Upcoming Renewals ( - )</button>
+                    <button className={style.myActiveContractsButton} >Upcoming Renewals ({metadata?.upcomingRenewalsContract?.upcomingRenewalsCount})</button>
                   </>
                 ) : (
                   <>
-                    <button className={style.myActiveContractsButton} >Expired / Terminated ( - )</button>
+                    <button className={style.myActiveContractsButton} >Expired / Terminated ({metadata?.expiredOrTerminatedContract?.expiredOrTerminatedContractCount})</button>
                   </>
                 )}
               </div>

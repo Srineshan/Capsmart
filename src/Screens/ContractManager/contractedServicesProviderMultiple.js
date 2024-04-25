@@ -3,19 +3,30 @@ import { GET, PUT, POST, TenantID } from './../dataSaver';
 import EditServiceProvider from './editServiceProviderDialog';
 import TaskAltOutlinedIcon from '@mui/icons-material/TaskAltOutlined';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import ReportGmailerrorredIcon from '@mui/icons-material/ReportGmailerrorred';
 import Table from '../../Components/TableDesign';
 import { validateTabs } from './contractValidation';
+import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 
 import style from './index.module.scss';
 
-const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newServiceProviderDialog, getViewPage1, getViewPage2, getViewPage3, getCurrentPage, contractId, contractName, isEditable, getTabDataStatus }) => {
+const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newServiceProviderDialog, getViewPage1, getViewPage2, getViewPage3, getCurrentPage, contractId, contractName, isEditable, getTabDataStatus, priorContractId, getShowPrevContractDataAlert, isNewContract }) => {
   const contractID = contractId;
   const [users, setUsers] = useState([]);
   const [editServiceProviderDialog, setEditServiceProviderDialog] = useState(false);
   const [userProviderData, setUserProviderData] = useState(undefined);
-  const tableHeaderValues = ['DATA STATUS', "CONTRACTOR'S NAME", 'CONTRACTOR TYPE', 'SITE LEVEL', 'DEPT LEVEL'];
+  const tableHeaderValues = isNewContract ? ['DATA STATUS', "CONTRACTOR'S NAME", 'CONTRACTOR TYPE', 'SITE LEVEL', 'DEPT LEVEL'] : ['DATA STATUS', "CONTRACTOR'S NAME", 'CONTRACTOR TYPE', 'SITE LEVEL', 'DEPT LEVEL', ''];
   const [providerDataStatus, setProviderDataStatus] = useState([]);
   const [tabValidation, setTabValidation] = useState();
+  const [showAddressConfirmationDialogWhenSubmit, setShowAddressConfirmationDialogWhenSubmit] = useState(false);
+  const [isPriorContractDataInuse, setPriorContractDataInuse] = useState(false);
+  const [contractTabsMetaData, setContractTabsMetaData] = useState();
+
+  console.log(priorContractId)
+
+  useEffect(() => {
+    getContractTabsMetadata()
+  }, [])
 
   useEffect(() => {
     if (userProviderData !== {} && userProviderData !== undefined) {
@@ -38,18 +49,38 @@ const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newSe
     }
   }, [tabValidation])
 
+  const getContractTabsMetadata = async () => {
+    const { data: contractTabsMetaData } = await GET(
+      `contract-managment-service/contracts/${contractId}/contractTabsMetaData`
+    );
+    setContractTabsMetaData(contractTabsMetaData)
+    getShowPrevContractDataAlert(contractTabsMetaData?.contractUsersUpdated)
+  }
 
   const getUserData = async () => {
     if (contractId !== '') {
       const { data: userData } = await GET(`user-management-service/user?contractID=${contractID}`);
-      if (userData) {
-        setUsers(userData?.filter(data => data?.roles?.map(role => role?.roleName)?.includes('Activity Logger') || data?.roles?.map(role => role?.roleName)?.includes('Aggregator') || data?.roles?.map(role => role?.roleName)?.includes('Passive Activity Logger')));
+      if (userData?.length === 0 && priorContractId !== undefined) {
+        setPriorContractDataInuse(true);
+        setShowAddressConfirmationDialogWhenSubmit(true)
+        const { data: priorContractUserData } = await GET(`user-management-service/user?contractID=${priorContractId}`);
+        if (priorContractUserData) {
+          setUsers(priorContractUserData?.filter(data => data?.roles?.map(role => role?.roleName)?.includes('Activity Logger') || data?.roles?.map(role => role?.roleName)?.includes('Aggregator') || data?.roles?.map(role => role?.roleName)?.includes('Passive Activity Logger')));
+        }
+      } else {
+        if (userData) {
+          setUsers(userData?.filter(data => data?.roles?.map(role => role?.roleName)?.includes('Activity Logger') || data?.roles?.map(role => role?.roleName)?.includes('Aggregator') || data?.roles?.map(role => role?.roleName)?.includes('Passive Activity Logger')));
+        }
       }
     }
   }
 
   const getEditServiceDialog = (value) => {
     setEditServiceProviderDialog(value);
+  }
+
+  const getShowAddressConfirmationDialogWhenSubmit = (value) => {
+    setShowAddressConfirmationDialogWhenSubmit(value)
   }
 
   const onClickFunction = (data) => {
@@ -85,6 +116,8 @@ const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newSe
   let siteLevelHoverText = [];
   let deptLevel = [];
   let deptLevelHoverText = [];
+  let firstTimeCheckIcon = [];
+  let firstTimeCheckIconText = [];
 
   const getServiceProviderValues = () => {
     dataStatus = [];
@@ -94,6 +127,8 @@ const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newSe
     siteLevelHoverText = [];
     deptLevel = [];
     deptLevelHoverText = [];
+    firstTimeCheckIcon = [];
+    firstTimeCheckIconText = [];
 
     users?.map((data, index) => {
       let siteLevelTitle = getSiteLevel(data?.contracts?.filter(contract => contract?.id === contractId)?.map(data => data?.sites?.sites)[0]);
@@ -105,6 +140,10 @@ const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newSe
       deptLevel.push(deptLevelTitle?.[0] || '-');
       siteLevelHoverText.push(siteLevelTitle);
       deptLevelHoverText.push(deptLevelTitle);
+      if (!isNewContract) {
+        firstTimeCheckIcon.push(contractTabsMetaData?.users?.filter(tabData => tabData?.refId === data?.id)[0]?.updated ? <ThumbUpAltIcon style={{ color: "#14B15A" }} /> : <ReportGmailerrorredIcon style={{ color: "#F94848" }} />);
+        firstTimeCheckIconText.push(contractTabsMetaData?.users?.filter(tabData => tabData?.refId === data?.id)[0]?.updated ? 'User Data Verified' : 'Previous Contract Data Have Been Copied To This Contract. After Verifying The Data Press Continue In The Specific Service.');
+      }
     })
 
     return [
@@ -113,6 +152,7 @@ const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newSe
       { "type": "text", "value": contractType, "onClickFunction": onClickFunction },
       { "type": "textWithHover", "value": siteLevel, "hoverText": siteLevelHoverText, "onClickFunction": onClickFunction },
       { "type": "textWithHover", "value": deptLevel, "hoverText": deptLevelHoverText, "onClickFunction": onClickFunction },
+      ...!isNewContract ? [{ "type": "icon", "icon": firstTimeCheckIcon, "hoverText": firstTimeCheckIconText, 'isShowHoverText': true }] : [],
     ];
   }
 
@@ -158,12 +198,12 @@ const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newSe
         <div className={`${style.spaceBetween} ${style.marginTop20}`}>
           <button className={`${style.newContractButtonStyle}  ${style.cursorPointer}`} onClick={() => { getCurrentPage('Contract ID & Term Limit') }}>BACK</button>
           <div className={`${style.floatRight}`}>
-            <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20}`} onClick={() => { { getViewPage2(true) }; getViewPage1(false); getCurrentPage('Contractor Business Entity') }}>CONTINUE</button>
+            <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20}`} onClick={() => { getViewPage2(true); getViewPage1(false); getCurrentPage('Contractor Business Entity') }}>CONTINUE</button>
           </div>
         </div>
       }
       {editServiceProviderDialog && (
-        <EditServiceProvider getEditServiceDialog={getEditServiceDialog} userProviderData={userProviderData} contractId={contractId} isEditable={isEditable} users={users} />
+        <EditServiceProvider getEditServiceDialog={getEditServiceDialog} userProviderData={userProviderData} contractId={contractId} isEditable={isEditable} users={users} showAddressConfirmationDialogWhenSubmit={showAddressConfirmationDialogWhenSubmit} getShowAddressConfirmationDialogWhenSubmit={getShowAddressConfirmationDialogWhenSubmit} isPriorContractDataInuse={isPriorContractDataInuse} priorContractId={priorContractId} contractTabsMetaData={contractTabsMetaData} />
       )}
     </div>
   )

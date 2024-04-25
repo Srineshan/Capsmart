@@ -18,6 +18,7 @@ import { valueCheck } from "./../../utils/valueCheck";
 
 import style from "./index.module.scss";
 import MissedMandatoryFieldAlert from "./missedMandatoryFieldAlert";
+import AddressConfirmationAlert from "./addressConfirmation";
 
 const TEXTFIELDLEN50 = 50;
 const TEXTFIELDLEN100 = 100;
@@ -33,6 +34,8 @@ const ContractorBusinessEntity = ({
   getShowAlert,
   isEditable,
   getTabDataStatus,
+  priorContractId,
+  getShowPrevContractDataAlert
 }) => {
   const [isUserUpdated, setIsUserUpdated] = useState(false);
   const [userCount, setUserCount] = useState(0);
@@ -88,14 +91,35 @@ const ContractorBusinessEntity = ({
   const [showSaveInProgress, setShowSaveInProgress] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [buttonName, setButtonName] = useState("");
-
+  const contractStatus = sessionStorage.getItem("Selected Contract Status");
+  const [showAddressConfirmation, setShowAddressConfirmation] = useState(false);
+  const [contractTabsMetaData, setContractTabsMetaData] = useState();
+  const [showAddressConfirmationDialogWhenSubmit, setShowAddressConfirmationDialogWhenSubmit] = useState(false);
   useEffect(() => {
     getUserData();
+    getContractTabsMetadata()
   }, []);
 
   // useEffect(() => {
   //   getContractorData();
   // }, [sameAsContractor])
+
+  const getContractTabsMetadata = async () => {
+    const { data: contractTabsMetaData } = await GET(
+      `contract-managment-service/contracts/${contractId}/contractTabsMetaData`
+    );
+    setContractTabsMetaData(contractTabsMetaData)
+    getShowPrevContractDataAlert(contractTabsMetaData?.contractorBusinessEntityUpdated)
+  }
+
+  const updateContractTabsMetaData = async () => {
+    console.log('entered', contractTabsMetaData)
+    if (!contractTabsMetaData?.contractorBusinessEntityUpdated) {
+      let data = contractTabsMetaData;
+      data.contractorBusinessEntityUpdated = true;
+      await PUT(`contract-managment-service/contracts/${contractId}/contractTabsMetaData`, data)
+    }
+  }
 
   const getUserData = async () => {
     setIsLoading(true);
@@ -219,17 +243,37 @@ const ContractorBusinessEntity = ({
       setShowSaveInProgress(true);
       setContinueLoading(true)
     } else {
-      handleContinue(buttonType);
+      if (!showAddressConfirmationDialogWhenSubmit) {
+        handleContinue(buttonType);
+      } else {
+        setShowAddressConfirmation(true)
+      }
     }
   };
 
   const saveInProgressFunction = (type) => {
-    handleContinue(type);
+    if (!showAddressConfirmationDialogWhenSubmit) {
+      handleContinue(type);
+    } else {
+      setShowAddressConfirmation(true)
+    }
     setShowSaveInProgress(false)
   };
 
   const getSaveInProgressAlert = (value) => {
     setShowSaveInProgress(value);
+    setContinueLoading(value)
+  };
+
+  const addressConfirmationFunction = (type) => {
+    setShowAddressConfirmationDialogWhenSubmit(false);
+    setShowAddressConfirmation(false)
+    handleContinue(type);
+  };
+
+  const getAddressConfirmation = (value) => {
+    console.log('AddressConfirmationAlert', value)
+    setShowAddressConfirmation(value);
     setContinueLoading(value)
   };
 
@@ -361,12 +405,12 @@ const ContractorBusinessEntity = ({
       JSON.stringify(data)
     );
     if (response) {
+      updateContractTabsMetaData();
       SuccessToaster("Business Entity Updated Successfully");
     } else {
       ErrorToaster("Unexpected Error");
     }
     setContinueLoading(false);
-
     if (buttonText === "Continue") {
       getViewPage5(true);
       getCurrentPage("Contracted Services Specification");
@@ -374,7 +418,6 @@ const ContractorBusinessEntity = ({
       getShowAlert(true);
     }
     setUnassignedKeys([]);
-
     getTabDataStatus();
     // }
   };
@@ -389,6 +432,13 @@ const ContractorBusinessEntity = ({
       `contract-managment-service/contracts/${contractId}/contractorBusinessEntity`
     );
     setContractorBusinessEntity(contractorBusinessEntity);
+    if (contractorBusinessEntity?.businessEntity === null && priorContractId !== undefined) {
+      setShowAddressConfirmationDialogWhenSubmit(true);
+      const { data: contractorBusinessEntityPriorContract } = await GET(
+        `contract-managment-service/contracts/${priorContractId}/contractorBusinessEntity`
+      );
+      setContractorBusinessEntity(contractorBusinessEntityPriorContract);
+    }
   };
 
   const setBusinessEntityData = () => {
@@ -1064,7 +1114,7 @@ const ContractorBusinessEntity = ({
               </div>
             )}
           </div>
-          {isEditable && (
+          {contractStatus === "DRAFT" && (
             <div className={`${style.spaceBetween} ${style.marginTop20}`}>
               <button
                 className={`${style.newContractButtonStyle}  ${style.cursorPointer}`}
@@ -1105,6 +1155,15 @@ const ContractorBusinessEntity = ({
           buttonText={"ADD CONTRACTOR"}
         />
       )}
+
+      <AddressConfirmationAlert
+        alert={showAddressConfirmation}
+        getAddressConfirmation={getAddressConfirmation}
+        fieldData={mailingAddress}
+        setContinueLoading={setContinueLoading}
+        addressConfirmationFunction={addressConfirmationFunction}
+        buttonName={buttonName}
+      />
 
       <MissedMandatoryFieldAlert
         alert={showSaveInProgress}

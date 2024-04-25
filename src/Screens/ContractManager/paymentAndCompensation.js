@@ -21,7 +21,7 @@ import style from './index.module.scss';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 import MissedMandatoryFieldAlert from "./missedMandatoryFieldAlert";
 
-const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPage, contractId, checkFieldAndPopAlert, getShowAlert, isEditable, getTabDataStatus }) => {
+const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPage, contractId, checkFieldAndPopAlert, getShowAlert, isEditable, getTabDataStatus, getShowPrevContractDataAlert }) => {
     const [compensation, setCompensation] = useState('RVUBASED');
     const [paymentAndCompensation, setPaymentAndCompensation] = useState({});
     const [rvuQuantity, setRvuQuantity] = useState({
@@ -68,6 +68,8 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
     const [unassignedKeys, setUnassignedKeys] = useState([]);
     const [showSaveInProgress, setShowSaveInProgress] = useState(false);
     const [buttonName, setButtonName] = useState("");
+    const contractStatus = sessionStorage.getItem('Selected Contract Status');
+    const [contractTabsMetaData, setContractTabsMetaData] = useState();
 
     const getContractDetail = async () => {
         const { data: contractData } = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
@@ -158,6 +160,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         }
         const response = await PUT(`contract-managment-service/contracts/${contractId}/paymentAndCompensation`, JSON.stringify(data));
         if (response) {
+            updateContractTabsMetaData()
             SuccessToaster('Payment And Compensation Updated Successfully');
         }
         else {
@@ -240,11 +243,28 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         getPaymentAndCompensation();
         getTimeSheetValues();
         getContractDetail();
+        getContractTabsMetadata();
     }, [])
 
     useEffect(() => {
         getTimeSheetValues();
     }, [contractId])
+
+    const getContractTabsMetadata = async () => {
+        const { data: contractTabsMetaData } = await GET(
+            `contract-managment-service/contracts/${contractId}/contractTabsMetaData`
+        );
+        setContractTabsMetaData(contractTabsMetaData)
+        getShowPrevContractDataAlert(contractTabsMetaData?.paymentAndCompensationUpdated)
+    }
+
+    const updateContractTabsMetaData = async () => {
+        if (!contractTabsMetaData?.paymentAndCompensationUpdated) {
+            let data = contractTabsMetaData;
+            data.paymentAndCompensationUpdated = true;
+            await PUT(`contract-managment-service/contracts/${contractId}/contractTabsMetaData`, data)
+        }
+    }
 
     const updateTimesheetPayment = (value, name, index) => {
         console.log(value, name, index)
@@ -632,7 +652,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                             </div>
                             {paymentFields}
                         </div>
-                        {isEditable &&
+                        {contractStatus === "DRAFT" &&
                             <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                                 <button className={`${style.newContractButtonStyle}  ${style.cursorPointer}`} onClick={() => { getCurrentPage('Timesheet Submission Terms') }}>BACK</button>
                                 <div>

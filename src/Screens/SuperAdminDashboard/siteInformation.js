@@ -481,6 +481,7 @@ const SiteInformation = ({ getActiveStep }) => {
   };
 
   const handleAddress = (name, value) => {
+    console.log(name, value)
     setAddress({ ...address, [name]: value });
   };
 
@@ -533,7 +534,7 @@ const SiteInformation = ({ getActiveStep }) => {
     });
     setSelectedDepartment(selectedSite?.departmentList?.departments || []);
     setLogo({ ...logo, name: selectedSite?.logo?.fileName || '', url: selectedSite?.logo?.file?.fileURL || '' });
-    setSelectedTimezone({ ...selectedTimezone, value: selectedSite?.timeZone?.id })
+    setSelectedTimezone({ ...selectedTimezone, value: selectedSite?.timeZone?.id, abbrev: selectedSite?.timeZone?.abbrevation })
   };
 
   console.log(selectedTimezone?.abbrev)
@@ -927,7 +928,7 @@ const SiteInformation = ({ getActiveStep }) => {
                         Time Zone*
                       </div>
                       <div className={`${style.leftAlign} `}>
-                        <Timezone selectedTimezone={selectedTimezone} setSelectedTimezone={setSelectedTimezone} />
+                        <Timezone cityName={address.city} selectedTimezone={selectedTimezone} setSelectedTimezone={setSelectedTimezone} />
                       </div>
                     </div>
                     {!isSuperAdminAccess && (

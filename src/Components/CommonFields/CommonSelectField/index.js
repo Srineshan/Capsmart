@@ -5,7 +5,7 @@ import { FormControl } from '@mui/material';
 
 import style from './index.module.scss';
 
-const CommonSelectField = ({ value, onChange, className, firstOptionLabel, firstOptionValue, valueList, labelList, disabledList, disabledSelect, defaultValue, widthValue }) => {
+const CommonSelectField = ({ value, onChange, className, firstOptionLabel, firstOptionValue, valueList, labelList, disabledList, disabledSelect, defaultValue, widthValue, menuColor }) => {
     const contractStatus = sessionStorage.getItem('Selected Contract Status');
 
     return (
@@ -25,7 +25,7 @@ const CommonSelectField = ({ value, onChange, className, firstOptionLabel, first
                     <MenuItem value={firstOptionValue}>{firstOptionLabel}</MenuItem>
                 )}
                 {valueList?.map((data, index) => (
-                    <MenuItem value={data} disabled={disabledList[index]}>{labelList[index]}</MenuItem>
+                    <MenuItem value={data} disabled={disabledList[index]} style={{ backgroundColor: menuColor ? menuColor[index] : '' }}>{labelList[index]}</MenuItem>
                 ))}
             </Select>
         </FormControl>

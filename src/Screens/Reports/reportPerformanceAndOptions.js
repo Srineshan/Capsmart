@@ -23,10 +23,11 @@ import ReportsFullScreen from './../../images/reportsFullScreen.png';
 import ReportsShare from './../../images/reportsShare.png';
 import Info from './../../images/info.png';
 import SaveReport from './saveReport';
+import { format } from 'date-fns';
 
 import style from './index.module.scss';
 
-const ReportPerformanceAndOptions = ({ handle, handlePrint, isUpdated, dataToUseInReport, refToUse, getIsDownloadClicked, isNoData }) => {
+const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, refToUse, getIsDownloadClicked, isNoData }) => {
     const { reportType } = useParams();
     const [showSaveReportOutput, setShowSaveReportOutput] = useState(false);
     const [showReportRefreshingDialog, setShowReportRefreshingDialog] = useState(false);
@@ -66,6 +67,8 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, isUpdated, dataToUse
         multiProviderContractsList: 'Multi Provider Contracts List',
         contractsWithABusinessEntity: 'Contracts With A Business Entity',
         currentRemitToAddressForActiveContracts: 'Current Remit To Address For Active Contracts',
+        activityStatusTracker: `Status Of Activities/ Services By Service Provider For ${format(new Date(), 'MMMM yyyy')}`,
+        paymentProcessingStatusTracker: 'Payment Processing Status By Service Provider'
     }
 
     const getSaveReportDialog = (value) => {
@@ -113,7 +116,6 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, isUpdated, dataToUse
                             onMouseEnter={(e) => setAnchorElRefresh(e.currentTarget)} onMouseLeave={() => setAnchorElRefresh(null)} aria-owns={openRefresh ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">
                             <img src={ReportsRefresh} alt="" className={`${style.reportsActions} ${style.marginTop5}`} onClick={() => { setShowReportRefreshingDialog(true); window.location.reload() }} />
-                            {/* <CachedOutlinedIcon style={{ color: isUpdated ? '#F46044' : '#52575D' }} onClick={() => { setShowReportRefreshingDialog(true); window.location.reload() }} /> */}
                             <Popover
                                 id={'mouse-over-popover'}
                                 sx={{

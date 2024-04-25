@@ -24,6 +24,7 @@ import { valueCheck } from "./../../utils/valueCheck";
 
 import style from "./index.module.scss";
 import MissedMandatoryFieldAlert from "./missedMandatoryFieldAlert";
+import AddressConfirmationAlert from "./addressConfirmation";
 
 const TEXTFIELDLEN50 = 50;
 const TEXTFIELDLEN100 = 100;
@@ -38,6 +39,8 @@ const ContractedServicesProviderIndividual = ({
   getShowAlert,
   isEditable,
   getTabDataStatus,
+  priorContractId,
+  getShowPrevContractDataAlert
 }) => {
   const testContractId = contractId;
   const [user, setUsers] = useState([]);
@@ -90,6 +93,7 @@ const ContractedServicesProviderIndividual = ({
   const [contractData, setContractData] = useState([]);
   const [userProviderData, setUserProviderData] = useState({});
   const [isUserPresent, setIsUserPresent] = useState(false);
+  const [isPriorContractDataInuse, setPriorContractDataInuse] = useState(false);
   const [siteList, setSiteList] = useState([]);
   const [sites, setSites] = useState([]);
   const [selectedSitesDept, setSelectedSitesDepartment] = useState([]);
@@ -102,15 +106,24 @@ const ContractedServicesProviderIndividual = ({
   const [CSPSubDomain, setCSPSubDomain] = useState("");
   const [unassignedKeys, setUnassignedKeys] = useState([]);
   const [showSaveInProgress, setShowSaveInProgress] = useState(false);
+  const [showAddressConfirmation, setShowAddressConfirmation] = useState(false);
   const contractStatus = sessionStorage.getItem("Selected Contract Status");
   const [buttonName, setButtonName] = useState("");
+  const [showAddressConfirmationDialogWhenSubmit, setShowAddressConfirmationDialogWhenSubmit] = useState(false);
+  const [contractTabsMetaData, setContractTabsMetaData] = useState();
 
   useEffect(() => {
     getRoles();
     getUserData();
     getUsersData();
     getEntityData();
+    getContractTabsMetadata()
   }, []);
+
+  useEffect(() => {
+    getUserData();
+    console.log(priorContractId)
+  }, [priorContractId]);
 
   useEffect(() => {
     let depts = sites
@@ -132,11 +145,13 @@ const ContractedServicesProviderIndividual = ({
       setContractorPhone(userProviderData?.communication?.mobileNumber);
       setContractorEmail(userProviderData?.email?.officialEmail);
       setAddress(userProviderData?.address);
-      setSelectedRoles(userProviderData?.roles || []);
+      setSelectedRoles(userProviderData?.contracts?.filter(data => data?.id === contractId)?.map(data => data?.roles)[0] || []);
       setContracts(userProviderData?.contracts);
-      let contractData = userProviderData?.contracts
+      let contractData = !isPriorContractDataInuse ? userProviderData?.contracts
         ?.filter((data) => data?.id === contractId)
-        ?.map((data) => data)[0];
+        ?.map((data) => data)[0] : userProviderData?.contracts
+          ?.filter((data) => data?.id === priorContractId)
+          ?.map((data) => data)[0];
       setSiteList(contractData?.sites?.sites ? contractData?.sites?.sites : []);
       setSiteLevel(contractData?.siteLevelResponsible);
       setDepartmentLevel(contractData?.departmentLevelResponsible);
@@ -171,6 +186,22 @@ const ContractedServicesProviderIndividual = ({
   useEffect(() => {
     getTitleData();
   }, [siteList?.length, siteList, userProviderData, isUserPresent]);
+
+  const getContractTabsMetadata = async () => {
+    const { data: contractTabsMetaData } = await GET(
+      `contract-managment-service/contracts/${contractId}/contractTabsMetaData`
+    );
+    setContractTabsMetaData(contractTabsMetaData)
+    getShowPrevContractDataAlert(contractTabsMetaData?.contractUsersUpdated)
+  }
+
+  const updateContractTabsMetaData = async () => {
+    if (!contractTabsMetaData?.contractUsersUpdated) {
+      let data = contractTabsMetaData;
+      data.contractUsersUpdated = true;
+      await PUT(`contract-managment-service/contracts/${contractId}/contractTabsMetaData`, data)
+    }
+  }
 
   const getTitleData = () => {
     console.log(
@@ -227,8 +258,13 @@ const ContractedServicesProviderIndividual = ({
     setDepartmentTitleValues(deptValue);
   };
 
+  console.log(showAddressConfirmationDialogWhenSubmit, priorContractId, isUserPresent, userProviderData?.contracts?.filter((data) => data?.id === contractId)
+    ?.map((data) => data)[0], contractId)
+
+
   const getUserData = async () => {
     if (contractId !== "" && contractId !== undefined) {
+      console.log(priorContractId)
       const { data: userData } = await GET(
         `user-management-service/user?contractID=${contractId}`
       );
@@ -236,6 +272,17 @@ const ContractedServicesProviderIndividual = ({
         if (userData?.length !== 0) {
           setUserProviderData(userData[0]);
           setIsUserPresent(true);
+        }
+        if (userData?.length === 0 && priorContractId !== undefined && priorContractId !== null) {
+          const { data: priorContractUserData } = await GET(
+            `user-management-service/user?contractID=${priorContractId}`
+          );
+          if (priorContractUserData?.length !== 0) {
+            setPriorContractDataInuse(true);
+            setShowAddressConfirmationDialogWhenSubmit(true);
+            setUserProviderData(priorContractUserData[0]);
+            setIsUserPresent(true);
+          }
         }
         setUsers(userData);
       }
@@ -456,7 +503,16 @@ const ContractedServicesProviderIndividual = ({
     return value;
   };
 
+  const getUniqueRoles = () => {
+    return Array.from(new Set(userProviderData?.contracts?.map(data => data?.roles)[0].concat(selectedRoles).map(obj => obj.id))).map(id => {
+      return userProviderData?.contracts?.map(data => data?.roles)[0].concat(selectedRoles).find(obj => obj.id === id);
+    })
+  }
+
+  console.log(getUniqueRoles())
+
   const mandatoryFieldCheck = async (buttonType) => {
+    console.log('entered')
     setContinueLoading(true);
     if (buttonType === "SaveInProgress" || buttonType === "Continue") {
       saveInProgresscheck(buttonType);
@@ -521,12 +577,20 @@ const ContractedServicesProviderIndividual = ({
       setShowSaveInProgress(true);
       setContinueLoading(true)
     } else {
-      handleSave(buttonType);
+      if (!showAddressConfirmationDialogWhenSubmit) {
+        handleSave(buttonType);
+      } else {
+        setShowAddressConfirmation(true)
+      }
     }
   };
 
   const saveInProgressFunction = (type) => {
-    handleSave(type);
+    if (!showAddressConfirmationDialogWhenSubmit) {
+      handleSave(type);
+    } else {
+      setShowAddressConfirmation(true)
+    }
     setShowSaveInProgress(false)
   };
 
@@ -535,7 +599,21 @@ const ContractedServicesProviderIndividual = ({
     setContinueLoading(value)
   };
 
+  const addressConfirmationFunction = (type) => {
+    setShowAddressConfirmationDialogWhenSubmit(false);
+    setShowAddressConfirmation(false)
+    handleSave(type);
+  };
+
+  const getAddressConfirmation = (value) => {
+    console.log('AddressConfirmationAlert', value)
+    setShowAddressConfirmation(value);
+    setContinueLoading(value)
+  };
+
   const handleSave = async (buttonText) => {
+    console.log('entered function', showAddressConfirmationDialogWhenSubmit)
+
     setContinueLoading(true);
     let roles = userProviderData?.roles || [];
     selectedRoles?.map((data) => {
@@ -624,7 +702,7 @@ const ContractedServicesProviderIndividual = ({
         landlineNumber: "string",
         mobileNumberNotApplicable: mobileNA,
       },
-      roles: selectedRoles,
+      roles: getUniqueRoles(),
       address: address,
       tenant: {
         tenantId: TenantID,
@@ -659,7 +737,7 @@ const ContractedServicesProviderIndividual = ({
         });
     }
     setContinueLoading(false);
-
+    updateContractTabsMetaData()
     if (buttonText === "Continue") {
       getViewPage3(true);
       getCurrentPage("Contractor Business Entity");
@@ -1407,7 +1485,7 @@ const ContractedServicesProviderIndividual = ({
           </div>
         </div>
       </div>
-      {isEditable && (
+      {contractStatus === "DRAFT" && (
         <div className={`${style.spaceBetween} ${style.marginTop20}`}>
           <button
             className={`${style.newContractButtonStyle}  ${style.cursorPointer}`}
@@ -1447,6 +1525,15 @@ const ContractedServicesProviderIndividual = ({
         fieldData={unassignedKeys}
         saveInProgressFunction={saveInProgressFunction}
         setContinueLoading={setContinueLoading}
+        buttonName={buttonName}
+      />
+
+      <AddressConfirmationAlert
+        alert={showAddressConfirmation}
+        getAddressConfirmation={getAddressConfirmation}
+        fieldData={address}
+        setContinueLoading={setContinueLoading}
+        addressConfirmationFunction={addressConfirmationFunction}
         buttonName={buttonName}
       />
     </div>

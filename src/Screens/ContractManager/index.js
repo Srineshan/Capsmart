@@ -84,7 +84,6 @@ const Contracts = () => {
 
     const getAddContract = (value, isNext = false) => {
         setAddContract(value);
-        sessionStorage.removeItem('Selected Contract Status');
         console.log('next', isNext, typeof isNext);
         if (!isNext) {
             console.log('inside', isNext);
@@ -189,7 +188,7 @@ const Contracts = () => {
 
     return (
         addContract ? (
-            <AddContract getAddContract={getAddContract} getNewContract={getNewContract} getContractType={getContractType} getSelectedContractType={getSelectedContractType} getMethod={getMethod} />
+            <AddContract getAddContract={getAddContract} getNewContract={getNewContract} getContractType={getContractType} getSelectedContractType={getSelectedContractType} getMethod={getMethod} getContractIdFromActive={getContractIdFromActive} />
         ) : activeContractView ? (<ActiveContract contractId={contractId} activeContractView={activeContractView} getActiveContractView={getActiveContractView} />) : newContractFromClone ? (
             <NewContractFromClone getNewContract={getNewContract} contractType={contractType} selectedContractType={selectedContractType} contractIdFromActive={contractId} getContractIdFromActive={getContractIdFromActive} method={method} contracts={contracts} isEditable={isEditable} selectedContract={selectedContract} />
         ) : (

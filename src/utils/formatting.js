@@ -57,6 +57,6 @@ export const timeZoneAbbreviation = () => {
 }
 
 console.log(timeZoneAbbreviation, siteTimeZone)
-export const corsUrl = 'https://app.mytimesmart.com/cors/'
+// export const corsUrl = 'https://app.mytimesmart.com/cors/'
 
-// export const corsUrl = 'https://app.timesmartai.com/cors/'
+export const corsUrl = 'https://app.timesmartai.com/cors/'

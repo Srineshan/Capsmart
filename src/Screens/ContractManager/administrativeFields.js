@@ -49,6 +49,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         dedicatedHoursSpecified: false,
         dedicatedHoursActivityType: '',
         dedicatedHoursPerformingActivity: '',
+        performingActivity: '',
         totalSession: '0',
         totalSessionFrequency: 'NA',
         sessionAmount: '0',
@@ -114,6 +115,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             dedicatedHoursPerformingActivity: '',
             totalSession: '0',
             totalSessionFrequency: 'NA',
+            performingActivity: '',
             sessionAmount: '0',
             sessionDuration: '1',
             serviceRateDuation: '0',
@@ -151,6 +153,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                 dedicatedHoursSpecified: serviceSelected?.dedicatedHoursSpecified,
                 dedicatedHoursActivityType: serviceSelected?.hoursBorrowed?.activityType?.activityType,
                 dedicatedHoursPerformingActivity: serviceSelected?.hoursBorrowed?.performingActivity?.activity,
+                performingActivity: serviceSelected?.performingActivity?.activity,
                 selectedActivities: serviceSelected?.activityResponse?.dataMap?.adminActivities,
                 totalSession: serviceSelected?.totalSessions?.value || '0',
                 totalSessionFrequency: serviceSelected?.totalSessions?.frequency || 'NA',
@@ -344,6 +347,18 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     return (
         <div>
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                <CommonLabel value='Admininstrative Services Group Name*' />
+                <div >
+                    <CommonTextField
+                        type="text"
+                        className={`${style.fullWidth}`}
+                        onChange={(e) => handleValueChange('performingActivity', e.target.value)}
+                        value={metadata?.performingActivity}
+                    />
+                </div>
+            </div>
+
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Dedicated Hours For Administrative Services*' />
                 <div className={style.displayInRow}>
                     {/* <div className={`${style.threeFieldWidth}`} > */}
@@ -392,7 +407,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                     InputProps={{
                                         endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                                     }}
-                                    onChange={(e) => e.target.value >= 0 && handleValueChange('totalSession', e.target.value.slice(0, 4))}
+                                    onChange={(e) => e.target.value >= 0 && handleValueChange('totalSession', e.target.value.slice(0, 9))}
                                     value={metadata?.totalSession}
                                     disabled={metadata?.totalSessionFrequency === "NA"}
                                 />
@@ -430,7 +445,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                             <div className={`${style.threeFieldWidth}`}>
                                 <CommonTextField
                                     type="tel"
-                                    maxLength="3"
+                                    maxLength="9"
                                     InputProps={{
                                         endAdornment: (
                                             <InputAdornment position="end" sx={{ fontSize: 10 }}>
@@ -440,7 +455,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                     }}
                                     onChange={(e) =>
                                         e.target.value >= 0 &&
-                                        setMetadata({ ...metadata, serviceRateDuration: parseFloat(e.target.value || '0'), sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? (metadata?.serviceRate * (metadata?.totalSession / parseFloat(e.target.value))) : (metadata?.serviceRate * parseFloat(e.target.value || '1')) })
+                                        setMetadata({ ...metadata, serviceRateDuration: e.target.value.slice(0, 9) || '0', sessionAmount: metadata?.serviceRateFrequency === "SESSION" ? (metadata?.serviceRate * (metadata?.totalSession / e.target.value.slice(0, 9))) : (metadata?.serviceRate * e.target.value.slice(0, 9) || '1') })
                                     }
                                     value={metadata?.serviceRateDuration}
                                 />

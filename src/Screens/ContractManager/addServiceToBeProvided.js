@@ -62,6 +62,7 @@ const AddServiceProvided = ({
   selectedIndex,
   isEditable,
   getTabDataStatus,
+  contractTabsMetaData
 }) => {
   const [serviceTypeList, setServiceTypeList] = useState([]);
   const [serviceTypeId, setServiceTypeId] = useState("");
@@ -324,6 +325,25 @@ const AddServiceProvided = ({
   const getMetaData = (value) => {
     setMetadata(value);
   };
+
+  const updateContractTabsMetaData = async () => {
+    let selectedServiceUpdated = contractTabsMetaData?.contractedServices?.filter(data => data?.refId === selectedService?.refId)[0]
+    if (!selectedServiceUpdated?.updated) {
+      let temp = contractTabsMetaData?.contractedServices?.map(item => {
+        if (item.refId === selectedService?.refId) {
+          return { ...item, updated: true };
+        }
+        return item;
+      });
+      let isAllUpdated = temp.every(obj => obj['updated'] === true)
+      let data = contractTabsMetaData;
+      data.contractedServices = temp;
+      if (isAllUpdated) {
+        data.contractedServicesUpdated = true;
+      }
+      await PUT(`contract-managment-service/contracts/${contractId}/contractTabsMetaData`, data)
+    }
+  }
 
   const getActivityList = async () => {
     let dept = [];
@@ -892,6 +912,7 @@ const AddServiceProvided = ({
     } else {
       handleSave(buttonType);
     }
+    updateContractTabsMetaData()
     setContinueLoading(false);
   };
 
@@ -1165,7 +1186,7 @@ const AddServiceProvided = ({
           users:
             selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers,
           performingActivity: {
-            activity: performingActivity,
+            activity: serviceTypeTemplate === ADMINISTRATIVE ? dataValues?.performingActivity : performingActivity,
           },
           activities: activities,
           ...((((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ONCALLSERVICE) &&
@@ -1296,7 +1317,7 @@ const AddServiceProvided = ({
             value: parseFloat(dataValues?.sessionAmount),
           },
           minSessionDuration: {
-            hours: parseInt(dataValues?.minimumSessionDuration || 1),
+            hours: parseInt(dataValues?.minimumSessionDuration || 0),
           },
           patientConsultRequired: dataValues?.patientConsultRequired || false,
           professionalServiceRequired: dataValues?.professionalServiceRequired || false,
@@ -1374,10 +1395,10 @@ const AddServiceProvided = ({
                     .toString(),
                   target: {
                     minimum: {
-                      value: parseInt(dataValues?.weekdayMin),
+                      value: parseFloat(dataValues?.weekdayMin),
                     },
                     maximum: {
-                      value: parseInt(dataValues?.weekdayMax),
+                      value: parseFloat(dataValues?.weekdayMax),
                     },
                     frequency: dataValues?.weekdayFrequency,
                   },
@@ -1415,10 +1436,10 @@ const AddServiceProvided = ({
                     .toString(),
                   target: {
                     minimum: {
-                      value: parseInt(dataValues?.weekdayNightsMin),
+                      value: parseFloat(dataValues?.weekdayNightsMin),
                     },
                     maximum: {
-                      value: parseInt(dataValues?.weekdayNightsMax),
+                      value: parseFloat(dataValues?.weekdayNightsMax),
                     },
                     frequency: dataValues?.weekdayNightsFrequency,
                   },
@@ -1464,10 +1485,10 @@ const AddServiceProvided = ({
                   }),
                   target: {
                     minimum: {
-                      value: parseInt(dataValues?.weekendMin),
+                      value: parseFloat(dataValues?.weekendMin),
                     },
                     maximum: {
-                      value: parseInt(dataValues?.weekendMax),
+                      value: parseFloat(dataValues?.weekendMax),
                     },
                     frequency: dataValues?.weekendFrequency,
                   },
@@ -1505,10 +1526,10 @@ const AddServiceProvided = ({
                   holidayTerm: dataValues?.holidayTerm,
                   target: {
                     minimum: {
-                      value: parseInt(dataValues?.holidayMin),
+                      value: parseFloat(dataValues?.holidayMin),
                     },
                     maximum: {
-                      value: parseInt(dataValues?.holidayMax),
+                      value: parseFloat(dataValues?.holidayMax),
                     },
                     frequency: dataValues?.holidayFrequency,
                   },
@@ -2523,7 +2544,7 @@ const AddServiceProvided = ({
                 updateConflict={updateConflict}
               />
             }
-            {isEditable && !isShowPDF && (
+            {contractStatus === "DRAFT" && !isShowPDF && (
               <div className={`${style.floatRight} `}>
                 {!editService && (
                   <button

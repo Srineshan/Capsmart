@@ -18,27 +18,55 @@ const AddContract = ({
   getContractType,
   getSelectedContractType,
   getMethod,
+  getContractIdFromActive
 }) => {
   const [selectedContract, setSelectedContract] = useState("0");
+  const [selectedPriorContractId, setSelectedPriorContractId] = useState("0");
+  const [selectedPriorContract, setSelectedPriorContract] = useState();
+  const [contractTypeIfExisting, setContractTypeIfExisting] = useState({ id: '', value: '' });
   const [selectedContractOnClick, setSelectedContractOnClick] = useState("");
   const [contractType, setContractType] = useState({ id: '', value: '' });
   const [isEmployeeContractNeeded, setIsEmployeeContractNeeded] = useState(sessionStorage?.getItem('isEmployeeContractNeeded'))
   const [contractTypeList, setContractTypeList] = useState([]);
-
-  const handleNext = () => {
-    if (selectedContract === "0" || contractType === "") {
-      ErrorToaster("Select a contract type to add");
+  const [activeContractList, setActiveContractList] = useState([]);
+  const handleNext = async () => {
+    if (selectedContract === "Renewal Contract") {
+      if (selectedPriorContractId === "0") {
+        ErrorToaster("Select a prior contract ID to Renew");
+      } else if (selectedPriorContract?.contractDetail?.contractRenewed) {
+        ErrorToaster("Contract Already Renewed");
+      } else {
+        await GET(
+          `contract-managment-service/contracts/${selectedPriorContract?.id}/renewContract`
+        ).then(response => {
+          getContractIdFromActive(response?.data?.id)
+          console.log(response?.data)
+          SuccessToaster('Contract Renewed Successfully');
+          getNewContract(true);
+          getAddContract(false, true);
+          getContractType(response?.data?.contractTypeId?.id, response?.data?.contractType)
+          getSelectedContractType(selectedContract);
+          sessionStorage.setItem('Selected Contract Status', "DRAFT")
+        }).catch(error => {
+          ErrorToaster('Contract Renewal Failed');
+        })
+      }
     } else {
-      getMethod("POST");
-      getNewContract(true);
-      getAddContract(false, true);
-      getContractType(contractType?.id, contractType?.value);
-      getSelectedContractType(selectedContract);
+      if (selectedContract === "0" || contractType === "") {
+        ErrorToaster("Select a contract type to add");
+      } else {
+        getMethod("POST");
+        getNewContract(true);
+        getAddContract(false, true);
+        getContractType(contractType?.id, contractType?.value);
+        getSelectedContractType(selectedContract);
+      }
     }
   };
 
   useEffect(() => {
     getContractTypeList();
+    getRenewalContracts();
   }, [])
 
   const getContractTypeList = async () => {
@@ -47,6 +75,27 @@ const AddContract = ({
     );
     setContractTypeList(contractType);
   };
+
+  const getRenewalContracts = async () => {
+    const { data: contracts } = await GET(`contract-managment-service/contracts?limit=200&tab=upcomingrenewals`);
+    let temp = [...contracts?.contractList] || [];
+    const { data: expiredContracts } = await GET(`contract-managment-service/contracts?limit=200&tab=expired/terminated`);
+    expiredContracts?.contractList?.map(data => { temp.push(data) })
+    const { data: activeContracts } = await GET(`contract-managment-service/contracts?limit=200&tab=activecontracts`);
+    activeContracts?.contractList?.map(data => { temp.push(data) })
+    setActiveContractList(temp);
+  };
+
+  const handleExistingContract = (id) => {
+    setSelectedPriorContractId(id);
+    let existingContract = activeContractList?.filter(data => data?.contractDetail?.contractId?.id === id)?.map(data => data)[0]
+    setSelectedPriorContract(existingContract)
+    setContractType({ id: existingContract?.contractTypeId?.id, value: existingContract?.contractType });
+    sessionStorage.setItem('contractType', existingContract?.contractType)
+    sessionStorage.setItem('existingContractId', existingContract?.id)
+    sessionStorage.setItem('priorContractId', id)
+
+  }
 
   console.log('contract type', contractType)
 
@@ -72,25 +121,6 @@ const AddContract = ({
         <div className={style.contractOptions}>
           <div className={`${style.positionCenter}`}>
             <p className={style.selectLable}>Select the Contract type to add</p>
-            {/* <select
-                            name="class"
-                            id="Class"
-                            value={selectedContract || '0'}
-                            onChange={(e) => setSelectedContract(e.target.value)}
-                            className={`${style.addContractTextFieldWidth} ${style.marginLeft20}`}>
-                            <option value="0" >
-                                Select...
-                            </option>
-                            <option value="New Contract" >
-                                New Contract with No Prior Contract(s) with Entity
-                            </option>
-                            <option value="Renewal Contract">
-                                Contracted Services Continuation Renewal Contract
-                            </option>
-                            <option value="Existing Contract">
-                                Existing Active Contract
-                            </option>
-                        </select> */}
             <CommonSelectField
               value={selectedContract || "0"}
               onChange={(e) => setSelectedContract(e.target.value)}
@@ -111,43 +141,61 @@ const AddContract = ({
               widthValue={400}
             />
           </div>
-          <div className={`${style.positionCenter} ${style.marginLeft20} `}>
-            <div className={`${style.positionCenter} ${style.marginLeft20}`}>
-              {contractTypeList?.map(data => (
-                <div
-                  className={`${style.contractCards} ${contractType?.value === data?.contractTypeTemplate && style.selectedContractCard
-                    }`}
-                  onClick={() => {
-                    setSelectedContractOnClick(true);
-                    setContractType({ id: data?.id, value: data?.contractTypeTemplate });
-                    sessionStorage.setItem('contractType', data?.contractTypeTemplate)
-                  }}
-                >
-                  <div className={style.alignCenter}>
-                    <div>
-                      <img
-                        // src={
-                        //   selectedContractOnClick && contractType === data?.contractTypeTemplate
-                        //     ? HighlightedDoctor
-                        //     : Doctor
-                        // }
-                        src={(selectedContractOnClick && contractType?.value === data?.contractTypeTemplate) ? `https://app.timesmartai.com/cors/${data?.selectedIcon?.fileURL}` : `https://app.timesmartai.com/cors/${data?.icon?.fileURL}`}
-                        alt="doctor"
-                        className={`${style.contractCardImage} ${style.alignCenter
-                          }`}
-                      />
-                      <div
-                        className={`${style.contractCardData} ${selectedContract !== "0" ? style.activeContractText : ""
-                          }`}
-                      >
-                        {data?.contractType}
+          {selectedContract === "Renewal Contract" ? (
+            <div className={`${style.positionCenter} ${style.marginTop20}`}>
+              <p className={style.selectLable}>Select the Prior Contract</p>
+              <CommonSelectField
+                value={selectedPriorContractId || "0"}
+                onChange={(e) => handleExistingContract(e.target.value)}
+                className={`${style.addContractTextFieldWidth} ${style.marginLeft20}`}
+                firstOptionLabel={"Select..."}
+                firstOptionValue={"0"}
+                valueList={activeContractList?.map(data => data?.contractDetail?.contractId?.id)}
+                labelList={activeContractList?.map(data => `${data?.contractName?.contractName} - ${data?.contractDetail?.contractId !== null ? data?.contractDetail?.contractId?.id : ''}`)}
+                disabledList={activeContractList?.map(data => false)}
+                widthValue={400}
+                menuColor={activeContractList?.map(data => data?.contractStatus === "ACTIVE" ? '#d1fae3' : data?.contractStatus === "EXPIRED" ? "#fdcece" : '#fff2cc')}
+              />
+            </div>
+          ) : (
+            <>
+              <div className={`${style.positionCenter} ${style.marginLeft20} `}>
+                <div className={`${style.positionCenter} ${style.marginLeft20}`}>
+                  {contractTypeList?.map(data => (
+                    <div
+                      className={`${style.contractCards} ${contractType?.value === data?.contractTypeTemplate && style.selectedContractCard
+                        }`}
+                      onClick={() => {
+                        setSelectedContractOnClick(true);
+                        setContractType({ id: data?.id, value: data?.contractTypeTemplate });
+                        sessionStorage.setItem('contractType', data?.contractTypeTemplate)
+                      }}
+                    >
+                      <div className={style.alignCenter}>
+                        <div>
+                          <img
+                            // src={
+                            //   selectedContractOnClick && contractType === data?.contractTypeTemplate
+                            //     ? HighlightedDoctor
+                            //     : Doctor
+                            // }
+                            src={(selectedContractOnClick && contractType?.value === data?.contractTypeTemplate) ? `https://app.timesmartai.com/cors/${data?.selectedIcon?.fileURL}` : `https://app.timesmartai.com/cors/${data?.icon?.fileURL}`}
+                            alt="doctor"
+                            className={`${style.contractCardImage} ${style.alignCenter
+                              }`}
+                          />
+                          <div
+                            className={`${style.contractCardData} ${selectedContract !== "0" ? style.activeContractText : ""
+                              }`}
+                          >
+                            {data?.contractType}
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              ))}
+                  ))}
 
-              {/* <div
+                  {/* <div
                 className={`${style.contractCards} ${contractType === "MULTIPLE" && style.selectedContractCard
                   }`}
                 onClick={() => {
@@ -207,26 +255,28 @@ const AddContract = ({
                   </div>
                 </div>
               </div>} */}
-            </div>
-          </div>
-          {selectedContractOnClick && (
-            <div
-              className={`${style.descriptionBoxStyle} ${contractType?.value === 'MULTIPLE' ? style.multipleSvgMarginLeft : ''}  ${contractType?.value === "INDIVIDUAL" ? style.individualSvgMarginLeft : ''}`}
-              style={{
-                backgroundImage: `url(${contractType?.value === 'EMPLOYEE' ? IndividualSvg : contractType?.value === 'MULTIPLE' ? MultipleSvg : EmployeeSvg})`,
-                backgroundRepeat: "no-repeat",
-                backgroundSize: "contain",
-              }}
-            >
-              <p className={style.descriptionStyle}>
-                After selecting one of the options above and clicking Next, you
-                will be guided through
-                <span className={`${style.blueColor} ${style.marginLeft20}`}>
-                  the Contracts Manager wizard to help upload contracts and
-                  assign the appropriate metadata.
-                </span>
-              </p>
-            </div>
+                </div>
+              </div>
+              {selectedContractOnClick && (
+                <div
+                  className={`${style.descriptionBoxStyle} ${contractType?.value === 'MULTIPLE' ? style.multipleSvgMarginLeft : ''}  ${contractType?.value === "INDIVIDUAL" ? style.individualSvgMarginLeft : ''}`}
+                  style={{
+                    backgroundImage: `url(${contractType?.value === 'EMPLOYEE' ? IndividualSvg : contractType?.value === 'MULTIPLE' ? MultipleSvg : EmployeeSvg})`,
+                    backgroundRepeat: "no-repeat",
+                    backgroundSize: "contain",
+                  }}
+                >
+                  <p className={style.descriptionStyle}>
+                    After selecting one of the options above and clicking Next, you
+                    will be guided through
+                    <span className={`${style.blueColor} ${style.marginLeft20}`}>
+                      the Contracts Manager wizard to help upload contracts and
+                      assign the appropriate metadata.
+                    </span>
+                  </p>
+                </div>
+              )}
+            </>
           )}
           {/* {selectedContractOnClick && (
             <div

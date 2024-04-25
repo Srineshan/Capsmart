@@ -81,7 +81,9 @@ const NewContractFromClone = ({
     empty: false,
   });
   const [selectedFileURL, setSelectedFileURL] = useState("");
+  const [priorContractId, setPriorContractId] = useState("");
   const [showAlert, setShowAlert] = useState(false);
+  const [showPrevContractDataAlert, setShowPrevContractDataAlert] = useState(false);
   const [isTabsValid, setIsTabsValid] = useState([]);
   const [contractSelected, setContractSelected] = useState(
     contracts
@@ -119,6 +121,11 @@ const NewContractFromClone = ({
     });
   };
 
+  const getPriorContractId = (value) => {
+    console.log('prior contract id', value)
+    setPriorContractId(value);
+  }
+
   const checkFieldAndPopAlert = (value, fieldName) => {
     if (value === null || value === 0 || value === '' || value === undefined || value === '0') {
       console.log('inside');
@@ -136,6 +143,11 @@ const NewContractFromClone = ({
   const getEntityData = async () => {
     const { data: data } = await GET(`entity-service/entity/${TenantID}`);
     setIsMultiSiteEntity(data?.multiSiteEntity);
+  }
+
+  const getShowPrevContractDataAlert = (value) => {
+    console.log(value, 'test')
+    setShowPrevContractDataAlert(value === false ? true : false)
   }
 
   const getFileData = () => {
@@ -283,6 +295,9 @@ const NewContractFromClone = ({
       selectedContract !== "draft" ? false : true
     );
     sessionStorage.removeItem('Selected Contract Status')
+    sessionStorage.removeItem('existingContractId')
+    sessionStorage.removeItem('priorContractId')
+    sessionStorage.removeItem('method')
   };
 
   return (
@@ -521,6 +536,7 @@ const NewContractFromClone = ({
             isEditable={isEditable}
             contract={contractSelected}
             getTabDataStatus={getTabDataStatus}
+            getShowPrevContractDataAlert={getShowPrevContractDataAlert}
           />
         ) : (currentPage === "Timesheet Processing Workflow" && (contractSelected?.contractedServices?.length !== 0 && contractSelected?.contractDetail?.contractType?.value !== "EMPLOYEE")) ? (
           <TimesheetProcessingWorkflow
@@ -533,6 +549,7 @@ const NewContractFromClone = ({
             isEditable={isEditable}
             getTabDataStatus={getTabDataStatus}
             getShowAlert={getShowAlert}
+            getShowPrevContractDataAlert={getShowPrevContractDataAlert}
           />
         ) : (currentPage === "Timesheet Submission Terms" && (contractSelected?.contractedServices?.length !== 0 || contractSelected?.contractDetail?.contractType?.value !== "EMPLOYEE")) ? (
           <TimeSheetSubmissionTerms
@@ -543,6 +560,7 @@ const NewContractFromClone = ({
             getShowAlert={getShowAlert}
             isEditable={isEditable}
             getTabDataStatus={getTabDataStatus}
+            getShowPrevContractDataAlert={getShowPrevContractDataAlert}
           />
         ) : (currentPage === "Payment & Compensation" && (contractSelected?.contractedServices?.length !== 0 || contractSelected?.contractDetail?.contractType?.value !== "EMPLOYEE")) ? (
           <PaymentAndCompensation
@@ -554,6 +572,7 @@ const NewContractFromClone = ({
             getShowAlert={getShowAlert}
             isEditable={isEditable}
             getTabDataStatus={getTabDataStatus}
+            getShowPrevContractDataAlert={getShowPrevContractDataAlert}
           />
         ) : currentPage === "Contracted Add on service specification" ||
           currentPage === "Contracted Services Specification" ? (
@@ -566,6 +585,8 @@ const NewContractFromClone = ({
             isMultiSiteEntity={isMultiSiteEntity}
             isEditable={isEditable}
             getTabDataStatus={getTabDataStatus}
+            getShowPrevContractDataAlert={getShowPrevContractDataAlert}
+            isNewContract={contractSelected?.newContract}
           />
         ) : currentPage === "Documentation Proof Required" ? (
           <DocumentationProofRequired
@@ -576,6 +597,7 @@ const NewContractFromClone = ({
             isMultiSiteEntity={isMultiSiteEntity}
             isEditable={isEditable}
             getTabDataStatus={getTabDataStatus}
+            getShowPrevContractDataAlert={getShowPrevContractDataAlert}
           />
         ) : currentPage === "Contractor Business Entity" ? (
           <ContractorBusinessEntity
@@ -588,6 +610,8 @@ const NewContractFromClone = ({
             getShowAlert={getShowAlert}
             isEditable={isEditable}
             getTabDataStatus={getTabDataStatus}
+            priorContractId={priorContractId}
+            getShowPrevContractDataAlert={getShowPrevContractDataAlert}
           />
         ) : selectContractInfo === "INDIVIDUAL" &&
           currentPage === "Contracted Services Provider(s)" ? (
@@ -601,6 +625,8 @@ const NewContractFromClone = ({
             getShowAlert={getShowAlert}
             isEditable={isEditable}
             getTabDataStatus={getTabDataStatus}
+            priorContractId={priorContractId}
+            getShowPrevContractDataAlert={getShowPrevContractDataAlert}
           />
         ) : currentPage === "Contract ID & Term Limit" ? (
           <ContractIdTermLimitIndividual
@@ -621,6 +647,8 @@ const NewContractFromClone = ({
             getShowAlert={getShowAlert}
             isEditable={isEditable}
             getTabDataStatus={getTabDataStatus}
+            getPriorContractId={getPriorContractId}
+            getShowPrevContractDataAlert={getShowPrevContractDataAlert}
           />
         ) : selectContractInfo === "MULTIPLE" &&
           currentPage === "Contracted Services Provider(s)" ? (
@@ -635,6 +663,9 @@ const NewContractFromClone = ({
             contractName={contractName}
             isEditable={isEditable}
             getTabDataStatus={getTabDataStatus}
+            priorContractId={priorContractId}
+            getShowPrevContractDataAlert={getShowPrevContractDataAlert}
+            isNewContract={contractSelected?.newContract}
           />
         )
           : selectContractInfo === "EMPLOYEE" &&
@@ -649,6 +680,7 @@ const NewContractFromClone = ({
               getShowAlert={getShowAlert}
               isEditable={isEditable}
               getTabDataStatus={getTabDataStatus}
+              getShowPrevContractDataAlert={getShowPrevContractDataAlert}
             />
           ) : (
             ""
@@ -659,6 +691,15 @@ const NewContractFromClone = ({
               <div>
                 <p className={`${style.smallHeadingStyle}`}>{contractName}</p>
                 <div className={style.welcomeBorder}></div>
+                {(showPrevContractDataAlert && !contractSelected?.newContract) && (
+                  <div>
+                    <div className={style.confidentialBoxStyle}>
+                      <div className={`${style.doNotDisturbTextStyle} ${style.textAlignCenter}`}>Previous Contract Data Have Been Copied To This Contract. After Verifying The Data Press Continue.</div>
+                      {/* <div className={`${style.doNotDisturbTextStyle} ${style.textAlignCenter}`}>Do Not Distribute</div>
+                      <div className={`${style.doNotDisturbTextStyle} ${style.textAlignCenter}`}>Without Permission</div> */}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
             <p className={`${style.smallHeadingStyle}`}>{currentPage}</p>

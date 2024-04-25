@@ -416,8 +416,8 @@ body::-webkit-scrollbar {
 
 .expiredContractGrid {
   display: grid;
-  grid-template-columns: 10% 12% 10% 12% 12% 12% 10% 12%;
-  grid-gap: 10px;
+  grid-template-columns: 5% 12% 10% 15% 10% 12% 10% 12% 5%;
+  grid-gap: 1%;
 }
 
 .documentDataProof {
@@ -2303,14 +2303,14 @@ input[type="number"] {
 
 .multipleServiceProviderGrid {
   display: grid;
-  grid-template-columns: 12% 20% 20% 20% 15%;
-  grid-gap: 2%;
+  grid-template-columns: 8% 20% 20% 20% 18% 7%;
+  grid-gap: 1%;
   padding-left: 3%;
 }
 
 .serviceSpecificationGrid {
   display: grid;
-  grid-template-columns: 10% 22% 22% 22% 10% 8%;
+  grid-template-columns: 8% 22% 22% 19% 10% 6% 6%;
   grid-gap: 1%;
   padding-left: 10px;
 }
@@ -2323,21 +2323,21 @@ input[type="number"] {
 
 .serviceSpecificationGridActive {
   display: grid;
-  grid-template-columns: 10% 22% 22% 22% 10% 8%;
+  grid-template-columns: 8% 22% 22% 19% 10% 6% 6%;
   grid-gap: 1%;
   padding-left: 10px;
 }
 
 .serviceSpecificationGridIndividual {
   display: grid;
-  grid-template-columns: 10% 30% 25% 20% 10%;
+  grid-template-columns: 10% 30% 25% 13% 8% 8%;
   grid-gap: 1%;
   padding-left: 10px;
 }
 
 .serviceSpecificationGridIndividualActive {
   display: grid;
-  grid-template-columns: 10% 30% 25% 20% 10%;
+  grid-template-columns: 10% 30% 25% 13% 8% 8%;
   grid-gap: 1%;
   padding-left: 10px;
 }
@@ -2630,7 +2630,7 @@ input[type="number"] {
 
 .trackTableHeaderGrid {
   display: grid;
-  grid-template-columns: 1fr .5fr .5fr;
+  grid-template-columns: .9fr .7fr .4fr;
 }
 
 .timesheetTableHeaderMiddleGrid {
@@ -2648,44 +2648,65 @@ input[type="number"] {
   grid-template-columns: 20% 15% 15% 14% 7% 14% 7% 8%;
 }
 
+.paymentPendingTableDataGrid {
+  display: grid;
+  grid-template-columns: 25% 25% 20% 15% 15%;
+}
+
+.submissionPendingTableDataGrid {
+  display: grid;
+  grid-template-columns: 33% 33% 33%;
+}
+
+.approvalPendingTableDataGrid {
+  display: grid;
+  grid-template-columns: 25% 25% 20% 15% 15%;
+}
+
+.paymentProcessedTableDataGrid {
+  display: grid;
+  grid-template-columns: 15% 15% 13% 10% 13% 10% 13% 10%;
+}
+
+
 .trackTableHeaderMiddleGrid {
   display: grid;
-  grid-template-columns: 32.5% 7.5% 15% 15% 15% 15%;
+  grid-template-columns: 47.5% 7.5% 15% 15% 15%;
 }
 
 .trackTableHeaderMiddleGridForActivityBased {
   display: grid;
-  grid-template-columns: 40% 20% 20% 20%;
+  grid-template-columns: 60% 20% 20%;
 }
 
 .trackTableHeaderTopGrid {
   display: grid;
-  grid-template-columns: 32.5% 67.5%;
+  grid-template-columns: 47.5% 52.5%;
 }
 
 .trackTableHeaderTopGridForActivityBased {
   display: grid;
-  grid-template-columns: 40% 60%;
+  grid-template-columns: 60% 40%;
 }
 
 .trackTableHeaderBottomGrid {
   display: grid;
-  grid-template-columns: 32.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 15%;
+  grid-template-columns: 47.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5%;
 }
 
 .trackTableHeaderBottomGridForActivityBased {
   display: grid;
-  grid-template-columns: 40% 10% 10% 10% 10% 20%;
+  grid-template-columns: 60% 10% 10% 10% 10%;
 }
 
 .trackTableDataGrid {
   display: grid;
-  grid-template-columns: 32.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 15%;
+  grid-template-columns: 47.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5%;
 }
 
 .trackTableDataGridForActivityBased {
   display: grid;
-  grid-template-columns: 40% 10% 10% 10% 10% 20%;
+  grid-template-columns: 60% 10% 10% 10% 10%;
 }
 
 .whiteBackground {
@@ -2719,6 +2740,49 @@ input[type="number"] {
 .iconSize {
   height: 30px;
   width: 30px;
+}
+
+.paymentTabStyle {
+  text-align: center;
+  font: normal normal 600 15px/23px Montserrat;
+  letter-spacing: 0px;
+  text-transform: uppercase;
+  color: #A4A4A4;
+  border: 1px solid #52575D;
+  height: 45px;
+  cursor: pointer;
+}
+
+.selectedPaymentTabStyle {
+  color: #7165E3;
+  border: 1px solid #7165E3;
+  background-color: #F1EFFC;
+}
+
+.paymentTabGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.doNotDisturbTextStyle {
+  font: normal normal 600 12px/15px Montserrat;
+  letter-spacing: 2.24px;
+  color: #F46044;
+  text-transform: capitalize;
+}
+
+.confidentialTextStyle {
+  font: normal normal bold 17px/20px Montserrat;
+  letter-spacing: 1.05px;
+  color: #F46044;
+}
+
+.confidentialBoxStyle {
+  border: 2px solid #F46044;
+  border-radius: 7px;
+  padding: 10px;
+  width: 100%;
+  margin-bottom: 20px;
 }
 
 .filterGrid {

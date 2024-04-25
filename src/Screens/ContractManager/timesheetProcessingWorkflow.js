@@ -12,7 +12,7 @@ import { valueCheck } from "./../../utils/valueCheck";
 import style from './index.module.scss';
 import MissedMandatoryFieldAlert from './missedMandatoryFieldAlert';
 
-const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContractInfo, contractId, contractName, isEditable, getTabDataStatus, contract, getShowAlert }) => {
+const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContractInfo, contractId, contractName, isEditable, getTabDataStatus, contract, getShowAlert, getShowPrevContractDataAlert }) => {
   const [timesheet, setTimesheet] = useState({ id: '', aggregator: '', aggregatorTitle: {}, reviewer: '', reviewerTitle: {}, approver: '', approverTitle: {} });
   const [workFlowList, setWorkFlowList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -36,6 +36,8 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
   const [unassignedKeys, setUnassignedKeys] = useState([]);
   const [showSaveInProgress, setShowSaveInProgress] = useState(false);
   const [buttonName, setButtonName] = useState("");
+  const contractStatus = sessionStorage.getItem('Selected Contract Status');
+  const [contractTabsMetaData, setContractTabsMetaData] = useState();
 
   useEffect(() => {
     setSelectTimesheetToDefineProcess(timesheetProcessingWorkflow[0]?.timesheetLabel?.label);
@@ -55,6 +57,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     getProviderData();
     getTimeSheetValues();
     getTimeSheetWorkFlow();
+    getContractTabsMetadata();
   }, [])
 
   useEffect(() => {
@@ -87,6 +90,25 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
   const getContractValidationDialog = (value) => {
     setIsShowValidationCheck(value);
   }
+
+  const getContractTabsMetadata = async () => {
+    const { data: contractTabsMetaData } = await GET(
+      `contract-managment-service/contracts/${contractId}/contractTabsMetaData`
+    );
+    setContractTabsMetaData(contractTabsMetaData)
+    getShowPrevContractDataAlert(contractTabsMetaData?.workFlowDetailsUpdated)
+  }
+
+  const updateContractTabsMetaData = async () => {
+    if (!contractTabsMetaData?.workFlowDetailsUpdated) {
+      let data = contractTabsMetaData;
+      data.workFlowDetailsUpdated = true;
+      await PUT(`contract-managment-service/contracts/${contractId}/contractTabsMetaData`, data).then((response) => {
+        getContractTabsMetadata()
+      })
+    }
+  }
+
 
   const getContractSites = async () => {
     const { data: contractData } = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
@@ -444,7 +466,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     //   setContinueLoading(false);
     //   return;
     // }
-
+    updateContractTabsMetaData();
     let data = handleTimeSheetWorkFlow(activeTab, timesheet?.reviewer, timesheet?.approver, timesheet?.aggregator, activeTab);
     await updateTimeSheetWorkflow(data, activeTab, 'Timesheet');
 
@@ -581,7 +603,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 <ReviewerApproverField data={users} label="Timesheet Approver*" onValueChange={(value, title) => { setTimesheet({ ...timesheet, approver: value, approverTitle: title }) }} selectLabel="Select Approver" value={timesheet?.approver || '0'} approverReviewer='approver' />
               </div>
               {
-                tabIndex < timeSheetTabs?.length - 1 && isEditable &&
+                tabIndex < timeSheetTabs?.length - 1 && contractStatus === "DRAFT" &&
                 <div>
                   <button className={`${style.timesheetNextButtonStyle}  ${style.cursorPointer} ${style.floatRight}`}
                     // onClick={() => { submit('Next') }}
@@ -590,7 +612,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 </div>
               }
             </div>
-            {isEditable &&
+            {contractStatus === "DRAFT" &&
               <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                 <button className={`${style.newContractButtonStyle} ${style.cursorPointer} `} onClick={() => { getCurrentPage('Payment & Compensation') }}>BACK</button>
                 <div>

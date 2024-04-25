@@ -7,6 +7,8 @@ import RedirectingPopUp from './redirectingPopUp';
 import TaskAltOutlinedIcon from '@mui/icons-material/TaskAltOutlined';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
+import ReportGmailerrorredIcon from '@mui/icons-material/ReportGmailerrorred';
+import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import Table from '../../Components/TableDesign';
 import { validateTabs } from './contractValidation';
 import style from './index.module.scss';
@@ -14,7 +16,7 @@ import AddServiceProvided from './addServiceToBeProvided';
 import { CLINIC, SURGERY, ONCALL, SUPPLEMENTAL, ADDON, ADMINISTRATIVE, PROCEDUREREADING } from '../../Constants';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
-const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPage, selectContractInfo, isMultiSiteEntity, isEditable, getTabDataStatus }) => {
+const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPage, selectContractInfo, isMultiSiteEntity, isEditable, getTabDataStatus, getShowPrevContractDataAlert, isNewContract }) => {
   const [addService, setAddService] = useState(false);
   const [editService, setEditService] = useState(false);
   const [addOn, setAddOn] = useState(false);
@@ -28,7 +30,10 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
   const [isLoading, setIsLoading] = useState(true);
   const [servicesValid, setServicesValid] = useState([]);
   const [serviceToDelete, setServiceToDelete] = useState('');
-  let tableHeaderValues = selectContractInfo === 'INDIVIDUAL' ? ['', 'ACTIVITY TYPE', 'SPECIFIC ACTIVITY', 'BILLABLE', ''] : ['', 'ACTIVITY TYPE', 'SPECIFIC ACTIVITY', 'APPLIES TO', 'BILLABLE', ''];
+  const contractStatus = sessionStorage.getItem('Selected Contract Status');
+  const [contractTabsMetaData, setContractTabsMetaData] = useState();
+
+  let tableHeaderValues = selectContractInfo === 'INDIVIDUAL' ? ['', 'ACTIVITY TYPE', 'SPECIFIC ACTIVITY', 'BILLABLE', '', ''] : ['', 'ACTIVITY TYPE', 'SPECIFIC ACTIVITY', 'APPLIES TO', 'BILLABLE', '', ''];
 
   useEffect(() => {
     getContractedServices();
@@ -37,6 +42,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
   useEffect(() => {
     getUserData();
     getDataStatus();
+    getContractTabsMetadata();
   }, [])
 
   useEffect(() => {
@@ -67,6 +73,14 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
   const getAddOn = (value) => {
     setAddOn(value);
     getAddon(value);
+  }
+
+  const getContractTabsMetadata = async () => {
+    const { data: contractTabsMetaData } = await GET(
+      `contract-managment-service/contracts/${contractId}/contractTabsMetaData`
+    );
+    setContractTabsMetaData(contractTabsMetaData)
+    getShowPrevContractDataAlert(contractTabsMetaData?.contractedServicesUpdated)
   }
 
   const getContractedServices = async () => {
@@ -149,7 +163,8 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
   let appliesToHoverText = [];
   let billable = [];
   let deleteIcon = [];
-
+  let firstTimeCheckIcon = [];
+  let firstTimeCheckIconText = [];
   const getDataStatus = () => {
     let tabsValid = validateTabs(contractId);
     tabsValid?.then(response => {
@@ -166,6 +181,8 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
     appliesToHoverText = [];
     billable = [];
     deleteIcon = [];
+    firstTimeCheckIcon = [];
+    firstTimeCheckIconText = [];
 
     contractedServices?.map((data, index) => {
       let billableValue = data?.billableService;
@@ -180,12 +197,16 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
       }
       dataStatus.push(servicesValid?.[index]?.length === 0 ? <TaskAltOutlinedIcon style={{ color: "#14B15A" }} /> : <WarningAmberIcon style={{ color: "#FF6562" }} />);
       activityType.push(data?.activityType?.activityType);
-      specificActivity.push(data?.activities?.length > 1 ? `${data?.activities?.length} Activities` : data?.activities?.[0]?.activity || '-');
+      specificActivity.push(data?.activityTypeTemplate?.activityTypeTemplate === ADMINISTRATIVE ? data?.performingActivity?.activity : data?.activities?.length > 1 ? `${data?.activities?.length} Activities` : data?.activities?.[0]?.activity || '-');
       specificActivityHoverText.push(data?.activities?.map(data => data?.activity) || '-');
       appliesTo.push(data?.users?.[0]?.name?.firstName || '-');
       appliesToHoverText.push(data?.users?.map(user => user?.name?.firstName) || '-');
       billable.push(billableValue ? 'YES' : 'NO');
       deleteIcon.push(<CloseOutlinedIcon style={{ color: "#F94848" }} />);
+      if (!isNewContract) {
+        firstTimeCheckIcon.push(contractTabsMetaData?.contractedServices?.filter(tabData => tabData?.refId === data?.refId)[0]?.updated ? <ThumbUpAltIcon style={{ color: "#14B15A" }} /> : <ReportGmailerrorredIcon style={{ color: "#F94848" }} />);
+        firstTimeCheckIconText.push(contractTabsMetaData?.contractedServices?.filter(tabData => tabData?.refId === data?.refId)[0]?.updated ? 'Service Data Verified' : 'Previous Contract Data Have Been Copied To This Contract. After Verifying The Data Press Continue In The Specific Service.');
+      }
     })
 
     return selectContractInfo === 'INDIVIDUAL' ? [
@@ -194,7 +215,8 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
       { "type": "textWithHover", "value": specificActivity, "hoverText": specificActivityHoverText, "onClickFunction": onClickFunction },
       // { "type": "textWithHover", "value": appliesTo, "hoverText": appliesToHoverText, "onClickFunction": onClickFunction },
       { "type": "text", "value": billable, "onClickFunction": onClickFunction },
-      isEditable && { "type": "text", "value": deleteIcon, "onClickFunction": onClickCrossFunction },
+      ...!isNewContract ? [{ "type": "icon", "icon": firstTimeCheckIcon, "hoverText": firstTimeCheckIconText, 'isShowHoverText': true }] : [],
+      ...sessionStorage.getItem('isEditable') === 'true' ? [{ "type": "text", "value": deleteIcon, "onClickFunction": onClickCrossFunction }] : [],
 
     ] : [
       { "type": "icon", "icon": dataStatus },
@@ -202,11 +224,12 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
       { "type": "textWithHover", "value": specificActivity, "hoverText": specificActivityHoverText, "onClickFunction": onClickFunction },
       { "type": "textWithHover", "value": appliesTo, "hoverText": appliesToHoverText, "onClickFunction": onClickFunction },
       { "type": "text", "value": billable, "onClickFunction": onClickFunction },
-      isEditable && { "type": "text", "value": deleteIcon, "onClickFunction": onClickCrossFunction },
+      ...!isNewContract ? [{ "type": "icon", "icon": firstTimeCheckIcon, "hoverText": firstTimeCheckIconText, 'isShowHoverText': true }] : [],
+      ...sessionStorage.getItem('isEditable') === 'true' ? [{ "type": "text", "value": deleteIcon, "onClickFunction": onClickCrossFunction }] : [],
     ];
   }
 
-  console.log('servicesValid', servicesValid)
+  console.log('servicesValid', servicesValid, isEditable, sessionStorage.getItem('isEditable'))
 
   if (isLoading) {
     return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />
@@ -217,7 +240,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
       {userLength !== 0 ? (
         <div className={style.cloneBlockStyle}>
           <div className={style.tableHeight}>
-            {isEditable && <button className={`${style.addCotractorButton} ${style.selectedColor} ${style.cursorPointer} ${style.floatRight} ${style.marginBottom}`} onClick={() => setAddService(true)}>ADD SERVICE</button>}
+            {contractStatus === "DRAFT" && <button className={`${style.addCotractorButton} ${style.selectedColor} ${style.cursorPointer} ${style.floatRight} ${style.marginBottom}`} onClick={() => setAddService(true)}>ADD SERVICE</button>}
             {/* <div className={`${style.serviceSpecificationTableHeader} ${style.marginTop20}`}>
               <p className={style.documentProofTextWidth}></p>
               <p className={`${style.documentProofTextWidth}`}>ACTIVITIES TYPE</p>
@@ -245,7 +268,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
               />
             </div>
           </div>
-          {isEditable &&
+          {contractStatus === "DRAFT" &&
             <div className={`${style.spaceBetween} ${style.marginTop20}`}>
               <button className={`${style.newContractButtonStyle}  ${style.cursorPointer}`} onClick={() => { getCurrentPage('Contractor Business Entity') }}>BACK</button>
               <div>
@@ -256,7 +279,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
 
           {
             (addService || editService) &&
-            <AddServiceProvided getAddServiceDialog={getAddServiceDialog} getAddOn={getAddOn} contractId={contractId} selectContractInfo={selectContractInfo} selectedService={selectedService} editService={editService} getEditServiceDialog={getEditServiceDialog} isMultiSiteEntity={isMultiSiteEntity} selectedIndex={selectedContractServiceIndex} isEditable={isEditable} getTabDataStatus={getTabDataStatus} />
+            <AddServiceProvided getAddServiceDialog={getAddServiceDialog} getAddOn={getAddOn} contractId={contractId} selectContractInfo={selectContractInfo} selectedService={selectedService} editService={editService} getEditServiceDialog={getEditServiceDialog} isMultiSiteEntity={isMultiSiteEntity} selectedIndex={selectedContractServiceIndex} isEditable={isEditable} getTabDataStatus={getTabDataStatus} contractTabsMetaData={contractTabsMetaData} />
           }
           <Dialog isOpen={showDeleteConfirmation} onClose={() => setShowDeleteConfirmation(false)} className={`${style.cloneDialog} ${style.dialogPaddingBottom}`}>
             <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>

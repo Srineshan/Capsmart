@@ -20,6 +20,7 @@ import CommonSwitch from "../../Components/CommonFields/CommonSwitch";
 import CommonLabel from "../../Components/CommonFields/CommonLabel";
 import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
 import { valueCheck } from "./../../utils/valueCheck";
+import AddressConfirmationAlert from "./addressConfirmation";
 
 import style from "./index.module.scss";
 
@@ -33,6 +34,11 @@ const EditServiceProvider = ({
   contractId,
   isEditable,
   users,
+  showAddressConfirmationDialogWhenSubmit,
+  getShowAddressConfirmationDialogWhenSubmit,
+  isPriorContractDataInuse,
+  priorContractId,
+  contractTabsMetaData
 }) => {
   const [selectedContract, setSelectedContract] = useState(
     "Written Contract Extension For Fixed Term"
@@ -43,8 +49,10 @@ const EditServiceProvider = ({
   );
   const [roles, setRoles] = useState([]);
   const [workFlowUser, setWorkFlowUser] = useState([]);
-  const [selectedRoles, setSelectedRoles] = useState(userProviderData?.roles);
+  const [selectedRoles, setSelectedRoles] = useState(userProviderData?.contracts?.filter(data => data?.id === contractId)?.map(data => data?.roles)[0] || []);
   const [npin, setNpin] = useState({ npin: "", missing: false, na: false });
+  const [contracts, setContracts] = useState([]);
+
   const [userDetails, setUserDetails] = useState({
     firstName: "",
     middleName: "",
@@ -88,6 +96,7 @@ const EditServiceProvider = ({
   const [phoneNA, setPhoneNA] = useState(false);
   const [continueLoading, setContinueLoading] = useState(false);
   const [CSPSubDomain, setCSPSubDomain] = useState("");
+  const [showAddressConfirmation, setShowAddressConfirmation] = useState(false);
 
   useEffect(() => {
     getRolesData();
@@ -113,7 +122,7 @@ const EditServiceProvider = ({
       missing: userProviderData?.npin?.missing,
       na: userProviderData?.npin?.notApplicable,
     });
-    setSelectedRoles(userProviderData?.roles || []);
+    setSelectedRoles(userProviderData?.contracts?.filter(data => data?.id === contractId)?.map(data => data?.roles)[0] || []);
     setUserDetails({
       ...userDetails,
       firstName: userProviderData?.name?.firstName || "",
@@ -135,13 +144,16 @@ const EditServiceProvider = ({
       state: userProviderData?.address?.state || "",
       zipcode: userProviderData?.address?.zipcode || "",
     });
-    let contractData = userProviderData?.contracts
+    let contractData = !isPriorContractDataInuse ? userProviderData?.contracts
       ?.filter((data) => data?.id === contractId)
-      ?.map((data) => data)[0];
+      ?.map((data) => data)[0] : userProviderData?.contracts
+        ?.filter((data) => data?.id === priorContractId)
+        ?.map((data) => data)[0];
     setSiteList(contractData?.sites?.sites ? contractData?.sites?.sites : []);
     setSiteLevel(contractData?.siteLevelResponsible);
     setDepartmentLevel(contractData?.departmentLevelResponsible);
     setPhoneNA(userProviderData?.communication?.mobileNumberNotApplicable);
+    setContracts(userProviderData?.contracts)
   }, []);
 
   const getTitleData = () => {
@@ -368,6 +380,7 @@ const EditServiceProvider = ({
         ?.map((data) => data?.name)[0],
     });
   };
+  console.log(sites)
 
   const deptTitleReset = () => {
     let temp = sites;
@@ -485,26 +498,107 @@ const EditServiceProvider = ({
     return siteData;
   };
 
+  const getContractsData = () => {
+    let isContractpresent =
+      contracts
+        ?.filter((data) => data?.id === contractId)
+        ?.map((data) => data)?.length || 0;
+    let value = [];
+    if (isContractpresent === 0) {
+      let temp = contracts !== null ? contracts : [];
+      temp.push({
+        id: contractId,
+        contractName: {
+          contractName: contractName,
+        },
+        roles: selectedRoles,
+        sites: {
+          sites: getSiteData(),
+        },
+        siteLevelResponsible: siteLevel,
+        departmentLevelResponsible: departmentLevel,
+      });
+      setContracts(temp);
+      value = temp;
+    } else {
+      let temp = contracts;
+      temp
+        ?.filter((data) => data?.id === contractId)
+        ?.map((data) => {
+          data.roles = selectedRoles;
+          let siteValue = {
+            sites: getSiteData(),
+          };
+          data.sites = siteValue;
+          // data.sites = tempSite;
+          data.siteLevelResponsible = siteLevel;
+          data.departmentLevelResponsible = departmentLevel;
+        });
+      setContracts(temp);
+      value = temp;
+    }
+    return value;
+  };
+
+  const updateContractTabsMetaData = async () => {
+    let selectedUserUpdated = contractTabsMetaData?.users?.filter(data => data?.refId === userProviderData?.id)[0]
+    if (!selectedUserUpdated?.updated) {
+      let temp = contractTabsMetaData?.users?.map(item => {
+        if (item.refId === userProviderData?.id) {
+          return { ...item, updated: true };
+        }
+        return item;
+      });
+      let isAllUpdated = temp.every(obj => obj['updated'] === true)
+      let data = contractTabsMetaData;
+      data.users = temp;
+      if (isAllUpdated) {
+        data.contractUsersUpdated = true;
+      }
+      await PUT(`contract-managment-service/contracts/${contractId}/contractTabsMetaData`, data)
+    }
+  }
+
+  const getUniqueRoles = () => {
+    return Array.from(new Set(userProviderData?.contracts?.map(data => data?.roles)[0].concat(selectedRoles).map(obj => obj.id))).map(id => {
+      return userProviderData?.contracts?.map(data => data?.roles)[0].concat(selectedRoles).find(obj => obj.id === id);
+    })
+  }
+
+  console.log(userProviderData, getUniqueRoles(), selectedRoles)
+
+  const addressConfirmationFunction = (type) => {
+    getShowAddressConfirmationDialogWhenSubmit(false);
+    setShowAddressConfirmation(false)
+    handleSave(type);
+  };
+
+  const getAddressConfirmation = (value) => {
+    console.log('AddressConfirmationAlert', value)
+    setShowAddressConfirmation(value);
+    setContinueLoading(value)
+  };
+
   const handleSave = async () => {
     setContinueLoading(true);
-    let contractData = userProviderData?.contracts;
-    contractData
-      ?.filter((data) => data?.id === contractId)
-      ?.map((data) => {
-        let site = {
-          sites: getSiteData(),
-        };
-        data.roles = selectedRoles;
-        data.sites = site;
-        data.departmentLevelResponsible = departmentLevel;
-        data.siteLevelResponsible = siteLevel;
-      });
-    let roles = userDetails?.roles || [];
-    selectedRoles?.map((data) => {
-      if (!roles?.map((role) => role?.id).includes(data?.id)) {
-        roles?.push(data);
-      }
-    });
+    // let contractData = userProviderData?.contracts;
+    // contractData
+    //   ?.filter((data) => data?.id === contractId)
+    //   ?.map((data) => {
+    //     let site = {
+    //       sites: getSiteData(),
+    //     };
+    //     data.roles = selectedRoles;
+    //     data.sites = site;
+    //     data.departmentLevelResponsible = departmentLevel;
+    //     data.siteLevelResponsible = siteLevel;
+    //   });
+    // let roles = userDetails?.roles || [];
+    // selectedRoles?.map((data) => {
+    //   if (!roles?.map((role) => role?.id).includes(data?.id)) {
+    //     roles?.push(data);
+    //   }
+    // });
     let sites = userDetails?.sites?.sites || [];
     let selectedSite = getSiteData();
     selectedSite?.map((data) => {
@@ -549,7 +643,7 @@ const EditServiceProvider = ({
       setContinueLoading(false);
       return;
     }
-    if (roles?.length === 0) {
+    if (selectedRoles?.length === 0) {
       ErrorToaster("Select User Role");
       setContinueLoading(false);
       return;
@@ -576,7 +670,7 @@ const EditServiceProvider = ({
         suffix: userDetails?.suffix,
       },
       userType: "CONTRACTED_SERVICE_PROVIDER_USER",
-      contracts: contractData,
+      contracts: getContractsData(),
       title: {
         title: "",
       },
@@ -590,7 +684,7 @@ const EditServiceProvider = ({
         landlineNumber: "",
         mobileNumberNotApplicable: phoneNA,
       },
-      roles: roles,
+      roles: getUniqueRoles(),
       address: {
         addressLine: address?.addressLine,
         city: address?.city,
@@ -670,6 +764,7 @@ const EditServiceProvider = ({
       .catch((error) => {
         ErrorToaster("Unexpected Error");
       });
+    updateContractTabsMetaData();
     setContinueLoading(false);
     getEditServiceDialog(false);
   };
@@ -1142,7 +1237,7 @@ const EditServiceProvider = ({
                 } ${continueLoading ? style.disabled : ""}`}
               onClick={() => {
                 !continueLoading &&
-                  handleSave();
+                  !showAddressConfirmationDialogWhenSubmit ? handleSave() : setShowAddressConfirmation(true);
               }
               }
             >
@@ -1150,6 +1245,13 @@ const EditServiceProvider = ({
             </button>
           </div>
         )}
+        <AddressConfirmationAlert
+          alert={showAddressConfirmation}
+          getAddressConfirmation={getAddressConfirmation}
+          fieldData={address}
+          setContinueLoading={setContinueLoading}
+          addressConfirmationFunction={addressConfirmationFunction}
+        />
       </div>
     </Dialog>
   );

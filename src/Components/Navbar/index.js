@@ -382,13 +382,19 @@ const Navbar = () => {
                         to={"/trackContracts/activityStatusTracker"}
                         className={style.noFontStyle}
                       >
-                        <div className={style.options}>Activity Status Tracker</div>
+                        <div className={style.options}>Track Services Rendered</div>
                       </Link>
                       <Link
                         to={"/trackContracts/timesheetAndInvoiceApprovalsStatusTracker"}
                         className={style.noFontStyle}
                       >
-                        <div className={style.options}>Timesheet And Invoice Approvals Status Tracker</div>
+                        <div className={style.options}>Timesheet Submission & Approval Status</div>
+                      </Link>
+                      <Link
+                        to={"/trackContracts/paymentProcessingStatusTracker"}
+                        className={style.noFontStyle}
+                      >
+                        <div className={style.options}>Payment Tracker</div>
                       </Link>
                     </div>
                   </Popover>
