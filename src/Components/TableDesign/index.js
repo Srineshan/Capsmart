@@ -139,6 +139,8 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, hidePagination, 
         }, [ref]);
     }
 
+    console.log(tableData, actions, actions[0]?.conditionToShow)
+
     return (
         <div>
             <div>
@@ -375,7 +377,8 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, hidePagination, 
                                             </div>
                                     ) : tableData?.type === "action" ? (
                                         <div className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.alignCenter}`} onClick={() => { setShowOptions(true); setSelectedMenuIndex(index) }}>
-                                            <MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />
+                                            {(actions[0]?.conditionToShow !== undefined && actions?.length === 1) ? eval(actions[0]?.conditionToShow) && (<MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />)
+                                                : (<MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />)}
                                             {showOptions && index === selectedMenuIndex && (
                                                 <Popover
                                                     id={id}
@@ -388,9 +391,11 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, hidePagination, 
                                                     }}
                                                 >
                                                     <div className={style.actionsCard} ref={menuRef}>
-                                                        {actions?.map((actionsData, actionsIndex) => (
-                                                            <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { actionsData?.onClick(data); handleClose() }} key={actionsIndex}>{actionsData?.data}</div>
-                                                        ))}
+                                                        {actions?.map((actionsData, actionsIndex) => actionsData?.conditionToShow !== undefined ? eval(actionsData?.conditionToShow) &&
+                                                            (<div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { actionsData?.onClick(data); handleClose() }} key={actionsIndex}>{actionsData?.data}</div>)
+                                                            :
+                                                            (<div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { actionsData?.onClick(data); handleClose() }} key={actionsIndex}>{actionsData?.data}</div>)
+                                                        )}
                                                     </div>
                                                 </Popover>
                                             )}

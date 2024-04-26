@@ -282,18 +282,22 @@ const ContractIdTermLimitIndividual = ({
   console.log("contract Users", contractUsers);
 
   const getContractTabsMetadata = async () => {
-    const { data: contractTabsMetaData } = await GET(
-      `contract-managment-service/contracts/${createdContractId}/contractTabsMetaData`
-    );
-    setContractTabsMetaData(contractTabsMetaData)
-    getShowPrevContractDataAlert(contractTabsMetaData?.contractDetailsUpdated)
+    if (createdContractId !== '') {
+      const { data: contractTabsMetaData } = await GET(
+        `contract-managment-service/contracts/${createdContractId}/contractTabsMetaData`
+      );
+      setContractTabsMetaData(contractTabsMetaData)
+      getShowPrevContractDataAlert(contractTabsMetaData?.contractDetailsUpdated)
+    }
   }
 
   const updateContractTabsMetaData = async () => {
-    if (!contractTabsMetaData?.contractDetailsUpdated) {
-      let data = contractTabsMetaData;
-      data.contractDetailsUpdated = true;
-      await PUT(`contract-managment-service/contracts/${createdContractId}/contractTabsMetaData`, data)
+    if (contractTabsMetaData !== undefined) {
+      if (!contractTabsMetaData?.contractDetailsUpdated) {
+        let data = contractTabsMetaData;
+        data.contractDetailsUpdated = true;
+        await PUT(`contract-managment-service/contracts/${createdContractId}/contractTabsMetaData`, data)
+      }
     }
   }
 
