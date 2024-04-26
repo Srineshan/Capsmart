@@ -76,6 +76,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
   const [metadata, setMetadata] = useState();
   const [CSPSubDomain, setCSPSubDomain] = useState("");
   const [contractFilterValues, setContractFilterValues] = useState();
+  console.log(contractFilterValues)
   const compensationPolicyAvailableValues = {
     ACTIVITY_BASED: 'Activity Based',
     FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITH_OFFSET: 'Fixed Amount For Timesheet Period With Offset',

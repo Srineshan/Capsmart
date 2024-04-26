@@ -146,9 +146,12 @@ const Contracts = () => {
 
     const getContracts = async () => {
         setIsLoading(true);
-        let apiUrl = `contract-managment-service/contracts?limit=${10}&offset=${page - 1}&searchText=${searchKey}&tab=${tabFilter?.smallTextSelected !== '' ? availableSmallTextValues[tabFilter?.smallTextSelected] : selectedContract}&contractType=${selectedContractTypeFilter}&compensationPolicy=${selectedCompensationPolicyFilter}&contractPolicyType=${selectedContractPolicyTypeFilter}&contractManagerId=${selectedContractManagersFilter}&contractId=${contractIdFilter !== undefined ? contractIdFilter : ''}&minimumNoOfContractors=${minNumberOfContractors !== undefined ? minNumberOfContractors : 0}&maximumNoOfContractors=${maxNumberOfContractors !== undefined ? maxNumberOfContractors : 99}&startDate=${format(new Date(startDate || new Date()), 'yyyy-MM-dd')}&endDate=${format(new Date(endDate || new Date()), 'yyyy-MM-dd')}&contractExpireInDays=${contractExpiresInDays !== undefined ? contractExpiresInDays : 0}&sortBy=${sortValue}&sortByField=${sortField}`
+        let apiUrl = `contract-managment-service/contracts?limit=${10}&offset=${page - 1}&searchText=${searchKey}&tab=${tabFilter?.smallTextSelected !== '' ? availableSmallTextValues[tabFilter?.smallTextSelected] : selectedContract}&contractType=${selectedContractTypeFilter}&compensationPolicy=${selectedCompensationPolicyFilter}&contractPolicyType=${selectedContractPolicyTypeFilter}&contractManagerId=${selectedContractManagersFilter}&contractId=${contractIdFilter !== undefined ? contractIdFilter : ''}&minimumNoOfContractors=${minNumberOfContractors !== undefined ? minNumberOfContractors : 0}&maximumNoOfContractors=${maxNumberOfContractors !== undefined ? maxNumberOfContractors : 99}&contractExpireInDays=${contractExpiresInDays !== undefined ? contractExpiresInDays : 0}&sortBy=${sortValue}&sortByField=${sortField}`
         if (tabFilter?.bottomTextFilter !== 'undefined') {
             apiUrl += `&noOfDays=${tabFilter?.bottomTextFilter !== 'undefined' ? tabFilter?.bottomTextFilter : ''}`
+        }
+        if (startDate !== null) {
+            apiUrl += `&startDate=${format(new Date(startDate || new Date()), 'yyyy-MM-dd')}&endDate=${format(new Date(endDate || new Date()), 'yyyy-MM-dd')}`
         }
         const { data: contracts } = await GET(apiUrl);
         setContracts(contracts?.contractList);

@@ -35,7 +35,7 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
         contractType: '',
         contractId: '',
         numberOfContract: { min: 0, max: 0 },
-        contractTimeCommitment: { from: new Date(subYears(new Date(), 5)), to: new Date() },
+        contractTimeCommitment: { from: null, to: null },
         compensationPolicyCount: [],
         contractManagers: [],
         contractPolicyTypeCount: [],
@@ -143,7 +143,7 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
         } else if (data === 'numberOfContract') {
             setContractFilter({ ...contractFilter, numberOfContract: { min: 0, max: 99 } })
         } else if (data === 'contractTimeCommitment') {
-            setContractFilter({ ...contractFilter, contractTimeCommitment: { from: subYears(new Date(), 5), to: new Date() } })
+            setContractFilter({ ...contractFilter, contractTimeCommitment: { from: null, to: null } })
         }
     }
 
@@ -173,7 +173,7 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
             data.selected = false
         })
         setContractFilter({ ...contractFilter, temp })
-        setContractFilter({ ...contractFilter, contractId: '', contractExpireInDays: 0, numberOfContract: { min: 0, max: 0 }, contractTimeCommitment: { from: subYears(new Date(), 5), to: new Date() } })
+        setContractFilter({ ...contractFilter, contractId: '', contractExpireInDays: 0, numberOfContract: { min: 0, max: 0 }, contractTimeCommitment: { from: null, to: null } })
     }
 
     const handleFilterSelect = (checked, index, filterName, contractType) => {
@@ -443,7 +443,7 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
                     <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
                         <div className={`${style.filterType} ${((contractFilter?.contractTimeCommitment?.to !== null || contractFilter?.contractTimeCommitment?.from !== null) && !contractTimeCommitmentFilter) ? style.purpleText : ''}`}>Contract Term Period</div>
                         <div className={`${style.displayInRow}  ${style.verticalAlignCenter}`}>
-                            <div className={`${style.clearText} ${(contractFilter?.contractTimeCommitment?.to !== null || contractFilter?.contractTimeCommitment?.from !== null) ? style.purpleText : ''}`} onClick={() => setContractFilter({ ...contractFilter, contractTimeCommitment: { from: subYears(new Date(), 5), to: new Date() } })}>Clear </div>
+                            <div className={`${style.clearText} ${(contractFilter?.contractTimeCommitment?.to !== null || contractFilter?.contractTimeCommitment?.from !== null) ? style.purpleText : ''}`} onClick={() => setContractFilter({ ...contractFilter, contractTimeCommitment: { from: null, to: null } })}>Clear </div>
                             {!contractTimeCommitmentFilter ? (
                                 <AddIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setContractTimeCommitmentFilter(!contractTimeCommitmentFilter)} />
                             ) : (
