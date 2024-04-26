@@ -110,6 +110,12 @@ const NewContractFromClone = ({
     console.log("entered");
   }, [fileFields]);
 
+  useEffect(() => {
+    setContractSelected(contracts
+      ?.filter((contract) => contract?.id === contractId)
+      ?.map((data) => data)[0])
+  }, [contractId])
+
   const getTabDataStatus = () => {
     let temp = validateTabs(contractSelected?.id);
     temp.then((value) => {
@@ -586,7 +592,7 @@ const NewContractFromClone = ({
             isEditable={isEditable}
             getTabDataStatus={getTabDataStatus}
             getShowPrevContractDataAlert={getShowPrevContractDataAlert}
-            isNewContract={contractSelected?.newContract}
+            isNewContract={contractSelected?.newContract ? true : !contractSelected?.newContract && contractSelected?.contractStatus !== 'DRAFT' ? true : false}
           />
         ) : currentPage === "Documentation Proof Required" ? (
           <DocumentationProofRequired
@@ -665,7 +671,7 @@ const NewContractFromClone = ({
             getTabDataStatus={getTabDataStatus}
             priorContractId={priorContractId}
             getShowPrevContractDataAlert={getShowPrevContractDataAlert}
-            isNewContract={contractSelected?.newContract}
+            isNewContract={contractSelected?.newContract ? true : !contractSelected?.newContract && contractSelected?.contractStatus !== 'DRAFT' ? true : false}
           />
         )
           : selectContractInfo === "EMPLOYEE" &&

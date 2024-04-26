@@ -485,7 +485,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     { 'data': 'Terminate Contract', 'onClick': contractTermination, 'requiredValue': 'boolean' },
     //   {'data': 'Clone Contract', 'onClick': contractClone, 'requiredValue': 'boolean'},
     { 'data': 'Pre Implementation Data', 'onClick': getShowPreImplementationDialog, 'requiredValue': 'boolean' },
-    { 'data': 'Renew Upcoming Renewal Contract', 'onClick': handleRenewalContracts, 'requiredValue': 'boolean' }
+    { 'data': 'Renew Upcoming Renewal Contract', 'onClick': handleRenewalContracts, 'requiredValue': 'boolean', 'conditionToShow': `!data?.contractDetail?.contractRenewed && data?.contractDetail?.continuationPolicy?.contractPolicyType !== 'ONETIMECONTRACTTERMINATEONEXPIRATION'` }
   ]
 
   const draftActionsData = [
@@ -504,11 +504,11 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     // {'data': 'Renew Existing Contract', 'onClick': deleteDraft, 'requiredValue': 'boolean'},
     { 'data': 'Extend Contract', 'onClick': activateContracts, 'requiredValue': 'id' },
     // {'data': 'Terminate Contract', 'onClick': activateContracts, 'requiredValue': 'id'}
-    { 'data': 'Renew Upcoming Renewal Contract', 'onClick': handleRenewalContracts, 'requiredValue': 'boolean' }
+    { 'data': 'Renew Upcoming Renewal Contract', 'onClick': handleRenewalContracts, 'requiredValue': 'boolean', 'conditionToShow': `!data?.contractDetail?.contractRenewed && data?.contractDetail?.continuationPolicy?.contractPolicyType !== 'ONETIMECONTRACTTERMINATEONEXPIRATION'` }
   ]
 
   const expiredActionsData = [
-    { 'data': 'Renew Expired Contract', 'onClick': handleRenewalContracts, 'requiredValue': 'boolean' }
+    { 'data': 'Renew Expired Contract', 'onClick': handleRenewalContracts, 'requiredValue': 'boolean', 'conditionToShow': `!data?.contractDetail?.contractRenewed && data?.contractDetail?.continuationPolicy?.contractPolicyType !== 'ONETIMECONTRACTTERMINATEONEXPIRATION'` }
   ]
 
   const handleAddContract = () => {
