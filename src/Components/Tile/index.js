@@ -33,17 +33,21 @@ const Tile = ({
 
   const [bottomTextFilter, setBottomTextFilter] = useState((bottomText?.length === 0 || bottomText === '' || bottomText === undefined) ? '' : bottomText[0])
   const [smallTextSelected, setSmallTextSelected] = useState('')
+  const [selectedBottomTextFilter, setSelectedBottomTextFilter] = useState('');
+
   console.log(smallTextSelected)
 
   useEffect(() => {
     if (typeof getTabFilter === 'function') {
-      getTabFilter({ bottomTextFilter: String(extractNumbersFromString(bottomTextFilter)[0]), smallTextSelected: smallTextSelected })
+      getTabFilter({ bottomTextFilter: String(extractNumbersFromString(selectedBottomTextFilter)[0]), smallTextSelected: smallTextSelected })
     }
   }, [bottomTextFilter, smallTextSelected])
 
   useEffect(() => {
     setSmallTextSelected('')
+    console.log(bottomText, 'filter')
     setBottomTextFilter((bottomText?.length === 0 || bottomText === '' || bottomText === undefined) ? '' : bottomText[0])
+    setSelectedBottomTextFilter('')
   }, [selectedContract])
 
 
@@ -52,14 +56,16 @@ const Tile = ({
     let index = bottomText.findIndex(str => str === bottomTextFilter)
     if (bottomText?.length - 1 === index) {
       setBottomTextFilter(bottomText[0])
-      if (bottomText?.length > 1) {
-        getTabFilter({ bottomTextFilter: String(extractNumbersFromString(bottomText[0])[0]) })
-      }
+      setSelectedBottomTextFilter(bottomText[0])
+      // if (bottomText?.length > 1) {
+      //   getTabFilter({ bottomTextFilter: String(extractNumbersFromString(bottomText[0])[0]) })
+      // }
     } else {
       setBottomTextFilter(bottomText[index + 1])
-      if (bottomText?.length > 1) {
-        getTabFilter({ bottomTextFilter: String(extractNumbersFromString(bottomText[index + 1])[0]) })
-      }
+      setSelectedBottomTextFilter(bottomText[index + 1])
+      // if (bottomText?.length > 1) {
+      //   getTabFilter({ bottomTextFilter: String(extractNumbersFromString(bottomText[index + 1])[0]) })
+      // }
     }
   }
 

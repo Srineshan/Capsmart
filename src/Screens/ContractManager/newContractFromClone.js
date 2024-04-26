@@ -665,7 +665,7 @@ const NewContractFromClone = ({
             getTabDataStatus={getTabDataStatus}
             priorContractId={priorContractId}
             getShowPrevContractDataAlert={getShowPrevContractDataAlert}
-            isNewContract={contractSelected?.newContract}
+            isNewContract={contractSelected?.newContract ? true : contractSelected?.contractStatus !== 'DRAFT' ? true : false}
           />
         )
           : selectContractInfo === "EMPLOYEE" &&
