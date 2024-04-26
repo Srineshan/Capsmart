@@ -110,6 +110,12 @@ const NewContractFromClone = ({
     console.log("entered");
   }, [fileFields]);
 
+  useEffect(() => {
+    setContractSelected(contracts
+      ?.filter((contract) => contract?.id === contractId)
+      ?.map((data) => data)[0])
+  }, [contractId])
+
   const getTabDataStatus = () => {
     let temp = validateTabs(contractSelected?.id);
     temp.then((value) => {
