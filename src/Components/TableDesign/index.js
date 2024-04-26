@@ -139,8 +139,6 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, hidePagination, 
         }, [ref]);
     }
 
-    console.log(tableData, actions, actions[0]?.conditionToShow)
-
     return (
         <div>
             <div>
