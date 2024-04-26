@@ -665,7 +665,7 @@ const NewContractFromClone = ({
             getTabDataStatus={getTabDataStatus}
             priorContractId={priorContractId}
             getShowPrevContractDataAlert={getShowPrevContractDataAlert}
-            isNewContract={contractSelected?.newContract ? true : contractSelected?.contractStatus !== 'DRAFT' ? true : false}
+            isNewContract={contractSelected?.newContract}
           />
         )
           : selectContractInfo === "EMPLOYEE" &&
@@ -691,7 +691,7 @@ const NewContractFromClone = ({
               <div>
                 <p className={`${style.smallHeadingStyle}`}>{contractName}</p>
                 <div className={style.welcomeBorder}></div>
-                {(showPrevContractDataAlert && !contractSelected?.newContract) && (
+                {(showPrevContractDataAlert && !contractSelected?.newContract && contractSelected?.contractStatus === "DRAFT") && (
                   <div>
                     <div className={style.confidentialBoxStyle}>
                       <div className={`${style.doNotDisturbTextStyle} ${style.textAlignCenter}`}>Previous Contract Data Have Been Copied To This Contract. After Verifying The Data Press Continue.</div>
