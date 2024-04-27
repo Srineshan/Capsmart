@@ -358,9 +358,9 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     action = [];
 
     contracts?.map(data => {
-      dot.push('yellow');
+      dot.push(data?.subStatus === 'ACTIVATION_READY' ? 'yellow' : 'red');
       contractType.push(data?.contractType === 'MULTIPLE' ? `MULTI - PROVIDER ${data?.newContract ? '(New)' : '(Existing)'}` : `${data?.contractType} ${data?.newContract ? '(New)' : '(Existing)'}`);
-      dotTooltipValues.push('In-Progress');
+      dotTooltipValues.push(data?.subStatus === 'ACTIVATION_READY' ? 'Activation Ready' : 'Activation Past Due');
       contractId.push(data?.contractDetail?.contractId?.id);
       lock.push(<LockOpenOutlinedIcon style={{ color: '#14B15A' }} />)
       lockHoverText.push('Contract available for other contract managers to access & work on');
@@ -418,8 +418,8 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     action = [];
 
     contracts?.map(data => {
-      dot.push('yellow');
-      dotTooltipValues.push('In-Progress');
+      dot.push(data?.subStatus === 'EXTENSION_REQUIRED' ? 'yellow' : 'red');
+      dotTooltipValues.push(data?.subStatus === 'EXTENSION_REQUIRED' ? 'Extension Required' : 'New Contract Required');
       contractType.push(data?.contractType === 'MULTIPLE' ? 'MULTI - PROVIDER' : data?.contractType);
       contractId.push(data?.contractDetail?.contractId?.id);
       name.push(data?.contractName?.contractName);
@@ -456,8 +456,8 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     action = [];
 
     contracts?.map(data => {
-      dot.push(true);
-      dotTooltipValues.push('Selected');
+      dot.push('red');
+      dotTooltipValues.push(data?.subStatus === 'EXPIRED' ? 'Expired' : 'Terminated');
       contractType.push(data?.contractType === 'MULTIPLE' ? 'MULTI - PROVIDER' : data?.contractType);
       contractId.push(data?.contractDetail?.contractId?.id);
       name.push(data?.contractName?.contractName);
@@ -469,7 +469,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     })
 
     return [
-      { "type": "checkbox", "value": dot, 'tooltipValue': dotTooltipValues },
+      { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
       { "type": "text", "value": contractType, "onClickFunction": onClickFunction },
       { "type": "text", "value": contractId, "onClickFunction": onClickFunction },
       { "type": "text", "value": name, "onClickFunction": onClickFunction },
