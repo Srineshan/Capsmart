@@ -79,7 +79,7 @@ const AddContract = ({
   const getRenewalContracts = async () => {
     const { data: contracts } = await GET(`contract-managment-service/contracts?limit=200&tab=upcomingrenewals`);
     let temp = [...contracts?.contractList] || [];
-    const { data: expiredContracts } = await GET(`contract-managment-service/contracts?limit=200&tab=expired/terminated`);
+    const { data: expiredContracts } = await GET(`contract-managment-service/contracts?limit=200&tab=expired`);
     expiredContracts?.contractList?.map(data => { temp.push(data) })
     const { data: activeContracts } = await GET(`contract-managment-service/contracts?limit=200&tab=activecontracts`);
     activeContracts?.contractList?.map(data => { temp.push(data) })
