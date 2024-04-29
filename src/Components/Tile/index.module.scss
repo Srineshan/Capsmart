@@ -220,3 +220,14 @@
     height: fit-content;
     min-height: 35px;
 }
+
+.clickableText {
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.clickableText:hover {
+    color: darkblue;
+    text-decoration: underline;
+}

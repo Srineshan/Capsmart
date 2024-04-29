@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import style from "./index.module.scss";
 import { extractNumbersFromString } from "../../utils/formatting";
+import { Tooltip } from "@mui/material";
+import ClearIcon from '@mui/icons-material/Clear';
 
 const Tile = ({
   selectedContract,
@@ -83,7 +85,7 @@ const Tile = ({
         <div>
           <div className={`${style.headingForContracts}`}>{tileLabel}</div>
           {bottomText !== "" && (
-            <div className={style.bottomTextStyle} onClick={() => handleGetBottomTextFilter()}>{bottomTextFilter}</div>
+            <div className={`${style.bottomTextStyle} ${style.clickableText}`} onClick={() => handleGetBottomTextFilter()}>{bottomTextFilter}</div>
           )}
         </div>
 
@@ -126,9 +128,24 @@ const Tile = ({
           >
             {smallNum3 !== "" && (
               <span
-                className={`${style.verticalAlignCenter}  ${style.alignRight} `} onClick={() => handleSmallTextSelected(smallText3)}
+                className={`${style.verticalAlignCenter}  ${style.alignRight} `}
               >
-                <span className={(smallTextSelected === smallText3 && selectedContract === currentTile) ? style.smallTextSelected : ''}>{smallText3}</span>
+                {(smallTextSelected === smallText3 && selectedContract === currentTile) && (<ClearIcon sx={{ fontSize: 13, color: '#7165E3', marginRight: '10px' }} onClick={() => setSmallTextSelected('')} />)}
+                <Tooltip title="Click here to apply this filter" arrow
+                  slotProps={{
+                    popper: {
+                      modifiers: [
+                        {
+                          name: 'offset',
+                          options: {
+                            offset: [0, -2],
+                          },
+                        },
+                      ],
+                    },
+                  }}>
+                  <span className={(smallTextSelected === smallText3 && selectedContract === currentTile) ? style.smallTextSelected : ''} onClick={() => handleSmallTextSelected(smallText3)}>{smallText3}</span>
+                </Tooltip>
                 <span
                   className={`${smallNum3 !== "-"
                     ? selectedContract === currentTile
@@ -142,10 +159,23 @@ const Tile = ({
               </span>
             )}
             {smallNum1 !== "" && (
-              <span
-                className={`${style.verticalAlignCenter} ${style.marginTop5} ${style.alignRight}`} onClick={() => handleSmallTextSelected(smallText1)}
-              >
-                <span className={(smallTextSelected === smallText1 && selectedContract === currentTile) ? style.smallTextSelected : ''}>{smallText1}</span>
+              <span className={`${style.verticalAlignCenter} ${style.marginTop5} ${style.alignRight}`} >
+                {(smallTextSelected === smallText1 && selectedContract === currentTile) && (<ClearIcon sx={{ fontSize: 13, color: '#7165E3', marginRight: '10px' }} onClick={() => setSmallTextSelected('')} />)}
+                <Tooltip title="Click here to apply this filter" arrow
+                  slotProps={{
+                    popper: {
+                      modifiers: [
+                        {
+                          name: 'offset',
+                          options: {
+                            offset: [0, -2],
+                          },
+                        },
+                      ],
+                    },
+                  }}>
+                  <span className={(smallTextSelected === smallText1 && selectedContract === currentTile) ? style.smallTextSelected : ''} onClick={() => handleSmallTextSelected(smallText1)}>{smallText1}</span>
+                </Tooltip>
                 <span
                   className={`${smallNum1 !== "-"
                     ? selectedContract === currentTile
@@ -160,9 +190,24 @@ const Tile = ({
             )}
             {smallNum2 !== "" && (
               <span
-                className={`${style.verticalAlignCenter} ${style.marginTop5} ${style.alignRight}`} onClick={() => handleSmallTextSelected(smallText2)}
+                className={`${style.verticalAlignCenter} ${style.marginTop5} ${style.alignRight}`}
               >
-                <span className={(smallTextSelected === smallText2 && selectedContract === currentTile) ? style.smallTextSelected : ''}>{smallText2}</span>
+                {(smallTextSelected === smallText2 && selectedContract === currentTile) && (<ClearIcon sx={{ fontSize: 13, color: '#7165E3', marginRight: '10px' }} onClick={() => setSmallTextSelected('')} />)}
+                <Tooltip title="Click here to apply this filter" arrow
+                  slotProps={{
+                    popper: {
+                      modifiers: [
+                        {
+                          name: 'offset',
+                          options: {
+                            offset: [0, -2],
+                          },
+                        },
+                      ],
+                    },
+                  }}>
+                  <span className={(smallTextSelected === smallText2 && selectedContract === currentTile) ? style.smallTextSelected : ''} onClick={() => handleSmallTextSelected(smallText2)}>{smallText2}</span>
+                </Tooltip>
                 <span
                   className={`${smallNum2 !== "-"
                     ? selectedContract === currentTile

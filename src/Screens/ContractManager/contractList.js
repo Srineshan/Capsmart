@@ -76,7 +76,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
   const [metadata, setMetadata] = useState();
   const [CSPSubDomain, setCSPSubDomain] = useState("");
   const [contractFilterValues, setContractFilterValues] = useState();
-  console.log(contractFilterValues)
+  console.log(contractFilterValues, 'filter')
   const compensationPolicyAvailableValues = {
     ACTIVITY_BASED: 'Activity Based',
     FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITH_OFFSET: 'Fixed Amount For Timesheet Period With Offset',
@@ -613,80 +613,83 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
               </div>
             </div>
             {(contractFilterValues !== undefined && (
-              contractFilterValues?.contractTypeCount !== '' ||
-              contractFilterValues?.contractId !== '' ||
+              contractFilterValues?.contractExpireInDays !== 0 ||
+              contractFilterValues?.contractTypeCount?.filter(data => data?.selected)?.map(data => data)?.length !== 0 ||
+              contractFilterValues?.contractPolicyTypeCount?.filter(data => data?.selected)?.map(data => data)?.length !== 0 ||
+              contractFilterValues?.compensationPolicyCount?.filter(data => data?.selected)?.map(data => data)?.length !== 0 ||
+              contractFilterValues?.contractManagers?.filter(data => data?.selected)?.map(data => data)?.length !== 0 ||
               (contractFilterValues?.numberOfContract?.min !== 0 || contractFilterValues?.numberOfContract?.max !== 0) ||
-              (contractFilterValues?.contractTimeCommitment?.from !== null || contractFilterValues?.contractTimeCommitment?.to !== null))) && (
-                <div className={`${style.displayInRow} ${style.marginTop} ${style.marginLeftRight20} ${style.filterGrid}`}>
-                  <div className={` ${style.verticalAlignCenter} ${style.marginTop}`}>
-                    <div className={`${style.contractFiltersHeading} ${style.marginTop10}`}>Filters Applied: </div>
-                  </div>
-                  {contractFilterValues?.contractTypeCount?.map((data, index) => data?.selected && (
-                    <div className={` ${style.marginLeft10} ${style.marginTop10}`} key={index}>
-                      <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
-                        <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${data?.contractType} (${data?.count})`}</div>
-                        <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => updateFilter('contractTypeCount', data?.contractType)} />
-                      </div>
-                    </div>
-                  ))}
-                  {contractFilterValues?.compensationPolicyCount?.map((data, index) => data?.selected && (
-                    <div className={` ${style.marginLeft10} ${style.marginTop10}`} key={index}>
-                      <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
-                        <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${compensationPolicyAvailableValues[data?.compensationPolicy]} (${data?.count})`}</div>
-                        <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => updateFilter('compensationPolicyCount', data?.compensationPolicy)} />
-                      </div>
-                    </div>
-                  ))}
-                  {contractFilterValues?.contractPolicyTypeCount?.map((data, index) => data?.selected && (
-                    <div className={` ${style.marginLeft10} ${style.marginTop10}`} key={index}>
-                      <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
-                        <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${contractPolicyTypeAvailableValues[data?.contractPolicyType]} (${data?.count})`}</div>
-                        <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => updateFilter('contractPolicyTypeCount', data?.contractPolicyType)} />
-                      </div>
-                    </div>
-                  ))}
-                  {contractFilterValues?.contractManagers?.map((data, index) => data?.selected && (
-                    <div className={` ${style.marginLeft10} ${style.marginTop10}`} key={index}>
-                      <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
-                        <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${data?.name?.firstName} ${data?.name?.lastName}`}</div>
-                        <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => updateFilter('contractManagers', data?.userID)} />
-                      </div>
-                    </div>
-                  ))}
-                  {(contractFilterValues?.contractId !== '' && contractFilterValues?.contractId !== undefined) && (
-                    <div className={` ${style.marginLeft10} ${style.marginTop10}`}>
-                      <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
-                        <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${contractFilterValues?.contractId}`}</div>
-                        <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer} ${style.marginRight5}`} onClick={() => updateFilter('contractId')} />
-                      </div>
-                    </div>
-                  )}
-                  {(contractFilterValues?.contractExpireInDays !== 0 && contractFilterValues?.contractExpireInDays !== undefined) && (
-                    <div className={` ${style.marginLeft10} ${style.marginTop10}`}>
-                      <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
-                        <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`Expires in ${contractFilterValues?.contractExpireInDays} Days`}</div>
-                        <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer} ${style.marginRight5}`} onClick={() => updateFilter('contractExpireInDays')} />
-                      </div>
-                    </div>
-                  )}
-                  {(contractFilterValues?.numberOfContract?.max !== 0) && (
-                    <div className={` ${style.marginLeft10} ${style.marginTop10}`}>
-                      <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
-                        <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${contractFilterValues?.numberOfContract?.min} - ${contractFilterValues?.numberOfContract?.max}`}</div>
-                        <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer} ${style.marginRight5}`} onClick={() => updateFilter('numberOfContract')} />
-                      </div>
-                    </div>
-                  )}
-                  {(contractFilterValues?.contractTimeCommitment?.from !== null || contractFilterValues?.contractTimeCommitment?.to !== null) && (
-                    <div className={` ${style.marginLeft10} ${style.marginTop10}`}>
-                      <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
-                        <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${format(new Date(contractFilterValues?.contractTimeCommitment?.from || new Date()), 'MM/dd/yyyy')} - ${format(new Date(contractFilterValues?.contractTimeCommitment?.to || new Date()), 'MM/dd/yyyy')}`}</div>
-                        <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer} ${style.marginRight5}`} onClick={() => updateFilter('contractTimeCommitment')} />
-                      </div>
-                    </div>
-                  )}
+              (contractFilterValues?.contractTimeCommitment?.from !== null || contractFilterValues?.contractTimeCommitment?.to !== null))) ? (
+              <div className={`${style.displayInRow} ${style.marginTop} ${style.marginLeftRight20} ${style.filterGrid}`}>
+                <div className={` ${style.verticalAlignCenter} ${style.marginTop} ${style.marginLeft10}`}>
+                  <div className={`${style.contractFiltersHeading} ${style.marginTop10}`}>Filters Applied </div>
                 </div>
-              )}
+                {contractFilterValues?.contractTypeCount?.map((data, index) => data?.selected && (
+                  <div className={` ${style.marginLeft10} ${style.marginTop10}`} key={index}>
+                    <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
+                      <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${data?.contractType} (${data?.count})`}</div>
+                      <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => updateFilter('contractTypeCount', data?.contractType)} />
+                    </div>
+                  </div>
+                ))}
+                {contractFilterValues?.compensationPolicyCount?.map((data, index) => data?.selected && (
+                  <div className={` ${style.marginLeft10} ${style.marginTop10}`} key={index}>
+                    <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
+                      <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${compensationPolicyAvailableValues[data?.compensationPolicy]} (${data?.count})`}</div>
+                      <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => updateFilter('compensationPolicyCount', data?.compensationPolicy)} />
+                    </div>
+                  </div>
+                ))}
+                {contractFilterValues?.contractPolicyTypeCount?.map((data, index) => data?.selected && (
+                  <div className={` ${style.marginLeft10} ${style.marginTop10}`} key={index}>
+                    <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
+                      <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${contractPolicyTypeAvailableValues[data?.contractPolicyType]} (${data?.count})`}</div>
+                      <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => updateFilter('contractPolicyTypeCount', data?.contractPolicyType)} />
+                    </div>
+                  </div>
+                ))}
+                {contractFilterValues?.contractManagers?.map((data, index) => data?.selected && (
+                  <div className={` ${style.marginLeft10} ${style.marginTop10}`} key={index}>
+                    <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
+                      <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${data?.name?.firstName} ${data?.name?.lastName}`}</div>
+                      <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => updateFilter('contractManagers', data?.userID)} />
+                    </div>
+                  </div>
+                ))}
+                {(contractFilterValues?.contractId !== '' && contractFilterValues?.contractId !== undefined) && (
+                  <div className={` ${style.marginLeft10} ${style.marginTop10}`}>
+                    <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
+                      <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${contractFilterValues?.contractId}`}</div>
+                      <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer} ${style.marginRight5}`} onClick={() => updateFilter('contractId')} />
+                    </div>
+                  </div>
+                )}
+                {(contractFilterValues?.contractExpireInDays !== 0 && contractFilterValues?.contractExpireInDays !== undefined) && (
+                  <div className={` ${style.marginLeft10} ${style.marginTop10}`}>
+                    <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
+                      <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`Expires in ${contractFilterValues?.contractExpireInDays} Days`}</div>
+                      <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer} ${style.marginRight5}`} onClick={() => updateFilter('contractExpireInDays')} />
+                    </div>
+                  </div>
+                )}
+                {(contractFilterValues?.numberOfContract?.max !== 0) && (
+                  <div className={` ${style.marginLeft10} ${style.marginTop10}`}>
+                    <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
+                      <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${contractFilterValues?.numberOfContract?.min} - ${contractFilterValues?.numberOfContract?.max}`}</div>
+                      <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer} ${style.marginRight5}`} onClick={() => updateFilter('numberOfContract')} />
+                    </div>
+                  </div>
+                )}
+                {(contractFilterValues?.contractTimeCommitment?.from !== null || contractFilterValues?.contractTimeCommitment?.to !== null) && (
+                  <div className={` ${style.marginLeft10} ${style.marginTop10}`}>
+                    <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
+                      <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${format(new Date(contractFilterValues?.contractTimeCommitment?.from || new Date()), 'MM/dd/yyyy')} - ${format(new Date(contractFilterValues?.contractTimeCommitment?.to || new Date()), 'MM/dd/yyyy')}`}</div>
+                      <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer} ${style.marginRight5}`} onClick={() => updateFilter('contractTimeCommitment')} />
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : ''}
             {isLoading ?
               <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
                 <CircularProgress sx={{ color: "#7165E3" }} />

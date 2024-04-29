@@ -56,6 +56,12 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
         AUTORENEWAL: 'Auto Renewal'
     }
 
+    const contractFiltersAvailableValues = {
+        INDIVIDUAL: 'Individual',
+        MULTIPLE: 'Multiple',
+        EMPLOYEE: 'Employee'
+    }
+
     useEffect(() => {
         getFilterData();
     }, [selectedContract])
@@ -253,8 +259,15 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
             <div className={`${style.filterPadding}`}>
                 <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
                     <div className={style.filterHeading}>CONTRACT FILTERS</div>
-                    <div className={style.clearText} onClick={reset}>Clear All</div>
+                    <div className={`${style.clearText} ${(contractFilter?.contractTypeCount?.filter(data => data?.selected)?.length !== 0 ||
+                        contractFilter?.compensationPolicyCount?.filter(data => data?.selected)?.length !== 0 ||
+                        contractFilter?.contractPolicyTypeCount?.filter(data => data?.selected)?.length !== 0 ||
+                        contractFilter?.contractManagers?.filter(data => data?.selected)?.length !== 0 ||
+                        contractFilter?.contractExpireInDays !== 0 ||
+                        contractFilter?.numberOfContract?.min !== 0 || contractFilter?.numberOfContract?.max !== 0 ||
+                        contractFilter?.contractTimeCommitment?.to !== null || contractFilter?.contractTimeCommitment?.from !== null) ? style.purpleText : ''}`} onClick={reset}>Clear All</div>
                 </div>
+                <div className={style.dividerStyle}></div>
                 <div>
                     <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
                         <div className={`${style.filterType} ${(contractFilter?.contractTypeCount?.filter(data => data?.selected)?.length !== 0 && !contractTypeFilter) ? style.purpleText : ''}`}>Contract Type</div>
@@ -279,7 +292,7 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
                                     }
                                 /> */}
                                 {contractFilter?.contractTypeCount?.map((data, index) => (
-                                    <CommonCheckBox checked={data?.selected === true ? true : false} onChange={(e) => handleFilterSelect(e.target.checked, index, 'contractTypeCount', data?.contractType)} label={`${data?.contractType}(${data?.count})`} key={index} />
+                                    <CommonCheckBox checked={data?.selected === true ? true : false} onChange={(e) => handleFilterSelect(e.target.checked, index, 'contractTypeCount', data?.contractType)} label={`${contractFiltersAvailableValues[data?.contractType]} (${data?.count})`} key={index} />
                                 ))}
                             </>
                         )}
@@ -347,7 +360,7 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
                             </>
                         )}
                     </div>
-                    <div className={style.dividerStyle}></div>
+                    {/* <div className={style.dividerStyle}></div>
                     <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
                         <div className={`${style.filterType}  ${(contractFilter?.contractId !== '' && !contractIdFilter) ? style.purpleText : ''}`}>Contract ID</div>
                         <div className={`${style.displayInRow}  ${style.verticalAlignCenter}`}>
@@ -370,7 +383,7 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
                                 }
                             />
                         )}
-                    </div>
+                    </div> */}
                     <div className={style.dividerStyle}></div>
                     <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
                         <div className={`${style.filterType}  ${(contractFilter?.contractExpireInDays !== 0 && !contractExpireInDaysFilter) ? style.purpleText : ''}`}>Contract Expire In Days</div>
