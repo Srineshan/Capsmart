@@ -55,12 +55,20 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, hidePagination, 
 
     const availableSortValue = {
         CONTRACT_NAME: 'NAME',
-        CONTRACT_ID: 'ID'
+        CONTRACT_ID: 'ID',
+        EFFECTIVE_DATE: 'EFFECTIVE DATE',
+        LAST_UPDATED: 'LAST UPDATED',
+        ACTIVIATION_STATUS: 'ACTIVATION STATUS',
+        EXPIRATION_DATE: 'EXPIRATION DATE'
     }
 
     const availableSortValueEnum = {
-        NAME: 'CONTRACT_NAME',
-        ID: 'CONTRACT_ID'
+        'NAME': 'CONTRACT_NAME',
+        'ID': 'CONTRACT_ID',
+        'EFFECTIVE DATE': 'EFFECTIVE_DATE',
+        'LAST UPDATED': 'LAST_UPDATED',
+        'ACTIVATION STATUS': 'ACTIVIATION_STATUS',
+        'EXPIRATION DATE': 'EXPIRATION_DATE'
     }
 
     const handleClick = (event) => {

@@ -2266,6 +2266,12 @@ input[type="number"] {
   border: 0.6000000238418579px solid #f54646;
 }
 
+.redBorderInput {
+  border: 0.6000000238418579px solid #f54646;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
 .redLable {
   color: #f54646 !important;
 }

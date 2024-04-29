@@ -205,7 +205,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
       deleteIcon.push(<CloseOutlinedIcon style={{ color: "#F94848" }} />);
       if (!isNewContract) {
         firstTimeCheckIcon.push(contractTabsMetaData?.contractedServices?.filter(tabData => tabData?.refId === data?.refId)[0]?.updated ? <ThumbUpAltIcon style={{ color: "#14B15A" }} /> : <ReportGmailerrorredIcon style={{ color: "#F94848" }} />);
-        firstTimeCheckIconText.push(contractTabsMetaData?.contractedServices?.filter(tabData => tabData?.refId === data?.refId)[0]?.updated ? 'Service Data Verified' : 'Previous Contract Data Have Been Copied To This Contract. After Verifying The Data Press Continue In The Specific Service.');
+        firstTimeCheckIconText.push(contractTabsMetaData?.contractedServices?.filter(tabData => tabData?.refId === data?.refId)[0]?.updated ? 'Service Data Verified' : 'NOTE: To ease your data entry burden,  prior contract data has been copied for this renewal contract. Please verify the data on each service and save before continuing.');
       }
     })
 

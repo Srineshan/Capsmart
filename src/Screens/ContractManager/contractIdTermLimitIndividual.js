@@ -1137,7 +1137,8 @@ const ContractIdTermLimitIndividual = ({
               onFocus={() => {
                 checkFieldAndPopAlert(contractId?.id, "Contract ID");
               }}
-              className={`${style.entityFieldWidth}`}
+              error={(contractId === undefined && isRenewedContract) ? true : false}
+              className={`${style.entityFieldWidth} ${(contractId?.id === undefined && isRenewedContract) ? style.redBorderInput : ''}`}
               onChange={(e) =>
                 setContractId({
                   ...contractId,
@@ -1451,7 +1452,7 @@ const ContractIdTermLimitIndividual = ({
                       ...params.inputProps,
                       placeholder: "Start Date",
                     }}
-                    error={contractTermPeriodFrom === null ? true : false}
+                    error={(contractTermPeriodFrom === null && createdContractId !== "") ? true : false}
                   />
                 )}
               />
@@ -1492,7 +1493,7 @@ const ContractIdTermLimitIndividual = ({
                       ...params.inputProps,
                       placeholder: "End Date",
                     }}
-                    error={contractTermPeriodTo === null ? true : false}
+                    error={(contractTermPeriodTo === null && createdContractId !== "") ? true : false}
                   />
                 )}
               />
@@ -1500,7 +1501,12 @@ const ContractIdTermLimitIndividual = ({
           </div>
         </div>
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <CommonLabel value="Contracted Services Effective Date*" />
+          <CommonLabel value="Contracted Services Effective Date*"
+            className={
+              dataCheck(contractEffectiveDate)
+                ? style.redLable
+                : ""
+            } />
           <div
             className={`${style.leftAlign} ${style.effectiveDateWidth}`}
             onFocus={() => {
@@ -1539,7 +1545,7 @@ const ContractIdTermLimitIndividual = ({
                     ...params.inputProps,
                     placeholder: "Effective Date",
                   }}
-                  error={contractEffectiveDate === null ? true : false}
+                  error={(contractEffectiveDate === null && createdContractId !== "") ? true : false}
                 />
               )}
             />
@@ -1700,6 +1706,7 @@ const ContractIdTermLimitIndividual = ({
                   "Extension By Mutual Written Signed Agreement.",
                 ]}
                 disabledList={[false, false]}
+                error={(selectedContractContinuationPolicy === '' && contractIdFromActive !== '' && !contractData?.newContract) ? true : false}
               />
             </div>
             {selectedContractContinuationPolicy === "AUTORENEWAL" && (

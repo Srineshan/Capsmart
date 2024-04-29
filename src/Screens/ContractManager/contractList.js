@@ -52,14 +52,14 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     "LAST UPDATED",
     "ACTION"
   ];
-  const draftHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "ACTIVATION STATUS", "LAST UPDATED", "REF DOCS", "LAST UPDATED BY", "MANAGER", "ACTION"];
-  const activationPendingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "REVIEWS", "APPROVALS", "REF DOCS", "GO LIVE DATE", "EFFECTIVE DATE", "MANAGER", "ACTION"];
+  const draftHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "ACTIVATION STATUS", "LAST UPDATED", "CONTRACT DOCS", "LAST UPDATED BY", "MANAGER", "ACTION"];
+  const activationPendingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "REVIEWS", "APPROVALS", "CONTRACT DOCS", "GO LIVE DATE", "EFFECTIVE DATE", "MANAGER", "ACTION"];
   const upcomingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "EXPIRATION DATE", "EXPIRING IN", "LAST UPDATE", "MANAGER", "ACTION"];
   const expiredHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "TERMINATION DATE", "NEW CONTRACT ID", "LAST UPDATE", "MANAGER", "ACTION"];
-  const activeColSortValues = [false, false, false, true, false, true, false, false, false, false];
-  const draftColSortValues = [false, false, true, true, false, false, false, false, false];
-  const upcomingColSortValues = [false, false, true, true, false, false, false, false, false];
-  const expiredColSortValues = [false, false, true, true, false, false, false, false];
+  const activeColSortValues = [false, false, false, true, false, true, false, true, true, false];
+  const draftColSortValues = [false, false, true, true, true, true, false, false, false];
+  const upcomingColSortValues = [false, false, true, true, true, false, true, false, false];
+  const expiredColSortValues = [false, false, true, true, false, false, true, false];
   const activationPendingColSortValues = [false, false, true, true, false, false, false, false, false, false, false];
   const [isPrintClicked, setIsPrintClicked] = useState(false);
   const [isDownloadClicked, setIsDownloadClicked] = useState(false);
@@ -358,9 +358,9 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     action = [];
 
     contracts?.map(data => {
-      dot.push(data?.subStatus === 'ACTIVATION_READY' ? 'yellow' : 'red');
+      dot.push(data?.subStatus === 'ACTIVATION_IN_PROGRESS' ? 'yellow' : 'red');
       contractType.push(data?.contractType === 'MULTIPLE' ? `MULTI - PROVIDER ${data?.newContract ? '(New)' : '(Existing)'}` : `${data?.contractType} ${data?.newContract ? '(New)' : '(Existing)'}`);
-      dotTooltipValues.push(data?.subStatus === 'ACTIVATION_READY' ? 'Activation Ready' : 'Activation Past Due');
+      dotTooltipValues.push(data?.subStatus === 'ACTIVATION_IN_PROGRESS' ? 'Activation Ready' : 'Activation Past Due');
       contractId.push(data?.contractDetail?.contractId?.id);
       lock.push(<LockOpenOutlinedIcon style={{ color: '#14B15A' }} />)
       lockHoverText.push('Contract available for other contract managers to access & work on');

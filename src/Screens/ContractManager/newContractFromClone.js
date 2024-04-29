@@ -50,6 +50,7 @@ const NewContractFromClone = ({
   isEditable,
 }) => {
   console.log('contract Type', contractType)
+
   const contractStatus = sessionStorage.getItem("Selected Contract Status");
   const [selectContractInfo, setSelectContractInfo] = useState(contractType?.value);
   const [deleteExecutedContractDialog, setDeleteExecutedContractDialog] =
@@ -90,7 +91,12 @@ const NewContractFromClone = ({
       ?.filter((contract) => contract?.id === contractId)
       ?.map((data) => data)[0]
   );
+
   const [providerDetails, setProviderDetails] = useState();
+  const [prevContractData, setPrevContractData] = useState();
+
+  console.log(contractSelected, prevContractData, 'selected contract')
+
   useEffect(() => {
     getTabDataStatus();
   }, []);
@@ -115,6 +121,21 @@ const NewContractFromClone = ({
       ?.filter((contract) => contract?.id === contractId)
       ?.map((data) => data)[0])
   }, [contractId])
+
+  useEffect(() => {
+    if (contractSelected?.contractDetail?.priorContractRefId?.id !== undefined) {
+      getPrevContractData()
+    }
+  }, [contractSelected])
+
+  const getPrevContractData = async () => {
+    const { data: contractData } = await GET(
+      `contract-managment-service/contracts/${contractSelected?.contractDetail?.priorContractRefId?.id}/contractDetail`
+    );
+    if (contractData) {
+      setPrevContractData(contractData)
+    }
+  }
 
   const getTabDataStatus = () => {
     let temp = validateTabs(contractSelected?.id);
@@ -310,11 +331,13 @@ const NewContractFromClone = ({
     <div className={`${style.welcomePadding} ${style.addContractBody}`}>
       <div className={style.spaceBetween}>
         <p className={style.welcomeStyle}>
-          {selectedContractType === "New Contract"
-            ? "New Contract With No Prior Contract(s) With Entity"
-            : selectedContractType === "Existing Contract"
-              ? "Existing Active Contract"
-              : "Contracted Services Continuation Renewal Contract"}{" "}
+          {!selectedContract?.newContract && (prevContractData?.contractStatus === 'EXPIRED' || prevContractData?.contractStatus === 'TERMINATED')
+            ? 'Renewed Expired Contract' : !selectedContract?.newContract && prevContractData?.contractStatus === 'ACTIVE'
+              ? 'Renewed Active Contract' : selectedContractType === "New Contract"
+                ? "New Contract With No Prior Contract(s) With Entity"
+                : selectedContractType === "Existing Contract"
+                  ? "Existing Active Contract"
+                  : "Contracted Services Continuation Renewal Contract"}{" "}
           <strong className={style.darkText}>
             {contractStatus === "ACTIVE" ? "( ACTIVE CONTRACT )" : ""}
           </strong>
@@ -700,7 +723,7 @@ const NewContractFromClone = ({
                 {(showPrevContractDataAlert && !contractSelected?.newContract && contractSelected?.contractStatus === "DRAFT") && (
                   <div>
                     <div className={style.confidentialBoxStyle}>
-                      <div className={`${style.doNotDisturbTextStyle} ${style.textAlignCenter}`}>Previous Contract Data Have Been Copied To This Contract. After Verifying The Data Press Continue.</div>
+                      <div className={`${style.doNotDisturbTextStyle} ${style.textAlignCenter}`}>NOTE: To ease your data entry burden,  prior contract data has been copied for this renewal contract. Please verify the data on each tab before continuing.</div>
                       {/* <div className={`${style.doNotDisturbTextStyle} ${style.textAlignCenter}`}>Do Not Distribute</div>
                       <div className={`${style.doNotDisturbTextStyle} ${style.textAlignCenter}`}>Without Permission</div> */}
                     </div>

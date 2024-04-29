@@ -142,7 +142,7 @@ const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newSe
       deptLevelHoverText.push(deptLevelTitle);
       if (!isNewContract) {
         firstTimeCheckIcon.push(contractTabsMetaData?.users?.filter(tabData => tabData?.refId === data?.id)[0]?.updated ? <ThumbUpAltIcon style={{ color: "#14B15A" }} /> : <ReportGmailerrorredIcon style={{ color: "#F94848" }} />);
-        firstTimeCheckIconText.push(contractTabsMetaData?.users?.filter(tabData => tabData?.refId === data?.id)[0]?.updated ? 'User Data Verified' : 'Previous Contract Data Have Been Copied To This Contract. After Verifying The Data Press Continue In The Specific Service.');
+        firstTimeCheckIconText.push(contractTabsMetaData?.users?.filter(tabData => tabData?.refId === data?.id)[0]?.updated ? 'User Data Verified' : 'NOTE: To ease your data entry burden,  prior contract data has been copied for this renewal contract. Please verify the data on each user and save before continuing.');
       }
     })
 
