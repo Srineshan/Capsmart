@@ -152,7 +152,7 @@ const ContractValidationCheckSummary = ({ getContractValidationDialog, contract 
                             <div className={style.validationPadding}>
                                 <div className={style.grid4}>
                                     <div className={style.statusText}>{data?.activityType?.activityType}</div>
-                                    <div className={style.statusText}>{data?.activities?.map(data => data?.activity)?.join(', ')}</div>
+                                    <div className={style.statusText}>{data?.performingActivity?.activity?.replace('-', ', ')}</div>
                                     <div className={style.statusText}>{data?.users?.map(user => user?.name?.firstName)?.join(', ')}</div>
                                     <div className={style.statusText}>{isTabsValid?.value4?.[index]?.length !== 0 ? 'FAIL' : 'PASS'}</div>
                                 </div>

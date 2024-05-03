@@ -232,7 +232,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             ErrorToaster('Enter a valid mail-id');
             return;
         }
-        if (addUser?.roles?.length === 0 && getFinalSiteValueWithDepartments()?.length === 0) {
+        if (addUser?.roles?.filter(data => data !== undefined)?.map(data => data)?.length === 0 || getFinalSiteValueWithDepartments()?.length === 0) {
             ErrorToaster('All Fields are Mandatory');
             return;
         }
