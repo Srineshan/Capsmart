@@ -214,7 +214,7 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
     console.log(contractFilter, selectedContractType, selectedCompensationPolicy, selectedContractPolicyType, selectedContractManagers, contractFilter?.contractTimeCommitment?.from)
     return (
         <div className={`${style.bigCardStyle} ${style.bigCalendarLeftCardWidth}`}>
-            {/* <h5 className={style.statisticsHeading}>{month.toLocaleString('en-US', { month: 'long' })} {year} Summary</h5>
+            <h5 className={style.statisticsHeading}>{month.toLocaleString('en-US', { month: 'long' })} {year} Summary</h5>
             <div>
                 <div className={style.progressbarStyle}>
                     <div className={style.spaceBetween}>
@@ -255,8 +255,8 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
                     // </div>
                 }
 
-            </div> */}
-            <div className={`${style.filterPadding}`}>
+            </div>
+            {/* <div className={`${style.filterPadding}`}>
                 <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
                     <div className={style.filterHeading}>CONTRACT FILTERS</div>
                     <div className={`${style.clearText} ${(contractFilter?.contractTypeCount?.filter(data => data?.selected)?.length !== 0 ||
@@ -282,8 +282,8 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
                     </div>
                     <div className={style.marginTop10}>
                         {contractTypeFilter && (
-                            <>
-                                {/* <CommonInputField
+                            <> */}
+            {/* <CommonInputField
                                     // className={style.fullWidth}
                                     placeholder="Search"
                                     value={contractFilter?.contractId}
@@ -291,7 +291,7 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
                                         setContractFilter({ ...contractFilter, contractId: e.target.value })
                                     }
                                 /> */}
-                                {contractFilter?.contractTypeCount?.map((data, index) => (
+            {/* {contractFilter?.contractTypeCount?.map((data, index) => (
                                     <CommonCheckBox checked={data?.selected === true ? true : false} onChange={(e) => handleFilterSelect(e.target.checked, index, 'contractTypeCount', data?.contractType)} label={`${contractFiltersAvailableValues[data?.contractType]} (${data?.count})`} key={index} />
                                 ))}
                             </>
@@ -359,8 +359,8 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
                                 ))}
                             </>
                         )}
-                    </div>
-                    {/* <div className={style.dividerStyle}></div>
+                    </div> */}
+            {/* <div className={style.dividerStyle}></div>
                     <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
                         <div className={`${style.filterType}  ${(contractFilter?.contractId !== '' && !contractIdFilter) ? style.purpleText : ''}`}>Contract ID</div>
                         <div className={`${style.displayInRow}  ${style.verticalAlignCenter}`}>
@@ -384,7 +384,7 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
                             />
                         )}
                     </div> */}
-                    <div className={style.dividerStyle}></div>
+            {/* <div className={style.dividerStyle}></div>
                     <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
                         <div className={`${style.filterType}  ${(contractFilter?.contractExpireInDays !== 0 && !contractExpireInDaysFilter) ? style.purpleText : ''}`}>Contract Expire In Days</div>
                         <div className={`${style.displayInRow}  ${style.verticalAlignCenter}`}>
@@ -530,7 +530,7 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
                     </div>
                     <div className={style.dividerStyle}></div>
                 </div>
-            </div>
+            </div> */}
         </div>
     )
 })
