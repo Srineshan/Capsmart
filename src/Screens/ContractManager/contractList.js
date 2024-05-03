@@ -75,8 +75,10 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
   const [selectedContractPreImplementationData, setSelectedContractPreImplementationData] = useState();
   const [metadata, setMetadata] = useState();
   const [CSPSubDomain, setCSPSubDomain] = useState("");
-  const [contractFilterValues, setContractFilterValues] = useState();
+  let contractFiltersFromSession = sessionStorage.getItem('contractFilters')
+  const [contractFilterValues, setContractFilterValues] = useState(contractFiltersFromSession);
   console.log(contractFilterValues, 'filter')
+  let bottomTextNumber = sessionStorage.getItem('bottomFilter')
   const compensationPolicyAvailableValues = {
     ACTIVITY_BASED: 'Activity Based',
     FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITH_OFFSET: 'Fixed Amount For Timesheet Period With Offset',
@@ -96,6 +98,15 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     getEntityData();
     sessionStorage.removeItem('Selected Contract Status')
   }, []);
+
+  useEffect(() => {
+    getContractsMetadata();
+  }, [bottomTextNumber]);
+
+  useEffect(() => {
+    console.log(JSON.parse(contractFiltersFromSession), 'contractFilter')
+    setContractFilterValues(JSON.parse(contractFiltersFromSession))
+  }, [contractFiltersFromSession])
 
   const activateContracts = async (data, userData) => {
     setSelectedContractId(data?.id);
@@ -305,8 +316,8 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     contracts?.map(data => {
       let contractorList = getContractors(data?.id);
       console.log('contractorList', contractorList);
-      dot.push(data?.subStatus === 'EXPIRING_IN_30_DAYS' ? 'yellow' : 'green');
-      dotTooltipValues.push(data?.subStatus === 'EXPIRING_IN_30_DAYS' ? 'Expiring in 30 days' : 'Auto Renewed');
+      dot.push(data?.subStatus === 'EXPIRING_IN_30_DAYS' ? 'yellow' : data?.subStatus === 'AUTO_RENEWED ' ? 'green' : 'grey');
+      dotTooltipValues.push(data?.subStatus === 'EXPIRING_IN_30_DAYS' ? 'Expiring in 30 days' : data?.subStatus === 'AUTO_RENEWED ' ? 'Auto Renewed' : 'Active Contract');
       warningHoverText.push('Submitted Timesheets not in compliance with contract terms. contract requires specific terms to be modified');
       notification.push(<WarningAmberIcon style={{ color: '#FF6562' }} />);
       contractType.push(data?.contractType === 'MULTIPLE' ? 'MULTI - PROVIDER' : data?.contractType);
@@ -358,9 +369,9 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     action = [];
 
     contracts?.map(data => {
-      dot.push(data?.subStatus === 'ACTIVATION_IN_PROGRESS' ? 'yellow' : 'red');
+      dot.push((data?.contractStatus === 'ACTIVATION_READY' && data?.subStatus === 'ACTIVATION_IN_PROGRESS') ? 'yellow' : (data?.contractStatus === 'DRAFT' && data?.subStatus === 'ACTIVATION_IN_PROGRESS') ? 'grey' : data?.subStatus === 'ACTIVATION_PAST_DUE' ? 'red' : 'grey');
       contractType.push(data?.contractType === 'MULTIPLE' ? `MULTI - PROVIDER ${data?.newContract ? '(New)' : '(Existing)'}` : `${data?.contractType} ${data?.newContract ? '(New)' : '(Existing)'}`);
-      dotTooltipValues.push(data?.subStatus === 'ACTIVATION_IN_PROGRESS' ? 'Activation Ready' : 'Activation Past Due');
+      dotTooltipValues.push((data?.contractStatus === 'ACTIVATION_READY' && data?.subStatus === 'ACTIVATION_IN_PROGRESS') ? 'Activation Ready' : (data?.contractStatus === 'DRAFT' && data?.subStatus === 'ACTIVATION_IN_PROGRESS') ? 'Activation In Progress' : data?.subStatus === 'ACTIVATION_PAST_DUE' ? 'Activation Past Due' : 'Draft Contract');
       contractId.push(data?.contractDetail?.contractId?.id);
       lock.push(<LockOpenOutlinedIcon style={{ color: '#14B15A' }} />)
       lockHoverText.push('Contract available for other contract managers to access & work on');
@@ -518,7 +529,17 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
   }
 
   const getContractsMetadata = async () => {
-    const { data: contractMetadata } = await GET(`contract-managment-service/contracts/metadata`);
+    console.log(bottomTextNumber, 'test')
+    let apiUrl = `contract-managment-service/contracts/metadata`;
+    if (bottomTextNumber !== 'undefined' && bottomTextNumber !== undefined && bottomTextNumber !== null) {
+      if (selectedContract === 'upcomingrenewals') {
+        apiUrl += `?UpcomingTabNoOfDays=${bottomTextNumber}`
+      }
+      if (selectedContract === 'expired/terminated') {
+        apiUrl += `?ExpiredTabNoOfDays=${bottomTextNumber}`
+      }
+    }
+    const { data: contractMetadata } = await GET(apiUrl);
     setMetadata(contractMetadata);
   };
 
@@ -527,7 +548,9 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
   }
 
   const getContractFilterValues = (value) => {
-    setContractFilterValues(value);
+    console.log(value, 'contractFilters')
+    // setContractFilterValues(value);
+    sessionStorage.setItem('contractFilters', JSON.stringify(value))
   }
 
   const updateFilter = (data, value) => {
