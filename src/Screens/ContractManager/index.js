@@ -72,6 +72,7 @@ const Contracts = () => {
 
     useEffect(() => {
         sessionStorage.setItem('isEditable', selectedContract !== 'draft' ? false : true)
+        sessionStorage.removeItem('bottomFilter')
     }, [selectedContract])
 
     useEffect(() => {
