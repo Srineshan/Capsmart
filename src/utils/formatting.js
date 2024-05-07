@@ -39,6 +39,12 @@ export const EmptyStringCheck = (value, message) => {
   }
 }
 
+export const extractNumbersFromString = (inputString) => {
+  const regex = /\d+/g;
+  const numbersArray = inputString.match(regex);
+  return numbersArray ? numbersArray.map(Number) : [];
+};
+
 export const GetDateFromHours = (time) => {
   time = time?.split(':') || [];
   let now = new Date();

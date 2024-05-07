@@ -1,5 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import style from "./index.module.scss";
+import { extractNumbersFromString } from "../../utils/formatting";
+import { Tooltip } from "@mui/material";
+import ClearIcon from '@mui/icons-material/Clear';
 
 const Tile = ({
   selectedContract,
@@ -26,7 +29,54 @@ const Tile = ({
   smallNum1SelectedColor,
   smallNum2SelectedColor,
   smallNum3SelectedColor,
+  getTabFilter
 }) => {
+
+
+  const [bottomTextFilter, setBottomTextFilter] = useState((bottomText?.length === 0 || bottomText === '' || bottomText === undefined) ? '' : bottomText[0])
+  const [smallTextSelected, setSmallTextSelected] = useState('')
+  const [selectedBottomTextFilter, setSelectedBottomTextFilter] = useState('');
+
+  console.log(smallTextSelected)
+
+  useEffect(() => {
+    if (typeof getTabFilter === 'function') {
+      getTabFilter({ bottomTextFilter: String(extractNumbersFromString(selectedBottomTextFilter)[0]), smallTextSelected: smallTextSelected })
+      sessionStorage.setItem('bottomFilter', String(extractNumbersFromString(selectedBottomTextFilter)[0]))
+    } else {
+      sessionStorage.removeItem('bottomFilter')
+    }
+  }, [bottomTextFilter, smallTextSelected])
+
+  useEffect(() => {
+    setSmallTextSelected('')
+    console.log(bottomText, 'filter')
+    setBottomTextFilter((bottomText?.length === 0 || bottomText === '' || bottomText === undefined) ? '' : bottomText[0])
+    setSelectedBottomTextFilter('')
+  }, [selectedContract])
+
+
+
+  const handleGetBottomTextFilter = () => {
+    let index = bottomText.findIndex(str => str === bottomTextFilter)
+    if (bottomText?.length - 1 === index) {
+      setBottomTextFilter(bottomText[0])
+      setSelectedBottomTextFilter(bottomText[0])
+      // if (bottomText?.length > 1) {
+      //   getTabFilter({ bottomTextFilter: String(extractNumbersFromString(bottomText[0])[0]) })
+      // }
+    } else {
+      setBottomTextFilter(bottomText[index + 1])
+      setSelectedBottomTextFilter(bottomText[index + 1])
+      // if (bottomText?.length > 1) {
+      //   getTabFilter({ bottomTextFilter: String(extractNumbersFromString(bottomText[index + 1])[0]) })
+      // }
+    }
+  }
+
+  const handleSmallTextSelected = (value) => {
+    setSmallTextSelected(value)
+  }
   return (
     <div
       className={`${style.cardStyle} ${selectedContract === currentTile && style.selectedContractBackground
@@ -38,12 +88,12 @@ const Tile = ({
         <div>
           <div className={`${style.headingForContracts}`}>{tileLabel}</div>
           {bottomText !== "" && (
-            <div className={style.bottomTextStyle}>{bottomText}</div>
+            <div className={`${style.bottomTextStyle} ${style.clickableText}`} onClick={() => handleGetBottomTextFilter()}>{bottomTextFilter}</div>
           )}
         </div>
 
         <div className={`${style.spaceBetween} ${style.marginBottom5} `}>
-          <div className={`${style.displayInColRev}  ${style.reduceTop10}  `}>
+          <div className={`${style.displayInColRev}`}>
             {bigText2 !== "" && (
               <div className={` ${style.displayInGrid}  `}>
                 <div
@@ -77,13 +127,28 @@ const Tile = ({
             </div>
           </div>
           <div
-            className={`${style.optionsStyle} ${style.displayInCol} ${style.reduceTop10} ${style.alignRight}`}
+            className={`${style.optionsStyle} ${style.displayInCol} ${style.alignRight}`}
           >
             {smallNum3 !== "" && (
               <span
-                className={`${style.verticalAlignCenter}  ${style.alignRight}`}
+                className={`${style.verticalAlignCenter}  ${style.alignRight} `}
               >
-                {smallText3}
+                {(smallTextSelected === smallText3 && selectedContract === currentTile) && (<ClearIcon sx={{ fontSize: 13, color: '#7165E3', marginRight: '10px' }} onClick={() => setSmallTextSelected('')} />)}
+                <Tooltip title={`Click here to apply ${smallText3} filter`} arrow
+                  slotProps={{
+                    popper: {
+                      modifiers: [
+                        {
+                          name: 'offset',
+                          options: {
+                            offset: [0, -2],
+                          },
+                        },
+                      ],
+                    },
+                  }}>
+                  <span className={(smallTextSelected === smallText3 && selectedContract === currentTile) ? style.smallTextSelected : ''} onClick={() => handleSmallTextSelected(smallText3)}>{smallText3}</span>
+                </Tooltip>
                 <span
                   className={`${smallNum3 !== "-"
                     ? selectedContract === currentTile
@@ -91,16 +156,30 @@ const Tile = ({
                       : smallNum3Color
                     : style.defaultSmallNumber
                     } ${style.countDesign}`}
+                  onClick={() => handleSmallTextSelected(smallText3)}
                 >
                   {smallNum3}
                 </span>
               </span>
             )}
             {smallNum1 !== "" && (
-              <span
-                className={`${style.verticalAlignCenter} ${style.marginTop5} ${style.alignRight}`}
-              >
-                {smallText1}
+              <span className={`${style.verticalAlignCenter} ${style.marginTop5} ${style.alignRight}`} >
+                {(smallTextSelected === smallText1 && selectedContract === currentTile) && (<ClearIcon sx={{ fontSize: 13, color: '#7165E3', marginRight: '10px' }} onClick={() => setSmallTextSelected('')} />)}
+                <Tooltip title={`Click here to apply ${smallText1} filter`} arrow
+                  slotProps={{
+                    popper: {
+                      modifiers: [
+                        {
+                          name: 'offset',
+                          options: {
+                            offset: [0, -2],
+                          },
+                        },
+                      ],
+                    },
+                  }}>
+                  <span className={(smallTextSelected === smallText1 && selectedContract === currentTile) ? style.smallTextSelected : ''} onClick={() => handleSmallTextSelected(smallText1)}>{smallText1}</span>
+                </Tooltip>
                 <span
                   className={`${smallNum1 !== "-"
                     ? selectedContract === currentTile
@@ -108,6 +187,7 @@ const Tile = ({
                       : smallNum1Color
                     : style.defaultSmallNumber
                     } ${style.countDesign}`}
+                  onClick={() => handleSmallTextSelected(smallText1)}
                 >
                   {smallNum1}
                 </span>
@@ -117,7 +197,22 @@ const Tile = ({
               <span
                 className={`${style.verticalAlignCenter} ${style.marginTop5} ${style.alignRight}`}
               >
-                {smallText2}
+                {(smallTextSelected === smallText2 && selectedContract === currentTile) && (<ClearIcon sx={{ fontSize: 13, color: '#7165E3', marginRight: '10px' }} onClick={() => setSmallTextSelected('')} />)}
+                <Tooltip title={`Click here to apply ${smallText2} filter`} arrow
+                  slotProps={{
+                    popper: {
+                      modifiers: [
+                        {
+                          name: 'offset',
+                          options: {
+                            offset: [0, -2],
+                          },
+                        },
+                      ],
+                    },
+                  }}>
+                  <span className={(smallTextSelected === smallText2 && selectedContract === currentTile) ? style.smallTextSelected : ''} onClick={() => handleSmallTextSelected(smallText2)}>{smallText2}</span>
+                </Tooltip>
                 <span
                   className={`${smallNum2 !== "-"
                     ? selectedContract === currentTile
@@ -125,6 +220,7 @@ const Tile = ({
                       : smallNum2Color
                     : style.defaultSmallNumber
                     } ${style.countDesign}`}
+                  onClick={() => handleSmallTextSelected(smallText2)}
                 >
                   {smallNum2}
                 </span>

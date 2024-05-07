@@ -66,7 +66,8 @@ const ContractIdTermLimitIndividual = ({
   getShowAlert,
   isEditable,
   getTabDataStatus,
-  getPriorContractId
+  getPriorContractId,
+  getShowPrevContractDataAlert
 }) => {
   const [calendarStart, setCalendarStart] = useState(false);
   const [calendarEnd, setCalendarEnd] = useState(false);
@@ -135,8 +136,11 @@ const ContractIdTermLimitIndividual = ({
   const methodFromSession = sessionStorage.getItem('method')
   const existingContractIdFromSession = sessionStorage.getItem('existingContractId')
   const [isPreviousContractDataInUse, setIsPreviousContractDataInUse] = useState(false);
+  const [contractTabsMetaData, setContractTabsMetaData] = useState();
+  const [isRenewedContract, setIsRenewedContract] = useState(false);
+  const [prevContractData, setPrevContractData] = useState();
 
-  console.log(existingContractId, method, methodFinal, existingContractIdFromSession)
+  console.log(prevContractData)
   useEffect(() => {
     if (methodFinal === "PUT" && createdContractId !== "") {
       getContractDetail();
@@ -146,23 +150,32 @@ const ContractIdTermLimitIndividual = ({
     getSites();
     getContractUser();
     getFileData();
+    getContractTabsMetadata()
   }, []);
 
-  useEffect(() => {
-    if (methodFinal === "POST" && (existingContractId !== "" && existingContractId !== null && createdContractId === "")) {
-      setIsPreviousContractDataInUse(true)
-      getContractDetailFirstTime(existingContractId);
-      // getContractUser();
-    }
-  }, [existingContractId])
+  // useEffect(() => {
+  //   if (methodFinal === "POST" && (existingContractId !== "" && existingContractId !== null && createdContractId === "")) {
+  //     setIsPreviousContractDataInUse(true)
+  //     getContractDetailFirstTime(existingContractId);
+  //     // getContractUser();
+  //   }
+  // }, [existingContractId])
+
+  // useEffect(() => {
+  //   if (methodFromSession !== null && methodFromSession !== '' && methodFromSession !== undefined) {
+  //     setMethodFinal(methodFromSession)
+  //   } else {
+  //     setMethodFinal(method)
+  //   }
+  // }, [methodFromSession])
 
   useEffect(() => {
-    if (methodFromSession !== null && methodFromSession !== '' && methodFromSession !== undefined) {
-      setMethodFinal(methodFromSession)
-    } else {
-      setMethodFinal(method)
+    console.log(contractData, 'prevContract')
+    if (contractData?.priorContractRefId !== null && contractData?.priorContractRefId !== undefined) {
+      getPrevContractData(contractData?.priorContractRefId?.id);
+      setIsRenewedContract(true)
     }
-  }, [methodFromSession])
+  }, [contractData])
 
   useEffect(() => {
     setExistingContractId(existingContractIdFromSession)
@@ -229,6 +242,15 @@ const ContractIdTermLimitIndividual = ({
     }
   }, [selectedSites?.length, departmentSpecific, siteSpecific]);
 
+  const getPrevContractData = async (id) => {
+    const { data: contractData } = await GET(
+      `contract-managment-service/contracts/${id}/contractDetail`
+    );
+    if (contractData) {
+      setPrevContractData(contractData)
+    }
+  }
+
   const getContractUser = async () => {
     console.log("Inside Contract User get");
     if (contractId !== "" && contractId !== undefined) {
@@ -259,6 +281,26 @@ const ContractIdTermLimitIndividual = ({
 
   console.log("contract Users", contractUsers);
 
+  const getContractTabsMetadata = async () => {
+    if (createdContractId !== '') {
+      const { data: contractTabsMetaData } = await GET(
+        `contract-managment-service/contracts/${createdContractId}/contractTabsMetaData`
+      );
+      setContractTabsMetaData(contractTabsMetaData)
+      getShowPrevContractDataAlert(contractTabsMetaData?.contractDetailsUpdated)
+    }
+  }
+
+  const updateContractTabsMetaData = async () => {
+    if (contractTabsMetaData !== undefined) {
+      if (!contractTabsMetaData?.contractDetailsUpdated) {
+        let data = contractTabsMetaData;
+        data.contractDetailsUpdated = true;
+        await PUT(`contract-managment-service/contracts/${createdContractId}/contractTabsMetaData`, data)
+      }
+    }
+  }
+
   const getContractDetail = async () => {
     const { data: contractData } = await GET(
       `contract-managment-service/contracts/${createdContractId}/contractDetail`
@@ -285,17 +327,17 @@ const ContractIdTermLimitIndividual = ({
         na: contractDetail?.priorContract?.notApplicable,
       });
       setContractTermPeriodFrom(
-        contractDetail?.contractTerm?.startDate !== null
+        (contractDetail?.contractTerm !== null && contractDetail?.contractTerm?.startDate !== null)
           ? new Date(contractDetail?.contractTerm?.startDate?.replace("-", "/"))
           : null
       );
       setContractTermPeriodTo(
-        contractDetail?.contractTerm?.endDate !== null
+        (contractDetail?.contractTerm !== null && contractDetail?.contractTerm?.endDate !== null)
           ? new Date(contractDetail?.contractTerm?.endDate?.replace("-", "/"))
           : null
       );
       setContractEffectiveDate(
-        contractDetail?.contractTerm?.effectiveDate !== null
+        (contractDetail?.contractTerm !== null && contractDetail?.contractTerm?.effectiveDate !== null)
           ? new Date(
             contractDetail?.contractTerm?.effectiveDate?.replace("-", "/")
           )
@@ -342,6 +384,7 @@ const ContractIdTermLimitIndividual = ({
     );
     if (contractData) {
       let contractDetail = contractData?.contractDetail;
+      console.log(contractDetail)
       setContractData(contractData?.contractDetail);
       setName(contractData?.contractName?.contractName || "");
       setContractName(contractData?.contractName?.contractName);
@@ -351,17 +394,17 @@ const ContractIdTermLimitIndividual = ({
           missing: contractDetail?.contractIdMissing,
         });
         setContractTermPeriodFrom(
-          contractDetail?.contractTerm?.startDate !== null
+          (contractDetail?.contractTerm !== null && contractDetail?.contractTerm?.startDate !== null)
             ? new Date(contractDetail?.contractTerm?.startDate?.replace("-", "/"))
             : null
         );
         setContractTermPeriodTo(
-          contractDetail?.contractTerm?.endDate !== null
+          (contractDetail?.contractTerm !== null && contractDetail?.contractTerm?.endDate !== null)
             ? new Date(contractDetail?.contractTerm?.endDate?.replace("-", "/"))
             : null
         );
         setContractEffectiveDate(
-          contractDetail?.contractTerm?.effectiveDate !== null
+          (contractDetail?.contractTerm !== null && contractDetail?.contractTerm?.effectiveDate !== null)
             ? new Date(
               contractDetail?.contractTerm?.effectiveDate?.replace("-", "/")
             )
@@ -760,6 +803,7 @@ const ContractIdTermLimitIndividual = ({
           ErrorToaster("Unexpected Error");
         });
     }
+    updateContractTabsMetaData();
     getTabDataStatus();
     // }
   };
@@ -1081,23 +1125,24 @@ const ContractIdTermLimitIndividual = ({
         </div>
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <CommonLabel
-            value={isPreviousContractDataInUse ? "Renewal Contract ID / Resolution No*" : "Contract ID / Resolution No*"}
+            value={isRenewedContract ? "Renewal Contract ID / Resolution No*" : "Contract ID / Resolution No*"}
             className={dataCheck(contractId?.id) && contractId.missing === false ? style.redLable : ""}
           />
           <div className={style.displayInRow}>
             <CommonInputField
-              placeholder={isPreviousContractDataInUse ? "Renewal Contract ID / Resolution No" : "Contract ID / Resolution No"}
+              placeholder={isRenewedContract ? "Renewal Contract ID / Resolution No" : "Contract ID / Resolution No"}
               value={contractId.id}
               disabled={contractId.missing}
               maxLength={TEXTFIELDLEN}
               onFocus={() => {
                 checkFieldAndPopAlert(contractId?.id, "Contract ID");
               }}
-              className={`${style.entityFieldWidth}`}
+              error={(contractId === undefined && isRenewedContract) ? true : false}
+              className={`${style.entityFieldWidth} ${(contractId?.id === undefined && isRenewedContract) ? style.redBorderInput : ''}`}
               onChange={(e) =>
                 setContractId({
                   ...contractId,
-                  id: e.target.value,
+                  id: prevContractData?.contractDetail?.contractId?.id !== e.target.value ? e.target.value : '',
                   missing: false,
                 })
               }
@@ -1132,7 +1177,7 @@ const ContractIdTermLimitIndividual = ({
                 className={style.selectFieldWidth}
                 maxLength={TEXTFIELDLEN}
                 inputProps={{
-                  disabled: isPreviousContractDataInUse ? true : contractStatus === "ACTIVE" ? true : false,
+                  disabled: !contractData?.newContract ? true : contractStatus === "ACTIVE" ? true : false,
                 }}
                 onChange={(e) =>
                   setContractPriorId({ ...contractPriorId, id: e.target.value })
@@ -1140,7 +1185,7 @@ const ContractIdTermLimitIndividual = ({
                 placeholder="Search by CID / Name"
                 value={contractPriorId?.id}
               />
-              {!isPreviousContractDataInUse && (
+              {contractData?.newContract && (
                 <CommonCheckBox
                   label="NA"
                   checked={contractPriorId.na}
@@ -1351,7 +1396,8 @@ const ContractIdTermLimitIndividual = ({
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <div></div>
             <SiteDepartmentField
-              sites={selectedSites && selectedSites.length > 0 ? selectedSites : sites}
+              sites={isMultiSiteEntity && selectedSites.length > 0 ? selectedSites : sites}
+              // sites={sites}
               getSelectedSites={onSelectDepartment}
               selectedSites={selectedSites}
               isMultiSiteEntity={isMultiSiteEntity}
@@ -1382,8 +1428,8 @@ const ContractIdTermLimitIndividual = ({
                 open={calendarStart}
                 onOpen={() => setCalendarStart(true)}
                 onClose={() => setCalendarStart(false)}
-                minDate={sub(new Date(), { years: 3 })}
-                maxDate={add(new Date(), { months: 6 })}
+                minDate={prevContractData !== undefined ? add(new Date(prevContractData?.contractDetail?.contractTerm?.endDate), { days: 1 }) : sub(new Date(), { years: 3 })}
+                maxDate={prevContractData !== undefined ? add(new Date(prevContractData?.contractDetail?.contractTerm?.endDate), { months: 6 }) : add(new Date(), { months: 6 })}
                 value={contractTermPeriodFrom}
                 onChange={(newValue) => {
                   // setCalendarStart(true);
@@ -1406,6 +1452,7 @@ const ContractIdTermLimitIndividual = ({
                       ...params.inputProps,
                       placeholder: "Start Date",
                     }}
+                    error={(contractTermPeriodFrom === null && createdContractId !== "") ? true : false}
                   />
                 )}
               />
@@ -1446,6 +1493,7 @@ const ContractIdTermLimitIndividual = ({
                       ...params.inputProps,
                       placeholder: "End Date",
                     }}
+                    error={(contractTermPeriodTo === null && createdContractId !== "") ? true : false}
                   />
                 )}
               />
@@ -1453,7 +1501,12 @@ const ContractIdTermLimitIndividual = ({
           </div>
         </div>
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <CommonLabel value="Contracted Services Effective Date*" />
+          <CommonLabel value="Contracted Services Effective Date*"
+            className={
+              dataCheck(contractEffectiveDate)
+                ? style.redLable
+                : ""
+            } />
           <div
             className={`${style.leftAlign} ${style.effectiveDateWidth}`}
             onFocus={() => {
@@ -1492,6 +1545,7 @@ const ContractIdTermLimitIndividual = ({
                     ...params.inputProps,
                     placeholder: "Effective Date",
                   }}
+                  error={(contractEffectiveDate === null && createdContractId !== "") ? true : false}
                 />
               )}
             />
@@ -1652,6 +1706,7 @@ const ContractIdTermLimitIndividual = ({
                   "Extension By Mutual Written Signed Agreement.",
                 ]}
                 disabledList={[false, false]}
+                error={(selectedContractContinuationPolicy === '' && contractIdFromActive !== '' && !contractData?.newContract) ? true : false}
               />
             </div>
             {selectedContractContinuationPolicy === "AUTORENEWAL" && (

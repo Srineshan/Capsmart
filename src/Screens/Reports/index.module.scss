@@ -117,6 +117,13 @@
     height: 100%;
 }
 
+.alignCenterJustify {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
 .userLogo {
     width: 53px;
     height: 53px;
@@ -1581,42 +1588,42 @@
 
 .trackTableHeaderMiddleGrid {
     display: grid;
-    grid-template-columns: 32.5% 7.5% 15% 15% 15% 15%;
+    grid-template-columns: 47.5% 7.5% 15% 15% 15%;
 }
 
 .trackTableHeaderMiddleGridForActivityBased {
     display: grid;
-    grid-template-columns: 45% 20% 20% 15%;
+    grid-template-columns: 60% 20% 20%;
 }
 
 .trackTableHeaderTopGrid {
     display: grid;
-    grid-template-columns: 32.5% 67.5%;
+    grid-template-columns: 47.5% 52.5%;
 }
 
 .trackTableHeaderTopGridForActivityBased {
     display: grid;
-    grid-template-columns: 45% 55%;
+    grid-template-columns: 60% 40%;
 }
 
 .trackTableHeaderBottomGrid {
     display: grid;
-    grid-template-columns: 32.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 15%;
+    grid-template-columns: 47.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5%;
 }
 
 .trackTableHeaderBottomGridForActivityBased {
     display: grid;
-    grid-template-columns: 45% 10% 10% 10% 10% 15%;
+    grid-template-columns: 60% 10% 10% 10% 10%;
 }
 
 .trackTableDataGrid {
     display: grid;
-    grid-template-columns: 32.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 15%;
+    grid-template-columns: 47.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5% 7.5%;
 }
 
 .trackTableDataGridForActivityBased {
     display: grid;
-    grid-template-columns: 45% 10% 10% 10% 10% 15%;
+    grid-template-columns: 60% 10% 10% 10% 10%;
 }
 
 .greenBigNumber {
@@ -1629,4 +1636,46 @@
 
 .redBigNumber {
     color: #f94848 !important;
+}
+
+.paymentTabStyle {
+    text-align: center;
+    font: normal normal 600 15px/23px Montserrat;
+    letter-spacing: 0px;
+    text-transform: uppercase;
+    color: #A4A4A4;
+    border: 1px solid #52575D;
+    height: 45px;
+    cursor: pointer;
+}
+
+.selectedPaymentTabStyle {
+    color: #7165E3;
+    border: 1px solid #7165E3;
+    background-color: #F1EFFC;
+}
+
+.paymentTabGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.paymentPendingTableDataGrid {
+    display: grid;
+    grid-template-columns: 25% 25% 20% 15% 15%;
+}
+
+.submissionPendingTableDataGrid {
+    display: grid;
+    grid-template-columns: 33% 33% 33%;
+}
+
+.approvalPendingTableDataGrid {
+    display: grid;
+    grid-template-columns: 25% 25% 20% 15% 15%;
+}
+
+.paymentProcessedTableDataGrid {
+    display: grid;
+    grid-template-columns: 15% 15% 13% 10% 13% 10% 13% 10%;
 }

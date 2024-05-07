@@ -47,6 +47,17 @@ const ContractTermination = ({ getTerminationDialog, contracts, contractId, getC
     }
   }
 
+  const calculateRemainingDays = () => {
+    const currentDate = new Date();
+    const endDate = new Date(currentContract?.contractDetail?.contractTerm?.endDate);
+    const timeDifference = endDate - currentDate;
+    const daysRemaining = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+    return daysRemaining;
+  };
+
+  const remainingDays = calculateRemainingDays();
+  // console.log(remainingDays)
+
   // console.log('terminate file contracts data', contracts, contractId)
 
   const contractData = contracts.find(item => item.id === contractId);
@@ -142,7 +153,7 @@ const ContractTermination = ({ getTerminationDialog, contracts, contractId, getC
               (Contract Manager)</div>
             <div className={`${style.dialogAdditionalDetailTextStyle} ${style.marginTop10}`}>{`${contractData?.contractType === "MULTIPLE" ? " SITE NAME - ( " + contractData?.contractDetail?.site?.sites?.[0]?.siteName?.siteName + " ) " : ""}`}
             </div>
-            <div className={`${style.dialogAdditionalDetailTextStyle} ${style.marginTop10}`}>EXPIRING IN 20 DAYS ( {contractData.lastModifiedDate && formatInTimeZone(new Date(contractData.lastModifiedDate) || new Date(), siteTimeZone(), 'MM-dd-yyyy HH:mm a')} {timeZoneAbbreviation()} )</div>
+            <div className={`${style.dialogAdditionalDetailTextStyle} ${style.marginTop10}`}>EXPIRING IN {remainingDays} DAYS ( {currentContract?.contractDetail?.contractTerm?.endDate && formatInTimeZone(new Date(currentContract?.contractDetail?.contractTerm?.endDate) || new Date(), siteTimeZone(), 'MM-dd-yyyy HH:mm a')} {timeZoneAbbreviation()} )</div>
           </div>
         </div>
         <div className={style.extensionBorder}></div>
@@ -230,8 +241,12 @@ const ContractTermination = ({ getTerminationDialog, contracts, contractId, getC
                 <div className={`${style.threeFieldWidth} ${!writtenNoticeServed && style.disabledOpacity}`}>
                   <div className={style.helperText}>Notice Period</div>
                   <TextField
+                    type="number"
                     disabled={!writtenNoticeServed}
                     size="small"
+                    onInput={e => {
+                      e.target.value = Math.max(0, parseInt(e.target.value)).toString().slice(0, 3);
+                    }}
                     InputProps={{
                       endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Days</InputAdornment>,
                     }}
@@ -240,8 +255,12 @@ const ContractTermination = ({ getTerminationDialog, contracts, contractId, getC
                 <div className={`${style.threeFieldWidth} ${style.marginLeft20} ${!writtenNoticeServed && style.disabledOpacity}`}>
                   <div className={style.helperText}>Cure Period</div>
                   <TextField
+                    type="number"
                     disabled={!writtenNoticeServed}
                     size="small"
+                    onInput={e => {
+                      e.target.value = Math.max(0, parseInt(e.target.value)).toString().slice(0, 3);
+                    }}
                     InputProps={{
                       endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Days</InputAdornment>,
                     }}

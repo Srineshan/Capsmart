@@ -49,6 +49,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         dedicatedHoursSpecified: false,
         dedicatedHoursActivityType: '',
         dedicatedHoursPerformingActivity: '',
+        performingActivity: '',
         totalSession: '0',
         totalSessionFrequency: 'NA',
         sessionAmount: '0',
@@ -114,6 +115,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             dedicatedHoursPerformingActivity: '',
             totalSession: '0',
             totalSessionFrequency: 'NA',
+            performingActivity: '',
             sessionAmount: '0',
             sessionDuration: '1',
             serviceRateDuation: '0',
@@ -151,6 +153,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                 dedicatedHoursSpecified: serviceSelected?.dedicatedHoursSpecified,
                 dedicatedHoursActivityType: serviceSelected?.hoursBorrowed?.activityType?.activityType,
                 dedicatedHoursPerformingActivity: serviceSelected?.hoursBorrowed?.performingActivity?.activity,
+                performingActivity: serviceSelected?.performingActivity?.activity,
                 selectedActivities: serviceSelected?.activityResponse?.dataMap?.adminActivities,
                 totalSession: serviceSelected?.totalSessions?.value || '0',
                 totalSessionFrequency: serviceSelected?.totalSessions?.frequency || 'NA',
@@ -343,6 +346,18 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
 
     return (
         <div>
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                <CommonLabel value='Admininstrative Services Group Name*' />
+                <div >
+                    <CommonTextField
+                        type="text"
+                        className={`${style.fullWidth}`}
+                        onChange={(e) => handleValueChange('performingActivity', e.target.value)}
+                        value={metadata?.performingActivity}
+                    />
+                </div>
+            </div>
+
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Dedicated Hours For Administrative Services*' />
                 <div className={style.displayInRow}>

@@ -27,7 +27,7 @@ import LeftStatsCard from '../../Components/LeftStatsCard';
 import LoadingScreen from '../../Components/LoadingScreen';
 import { toPDF } from '../../Components/ConvertToPdf';
 import { useReactToPrint } from "react-to-print";
-
+import CloseIcon from '@mui/icons-material/Close';
 import { validateTimesheetSubmission } from './contractValidation';
 
 import style from './index.module.scss';
@@ -35,9 +35,10 @@ import SideBar from '../../Components/Sidebar';
 import PreImplementationDataDialog from './preImplementationDataDialog';
 import ReviewAndApprovalStatusSummary from './reviewAndApprovalStatusSummary';
 
-const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog, contracts, getSelectedContract, getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page, getActiveContractView }) => {
+const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog, contracts, getSelectedContract, getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page, getActiveContractView, getFilterValues, getHandleSort, sortValue, getTabFilter }) => {
   const PDFRef = createRef();
   const componentRef = useRef(null);
+  const filterRef = useRef();
 
   const reactToPrintContent = useCallback(() => {
     return componentRef.current;
@@ -51,14 +52,14 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     "LAST UPDATED",
     "ACTION"
   ];
-  const draftHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "ACTIVATION STATUS", "LAST UPDATED", "REF DOCS", "LAST UPDATED BY", "MANAGER", "ACTION"];
-  const activationPendingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "REVIEWS", "APPROVALS", "REF DOCS", "GO LIVE DATE", "EFFECTIVE DATE", "MANAGER", "ACTION"];
+  const draftHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "ACTIVATION STATUS", "LAST UPDATED", "CONTRACT DOCS", "LAST UPDATED BY", "MANAGER", "ACTION"];
+  const activationPendingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "REVIEWS", "APPROVALS", "CONTRACT DOCS", "GO LIVE DATE", "EFFECTIVE DATE", "MANAGER", "ACTION"];
   const upcomingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "EXPIRATION DATE", "EXPIRING IN", "LAST UPDATE", "MANAGER", "ACTION"];
   const expiredHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "TERMINATION DATE", "NEW CONTRACT ID", "LAST UPDATE", "MANAGER", "ACTION"];
-  const activeColSortValues = [false, false, false, false, true, true, false, false, false, false];
-  const draftColSortValues = [false, false, true, true, false, false, false, false, false];
-  const upcomingColSortValues = [false, false, true, true, false, false, false, false, false];
-  const expiredColSortValues = [false, false, true, true, false, false, false, false];
+  const activeColSortValues = [false, false, false, true, false, true, false, true, true, false];
+  const draftColSortValues = [false, false, true, true, true, true, false, false, false];
+  const upcomingColSortValues = [false, false, true, true, true, false, true, false, false];
+  const expiredColSortValues = [false, false, true, true, false, false, true, false];
   const activationPendingColSortValues = [false, false, true, true, false, false, false, false, false, false, false];
   const [isPrintClicked, setIsPrintClicked] = useState(false);
   const [isDownloadClicked, setIsDownloadClicked] = useState(false);
@@ -74,12 +75,38 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
   const [selectedContractPreImplementationData, setSelectedContractPreImplementationData] = useState();
   const [metadata, setMetadata] = useState();
   const [CSPSubDomain, setCSPSubDomain] = useState("");
+  let contractFiltersFromSession = sessionStorage.getItem('contractFilters')
+  const [contractFilterValues, setContractFilterValues] = useState(contractFiltersFromSession);
+  console.log(contractFilterValues, 'filter')
+  let bottomTextNumber = sessionStorage.getItem('bottomFilter')
+  const compensationPolicyAvailableValues = {
+    ACTIVITY_BASED: 'Activity Based',
+    FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITH_OFFSET: 'Fixed Amount For Timesheet Period With Offset',
+    SHIFT_OR_PER_DAY_BASED: 'Shift Or Per Day Based',
+    FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET: 'Fixed Amount For Timesheet Period Without Offset'
+  }
 
+  const contractPolicyTypeAvailableValues = {
+    NEWCONTRACTONEXPIRATION: 'New Contract Expiration',
+    ONETIMECONTRACTTERMINATEONEXPIRATION: 'One Time Contract Termination Expiration',
+    WRITTENCONTRACTEXTENSIONFORFIXEDTERM: 'Written Contract Extension For Fixed Term',
+    AUTORENEWAL: 'Auto Renewal'
+  }
+  console.log(contractFilterValues)
   useEffect(() => {
     getContractsMetadata();
     getEntityData();
     sessionStorage.removeItem('Selected Contract Status')
   }, []);
+
+  useEffect(() => {
+    getContractsMetadata();
+  }, [bottomTextNumber]);
+
+  useEffect(() => {
+    console.log(JSON.parse(contractFiltersFromSession), 'contractFilter')
+    setContractFilterValues(JSON.parse(contractFiltersFromSession))
+  }, [contractFiltersFromSession])
 
   const activateContracts = async (data, userData) => {
     setSelectedContractId(data?.id);
@@ -199,16 +226,29 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     sessionStorage.setItem('Selected Contract Status', data?.contractStatus)
   }
 
-  const handleRenewalContracts = (data) => {
-    getNewContract(true);
-    getContractType(data?.contractTypeId?.id, data?.contractType);
-    getSelectedContractType('Existing Contract');
-    console.log(data, 'contract data')
-    sessionStorage.setItem('Selected Contract Status', "DRAFT")
-    sessionStorage.setItem('contractType', data?.contractType)
-    sessionStorage.setItem('existingContractId', data?.id)
-    sessionStorage.setItem('priorContractId', data?.contractDetail?.contractId?.id)
-    sessionStorage.setItem('method', 'POST')
+  const handleRenewalContracts = async (data) => {
+    // getNewContract(true);
+    // getContractType(data?.contractTypeId?.id, data?.contractType);
+    // getSelectedContractType('Existing Contract');
+    // console.log(data, 'contract data')
+    // sessionStorage.setItem('Selected Contract Status', "DRAFT")
+    // sessionStorage.setItem('contractType', data?.contractType)
+    // sessionStorage.setItem('existingContractId', data?.id)
+    // sessionStorage.setItem('priorContractId', data?.contractDetail?.contractId?.id)
+    // sessionStorage.setItem('method', 'POST')
+    if (!data?.contractDetail?.contractRenewed) {
+      const { data: userData } = await GET(
+        `contract-managment-service/contracts/${data?.id}/renewContract`
+      )
+
+      if (userData) {
+        SuccessToaster('Contract Renewed Successfully');
+        getContracts();
+        getContractsMetadata();
+      } else { ErrorToaster('Contract Renewal Failed'); };
+    } else {
+      ErrorToaster('Contract Already Renewed');
+    }
   }
 
   const handleDownloadClicked = () => {
@@ -276,8 +316,8 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     contracts?.map(data => {
       let contractorList = getContractors(data?.id);
       console.log('contractorList', contractorList);
-      dot.push(data?.subStatus === 'EXPIRING_IN_30_DAYS' ? 'yellow' : 'green');
-      dotTooltipValues.push(data?.subStatus === 'EXPIRING_IN_30_DAYS' ? 'Expiring in 30 days' : 'Auto Renewed');
+      dot.push(data?.subStatus === 'EXPIRING_IN_30_DAYS' ? 'yellow' : data?.subStatus === 'AUTO_RENEWED ' ? 'green' : 'grey');
+      dotTooltipValues.push(data?.subStatus === 'EXPIRING_IN_30_DAYS' ? 'Expiring in 30 days' : data?.subStatus === 'AUTO_RENEWED ' ? 'Auto Renewed' : 'Active Contract');
       warningHoverText.push('Submitted Timesheets not in compliance with contract terms. contract requires specific terms to be modified');
       notification.push(<WarningAmberIcon style={{ color: '#FF6562' }} />);
       contractType.push(data?.contractType === 'MULTIPLE' ? 'MULTI - PROVIDER' : data?.contractType);
@@ -290,7 +330,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
       name.push(data?.contractName?.contractName);
       contractors.push(contractorList?.length || '-');
       contractorsIcon.push(contractorList?.length > 1 ? <GroupOutlinedIcon style={{ fontSize: 20, color: '#857AEF' }} /> : contractorList?.length === 0 ? '' : <PersonOutlinedIcon style={{ fontSize: 20, color: '#857AEF' }} />);
-      effectiveDate.push(format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy'));
+      effectiveDate.push(data?.contractDetail?.contractTerm !== null ? format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy') : '-');
       // podStatus.push("3");
       manager.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
       lastUpdated.push(format(new Date(data?.lastModifiedDate), 'MM-dd-yyyy'))
@@ -329,9 +369,9 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     action = [];
 
     contracts?.map(data => {
-      dot.push('yellow');
+      dot.push((data?.contractStatus === 'ACTIVATION_READY' && data?.subStatus === 'ACTIVATION_IN_PROGRESS') ? 'yellow' : (data?.contractStatus === 'DRAFT' && data?.subStatus === 'ACTIVATION_IN_PROGRESS') ? 'grey' : data?.subStatus === 'ACTIVATION_PAST_DUE' ? 'red' : 'grey');
       contractType.push(data?.contractType === 'MULTIPLE' ? `MULTI - PROVIDER ${data?.newContract ? '(New)' : '(Existing)'}` : `${data?.contractType} ${data?.newContract ? '(New)' : '(Existing)'}`);
-      dotTooltipValues.push('In-Progress');
+      dotTooltipValues.push((data?.contractStatus === 'ACTIVATION_READY' && data?.subStatus === 'ACTIVATION_IN_PROGRESS') ? 'Activation Ready' : (data?.contractStatus === 'DRAFT' && data?.subStatus === 'ACTIVATION_IN_PROGRESS') ? 'Activation In Progress' : data?.subStatus === 'ACTIVATION_PAST_DUE' ? 'Activation Past Due' : 'Draft Contract');
       contractId.push(data?.contractDetail?.contractId?.id);
       lock.push(<LockOpenOutlinedIcon style={{ color: '#14B15A' }} />)
       lockHoverText.push('Contract available for other contract managers to access & work on');
@@ -342,7 +382,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
       activationStatus.push(data?.contractStatus === 'ACTIVATION_READY' ? 'Activation pending' : 'Not Activated');
       icon.push(<TextSnippetOutlinedIcon style={{ color: (data?.contractDetail?.contractFiles?.length === 0 || data?.contractDetail?.contractFiles === null) ? '#F94848' : '#14B15A' }} />);
       iconHoverText.push((data?.contractDetail?.contractFiles?.length === 0 || data?.contractDetail?.contractFiles === null) ? 'No Document Uploaded' : 'Document Uploaded');
-      effectiveDate.push(format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy'));
+      effectiveDate.push(data?.contractDetail?.contractTerm !== null ? format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy') : '-');
       manager.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
       lastUpdated.push(format(new Date(data?.lastModifiedDate), 'MM-dd-yyyy'))
       lastUpdatedBy.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
@@ -389,8 +429,8 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     action = [];
 
     contracts?.map(data => {
-      dot.push('yellow');
-      dotTooltipValues.push('In-Progress');
+      dot.push(data?.subStatus === 'EXTENSION_REQUIRED' ? 'yellow' : 'red');
+      dotTooltipValues.push(data?.subStatus === 'EXTENSION_REQUIRED' ? 'Extension Required' : 'New Contract Required');
       contractType.push(data?.contractType === 'MULTIPLE' ? 'MULTI - PROVIDER' : data?.contractType);
       contractId.push(data?.contractDetail?.contractId?.id);
       name.push(data?.contractName?.contractName);
@@ -427,20 +467,20 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     action = [];
 
     contracts?.map(data => {
-      dot.push(true);
-      dotTooltipValues.push('Selected');
+      dot.push('red');
+      dotTooltipValues.push(data?.subStatus === 'EXPIRED' ? 'Expired' : 'Terminated');
       contractType.push(data?.contractType === 'MULTIPLE' ? 'MULTI - PROVIDER' : data?.contractType);
       contractId.push(data?.contractDetail?.contractId?.id);
       name.push(data?.contractName?.contractName);
       expirationDate.push(data?.contractDetail?.contractExpiryDate !== null ? format(new Date(data?.contractDetail?.contractExpiryDate), 'MM-dd-yyyy') : '-');
-      newContractId.push('-');
+      newContractId.push(data?.contractDetail?.renewedContractId !== null ? data?.contractDetail?.renewedContractId?.id : '-');
       manager.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
       lastUpdated.push(format(new Date(data?.lastModifiedDate), 'MM-dd-yyyy'))
       action.push(true)
     })
 
     return [
-      { "type": "checkbox", "value": dot, 'tooltipValue': dotTooltipValues },
+      { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
       { "type": "text", "value": contractType, "onClickFunction": onClickFunction },
       { "type": "text", "value": contractId, "onClickFunction": onClickFunction },
       { "type": "text", "value": name, "onClickFunction": onClickFunction },
@@ -456,7 +496,8 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     // {'data': 'Contract Extension', 'onClick': contractExtension, 'requiredValue': 'boolean'},
     { 'data': 'Terminate Contract', 'onClick': contractTermination, 'requiredValue': 'boolean' },
     //   {'data': 'Clone Contract', 'onClick': contractClone, 'requiredValue': 'boolean'},
-    { 'data': 'Pre Implementation Data', 'onClick': getShowPreImplementationDialog, 'requiredValue': 'boolean' }
+    { 'data': 'Pre Implementation Data', 'onClick': getShowPreImplementationDialog, 'requiredValue': 'boolean' },
+    { 'data': 'Renew Upcoming Renewal Contract', 'onClick': handleRenewalContracts, 'requiredValue': 'boolean', 'conditionToShow': `!data?.contractDetail?.contractRenewed && data?.contractDetail?.continuationPolicy?.contractPolicyType !== 'ONETIMECONTRACTTERMINATEONEXPIRATION' && data?.contractStatus !== 'TERMINATED'` }
   ]
 
   const draftActionsData = [
@@ -475,11 +516,11 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
     // {'data': 'Renew Existing Contract', 'onClick': deleteDraft, 'requiredValue': 'boolean'},
     { 'data': 'Extend Contract', 'onClick': activateContracts, 'requiredValue': 'id' },
     // {'data': 'Terminate Contract', 'onClick': activateContracts, 'requiredValue': 'id'}
-    { 'data': 'Renew Upcoming Contract', 'onClick': handleRenewalContracts, 'requiredValue': 'boolean' }
+    { 'data': 'Renew Upcoming Renewal Contract', 'onClick': handleRenewalContracts, 'requiredValue': 'boolean', 'conditionToShow': `!data?.contractDetail?.contractRenewed && data?.contractDetail?.continuationPolicy?.contractPolicyType !== 'ONETIMECONTRACTTERMINATEONEXPIRATION' && data?.contractStatus !== 'TERMINATED'` }
   ]
 
   const expiredActionsData = [
-    { 'data': 'Renew Expired Contract', 'onClick': handleRenewalContracts, 'requiredValue': 'boolean' }
+    { 'data': 'Renew Expired Contract', 'onClick': handleRenewalContracts, 'requiredValue': 'boolean', 'conditionToShow': `!data?.contractDetail?.contractRenewed && data?.contractDetail?.continuationPolicy?.contractPolicyType !== 'ONETIMECONTRACTTERMINATEONEXPIRATION' && data?.contractStatus !== 'TERMINATED'` }
   ]
 
   const handleAddContract = () => {
@@ -488,12 +529,32 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
   }
 
   const getContractsMetadata = async () => {
-    const { data: contractMetadata } = await GET(`contract-managment-service/contracts/metadata`);
+    console.log(bottomTextNumber, 'test')
+    let apiUrl = `contract-managment-service/contracts/metadata`;
+    if (bottomTextNumber !== 'undefined' && bottomTextNumber !== undefined && bottomTextNumber !== null) {
+      if (selectedContract === 'upcomingrenewals') {
+        apiUrl += `?UpcomingTabNoOfDays=${bottomTextNumber}`
+      }
+      if (selectedContract === 'expired/terminated') {
+        apiUrl += `?ExpiredTabNoOfDays=${bottomTextNumber}`
+      }
+    }
+    const { data: contractMetadata } = await GET(apiUrl);
     setMetadata(contractMetadata);
   };
 
   const getIsExpanded = (value) => {
     setIsExpanded(value);
+  }
+
+  const getContractFilterValues = (value) => {
+    console.log(value, 'contractFilters')
+    // setContractFilterValues(value);
+    sessionStorage.setItem('contractFilters', JSON.stringify(value))
+  }
+
+  const updateFilter = (data, value) => {
+    filterRef.current.updateFilter(data, value);
   }
 
   let tableHeaderValues = selectedContract === 'activecontracts' ? activeHeaderValues : selectedContract === 'draft' ? (isDraft ? draftHeaderValues : activationPendingHeaderValues) : selectedContract === 'upcomingrenewals' ? upcomingHeaderValues : expiredHeaderValues;
@@ -508,12 +569,13 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
       <div className={isExpanded ? style.bigCardGrid : style.smallCardGrid}>
         <div>
           <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
-            <LeftStatsCard metadata={metadata} />
+            <LeftStatsCard metadata={metadata} getContractFilterValues={getContractFilterValues} selectedContract={selectedContract}
+              getFilterValues={getFilterValues} ref={filterRef} />
           </SideBar>
         </div>
         <div>
           <ContractTiles getSelectedContract={getSelectedContract} selectedContract={selectedContract}
-            metadata={metadata} />
+            metadata={metadata} getTabFilter={getTabFilter} />
           <div className={`${style.bigCardStyle} ${style.marginTop20}`}>
             <div className={`${style.spaceBetween} ${style.marginLeftRight20}`}>
               <div className={`${style.displayInRow} ${style.marginTop10}`}>
@@ -573,6 +635,84 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
                 </div>
               </div>
             </div>
+            {(contractFilterValues !== undefined && (
+              contractFilterValues?.contractExpireInDays !== 0 ||
+              contractFilterValues?.contractTypeCount?.filter(data => data?.selected)?.map(data => data)?.length !== 0 ||
+              contractFilterValues?.contractPolicyTypeCount?.filter(data => data?.selected)?.map(data => data)?.length !== 0 ||
+              contractFilterValues?.compensationPolicyCount?.filter(data => data?.selected)?.map(data => data)?.length !== 0 ||
+              contractFilterValues?.contractManagers?.filter(data => data?.selected)?.map(data => data)?.length !== 0 ||
+              (contractFilterValues?.numberOfContract?.min !== 0 || contractFilterValues?.numberOfContract?.max !== 0) ||
+              (contractFilterValues?.contractTimeCommitment?.from !== null || contractFilterValues?.contractTimeCommitment?.to !== null))) ? (
+              <div className={`${style.displayInRow} ${style.marginTop} ${style.marginLeftRight20} ${style.filterGrid}`}>
+                <div className={` ${style.verticalAlignCenter} ${style.marginTop} ${style.marginLeft10}`}>
+                  <div className={`${style.contractFiltersHeading} ${style.marginTop10}`}>Filters Applied </div>
+                </div>
+                {contractFilterValues?.contractTypeCount?.map((data, index) => data?.selected && (
+                  <div className={` ${style.marginLeft10} ${style.marginTop10}`} key={index}>
+                    <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
+                      <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${data?.contractType} (${data?.count})`}</div>
+                      <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => updateFilter('contractTypeCount', data?.contractType)} />
+                    </div>
+                  </div>
+                ))}
+                {contractFilterValues?.compensationPolicyCount?.map((data, index) => data?.selected && (
+                  <div className={` ${style.marginLeft10} ${style.marginTop10}`} key={index}>
+                    <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
+                      <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${compensationPolicyAvailableValues[data?.compensationPolicy]} (${data?.count})`}</div>
+                      <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => updateFilter('compensationPolicyCount', data?.compensationPolicy)} />
+                    </div>
+                  </div>
+                ))}
+                {contractFilterValues?.contractPolicyTypeCount?.map((data, index) => data?.selected && (
+                  <div className={` ${style.marginLeft10} ${style.marginTop10}`} key={index}>
+                    <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
+                      <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${contractPolicyTypeAvailableValues[data?.contractPolicyType]} (${data?.count})`}</div>
+                      <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => updateFilter('contractPolicyTypeCount', data?.contractPolicyType)} />
+                    </div>
+                  </div>
+                ))}
+                {contractFilterValues?.contractManagers?.map((data, index) => data?.selected && (
+                  <div className={` ${style.marginLeft10} ${style.marginTop10}`} key={index}>
+                    <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
+                      <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${data?.name?.firstName} ${data?.name?.lastName}`}</div>
+                      <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => updateFilter('contractManagers', data?.userID)} />
+                    </div>
+                  </div>
+                ))}
+                {(contractFilterValues?.contractId !== '' && contractFilterValues?.contractId !== undefined) && (
+                  <div className={` ${style.marginLeft10} ${style.marginTop10}`}>
+                    <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
+                      <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${contractFilterValues?.contractId}`}</div>
+                      <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer} ${style.marginRight5}`} onClick={() => updateFilter('contractId')} />
+                    </div>
+                  </div>
+                )}
+                {(contractFilterValues?.contractExpireInDays !== 0 && contractFilterValues?.contractExpireInDays !== undefined) && (
+                  <div className={` ${style.marginLeft10} ${style.marginTop10}`}>
+                    <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
+                      <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`Expires in ${contractFilterValues?.contractExpireInDays} Days`}</div>
+                      <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer} ${style.marginRight5}`} onClick={() => updateFilter('contractExpireInDays')} />
+                    </div>
+                  </div>
+                )}
+                {(contractFilterValues?.numberOfContract?.max !== 0) && (
+                  <div className={` ${style.marginLeft10} ${style.marginTop10}`}>
+                    <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
+                      <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${contractFilterValues?.numberOfContract?.min} - ${contractFilterValues?.numberOfContract?.max}`}</div>
+                      <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer} ${style.marginRight5}`} onClick={() => updateFilter('numberOfContract')} />
+                    </div>
+                  </div>
+                )}
+                {(contractFilterValues?.contractTimeCommitment?.from !== null || contractFilterValues?.contractTimeCommitment?.to !== null) && (
+                  <div className={` ${style.marginLeft10} ${style.marginTop10}`}>
+                    <div className={`${style.contractFilterCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
+                      <div className={`${style.contractFiltersTextStyle} ${style.marginLeft10}`}>{`${format(new Date(contractFilterValues?.contractTimeCommitment?.from || new Date()), 'MM/dd/yyyy')} - ${format(new Date(contractFilterValues?.contractTimeCommitment?.to || new Date()), 'MM/dd/yyyy')}`}</div>
+                      <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer} ${style.marginRight5}`} onClick={() => updateFilter('contractTimeCommitment')} />
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : ''}
             {isLoading ?
               <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
                 <CircularProgress sx={{ color: "#7165E3" }} />
@@ -601,6 +741,8 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
                       <AddCircleOutlineIcon sx={{ fontSize: 20, color: 'white' }} />
                     </div>}
                     onClickFunction={() => { }}
+                    getHandleSort={getHandleSort}
+                    sortValue={sortValue}
                   />
                 </div>
               </div>

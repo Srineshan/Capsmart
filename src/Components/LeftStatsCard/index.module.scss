@@ -12,6 +12,14 @@
     margin-right: 15px;
 }
 
+.marginTop20 {
+    margin-top: 20px;
+}
+
+.marginTop10 {
+    margin-top: 10px;
+}
+
 .statisticsHeading {
     border-bottom: 2px solid #EBF2F7;
     padding: 0 0 20px 20px;
@@ -70,4 +78,79 @@
 
 .progressMargin {
     margin: -5px 0 20px 0;
+}
+
+.filterHeading {
+    text-align: left;
+    font: normal normal bold 14px/14px Montserrat;
+    color: #7165E3;
+    text-transform: uppercase;
+}
+
+.clearText {
+    text-align: left;
+    font: normal normal 600 11px/11px Montserrat;
+    color: #BCBCBC;
+    text-transform: capitalize;
+    cursor: pointer;
+}
+
+.labelText {
+    text-align: left;
+    font: normal normal 600 10px/10px Montserrat;
+    color: #BCBCBC;
+    text-transform: capitalize;
+}
+
+.filterPadding {
+    padding: 10px;
+}
+
+.filterType {
+    text-align: left;
+    font: normal normal 600 12px/15px Montserrat;
+    color: #707070;
+    text-transform: capitalize;
+}
+
+.displayInRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.verticalAlignCenter {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.alignCenter {
+    display: flex;
+    justify-content: center;
+}
+
+.dividerStyle {
+    margin: 10px -10px;
+    background-color: #DBDBDB;
+    height: 1px;
+}
+
+.numberOfContractorsGrid {
+    display: grid;
+    grid-template-columns: 30% 10% 30%;
+    grid-gap: 5%;
+}
+
+.contractTimeCommitmentGrid {
+    display: grid;
+    grid-template-columns: 48% 48%;
+    grid-gap: 2%;
+}
+
+.purpleText {
+    color: #7165E3;
+}
+
+.textAlignLeft {
+    text-align: left;
 }

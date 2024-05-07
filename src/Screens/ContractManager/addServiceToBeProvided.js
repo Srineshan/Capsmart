@@ -62,6 +62,7 @@ const AddServiceProvided = ({
   selectedIndex,
   isEditable,
   getTabDataStatus,
+  contractTabsMetaData
 }) => {
   const [serviceTypeList, setServiceTypeList] = useState([]);
   const [serviceTypeId, setServiceTypeId] = useState("");
@@ -324,6 +325,25 @@ const AddServiceProvided = ({
   const getMetaData = (value) => {
     setMetadata(value);
   };
+
+  const updateContractTabsMetaData = async () => {
+    let selectedServiceUpdated = contractTabsMetaData?.contractedServices?.filter(data => data?.refId === selectedService?.refId)[0]
+    if (!selectedServiceUpdated?.updated) {
+      let temp = contractTabsMetaData?.contractedServices?.map(item => {
+        if (item.refId === selectedService?.refId) {
+          return { ...item, updated: true };
+        }
+        return item;
+      });
+      let isAllUpdated = temp.every(obj => obj['updated'] === true)
+      let data = contractTabsMetaData;
+      data.contractedServices = temp;
+      if (isAllUpdated) {
+        data.contractedServicesUpdated = true;
+      }
+      await PUT(`contract-managment-service/contracts/${contractId}/contractTabsMetaData`, data)
+    }
+  }
 
   const getActivityList = async () => {
     let dept = [];
@@ -892,6 +912,7 @@ const AddServiceProvided = ({
     } else {
       handleSave(buttonType);
     }
+    updateContractTabsMetaData()
     setContinueLoading(false);
   };
 
@@ -1164,7 +1185,7 @@ const AddServiceProvided = ({
           users:
             selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers,
           performingActivity: {
-            activity: performingActivity,
+            activity: serviceTypeTemplate === ADMINISTRATIVE ? dataValues?.performingActivity : performingActivity,
           },
           activities: activities,
           ...((((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ONCALLSERVICE) &&

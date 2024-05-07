@@ -39,7 +39,8 @@ const ContractedServicesProviderIndividual = ({
   getShowAlert,
   isEditable,
   getTabDataStatus,
-  priorContractId
+  priorContractId,
+  getShowPrevContractDataAlert
 }) => {
   const testContractId = contractId;
   const [user, setUsers] = useState([]);
@@ -109,12 +110,14 @@ const ContractedServicesProviderIndividual = ({
   const contractStatus = sessionStorage.getItem("Selected Contract Status");
   const [buttonName, setButtonName] = useState("");
   const [showAddressConfirmationDialogWhenSubmit, setShowAddressConfirmationDialogWhenSubmit] = useState(false);
+  const [contractTabsMetaData, setContractTabsMetaData] = useState();
 
   useEffect(() => {
     getRoles();
     getUserData();
     getUsersData();
     getEntityData();
+    getContractTabsMetadata()
   }, []);
 
   useEffect(() => {
@@ -183,6 +186,22 @@ const ContractedServicesProviderIndividual = ({
   useEffect(() => {
     getTitleData();
   }, [siteList?.length, siteList, userProviderData, isUserPresent]);
+
+  const getContractTabsMetadata = async () => {
+    const { data: contractTabsMetaData } = await GET(
+      `contract-managment-service/contracts/${contractId}/contractTabsMetaData`
+    );
+    setContractTabsMetaData(contractTabsMetaData)
+    getShowPrevContractDataAlert(contractTabsMetaData?.contractUsersUpdated)
+  }
+
+  const updateContractTabsMetaData = async () => {
+    if (!contractTabsMetaData?.contractUsersUpdated) {
+      let data = contractTabsMetaData;
+      data.contractUsersUpdated = true;
+      await PUT(`contract-managment-service/contracts/${contractId}/contractTabsMetaData`, data)
+    }
+  }
 
   const getTitleData = () => {
     console.log(
@@ -718,7 +737,7 @@ const ContractedServicesProviderIndividual = ({
         });
     }
     setContinueLoading(false);
-
+    updateContractTabsMetaData()
     if (buttonText === "Continue") {
       getViewPage3(true);
       getCurrentPage("Contractor Business Entity");

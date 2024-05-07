@@ -49,6 +49,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     const [selectedContracts, setSelectedContracts] = useState([]);
     const [selectedContractedServiceProvider, setSelectedContractedServiceProvider] = useState([]);
     const [selectedContractedServiceProviderToSend, setSelectedContractedServiceProviderToSend] = useState([]);
+    const [selectedTimesheetInterval, setSelectedTimesheetInterval] = useState([]);
+    const [timesheetIntervals, setTimesheetIntervals] = useState([]);
     const [user, setUsers] = useState([]);
     const [from, setFrom] = useState(startOfMonth(new Date()));
     const [to, setTo] = useState(endOfMonth(new Date()));
@@ -67,7 +69,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         multiProviderContractsList: 'CONTRACT',
         currentRemitToAddressForActiveContracts: 'CONTRACT',
         nonCompliant: 'CONTRACT',
-        activityStatusTracker: 'CONTRACT'
+        activityStatusTracker: 'CONTRACT',
+        paymentProcessingStatusTracker: 'TIMESHEET'
     }
     const defaultOption = ''
 
@@ -78,7 +81,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     const [userId, setUserId] = useState(userDetail?.id);
     const [contractedServiceProviders, setContractedServiceProviders] = useState([]);
     const [initialValueSet, setInitialValueSet] = useState(false);
-
+    console.log(isLoading, 'loading')
     let dataToUseInReport = {
         renewalreportingTimePeriod: renewalreportingTimePeriod,
         selectedSites: selectedSites,
@@ -99,6 +102,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         selectedContractedServiceProvider: selectedContractedServiceProvider,
         selectedContractedServiceProviderToSend: selectedContractedServiceProviderToSend,
         initialValueSet: initialValueSet,
+        selectedTimesheetInterval: selectedTimesheetInterval
     };
 
     useEffect(() => {
@@ -106,11 +110,22 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         setUserDetails();
         getActivityLogger();
         getContractAndUserList();
+        if (reportType === 'paymentProcessingStatusTracker') {
+            getTimesheetIntervals()
+        }
     }, [])
 
     const setUserDetails = async () => {
         const { data: user } = await GET(`user-management-service/user/${userId}`);
         setCurrentUserDetails(user);
+    }
+
+    const getTimesheetIntervals = async () => {
+        const { data: data } = await GET(`timesheet-management-service/timesheet/timesheetIntervals`);
+        setTimesheetIntervals(data);
+        if (data?.length !== 0) {
+            setSelectedTimesheetInterval(selectedContractedServiceProvider !== '' && reportType !== "paymentProcessingStatusTracker" ? [defaultOption] : [`${format(startOfMonth(new Date()), 'yyyy-MM-dd')}%23${format(endOfMonth(new Date()), 'yyyy-MM-dd')}`])
+        }
     }
 
     const getActivityLogger = async () => {
@@ -179,6 +194,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         //     }
         // }
         if (reportFilter) {
+            const encodedArray = reportFilter?.intervals.map(encodeHashToPercent23);
+            console.log(encodedArray, 'encodedArray', reportFilter?.intervals)
             setFrom(new Date(reportFilter?.startDate));
             setTo(new Date(reportFilter?.endDate));
             setSelectedContracts(reportFilter?.contracts);
@@ -189,6 +206,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
             setContractContinuationPolicy(reportFilter?.contractPolicyType !== "" ? reportFilter?.contractPolicyType : 'ALL');
             setContractStatus(reportFilter?.contractStatus);
             setRenewalreportingTimePeriod(reportFilter?.renewalDays)
+            setSelectedTimesheetInterval(reportFilter?.intervals ? encodedArray : [])
         }
     }, [currentUserDetails])
 
@@ -226,7 +244,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         getDataToUseInReport(dataToUseInReport);
     }, [renewalreportingTimePeriod, selectedSites, selectedDepartments, contractContinuationPolicy, selectedContracts,
         podType, contractStatus, reportingTimePeriod, selectedContractedServiceProvider,
-        selectedContractedServiceProviderToSend, from, to, initialValueSet]);
+        selectedContractedServiceProviderToSend, from, to, initialValueSet, selectedTimesheetInterval]);
 
     useEffect(() => {
         let tempDept = [];
@@ -329,6 +347,14 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         return () => clearTimeout(timer);
 
     }, [defaultOption, selectedSites, selectedDepartments, selectedContractedServiceProvider, selectedContracts]);
+
+    const encodeHashToPercent23 = (str) => {
+        const parts = str.split('#');
+        const encodedParts = parts.map((part, index) => {
+            return index < parts.length - 1 ? encodeURIComponent(part) + '%23' : encodeURIComponent(part);
+        });
+        return encodedParts.join('');
+    };
 
     const handleChange = (event) => {
         setActivityType(event.target.value);
@@ -459,6 +485,21 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         }
     };
 
+    const handleChangeTimesheetInterval = (event) => {
+        const {
+            target: { value },
+        } = event;
+        console.log(event, value)
+
+        if (value?.length >= 2 && value[value?.length - 1] === defaultOption && reportType !== "paymentProcessingStatusTracker") {
+            setSelectedTimesheetInterval([defaultOption]);
+        } else {
+            setSelectedTimesheetInterval(
+                typeof value === 'string' ? value.split(',') : value
+            );
+        }
+    };
+
     return (
         <div>
             <div className={`${style.leftCard} ${style.marginTop20} ${style.bigCalendarLeftCardWidth}`}>
@@ -466,7 +507,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                 {(reportType === "upcomingContractRenewals" || reportType === "oneTimeContract" ||
                     reportType === "contractDocumentsOnFile" || reportType === "multiProviderContractsList" ||
                     reportType === "contractsWithABusinessEntity" || reportType === "currentRemitToAddressForActiveContracts" ||
-                    reportType === 'nonCompliant' || reportType === "activityStatusTracker") ? (
+                    reportType === 'nonCompliant' || reportType === "activityStatusTracker" || reportType === "paymentProcessingStatusTracker") ? (
                     <>
                         {reportType === "upcomingContractRenewals" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
@@ -479,9 +520,9 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     label="Renewal Time Frame"
                                     disabled={isMyReport || isLoading}
                                 >
-                                    <MenuItem value={30}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 30 days</MenuItem>
-                                    <MenuItem value={60}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 60 days</MenuItem>
-                                    <MenuItem value={90}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 90 days</MenuItem>
+                                    <MenuItem value={30} disabled={isMyReport || isLoading}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 30 days</MenuItem>
+                                    <MenuItem value={60} disabled={isMyReport || isLoading}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 60 days</MenuItem>
+                                    <MenuItem value={90} disabled={isMyReport || isLoading}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 90 days</MenuItem>
                                 </Select>
                             </FormControl>
                         )}
@@ -497,12 +538,13 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 disabled={isMyReport || isLoading}
                             >
                                 {sites?.length >= 2 && (
-                                    <MenuItem value={defaultOption}>All Sites</MenuItem>
+                                    <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All Sites</MenuItem>
                                 )}
                                 {sites?.map((data) => (
                                     <MenuItem
                                         key={data?.id}
                                         value={data?.id}
+                                        disabled={isMyReport || isLoading}
                                     >
                                         {data?.siteName?.siteName}
                                     </MenuItem>
@@ -521,7 +563,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 disabled={isMyReport || isLoading}
                             >
                                 {departments?.length >= 2 && (
-                                    <MenuItem value={defaultOption}>All Departments</MenuItem>
+                                    <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All Departments</MenuItem>
                                 )}
                                 {departments?.map((data) => (
                                     // <MenuItem
@@ -533,6 +575,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     <MenuItem
                                         key={data?.id}
                                         value={data?.id}
+                                        disabled={isMyReport || isLoading}
                                     >
                                         {data?.departmentName?.name}
                                     </MenuItem>
@@ -551,12 +594,13 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                             // MenuProps={MenuProps}
                             >
                                 {contracts?.length >= 2 && (
-                                    <MenuItem value={defaultOption}>All Contracts</MenuItem>
+                                    <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All Contracts</MenuItem>
                                 )}
                                 {contracts?.map((data) => (
                                     <MenuItem
                                         key={data?.id}
                                         value={data?.id}
+                                        disabled={isMyReport || isLoading}
                                     >
                                         {data?.contractName?.contractName}
                                     </MenuItem>
@@ -576,18 +620,93 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     disabled={isMyReport || isLoading}
                                 >
                                     {contractedServiceProviders?.length >= 2 && (
-                                        <MenuItem value={defaultOption}>All Contracted Service Providers</MenuItem>
+                                        <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All Contracted Service Providers</MenuItem>
                                     )}
                                     {contractedServiceProviders?.map((data, index) => (
                                         <MenuItem
                                             key={index}
                                             value={data?.id}
+                                            disabled={isMyReport || isLoading}
                                         >
                                             {`${data?.name?.firstName} ${data?.name?.lastName}`}
                                         </MenuItem>
                                     ))}
                                 </Select>
                             </FormControl>
+                        )}
+                        {reportType === "paymentProcessingStatusTracker" && (
+                            <>
+                                <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                    <InputLabel id="demo-multiple-name-label5">Contracted Service Provider</InputLabel>
+                                    <Select
+                                        labelId="demo-multiple-name-label5"
+                                        id="demo-multiple-name5"
+                                        value={selectedContractedServiceProvider}
+                                        onChange={handleChangeContractedServiceProviders}
+                                        MenuProps={MenuProps}
+                                        disabled={isMyReport || isLoading}
+                                    >
+                                        {contractedServiceProviders?.length >= 2 && (
+                                            <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All Contracted Service Providers</MenuItem>
+                                        )}
+                                        {contractedServiceProviders?.map((data, index) => (
+                                            <MenuItem
+                                                key={index}
+                                                value={data?.id}
+                                                disabled={isMyReport || isLoading}
+                                            >
+                                                {`${data?.name?.firstName} ${data?.name?.lastName}`}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                                {(selectedContractedServiceProvider?.length === 1 && selectedContractedServiceProvider[0] !== '') ? (
+                                    <FormControl variant="standard" sx={{ width: '250px', marginTop: '20px' }}>
+                                        <InputLabel id="demo-multiple-name-label5">Timesheet Interval</InputLabel>
+                                        <Select
+                                            labelId="demo-multiple-name-label2"
+                                            id="demo-multiple-name2"
+                                            multiple
+                                            value={selectedTimesheetInterval}
+                                            onChange={handleChangeTimesheetInterval}
+                                            MenuProps={{ MenuProps }}
+                                            disabled={isMyReport || isLoading}
+                                        >
+                                            {timesheetIntervals?.map((data) => (
+                                                <MenuItem
+                                                    key={data?.startDate}
+                                                    value={`${data?.startDate}%23${data?.endDate}`}
+                                                    disabled={isMyReport || isLoading}
+                                                >
+                                                    {`Timesheets for ${format(new Date(data?.startDate), 'MMMM yyyy')}`}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                ) : (
+                                    <FormControl variant="standard" sx={{ width: '250px', marginTop: '20px' }}>
+                                        <InputLabel id="demo-multiple-name-label5">Timesheet Interval</InputLabel>
+                                        <Select
+                                            labelId="demo-multiple-name-label2"
+                                            id="demo-multiple-name2"
+                                            value={selectedTimesheetInterval}
+                                            onChange={(e) => setSelectedTimesheetInterval([e.target.value])}
+                                            MenuProps={{ MenuProps }}
+                                            disabled={isMyReport || isLoading}
+                                        >
+                                            {timesheetIntervals?.map((data) => (
+                                                <MenuItem
+                                                    key={data?.startDate}
+                                                    value={`${data?.startDate}%23${data?.endDate}`}
+                                                    disabled={isMyReport || isLoading}
+                                                >
+                                                    {`Timesheets for ${format(new Date(data?.startDate), 'MMMM yyyy')}`}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                )}
+                            </>
                         )}
                         {(reportType === "contractDocumentsOnFile" || reportType === "multiProviderContractsList" ||
                             reportType === "contractsWithABusinessEntity" || reportType === 'nonCompliant') && (
@@ -601,11 +720,11 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                         MenuProps={MenuProps}
                                         disabled={isMyReport || isLoading}
                                     >
-                                        <MenuItem value={'ACTIVE'}>Active</MenuItem>
-                                        <MenuItem value={'DRAFT'}>Draft</MenuItem>
-                                        <MenuItem value={'EXPIRED'}>Expired</MenuItem>
-                                        <MenuItem value={'TERMINATED'}>Terminated</MenuItem>
-                                        <MenuItem value={'ACTIVATION_READY'}>Ready To Activate</MenuItem>
+                                        <MenuItem value={'ACTIVE'} disabled={isMyReport || isLoading}>Active</MenuItem>
+                                        <MenuItem value={'DRAFT'} disabled={isMyReport || isLoading}>Draft</MenuItem>
+                                        <MenuItem value={'EXPIRED'} disabled={isMyReport || isLoading}>Expired</MenuItem>
+                                        <MenuItem value={'TERMINATED'} disabled={isMyReport || isLoading}>Terminated</MenuItem>
+                                        <MenuItem value={'ACTIVATION_READY'} disabled={isMyReport || isLoading}>Ready To Activate</MenuItem>
                                     </Select>
                                 </FormControl>
                             )}
@@ -621,11 +740,11 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     MenuProps={MenuProps}
                                     disabled={isMyReport || isLoading}
                                 >
-                                    <MenuItem value={'ALL'}>All Contract Continuation Policy</MenuItem>
-                                    <MenuItem value={'AUTORENEWAL'}>Auto Renewal</MenuItem>
-                                    <MenuItem value={'WRITTENCONTRACTEXTENSIONFORFIXEDTERM'}>Written Contract Extension For Fixed Term</MenuItem>
-                                    <MenuItem value={'NEWCONTRACTONEXPIRATION'}>New Contract On Expiration</MenuItem>
-                                    <MenuItem value={'ONETIMECONTRACTTERMINATEONEXPIRATION'}>One Time Contract - Terminate On Expiration</MenuItem>
+                                    <MenuItem value={'ALL'} disabled={isMyReport || isLoading}>All Contract Continuation Policy</MenuItem>
+                                    <MenuItem value={'AUTORENEWAL'} disabled={isMyReport || isLoading}>Auto Renewal</MenuItem>
+                                    <MenuItem value={'WRITTENCONTRACTEXTENSIONFORFIXEDTERM'} disabled={isMyReport || isLoading}>Written Contract Extension For Fixed Term</MenuItem>
+                                    <MenuItem value={'NEWCONTRACTONEXPIRATION'} disabled={isMyReport || isLoading}>New Contract On Expiration</MenuItem>
+                                    <MenuItem value={'ONETIMECONTRACTTERMINATEONEXPIRATION'} disabled={isMyReport || isLoading}>One Time Contract - Terminate On Expiration</MenuItem>
                                 </Select>
                             </FormControl>
                         )}
@@ -642,7 +761,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     disabled={isMyReport || isLoading}
                                 >
                                     {podTypes?.map((data, index) => (
-                                        <MenuItem value={data} key={index}>{data}</MenuItem>
+                                        <MenuItem value={data} key={index} disabled={isMyReport || isLoading}>{data}</MenuItem>
                                     ))}
                                 </Select>
                             </FormControl>
@@ -660,15 +779,15 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 onChange={(e) => { setReportingTimePeriod(e.target.value) }}
                                 disabled={isMyReport || isLoading}
                             >
-                                <MenuItem value={'Current Week'}>Current Week</MenuItem>
-                                <MenuItem value={'Last Week'}>Last Week</MenuItem>
-                                <MenuItem value={'Current Month'}>Current Month</MenuItem>
-                                <MenuItem value={'Last Month'}>Last Month</MenuItem>
-                                <MenuItem value={'Current Qtr'}>Current Quarter</MenuItem>
-                                <MenuItem value={'Last Qtr'}>Last Quarter</MenuItem>
-                                <MenuItem value={'Current Year'}>Current Year</MenuItem>
-                                <MenuItem value={'Last Year'}>Last Year</MenuItem>
-                                <MenuItem value={'Custom'}>Custom</MenuItem>
+                                <MenuItem value={'Current Week'} disabled={isMyReport || isLoading}>Current Week</MenuItem>
+                                <MenuItem value={'Last Week'} disabled={isMyReport || isLoading}>Last Week</MenuItem>
+                                <MenuItem value={'Current Month'} disabled={isMyReport || isLoading}>Current Month</MenuItem>
+                                <MenuItem value={'Last Month'} disabled={isMyReport || isLoading}>Last Month</MenuItem>
+                                <MenuItem value={'Current Qtr'} disabled={isMyReport || isLoading}>Current Quarter</MenuItem>
+                                <MenuItem value={'Last Qtr'} disabled={isMyReport || isLoading}>Last Quarter</MenuItem>
+                                <MenuItem value={'Current Year'} disabled={isMyReport || isLoading}>Current Year</MenuItem>
+                                <MenuItem value={'Last Year'} disabled={isMyReport || isLoading}>Last Year</MenuItem>
+                                <MenuItem value={'Custom'} disabled={isMyReport || isLoading}>Custom</MenuItem>
                             </Select>
                         </FormControl>
                         {reportingTimePeriod === "Custom" && (
@@ -749,12 +868,13 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 disabled={isMyReport || isLoading}
                             >
                                 {sites?.length >= 2 && (
-                                    <MenuItem value={defaultOption}>All Sites</MenuItem>
+                                    <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All Sites</MenuItem>
                                 )}
                                 {sites?.map((data) => (
                                     <MenuItem
                                         key={data?.id}
                                         value={data?.id}
+                                        disabled={isMyReport || isLoading}
                                     >
                                         {data?.siteName?.siteName}
                                     </MenuItem>
@@ -775,7 +895,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 disabled={isMyReport || isLoading}
                             >
                                 {departments?.length >= 2 && (
-                                    <MenuItem value={defaultOption}>All Departments</MenuItem>
+                                    <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All Departments</MenuItem>
                                 )}
                                 {departments?.map((data) => (
                                     // <MenuItem
@@ -787,6 +907,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     <MenuItem
                                         key={data?.id}
                                         value={data?.id}
+                                        disabled={isMyReport || isLoading}
                                     >
                                         {data?.departmentName?.name}
                                     </MenuItem>
@@ -806,12 +927,13 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 disabled={isMyReport || isLoading}
                             >
                                 {contracts?.length >= 2 && (
-                                    <MenuItem value={defaultOption}>All Contracts</MenuItem>
+                                    <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All Contracts</MenuItem>
                                 )}
                                 {contracts?.map((data) => (
                                     <MenuItem
                                         key={data?.id}
                                         value={data?.id}
+                                        disabled={isMyReport || isLoading}
                                     >
                                         {data?.contractName?.contractName}
                                     </MenuItem>
@@ -831,7 +953,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     disabled={isMyReport || isLoading}
                                 >
                                     <MenuItem
-                                        value={currentUserDetails?.id}
+                                        value={currentUserDetails?.id} disabled={isMyReport || isLoading}
                                     >
                                         {`${currentUserDetails?.name?.firstName} ${currentUserDetails?.name?.lastName}`}
                                     </MenuItem>
@@ -850,12 +972,13 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     disabled={isMyReport || isLoading}
                                 >
                                     {contractedServiceProviders?.length >= 2 && (
-                                        <MenuItem value={defaultOption}>All Contracted Service Providers</MenuItem>
+                                        <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All Contracted Service Providers</MenuItem>
                                     )}
                                     {contractedServiceProviders?.map((data, index) => (
                                         <MenuItem
                                             key={index}
                                             value={data?.id}
+                                            disabled={isMyReport || isLoading}
                                         >
                                             {`${data?.name?.firstName} ${data?.name?.lastName}`}
                                         </MenuItem>
@@ -898,12 +1021,13 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 disabled={isMyReport || isLoading}
                             >
                                 {contracts?.length >= 2 && (
-                                    <MenuItem value={defaultOption}>All Contracts</MenuItem>
+                                    <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All Contracts</MenuItem>
                                 )}
                                 {contracts?.map((data) => (
                                     <MenuItem
                                         key={data?.id}
                                         value={data?.id}
+                                        disabled={isMyReport || isLoading}
                                     >
                                         {data?.contractName?.contractName}
                                     </MenuItem>

@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-const Table = ({ tableHeaderValues, tableDataValues, tableData, hidePagination, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, onClickText, onClickFunction, buttonComponent }) => {
+const Table = ({ tableHeaderValues, tableDataValues, tableData, hidePagination, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, onClickText, onClickFunction, buttonComponent, getHandleSort, sortValue }) => {
     const [showOptions, setShowOptions] = useState(false);
     const [selectedMenuIndex, setSelectedMenuIndex] = useState(-1);
     const [selectedMenuColIndex, setSelectedMenuColIndex] = useState(-1);
@@ -52,6 +52,24 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, hidePagination, 
     useOptionsHide(menuRef);
     useOptionsHide(countHoverRef);
     useOptionsHide(textHoverRef);
+
+    const availableSortValue = {
+        CONTRACT_NAME: 'NAME',
+        CONTRACT_ID: 'ID',
+        EFFECTIVE_DATE: 'EFFECTIVE DATE',
+        LAST_UPDATED: 'LAST UPDATED',
+        ACTIVIATION_STATUS: 'ACTIVATION STATUS',
+        EXPIRATION_DATE: 'EXPIRATION DATE'
+    }
+
+    const availableSortValueEnum = {
+        'NAME': 'CONTRACT_NAME',
+        'ID': 'CONTRACT_ID',
+        'EFFECTIVE DATE': 'EFFECTIVE_DATE',
+        'LAST UPDATED': 'LAST_UPDATED',
+        'ACTIVATION STATUS': 'ACTIVIATION_STATUS',
+        'EXPIRATION DATE': 'EXPIRATION_DATE'
+    }
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -145,16 +163,22 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, hidePagination, 
                 <div className={`${style.tableHeader} ${gridStyle} ${style.marginTop10}`}>
                     {tableHeaderValues?.map((data, index) => (
                         <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} key={index}>
-                            {/* {tableSortValues?.[index] ? (
-                                <img src={AscendingSort} alt="" className={`${style.sortImgStyle} ${style.cursorPointer}`} />
-                            ) : (
-                                <img src={DescendingSort} alt="" className={style.sortImgStyle} />
-                            )} */}
                             {data === 'CHECKBOX' ? (
                                 <img src={Checkbox} alt="" className={`${style.CheckboxImgStyle} ${style.marginLeft30}`} />
                             ) : (
                                 <div className={`${data === "" && style.marginLeft30} ${style.tableHeaderFontStyle}`}>{data}</div>
                             )}
+                            {tableSortValues?.[index] && (data === availableSortValue[sortValue?.sortByField] && sortValue?.sortBy === 'ASCENDING') ? (
+                                <img src={AscendingSort} alt="" className={`${style.sortImgStyle} ${style.cursorPointer}`} onClick={() => getHandleSort(availableSortValueEnum[data], 'ASCENDING')} />
+                            ) : tableSortValues?.[index] && (data === availableSortValue[sortValue?.sortByField] && sortValue?.sortBy === 'DESCENDING') ? (
+                                <img src={DescendingSort} alt="" className={`${style.sortImgStyle} ${style.cursorPointer}`} onClick={() => getHandleSort(availableSortValueEnum[data], 'DESCENDING')} />
+                            ) : tableSortValues?.[index] && (
+                                <img src={Sort} alt="" className={`${style.sortImgStyle} ${style.cursorPointer}`} onClick={() => getHandleSort(availableSortValueEnum[data], 'NONE')} />
+                            )
+                                //  : (
+                                //     <img src={DescendingSort} alt="" className={style.sortImgStyle} />
+                                // )
+                            }
                         </div>
                     ))}
                 </div>
@@ -166,7 +190,7 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, hidePagination, 
                                     tableData?.type === "dot" ? (
                                         <div className={`${style.displayInRow} ${style.marginLeft30} ${style.verticalAlignCenter}`}>
                                             <Tooltip title={tableData?.tooltipValue?.[index]} arrow>
-                                                <div className={`${tableData?.value?.[index] === "green" ? style.green : tableData?.value?.[index] === "yellow" ? style.yellow : tableData?.value?.[index] === "grey" ? style.grey : ''} ${tableData?.value?.[index] === "green" ? style.greenDotStyle : tableData?.value?.[index] === "yellow" ? style.yellowDotStyle : tableData?.value?.[index] === "grey" ? style.greyDotStyle : tableData?.value?.[index] === 'purple' ? style.purpleDotStyle : ''}`}></div>
+                                                <div className={`${tableData?.value?.[index] === "green" ? style.green : tableData?.value?.[index] === "yellow" ? style.yellow : tableData?.value?.[index] === "grey" ? style.grey : tableData?.value?.[index] === "red" ? style.red : ''} ${tableData?.value?.[index] === "green" ? style.greenDotStyle : tableData?.value?.[index] === "yellow" ? style.yellowDotStyle : tableData?.value?.[index] === "red" ? style.redDotStyle : tableData?.value?.[index] === "grey" ? style.greyDotStyle : tableData?.value?.[index] === 'purple' ? style.purpleDotStyle : ''}`}></div>
                                             </Tooltip>
                                         </div>
                                     ) : tableData?.type === "checkbox" ? (
@@ -374,8 +398,9 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, hidePagination, 
                                                 -
                                             </div>
                                     ) : tableData?.type === "action" ? (
-                                        <div className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.alignCenter}`} onClick={() => { setShowOptions(true); setSelectedMenuIndex(index) }}>
-                                            <MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />
+                                        <div className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.alignCenter}`} onClick={(actions[0]?.conditionToShow !== undefined && actions?.length === 1) ? eval(actions[0]?.conditionToShow) ? () => { setShowOptions(true); setSelectedMenuIndex(index) } : () => { } : () => { setShowOptions(true); setSelectedMenuIndex(index) }}>
+                                            {(actions[0]?.conditionToShow !== undefined && actions?.length === 1) ? eval(actions[0]?.conditionToShow) && (<MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />)
+                                                : (<MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />)}
                                             {showOptions && index === selectedMenuIndex && (
                                                 <Popover
                                                     id={id}
@@ -388,9 +413,11 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, hidePagination, 
                                                     }}
                                                 >
                                                     <div className={style.actionsCard} ref={menuRef}>
-                                                        {actions?.map((actionsData, actionsIndex) => (
-                                                            <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { actionsData?.onClick(data); handleClose() }} key={actionsIndex}>{actionsData?.data}</div>
-                                                        ))}
+                                                        {actions?.map((actionsData, actionsIndex) => actionsData?.conditionToShow !== undefined ? eval(actionsData?.conditionToShow) &&
+                                                            (<div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { actionsData?.onClick(data); handleClose() }} key={actionsIndex}>{actionsData?.data}</div>)
+                                                            :
+                                                            (<div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { actionsData?.onClick(data); handleClose() }} key={actionsIndex}>{actionsData?.data}</div>)
+                                                        )}
                                                     </div>
                                                 </Popover>
                                             )}

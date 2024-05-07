@@ -9,7 +9,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
-import { differenceInCalendarDays, format } from 'date-fns';
+import { differenceInCalendarDays, endOfMonth, format, startOfMonth } from 'date-fns';
 import Select from '@mui/material/Select';
 import { DataGrid, GridToolbarContainer, GridToolbarExport } from '@mui/x-data-grid';
 import 'react-data-grid/lib/styles.css';
@@ -80,23 +80,23 @@ const TrackYourContracts = () => {
 
     const getColumns = (data, index) => {
         let tempCol = [
-            { field: 'service', headerName: '', width: 280 },
+            { field: 'service', headerName: '', width: 280, align: 'center' },
             {
-                field: 'hourlyRate', headerName: 'Pro-Rata Hourly Rate', width: 140,
+                field: 'hourlyRate', headerName: 'Pro-Rata Hourly Rate', width: 140, align: 'center',
                 renderCell: (params) => {
                     return dollarFormatter(params.value?.toLocaleString());
                 }
             },
-            { field: 'cyExpectedHours', headerName: 'Hours', width: 140 },
+            { field: 'cyExpectedHours', headerName: 'Hours', width: 140, align: 'center' },
             {
-                field: 'cyExpectedAmount', headerName: '$$', width: 140,
+                field: 'cyExpectedAmount', headerName: '$$', width: 140, align: 'center',
                 renderCell: (params) => {
                     return dollarFormatter(params.value?.toLocaleString());
                 }
             },
-            { field: 'cymExpectedHours', headerName: 'Hours', width: 140 },
+            { field: 'cymExpectedHours', headerName: 'Hours', width: 140, align: 'center' },
             {
-                field: 'cymExpectedAmount', headerName: '$$', width: 140,
+                field: 'cymExpectedAmount', headerName: '$$', width: 140, align: 'center',
                 renderCell: (params) => {
                     return dollarFormatter(params.value?.toLocaleString());
                 }
@@ -105,9 +105,9 @@ const TrackYourContracts = () => {
 
         // contractTrackCompensationValues?.map((data, index) => {
         data?.timesheetActivitiesWithActualValuesList?.map((actualValue, actualIndex) => {
-            tempCol.push({ field: `cy${index + 1}m${actualIndex + 1}ActualHours`, headerName: `Hours`, width: 140 })
+            tempCol.push({ field: `cy${index + 1}m${actualIndex + 1}ActualHours`, headerName: `Hours`, width: 140, align: 'center' })
             tempCol.push({
-                field: `cy${index + 1}m${actualIndex + 1}ActualAmount`, headerName: `$$`, width: 140,
+                field: `cy${index + 1}m${actualIndex + 1}ActualAmount`, headerName: `$$`, width: 140, align: 'center',
                 renderCell: (params) => {
                     return dollarFormatter(params.value?.toLocaleString());
                 }
@@ -180,6 +180,7 @@ const TrackYourContracts = () => {
                     groupId: `Expected Monthly (${contractTrackCompensationValues?.[0]?.contractYearInterval !== null ? format(new Date(contractTrackCompensationValues?.[0]?.contractYearInterval?.startDate), 'yyyy') : '-'})`,
                     description: '',
                     children: [{ field: 'cymExpectedHours' }, { field: 'cymExpectedAmount' }],
+
                 },
             ];
             // contractTrackCompensationValues?.map((data, index) => {
@@ -239,7 +240,7 @@ const TrackYourContracts = () => {
             getContractTrackValues()
         }
         if (trackType === 'timesheetAndInvoiceApprovalsStatusTracker' || trackType === "paymentProcessingStatusTracker") {
-            setSelectedTimesheetInterval(selectedContractedServiceProvider !== '' && trackType !== "paymentProcessingStatusTracker" ? [defaultOption] : [`${timesheetIntervals?.[0]?.startDate}%23${timesheetIntervals?.[0]?.endDate}`])
+            setSelectedTimesheetInterval(selectedContractedServiceProvider !== '' && trackType === "timesheetAndInvoiceApprovalsStatusTracker" ? [defaultOption] : [`${format(startOfMonth(new Date()), 'yyyy-MM-dd')}%23${format(endOfMonth(new Date()), 'yyyy-MM-dd')}`])
         }
     }, [selectedContractedServiceProvider])
 
@@ -325,7 +326,7 @@ const TrackYourContracts = () => {
         if (data?.length !== 0) {
             setTimesheetIntervalsStartDate(data?.[0]?.startDate)
             setTimesheetIntervalsEndDate(data?.[0]?.endDate)
-            setSelectedTimesheetInterval(selectedContractedServiceProvider !== '' && trackType !== "paymentProcessingStatusTracker" ? [defaultOption] : [`${data?.[0]?.startDate}%23${data?.[0]?.endDate}`])
+            setSelectedTimesheetInterval(selectedContractedServiceProvider !== '' && trackType === "timesheetAndInvoiceApprovalsStatusTracker" ? [defaultOption] : [`${format(startOfMonth(new Date()), 'yyyy-MM-dd')}%23${format(endOfMonth(new Date()), 'yyyy-MM-dd')}`])
         }
     }
 
@@ -393,7 +394,7 @@ const TrackYourContracts = () => {
             console.log(filteredServiceValues)
             Object.keys(filteredServiceValues)?.map(data => {
                 if (filteredServiceValues?.[data]?.length !== 0) {
-                    service?.push({ type: 'parentChildService', name: data, values: filteredServiceValues?.[data]?.map(data => `${(`${data?.activityType} - ${data?.performingActivity}`.length > 35 && activityData?.contract?.compensationPolicy !== 'ACTIVITY_BASED') ? `${data?.activityType} - ${data?.performingActivity}`.slice(0, 32) + '...' : (`${data?.activityType} - ${data?.performingActivity}`.length > 50) ? `${data?.activityType} - ${data?.performingActivity}`.slice(0, 47) + '...' : `${data?.activityType} - ${data?.performingActivity}`} (${data?.timeBlock})`) })
+                    service?.push({ type: 'parentChildService', name: data, values: filteredServiceValues?.[data]?.map(data => `${(`${data?.activityType} - ${data?.performingActivity}`.length > 55 && activityData?.contract?.compensationPolicy !== 'ACTIVITY_BASED') ? `${data?.activityType} - ${data?.performingActivity}`.slice(0, 52) + '...' : (`${data?.activityType} - ${data?.performingActivity}`.length > 75) ? `${data?.activityType} - ${data?.performingActivity}`.slice(0, 72) + '...' : `${data?.activityType} - ${data?.performingActivity}`} (${data?.timeBlock})`) })
                     completedUnits?.push({ type: 'number', values: filteredServiceValues?.[data]?.map(data => data?.complated?.units) })
                     completedHours?.push({ type: 'number', values: filteredServiceValues?.[data]?.map(data => data?.complated?.hours) })
                     toBeProposedUnits?.push({ type: 'number', values: filteredServiceValues?.[data]?.map(data => data?.inprogress?.units) })
@@ -505,7 +506,7 @@ const TrackYourContracts = () => {
         if (selectedPaymentTab === "Approval Pending") {
             paymentTrackerTableValues.push({
                 interval: paymentTrackValues?.approvalPending?.map(data => data?.interval !== null ? `${format(new Date(data?.interval?.startDate), 'MMM dd, yyyy')} - ${format(new Date(data?.interval?.endDate), 'MMM dd, yyyy')}` : '-'),
-                timesheetName: paymentTrackValues?.approvalPending?.map(data => data?.timesheetLabel !== null ? data?.timesheetLabel?.label : '-'),
+                timesheetName: paymentTrackValues?.approvalPending?.map(data => data?.timesheetLabel !== null ? data?.timesheetLabel?.label : 'Timesheet Not Entered'),
                 timesheetContractName: paymentTrackValues?.approvalPending?.map(data => data?.contractName?.contractName),
                 approvalBy: paymentTrackValues?.approvalPending?.map(data => data?.approvedBy !== null ? data?.approvedBy?.name?.name : '-'),
                 approvalDate: paymentTrackValues?.approvalPending?.map(data => data?.approvedDate !== null ? format(new Date(data?.approvedDate), 'MMM dd, yyyy') : '-'),
@@ -514,7 +515,7 @@ const TrackYourContracts = () => {
         } else if (selectedPaymentTab === "Payment Processed") {
             paymentTrackerTableValues.push({
                 interval: paymentTrackValues?.paymentProcessed?.map(data => data?.interval !== null ? `${format(new Date(data?.interval?.startDate), 'MMM dd, yyyy')} - ${format(new Date(data?.interval?.endDate), 'MMM dd, yyyy')}` : '-'),
-                timesheetName: paymentTrackValues?.paymentProcessed?.map(data => data?.timesheetLabel !== null ? data?.timesheetLabel?.label : '-'),
+                timesheetName: paymentTrackValues?.paymentProcessed?.map(data => data?.timesheetLabel !== null ? data?.timesheetLabel?.label : 'Timesheet Not Entered'),
                 timesheetContractName: paymentTrackValues?.paymentProcessed?.map(data => data?.contractName?.contractName),
                 approvalBy: paymentTrackValues?.paymentProcessed?.map(data => data?.approvedBy !== null ? data?.approvedBy?.name?.name : '-'),
                 approvalDate: paymentTrackValues?.paymentProcessed?.map(data => data?.approvedDate !== null ? format(new Date(data?.approvedDate), 'MMM dd, yyyy') : '-'),
@@ -526,7 +527,7 @@ const TrackYourContracts = () => {
         } else if (selectedPaymentTab === "Submission Pending") {
             paymentTrackerTableValues.push({
                 interval: paymentTrackValues?.submissionPending?.map(data => data?.interval !== null ? `${format(new Date(data?.interval?.startDate), 'MMM dd, yyyy')} - ${format(new Date(data?.interval?.endDate), 'MMM dd, yyyy')}` : '-'),
-                timesheetName: paymentTrackValues?.submissionPending?.map(data => data?.timesheetLabel !== null ? data?.timesheetLabel?.label : '-'),
+                timesheetName: paymentTrackValues?.submissionPending?.map(data => data?.timesheetLabel !== null ? data?.timesheetLabel?.label : 'Timesheet Not Entered'),
                 timesheetContractName: paymentTrackValues?.submissionPending?.map(data => data?.contractName?.contractName),
 
                 order: ['timesheetContractName', 'timesheetName', 'interval']
@@ -534,7 +535,7 @@ const TrackYourContracts = () => {
         } else if (selectedPaymentTab === "Payment Pending") {
             paymentTrackerTableValues.push({
                 interval: paymentTrackValues?.paymentPending?.map(data => data?.interval !== null ? `${format(new Date(data?.interval?.startDate), 'MMM dd, yyyy')} - ${format(new Date(data?.interval?.endDate), 'MMM dd, yyyy')}` : '-'),
-                timesheetName: paymentTrackValues?.paymentPending?.map(data => data?.timesheetLabel !== null ? data?.timesheetLabel?.label : '-'),
+                timesheetName: paymentTrackValues?.paymentPending?.map(data => data?.timesheetLabel !== null ? data?.timesheetLabel?.label : 'Timesheet Not Entered'),
                 timesheetContractName: paymentTrackValues?.paymentPending?.map(data => data?.contractName?.contractName),
                 approvalBy: paymentTrackValues?.paymentPending?.map(data => data?.approvedBy !== null ? data?.approvedBy?.name?.name : '-'),
                 approvalDate: paymentTrackValues?.paymentPending?.map(data => data?.approvedDate !== null ? format(new Date(data?.approvedDate), 'MMM dd, yyyy') : '-'),
@@ -543,10 +544,6 @@ const TrackYourContracts = () => {
         }
         console.log(paymentTrackerTableValues)
         return paymentTrackerTableValues;
-        // return selectedPaymentTab === "Payment Processed" ? [paymentTrackerTableValues?.[0]?.timesheetContractName, paymentTrackerTableValues?.[0]?.timesheetName, paymentTrackerTableValues?.[0]?.interval, paymentTrackerTableValues?.[0]?.approvalDate, paymentTrackerTableValues?.[0]?.approvalBy, paymentTrackerTableValues?.[0]?.paymentApprovalDate, paymentTrackerTableValues?.[0]?.paymentApprovalBy, paymentTrackerTableValues?.[0]?.payment] :
-        //     selectedPaymentTab === "Payment Pending" ? [paymentTrackerTableValues?.[0]?.timesheetContractName, paymentTrackerTableValues?.[0]?.timesheetName, paymentTrackerTableValues?.[0]?.interval, paymentTrackerTableValues?.[0]?.approvalDate, paymentTrackerTableValues?.[0]?.approvalBy] :
-        //         selectedPaymentTab === "Approval Pending" ? [paymentTrackerTableValues?.[0]?.timesheetContractName, paymentTrackerTableValues?.[0]?.timesheetName, paymentTrackerTableValues?.[0]?.interval, paymentTrackerTableValues?.[0]?.approvalDate, paymentTrackerTableValues?.[0]?.approvalBy] :
-        //             selectedPaymentTab === "Submission Pending" ? [paymentTrackerTableValues?.[0]?.timesheetContractName, paymentTrackerTableValues?.[0]?.timesheetName, paymentTrackerTableValues?.[0]?.interval] : [];
     }
 
     return (
@@ -560,7 +557,7 @@ const TrackYourContracts = () => {
                                 <CommonSelectField
                                     value={selectedContractedServiceProvider || ""}
                                     onChange={(e) => setSelectedContractedServiceProvider(e.target.value)}
-                                    firstOptionLabel={trackType === 'timesheetAndInvoiceApprovalsStatusTracker' ? "All Service Providers" : "Select Service Provider"}
+                                    firstOptionLabel={(trackType === 'timesheetAndInvoiceApprovalsStatusTracker' || trackType === 'paymentProcessingStatusTracker') ? "All Service Providers" : "Select Service Provider"}
                                     firstOptionValue={""}
                                     valueList={contractedServiceProviders?.map(data => data?.id)}
                                     labelList={contractedServiceProviders?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`)}
@@ -612,11 +609,15 @@ const TrackYourContracts = () => {
                                                 hideFooterPagination={true}
                                                 sx={{
                                                     "& .MuiDataGrid-withBorderColor": {
-                                                        borderColor: '#646D82'
+                                                        borderColor: '#646D82',
+                                                        borderWidth: '2px'
                                                     },
                                                     "& .MuiDataGrid-toolbarContainer": {
-                                                        borderBottom: "1px solid #646D82"
-                                                    }
+                                                        borderBottom: "2px solid #646D82",
+                                                    },
+                                                    // "& .MuiDataGrid-cell--textCenter": {
+                                                    //     borderLeft: "2px solid #646D82",
+                                                    // }
                                                 }}
                                                 experimentalFeatures={{ columnGrouping: true }}
                                                 className={`${style.whiteBackground} ${style.muiDataGridWithBorderColor}`}
@@ -628,6 +629,7 @@ const TrackYourContracts = () => {
                                                 showColumnVerticalBorder={true}
                                                 rowHeight={35}
                                                 columnHeaderHeight={35}
+                                                disableRowSelectionOnClick
                                             />
                                         </div>
                                     )) : (
