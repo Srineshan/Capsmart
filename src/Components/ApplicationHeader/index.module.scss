@@ -1,0 +1,44 @@
+.headerCard {
+    height: 80px;
+    background-color: white;
+    padding: 0px 60px;
+}
+
+.headerGrid {
+    display: grid;
+    grid-template-columns: 15% 75% 5% 5%;
+}
+
+.logo {
+    position: relative;
+    width: auto;
+    height: 80px;
+    object-fit: contain;
+}
+
+.titleText {
+    text-align: left;
+    font: normal normal bold 20px/28px Montserrat;
+    letter-spacing: 0px;
+    color: #7165E3;
+    text-transform: capitalize;
+}
+
+.marginLeft20 {
+    margin-left: 20px !important;
+}
+
+.crossStyle {
+    height: 18px;
+    width: 18px;
+}
+
+.cursorPointer {
+    cursor: pointer;
+}
+
+.verticalAlignCenter {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}

@@ -178,7 +178,9 @@ const ClientAdminDashboard = React.lazy(() =>
 const Thankyou = React.lazy(() =>
   import("./Screens/SuperAdminDashboard/thankyou")
 );
-
+const ApplicationForm = React.lazy(() =>
+  import("./Screens/ApplicationForm")
+);
 const App = ({ props }) => {
   const [accessToken, setAccessToken] = useState(Auth());
   const [tenantId, setTenantId] = useState(GetEntityDetails());
@@ -680,6 +682,7 @@ const App = ({ props }) => {
                 path="/myReport/:reportType"
                 element={<ReportTypeOverview />}
               />
+              <Route path="/applicationForm/section1/step1" element={<ApplicationForm />} />
             </Routes>
           </>
           {/* ) : (

@@ -1,0 +1,115 @@
+.progressCard {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 5px 20px #52575D4D;
+    border: 0.4000000059604645px solid #94979A;
+    border-radius: 12px;
+    opacity: 1;
+    width: 100%;
+    padding: 15px 30px
+}
+
+.stepTextStyle {
+    text-align: left;
+    font: normal normal bold 14px/26px Montserrat;
+    letter-spacing: 3.4px;
+    color: #52575D;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+.dataTypeCollectionsTextStyle {
+    text-align: left;
+    font: normal normal bold 14px/24px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    opacity: 0.6;
+}
+
+.timeSpentText {
+    text-align: right;
+    font: normal normal normal 12px/26px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    opacity: 0.6;
+}
+
+.titleTextStyle {
+    text-align: left;
+    font: normal normal bold 17px/25px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+}
+
+.hourNumberStyle {
+    font: normal normal bold 25px/25px Montserrat;
+    letter-spacing: 0px;
+    color: #7165E3;
+    text-shadow: 2px 6px 12px #382DA514;
+    opacity: 1;
+}
+
+.hourTextStyle {
+    text-align: right;
+    font: normal normal normal 17px/17px Montserrat;
+    letter-spacing: 0px;
+    color: #7165E3;
+    text-shadow: 2px 6px 12px #382DA514;
+    text-transform: capitalize;
+    opacity: 1;
+}
+
+.displayInRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.spaceBetween {
+    display: flex;
+    justify-content: space-between;
+}
+
+.flex {
+    display: flex;
+}
+
+.textAlignBottom {
+    align-self: flex-end;
+}
+
+.marginTop {
+    margin-top: 20px;
+}
+
+.marginTop10 {
+    margin-top: 10px;
+}
+
+.marginLeft5 {
+    margin-left: 5px;
+}
+
+.marginLeft {
+    margin-left: 20px;
+}
+
+.progressStyle {
+    height: 10px;
+    width: 100%;
+    background: transparent linear-gradient(90deg, #7165E3 0%, #7165E3 10%, #E9E9F0 11%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+    opacity: 1;
+}
+
+.sectionSplit {
+    width: 8px;
+    height: 15px;
+    background-color: white;
+    rotate: 30deg;
+    margin-left: 100%;
+    margin-top: -12px;
+}
+
+.sectionSplitGrid {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: 10% 40% 40% 10%;
+}
