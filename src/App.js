@@ -14,7 +14,6 @@ import jwt from "jwt-decode";
 import MileageRateForCustomers from "./Screens/ReferenceList/mileageRateForCustomers";
 import GeneralConfigurationForCustomers from "./Screens/ReferenceList/generalConfigurationForCustomers";
 
-
 const ReportType = React.lazy(() => import("./Screens/Reports/reportType"));
 const ReportTypeOverview = React.lazy(() =>
   import("./Screens/Reports/reportTypeOverview")
@@ -25,6 +24,8 @@ const FunctionalTitleForCustomer = React.lazy(() =>
   import("./Screens/ReferenceList/functionalTitleForCustomer")
 );
 const ActiveContracts = React.lazy(() => import("./Screens/ContractManager"));
+const ActiveStaffs = React.lazy(() => import("./Screens/StaffManager"));
+const StaffApplication = React.lazy(() => import("./Screens/StaffApplication"));
 const Welcome = React.lazy(() =>
   import("./Screens/SuperAdminDashboard/welcome")
 );
@@ -498,6 +499,8 @@ const App = ({ props }) => {
             <Routes>
               <Route path="/" element={<LoginRoute />} />
               <Route path="/contracts" element={<ActiveContracts />} />
+              <Route path="/staffs" element={<ActiveStaffs />} />
+              <Route path="/applications" element={<StaffApplication />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/notifyUser" element={<Notify />} />
               <Route path="/trackContracts/:trackType" element={<TrackYourContracts />} />
