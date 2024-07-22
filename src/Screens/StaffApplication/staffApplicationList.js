@@ -86,31 +86,73 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
   },
   ]
 
+  const ApplicationData = [{
+    applicantName: "LAST,First MI ",
+    applicantType: "Doctor",
+    department: "Department",
+    commiteeStatus: "yellow",
+    boardStatus: "grey",
+    ceoStatus: "grey",
+    lastUpdatedOn: "June 19, 2024",
+    lastUpdatedBy: "lorem ipsum",
+  },
+  {
+    applicantName: "LAST,First MI ",
+    applicantType: "Doctor",
+    department: "Department",
+    commiteeStatus: "green",
+    boardStatus: "yellow",
+    ceoStatus: "grey",
+    lastUpdatedOn: "June 19, 2024",
+    lastUpdatedBy: "lorem ipsum",
+  },
+  ]
+
+  const ClarificationData = [
+    {
+      subStatus: "green",
+      applicantName: "LAST,First MI 89327439",
+      applicantType: "Doctor",
+      clarificationTitle: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Enim cum, quos possimus nostrum debitis autem!",
+      raisedBy: "Committee Member",
+      createdOn: "June 19, 2024",
+      lastUpdatedOn: "June 19, 2024",
+    },
+    {
+      subStatus: "green",
+      applicantName: "LAST,First MI 89327439",
+      applicantType: "Doctor",
+      clarificationTitle: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Enim cum, quos possimus nostrum debitis autem!",
+      raisedBy: "Committee Member",
+      createdOn: "June 19, 2024",
+      lastUpdatedOn: "June 19, 2024",
+    }
+  ]
+  const ApprovedData = [
+    {
+      subStatus: "yellow",
+      applicantName: "LAST,First MI 89327439",
+      applicantType: "Doctor",
+      approvedNotes: "Lorem ipsum dolor",
+      lastUpdatedOn: "June 19, 2024",
+    }
+  ]
+
   const reactToPrintContent = useCallback(() => {
     return componentRef.current;
   }, [componentRef.current]);
   const [selectedContractId, setSelectedContractId] = useState();
-  const activeHeaderValues = ["",
-    "Applicant Name & ID",
-    "Applicant Type",
-    "Docs",
-    "Data",
-    "Disclosures",
-    "CRs",
-    "Notes",
-    "Last Updated",
-    "Cap Manager",
-    ""
-  ];
-  const draftHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "ACTIVATION STATUS", "LAST UPDATED", "CONTRACT DOCS", "LAST UPDATED BY", "MANAGER", "ACTION"];
-  const activationPendingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "REVIEWS", "APPROVALS", "CONTRACT DOCS", "GO LIVE DATE", "EFFECTIVE DATE", "MANAGER", "ACTION"];
-  const upcomingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "EXPIRATION DATE", "EXPIRING IN", "LAST UPDATE", "MANAGER", "ACTION"];
-  const expiredHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "TERMINATION DATE", "NEW CONTRACT ID", "LAST UPDATE", "MANAGER", "ACTION"];
-  const activeColSortValues = [false, false, false, false, false, false, false, false, false];
-  const draftColSortValues = [false, false, true, true, true, true, false, false, false];
-  const upcomingColSortValues = [false, false, true, true, true, false, true, false, false];
-  const expiredColSortValues = [false, false, true, true, false, false, true, false];
-  const activationPendingColSortValues = [false, false, true, true, false, false, false, false, false, false, false];
+
+  const applicantHeaderValues = ["", "Applicant Name & ID", "Applicant Type", "Docs", "Data", "Disclosures", "CRs", "Notes", "Last Updated", "Cap Manager", ""];
+  const applicationHeaderValues = ["", "Applicant Name", "Applicant Type", "Department", "Commitee", "Board", "CEO", "Last Updated On", "Last Updated by", ""];
+  const clarificationHeaderValues = ["", "Applicant Name", "Type", "Clarification Title", "Raised By", "Created On", "Last Updated On", ""];
+  const approvedHeaderValues = ["", "Applicant Name", "Type", "Notes", "Last Updated On", ""];
+
+  const applicantColSortValues = [false, false, false, false, false, false, false, false, false];
+  const applicationColSortValues = [false, false, false, false, false, false, false, false, false];
+  const clarificationColSortValues = [false, false, false, false, false, false, false, false, false];
+  const approvedColSortValues = [false, false, false, false, false, false, false, false, false];
+
   const [isPrintClicked, setIsPrintClicked] = useState(false);
   const [isDownloadClicked, setIsDownloadClicked] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
@@ -316,27 +358,8 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
 
   let dot = [];
   let dotTooltipValues = [];
-  let contractType = [];
-  let contractId = [];
-  let lock = [];
-  let lockHoverText = [];
-  let icon = [];
-  let iconHoverText = [];
-  let name = [];
-  let reviews = [];
-  let approvals = [];
-  let goLiveDate = [];
-  let effectiveDate = [];
-  let expirationDate = [];
-  let expiringIn = [];
-  let manager = [];
   let lastUpdated = [];
   let action = [];
-  let activationStatus = [];
-  let lastUpdatedBy = [];
-  let newContractId = [];
-  let applicantStaffName = [];
-  let type = [];
   let applicantName = [];
   let applicantId = [];
   let applicantType = [];
@@ -351,8 +374,18 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
   let notesHoverText = [];
   let notesIcon = [];
   let capManager = [];
+  let department = [];
+  let commiteeStatus = [];
+  let boardStatus = [];
+  let ceoStatus = [];
+  let lastUpdatedOn = [];
+  let lastUpdatedBy = [];
+  let clarificationTitle = [];
+  let raisedBy = [];
+  let createdOn = [];
+  let approvedNotes = [];
 
-  const getActiveContractsValues = () => {
+  const getApplicantValues = () => {
     dot = [];
     applicantName = [];
     applicantId = [];
@@ -406,146 +439,105 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
     ];
   }
 
-  const getDraftContractsValues = () => {
-    dot = [];
-    dotTooltipValues = [];
-    icon = [];
-    iconHoverText = [];
-    contractType = [];
-    contractId = [];
-    name = [];
-    activationStatus = [];
-    effectiveDate = [];
-    manager = [];
-    lastUpdated = [];
+  const getApplicationValues = () => {
+    applicantName = [];
+    applicantType = [];
+    department = [];
+    commiteeStatus = [];
+    boardStatus = [];
+    ceoStatus = [];
+    lastUpdatedOn = [];
     lastUpdatedBy = [];
     action = [];
 
-    contracts?.map(data => {
-      dot.push((data?.contractStatus === 'ACTIVATION_READY' && data?.subStatus === 'ACTIVATION_IN_PROGRESS') ? 'yellow' : (data?.contractStatus === 'DRAFT' && data?.subStatus === 'ACTIVATION_IN_PROGRESS') ? 'grey' : data?.subStatus === 'ACTIVATION_PAST_DUE' ? 'red' : 'grey');
-      contractType.push(data?.contractType === 'MULTIPLE' ? `MULTI - PROVIDER ${data?.newContract ? '(New)' : '(Existing)'}` : `${data?.contractType} ${data?.newContract ? '(New)' : '(Existing)'}`);
-      dotTooltipValues.push((data?.contractStatus === 'ACTIVATION_READY' && data?.subStatus === 'ACTIVATION_IN_PROGRESS') ? 'Activation Ready' : (data?.contractStatus === 'DRAFT' && data?.subStatus === 'ACTIVATION_IN_PROGRESS') ? 'Activation In Progress' : data?.subStatus === 'ACTIVATION_PAST_DUE' ? 'Activation Past Due' : 'Draft Contract');
-      contractId.push(data?.contractDetail?.contractId?.id);
-      lock.push(<LockOpenOutlinedIcon style={{ color: '#14B15A' }} />)
-      lockHoverText.push('Contract available for other contract managers to access & work on');
-      name.push(data?.contractName?.contractName);
-      reviews.push('1/1');
-      approvals.push('3/3');
-      goLiveDate.push('07/19/2019');
-      activationStatus.push(data?.contractStatus === 'ACTIVATION_READY' ? 'Activation pending' : 'Not Activated');
-      icon.push(<TextSnippetOutlinedIcon style={{ color: (data?.contractDetail?.contractFiles?.length === 0 || data?.contractDetail?.contractFiles === null) ? '#F94848' : '#14B15A' }} />);
-      iconHoverText.push((data?.contractDetail?.contractFiles?.length === 0 || data?.contractDetail?.contractFiles === null) ? 'No Document Uploaded' : 'Document Uploaded');
-      effectiveDate.push(data?.contractDetail?.contractTerm !== null ? format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy') : '-');
-      manager.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
-      lastUpdated.push(format(new Date(data?.lastModifiedDate), 'MM-dd-yyyy'))
-      lastUpdatedBy.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
-      action.push(true)
+    ApplicationData?.map(data => {
+      dot.push("");
+      applicantName.push(data?.applicantName);
+      applicantType.push(data?.applicantType);
+      department.push(data?.department);
+      commiteeStatus.push(data?.commiteeStatus);
+      boardStatus.push(data?.boardStatus);
+      ceoStatus.push(data?.ceoStatus);
+      lastUpdatedOn.push(data?.lastUpdatedOn)
+      lastUpdatedBy.push(data?.lastUpdatedBy);
+      action.push(true);
     })
 
-    return isDraft ? [
-      { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
-      { "type": "text", "value": contractType, "onClickFunction": onClickFunction },
-      { "type": "text", "value": contractId, "onClickFunction": onClickFunction },
-      // { "type": "icon", "icon": lock, "hoverText": lockHoverText, 'isShowHoverText': true },
-      { "type": "text", "value": name, "onClickFunction": onClickFunction },
-      { "type": "text", "value": activationStatus, "onClickFunction": onClickFunction },
-      { "type": "text", "value": lastUpdated, "onClickFunction": onClickFunction },
-      { "type": "icon", "icon": icon, "hoverText": iconHoverText, 'isShowHoverText': true },
-      { "type": "text", "value": lastUpdatedBy, "onClickFunction": onClickFunction },
-      { "type": "text", "value": manager, "onClickFunction": onClickFunction },
-      { "type": "action", "value": action },
-    ] : [
-      { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
-      { "type": "text", "value": contractType, "onClickFunction": onClickFunction },
-      { "type": "text", "value": contractId, "onClickFunction": onClickFunction },
-      { "type": "text", "value": name, "onClickFunction": onClickFunction },
-      { "type": "text", "value": reviews, "onClickFunction": onClickFunction },
-      { "type": "text", "value": approvals, "onClickFunction": onClickFunction },
-      { "type": "icon", "icon": icon, "hoverText": iconHoverText, 'isShowHoverText': true },
-      { "type": "text", "value": goLiveDate, "onClickFunction": onClickFunction },
-      { "type": "text", "value": effectiveDate, "onClickFunction": onClickFunction },
-      { "type": "text", "value": manager, "onClickFunction": onClickFunction },
+    return [
+      { "type": "dot", "value": dot },
+      { "type": "text", "value": applicantName },
+      { "type": "text", "value": applicantType },
+      { "type": "text", "value": department },
+      { "type": "dot", "value": commiteeStatus },
+      { "type": "dot", "value": boardStatus },
+      { "type": "dot", "value": ceoStatus },
+      { "type": "text", "value": lastUpdatedOn },
+      { "type": "text", "value": lastUpdatedBy },
       { "type": "action", "value": action },
     ];
   }
 
-  const getUpcomingContractsValues = () => {
+  const getClarificationValues = () => {
     dot = [];
-    dotTooltipValues = [];
-    contractType = [];
-    contractId = [];
-    name = [];
-    expirationDate = [];
-    expiringIn = [];
-    manager = [];
-    lastUpdated = [];
+    applicantName = [];
+    applicantType = [];
+    clarificationTitle = [];
+    raisedBy = [];
+    createdOn = [];
+    lastUpdatedOn = [];
     action = [];
 
-    contracts?.map(data => {
-      dot.push(data?.subStatus === 'EXTENSION_REQUIRED' ? 'yellow' : 'red');
-      dotTooltipValues.push(data?.subStatus === 'EXTENSION_REQUIRED' ? 'Extension Required' : 'New Contract Required');
-      contractType.push(data?.contractType === 'MULTIPLE' ? 'MULTI - PROVIDER' : data?.contractType);
-      contractId.push(data?.contractDetail?.contractId?.id);
-      name.push(data?.contractName?.contractName);
-      expirationDate.push('07/19/2019');
-      expiringIn.push('15 days');
-      manager.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
-      lastUpdated.push(format(new Date(data?.lastModifiedDate), 'MM-dd-yyyy'))
-      action.push(true)
+    ClarificationData?.map(data => {
+      dot.push(data?.subStatus);
+      applicantName.push(data?.applicantName);
+      applicantType.push(data?.applicantType);
+      clarificationTitle.push(data?.clarificationTitle);
+      raisedBy.push(data?.raisedBy);
+      createdOn.push(data?.createdOn);
+      lastUpdatedOn.push(data?.lastUpdatedOn);
+      action.push(true);
     })
 
     return [
       { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
-      { "type": "text", "value": contractType, "onClickFunction": onClickFunction },
-      { "type": "text", "value": contractId, "onClickFunction": onClickFunction },
-      { "type": "text", "value": name, "onClickFunction": onClickFunction },
-      { "type": "text", "value": expirationDate, "onClickFunction": onClickFunction },
-      { "type": "text", "value": expiringIn, "onClickFunction": onClickFunction },
-      { "type": "text", "value": lastUpdated, "onClickFunction": onClickFunction },
-      { "type": "text", "value": manager, "onClickFunction": onClickFunction },
+      { "type": "text", "value": applicantName },
+      { "type": "text", "value": applicantType },
+      { "type": "text", "value": clarificationTitle },
+      { "type": "text", "value": raisedBy },
+      { "type": "text", "value": createdOn },
+      { "type": "text", "value": lastUpdatedOn },
       { "type": "action", "value": action },
     ];
   }
 
-  const getExpiredContractsValues = () => {
+  const getApprovedValues = () => {
     dot = [];
-    dotTooltipValues = [];
-    contractType = [];
-    contractId = [];
-    name = [];
-    expirationDate = [];
-    newContractId = [];
-    manager = [];
-    lastUpdated = [];
+    applicantName = [];
+    applicantType = [];
+    approvedNotes = [];
+    lastUpdatedOn = [];
     action = [];
 
-    contracts?.map(data => {
-      dot.push('red');
-      dotTooltipValues.push(data?.subStatus === 'EXPIRED' ? 'Expired' : 'Terminated');
-      contractType.push(data?.contractType === 'MULTIPLE' ? 'MULTI - PROVIDER' : data?.contractType);
-      contractId.push(data?.contractDetail?.contractId?.id);
-      name.push(data?.contractName?.contractName);
-      expirationDate.push(data?.contractDetail?.contractExpiryDate !== null ? format(new Date(data?.contractDetail?.contractExpiryDate), 'MM-dd-yyyy') : '-');
-      newContractId.push(data?.contractDetail?.renewedContractId !== null ? data?.contractDetail?.renewedContractId?.id : '-');
-      manager.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
-      lastUpdated.push(format(new Date(data?.lastModifiedDate), 'MM-dd-yyyy'))
-      action.push(true)
+    ApprovedData?.map(data => {
+      dot.push(data?.subStatus);
+      applicantName.push(data?.applicantName);
+      applicantType.push(data?.applicantType);
+      approvedNotes.push(data?.approvedNotes);
+      lastUpdatedOn.push(data?.lastUpdatedOn);
+      action.push(true);
     })
 
     return [
       { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
-      { "type": "text", "value": contractType, "onClickFunction": onClickFunction },
-      { "type": "text", "value": contractId, "onClickFunction": onClickFunction },
-      { "type": "text", "value": name, "onClickFunction": onClickFunction },
-      { "type": "text", "value": expirationDate, "onClickFunction": onClickFunction },
-      { "type": "text", "value": newContractId, "onClickFunction": onClickFunction },
-      { "type": "text", "value": lastUpdated, "onClickFunction": onClickFunction },
-      { "type": "text", "value": manager, "onClickFunction": onClickFunction },
+      { "type": "text", "value": applicantName },
+      { "type": "text", "value": applicantType },
+      { "type": "text", "value": approvedNotes },
+      { "type": "text", "value": lastUpdatedOn },
       { "type": "action", "value": action },
     ];
   }
 
-  const activeActionsData = [
+  const applicantActionsData = [
     { 'data': 'View & Verify', 'requiredValue': 'boolean', "onClick": '' },
     { 'data': 'Send for Committee Review', 'requiredValue': 'boolean', "onClick": '' },
     { 'data': 'Send Reminder for Required Documents', 'requiredValue': 'boolean', "onClick": '' },
@@ -555,8 +547,29 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
     { 'data': 'From Institution', 'requiredValue': 'boolean', "onClick": '' },
   ]
 
-  const expiredActionsData = [
-    { 'data': 'Renew Expired Contract', 'onClick': handleRenewalContracts, 'requiredValue': 'boolean', 'conditionToShow': `!data?.contractDetail?.contractRenewed && data?.contractDetail?.continuationPolicy?.contractPolicyType !== 'ONETIMECONTRACTTERMINATEONEXPIRATION' && data?.contractStatus !== 'TERMINATED'` }
+  const applicationActionsData = [
+    { 'data': 'View & Verify', 'requiredValue': 'boolean', "onClick": '' },
+    { 'data': 'Send for Committee Review', 'requiredValue': 'boolean', "onClick": '' },
+    { 'data': 'Send Reminder for Required Documents', 'requiredValue': 'boolean', "onClick": '' },
+    { 'data': 'Request for Clarification', 'requiredValue': 'boolean', "onClick": '' },
+    { 'data': 'From Applicant', 'requiredValue': 'boolean', "onClick": '' },
+    { 'data': 'From Internal Approver', 'requiredValue': 'boolean', "onClick": '' },
+    { 'data': 'From Institution', 'requiredValue': 'boolean', "onClick": '' },
+  ]
+
+  const clarificationActionsData = [
+    { 'data': 'View & Verify', 'requiredValue': 'boolean', "onClick": '' },
+    { 'data': 'Send for Committee Review', 'requiredValue': 'boolean', "onClick": '' },
+    { 'data': 'Send Reminder for Required Documents', 'requiredValue': 'boolean', "onClick": '' },
+    { 'data': 'Request for Clarification', 'requiredValue': 'boolean', "onClick": '' },
+    { 'data': 'From Applicant', 'requiredValue': 'boolean', "onClick": '' },
+    { 'data': 'From Internal Approver', 'requiredValue': 'boolean', "onClick": '' },
+    { 'data': 'From Institution', 'requiredValue': 'boolean', "onClick": '' },
+  ]
+
+  const approvedActionsData = [
+    { 'data': 'Add as active staff', 'requiredValue': 'boolean', "onClick": '' },
+    { 'data': 'Send follow up disclosures', 'requiredValue': 'boolean', "onClick": '' },
   ]
 
   const handleAddContract = () => {
@@ -593,11 +606,11 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
     filterRef.current.updateFilter(data, value);
   }
 
-  let tableHeaderValues = activeHeaderValues;
-  let tableSortValues = activeColSortValues;
-  let tableDataValues = getActiveContractsValues();
-  let actions = activeActionsData;
-  let gridStyle = selectedContract === 'Applicants' ? style.applicantStaffGrid : selectedContract === "draft" ? (isDraft ? style.draftContractGrid : style.activationPendingContractGrid) : selectedContract === "upcomingrenewals" ? style.upcomingContractGrid : style.expiredContractGrid;
+  let tableHeaderValues = selectedContract === 'Applicants' ? applicantHeaderValues : selectedContract === "Applications" ? applicationHeaderValues : selectedContract === "Clarifications" ? clarificationHeaderValues : approvedHeaderValues;
+  let tableSortValues = selectedContract === 'Applicants' ? applicantColSortValues : selectedContract === "Applications" ? applicationColSortValues : selectedContract === "Clarifications" ? clarificationColSortValues : approvedColSortValues;
+  let tableDataValues = selectedContract === 'Applicants' ? getApplicantValues() : selectedContract === "Applications" ? getApplicationValues() : selectedContract === "Clarifications" ? getClarificationValues() : getApprovedValues();
+  let actions = selectedContract === 'Applicants' ? applicantActionsData : selectedContract === "Applications" ? applicationActionsData : selectedContract === "Clarifications" ? clarificationActionsData : approvedActionsData;
+  let gridStyle = selectedContract === 'Applicants' ? style.applicantStaffGrid : selectedContract === "Applications" ? style.applicationStaffGrid : selectedContract === "Clarifications" ? style.clarificationStaffGrid : style.approvedStaffGrid;
 
   return (
     <div className={style.margin20}>
@@ -793,7 +806,7 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
                   <TableTwo
                     tableHeaderValues={tableHeaderValues}
                     tableDataValues={tableDataValues}
-                    tableData={ApplicantsProcessData}
+                    tableData={selectedContract === 'Applicants' ? ApplicantsProcessData : selectedContract === "Applications" ? ApplicationData : selectedContract === "Clarifications" ? ClarificationData : ApprovedData}
                     getNewContract={getNewContract}
                     getContractType={getContractType}
                     getSelectedContractType={getSelectedContractType}
@@ -803,12 +816,12 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
                     getSelectedPage={getSelectedPage}
                     scrollStyle={style.contractScrollStyle}
                     tableSortValues={tableSortValues}
-                    heading={'There are no contracts for you to manage'}
-                    subHeading={'To add a new contract click on'}
-                    onClickText={'Click To View A Short Tutorial On How To Add A Contract'}
-                    buttonComponent={<div className={`${style.addStyle} ${style.alignCenter} ${style.marginLeft20}`}>
-                      <AddCircleOutlineIcon sx={{ fontSize: 20, color: 'white' }} />
-                    </div>}
+                    heading={'There are no Record for you to manage'}
+                    // subHeading={'To add a new contract click on'}
+                    // onClickText={'Click To View A Short Tutorial On How To Add A Contract'}
+                    // buttonComponent={<div className={`${style.addStyle} ${style.alignCenter} ${style.marginLeft20}`}>
+                    //   <AddCircleOutlineIcon sx={{ fontSize: 20, color: 'white' }} />
+                    // </div>}
                     onClickFunction={() => { }}
                     getHandleSort={getHandleSort}
                     sortValue={sortValue}

@@ -535,13 +535,31 @@ body::-webkit-scrollbar {
 
 .activeStaffGrid {
   display: grid;
-  grid-template-columns: 6% 20% 15% 12% 10% 11% 11% 10% 5%;
+  grid-template-columns: 3% 22% 15% 15% 10% 11% 11% 5%;
   grid-gap: 10px;
 }
 
 .applicantStaffGrid {
   display: grid;
   grid-template-columns: 5% 15% 12% 6% 5% 10% 5% 8% 10% 10% 5%;
+  grid-gap: 10px;
+}
+
+.applicationStaffGrid {
+  display: grid;
+  grid-template-columns: 2% 18% 15% 12% 8% 5% 5% 11% 11% 5%;
+  grid-gap: 10px;
+}
+
+.clarificationStaffGrid {
+  display: grid;
+  grid-template-columns: 3% 18% 10% 26% 12% 8% 11% 5%;
+  grid-gap: 10px;
+}
+
+.approvedStaffGrid {
+  display: grid;
+  grid-template-columns: 3% 27% 32% 16% 12% 5%;
   grid-gap: 10px;
 }
 

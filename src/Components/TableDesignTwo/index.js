@@ -224,19 +224,25 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
                                                         vertical: 'bottom',
                                                         horizontal: 'left',
                                                     }}
+                                                    PaperProps={{
+                                                        style: {
+                                                            backgroundColor: "transparent",
+                                                            boxShadow: "none",
+                                                            borderRadius: 0
+                                                        }
+                                                    }}
                                                     disableRestoreFocus
                                                 >
                                                     <Box
                                                         sx={{
                                                             position: "relative",
                                                             mt: "10px",
-                                                            right: 0,
-                                                            marginRight: '-0.9em',
                                                             "&::before": {
                                                                 backgroundColor: "#857AEF",
                                                                 content: '""',
                                                                 display: "block",
                                                                 position: "absolute",
+                                                                margin: 'auto',
                                                                 width: 12,
                                                                 height: 12,
                                                                 top: -6,
@@ -273,6 +279,17 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
                                                         vertical: 'bottom',
                                                         horizontal: 'left',
                                                     }}
+                                                    transformOrigin={{
+                                                        vertical: 'top',
+                                                        horizontal: 'right',
+                                                    }}
+                                                    PaperProps={{
+                                                        style: {
+                                                            backgroundColor: "transparent",
+                                                            boxShadow: "none",
+                                                            borderRadius: 0
+                                                        }
+                                                    }}
                                                     disableRestoreFocus
                                                 >
                                                     <Box
@@ -293,8 +310,9 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
                                                         }}
                                                     />
                                                     {tableData?.hoverText?.[index]?.map((data, innerIndex) => (
-                                                        <div className={style.actionsCard} ref={countHoverRef}>
+                                                        <div className={style.multipleOptionsCard} ref={countHoverRef}>
                                                             <div className={`${style.specificActionCard} ${style.cursorPointer}`}> {data}</div>
+                                                            <div className={style.dividerStyle}></div>
                                                         </div>
                                                     ))}
                                                 </Popover>
@@ -320,6 +338,13 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
                                                         anchorOrigin={{
                                                             vertical: 'bottom',
                                                             horizontal: 'left',
+                                                        }}
+                                                        PaperProps={{
+                                                            style: {
+                                                                backgroundColor: "transparent",
+                                                                boxShadow: "none",
+                                                                borderRadius: 0
+                                                            }
                                                         }}
                                                         disableRestoreFocus
                                                     >
