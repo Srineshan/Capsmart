@@ -318,14 +318,14 @@ const Navbar = () => {
             // <img src={SanmateoLogo} alt="Hospital Logo" className={style.logo} />
           }
           <img src={logo} alt="Hospital Logo" className={style.sanmateoLogo} />
-          <div
+          {/* <div
             className={`${style.menuStyle} ${window.location.pathname.includes(homeLink) && !window.location.pathname.includes('contractsWithABusinessEntity') &&
               style.activeMenuColor
               }`}
             onClick={homeRoute}
           >
             <p>HOME - {(selectedWorkingMode !== null && selectedWorkingMode !== '' && selectedWorkingMode !== undefined) ? selectedWorkingMode : currentUserRoles?.[0]?.toUpperCase()}</p>
-          </div>
+          </div> */}
 
           {
             //   isContractManager && (
@@ -337,6 +337,25 @@ const Navbar = () => {
             // )
           }
           {
+            isContractManager && (
+              <Link to={'/staffs'} className={style.noFontStyle}>
+                <div className={`${style.menuStyle} ${window.location.pathname.includes("/staffs") && style.activeMenuColor}`}>
+                  <p>STAFF MANAGER</p>
+                </div>
+              </Link>
+            )
+          }
+          {
+            isContractManager && (
+              <Link to={'/applications'} className={style.noFontStyle}>
+                <div className={`${style.menuStyle} ${window.location.pathname.includes("/applications") && style.activeMenuColor}`}>
+                  <p>APPLICATIONS</p>
+                </div>
+              </Link>
+            )
+          }
+
+          {/* {
             isContractManager && (
               <div>
                 <div
@@ -401,7 +420,7 @@ const Navbar = () => {
                 </div>
               </div>
             )
-          }
+          } */}
           {(isActivityServiceLogAvailable || isTimesheetsAvailable || isPaymentsAvailable || isContractManagementAvailable || isContractComplianceAvailable) && (
             <div>
               <div
@@ -417,7 +436,7 @@ const Navbar = () => {
                 aria-haspopup="true"
               >
                 <p>REPORTS</p>
-                <Popover
+                {/* <Popover
                   id={"mouse-over-popover"}
                   open={open}
                   anchorEl={popoverAnchor.current}
@@ -433,12 +452,12 @@ const Navbar = () => {
                     onMouseEnter: handleClick,
                     onMouseLeave: handleClose,
                   }}
-                >
-                  <div
+                > */}
+                {/* <div
                     className={style.optionsCardStyle}
                     onClick={() => handleClose()}
-                  >
-                    {isActivityServiceLogAvailable && (
+                  > */}
+                {/* {isActivityServiceLogAvailable && (
                       <Link
                         to={"/reports/servicesOrActivities"}
                         className={style.noFontStyle}
@@ -447,39 +466,39 @@ const Navbar = () => {
                           Services/ Activities Logs
                         </div>
                       </Link>
-                    )}
-                    {isContractManagementAvailable && (
+                    )} */}
+                {/* {isContractManagementAvailable && (
                       <Link
                         to={"/reports/contractManagement"}
                         className={style.noFontStyle}
                       >
                         <div className={style.options}>Contract Management</div>
                       </Link>
-                    )}
-                    {isTimesheetsAvailable && (
+                    )} */}
+                {/* {isTimesheetsAvailable && (
                       <Link
                         to={"/reports/timesheets"}
                         className={style.noFontStyle}
                       >
                         <div className={style.options}>Timesheets</div>
                       </Link>
-                    )}
-                    {/* <Link to={'/reports/reviewsAndApprovals'} className={style.noFontStyle}>
+                    )} */}
+                {/* <Link to={'/reports/reviewsAndApprovals'} className={style.noFontStyle}>
                                     <div className={style.options}>Reviews & Approvals</div>
                                 </Link>
                                 <Link to={'/reports/taskManagement'} className={style.noFontStyle}>
                                     <div className={style.options}>Task Management</div>
                                 </Link> */}
-                    {isPaymentsAvailable && (
+                {/* {isPaymentsAvailable && (
                       <Link
                         to={"/reports/payments"}
                         className={style.noFontStyle}
                       >
                         <div className={style.options}>Payments</div>
                       </Link>
-                    )}
+                    )} */}
 
-                    {/* {isContractComplianceAvailable && (
+                {/* {isContractComplianceAvailable && (
                       <Link
                         to={"/reports/contractCompliance"}
                         className={style.noFontStyle}
@@ -487,17 +506,18 @@ const Navbar = () => {
                         <div className={style.options}>Contract Compliance</div>
                       </Link>
                     )} */}
-                    {/* <Link to={'/reports/contractPerformance'} className={style.noFontStyle}>
+                {/* <Link to={'/reports/contractPerformance'} className={style.noFontStyle}>
                                     <div className={style.options}>Contract Performance</div>
                                 </Link>
                                 <Link to={'/reports/systemAdministration'} className={style.noFontStyle}>
                                     <div className={style.options}>System Administration</div>
                                 </Link> */}
-                  </div>
-                </Popover>
+                {/* </div> */}
+                {/* </Popover> */}
               </div>
             </div>
           )}
+
           {isEntityLevelAdmin && (
             <div>
               <div
@@ -554,7 +574,8 @@ const Navbar = () => {
               </div>
             </div>
           )}
-          <div>
+
+          {/* <div>
             <div
               className={`${style.menuStyle} ${window.location.pathname === "/help" && style.activeMenuColor
                 }`}
@@ -592,7 +613,7 @@ const Navbar = () => {
                 </div>
               </Popover>
             </div>
-          </div>
+          </div> */}
         </div>
         <div className={style.displayInRow}>
           {/* {!window.location.pathname.includes('reportTypeOverview') && (
