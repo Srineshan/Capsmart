@@ -33,6 +33,7 @@
     color: #7165E3;
     text-transform: uppercase;
     padding: 5px;
+    cursor: pointer;
 }
 
 .continue {
@@ -45,11 +46,13 @@
     color: #FFFFFF;
     text-transform: uppercase;
     padding: 5px;
+    cursor: pointer;
 }
 
 .applicationCardStyle {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 5px 20px #52575D4D;
     border-radius: 20px;
-    border: 0.4000000059604645px solid #94979A;
+    border: 0.4000000059604645px solid #e5e6e6;
+    padding: 20px;
 }

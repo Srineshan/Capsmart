@@ -6,6 +6,8 @@ import ApplicationHeader from '../../Components/ApplicationHeader';
 import ApplicationUserCard from '../../Components/ApplicationUserCard';
 import ApplicationAssistanceCard from '../../Components/ApplicationAssistanceCard';
 import ApplicationReferenceDocuments from '../../Components/ApplicationReferenceDocuments';
+import CommonMailingAddress from '../../Components/CommonFields/CommonMailingAddress';
+import CommonDivider from '../../Components/CommonFields/CommonDivider';
 
 const ApplicationForm = () => {
     return (
@@ -18,7 +20,10 @@ const ApplicationForm = () => {
                 </div>
                 <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                     <div className={style.applicationCardStyle}>
-
+                        <CommonMailingAddress label={'Business Mailing Address*'} onChangeAddressLine1={() => { }} placeholderAddressLine1={'123 Street'} maxLengthAddressLine1={25} valueAddressLine1={''}
+                            onChangeAddressLine2={() => { }} placeholderAddressLine2={'Apartment 5'} maxLengthAddressLine2={25} valueAddressLine2={''} onChangeCity={() => { }} placeholderCity={'City'} maxLengthCity={25}
+                            valueCity={''} onChangeState={() => { }} placeholderState={'Province'} maxLengthState={25} valueState={''} onChangeZipcode={() => { }} placeholderZipcode={'Zipcode'} maxLengthZipcode={15} valueZipcode={''} />
+                        <CommonDivider />
                     </div>
                     <div>
                         <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />

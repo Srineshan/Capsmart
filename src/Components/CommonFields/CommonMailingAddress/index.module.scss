@@ -1,9 +1,19 @@
 .fullWidth {
-    width: 100% !important;
+    width: 100%;
+}
+
+.grid3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 10px;
 }
 
 .marginTop {
     margin-top: 10px;
+}
+
+.marginTop20 {
+    margin-top: 20px;
 }
 
 .lableStyle {
@@ -14,4 +24,9 @@
     text-transform: capitalize;
     opacity: 1;
     margin-top: 5px;
+}
+
+.divider {
+    background: #EBF2F7 0% 0% no-repeat padding-box;
+    height: 4px;
 }

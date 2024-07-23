@@ -2,6 +2,7 @@ import React from 'react';
 import Switch from '@mui/material/Switch';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import style from './index.module.scss';
 
 const switchTheme = createTheme({
     palette: {
@@ -11,21 +12,24 @@ const switchTheme = createTheme({
     },
 });
 
-const CommonSwitch = ({ checked, onChange, label, className, disabled }) => {
+const CommonSwitch = ({ checked, onChange, label, className, disabled, required, labelName }) => {
     const contractStatus = sessionStorage.getItem('Selected Contract Status');
 
     return (
-        <ThemeProvider theme={switchTheme}>
-            <FormControlLabel
-                control={
-                    <Switch className={className} onChange={onChange} checked={checked} disabled={contractStatus === "ACTIVE" ? true : disabled || false} size="small" />
-                }
-                color='primary'
-                className={className}
-                label={label}
+        <div className={style.labelGrid}>
+            <div className={`${style.lableStyle}`}>{labelName}{required && '*'}</div>
+            <ThemeProvider theme={switchTheme}>
+                <FormControlLabel
+                    control={
+                        <Switch className={className} onChange={onChange} checked={checked} disabled={contractStatus === "ACTIVE" ? true : disabled || false} size="small" />
+                    }
+                    color='primary'
+                    className={className}
+                    label={label}
 
-            />
-        </ThemeProvider>
+                />
+            </ThemeProvider>
+        </div>
     )
 }
 

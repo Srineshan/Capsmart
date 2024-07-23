@@ -1,5 +1,7 @@
-.fullWidth {
-    width: 100% !important;
+.phoneGrid {
+    display: grid;
+    grid-template-columns: 20px 1fr;
+    grid-gap: 10px;
 }
 
 .marginTop {

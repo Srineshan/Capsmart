@@ -181,6 +181,9 @@ const Thankyou = React.lazy(() =>
 const ApplicationForm = React.lazy(() =>
   import("./Screens/ApplicationForm")
 );
+const CreateStaffMemberApplication = React.lazy(() =>
+  import("./Screens/CreateStaffMemberApplication")
+);
 const App = ({ props }) => {
   const [accessToken, setAccessToken] = useState(Auth());
   const [tenantId, setTenantId] = useState(GetEntityDetails());
@@ -366,7 +369,7 @@ const App = ({ props }) => {
 
 
   const getEntityId = async () => {
-    await axios(`http://ec2-18-232-204-138.compute-1.amazonaws.com:8010/entity-service/entityID`, {
+    await axios(`http://ec2-52-204-199-180.compute-1.amazonaws.com/entity-service/entityID`, {
       method: "GET",
       // headers: { "X-subdomain": "hopkins" },
     })
@@ -389,7 +392,7 @@ const App = ({ props }) => {
       }
     };
     fetch(
-      `http://ec2-18-232-204-138.compute-1.amazonaws.com:8010/user-management-service/auth/login`,
+      `http://ec2-52-204-199-180.compute-1.amazonaws.com/user-management-service/auth/login`,
       requestOptions
     )
       .then((response) => response.json())
@@ -683,6 +686,7 @@ const App = ({ props }) => {
                 element={<ReportTypeOverview />}
               />
               <Route path="/applicationForm/section1/step1" element={<ApplicationForm />} />
+              <Route path="/createStaffMemberApplication" element={<CreateStaffMemberApplication />} />
             </Routes>
           </>
           {/* ) : (

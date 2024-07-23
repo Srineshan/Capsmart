@@ -7,7 +7,9 @@ import { DateInput2 } from "@blueprintjs/datetime2";
 import { format, parse, parseISO } from "date-fns";
 import { jsDateFormatter } from './../../../utils/jsDateFormatter'
 
-const CommonDateField = ({ onChange, value, InputProps, onOpen, onClose, open, renderInput, minDate, maxDate }) => {
+import style from './index.module.scss'
+
+const CommonDateField = ({ onChange, value, InputProps, onOpen, onClose, open, renderInput, minDate, maxDate, label, required, className }) => {
     const contractStatus = sessionStorage.getItem('Selected Contract Status');
     const dateFnsFormat = "MM/dd/yyyy";
     const formatDate = useCallback((date) => format(date, dateFnsFormat), []);
@@ -20,21 +22,26 @@ const CommonDateField = ({ onChange, value, InputProps, onOpen, onClose, open, r
         //     placeholder={dateFnsFormat}
         //     value={format(new Date(value), dateFnsFormat)}
         // />
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <DesktopDatePicker
-                open={open}
-                onOpen={onOpen}
-                onClose={onClose}
-                value={value}
-                onChange={onChange}
-                InputProps={InputProps}
-                minDate={minDate}
-                maxDate={maxDate}
-                renderInput={renderInput}
-                reduceAnimations={true}
-                readOnly={contractStatus === "ACTIVE" ? true : false}
-            />
-        </LocalizationProvider>
+        <div>
+            <div className={`${style.lableStyle}`}>{label}{required && '*'}</div>
+            <div className={`${className} ${style.marginTop}`}>
+                <LocalizationProvider dateAdapter={AdapterDateFns} sx={className}>
+                    <DesktopDatePicker
+                        // open={open}
+                        // onOpen={onOpen}
+                        // onClose={onClose}
+                        value={value}
+                        onChange={onChange}
+                        InputProps={InputProps}
+                        minDate={minDate}
+                        maxDate={maxDate}
+                        renderInput={renderInput}
+                        reduceAnimations={true}
+                        readOnly={contractStatus === "ACTIVE" ? true : false}
+                    />
+                </LocalizationProvider>
+            </div>
+        </div>
     )
 }
 

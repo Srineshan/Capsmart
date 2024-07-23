@@ -1,0 +1,36 @@
+.backgroundCard {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 5px 20px #52575D29;
+    border-radius: 20px;
+    padding: 30px;
+}
+
+.marginTop {
+    margin-top: 20px;
+}
+
+.cardTitle {
+    text-align: left;
+    font: normal normal 600 17px/28px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    text-transform: capitalize;
+}
+
+.fullWidth {
+    width: 100%;
+}
+
+.addButton {
+    border: 0.5px solid #7165E3;
+    border-radius: 12px;
+    width: 130px;
+    color: #7165E3;
+    font: normal normal bold 20px/40px Montserrat;
+    cursor: pointer;
+}
+
+.spaceBetween {
+    display: flex;
+    justify-content: space-between;
+}
