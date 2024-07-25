@@ -773,7 +773,7 @@ const AbsenceReasonsForCustomer = () => {
           <p className={style.poweredBy}>Powered by - TimeSmartAI.Inc LLP</p>
           <p className={style.poweredBy}>© TimeSmartAI.Inc</p>
         </div>
-      </div>
+      </div>  
       {showAddAbsenseReasonsDialog && (
         <AddAbsenseReasonsForHealthcare
           getAddEntityDialog={getAddAbsenseReasonsDialog}
