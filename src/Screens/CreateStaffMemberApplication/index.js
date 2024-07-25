@@ -129,13 +129,16 @@ const CreateStaffMemberApplication = () => {
                 const { data: form } = await GET(
                     `application-management-service/formSchema/${basicForm?.generalSchemas?.[0]?.id}`
                 );
-                console.log(form)
+                let temp = form;
+                if (temp.properties.applicant.properties !== null) {
+                    delete temp.properties.applicant.properties['letterOfInterest']
+                    delete temp.properties.applicant.properties['curriculumVitae']
+                }
                 setForm(form)
             } else {
                 const { data: form } = await GET(
                     `application-management-service/formSchema/${basicForm?.generalSchemas?.[1]?.id}`
                 );
-                console.log(form)
                 setForm(form)
             }
         }
@@ -193,16 +196,16 @@ const CreateStaffMemberApplication = () => {
                         {form !== undefined && 'applicant' in form?.properties && (
                             <ApplicationFieldCard object={form?.properties?.applicant} gridStyle={style.threeCol} baseKey={'applicant'} basicForm={basicForm} setBasicForm={setBasicForm} />
                         )}
-                        {form !== undefined && 'providerType' in form?.properties && (
-                            <ApplicationFieldCard object={form?.properties?.providerType} gridStyle={style.twoCol} baseKey={'providerType'} basicForm={basicForm} setBasicForm={setBasicForm} />
+                        {form !== undefined && 'service' in form?.properties && (
+                            <ApplicationFieldCard object={form?.properties?.service} gridStyle={style.twoCol} baseKey={'service'} basicForm={basicForm} setBasicForm={setBasicForm} />
                         )}
                         {form !== undefined && 'interviewDetails' in form?.properties && (
                             <ApplicationFieldCard object={form?.properties?.interviewDetails} gridStyle={style.jobInterviewGrid} baseKey={'interviewDetails'} basicForm={basicForm} setBasicForm={setBasicForm} />
                         )}
                         <div className={style.spaceBetween}>
-                            <div className={`${style.saveInProgress} ${style.marginTop}`}>DISCARD</div>
+                            <div></div>
                             <div className={style.displayInRow}>
-                                <div className={`${style.saveInProgress} ${style.marginTop}`}>SEND APPLICATION LINK</div>
+                                <div className={`${style.saveInProgress} ${style.marginTop}`}>DISCARD</div>
                                 <div className={`${style.continue} ${style.marginTop} ${style.marginLeft}`} onClick={() => handleSubmitApplicationReq()}>Next</div>
                             </div>
                         </div>
@@ -238,9 +241,9 @@ const CreateStaffMemberApplication = () => {
                             <ApplicationFieldCard object={form?.properties?.regionalCallResponsibilities} gridStyle={style.jobInterviewGrid} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} />
                         )}
                         <div className={style.spaceBetween}>
-                            <div className={`${style.saveInProgress} ${style.marginTop}`}>DISCARD</div>
+                            <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => setIsNextPage(false)}>BACK</div>
                             <div className={style.displayInRow}>
-                                <div className={`${style.saveInProgress} ${style.marginTop}`}>SEND APPLICATION LINK</div>
+                                <div className={`${style.saveInProgress} ${style.marginTop}`} >SEND APPLICATION LINK</div>
                                 <div className={`${style.continue} ${style.marginTop} ${style.marginLeft}`} onClick={() => handleSubmitApplicationReq()}>Next</div>
                             </div>
                         </div>
