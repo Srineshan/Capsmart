@@ -37,8 +37,9 @@ import PermIdentityIcon from '@mui/icons-material/PermIdentity';
 import style from './index.module.scss';
 import SideBar from '../../Components/Sidebar';
 import ProgressBar from "@ramonak/react-progress-bar";
+import ApplicationRejection from './applicationRejectionDialog';
 
-const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog, contracts, getSelectedContract, getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page, getActiveContractView, getFilterValues, getHandleSort, sortValue, getTabFilter }) => {
+const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog, contracts, getSelectedContract, getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page, getActiveContractView, getFilterValues, getHandleSort, sortValue, getTabFilter, getActiveApplicationView }) => {
   const PDFRef = createRef();
   const componentRef = useRef(null);
   const filterRef = useRef();
@@ -160,6 +161,7 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
   const [isDraft, setIsDraft] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
   const [showPreImplementationDialog, setShowPreImplementationDialog] = useState(false);
+  const [showApplicationRejectionDialog, setShowApplicationRejectionDialog] = useState(false);
   const [showReviewAndApprovalStatusSummaryDialog, setShowReviewAndApprovalStatusSummaryDialog] = useState(false);
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
@@ -272,6 +274,10 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
     setShowPreImplementationDialog(value);
   }
 
+  const getApplicationRejectionDialog = (value) => {
+    setShowApplicationRejectionDialog(value);
+  }
+
   const getReviewAndApprovalStatusSummaryDialog = (data) => {
     setShowReviewAndApprovalStatusSummaryDialog(true);
   }
@@ -303,6 +309,10 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
       contractedUsers.push(name);
     });
     return contractedUsers;
+  }
+
+  const onClickViewAndVerifyFunction = (data) => {
+    getActiveApplicationView(true);
   }
 
   const onClickFunction = (data) => {
@@ -538,7 +548,7 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
   }
 
   const applicantActionsData = [
-    { 'data': 'View & Verify', 'requiredValue': 'boolean', "onClick": '' },
+    { 'data': 'View & Verify', 'requiredValue': 'boolean', "onClick": onClickViewAndVerifyFunction },
     { 'data': 'Send for Committee Review', 'requiredValue': 'boolean', "onClick": '' },
     { 'data': 'Send Reminder for Required Documents', 'requiredValue': 'boolean', "onClick": '' },
     { 'data': 'Request for Clarification', 'requiredValue': 'boolean', "onClick": '' },
@@ -763,7 +773,7 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
                   <div className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}>
                     Appointment Requests Denied (5)
                   </div>
-                  <div className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}>
+                  <div className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`} onClick={() => { setShowApplicationRejectionDialog(true) }}>
                     Applications Rejected (3)
                   </div>
                   <div className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}>
@@ -840,6 +850,11 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
         <p className={style.poweredBy}>© {new Date().getFullYear()} TimeSmartAI.Inc</p>
       </div>
 
+      {
+        showApplicationRejectionDialog && (
+          <ApplicationRejection getApplicationRejectionDialog={getApplicationRejectionDialog} />
+        )
+      }
     </div >
   )
 }
