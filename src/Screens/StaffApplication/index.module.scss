@@ -27,6 +27,10 @@ body::-webkit-scrollbar {
   margin: 0 20px !important;
 }
 
+.marginLeftRight50 {
+  margin: 0 50px !important;
+}
+
 .marginLeft10 {
   margin-left: 10px !important;
 }
@@ -55,12 +59,24 @@ body::-webkit-scrollbar {
   padding-top: 5px;
 }
 
+.marginTop5 {
+  margin-top: 5px !important;
+}
+
 .marginTop10 {
   margin-top: 10px !important;
 }
 
+.marginTop15 {
+  margin-top: 15px !important;
+}
+
 .marginBottom10 {
   margin-bottom: 10px !important;
+}
+
+.marginBottom20 {
+  margin-bottom: 20px !important;
 }
 
 .grid {
@@ -80,6 +96,60 @@ body::-webkit-scrollbar {
   padding: 20px;
   font-size: 18px;
   font-weight: 400;
+}
+
+.buttonCardStyle {
+  height: 50px;
+  width: 270px;
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border: 0.5px solid #7165E3;
+  border-radius: 8px;
+  opacity: 1;
+}
+
+.buttonCardStyle1 {
+  width: 200px;
+  height: 40px;
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border: 0.5px solid #7165E3;
+  border-radius: 8px;
+  opacity: 1;
+}
+
+.buttonCardGreyStyle {
+  width: 200px;
+  height: 40px;
+  background: #94979A 0% 0% no-repeat padding-box;
+  border-radius: 8px;
+  opacity: 1;
+}
+
+.buttonTextStyle {
+  text-align: center;
+  font: normal normal bold 18px/30px Proxima Nova;
+  letter-spacing: 0px;
+  color: #7165E3;
+  text-transform: uppercase;
+  opacity: 1;
+}
+
+.buttonGreyTextStyle {
+  text-align: center;
+  font: normal normal bold 18px/26px Proxima Nova;
+  letter-spacing: 0px;
+  color: #FFFFFF;
+  text-transform: uppercase;
+  opacity: 1
+}
+
+.overAllCardStyle {
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 5px 20px #52575D29;
+  border: 0.4000000059604645px solid #E0E1FB;
+  border-radius: 12px;
+  opacity: 1;
 }
 
 /* The container */
@@ -230,6 +300,62 @@ body::-webkit-scrollbar {
   border-radius: 50%;
   background-color: #94979A;
   color: #94979A;
+}
+
+.colorFileStyle {
+  height: 25px !important;
+  width: 25px !important;
+  margin-right: 5px;
+  object-fit: contain;
+  cursor: pointer;
+}
+
+.multipleOptionsCard {
+  background: #857AEF 0% 0% no-repeat padding-box;
+  border: none;
+}
+
+.specificActionCard {
+  min-height: 35px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  color: #F5F9FD;
+  max-width: 250px;
+}
+
+.tableHeaderTextStyle {
+  text-align: left;
+  font: normal normal bold 16px/22px Proxima Nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  opacity: 1;
+  text-transform: capitalize;
+}
+
+.tableHeaderTextStyle1 {
+  text-align: left;
+  font: normal normal medium 20px/26px Proxima Nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  text-transform: capitalize;
+}
+
+.cardInnerText {
+  border: 1px solid var(--unnamed-color-e9e9f0);
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  border: 1px solid #E9E9F0;
+  border-radius: 4px;
+  opacity: 1;
+}
+
+.tableHeaderHeadingTextStyle {
+  text-align: left;
+  font: normal normal bold 18px/22px Proxima Nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  opacity: 1;
+  text-transform: capitalize;
 }
 
 .progressMargin {
@@ -439,6 +565,11 @@ body::-webkit-scrollbar {
   justify-content: space-between;
 }
 
+.spaceEvenly {
+  display: flex;
+  justify-content: space-evenly;
+}
+
 .warningTextAlign {
   display: flex;
   justify-content: space-between;
@@ -536,6 +667,24 @@ body::-webkit-scrollbar {
 .activeStaffGrid {
   display: grid;
   grid-template-columns: 3% 22% 15% 15% 10% 11% 11% 5%;
+  grid-gap: 10px;
+}
+
+.tableHeaderGridStyle {
+  display: grid;
+  grid-template-columns: 6% 45% 12% 12% 12% 8%;
+  grid-gap: 10px;
+}
+
+.tableHeaderGridStyle1 {
+  display: grid;
+  grid-template-columns: 6% 85% 10%;
+  grid-gap: 10px;
+}
+
+.tableHeaderGridStyle2 {
+  display: grid;
+  grid-template-columns: 5% 83% 10%;
   grid-gap: 10px;
 }
 
@@ -663,7 +812,7 @@ body::-webkit-scrollbar {
 
 .welcomeStyle {
   text-align: left;
-  font: normal normal bold 20px/18px Proxima Nova;
+  font: normal normal bold 26px/22px Proxima Nova;
   letter-spacing: 0px;
   color: #7165e3;
 }
@@ -675,9 +824,60 @@ body::-webkit-scrollbar {
   color: #7165e3;
 }
 
+.extensionStyle1 {
+  text-align: left;
+  font: normal normal bold 20px/24px Proxima Nova;
+  letter-spacing: 0px;
+  color: #7165E3;
+  text-transform: capitalize;
+  opacity: 1;
+}
+
 .extensionBorder {
   background-color: #ebf2f7;
   height: 3px;
+}
+
+.rejectionBorderStyle {
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 5px 20px #52575D14;
+  border: 0.4px solid #52575D14;
+  border-radius: 12px;
+  opacity: 1;
+}
+
+.rejectionHeadingTextStyle {
+  text-align: left;
+  font: normal normal bold 16px/24px Proxima Nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  text-transform: capitalize;
+  opacity: 1;
+}
+
+.rejectionSubHeadingTextStyle {
+  text-align: left;
+  font: normal normal medium 14px/22px Proxima Nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  text-transform: capitalize;
+  opacity: 0.5;
+}
+
+.rejectionTextStyle {
+  text-align: left;
+  font: normal normal medium 18px/34px Proxima Nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  text-transform: capitalize;
+  opacity: 1;
+}
+
+.declineBorderStyle {
+  background: #DBD8FA 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 18px #0F0B3129;
+  border: 1px solid #0F0B3129;
+  border-radius: 8px;
 }
 
 .extensionOptionsStyle {
@@ -762,6 +962,21 @@ body::-webkit-scrollbar {
   padding: 30px 40px;
 }
 
+.headerHeading {
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 6px 12px #382DA514;
+  opacity: 1;
+  height: 97px;
+}
+
+.topHeadingTextStyle {
+  text-align: left;
+  font: normal normal 600 15px/24px Proxima Nova;
+  letter-spacing: 1.5px;
+  color: #646D82;
+  text-transform: uppercase;
+}
+
 .welcomeMessage {
   background: #ebe9fb 0% 0% no-repeat padding-box;
   text-align: left;
@@ -773,7 +988,6 @@ body::-webkit-scrollbar {
 
 .addContractBody {
   background-color: white;
-  height: 100vh;
   overflow: scroll;
 }
 
@@ -863,6 +1077,23 @@ body::-webkit-scrollbar {
   padding: 20px;
 }
 
+.scrollBarStyle {
+  opacity: 1;
+  height: 80vh;
+  width: 100%;
+  padding: 20px;
+  overflow-y: scroll;
+}
+
+.scrollRejectionStyle {
+  width: 11px;
+  height: 311px;
+  /* UI Properties */
+  background: #7165E3 0% 0% no-repeat padding-box;
+  border-radius: 6px;
+  opacity: 0.4;
+}
+
 .deleteDraftBoxStyle {
   border: 1px solid #7165e3;
   border-radius: 8px;
@@ -884,8 +1115,30 @@ body::-webkit-scrollbar {
   padding: 20px;
 }
 
+.rightAlignTextStyle {
+  text-align: right;
+  font: normal normal medium 16px/23px Proxima Nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  text-transform: capitalize;
+  opacity: 0.8;
+}
+
+.leftAlignTextStyle {
+  text-align: left;
+  font: normal normal bold 16px/23px Proxima Nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  text-transform: uppercase;
+  opacity: 1;
+}
+
 .textAlignLeft {
   text-align: left !important;
+}
+
+.textAlignRight {
+  text-align: right !important;
 }
 
 .textAlignCenter {
@@ -912,6 +1165,24 @@ body::-webkit-scrollbar {
 .flexLeft {
   display: flex;
   justify-content: left;
+}
+
+.cardTextBoldStyle {
+  text-align: left;
+  font: normal normal bold 16px/20px Proxima Nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  text-transform: capitalize;
+  opacity: 1;
+}
+
+.cardTextNormalStyle {
+  text-align: left;
+  font: normal normal medium 16px/23px Proxima Nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  text-transform: capitalize;
+  opacity: 0.6;
 }
 
 .switchFontStyle {
@@ -1010,6 +1281,12 @@ select {
   align-items: center;
   height: 100%;
 }
+
+.alignItemsCenter {
+  display: flex;
+  align-items: center;
+}
+
 
 .contractCardData {
   text-align: center;
@@ -1150,6 +1427,24 @@ select {
   border-radius: 10px;
   margin-bottom: -20px;
   box-shadow: 0px 3px 11px #7165e3;
+}
+
+.bigButtonStyle {
+  height: 50px;
+  /* UI Properties */
+  background: #7165E3 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border-radius: 8px;
+  opacity: 1;
+}
+
+.bigButtonTextStyle {
+  text-align: center;
+  font: normal normal bold 18px/30px Proxima Nova;
+  letter-spacing: 0px;
+  color: #FFFFFF;
+  text-transform: uppercase;
+  opacity: 1;
 }
 
 .newContractButtonStyle {
@@ -1780,7 +2075,7 @@ select {
 
 .grid2 {
   display: grid;
-  grid-template-columns: 1fr 2fr;
+  grid-template-columns: 2fr 1fr;
   grid-gap: 20px;
 }
 
@@ -1790,9 +2085,20 @@ select {
   grid-gap: 20px;
 }
 
+.twoColumnGridInner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 20px;
+  justify-items: start;
+}
+
 .sendMailUserDialog {
   height: 40%;
   width: 40% !important;
+}
+
+.padding5 {
+  padding: 5px;
 }
 
 .padding10 {
@@ -2148,6 +2454,39 @@ input[type="file"] {
 
 .administrativeCardStyle {
   height: 40px;
+}
+
+.cardLeftStyle {
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 5px 20px #52575D29;
+  border: 0.4000000059604645px solid #E0E1FB;
+  border-radius: 12px;
+  opacity: 1;
+}
+
+.marginLeftRight10 {
+  margin: 10px 10px;
+}
+
+.photoCardStyle {
+  width: 93px;
+  height: 89px;
+  transform: matrix(0.74, -0.67, 0.67, 0.74, 0, 0);
+  /* UI Properties */
+  text-align: left;
+  font: normal normal bold 34px/58px Proxima Nova;
+  letter-spacing: 0px;
+  color: #7165E3;
+  opacity: 0.1;
+}
+
+.photoBorderStyle {
+  width: 108px;
+  height: 108px;
+  /* UI Properties */
+  background: #7165E3 0% 0% no-repeat padding-box;
+  border-radius: 10px;
+  opacity: 0.1;
 }
 
 .selectedAdministrativeCardStyle {
@@ -2571,6 +2910,15 @@ input[type="number"] {
   padding: 0 10px;
 }
 
+.tableHeaderStyle {
+  background: #ebe9fb 0% 0% no-repeat padding-box;
+  min-height: 48px;
+  width: 96%;
+  margin-left: 2%;
+  border: 0.400000006px solid #ebe9fb;
+  border-radius: 2px;
+}
+
 .editableTableGridStyle {
   display: grid;
   grid-template-columns: 15% 18% 18% 18% 10% 10% 5%;
@@ -2578,11 +2926,10 @@ input[type="number"] {
 }
 
 .tableHeaderFontStyle {
-  font: normal normal bold 13px/15px Proxima Nova;
+  font: normal normal bold 14px/15px Proxima Nova;
   letter-spacing: 0px;
   color: #52575d;
   text-transform: uppercase;
-  opacity: 1;
   text-align: left;
 }
 
@@ -2595,12 +2942,47 @@ input[type="number"] {
   padding: 0 10px;
 }
 
+.tableDataStyle {
+  background: #F5F5F8 0% 0% no-repeat padding-box;
+  min-height: 50px;
+  width: 96%;
+  margin-left: 2%;
+  border: 0.400000006px solid #ebe9fb;
+  border-radius: 2px;
+}
+
+.tableDataStyle1 {
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  min-height: 50px;
+  width: 96%;
+  margin-left: 2%;
+  border: 0.400000006px solid #CBCBE3;
+  border-radius: 2px;
+}
+
 .tableDataFontStyle {
   font: normal normal normal 13px/17px Proxima Nova;
   letter-spacing: 0px;
   color: #52575d;
   text-transform: uppercase;
   text-align: left;
+}
+
+.tableDataFontStyle1 {
+  font: normal normal normal 16px/20px Proxima Nova;
+  letter-spacing: 0px;
+  color: #52575d;
+  text-transform: capitalize;
+  text-align: left;
+}
+
+.tableDataFontStyle2 {
+  text-align: left;
+  font: normal normal 600 16px/24px Proxima Nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  text-transform: capitalize;
+  opacity: 1;
 }
 
 // .scheduleTableGrid1 {

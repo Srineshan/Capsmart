@@ -2,6 +2,7 @@ import React, { Fragment, useState, useEffect } from 'react';
 import Navbar from '../../Components/Navbar';
 import { GET, PUT, POST, TenantID } from '../dataSaver';
 import StaffApplicationList from './staffApplicationList';
+import NewActiveApplication from './newActiveApplication';
 import { format, subYears } from "date-fns";
 
 const StaffApplication = () => {
@@ -24,6 +25,7 @@ const StaffApplication = () => {
     const [totalCount, setTotalCount] = useState(0);
     const [isEditable, setIsEditable] = useState(false);
     const [activeContractView, setActiveContractView] = useState(false);
+    const [activeApplicationView, setActiveApplicationView] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [selectedContractTypeFilter, setSelectedContractTypeFilter] = useState([]);
     const [selectedContractPolicyTypeFilter, setSelectedContractPolicyTypeFilter] = useState([]);
@@ -116,6 +118,10 @@ const StaffApplication = () => {
         setActiveContractView(value);
     }
 
+    const getActiveApplicationView = (value) => {
+        setActiveApplicationView(value);
+    }
+
     const getDeleteDraftDialog = (value) => {
         setDeleteDraftDialog(value);
     }
@@ -199,37 +205,42 @@ const StaffApplication = () => {
     // }
 
     return (
-        <Fragment>
-            <Navbar />
-            <StaffApplicationList
-                isLoading={isLoading}
-                getDeleteDraftDialog={getDeleteDraftDialog}
-                getContractActivationDialog={getContractActivationDialog}
-                getSelectedContract={getSelectedContract}
-                getAddContract={getAddContract}
-                getExtensionDialog={getExtensionDialog}
-                getTerminationDialog={getTerminationDialog}
-                getCloneDialog={getCloneDialog}
-                contracts={contracts}
-                getNewContract={getNewContract}
-                getContractType={getContractType}
-                getSelectedContractType={getSelectedContractType}
-                getContractIdFromActive={getContractIdFromActive}
-                getContracts={getContracts}
-                selectedContract={selectedContract}
-                users={users}
-                getSearchKey={getSearchKey}
-                getSelectedPage={getSelectedPage}
-                totalCount={totalCount}
-                page={page}
-                getActiveContractView={getActiveContractView}
-                searchKey={searchKey}
-                getFilterValues={getFilterValues}
-                getHandleSort={getHandleSort}
-                sortValue={{ sortBy: sortValue, sortByField: sortField }}
-                getTabFilter={getTabFilter}
-            />
-        </Fragment>
+        activeApplicationView ? (
+            <NewActiveApplication getActiveApplicationView={getActiveApplicationView} />
+        ) : (
+            <Fragment>
+                <Navbar />
+                <StaffApplicationList
+                    isLoading={isLoading}
+                    getDeleteDraftDialog={getDeleteDraftDialog}
+                    getContractActivationDialog={getContractActivationDialog}
+                    getSelectedContract={getSelectedContract}
+                    getAddContract={getAddContract}
+                    getExtensionDialog={getExtensionDialog}
+                    getTerminationDialog={getTerminationDialog}
+                    getCloneDialog={getCloneDialog}
+                    contracts={contracts}
+                    getNewContract={getNewContract}
+                    getContractType={getContractType}
+                    getSelectedContractType={getSelectedContractType}
+                    getContractIdFromActive={getContractIdFromActive}
+                    getContracts={getContracts}
+                    selectedContract={selectedContract}
+                    users={users}
+                    getSearchKey={getSearchKey}
+                    getSelectedPage={getSelectedPage}
+                    totalCount={totalCount}
+                    page={page}
+                    getActiveContractView={getActiveContractView}
+                    getActiveApplicationView={getActiveApplicationView}
+                    searchKey={searchKey}
+                    getFilterValues={getFilterValues}
+                    getHandleSort={getHandleSort}
+                    sortValue={{ sortBy: sortValue, sortByField: sortField }}
+                    getTabFilter={getTabFilter}
+                />
+            </Fragment>
+        )
     )
 }
 
