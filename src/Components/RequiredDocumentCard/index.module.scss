@@ -1,0 +1,37 @@
+.requiredDocumentCard {
+    background: #F5F5F8 0% 0% no-repeat padding-box;
+    border: 0.4000000059604645px solid #d7d4f7;
+    border-radius: 4px;
+    padding: 10px 15px;
+}
+
+.info {
+    opacity: 0.7;
+}
+
+.requiredDocumentCardAlternativeColor {
+    background: #f0f0f5 0% 0% no-repeat padding-box;
+}
+
+.documentTextStyle {
+    text-align: left;
+    font: normal normal normal 15px/21px Montserrat;
+    letter-spacing: 0px;
+    color: #6F7479;
+    text-transform: capitalize;
+}
+
+.displayInRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.verticalAlignCenter {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.marginTop5 {
+    margin-top: 5px;
+}

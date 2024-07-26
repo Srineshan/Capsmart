@@ -8,19 +8,14 @@
     background: #EDEDF3 0% 0% no-repeat padding-box;
 }
 
-.breadcrumbStyle {
-    text-align: left;
-    font: normal normal 600 12px/24px Montserrat;
-    letter-spacing: 1.5px;
-    color: #646D82;
-    text-transform: uppercase;
+.spaceBetween {
+    display: flex;
+    justify-content: space-between;
 }
 
-.backgroundCard {
-    background: #FFFFFF 0% 0% no-repeat padding-box;
-    box-shadow: 0px 5px 20px #52575D29;
-    border-radius: 20px;
-    padding: 20px;
+.displayInRow {
+    display: flex;
+    flex-direction: row;
 }
 
 .marginTop {
@@ -29,14 +24,6 @@
 
 .marginLeft {
     margin-left: 20px;
-}
-
-.cardTitle {
-    text-align: left;
-    font: normal normal 600 17px/28px Montserrat;
-    letter-spacing: 0px;
-    color: #52575D;
-    text-transform: capitalize;
 }
 
 .threeCol {
@@ -65,16 +52,6 @@
 
 .siteGrid> :nth-child(1) {
     grid-column: 1 / -1;
-}
-
-.spaceBetween {
-    display: flex;
-    justify-content: space-between;
-}
-
-.displayInRow {
-    display: flex;
-    flex-direction: row;
 }
 
 .saveInProgress {
@@ -166,4 +143,24 @@
     font: normal normal bold 12px/24px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
+}
+
+.cardTitle {
+    text-align: left;
+    font: normal normal 600 17px/28px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    text-transform: capitalize;
+}
+
+
+.backgroundCard {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 5px 20px #52575D29;
+    border-radius: 20px;
+    padding: 20px;
+}
+
+input[type="file"] {
+    display: none;
 }

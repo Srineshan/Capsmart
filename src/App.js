@@ -182,6 +182,15 @@ const Thankyou = React.lazy(() =>
 const ApplicationForm = React.lazy(() =>
   import("./Screens/ApplicationForm")
 );
+const ApplicationFormRequirement = React.lazy(() =>
+  import("./Screens/ApplicationForm/ApplicationFormRequirement")
+);
+const ApplicationRequest = React.lazy(() =>
+  import("./Screens/ApplicationRequest")
+);
+const CompleteApplicationRequest = React.lazy(() =>
+  import("./Screens/ApplicationRequest/CompleteApplicationRequest")
+);
 const CreateStaffMemberApplication = React.lazy(() =>
   import("./Screens/CreateStaffMemberApplication")
 );
@@ -370,7 +379,7 @@ const App = ({ props }) => {
 
 
   const getEntityId = async () => {
-    await axios(`http://ec2-52-204-199-180.compute-1.amazonaws.com/entity-service/entityID`, {
+    await axios(`https://acme-hospital.doxonify.ca//entity-service/entityID`, {
       method: "GET",
       // headers: { "X-subdomain": "hopkins" },
     })
@@ -393,7 +402,7 @@ const App = ({ props }) => {
       }
     };
     fetch(
-      `http://ec2-52-204-199-180.compute-1.amazonaws.com/user-management-service/auth/login`,
+      `https://acme-hospital.doxonify.ca//user-management-service/auth/login`,
       requestOptions
     )
       .then((response) => response.json())
@@ -688,7 +697,10 @@ const App = ({ props }) => {
                 path="/myReport/:reportType"
                 element={<ReportTypeOverview />}
               />
-              <Route path="/applicationForm/section1/step1" element={<ApplicationForm />} />
+              <Route path="/applicationForm/:section/:step" element={<ApplicationForm />} />
+              <Route path="/applicationForm" element={<ApplicationFormRequirement />} />
+              <Route path="/applicationRequest" element={<ApplicationRequest />} />
+              <Route path="/completeApplicationRequest" element={<CompleteApplicationRequest />} />
               <Route path="/createStaffMemberApplication" element={<CreateStaffMemberApplication />} />
             </Routes>
           </>

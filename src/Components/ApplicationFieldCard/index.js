@@ -8,13 +8,20 @@ import { add, format, sub } from 'date-fns';
 import { FormatPhoneNumber } from '../../utils/formatting';
 import CommonRadio from '../CommonFields/CommonRadio';
 import CommonSwitch from '../CommonFields/CommonSwitch';
+import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 
 import style from './index.module.scss';
+import CommonCheckBox from '../CommonFields/CommonCheckBox';
 
 const TEXTFIELDLEN50 = 50;
 
 const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicForm, showAdd }) => {
     const [calendarStart, setCalendarStart] = useState(false);
+    const basicpath = 'basicDetails'
+
+    useEffect(() => {
+        renderObjectFields(object)
+    }, [basicForm]);
 
     const setNestedValue = (obj, path, value) => {
         console.log(obj, path, value, 'Test')
@@ -35,7 +42,6 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
         console.log(path, value, basePath, baseKey, 'Check')
         setBasicForm((prevData) => {
             const newData = { ...prevData };
-            const basicpath = 'basicDetails'
             if (basePath3 && basePath2 && basePath && path) {
                 setNestedValue(newData, `${basePath}.${basePath2}.${basePath3}.${path}`, value);
                 setNestedValue(newData, `${basicpath}.${basePath}.${path}`, value);
@@ -84,105 +90,128 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
     // };
 
     const renderField = (fieldKey, fieldData, baseKey, handleChange, getValueByPath, style, calendarStart, setCalendarStart) => {
-        switch (fieldData.fieldType) {
-            case 'dropdown':
-                return (
-                    <CommonSelectField
-                        value={getValueByPath(basicForm, `${baseKey}.${fieldKey}`)}
-                        onChange={(e) => handleChange(fieldKey, e.target.value, baseKey)}
-                        className={style.fullWidth}
-                        firstOptionLabel={fieldData.label}
-                        firstOptionValue={fieldData.label}
-                        valueList={fieldData.enum}
-                        labelList={fieldData.enum}
-                        disabledList={fieldData.enum.map(data => false)}
-                        label={fieldData.label}
-                        required={fieldData.required?.includes(fieldKey)}
-                    />
-                );
-            case 'textbox':
-                return (
-                    <CommonInputField
-                        value={getValueByPath(basicForm, `${baseKey}.${fieldKey}`)}
-                        className={style.fullWidth}
-                        onChange={(e) => handleChange(fieldKey, e.target.value, baseKey)}
-                        maxLength={TEXTFIELDLEN50}
-                        placeholder={fieldData.label}
-                        label={fieldData.label}
-                        required={fieldData.required?.includes(fieldKey)}
-                    />
-                );
-            case 'cellNumber':
-                return (
-                    <CommonPhoneField
-                        value={getValueByPath(basicForm, `${baseKey}.${fieldKey}`)}
-                        className={style.fullWidth}
-                        onChange={(e) => handleChange(fieldKey, FormatPhoneNumber(e.target.value), baseKey)}
-                        placeholder={fieldData.label}
-                        label={fieldData.label}
-                        required={fieldData.required?.includes(fieldKey)}
-                    />
-                );
-            case 'datepicker':
-                return (
-                    <CommonDateField
-                        className={style.fullWidth}
-                        open={calendarStart}
-                        onOpen={() => setCalendarStart(true)}
-                        onClose={() => setCalendarStart(false)}
-                        minDate={sub(new Date(), { years: 3 })}
-                        maxDate={add(new Date(), { months: 6 })}
-                        value={getValueByPath(basicForm, `${baseKey}.${fieldKey}`)}
-                        onChange={(newValue) => handleChange(fieldKey, format(new Date(newValue), 'yyyy-MM-dd'), baseKey)}
-                        InputProps={{
-                            style: {
-                                fontSize: 14,
-                                height: 30,
-                            },
-                        }}
-                        renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                inputProps={{
-                                    ...params.inputProps,
-                                    placeholder: fieldData.label,
-                                }}
-                                fullWidth
+        if (!object?.then?.required?.includes(fieldKey) || getValueByPath(basicForm, `${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`) === Object.entries(object?.if?.properties)?.map(([key, data]) => data)[0]?.const) {
+            switch (fieldData.fieldType) {
+                case 'dropdown':
+                    return (
+                        <CommonSelectField
+                            value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)}
+                            onChange={(e) => handleChange(fieldKey, e.target.value, baseKey)}
+                            className={style.fullWidth}
+                            firstOptionLabel={fieldData.label}
+                            firstOptionValue={fieldData.label}
+                            valueList={fieldData.enum}
+                            labelList={fieldData.enum}
+                            disabledList={fieldData.enum.map(data => false)}
+                            label={fieldData.label}
+                            required={fieldData.required?.includes(fieldKey)}
+                        />
+                    );
+                case 'textbox':
+                    return (
+                        <CommonInputField
+                            value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)}
+                            className={style.fullWidth}
+                            onChange={(e) => handleChange(fieldKey, e.target.value, baseKey)}
+                            maxLength={TEXTFIELDLEN50}
+                            placeholder={fieldData.label}
+                            label={fieldData.label}
+                            required={fieldData.required?.includes(fieldKey)}
+                        />
+                    );
+                case 'cellNumber':
+                    return (
+                        <CommonPhoneField
+                            value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)}
+                            className={style.fullWidth}
+                            onChange={(e) => handleChange(fieldKey, FormatPhoneNumber(e.target.value), baseKey)}
+                            placeholder={fieldData.label}
+                            label={fieldData.label}
+                            required={fieldData.required?.includes(fieldKey)}
+                        />
+                    );
+                case 'datepicker':
+                    return (
+                        <CommonDateField
+                            className={style.fullWidth}
+                            open={calendarStart}
+                            onOpen={() => setCalendarStart(true)}
+                            onClose={() => setCalendarStart(false)}
+                            minDate={sub(new Date(), { years: 3 })}
+                            maxDate={add(new Date(), { months: 6 })}
+                            value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)}
+                            onChange={(newValue) => handleChange(fieldKey, format(new Date(newValue), 'yyyy-MM-dd'), baseKey)}
+                            InputProps={{
+                                style: {
+                                    fontSize: 14,
+                                    height: 30,
+                                },
+                            }}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    inputProps={{
+                                        ...params.inputProps,
+                                        placeholder: fieldData.label,
+                                    }}
+                                    fullWidth
+                                />
+                            )}
+                            label={fieldData.label}
+                            required={fieldData.required?.includes(fieldKey)}
+                        />
+                    );
+                case 'radiobutton':
+                    return (
+                        <CommonRadio
+                            className={style.leftAlign}
+                            value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)}
+                            onChange={(e) => handleChange(fieldKey, e.target.value, baseKey)}
+                            radioValue={fieldData.enum}
+                            label={fieldData.enum}
+                        />
+                    );
+                case 'switchbutton':
+                    return (
+                        <CommonSwitch label={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === true ? 'YES' : 'NO'} checked={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)} onChange={(e) => handleChange(fieldKey, e.target.checked, baseKey)} labelName={fieldData.label} />
+                    );
+                case 'checkbox':
+                    return (
+                        <div className={`${style.siteDisplayCard} ${style.siteDisplayGrid} ${style.verticalAlignCenter}`}>
+                            <CommonCheckBox
+                                checked={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)}
+                                onChange={(e) => handleChange(fieldKey, e.target.checked, baseKey)}
                             />
-                        )}
-                        label={fieldData.label}
-                        required={fieldData.required?.includes(fieldKey)}
-                    />
-                );
-            case 'radiobutton':
-                return (
-                    <CommonRadio
-                        className={style.leftAlign}
-                        value={getValueByPath(basicForm, baseKey)}
-                        onChange={(e) => handleChange(fieldKey, e.target.value, baseKey)}
-                        radioValue={fieldData.enum}
-                        label={fieldData.enum}
-                    />
-                );
-            case 'switchbutton':
-                return (
-                    <CommonSwitch label={getValueByPath(basicForm, `${baseKey}.${fieldKey}`) === true ? 'YES' : 'NO'} checked={getValueByPath(basicForm, `${baseKey}.${fieldKey}`)} onChange={(e) => handleChange(fieldKey, e.target.checked, baseKey)} labelName={fieldData.label} />
-                );
-            case 'checkbox':
-                return (
-                    <CommonSwitch label={getValueByPath(basicForm, `${baseKey}.${fieldKey}`) === true ? 'YES' : 'NO'} checked={getValueByPath(basicForm, `${baseKey}.${fieldKey}`)} onChange={(e) => handleChange(fieldKey, e.target.checked, baseKey)} labelName={fieldData.label} />
-                );
-            default:
-                return <div key={fieldKey}></div>;
+                            <div>
+                                <div className={style.siteDisplaySiteTextStyle}>Cambridge Memorial Hospital </div>
+                                <div className={style.siteDisplayDepartmentTextStyle}>Department of Surgery (Cardiothoracic Surgery)</div>
+                            </div>
+                        </div>
+                    );
+                case 'fileupload':
+                    return (
+                        <div>
+                            <div className={`${style.uploadButton} ${style.uploadGrid} ${style.verticalAlignCenter}`}>
+                                <DescriptionOutlinedIcon sx={{ color: '#787f87' }} />
+                                <label for={`file-upload-dynamic-${fieldKey}`} className={`${style.uploadText} `}>
+                                    {fieldData.label}
+                                </label>
+                            </div>
+                            <input id={`file-upload-dynamic-${fieldKey}`} type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx" onChange={(e) => { handleChange(fieldKey, e.target.files[0], baseKey) }} />
+                        </div>
+                    );
+                default:
+                    return <div key={fieldKey}></div>;
+            }
         }
     };
 
     const renderObjectFields = (object) => {
         if (object?.properties) {
             return Object.entries(object.properties).map(([key, data]) => {
-                if (data.type === 'object' && data.properties) {
+                if (data.type === 'object' && data.properties && data.fieldType === null) {
+                    console.log('entered')
                     // console.log(getValueByPath(basicForm, `${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`), 'value if', Object.entries(object?.if?.properties)?.map(([key, data]) => data)[0]?.const)
-
                     if (object?.if === null) {
                         return Object.entries(data.properties).map(([innerKey, innerData]) => {
                             return renderField(innerKey, innerData, `${baseKey}.${key}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
@@ -215,6 +244,8 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                     return Object.entries(data.items.properties).map(([innerKey, innerData]) => {
                         return renderField(innerKey, innerData, `${baseKey}.${key}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
                     });
+                } else if (data.type === 'object' && data.properties && data.fieldType !== null) {
+                    return renderField(key, data, baseKey, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
                 } else {
                     return renderField(key, data, baseKey, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
                 }
@@ -255,416 +286,13 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
         return path.split('.').reduce((acc, part) => acc && acc[part], basicForm);
     };
 
-    console.log(object, Object.entries(object?.properties)?.map(([data, details]) => data), Object.entries(object?.properties)?.map(([data, details]) => details?.properties !== null && details?.properties !== undefined && Object.entries(details?.properties)?.map(([innerKey, innerData]) => innerData?.label)),
-        getValueByPath(basicForm, `${'applicant'}.${"name"}.${'firstName'}`))
+    // console.log(object, Object.entries(object?.properties)?.map(([data, details]) => data), Object.entries(object?.properties)?.map(([data, details]) => details?.properties !== null && details?.properties !== undefined && Object.entries(details?.properties)?.map(([innerKey, innerData]) => innerData?.label)),
+    //     getValueByPath(basicForm, `${'applicant'}.${"name"}.${'firstName'}`))
     console.log(basicForm)
     return (
-        <div className={`${style.backgroundCard} ${style.marginTop}`}>
+        <div className={`${window.location.pathname.includes('applicationForm') ? '' : style.backgroundCard} ${style.marginTop}`}>
             <div className={style.cardTitle}>{object?.label}</div>
             <div className={`${gridStyle} ${object?.label !== null ? style.marginTop : ''}`}>
-                {/* {object?.properties !== undefined && object?.properties !== null && Object.entries(object?.properties)?.map(([key, data]) =>
-                    data?.type === 'object' ?
-                        data?.properties !== undefined && data?.properties !== null && Object.entries(data?.properties)?.map(([innerKey, innerData]) =>
-                            // innerData?.type === 'string' ?
-                            innerData?.fieldType !== null && innerData?.fieldType === 'dropdown' ? (
-                                <CommonSelectField
-                                    value={getValueByPath(basicForm, `${baseKey}.${key}.${innerKey}`)}
-                                    onChange={(e) => {
-                                        handleChange(innerKey, e.target.value, key);
-                                    }}
-                                    className={`${style.fullWidth}`}
-                                    firstOptionLabel={`${innerData?.label}`}
-                                    firstOptionValue={`${innerData?.label}`}
-                                    valueList={innerData?.enum}
-                                    labelList={innerData?.enum}
-                                    disabledList={innerData?.enum?.map(data => false)}
-                                    label={innerData?.label}
-                                    required={data?.required?.includes(innerKey)}
-                                />
-                            ) : innerData?.fieldType !== null && innerData?.fieldType === 'textbox' ? (
-                                <CommonInputField
-                                    value={getValueByPath(basicForm, `${baseKey}.${key}.${innerKey}`)}
-                                    className={style.fullWidth}
-                                    onChange={(e) => {
-                                        handleChange(innerKey, e.target.value, key);
-                                    }}
-                                    maxLength={TEXTFIELDLEN50}
-                                    placeholder={innerData?.label}
-                                    label={innerData?.label}
-                                    required={data?.required?.includes(innerKey)}
-                                />
-                            ) : innerData?.fieldType !== null && innerData?.fieldType === 'cellNumber' ? (
-                                <CommonPhoneField
-                                    value={getValueByPath(basicForm, `${baseKey}.${key}.${innerKey}`)}
-                                    className={style.fullWidth}
-                                    onChange={(e) => {
-                                        handleChange(innerKey, FormatPhoneNumber(e.target.value), key);
-                                    }}
-                                    placeholder={innerData?.label}
-                                    label={innerData?.label}
-                                    required={data?.required?.includes(innerKey)}
-                                />
-                            ) : innerData?.fieldType !== null && innerData?.fieldType === 'datepicker' ? (
-                                <CommonDateField
-                                    className={style.fullWidth}
-                                    open={calendarStart}
-                                    onOpen={() => setCalendarStart(true)}
-                                    onClose={() => setCalendarStart(false)}
-                                    minDate={sub(new Date(), { years: 3 })}
-                                    maxDate={add(new Date(), { months: 6 })}
-                                    value={getValueByPath(basicForm, `${baseKey}.${key}.${innerKey}`)}
-                                    onChange={(newValue) => handleChange(innerKey, newValue, key)}
-                                    InputProps={{
-                                        style: {
-                                            fontSize: 14,
-                                            height: 30,
-                                        },
-                                    }}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            // onClick={() => setCalendarStart(true)}
-                                            inputProps={{
-                                                ...params.inputProps,
-                                                placeholder: `${innerData?.label}`,
-                                            }}
-                                            fullWidth
-                                        />
-                                    )}
-                                    label={innerData?.label}
-                                    required={innerData?.required?.includes(innerKey)}
-                                />
-                            ) : (
-                                <div></div>
-                            )
-                            // : (
-                            //     <div></div>
-                            // )
-                        )
-                        : data?.type === 'string' ?
-                            data?.fieldType !== null && data?.fieldType === 'dropdown' ? (
-                                <CommonSelectField
-                                    value={getValueByPath(basicForm, `${baseKey}.${key}`)}
-                                    onChange={(e) => {
-                                        handleChange(key, e.target.value);
-                                    }}
-                                    className={`${style.fullWidth}`}
-                                    firstOptionLabel={`${data?.label}`}
-                                    firstOptionValue={`${data?.label}`}
-                                    valueList={data?.enum}
-                                    labelList={data?.enum}
-                                    disabledList={data?.enum?.map(data => false)}
-                                    label={data?.label}
-                                    required={data?.required?.includes(key)}
-                                />
-                            ) : data?.fieldType !== null && data?.fieldType === 'textbox' ? (
-                                <CommonInputField
-                                    value={getValueByPath(basicForm, `${baseKey}.${key}`)}
-                                    className={style.fullWidth}
-                                    onChange={(e) => {
-                                        handleChange(key, e.target.value);
-                                    }}
-                                    maxLength={TEXTFIELDLEN50}
-                                    placeholder={data?.label}
-                                    label={data?.label}
-                                    required={data?.required?.includes(key)}
-                                />
-                            ) : data?.fieldType !== null && data?.fieldType === 'cellNumber' ? (
-                                <CommonPhoneField
-                                    value={getValueByPath(basicForm, `${baseKey}.${key}`)}
-                                    className={style.fullWidth}
-                                    onChange={(e) => {
-                                        handleChange(key, FormatPhoneNumber(e.target.value));
-                                    }}
-                                    placeholder={data?.label}
-                                    label={data?.label}
-                                    required={data?.required?.includes(key)}
-                                />
-                            ) : data?.fieldType !== null && data?.fieldType === 'datepicker' ? (
-                                <CommonDateField
-                                    className={style.fullWidth}
-                                    open={calendarStart}
-                                    onOpen={() => setCalendarStart(true)}
-                                    onClose={() => setCalendarStart(false)}
-                                    minDate={sub(new Date(), { years: 3 })}
-                                    maxDate={add(new Date(), { months: 6 })}
-                                    // value={contractTermPeriodFrom}
-                                    onChange={(newValue) => handleChange(key, newValue)}
-                                    InputProps={{
-                                        style: {
-                                            fontSize: 14,
-                                            height: 30,
-                                        },
-                                    }}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            // onClick={() => setCalendarStart(true)}
-                                            inputProps={{
-                                                ...params.inputProps,
-                                                placeholder: `${data?.label}`,
-                                            }}
-                                            fullWidth
-                                        />
-                                    )}
-                                    label={data?.label}
-                                    required={data?.required?.includes(key)}
-                                />
-                            ) : (
-                                <div></div>
-                            )
-                            : (
-                                <></>
-                            )
-                )} */}
-                {/* {object?.properties !== undefined && object?.properties !== null && Object.entries(object?.properties)?.map(([key, data]) =>
-                    data?.type === 'object' ?
-                        data?.properties !== undefined && data?.properties !== null && Object.entries(data?.properties)?.map(([innerKey, innerData]) =>
-                            // innerData?.type === 'string' ?
-                            innerData?.fieldType !== null && innerData?.fieldType === 'dropdown' ? (
-                                <CommonSelectField
-                                    value={getValueByPath(basicForm, `${baseKey}.${key}.${innerKey}`)}
-                                    onChange={(e) => {
-                                        handleChange(innerKey, e.target.value, key);
-                                    }}
-                                    className={`${style.fullWidth}`}
-                                    firstOptionLabel={`${innerData?.label}`}
-                                    firstOptionValue={`${innerData?.label}`}
-                                    valueList={innerData?.enum}
-                                    labelList={innerData?.enum}
-                                    disabledList={innerData?.enum?.map(data => false)}
-                                    label={innerData?.label}
-                                    required={data?.required?.includes(innerKey)}
-                                />
-                            ) : innerData?.fieldType !== null && innerData?.fieldType === 'textbox' ? (
-                                <CommonInputField
-                                    value={getValueByPath(basicForm, `${baseKey}.${key}.${innerKey}`)}
-                                    className={style.fullWidth}
-                                    onChange={(e) => {
-                                        handleChange(innerKey, e.target.value, key);
-                                    }}
-                                    maxLength={TEXTFIELDLEN50}
-                                    placeholder={innerData?.label}
-                                    label={innerData?.label}
-                                    required={data?.required?.includes(innerKey)}
-                                />
-                            ) : innerData?.fieldType !== null && innerData?.fieldType === 'cellNumber' ? (
-                                <CommonPhoneField
-                                    value={getValueByPath(basicForm, `${baseKey}.${key}.${innerKey}`)}
-                                    className={style.fullWidth}
-                                    onChange={(e) => {
-                                        handleChange(innerKey, FormatPhoneNumber(e.target.value), key);
-                                    }}
-                                    placeholder={innerData?.label}
-                                    label={innerData?.label}
-                                    required={data?.required?.includes(innerKey)}
-                                />
-                            ) : innerData?.fieldType !== null && innerData?.fieldType === 'datepicker' ? (
-                                <CommonDateField
-                                    className={style.fullWidth}
-                                    open={calendarStart}
-                                    onOpen={() => setCalendarStart(true)}
-                                    onClose={() => setCalendarStart(false)}
-                                    minDate={sub(new Date(), { years: 3 })}
-                                    maxDate={add(new Date(), { months: 6 })}
-                                    value={getValueByPath(basicForm, `${baseKey}.${key}.${innerKey}`)}
-                                    onChange={(newValue) => handleChange(innerKey, newValue, key)}
-                                    InputProps={{
-                                        style: {
-                                            fontSize: 14,
-                                            height: 30,
-                                        },
-                                    }}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            // onClick={() => setCalendarStart(true)}
-                                            inputProps={{
-                                                ...params.inputProps,
-                                                placeholder: `${innerData?.label}`,
-                                            }}
-                                            fullWidth
-                                        />
-                                    )}
-                                    label={innerData?.label}
-                                    required={innerData?.required?.includes(innerKey)}
-                                />
-                            ) : innerData?.fieldType !== null && innerData?.fieldType === 'radiobutton' ? (
-                                <CommonRadio
-                                    className={`${style.leftAlign}`}
-                                    value={getValueByPath(basicForm, `${baseKey}.${key}.${innerKey}`)}
-                                    onChange={(e) => handleChange(innerKey, e.target.value, key)}
-                                    radioValue={innerData?.enum}
-                                    label={innerData?.enum}
-                                />
-                            ) : (
-                                <div></div>
-                            )
-                            // : (
-                            //     <div></div>
-                            // )
-                        ) : data?.type === 'array' ?
-                            data?.items !== undefined && data?.items !== null && Object.entries(data?.items?.properties)?.map(([innerKey, innerData]) =>
-                                // innerData?.type === 'string' ?
-                                innerData?.fieldType !== null && innerData?.fieldType === 'dropdown' ? (
-                                    <CommonSelectField
-                                        value={getValueByPath(basicForm, `${baseKey}.${key}.${innerKey}`)}
-                                        onChange={(e) => {
-                                            handleChange(innerKey, e.target.value, key);
-                                        }}
-                                        className={`${style.fullWidth}`}
-                                        firstOptionLabel={`${innerData?.label}`}
-                                        firstOptionValue={`${innerData?.label}`}
-                                        valueList={innerData?.enum}
-                                        labelList={innerData?.enum}
-                                        disabledList={innerData?.enum?.map(data => false)}
-                                        label={innerData?.label}
-                                        required={data?.required?.includes(innerKey)}
-                                    />
-                                ) : innerData?.fieldType !== null && innerData?.fieldType === 'textbox' ? (
-                                    <CommonInputField
-                                        value={getValueByPath(basicForm, `${baseKey}.${key}.${innerKey}`)}
-                                        className={style.fullWidth}
-                                        onChange={(e) => {
-                                            handleChange(innerKey, e.target.value, key);
-                                        }}
-                                        maxLength={TEXTFIELDLEN50}
-                                        placeholder={innerData?.label}
-                                        label={innerData?.label}
-                                        required={data?.required?.includes(innerKey)}
-                                    />
-                                ) : innerData?.fieldType !== null && innerData?.fieldType === 'cellNumber' ? (
-                                    <CommonPhoneField
-                                        value={getValueByPath(basicForm, `${baseKey}.${key}.${innerKey}`)}
-                                        className={style.fullWidth}
-                                        onChange={(e) => {
-                                            handleChange(innerKey, FormatPhoneNumber(e.target.value), key);
-                                        }}
-                                        placeholder={innerData?.label}
-                                        label={innerData?.label}
-                                        required={data?.required?.includes(innerKey)}
-                                    />
-                                ) : innerData?.fieldType !== null && innerData?.fieldType === 'datepicker' ? (
-                                    <CommonDateField
-                                        className={style.fullWidth}
-                                        open={calendarStart}
-                                        onOpen={() => setCalendarStart(true)}
-                                        onClose={() => setCalendarStart(false)}
-                                        minDate={sub(new Date(), { years: 3 })}
-                                        maxDate={add(new Date(), { months: 6 })}
-                                        value={getValueByPath(basicForm, `${baseKey}.${key}.${innerKey}`)}
-                                        onChange={(newValue) => handleChange(innerKey, newValue, key)}
-                                        InputProps={{
-                                            style: {
-                                                fontSize: 14,
-                                                height: 30,
-                                            },
-                                        }}
-                                        renderInput={(params) => (
-                                            <TextField
-                                                {...params}
-                                                // onClick={() => setCalendarStart(true)}
-                                                inputProps={{
-                                                    ...params.inputProps,
-                                                    placeholder: `${innerData?.label}`,
-                                                }}
-                                                fullWidth
-                                            />
-                                        )}
-                                        label={innerData?.label}
-                                        required={innerData?.required?.includes(innerKey)}
-                                    />
-                                ) : (
-                                    <div></div>
-                                )
-                                // : (
-                                //     <div></div>
-                                // )
-                            )
-                            : data?.type === 'string' ?
-                                data?.fieldType !== null && data?.fieldType === 'dropdown' ? (
-                                    <CommonSelectField
-                                        value={getValueByPath(basicForm, `${baseKey}.${key}`)}
-                                        onChange={(e) => {
-                                            handleChange(key, e.target.value);
-                                        }}
-                                        className={`${style.fullWidth}`}
-                                        firstOptionLabel={`${data?.label}`}
-                                        firstOptionValue={`${data?.label}`}
-                                        valueList={data?.enum}
-                                        labelList={data?.enum}
-                                        disabledList={data?.enum?.map(data => false)}
-                                        label={data?.label}
-                                        required={data?.required?.includes(key)}
-                                    />
-                                ) : data?.fieldType !== null && data?.fieldType === 'textbox' ? (
-                                    <CommonInputField
-                                        value={getValueByPath(basicForm, `${baseKey}.${key}`)}
-                                        className={style.fullWidth}
-                                        onChange={(e) => {
-                                            handleChange(key, e.target.value);
-                                        }}
-                                        maxLength={TEXTFIELDLEN50}
-                                        placeholder={data?.label}
-                                        label={data?.label}
-                                        required={data?.required?.includes(key)}
-                                    />
-                                ) : data?.fieldType !== null && data?.fieldType === 'cellNumber' ? (
-                                    <CommonPhoneField
-                                        value={getValueByPath(basicForm, `${baseKey}.${key}`)}
-                                        className={style.fullWidth}
-                                        onChange={(e) => {
-                                            handleChange(key, FormatPhoneNumber(e.target.value));
-                                        }}
-                                        placeholder={data?.label}
-                                        label={data?.label}
-                                        required={data?.required?.includes(key)}
-                                    />
-                                ) : data?.fieldType !== null && data?.fieldType === 'datepicker' ? (
-                                    <CommonDateField
-                                        className={style.fullWidth}
-                                        open={calendarStart}
-                                        onOpen={() => setCalendarStart(true)}
-                                        onClose={() => setCalendarStart(false)}
-                                        minDate={sub(new Date(), { years: 3 })}
-                                        maxDate={add(new Date(), { months: 6 })}
-                                        value={getValueByPath(basicForm, `${baseKey}.${key}`)}
-                                        onChange={(newValue) => handleChange(key, newValue)}
-                                        InputProps={{
-                                            style: {
-                                                fontSize: 14,
-                                                height: 30,
-                                            },
-                                        }}
-                                        renderInput={(params) => (
-                                            <TextField
-                                                {...params}
-                                                // onClick={() => setCalendarStart(true)}
-                                                inputProps={{
-                                                    ...params.inputProps,
-                                                    placeholder: `${data?.label}`,
-                                                }}
-                                                fullWidth
-                                            />
-                                        )}
-                                        label={data?.label}
-                                        required={data?.required?.includes(key)}
-                                    />
-                                ) : data?.fieldType !== null && data?.fieldType === 'radiobutton' ? (
-                                    <CommonRadio
-                                        className={`${style.leftAlign}`}
-                                        value={getValueByPath(basicForm, `${baseKey}.${key}`)}
-                                        onChange={(e) => handleChange(key, e.target.value)}
-                                        radioValue={data?.enum}
-                                        label={data?.enum}
-                                    />
-                                ) : (
-                                    <div></div>
-                                )
-                                : (
-                                    <></>
-                                )
-                )} */}
                 {renderObjectFields(object)}
             </div>
             {showAdd && (

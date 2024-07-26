@@ -38,9 +38,11 @@ import style from './index.module.scss';
 import SideBar from '../../Components/Sidebar';
 import ProgressBar from "@ramonak/react-progress-bar";
 import ApplicationRejection from './applicationRejectionDialog';
+import { useNavigate } from 'react-router-dom';
 
 const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog, contracts, getSelectedContract, getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page, getActiveContractView, getFilterValues, getHandleSort, sortValue, getTabFilter, getActiveApplicationView }) => {
   const PDFRef = createRef();
+  const navigate = useNavigate();
   const componentRef = useRef(null);
   const filterRef = useRef();
   const [requestAppointment, setRequestAppointment] = useState(true);
@@ -628,7 +630,7 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
         <div>
           <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
             <div className={`${style.addStyle}  ${style.applicationButton} ${style.spaceBetween} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`} >
-              <div className={`${style.displayInRow} ${style.marginLeftRight10} `} >
+              <div className={`${style.displayInRow} ${style.marginLeftRight10} `} onClick={() => navigate('/createStaffMemberApplication')}>
                 CREATE NEW APPLICATION
               </div>
               <div className={`${style.displayInRow} ${style.marginLeft20} `} >
