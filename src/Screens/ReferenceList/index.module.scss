@@ -585,6 +585,33 @@
   cursor: pointer;
 }
 
+.headerFlag {
+  width: 50px;
+  height: 30px;
+  background: transparent 0% 0% no-repeat padding-box;
+  border: 1px solid #7165e3;
+  opacity: 1;
+}
+
+.headerCountryName {
+  width: 45px;
+  height: 20px;
+  text-align: left;
+  font: normal normal 600 20px/41px Proxima Nova;
+  letter-spacing: 2.3px;
+  color: #52575d;
+  text-transform: uppercase;
+  opacity: 1;
+  margin-top: -2px;
+}
+
+.headerArrow {
+  width: 25px;
+  height: 15px;
+  opacity: 1;
+  cursor: pointer;
+}
+
 .industriesEntityCardStyle {
   max-height: calc(100vh - 250px);
   width: 56vw;
@@ -595,10 +622,31 @@
   padding: 5px;
 }
 
+.countryCardStyle {
+  max-height: calc(100vh - 250px);
+  width: 75vw;
+  overflow: scroll;
+  box-shadow: 0px 3px 6px #00000029;
+  border: 0.20000000298023224px solid #d9d9d9;
+  border-radius: 10px;
+  padding: 5px;
+}
+
+.tableHeaderCountryList {
+  background: #afa9ef 0% 0% no-repeat padding-box;
+  font-weight: medium;
+  height: 55px;
+  width: 100%;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 30% 20% 20% 15% 10% 5%;
+}
+
 .tableHeaderIndustriesEntity {
   background: #afa9ef 0% 0% no-repeat padding-box;
   font-weight: medium;
-  //margin-left: 50px;
   height: 55px;
   width: 100%;
   border-radius: 6px;
@@ -606,7 +654,6 @@
   align-items: center;
   display: grid;
   grid-template-columns: 55% 15% 15% 10% 10%;
-  // 60% 20% 10% 5% 5%
 }
 
 .tableHeaderSuffixByIndustries {
@@ -729,6 +776,19 @@
   margin-left: 10px;
 }
 
+.stateListHeader {
+  background: #d3d0f6 0% 0% no-repeat padding-box;
+  font-weight: normal;
+  min-height: 50px;
+  width: 100%;
+  border-radius: 6px;
+  margin-top: 2px;
+  align-items: center;
+  display: flex;
+  display: grid;
+  grid-template-columns: 5% 25% 20% 18% 10% 10% 6% 6%;
+}
+
 .healthCareIndustriesHeader {
   background: #d3d0f6 0% 0% no-repeat padding-box;
   font-weight: normal;
@@ -805,6 +865,18 @@
   display: flex;
   display: grid;
   grid-template-columns: 3% 88% 5% 5%;
+}
+
+.countryTableData {
+  background: #f5f5f8 0% 0% no-repeat padding-box;
+  min-height: 50px;
+  width: 98%;
+  margin-left: 2%;
+  border-radius: 6px;
+  display: grid;
+  align-items: center;
+  margin-top: 5px;
+  grid-template-columns: 30% 16% 15% 15% 12% 6% 6%;
 }
 
 .healthCareTableData {
@@ -1399,6 +1471,22 @@
   grid-gap: 20px;
 }
 
+.countryGridInput {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  grid-gap: 20px;
+}
+
+.countryGrid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 20px;
+}
+
+.countryDisplayTable {
+  display: inline-block;
+}
+
 .editHealthCareGrid3 {
   display: grid;
   grid-template-columns: 14% 50%;
@@ -1440,7 +1528,11 @@
 }
 
 .width150 {
-  width: 120%;
+  width: 120% !important;
+}
+
+.width140 {
+  width: 140% !important;
 }
 
 .width25 {
@@ -1453,6 +1545,20 @@
 
 .floatRight {
   float: right;
+}
+
+.customFileUpload {
+  cursor: pointer;
+  width: 70px;
+  height: 50px;
+  padding: 5px 10px;
+  font-size: 14px;
+  line-height: 1.25;
+  background-color: #f1f2f3;
+  color: #7165e3;
+  border: none;
+  position: relative;
+  top: 7px;
 }
 
 .outlinedButton {
@@ -2625,7 +2731,7 @@
 
 .stateTextStyle {
   position: absolute;
-  top: 120px;
+  top: 80px;
 }
 
 .positionAbsolute {
@@ -2742,6 +2848,10 @@
 .inputBoxStyle {
   display: flex;
   gap: 10%;
+}
+
+.textAlignRight {
+  text-align: right;
 }
 
 .labelTextAlignCenter {

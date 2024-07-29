@@ -2,7 +2,7 @@ import React, { Fragment, useState } from "react";
 import { Link } from 'react-router-dom';
 import Navbar from '../../Components/Navbar';
 import SideBar from "../../Components/Sidebar";
-import { Icon, Intent } from "@blueprintjs/core";
+import { Dialog, Classes, Icon, Intent, InputGroup, RadioGroup, Radio } from '@blueprintjs/core';
 import style from './index.module.scss';
 import AddNewEntity from './../../images/addEntity.png';
 import AddRefresh from './../../images/refreshEntity.png';
@@ -48,8 +48,8 @@ const ContractDocumentTypeForUpload = () => {
                             <div className={style.centreCardStyle}>
                                 <div className={style.margin20}>
                                     <div className={style.departmentCardColumnsGrid}>
-                                        <Titlebar/>
-                                        
+                                        <Titlebar />
+
                                         {/* <div className={style.displayInCol}>
                                             <div className={`${style.industriesCardStyle} ${style.selectedIndustriesBackground}`}>
                                                 <div className={style.spaceBetween}>
