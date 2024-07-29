@@ -1,26 +1,12 @@
 @import '../../styles/mixins.scss';
 
 .cardStyle {
-    height: 50px;
+    height: 115px;
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 10px 20px #C4C8D066;
-    border-radius: 5px;
+    border-radius: 10px;
     opacity: 1;
     cursor: pointer;
-    padding: 10px;
-}
-
-.applicationCardStyle {
-    height: 50px;
-    opacity: 1;
-    cursor: pointer;
-    padding: 10px;
-    background: #FFFFFF 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 15px #52575D1A;
-    border-radius: 4px 4px 0px 0px;
-}
-
-.padding10 {
     padding: 10px;
 }
 
@@ -36,25 +22,17 @@
     margin-top: -5px;
 }
 
-.selectedContractBackground {
-    background-color: #7165E3;
-    border: 0.4px solid #7165E3;
-    border-radius: 0.4px;
-    border-radius: 4px 4px 0px 0px;
-}
-
-.selectedApplicationText {
-    text-align: left;
-    font: normal normal bold 16px/20px Proxima Nova;
-    letter-spacing: 0px;
-    color: #F5F9FD;
+.selectedApplicantBackground {
+    background-color: #e8e7fe;
+    border: 1px solid #d1cefd;
 }
 
 .headingForContracts {
-    font: normal normal bold 16px/20px Proxima Nova !important;
+    font: normal normal bolder 15px/20px Proxima Nova !important;
     letter-spacing: 0px;
     text-align: left;
     color: #52575D;
+    text-transform: uppercase;
     opacity: 1;
 
     @include breakpoint(md) {
@@ -77,14 +55,6 @@
 .grid2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
-}
-
-.selectedApplicantBackground {
-    background: #7165E3 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 11px #52575D1A;
-    border: 0.4000000059604645px solid #7165E3;
-    border-radius: 4px 4px 0px 0px;
-    opacity: 1;
 }
 
 .displayInCol {
@@ -174,12 +144,12 @@
     margin: -3px 0px 0 0px;
     text-align: left;
     float: right !important;
-    font: normal normal bold 12px/12px Proxima Nova;
+    font: normal normal bold 12px/12px Montserrat;
     color: #52575D;
 
     span {
         @include breakpoint(md) {
-            font: normal normal bold 10px/12px Proxima Nova !important;
+            font: normal normal bold 10px/12px Montserrat !important;
         }
     }
 }
@@ -191,12 +161,12 @@
 .descriptionText {
     text-align: left;
     float: right !important;
-    font: normal normal bold 10px/12px Proxima Nova;
+    font: normal normal bold 10px/12px Montserrat;
     color: #52575D;
 
     span {
         @include breakpoint(md) {
-            font: normal normal bold 10px/12px Proxima Nova !important;
+            font: normal normal bold 10px/12px Montserrat !important;
         }
     }
 }
@@ -238,13 +208,6 @@
     justify-content: flex-end;
 }
 
-.alignCenter {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-}
-
 .displayInGrid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -267,59 +230,4 @@
 .clickableText:hover {
     color: darkblue;
     text-decoration: underline;
-}
-
-.justifyCenter {
-    display: flex;
-    justify-content: center;
-}
-
-.marginAuto {
-    margin: auto;
-}
-
-.displayInRow {
-    display: flex;
-    flex-direction: row;
-}
-
-/**
- * Tabs
- */
-.tabs {
-    display: flex;
-    flex-wrap: wrap; // make sure it wraps
-}
-
-.tabs label {
-    order: 1; // Put the labels first
-    display: block;
-    padding: 1rem 2rem;
-    margin-right: 0.2rem;
-    cursor: pointer;
-    background: #90CAF9;
-    font-weight: bold;
-    transition: background ease 0.2s;
-    text-align: left;
-}
-
-.tabs .tab {
-    order: 99; // Put the tabs last
-    flex-grow: 1;
-    width: 100%;
-    display: none;
-    padding: 1rem;
-    background: #fff;
-}
-
-.tabs input[type="radio"] {
-    display: none;
-}
-
-.tabs input[type="radio"]:checked+label {
-    background: #fff;
-}
-
-.tabs input[type="radio"]:checked+label+.tab {
-    display: block;
 }

@@ -1,37 +1,16 @@
 import React, { useState, useEffect, createRef, useCallback, useRef } from 'react';
-import DownloadLight from './../../images/downloadLightColor.png';
-import Download from '../../images/download.png'
-import PrintIcon from './../../images/printIcon.png';
-import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
-import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
-import DownloadIcon from '@mui/icons-material/Download';
-import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 import NoteAltOutlinedIcon from '@mui/icons-material/NoteAltOutlined';
-import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
-import Popover from '@mui/material/Popover';
-import GreenPage from './../../images/greenPage.png';
 import TimeSmartLogo from './../../images/timeSmartAI-logo-withoutbg.png';
 import StaffApplicationTiles from './staffApplicationTiles';
-import SearchBar from '../../Components/SearchBar';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
-import { GET, PUT, POST, TenantID } from '../dataSaver';
-import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import CircularProgress from "@mui/material/CircularProgress";
-import { SuccessToaster, ErrorToaster } from '../../utils/toaster';
-import { currentUser } from '../../utils/auth';
 import { format } from 'date-fns';
 import TableTwo from '../../Components/TableDesignTwo';
-import LeftStatsCard from '../../Components/LeftStatsCard';
-import LoadingScreen from '../../Components/LoadingScreen';
-import { toPDF } from '../../Components/ConvertToPdf';
-import { useReactToPrint } from "react-to-print";
-import CloseIcon from '@mui/icons-material/Close';
 import PublicIcon from '@mui/icons-material/Public';
 import PermIdentityIcon from '@mui/icons-material/PermIdentity';
 import style from './index.module.scss';
@@ -40,11 +19,10 @@ import ProgressBar from "@ramonak/react-progress-bar";
 import ApplicationRejection from './applicationRejectionDialog';
 import { useNavigate } from 'react-router-dom';
 
-const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog, contracts, getSelectedContract, getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page, getActiveContractView, getFilterValues, getHandleSort, sortValue, getTabFilter, getActiveApplicationView }) => {
+const StaffApplicationList = ({ isLoading, getSelectedApplicant, selectedApplicant, getActiveApplicationView }) => {
   const PDFRef = createRef();
   const navigate = useNavigate();
   const componentRef = useRef(null);
-  const filterRef = useRef();
   const [requestAppointment, setRequestAppointment] = useState(true);
   const [sentCompletion, setSentCompletion] = useState(true);
   const [applicationRejected, setApplicationRejected] = useState(true);
@@ -141,11 +119,6 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
     }
   ]
 
-  const reactToPrintContent = useCallback(() => {
-    return componentRef.current;
-  }, [componentRef.current]);
-  const [selectedContractId, setSelectedContractId] = useState();
-
   const applicantHeaderValues = ["", "Applicant Name & ID", "Applicant Type", "Docs", "Data", "Disclosures", "CRs", "Notes", "Last Updated", "Cap Manager", ""];
   const applicationHeaderValues = ["", "Applicant Name", "Applicant Type", "Department", "Commitee", "Board", "CEO", "Last Updated On", "Last Updated by", ""];
   const clarificationHeaderValues = ["", "Applicant Name", "Type", "Clarification Title", "Raised By", "Created On", "Last Updated On", ""];
@@ -157,216 +130,16 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
   const approvedColSortValues = [false, false, false, false, false, false, false, false, false];
 
   const [isPrintClicked, setIsPrintClicked] = useState(false);
-  const [isDownloadClicked, setIsDownloadClicked] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
-  const [isMyContract, setIsMyContract] = useState(true);
-  const [isDraft, setIsDraft] = useState(true);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [showPreImplementationDialog, setShowPreImplementationDialog] = useState(false);
   const [showApplicationRejectionDialog, setShowApplicationRejectionDialog] = useState(false);
-  const [showReviewAndApprovalStatusSummaryDialog, setShowReviewAndApprovalStatusSummaryDialog] = useState(false);
-  const open = Boolean(anchorEl);
-  const id = open ? 'simple-popover' : undefined;
-  const currentUserData = currentUser();
-  const [selectedContractPreImplementationData, setSelectedContractPreImplementationData] = useState();
-  const [metadata, setMetadata] = useState();
-  const [CSPSubDomain, setCSPSubDomain] = useState("");
-  let contractFiltersFromSession = sessionStorage.getItem('contractFilters')
-  const [contractFilterValues, setContractFilterValues] = useState(contractFiltersFromSession);
-  console.log(contractFilterValues, 'filter')
-  let bottomTextNumber = sessionStorage.getItem('bottomFilter')
-  const compensationPolicyAvailableValues = {
-    ACTIVITY_BASED: 'Activity Based',
-    FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITH_OFFSET: 'Fixed Amount For Timesheet Period With Offset',
-    SHIFT_OR_PER_DAY_BASED: 'Shift Or Per Day Based',
-    FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET: 'Fixed Amount For Timesheet Period Without Offset'
-  }
-
-  const contractPolicyTypeAvailableValues = {
-    NEWCONTRACTONEXPIRATION: 'New Contract Expiration',
-    ONETIMECONTRACTTERMINATEONEXPIRATION: 'One Time Contract Termination Expiration',
-    WRITTENCONTRACTEXTENSIONFORFIXEDTERM: 'Written Contract Extension For Fixed Term',
-    AUTORENEWAL: 'Auto Renewal'
-  }
-  console.log(contractFilterValues)
-  useEffect(() => {
-    getContractsMetadata();
-    getEntityData();
-    sessionStorage.removeItem('Selected Contract Status')
-  }, []);
-
-  useEffect(() => {
-    getContractsMetadata();
-  }, [bottomTextNumber]);
-
-  useEffect(() => {
-    console.log(JSON.parse(contractFiltersFromSession), 'contractFilter')
-    setContractFilterValues(JSON.parse(contractFiltersFromSession))
-  }, [contractFiltersFromSession])
-
-  const activateContracts = async (data, userData) => {
-    setSelectedContractId(data?.id);
-    let status = userData?.filter(data => !data?.ssoId?.id?.includes(`@${CSPSubDomain}`))?.length === 0 ? 'ACTIVE' : 'ACTIVATION_READY';
-    let activationData = {
-      "contractActivation": {
-        "activationNotes": {
-          "notes": ""
-        },
-        "activatedBy": {
-          "id": currentUserData?.id,
-          "name": {
-            "firstName": currentUserData?.firstName,
-            "lastName": currentUserData?.lastName
-          },
-          "email": {
-            "officialEmail": currentUserData?.email
-          }
-        }
-      }
-    }
-    await PUT(`contract-managment-service/contracts/${data?.id}/contractStatus/${status}`, activationData)
-      .then(response => {
-        SuccessToaster('Contract Activated Successfully');
-        getContracts();
-        getContractsMetadata();
-      })
-      .catch(error => { ErrorToaster('Contract Activation Failed'); })
-  };
-
-  const getUserData = async (data) => {
-    if (data?.id !== "" && data?.id !== undefined) {
-      const { data: userData } = await GET(
-        `user-management-service/user?contractID=${data?.id}`
-      );
-      if (userData) {
-        if (userData?.length !== 0) {
-          activateContracts(data, userData);
-        }
-      }
-    }
-  };
-
-  const contractExtension = (data) => {
-    getExtensionDialog(true);
-    getContractIdFromActive(data?.id);
-  }
-
-  const contractTermination = (data) => {
-    getTerminationDialog(true);
-    getContractIdFromActive(data?.id);
-  }
-
-  const contractClone = (data) => {
-    getCloneDialog(true);
-    getContractIdFromActive(data?.id);
-  }
-
-  const deleteDraft = (data) => {
-    getDeleteDraftDialog(true);
-    getContractIdFromActive(data?.id);
-  }
-
-  const getShowPreImplementationDialog = (data) => {
-    setShowPreImplementationDialog(true);
-    setSelectedContractId(data?.id);
-    setSelectedContractPreImplementationData(data);
-  }
-
-  const getPreImplementationDialogBoolean = (value) => {
-    setShowPreImplementationDialog(value);
-  }
 
   const getApplicationRejectionDialog = (value) => {
     setShowApplicationRejectionDialog(value);
   }
 
-  const getReviewAndApprovalStatusSummaryDialog = (data) => {
-    setShowReviewAndApprovalStatusSummaryDialog(true);
-  }
-
-  const getReviewAndApprovalStatusSummaryDialogBoolean = (value) => {
-    setShowReviewAndApprovalStatusSummaryDialog(value);
-  }
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setIsPrintClicked(false);
-    setAnchorEl(null);
-  };
-
-  const getEntityData = async () => {
-    const { data: entityData } = await GET(`entity-service/entity/${TenantID}`);
-    // console.log("entity", entityData.subdomain);
-    setCSPSubDomain(entityData?.officialEmailDomain?.officialEmail);
-  };
-
-  const getContractors = (id) => {
-    let contractedUsers = [];
-    users?.filter(user => user?.contracts?.map(contract => contract?.roles?.map(role => role?.roleName)?.includes('Activity Logger') && contract?.id)?.includes(id))?.map(data => {
-      console.log('suffix check', data)
-      let name = `${data?.name?.firstName}, ${data?.name?.lastName?.toUpperCase() || ''} ${data?.name?.suffix?.suffix || ''}`
-      contractedUsers.push(name);
-    });
-    return contractedUsers;
-  }
-
   const onClickViewAndVerifyFunction = (data) => {
     getActiveApplicationView(true);
   }
-
-  const onClickFunction = (data) => {
-    // if (selectedContract === 'activestaffs') {
-    //   getActiveContractView(true);
-    // } else {
-    getNewContract(true);
-    getContractType(data?.contractTypeId?.id, data?.contractType);
-    getSelectedContractType(data?.newContract ? 'New Contract' : 'Existing Contract');
-    // }
-    getContractIdFromActive(data?.id);
-    console.log(data, 'contract data')
-    sessionStorage.setItem('Selected Contract Status', data?.contractStatus)
-  }
-
-  const handleRenewalContracts = async (data) => {
-    // getNewContract(true);
-    // getContractType(data?.contractTypeId?.id, data?.contractType);
-    // getSelectedContractType('Existing Contract');
-    // console.log(data, 'contract data')
-    // sessionStorage.setItem('Selected Contract Status', "DRAFT")
-    // sessionStorage.setItem('contractType', data?.contractType)
-    // sessionStorage.setItem('existingContractId', data?.id)
-    // sessionStorage.setItem('priorContractId', data?.contractDetail?.contractId?.id)
-    // sessionStorage.setItem('method', 'POST')
-    if (!data?.contractDetail?.contractRenewed) {
-      const { data: userData } = await GET(
-        `contract-managment-service/contracts/${data?.id}/renewContract`
-      )
-
-      if (userData) {
-        SuccessToaster('Contract Renewed Successfully');
-        getContracts();
-        getContractsMetadata();
-      } else { ErrorToaster('Contract Renewal Failed'); };
-    } else {
-      ErrorToaster('Contract Already Renewed');
-    }
-  }
-
-  const handleDownloadClicked = () => {
-    toPDF(".contractList", `ContractsList_${format(new Date(), 'MM_dd_yy')}`);
-  }
-
-  const handlePrint = useReactToPrint({
-    content: reactToPrintContent,
-    documentTitle: `ContractsList_${format(new Date(), 'MM_dd_yy')}`,
-    // onBeforeGetContent: handleOnBeforeGetContent,
-    // onBeforePrint: handleBeforePrint,
-    // onAfterPrint: handleAfterPrint,
-    removeAfterPrint: true
-  });
 
   let dot = [];
   let dotTooltipValues = [];
@@ -584,45 +357,15 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
     { 'data': 'Send follow up disclosures', 'requiredValue': 'boolean', "onClick": '' },
   ]
 
-  const handleAddContract = () => {
-    sessionStorage.setItem('Selected Contract Status', "DRAFT")
-    getAddContract(true);
-  }
-
-  const getContractsMetadata = async () => {
-    console.log(bottomTextNumber, 'test')
-    let apiUrl = `contract-managment-service/contracts/metadata`;
-    if (bottomTextNumber !== 'undefined' && bottomTextNumber !== undefined && bottomTextNumber !== null) {
-      if (selectedContract === 'upcomingrenewals') {
-        apiUrl += `?UpcomingTabNoOfDays=${bottomTextNumber}`
-      }
-      if (selectedContract === 'expired/terminated') {
-        apiUrl += `?ExpiredTabNoOfDays=${bottomTextNumber}`
-      }
-    }
-    const { data: contractMetadata } = await GET(apiUrl);
-    setMetadata(contractMetadata);
-  };
-
   const getIsExpanded = (value) => {
     setIsExpanded(value);
   }
 
-  const getContractFilterValues = (value) => {
-    console.log(value, 'contractFilters')
-    // setContractFilterValues(value);
-    sessionStorage.setItem('contractFilters', JSON.stringify(value))
-  }
-
-  const updateFilter = (data, value) => {
-    filterRef.current.updateFilter(data, value);
-  }
-
-  let tableHeaderValues = selectedContract === 'Applicants' ? applicantHeaderValues : selectedContract === "Applications" ? applicationHeaderValues : selectedContract === "Clarifications" ? clarificationHeaderValues : approvedHeaderValues;
-  let tableSortValues = selectedContract === 'Applicants' ? applicantColSortValues : selectedContract === "Applications" ? applicationColSortValues : selectedContract === "Clarifications" ? clarificationColSortValues : approvedColSortValues;
-  let tableDataValues = selectedContract === 'Applicants' ? getApplicantValues() : selectedContract === "Applications" ? getApplicationValues() : selectedContract === "Clarifications" ? getClarificationValues() : getApprovedValues();
-  let actions = selectedContract === 'Applicants' ? applicantActionsData : selectedContract === "Applications" ? applicationActionsData : selectedContract === "Clarifications" ? clarificationActionsData : approvedActionsData;
-  let gridStyle = selectedContract === 'Applicants' ? style.applicantStaffGrid : selectedContract === "Applications" ? style.applicationStaffGrid : selectedContract === "Clarifications" ? style.clarificationStaffGrid : style.approvedStaffGrid;
+  let tableHeaderValues = selectedApplicant === 'Applicants' ? applicantHeaderValues : selectedApplicant === "Applications" ? applicationHeaderValues : selectedApplicant === "Clarifications" ? clarificationHeaderValues : approvedHeaderValues;
+  let tableSortValues = selectedApplicant === 'Applicants' ? applicantColSortValues : selectedApplicant === "Applications" ? applicationColSortValues : selectedApplicant === "Clarifications" ? clarificationColSortValues : approvedColSortValues;
+  let tableDataValues = selectedApplicant === 'Applicants' ? getApplicantValues() : selectedApplicant === "Applications" ? getApplicationValues() : selectedApplicant === "Clarifications" ? getClarificationValues() : getApprovedValues();
+  let actions = selectedApplicant === 'Applicants' ? applicantActionsData : selectedApplicant === "Applications" ? applicationActionsData : selectedApplicant === "Clarifications" ? clarificationActionsData : approvedActionsData;
+  let gridStyle = selectedApplicant === 'Applicants' ? style.applicantStaffGrid : selectedApplicant === "Applications" ? style.applicationStaffGrid : selectedApplicant === "Clarifications" ? style.clarificationStaffGrid : style.approvedStaffGrid;
 
   return (
     <div className={style.margin20}>
@@ -794,10 +537,9 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
           </div>
 
           <div className={`${style.spaceBetween} ${style.marginTop20} ${style.marginLeft30} `}>
-            <StaffApplicationTiles getSelectedContract={getSelectedContract} selectedContract={selectedContract}
-              metadata={metadata} getTabFilter={getTabFilter} />
-            <div className={`${style.spaceBetween} ${style.marginLeft} `}>
+            <StaffApplicationTiles getSelectedApplicant={getSelectedApplicant} selectedApplicant={selectedApplicant} />
 
+            <div className={`${style.spaceBetween} ${style.marginLeft} `}>
               <div className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`} >
                 <SearchOutlinedIcon sx={{ fontSize: isPrintClicked ? 20 : 25, color: isPrintClicked ? '#fff' : '#857AEF' }} />
               </div>
@@ -818,25 +560,13 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
                   <TableTwo
                     tableHeaderValues={tableHeaderValues}
                     tableDataValues={tableDataValues}
-                    tableData={selectedContract === 'Applicants' ? ApplicantsProcessData : selectedContract === "Applications" ? ApplicationData : selectedContract === "Clarifications" ? ClarificationData : ApprovedData}
-                    getNewContract={getNewContract}
-                    getContractType={getContractType}
-                    getSelectedContractType={getSelectedContractType}
-                    getContractIdFromActive={getContractIdFromActive}
+                    tableData={selectedApplicant === 'Applicants' ? ApplicantsProcessData : selectedApplicant === "Applications" ? ApplicationData : selectedApplicant === "Clarifications" ? ClarificationData : ApprovedData}
                     gridStyle={gridStyle}
                     actions={actions}
-                    getSelectedPage={getSelectedPage}
                     scrollStyle={style.contractScrollStyle}
                     tableSortValues={tableSortValues}
                     heading={'There are no Record for you to manage'}
-                    // subHeading={'To add a new contract click on'}
-                    // onClickText={'Click To View A Short Tutorial On How To Add A Contract'}
-                    // buttonComponent={<div className={`${style.addStyle} ${style.alignCenter} ${style.marginLeft20}`}>
-                    //   <AddCircleOutlineIcon sx={{ fontSize: 20, color: 'white' }} />
-                    // </div>}
                     onClickFunction={() => { }}
-                    getHandleSort={getHandleSort}
-                    sortValue={sortValue}
                   />
                 </div>
               </div>

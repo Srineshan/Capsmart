@@ -3,7 +3,7 @@ import { Dialog, Classes, Icon, Intent, TextArea, InputGroup, Button, RadioGroup
 import style from './index.module.scss';
 import Popover from '@mui/material/Popover';
 
-const ApplicationRejection = ({ getApplicationRejectionDialog, contracts, contractId, getContracts }) => {
+const ApplicationRejection = ({ getApplicationRejectionDialog }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handlePopoverOpen = (event) => {

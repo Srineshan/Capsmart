@@ -11,7 +11,6 @@ import DescendingSort from './../../images/descendingSort.png';
 import CheckboxChecked from './../../images/checkboxClicked.png';
 import Checkbox from './../../images/checkboxUnclicked.png';
 import Sort from './../../images/sort.png';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import NoDataBox from '../ReusableSmallComponents/noDataBox';
 
 import style from './index.module.scss';
@@ -26,7 +25,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePagination, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, onClickText, onClickFunction, buttonComponent, getHandleSort, sortValue }) => {
+const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePagination, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, onClickText, onClickFunction, buttonComponent, getHandleSort, sortValue }) => {
     const [showOptions, setShowOptions] = useState(false);
     const [selectedMenuIndex, setSelectedMenuIndex] = useState(-1);
     const [selectedMenuColIndex, setSelectedMenuColIndex] = useState(-1);
@@ -522,19 +521,9 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
                     )}
                 </div>
 
-
                 {
                     !hidePagination && (totalCount || tableData?.length) > 10 &&
                     <Pagination selectPage={getSelectedPage} totalCount={totalCount || tableData?.length} selectedPage={page || 1} />
-                }
-                {
-                    // <div className={style.spaceBetween}>
-                    //     <p></p>
-                    //     <div className={style.displayInRow}>
-                    //         <p className={style.paginationStyle}>1 - 10 of 200<span className={`${style.marginLeft20} ${style.leftChevronColor}`}>&lt;</span> </p>
-                    //         <img src={ChevronRight} className={style.roundChevron} />
-                    //     </div>
-                    // </div>
                 }
 
             </div>

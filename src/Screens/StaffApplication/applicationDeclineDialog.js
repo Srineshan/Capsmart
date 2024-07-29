@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Dialog, Classes, Icon, Intent, TextArea, InputGroup, Button, RadioGroup, Radio } from '@blueprintjs/core';
+import React, { useState } from 'react';
+import { Dialog, Classes, Icon, Intent } from '@blueprintjs/core';
 import style from './index.module.scss';
-import Popover from '@mui/material/Popover';
 import DeclineMailTemplate from './declineMailTemplate';
 
-const ApplicationDecline = ({ getApplicationDeclineDialog, contracts, contractId, getContracts }) => {
+const ApplicationDecline = ({ getApplicationDeclineDialog }) => {
   const [showDeclineMailDialog, setShowDeclineMailDialog] = useState(false);
 
   const getDeclineMailDialog = (value) => {

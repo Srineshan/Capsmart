@@ -5,8 +5,8 @@ import { Tooltip } from "@mui/material";
 import ClearIcon from '@mui/icons-material/Clear';
 
 const TileApplication = ({
-  selectedContract,
-  getSelectedContract,
+  selectedApplicant,
+  getSelectedApplicant,
   tileLabel,
   tileCount,
   bigNumber,
@@ -33,60 +33,17 @@ const TileApplication = ({
   getTabFilter
 }) => {
 
+  console.log(selectedApplicant, currentTile)
 
-  const [bottomTextFilter, setBottomTextFilter] = useState((bottomText?.length === 0 || bottomText === '' || bottomText === undefined) ? '' : bottomText[0])
-  const [smallTextSelected, setSmallTextSelected] = useState('')
-  const [selectedBottomTextFilter, setSelectedBottomTextFilter] = useState('');
-
-  console.log(smallTextSelected)
-
-  useEffect(() => {
-    if (typeof getTabFilter === 'function') {
-      getTabFilter({ bottomTextFilter: String(extractNumbersFromString(selectedBottomTextFilter)[0]), smallTextSelected: smallTextSelected })
-      sessionStorage.setItem('bottomFilter', String(extractNumbersFromString(selectedBottomTextFilter)[0]))
-    } else {
-      sessionStorage.removeItem('bottomFilter')
-    }
-  }, [bottomTextFilter, smallTextSelected])
-
-  useEffect(() => {
-    setSmallTextSelected('')
-    console.log(bottomText, 'filter')
-    setBottomTextFilter((bottomText?.length === 0 || bottomText === '' || bottomText === undefined) ? '' : bottomText[0])
-    setSelectedBottomTextFilter('')
-  }, [selectedContract])
-
-
-
-  const handleGetBottomTextFilter = () => {
-    let index = bottomText.findIndex(str => str === bottomTextFilter)
-    if (bottomText?.length - 1 === index) {
-      setBottomTextFilter(bottomText[0])
-      setSelectedBottomTextFilter(bottomText[0])
-      // if (bottomText?.length > 1) {
-      //   getTabFilter({ bottomTextFilter: String(extractNumbersFromString(bottomText[0])[0]) })
-      // }
-    } else {
-      setBottomTextFilter(bottomText[index + 1])
-      setSelectedBottomTextFilter(bottomText[index + 1])
-      // if (bottomText?.length > 1) {
-      //   getTabFilter({ bottomTextFilter: String(extractNumbersFromString(bottomText[index + 1])[0]) })
-      // }
-    }
-  }
-
-  const handleSmallTextSelected = (value) => {
-    setSmallTextSelected(value)
-  }
   return (
     <div
-      className={`${style.applicationCardStyle} ${style.alignCenter} ${selectedContract === currentTile && style.selectedContractBackground}`}
-      onClick={() => getSelectedContract(currentTile)}
+      className={`${style.applicationCardStyle} ${style.alignCenter} ${selectedApplicant === currentTile && style.selectedApplicantBackground}`}
+      onClick={() => getSelectedApplicant(currentTile)}
     >
       {topText !== "" && <p className={style.next30Style}>{topText}</p>}
       <div className={`${style.spaceBetweenColumn} ${style.padding5}`}>
         <div>
-          <div className={`${style.spaceBetween}  ${selectedContract === currentTile ? style.selectedApplicationText : style.headingForContracts}`}>{tileLabel}
+          <div className={`${style.spaceBetween}  ${selectedApplicant === currentTile ? style.selectedApplicationText : style.headingForContracts}`}>{tileLabel}
             <span className={style.countDesign}>{tileCount}</span>
           </div>
         </div>
