@@ -17,7 +17,7 @@ import Titlebar from "../../Components/titlemenu";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import ArrowDown from "./../../images/arrowDown.png";
 
-const CountryStatesList = ({ getAddStateList }) => {
+const CountryStatesList = ({ getAddStateList, countryDataList }) => {
   const [showContractDocumentDialod, setShowContractDocumentDialod] =
     useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
@@ -53,6 +53,8 @@ const CountryStatesList = ({ getAddStateList }) => {
               </p>
               <p className={style.tableHeaderIndustriesFontStyle}></p>
             </div>
+
+
             {
               <div className={style.stateListHeader}>
                 <img

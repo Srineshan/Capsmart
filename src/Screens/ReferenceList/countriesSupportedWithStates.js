@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../../Components/Navbar";
 import SideBar from "../../Components/Sidebar";
@@ -18,12 +18,18 @@ import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import ArrowDown from "./../../images/arrowDown.png";
 import CountryStatesList from "./countryStatesList";
 import AddCountryType from "./addCountryType";
+import { DELETE, GET, POST, PUT, TenantID } from "../dataSaver";
 
 const CountriesSupportedWithStates = () => {
   const [showCountryDialog, setShowCountryDialog] =
     useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
   const [stateList, setStateList] = useState(false);
+  const [countryDataList, setCountryDataList] = useState([]);
+
+  useEffect(() => {
+    getCountryList();
+  }, []);
 
   const getAddCountryDialog = (value) => {
     setShowCountryDialog(value);
@@ -35,6 +41,12 @@ const CountriesSupportedWithStates = () => {
 
   const getIsExpanded = (value) => {
     setIsExpanded(value);
+  };
+
+  const getCountryList = async () => {
+    const { data: countryData } = await GET(`entity-service/countryMaster`);
+    console.log("countryData", countryData)
+    setCountryDataList(countryData)
   };
 
   return (
@@ -196,6 +208,7 @@ const CountriesSupportedWithStates = () => {
                     stateList && (
                       <CountryStatesList
                         getAddStateList={getAddStateList}
+                        countryDataList={countryDataList}
                       />
                     )
                   }

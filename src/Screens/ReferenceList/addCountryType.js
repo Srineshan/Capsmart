@@ -7,12 +7,77 @@ import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import Select from "react-select";
 
 const AddCountryType = ({ getAddCountryDialog }) => {
-  const [absenseType, setAbsenseType] = useState("Planned");
+  const [countryName, setCountryName] = useState("United States");
+  const [countryType, setCountryType] = useState("$");
+  const [dateFormat, setDateFormat] = useState("MM/DD/YYYY");
+  const [abbreviation, setAbbreviation] = useState("");
+  const [decimalFormat, setDecimalFormat] = useState("");
   const [language, setLanguage] = useState([]);
+  const [createdDate, setCreatedDate] = useState("");
+  const [flag, setFlag] = useState({ fileName: '', fileURL: '', filePath: null });
+  const [arrayOfStrings, setArrayOfStrings] = useState([]);
+
+  useEffect(() => {
+    const strings = language.map(obj => `${obj.value}`);
+    setArrayOfStrings(strings);
+  }, [language]);
 
   const handleChange = (language) => {
     setLanguage(language || []);
   };
+
+  const handleFlagFile = (e) => {
+    setFlag({ ...flag, fileURL: URL.createObjectURL(e.target.files[0]) || '', fileName: e.target?.files?.[0]?.name || '', filePath: e.target.files[0] });
+  }
+
+  const handleFlagUpload = async (countryId) => {
+    const formData = new FormData();
+    let data = {
+      "fileName": flag?.fileName
+    }
+    if (flag === null) {
+      formData.append('file', new Blob([JSON.stringify(data)], {
+        type: "application/json"
+      }));
+      formData.append('flag', flag?.filePath);
+
+      await POST(`entity-service/countryMaster/flag`, formData)
+        .then(response => {
+          SuccessToaster('Country Flag Updated Successfully');
+        })
+        .catch(error => {
+          ErrorToaster('Unexpected Error Occured');
+        })
+    }
+  }
+
+  const saveSubmitHandler = async () => {
+    const data = {
+      "country": countryName,
+      "abbreviation": abbreviation,
+      "currencyType": countryType,
+      "dateFormat": dateFormat,
+      "decimalFormat": decimalFormat,
+      "languages": arrayOfStrings,
+      "flag": flag,
+      "customized": true
+    }
+
+    // console.log("CountryName", data)
+
+    await POST("entity-service/countryMaster", JSON.stringify(data))
+      .then((response) => {
+        console.log(response)
+        SuccessToaster("Country Added Successfully");
+        if (flag?.fileName !== '') {
+          handleFlagUpload(response?.data?.id);
+        }
+      })
+      .catch((error) => {
+        ErrorToaster(error);
+      });
+    getAddCountryDialog(false)
+  }
 
   const options = [
     { value: "English", label: "English" },
@@ -32,10 +97,10 @@ const AddCountryType = ({ getAddCountryDialog }) => {
   const leftElement = () => {
     return (
       <div>
-        <label for="file-upload" className={style.customFileUpload}>
+        <label for="flag-upload" className={style.customFileUpload}>
           UPLOAD
         </label>
-        <input id="file-upload" type="file" />
+        <input id="flag-upload" type="file" onChange={handleFlagFile} />
       </div>
     )
   }
@@ -92,15 +157,15 @@ const AddCountryType = ({ getAddCountryDialog }) => {
                 <select
                   name="class"
                   id="Class"
-                  value={absenseType}
-                  onChange={(e) => setAbsenseType(e.target.value)}
+                  value={countryName}
+                  onChange={(e) => setCountryName(e.target.value)}
                   className={`${style.selectDropdownInputBox} ${style.width140}`}
                 >
+                  <option value="United States">United States</option>
                   <option value="Canada">Canada</option>
                   <option value="Australia">Australia</option>
                   <option value="New Zealand">New Zealand</option>
                   <option value="United Kingdom">United Kingdom</option>
-                  <option value="United States">United States</option>
                 </select>
               </div>
               <RadioGroup
@@ -130,11 +195,14 @@ const AddCountryType = ({ getAddCountryDialog }) => {
               <select
                 name="class"
                 id="Class"
-                value={absenseType}
-                onChange={(e) => setAbsenseType(e.target.value)}
+                value={countryType}
+                onChange={(e) => setCountryType(e.target.value)}
                 className={`${style.width34} ${style.selectDropdownInputBox}`}
               >
                 <option value="$">$</option>
+                <option value="£">£</option>
+                <option value="CAN $">CAN $</option>
+                <option value="AU $">AU $</option>
               </select>
             </div>
           </div>
@@ -144,18 +212,21 @@ const AddCountryType = ({ getAddCountryDialog }) => {
               <select
                 name="class"
                 id="Class"
-                value={absenseType}
-                onChange={(e) => setAbsenseType(e.target.value)}
+                value={dateFormat}
+                onChange={(e) => setDateFormat(e.target.value)}
                 className={`${style.width34} ${style.selectDropdownInputBox}`}
               >
                 <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                <option value="M/d/yyyy">M/d/yyyy</option>
+                <option value="yyyy-MM-dd">yyyy-MM-dd</option>
+                <option value="yyyyMMddTHH:mmzzz">yyyyMMddTHH:mmzzz</option>
               </select>
             </div>
           </div>
           <div className={`${style.countryGridInput} ${style.marginTop20}`}>
             <div className={style.extentionLableStyle}>Flag Image</div>
             <div className={style.displayInRow}>
-              <InputGroup leftElement={leftElement()} className={style.width34} />
+              <InputGroup value={flag?.fileName} leftElement={leftElement()} className={style.width34} />
             </div>
           </div>
           <div
@@ -166,11 +237,11 @@ const AddCountryType = ({ getAddCountryDialog }) => {
               <div className={style.entityLableStyle}>State / Province / Territory Name*</div>
               <div className={style.displayInRow}>
                 <InputGroup
-                  value={""}
+                  value={decimalFormat}
                   placeholder="Alberta"
-                  id="absenceEl"
+                  id="decimalFormat"
                   className={`${style.fullWidth} ${style.marginTop10}`}
-                // onChange={(e) => setAbsenseReason(e.target.value)}
+                  onChange={(e) => setDecimalFormat(e.target.value)}
                 />
               </div>
             </div>
@@ -178,11 +249,11 @@ const AddCountryType = ({ getAddCountryDialog }) => {
               <div className={style.entityLableStyle}>Abbreviation*</div>
               <div className={style.displayInRow}>
                 <InputGroup
-                  value={""}
+                  value={abbreviation}
                   placeholder="AB"
-                  id="absenceEl"
+                  id="abbreviation"
                   className={style.width34}
-                // onChange={(e) => setAbsenseReason(e.target.value)}
+                  onChange={(e) => setAbbreviation(e.target.value)}
                 />
               </div>
             </div>
@@ -207,6 +278,7 @@ const AddCountryType = ({ getAddCountryDialog }) => {
             </button>
             <button
               className={`${style.buttonStyle} ${style.marginLeft20}`}
+              onClick={() => saveSubmitHandler("Save & Exit")}
             >
               SAVE
             </button>
