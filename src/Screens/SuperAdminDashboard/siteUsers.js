@@ -144,7 +144,7 @@ const SiteUsers = ({ getActiveStep }) => {
   };
 
   const getContracts = async () => {
-    await axios(`http://ec2-52-204-199-180.compute-1.amazonaws.com//contract-managment-service/contracts`, {
+    await axios(`http://ec2-52-204-199-180.compute-1.amazonaws.com/contract-managment-service/contracts`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -159,7 +159,7 @@ const SiteUsers = ({ getActiveStep }) => {
   }
 
   const getUserData = async () => {
-    await axios(`http://ec2-52-204-199-180.compute-1.amazonaws.com//user-management-service/user`, {
+    await axios(`http://ec2-52-204-199-180.compute-1.amazonaws.com/user-management-service/user`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
