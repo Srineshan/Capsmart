@@ -4,12 +4,12 @@ import StaffApplicationList from './staffApplicationList';
 import NewActiveApplication from './newActiveApplication';
 
 const StaffApplication = () => {
-    const [selectedApplicant, setSelectedApplicant] = useState('Applicants');
+    const [selectedTab, setSelectedTab] = useState('applicantsToProcess');
     const [activeApplicationView, setActiveApplicationView] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    const getSelectedApplicant = (value) => {
-        setSelectedApplicant(value);
+    const getSelectedTab = (value) => {
+        setSelectedTab(value);
     }
 
     const getActiveApplicationView = (value) => {
@@ -24,8 +24,8 @@ const StaffApplication = () => {
                 <Navbar />
                 <StaffApplicationList
                     isLoading={isLoading}
-                    getSelectedApplicant={getSelectedApplicant}
-                    selectedApplicant={selectedApplicant}
+                    getSelectedTab={getSelectedTab}
+                    selectedTab={selectedTab}
                     getActiveApplicationView={getActiveApplicationView}
                 />
             </Fragment>

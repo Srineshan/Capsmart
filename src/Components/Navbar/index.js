@@ -180,14 +180,14 @@ const Navbar = () => {
   const idHelp = open ? "mouse-over-popover" : undefined;
 
   const logoutURL = () => {
-    window.location.href = `https://acme-hospital.doxonify.ca//logout`;
+    window.location.href = `http://ec2-52-204-199-180.compute-1.amazonaws.com/logout`;
   }
 
   const logout = async () => {
     const cookies = new Cookies();
     let token = cookies.get("user");
     let entityId = cookies.get("entityId");
-    // await fetch(`https://acme-hospital.doxonify.ca//logout`, {
+    // await fetch(`http://ec2-52-204-199-180.compute-1.amazonaws.com/logout`, {
     //   // redirect: 'manual',
     //   method: 'PUT',
     //   body: JSON.stringify({}),
@@ -199,7 +199,7 @@ const Navbar = () => {
     // })
 
     // let data = JSON.stringify({});
-    // await axios(`https://acme-hospital.doxonify.ca//logout`, {
+    // await axios(`http://ec2-52-204-199-180.compute-1.amazonaws.com/logout`, {
     //   method: 'PUT',
     //   data,
     // }).then(response => {
@@ -212,7 +212,7 @@ const Navbar = () => {
     // })
 
     // window.location.href = respose.headers?.get('Location')
-    // axios.post(`https://acme-hospital.doxonify.ca//logout`, {
+    // axios.post(`http://ec2-52-204-199-180.compute-1.amazonaws.com/logout`, {
     //   // Add parameters here
     //   // transformRequest: (data, headers) => {
     //   //   delete headers.common['X-XSRF-TOKEN'];

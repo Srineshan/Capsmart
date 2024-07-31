@@ -379,7 +379,7 @@ const App = ({ props }) => {
 
 
   const getEntityId = async () => {
-    await axios(`https://acme-hospital.doxonify.ca//entity-service/entityID`, {
+    await axios(`http://ec2-52-204-199-180.compute-1.amazonaws.com/entity-service/entityID`, {
       method: "GET",
       // headers: { "X-subdomain": "hopkins" },
     })
@@ -402,7 +402,7 @@ const App = ({ props }) => {
       }
     };
     fetch(
-      `https://acme-hospital.doxonify.ca//user-management-service/auth/login`,
+      `http://ec2-52-204-199-180.compute-1.amazonaws.com/user-management-service/auth/login`,
       requestOptions
     )
       .then((response) => response.json())

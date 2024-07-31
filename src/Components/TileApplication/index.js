@@ -5,8 +5,8 @@ import { Tooltip } from "@mui/material";
 import ClearIcon from '@mui/icons-material/Clear';
 
 const TileApplication = ({
-  selectedApplicant,
-  getSelectedApplicant,
+  selectedTab,
+  getSelectedTab,
   tileLabel,
   tileCount,
   bigNumber,
@@ -33,17 +33,17 @@ const TileApplication = ({
   getTabFilter
 }) => {
 
-  console.log(selectedApplicant, currentTile)
+  console.log(selectedTab, currentTile)
 
   return (
     <div
-      className={`${style.applicationCardStyle} ${style.alignCenter} ${selectedApplicant === currentTile && style.selectedApplicantBackground}`}
-      onClick={() => getSelectedApplicant(currentTile)}
+      className={`${style.applicationCardStyle} ${style.alignCenter} ${selectedTab === currentTile && style.selectedApplicantBackground}`}
+      onClick={() => getSelectedTab(currentTile)}
     >
       {topText !== "" && <p className={style.next30Style}>{topText}</p>}
       <div className={`${style.spaceBetweenColumn} ${style.padding5}`}>
         <div>
-          <div className={`${style.spaceBetween}  ${selectedApplicant === currentTile ? style.selectedApplicationText : style.headingForContracts}`}>{tileLabel}
+          <div className={`${style.spaceBetween}  ${selectedTab === currentTile ? style.selectedApplicationText : style.headingForContracts}`}>{tileLabel}
             <span className={style.countDesign}>{tileCount}</span>
           </div>
         </div>
