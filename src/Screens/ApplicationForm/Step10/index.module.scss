@@ -59,6 +59,60 @@
     gap: 20px;
 }
 
+.healthCareGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.healthCareGrid> :nth-child(1) {
+    grid-column: span 4;
+}
+
+.healthCareGrid> :nth-child(2) {
+    grid-column: span 2;
+}
+
+.healthCareGrid> :nth-child(3) {
+    grid-column: span 2;
+}
+
+.referenceGrid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 20px;
+}
+
+.referenceGrid> :nth-child(1) {
+    grid-column: span 3;
+}
+
+.referenceGrid> :nth-child(2) {
+    grid-column: span 3;
+}
+
+.referenceGrid> :nth-child(3) {
+    grid-column: span 3;
+}
+
+.referenceGrid> :nth-child(4) {
+    grid-column: span 6;
+}
+
+.referenceGrid> :nth-child(5),
+.referenceGrid> :nth-child(6),
+.referenceGrid> :nth-child(7) {
+    grid-column: span 2;
+}
+
+.referenceGrid> :nth-child(8) {
+    grid-column: span 3;
+}
+
+.referenceGrid> :nth-child(9) {
+    grid-column: span 3;
+}
+
 .progressStyle {
     height: 10px;
     width: 100%;
@@ -66,7 +120,7 @@
 }
 
 .progressStyleBackground {
-    background: transparent linear-gradient(90deg, #7165E3 0%, #7165E3 10%, #E9E9F0 13%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(90deg, #7165E3 0%, #7165E3 33%, #E9E9F0 36%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
 }
 
 .siteDisplayCard {

@@ -6,12 +6,13 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import AddIcon from '@mui/icons-material/Add';
 import { GET } from '../../dataSaver';
+import { useNavigate } from 'react-router-dom';
 
 import style from './index.module.scss';
 
 const Step2 = ({ basicForm, setBasicForm }) => {
     const [formSchema, setFormSchema] = useState();
-
+    const navigate = useNavigate()
     useEffect(() => {
         if (basicForm) {
             getFormSchema()
@@ -72,7 +73,7 @@ const Step2 = ({ basicForm, setBasicForm }) => {
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
-                    <div className={`${style.continue} ${style.marginTop10}`}>CONTINUE</div>
+                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate('/applicationForm/section1/step3')}>CONTINUE</div>
                     {/* <div className={style.marginTop}>
                             <ApplicationReferenceDocuments />
                         </div> */}

@@ -4,13 +4,13 @@ import ApplicationUserCard from '../../../Components/ApplicationUserCard';
 import ApplicationAssistanceCard from '../../../Components/ApplicationAssistanceCard';
 import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
+import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
 import { GET } from '../../dataSaver';
 import { useNavigate } from 'react-router-dom';
-import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
 
 import style from './index.module.scss';
 
-const Step3 = ({ basicForm, setBasicForm }) => {
+const Step7 = ({ basicForm, setBasicForm }) => {
     const [formSchema, setFormSchema] = useState();
     const navigate = useNavigate()
     useEffect(() => {
@@ -21,28 +21,25 @@ const Step3 = ({ basicForm, setBasicForm }) => {
 
     const getFormSchema = async () => {
         const { data: form } = await GET(
-            `application-management-service/formSchema/${basicForm?.formSchemas?.[1]?.id}`
+            `application-management-service/formSchema/${basicForm?.formSchemas?.[5]?.id}`
         );
         setFormSchema(form)
     }
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 3'} dataType={'Forms'} title={'Your Contact Address(es)'} timeNumber={1} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                <ProgressCard step={'STEP 7'} dataType={'Documents and Data'} title={formSchema?.title} timeNumber={16} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
                     <div className={style.applicationCardStyle}>
-                        {/* <CommonMailingAddress label={'Business Mailing Address*'} onChangeAddressLine1={() => { }} placeholderAddressLine1={'123 Street'} maxLengthAddressLine1={25} valueAddressLine1={''}
-                            onChangeAddressLine2={() => { }} placeholderAddressLine2={'Apartment 5'} maxLengthAddressLine2={25} valueAddressLine2={''} onChangeCity={() => { }} placeholderCity={'City'} maxLengthCity={25}
-                            valueCity={''} onChangeState={() => { }} placeholderState={'Province'} maxLengthState={25} valueState={''} onChangeZipcode={() => { }} placeholderZipcode={'Zipcode'} maxLengthZipcode={15} valueZipcode={''} /> */}
-                        {formSchema !== undefined && 'contactAddress1' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.contactAddress1} gridStyle={style.homeMailingAddressGrid} baseKey={'contactAddress1'} basicForm={basicForm} setBasicForm={setBasicForm} />
+                        {formSchema !== undefined && 'trainingAndWorkingExperience' in formSchema?.properties && (
+                            <ApplicationFieldCard object={formSchema?.properties?.trainingAndWorkingExperience} gridStyle={style.trainingGrid} baseKey={'trainingAndWorkingExperience'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} />
                         )}
                         <CommonDivider />
-                        {formSchema !== undefined && 'contactAddress2' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.contactAddress2} gridStyle={style.businessMailingAddressGrid} baseKey={'contactAddress2'} basicForm={basicForm} setBasicForm={setBasicForm} />
+                        {formSchema !== undefined && 'healthcareFacilityAppointments' in formSchema?.properties && (
+                            <ApplicationFieldCard object={formSchema?.properties?.healthcareFacilityAppointments} gridStyle={style.healthCareGrid} baseKey={'healthcareFacilityAppointments'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} />
                         )}
                     </div>
                 </div>
@@ -50,7 +47,7 @@ const Step3 = ({ basicForm, setBasicForm }) => {
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
                     <div className={`${style.continue} ${style.marginTop10}`}
-                        onClick={() => navigate('/applicationForm/section1/step4')}
+                    // onClick={() => navigate('/applicationForm/section1/step8')}
                     >CONTINUE</div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
@@ -61,4 +58,4 @@ const Step3 = ({ basicForm, setBasicForm }) => {
     )
 }
 
-export default Step3;
+export default Step7;

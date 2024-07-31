@@ -59,6 +59,24 @@
     gap: 20px;
 }
 
+.EducationGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.EducationGrid> :nth-child(1) {
+    grid-column: span 4;
+}
+
+.EducationGrid> :nth-child(2) {
+    grid-column: span 4;
+}
+
+.EducationGrid> :nth-child(3) {
+    grid-column: span 2;
+}
+
 .progressStyle {
     height: 10px;
     width: 100%;
@@ -66,7 +84,7 @@
 }
 
 .progressStyleBackground {
-    background: transparent linear-gradient(90deg, #7165E3 0%, #7165E3 10%, #E9E9F0 13%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(90deg, #7165E3 0%, #7165E3 21%, #E9E9F0 25%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
 }
 
 .siteDisplayCard {

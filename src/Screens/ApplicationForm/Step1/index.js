@@ -7,13 +7,14 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import CommonCheckBox from '../../../Components/CommonFields/CommonCheckBox';
 import { GET } from '../../dataSaver';
+import { useNavigate } from 'react-router-dom';
 
 import style from './index.module.scss';
 
 const Step1 = ({ basicForm, setBasicForm }) => {
     const [form1, setForm1] = useState();
     const [form2, setForm2] = useState();
-
+    const navigate = useNavigate()
     useEffect(() => {
         getBasicForm()
     }, [])
@@ -95,7 +96,7 @@ const Step1 = ({ basicForm, setBasicForm }) => {
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
-                    <div className={`${style.continue} ${style.marginTop10}`}>CONTINUE</div>
+                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate('/applicationForm/section1/step2')}>CONTINUE</div>
                     {/* <div className={style.marginTop}>
                             <ApplicationReferenceDocuments />
                         </div> */}

@@ -9,6 +9,10 @@
     margin-top: 20px;
 }
 
+.marginLeft {
+    margin-left: 20px;
+}
+
 .cardTitle {
     text-align: left;
     font: normal normal 600 17px/28px Montserrat;
@@ -27,6 +31,27 @@
     width: 130px;
     color: #7165E3;
     font: normal normal bold 20px/40px Montserrat;
+    cursor: pointer;
+}
+
+.addMoreButton {
+    background: #7165E3 0% 0% no-repeat padding-box;
+    border-radius: 12px;
+    padding: 15px;
+    color: #fff;
+    min-width: 150px !important;
+    font: normal normal bold 15px/15px Montserrat;
+    cursor: pointer;
+}
+
+.addMoreButtonOutlined {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    border-radius: 12px;
+    border: 1px solid #7165E3;
+    padding: 15px;
+    color: #7165E3;
+    min-width: 180px;
+    font: normal normal bold 15px/15px Montserrat;
     cursor: pointer;
 }
 
@@ -86,4 +111,55 @@
     font: normal normal bold 12px/24px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
+}
+
+.addMoreBorder {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    border: 1px solid #c4bef3;
+    border-radius: 8px;
+}
+
+.padding20 {
+    padding: 20px;
+}
+
+.padding10 {
+    padding: 10px;
+}
+
+.addMoreText {
+    text-align: left;
+    font: normal normal bold 15px/25px Montserrat;
+    letter-spacing: 0px;
+    color: #b0b3b5;
+}
+
+.displayInRowRev {
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.displayInRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.addMoreUpload {
+    display: flex;
+    flex-direction: row-reverse;
+    margin-top: -50px;
+}
+
+.cursorPointer {
+    cursor: pointer;
+}
+
+.checkedCircleIcon {
+    height: 17px;
+    width: 17px;
+    border-radius: 50%;
+    background-color: #25BF6A;
+    position: relative;
+    top: 17px;
+    left: 15px;
 }

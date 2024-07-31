@@ -17,7 +17,9 @@ import RequiredDocumentCard from '../../../Components/RequiredDocumentCard';
 const ApplicationFormRequirement = () => {
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(true);
-    const requiredDocument = [{ title: 'Passport Size Photo' }, { title: 'Curriculum Vitae' }, { title: 'Professional Liability Insurance Coverage' }, { title: 'Education / College Diplomas, Degrees & Certificate' }, { title: 'Vulnerable Sector Police Check' }]
+    const requiredDocument = [{ title: 'Passport Size Photo' }, { title: 'Curriculum Vitae' }
+        // , { title: 'Professional Liability Insurance Coverage' }, { title: 'Education / College Diplomas, Degrees & Certificate' }, { title: 'Vulnerable Sector Police Check' }
+    ]
     const getIsOpen = (value) => {
         setIsOpen(value);
     }

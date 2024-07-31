@@ -12,6 +12,15 @@
     grid-gap: 20px;
 }
 
+
+.cardTitle {
+    text-align: left;
+    font: normal normal 600 17px/28px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    text-transform: capitalize;
+}
+
 .saveInProgress {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
@@ -44,7 +53,7 @@
     box-shadow: 0px 5px 20px #52575D4D;
     border-radius: 20px;
     border: 0.4000000059604645px solid #e5e6e6;
-    padding: 20px;
+    padding: 10px 20px 20px 20px;
 }
 
 .twoCol {

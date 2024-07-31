@@ -59,6 +59,24 @@
     gap: 20px;
 }
 
+.licenseGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.licenseGrid> :nth-child(1) {
+    grid-column: 1 / -1;
+}
+
+.licenseGrid> :nth-child(2) {
+    grid-column: 1 / -1;
+}
+
+.licenseGrid> :nth-child(3) {
+    grid-column: 1 / -1;
+}
+
 .progressStyle {
     height: 10px;
     width: 100%;
@@ -66,7 +84,7 @@
 }
 
 .progressStyleBackground {
-    background: transparent linear-gradient(90deg, #7165E3 0%, #7165E3 10%, #E9E9F0 13%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(90deg, #7165E3 0%, #7165E3 19%, #E9E9F0 21%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
 }
 
 .siteDisplayCard {
