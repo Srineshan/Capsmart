@@ -27,6 +27,7 @@ const CountriesSupportedWithStates = () => {
   const [stateList, setStateList] = useState(false);
   const [countryDataList, setCountryDataList] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState({});
+  const [isCountryEdit, setIsCountryEdit] = useState(false);
 
   useEffect(() => {
     getCountryList();
@@ -36,8 +37,8 @@ const CountriesSupportedWithStates = () => {
     setShowCountryDialog(value);
   };
 
-  const getAddStateList = () => {
-    setStateList(true);
+  const getAddStateList = (value) => {
+    setStateList(value);
   };
 
   const getIsExpanded = (value) => {
@@ -46,13 +47,12 @@ const CountriesSupportedWithStates = () => {
 
   const getCountryList = async () => {
     const { data: countryData } = await GET(`entity-service/countryMaster`);
-    console.log("countryData", countryData)
+    // console.log("countryData", countryData)
     setCountryDataList(countryData)
   };
 
   const handleShowStateList = () => {
     setStateList(true)
-
   }
 
   return (
@@ -92,9 +92,12 @@ const CountriesSupportedWithStates = () => {
                 />
                 <button
                   className={`${style.buttonStyle} ${style.marginLeft20}`}
-                  onClick={() => stateList ? getAddCountryDialog(true) : ""}
+                  onClick={() => {
+                    setIsCountryEdit(stateList ? true : false);
+                    getAddCountryDialog(true)
+                  }}
                 >
-                  {`ADD COUNTRY`}
+                  {stateList ? `EDIT COUNTRY` : `ADD COUNTRY`}
                 </button>
                 {
                   !stateList && (
@@ -118,24 +121,6 @@ const CountriesSupportedWithStates = () => {
                 <div className={style.margin20}>
                   {!stateList && (
                     <div className={style.countryGridStyle}>
-                      <div className={style.countryGridCol} onClick={handleShowStateList}>
-                        <div
-                          className={`${style.industriesCardTextStyle1} ${style.positionAbsolute}`}
-                        >
-                          AUSTRALIA
-                        </div>
-                        <div className={style.countryDollerTextStyle}>AU $</div>
-                        <div
-                          className={`${style.industriesCardTextStyle1} ${style.stateTextStyle}`}
-                        >
-                          STATES 7
-                        </div>
-                        <img
-                          className={style.countryImgStyle}
-                          src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Flag_of_Australia_%28converted%29.svg/125px-Flag_of_Australia_%28converted%29.svg.png"
-                          alt=""
-                        />
-                      </div>
                       {countryDataList.map((data => {
                         return (
                           <>
@@ -153,96 +138,24 @@ const CountriesSupportedWithStates = () => {
                               <p
                                 className={`${style.industriesCardTextStyle1} ${style.stateTextStyle}`}
                               >
-                                STATES 7
+                                STATES ({data?.numberOfStates})
                               </p>
                               <img
                                 className={style.countryImgStyle}
-                                src={data?.flag.fileName}
+                                src={data?.flag?.fileURL}
                                 alt=""
                               />
                             </div>
                           </>
                         )
                       }))}
-                      {/* <div className={style.countryGridCol}>
-                        <p
-                          className={`${style.industriesCardTextStyle1} ${style.positionAbsolute}`}
-                        >
-                          CANADA
-                        </p>
-                        <p className={style.countryDollerTextStyle}>CAN $</p>
-                        <p
-                          className={`${style.industriesCardTextStyle1} ${style.stateTextStyle}`}
-                        >
-                          STATES 7
-                        </p>
-                        <img
-                          className={style.countryImgStyle}
-                          src="https://cdn.pixabay.com/photo/2013/07/13/14/14/canada-162259__340.png"
-                          alt=""
-                        />
-                      </div>
-                      <div className={style.countryGridCol}>
-                        <h5
-                          className={`${style.industriesCardTextStyle1} ${style.positionAbsolute}`}
-                        >
-                          NEW ZEALAND{" "}
-                        </h5>
-                        <p className={style.countryDollerTextStyle}> $</p>
-                        <p
-                          className={`${style.industriesCardTextStyle1} ${style.stateTextStyle}`}
-                        >
-                          STATES 7
-                        </p>
-                        <img
-                          className={style.countryImgStyle}
-                          src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Flag_of_New_Zealand.svg/255px-Flag_of_New_Zealand.svg.png"
-                          alt=""
-                        />
-                      </div>
-                      <div className={style.countryGridCol}>
-                        <p
-                          className={`${style.industriesCardTextStyle1} ${style.positionAbsolute}`}
-                        >
-                          UNITED KINGDOM <br /> (UK){" "}
-                        </p>
-                        <p className={style.countryDollerTextStyle}>£</p>
-                        <p
-                          className={`${style.industriesCardTextStyle1} ${style.stateTextStyle}`}
-                        >
-                          STATES 7
-                        </p>
-                        <img
-                          className={style.countryImgStyle}
-                          src="https://upload.wikimedia.org/wikipedia/en/thumb/a/ae/Flag_of_the_United_Kingdom.svg/255px-Flag_of_the_United_Kingdom.svg.png"
-                          alt=""
-                        />
-                      </div>
-                      <div className={style.countryGridCol}>
-                        <p
-                          className={`${style.industriesCardTextStyle1} ${style.positionAbsolute}`}
-                        >
-                          UNITED STATES <br /> (USA){" "}
-                        </p>
-                        <p className={style.countryDollerTextStyle}>£</p>
-                        <p
-                          className={`${style.industriesCardTextStyle1} ${style.stateTextStyle}`}
-                        >
-                          STATES 6
-                        </p>
-                        <img
-                          className={style.countryImgStyle}
-                          src="https://upload.wikimedia.org/wikipedia/en/thumb/a/a4/Flag_of_the_United_States.svg/255px-Flag_of_the_United_States.svg.png"
-                          alt=""
-                        />
-                      </div> */}
                     </div>
                   )}
                   {
                     stateList && (
                       <CountryStatesList
                         getAddStateList={getAddStateList}
-                        countryDataList={countryDataList}
+                        getCountryList={getCountryList}
                         selectedCountry={selectedCountry}
                       />
                     )
@@ -258,7 +171,7 @@ const CountriesSupportedWithStates = () => {
         </div>
       </div>
 
-      {showCountryDialog && <AddCountryType getAddCountryDialog={getAddCountryDialog} />}
+      {showCountryDialog && <AddCountryType getAddCountryDialog={getAddCountryDialog} getCountryList={getCountryList} isCountryEdit={isCountryEdit} selectedCountry={selectedCountry} getAddStateList={getAddStateList} />}
 
     </Fragment >
   );

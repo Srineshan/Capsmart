@@ -6,7 +6,8 @@ import { POST, PUT, TenantID } from "../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import Select from "react-select";
 
-const AddCountryType = ({ getAddCountryDialog }) => {
+const AddCountryType = ({ getAddCountryDialog, getCountryList, isCountryEdit, selectedCountry, getAddStateList }) => {
+  const [countryId, setCountryId] = useState("");
   const [countryName, setCountryName] = useState("United States");
   const [countryType, setCountryType] = useState("$");
   const [dateFormat, setDateFormat] = useState("MM/DD/YYYY");
@@ -14,8 +15,25 @@ const AddCountryType = ({ getAddCountryDialog }) => {
   const [decimalFormat, setDecimalFormat] = useState("");
   const [language, setLanguage] = useState([]);
   const [createdDate, setCreatedDate] = useState("");
-  const [flag, setFlag] = useState({ fileName: '', fileURL: '', filePath: null });
+  const [flag, setFlag] = useState({ fileName: '', fileURL: '', filePath: '' });
   const [arrayOfStrings, setArrayOfStrings] = useState([]);
+
+  console.log("selectedCountry", selectedCountry)
+
+  useEffect(() => {
+    if (isCountryEdit) {
+      setCountryId(selectedCountry?.id)
+      setCountryName(selectedCountry?.country)
+      setCountryType(selectedCountry?.currencyType)
+      setAbbreviation(selectedCountry?.abbreviation)
+      setDecimalFormat(selectedCountry?.decimalFormat)
+      setDateFormat(selectedCountry?.dateFormat)
+      setLanguage(selectedCountry?.languages.map((data) => ({
+        value: data, label: data
+      })))
+      setFlag(selectedCountry?.flag)
+    }
+  }, [isCountryEdit, selectedCountry]);
 
   useEffect(() => {
     const strings = language.map(obj => `${obj.value}`);
@@ -23,52 +41,34 @@ const AddCountryType = ({ getAddCountryDialog }) => {
   }, [language]);
 
   const handleChange = (language) => {
+    console.log(language)
     setLanguage(language || []);
   };
 
   const handleFlagFile = async (e) => {
-    setFlag({ ...flag, fileURL: URL.createObjectURL(e.target.files[0]) || '', fileName: e.target?.files?.[0]?.name || '', filePath: '' });
-    // const formData = new FormData();
-    // let data = {
-    //   "fileName": e.target?.files?.[0]?.name
-    // }
-    // // if (flag === null) {
-    // // formData.append('file', new Blob([JSON.stringify(data)], {
-    // //   type: "application/json"
-    // // }));
-    // formData.append('file', e.target.files[0]);
+    const formData = new FormData();
+    let data = {
+      "fileName": e.target?.files?.[0]?.name
+    }
+    if (flag !== null) {
+      formData.append('file', new Blob([JSON.stringify(data)], {
+        type: "application/json"
+      }));
 
-    // await POST(`entity-service/countryMaster/flag`, formData)
-    //   .then(response => {
-    //     console.log(response)
-    //     SuccessToaster('Country Flag Updated Successfully');
-    //   })
-    //   .catch(error => {
-    //     ErrorToaster('Unexpected Error Occured');
-    //   })
-    // }
+      formData.append('flag', e.target.files[0]);
+
+      await POST(`entity-service/countryMaster/flag`, formData)
+        .then(response => {
+          // console.log(response)
+          setFlag({ ...flag, fileURL: response?.data?.fileURL || '', fileName: response?.data?.fileName || '', filePath: response?.data?.filePath || '' });
+          SuccessToaster('Country Flag Updated Successfully');
+        })
+        .catch(error => {
+          ErrorToaster('Unexpected Error Occured');
+        })
+    }
   }
 
-  // const handleFlagUpload = async (countryId) => {
-  //   const formData = new FormData();
-  //   let data = {
-  //     "fileName": flag?.fileName
-  //   }
-  //   if (flag === null) {
-  //     formData.append('file', new Blob([JSON.stringify(data)], {
-  //       type: "application/json"
-  //     }));
-  //     formData.append('flag', flag?.filePath);
-
-  //     await POST(`entity-service/countryMaster/flag`, formData)
-  //       .then(response => {
-  //         SuccessToaster('Country Flag Updated Successfully');
-  //       })
-  //       .catch(error => {
-  //         ErrorToaster('Unexpected Error Occured');
-  //       })
-  //   }
-  // }
 
   const saveSubmitHandler = async () => {
     const data = {
@@ -84,14 +84,29 @@ const AddCountryType = ({ getAddCountryDialog }) => {
 
     // console.log("CountryName", data)
 
-    await POST("entity-service/countryMaster", JSON.stringify(data))
-      .then((response) => {
-        SuccessToaster("Country Added Successfully");
-      })
-      .catch((error) => {
-        ErrorToaster(error);
-      });
-    getAddCountryDialog(false)
+    if (!isCountryEdit) {
+      await POST("entity-service/countryMaster", JSON.stringify(data))
+        .then((response) => {
+          SuccessToaster("Country Added Successfully");
+          getCountryList()
+        })
+        .catch((error) => {
+          ErrorToaster(error);
+        });
+      getAddCountryDialog(false)
+    } else {
+      await PUT(`entity-service/countryMaster/${countryId}?id=${countryId}`, JSON.stringify(data))
+        .then((response) => {
+          SuccessToaster("Country Updated Successfully");
+          getCountryList()
+          getAddStateList(false)
+        })
+        .catch((error) => {
+          ErrorToaster(error);
+        });
+      getAddCountryDialog(false)
+    }
+
   }
 
   const options = [
@@ -132,7 +147,7 @@ const AddCountryType = ({ getAddCountryDialog }) => {
       >
         <div className={style.spaceBetween}>
           <p className={style.extensionStyle}>
-            Add / Edit Country
+            {isCountryEdit ? "Edit" : "Add"} Country
           </p>
           <div className={`${style.displayInRow}`}>
             <div className={`${style.displayInRow} ${style.marginRight20}`}>
