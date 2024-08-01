@@ -26,6 +26,7 @@ const CountriesSupportedWithStates = () => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [stateList, setStateList] = useState(false);
   const [countryDataList, setCountryDataList] = useState([]);
+  const [selectedCountry, setSelectedCountry] = useState({});
 
   useEffect(() => {
     getCountryList();
@@ -48,6 +49,11 @@ const CountriesSupportedWithStates = () => {
     console.log("countryData", countryData)
     setCountryDataList(countryData)
   };
+
+  const handleShowStateList = () => {
+    setStateList(true)
+
+  }
 
   return (
     <Fragment>
@@ -112,7 +118,7 @@ const CountriesSupportedWithStates = () => {
                 <div className={style.margin20}>
                   {!stateList && (
                     <div className={style.countryGridStyle}>
-                      <div className={style.countryGridCol} onClick={() => { setStateList(true) }}>
+                      <div className={style.countryGridCol} onClick={handleShowStateList}>
                         <div
                           className={`${style.industriesCardTextStyle1} ${style.positionAbsolute}`}
                         >
@@ -130,7 +136,35 @@ const CountriesSupportedWithStates = () => {
                           alt=""
                         />
                       </div>
-                      <div className={style.countryGridCol}>
+                      {countryDataList.map((data => {
+                        return (
+                          <>
+                            <div className={style.countryGridCol}
+                              onClick={() => {
+                                setStateList(true);
+                                setSelectedCountry(data);
+                              }}>
+                              <p
+                                className={`${style.industriesCardTextStyle1} ${style.positionAbsolute}`}
+                              >
+                                {data?.country}
+                              </p>
+                              <p className={style.countryDollerTextStyle}>{data?.currencyType}</p>
+                              <p
+                                className={`${style.industriesCardTextStyle1} ${style.stateTextStyle}`}
+                              >
+                                STATES 7
+                              </p>
+                              <img
+                                className={style.countryImgStyle}
+                                src={data?.flag.fileName}
+                                alt=""
+                              />
+                            </div>
+                          </>
+                        )
+                      }))}
+                      {/* <div className={style.countryGridCol}>
                         <p
                           className={`${style.industriesCardTextStyle1} ${style.positionAbsolute}`}
                         >
@@ -201,7 +235,7 @@ const CountriesSupportedWithStates = () => {
                           src="https://upload.wikimedia.org/wikipedia/en/thumb/a/a4/Flag_of_the_United_States.svg/255px-Flag_of_the_United_States.svg.png"
                           alt=""
                         />
-                      </div>
+                      </div> */}
                     </div>
                   )}
                   {
@@ -209,6 +243,7 @@ const CountriesSupportedWithStates = () => {
                       <CountryStatesList
                         getAddStateList={getAddStateList}
                         countryDataList={countryDataList}
+                        selectedCountry={selectedCountry}
                       />
                     )
                   }

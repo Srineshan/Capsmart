@@ -26,30 +26,49 @@ const AddCountryType = ({ getAddCountryDialog }) => {
     setLanguage(language || []);
   };
 
-  const handleFlagFile = (e) => {
-    setFlag({ ...flag, fileURL: URL.createObjectURL(e.target.files[0]) || '', fileName: e.target?.files?.[0]?.name || '', filePath: e.target.files[0] });
+  const handleFlagFile = async (e) => {
+    setFlag({ ...flag, fileURL: URL.createObjectURL(e.target.files[0]) || '', fileName: e.target?.files?.[0]?.name || '', filePath: '' });
+    // const formData = new FormData();
+    // let data = {
+    //   "fileName": e.target?.files?.[0]?.name
+    // }
+    // // if (flag === null) {
+    // // formData.append('file', new Blob([JSON.stringify(data)], {
+    // //   type: "application/json"
+    // // }));
+    // formData.append('file', e.target.files[0]);
+
+    // await POST(`entity-service/countryMaster/flag`, formData)
+    //   .then(response => {
+    //     console.log(response)
+    //     SuccessToaster('Country Flag Updated Successfully');
+    //   })
+    //   .catch(error => {
+    //     ErrorToaster('Unexpected Error Occured');
+    //   })
+    // }
   }
 
-  const handleFlagUpload = async (countryId) => {
-    const formData = new FormData();
-    let data = {
-      "fileName": flag?.fileName
-    }
-    if (flag === null) {
-      formData.append('file', new Blob([JSON.stringify(data)], {
-        type: "application/json"
-      }));
-      formData.append('flag', flag?.filePath);
+  // const handleFlagUpload = async (countryId) => {
+  //   const formData = new FormData();
+  //   let data = {
+  //     "fileName": flag?.fileName
+  //   }
+  //   if (flag === null) {
+  //     formData.append('file', new Blob([JSON.stringify(data)], {
+  //       type: "application/json"
+  //     }));
+  //     formData.append('flag', flag?.filePath);
 
-      await POST(`entity-service/countryMaster/flag`, formData)
-        .then(response => {
-          SuccessToaster('Country Flag Updated Successfully');
-        })
-        .catch(error => {
-          ErrorToaster('Unexpected Error Occured');
-        })
-    }
-  }
+  //     await POST(`entity-service/countryMaster/flag`, formData)
+  //       .then(response => {
+  //         SuccessToaster('Country Flag Updated Successfully');
+  //       })
+  //       .catch(error => {
+  //         ErrorToaster('Unexpected Error Occured');
+  //       })
+  //   }
+  // }
 
   const saveSubmitHandler = async () => {
     const data = {
@@ -67,11 +86,7 @@ const AddCountryType = ({ getAddCountryDialog }) => {
 
     await POST("entity-service/countryMaster", JSON.stringify(data))
       .then((response) => {
-        console.log(response)
         SuccessToaster("Country Added Successfully");
-        if (flag?.fileName !== '') {
-          handleFlagUpload(response?.data?.id);
-        }
       })
       .catch((error) => {
         ErrorToaster(error);
@@ -100,7 +115,7 @@ const AddCountryType = ({ getAddCountryDialog }) => {
         <label for="flag-upload" className={style.customFileUpload}>
           UPLOAD
         </label>
-        <input id="flag-upload" type="file" onChange={handleFlagFile} />
+        <input id="flag-upload" type="file" accept="image/png, image/jpeg" onChange={handleFlagFile} />
       </div>
     )
   }
