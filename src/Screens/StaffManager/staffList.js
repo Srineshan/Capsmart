@@ -23,8 +23,9 @@ const StaffList = ({ isLoading, getSelectedApplicant, selectedApplicant, getActi
     workItem: "Application submitted for review",
     workItemHoverText: ["Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas libero, repudiandae id."],
     type: "credentialing Application",
+    applicantType: 'Nurse - Midwife',
     applicantStaffName: "Karen K.",
-    manager: "Nina G.",
+    assignedTo: 'Nina G',
     createdOn: "June 01 2024",
     dueDate: "June 01 2024"
   },
@@ -33,8 +34,9 @@ const StaffList = ({ isLoading, getSelectedApplicant, selectedApplicant, getActi
     workItem: "n95 certificate expiring",
     workItemHoverText: ["Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas libero, repudiandae id."],
     type: "Active Staff",
+    applicantType: 'Physician - Cardiologist',
     applicantStaffName: "Jason M.",
-    manager: "Nina G.",
+    assignedTo: "Nina G.",
     createdOn: "June 01 2024",
     dueDate: "June 01 2024"
   },
@@ -43,8 +45,9 @@ const StaffList = ({ isLoading, getSelectedApplicant, selectedApplicant, getActi
     workItem: "upcoming staff Reappointment",
     workItemHoverText: ["Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas libero, repudiandae id."],
     type: "Active Staff",
+    applicantType: 'Physician - Pediatrics',
     applicantStaffName: "Hannanh Y.",
-    manager: "Nina G.",
+    assignedTo: "Nina G.",
     createdOn: "June 01 2024",
     dueDate: "June 01 2024"
   }
@@ -53,8 +56,9 @@ const StaffList = ({ isLoading, getSelectedApplicant, selectedApplicant, getActi
   const activeHeaderValues = ["",
     "Work Item ",
     "Type",
+    "Applicant Type",
     "Applicant / Staff Name",
-    "Manager",
+    "Assigned To",
     "Created On",
     "Due Date",
     ""
@@ -68,7 +72,8 @@ const StaffList = ({ isLoading, getSelectedApplicant, selectedApplicant, getActi
   let dot = [];
   let dotTooltipValues = [];
   let effectiveDate = [];
-  let manager = [];
+  let assignedTo = [];
+  let applicantType = [];
   let lastUpdated = [];
   let action = [];
   let applicantStaffName = [];
@@ -79,7 +84,8 @@ const StaffList = ({ isLoading, getSelectedApplicant, selectedApplicant, getActi
   const getActiveContractsValues = () => {
     dot = [];
     applicantStaffName = [];
-    manager = [];
+    assignedTo = [];
+    applicantType = [];
     lastUpdated = [];
     action = [];
     type = [];
@@ -91,10 +97,11 @@ const StaffList = ({ isLoading, getSelectedApplicant, selectedApplicant, getActi
       workItem.push(data?.workItem);
       workItemHoverText.push(data?.workItemHoverText || '-');
       type.push(data?.type);
+      applicantType.push(data?.applicantType)
       applicantStaffName.push(data?.applicantStaffName);
-      manager.push(data?.manager);
-      effectiveDate.push(format(new Date(data?.createdOn), 'MM-dd-yyyy'))
-      lastUpdated.push(format(new Date(data?.dueDate), 'MM-dd-yyyy'))
+      assignedTo.push(data?.manager);
+      effectiveDate.push(format(new Date(data?.createdOn), 'MMM dd yyyy'))
+      lastUpdated.push(format(new Date(data?.dueDate), 'MMM dd yyyy'))
       action.push(true);
     })
 
@@ -102,8 +109,9 @@ const StaffList = ({ isLoading, getSelectedApplicant, selectedApplicant, getActi
       { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
       { "type": "textWithHover", "value": workItem, "hoverText": workItemHoverText },
       { "type": "text", "value": type },
+      { "type": "text", "value": applicantType },
       { "type": "text", "value": applicantStaffName },
-      { "type": "text", "value": manager },
+      { "type": "text", "value": assignedTo },
       { "type": "text", "value": effectiveDate },
       { "type": "text", "value": lastUpdated },
       { "type": "action", "value": action },

@@ -31,7 +31,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
       <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Applicants to Process" tileCount={counts.applicantsToProcess} currentTile="applicantsToProcess" />
       <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Applications Under Review" tileCount={counts.applicationsUnderReview} currentTile="applicationsUnderReview" />
       <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Clarifications Required" tileCount={counts.clarificationsRequired} currentTile="clarificationsRequired" />
-      <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Approved" tileCount={counts.approved} currentTile="approved" />
+      <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Approved Applicants" tileCount={counts.approved} currentTile="approved" />
     </div>
   )
 }

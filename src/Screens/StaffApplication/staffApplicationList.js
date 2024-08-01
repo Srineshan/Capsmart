@@ -42,7 +42,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
   const [tableData, setTableData] = useState([]);
   const [rejectionListData, setRejectionListData] = useState([]);
 
-  const applicantHeaderValues = ["", "Applicant Name & ID", "Applicant Type", "Docs", "Data", "Disclosures", "CRs", "Notes", "Last Updated", "Cap Manager", ""];
+  const applicantHeaderValues = ["", "Applicant Name", "Applicant Type", "Department", "Docs", "Data", "Disclosures", "CRs", "Notes", "Last Updated", "Last Updated By", "Manager", ""];
   const applicationHeaderValues = ["", "Applicant Name", "Applicant Type", "Department", "Commitee", "Board", "CEO", "Last Updated On", "Last Updated by", ""];
   const clarificationHeaderValues = ["", "Applicant Name", "Type", "Clarification Title", "Raised By", "Created On", "Last Updated On", ""];
   const approvedHeaderValues = ["", "Applicant Name", "Type", "Notes", "Last Updated On", ""];
@@ -175,6 +175,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
     applicantName = [];
     applicantId = [];
     applicantType = [];
+    department = [];
     docs = [];
     docsHoverText = [];
     docsIcon = [];
@@ -186,14 +187,16 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
     notesHoverText = [];
     notesIcon = [];
     lastUpdated = [];
+    lastUpdatedBy = [];
     capManager = [];
     action = [];
 
     tableData?.map(data => {
       dot.push(data?.subStatus === 'REVIEW_INPROGRESS' ? 'yellow' : data?.subStatus === 'COMPLETED ' ? 'green' : 'grey');
-      applicantName.push(data?.applicant?.name?.lastName + ' ' + data?.applicant?.name?.firstName || '');
+      applicantName.push(`${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` || '');
       applicantId.push(data?.Id);
       applicantType.push(data?.providerType.serviceProviderType);
+      department.push(data?.department);
       docs.push(data?.docs || '2/8');
       docsHoverText.push(["Immunization History Verification From PCP pending"])
       docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} />);
@@ -204,7 +207,8 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
       notes.push(data?.notes || '1');
       notesIcon.push(<NoteAltOutlinedIcon style={{ fontSize: 20, color: `#52575D` }} />);
       notesHoverText.push(["June 13 00:00, Nina Grealy", "Lorem ipsum dolor sit amet, consetetur sadipscing."])
-      lastUpdated.push(format(new Date(data?.lastModifiedDate), 'MM-dd-yyyy'))
+      lastUpdated.push(format(new Date(data?.lastModifiedDate), 'MMM dd, yyyy'))
+      lastUpdatedBy.push('-')
       // const lastUpdatedDate = new Date(data?.lastModifiedDate);
       // lastUpdated.push(isNaN(lastUpdatedDate.getTime()) ? 'Invalid Date' : format(lastUpdatedDate, 'MM-dd-yyyy'));
       capManager.push(data?.capManager || 'keerthana ');
@@ -215,12 +219,14 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
       { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
       { "type": "text", "value": applicantName },
       { "type": "text", "value": applicantType },
+      { "type": "text", "value": department },
       { "type": "iconWithCount", "value": docs, "hoverText": docsHoverText, 'isShowHoverText': true, "icon": docsIcon },
       { "type": "dot", "value": dataStatus },
       { "type": "iconWithCount", "value": disclosures, "hoverText": docsHoverText, 'isShowHoverText': true, "icon": docsIcon },
       { "type": "countWithHover", "value": crs, "hoverText": crsHoverText },
       { "type": "iconWithCount", "value": notes, "hoverText": notesHoverText, 'isShowHoverText': true, "icon": notesIcon },
       { "type": "text", "value": lastUpdated },
+      { "type": "text", "value": lastUpdatedBy },
       { "type": "text", "value": capManager },
       { "type": "action", "value": action },
     ];
@@ -239,13 +245,13 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
 
     tableData?.map(data => {
       dot.push("");
-      applicantName.push(data?.applicant?.name?.lastName + ' ' + data?.applicant?.name?.firstName || '');
+      applicantName.push(`${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` || '');
       applicantType.push(data?.providerType.serviceProviderType);
       department.push(data?.department || 'department');
       commiteeStatus.push(data?.commiteeStatus || 'yellow');
       boardStatus.push(data?.boardStatus || 'green');
       ceoStatus.push(data?.ceoStatus || 'grey');
-      lastUpdatedOn.push(format(new Date(data?.lastModifiedDate), 'MM-dd-yyyy'))
+      lastUpdatedOn.push(format(new Date(data?.lastModifiedDate), 'MMM dd, yyyy'))
       lastUpdatedBy.push(data?.lastUpdatedBy);
       action.push(true);
     })
@@ -276,7 +282,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
 
     tableData?.map(data => {
       dot.push(data?.subStatus || 'green');
-      applicantName.push(data?.applicant?.name?.lastName + ' ' + data?.applicant?.name?.firstName || '');
+      applicantName.push(`${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` || '');
       applicantType.push(data?.providerType.serviceProviderType);
       clarificationTitle.push(data?.clarificationTitle);
       raisedBy.push(data?.raisedBy);
@@ -307,10 +313,10 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
 
     tableData?.map(data => {
       dot.push(data?.subStatus);
-      applicantName.push(data?.applicant?.name?.lastName + ' ' + data?.applicant?.name?.firstName || '');
+      applicantName.push(`${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` || '');
       applicantType.push(data?.providerType.serviceProviderType);
       approvedNotes.push(data?.approvedNotes);
-      lastUpdatedOn.push(format(new Date(data?.lastModifiedDate), 'MM-dd-yyyy'));
+      lastUpdatedOn.push(format(new Date(data?.lastModifiedDate), 'MMM dd, yyyy'));
       action.push(true);
     })
 
@@ -386,7 +392,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
             <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
               <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
                 <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
-                  Request For Appointment ({requestAppointment})
+                  Requests For Appointment ({requestAppointment})
                 </div>
                 <div className={`${style.marginLeft10} `} >
                   {!showCardAppointment ? (
