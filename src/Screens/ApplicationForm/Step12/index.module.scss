@@ -77,22 +77,10 @@
     grid-column: span 2;
 }
 
-.privilegeGrid {
+.criminalHistoryGrid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(1, 1fr);
     gap: 20px;
-}
-
-.privilegeGrid> :nth-child(1) {
-    grid-column: span 2;
-}
-
-.privilegeGrid> :nth-child(2) {
-    grid-column: span 2;
-}
-
-.privilegeGrid> :nth-child(3) {
-    grid-column: span 2;
 }
 
 .progressStyle {
@@ -102,7 +90,7 @@
 }
 
 .progressStyleBackground {
-    background: transparent linear-gradient(90deg, #7165E3 0%, #7165E3 27%, #E9E9F0 30%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(90deg, #7165E3 0%, #7165E3 39%, #E9E9F0 42%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
 }
 
 .siteDisplayCard {

@@ -34,8 +34,11 @@ const Step8 = ({ basicForm, setBasicForm }) => {
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
                     <div className={style.applicationCardStyle}>
-                        {formSchema !== undefined && 'provideRecognition' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.provideRecognition} gridStyle={style.trainingGrid} baseKey={'provideRecognition'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} />
+                        {formSchema !== undefined && 'privilegeCategories' in formSchema?.properties && (
+                            <ApplicationFieldCard object={formSchema?.properties?.privilegeCategories} gridStyle={style.privilegeGrid} baseKey={'privilegeCategories'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} />
+                        )}
+                        {formSchema !== undefined && 'additionalInformationAndSupportingDocuments' in formSchema?.properties && (
+                            <ApplicationFieldCard object={formSchema?.properties?.additionalInformationAndSupportingDocuments} gridStyle={style.privilegeGrid} baseKey={'additionalInformationAndSupportingDocuments'} basicForm={basicForm} setBasicForm={setBasicForm} />
                         )}
                     </div>
                 </div>

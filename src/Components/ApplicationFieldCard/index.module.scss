@@ -9,8 +9,20 @@
     margin-top: 20px;
 }
 
+.marginTop10 {
+    margin-top: 10px;
+}
+
+.marginBottom5 {
+    margin-bottom: 5px;
+}
+
 .marginLeft {
     margin-left: 20px;
+}
+
+.marginRight {
+    margin-right: 20px;
 }
 
 .cardTitle {
@@ -134,6 +146,20 @@
     color: #b0b3b5;
 }
 
+.addMoreDescriptionText {
+    text-align: left;
+    font: normal normal bold 13px/25px Montserrat;
+    letter-spacing: 0px;
+    color: #b0b3b5;
+}
+
+.collapsableCardText {
+    text-align: left;
+    font: normal normal bold 15px/25px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+}
+
 .displayInRowRev {
     display: flex;
     flex-direction: row-reverse;
@@ -162,4 +188,15 @@
     position: relative;
     top: 17px;
     left: 15px;
+}
+
+.lableStyle {
+    text-align: left;
+    font: normal normal bold 13px/17px Montserrat;
+    letter-spacing: 0px;
+    color: #94979A;
+    text-transform: capitalize;
+    opacity: 1;
+    margin-top: 5px;
+    max-width: 85%;
 }

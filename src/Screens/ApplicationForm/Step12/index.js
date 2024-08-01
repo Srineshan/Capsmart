@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 
 import style from './index.module.scss';
 
-const Step9 = ({ basicForm, setBasicForm }) => {
+const Step12 = ({ basicForm, setBasicForm }) => {
     const [formSchema, setFormSchema] = useState();
     const navigate = useNavigate()
     useEffect(() => {
@@ -21,28 +21,31 @@ const Step9 = ({ basicForm, setBasicForm }) => {
 
     const getFormSchema = async () => {
         const { data: form } = await GET(
-            `application-management-service/formSchema/${basicForm?.formSchemas?.[7]?.id}`
+            `application-management-service/formSchema/${basicForm?.formSchemas?.[10]?.id}`
         );
         setFormSchema(form)
     }
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 9'} dataType={'Documents and Data'} title={formSchema?.title} timeNumber={20} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                <ProgressCard step={'STEP 12'} dataType={'Documents and Data'} title={formSchema?.title} timeNumber={20} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
                     <div className={style.applicationCardStyle}>
-                        {formSchema !== undefined && 'provideRecognition' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.provideRecognition} gridStyle={style.trainingGrid} baseKey={'provideRecognition'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} addMoreOpenBydefault={true} />
+                        {formSchema !== undefined && 'criminalData1' in formSchema?.properties && (
+                            <ApplicationFieldCard object={formSchema?.properties?.criminalData1} gridStyle={style.criminalHistoryGrid} baseKey={'criminalData1'} basicForm={basicForm} setBasicForm={setBasicForm} collapsableQuestionCard={true} />
+                        )}
+                        {formSchema !== undefined && 'criminalData2' in formSchema?.properties && (
+                            <ApplicationFieldCard object={formSchema?.properties?.criminalData2} gridStyle={style.criminalHistoryGrid} baseKey={'criminalData2'} basicForm={basicForm} setBasicForm={setBasicForm} collapsableQuestionCard={true} />
                         )}
                     </div>
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
-                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate('/applicationForm/section1/step10')}>CONTINUE</div>
+                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate('/applicationForm/section1/step13')}>CONTINUE</div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
                     </div>
@@ -52,4 +55,4 @@ const Step9 = ({ basicForm, setBasicForm }) => {
     )
 }
 
-export default Step9;
+export default Step12;
