@@ -1,14 +1,37 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import TileApplication from '../../Components/TileApplication';
 import style from './index.module.scss';
+import { GET } from './../../Screens/dataSaver';
 
-const StaffApplicationTiles = ({ metadata, getSelectedContract, selectedContract, activeContractsLength, draftContractsLength, upcomingContractsLength, expiredContractsLength, getTabFilter }) => {
+const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
+  const [counts, setCounts] = useState({
+    approved: 0,
+    applicationsUnderReview: 0,
+    applicantsToProcess: 0,
+    rejected: 0,
+    clarificationsRequired: 0
+  });
+
+  const getTitleCounts = async () => {
+    await GET('application-management-service/application/workflowUser/meta')
+      .then(response => {
+        setCounts(response?.data);
+      })
+      .catch(error => {
+        console.log('error', error);
+      })
+  };
+
+  useEffect(() => {
+    getTitleCounts();
+  }, []);
+
   return (
     <div className={`${style.tabs}`}>
-      <TileApplication selectedContract={selectedContract} getSelectedContract={getSelectedContract} tileLabel="Applicants to Process" tileCount={3} currentTile="Applicants" />
-      <TileApplication selectedContract={selectedContract} getSelectedContract={getSelectedContract} tileLabel="Applications Under Review" tileCount={3} currentTile="Applications" />
-      <TileApplication selectedContract={selectedContract} getSelectedContract={getSelectedContract} tileLabel="Clarifications Required" tileCount={2} currentTile="Clarifications" />
-      <TileApplication selectedContract={selectedContract} getSelectedContract={getSelectedContract} tileLabel="Approved" tileCount={1} currentTile="Approved" />
+      <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Applicants to Process" tileCount={counts.applicantsToProcess} currentTile="applicantsToProcess" />
+      <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Applications Under Review" tileCount={counts.applicationsUnderReview} currentTile="applicationsUnderReview" />
+      <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Clarifications Required" tileCount={counts.clarificationsRequired} currentTile="clarificationsRequired" />
+      <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Approved Applicants" tileCount={counts.approved} currentTile="approved" />
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import React, { Fragment, useState, useEffect } from "react";
 import Navbar from "../../Components/Navbar";
 import SideBar from "./../../Components/Sidebar";
-import { Checkbox, Icon, Intent } from "@blueprintjs/core";
+import { Checkbox, Icon, Intent, TextArea } from "@blueprintjs/core";
 import AddNewEntity from "./../../images/addEntity.png";
 import SelectArrow from "./../../images/selectArrow.png";
 import OpenFolderBlue from "./../../images/openFolderBlue.png";
@@ -16,7 +16,7 @@ import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import DeleteConfirmation from "../../Components/DeleteConfirmation";
-import {InputGroup} from "@blueprintjs/core";
+import { InputGroup } from "@blueprintjs/core";
 import style from "./index.module.scss";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
@@ -34,7 +34,7 @@ const GeneralConfigurationForCustomers = () => {
   const [lastUpdatedDate, setLastUpdatedDate] = useState("");
   const [mileageRateData, setMileageRateData] = useState([]);
 
-  
+
   const getAddMileageRateDialog = (value) => {
     setShowAddCompanyDialog(value);
   };
@@ -76,7 +76,7 @@ const GeneralConfigurationForCustomers = () => {
     );
     setMileageRateData(mileageRateData)
   };
-  
+
   const handleDeleteMileageRate = async (id) => {
     await DELETE(`entity-service/mileageRate/${id}`)
       .then((response) => {
@@ -89,7 +89,7 @@ const GeneralConfigurationForCustomers = () => {
       });
   };
 
-  
+
   const getShowDeleteConfirmation = (value) => {
     setShowDeleteConfirmation(value);
   };
@@ -133,7 +133,8 @@ const GeneralConfigurationForCustomers = () => {
                           <div className={`${style.editHealthCareGrid2} ${style.marginLeft20} ${style.marginTop10}`}>
                             <div className={style.entityLableStyle3}>Certification Language for Approver*</div>
                             <div className={style.displayInRow}>
-                              <InputGroup
+                              <TextArea
+                                rows={3}
                                 value={""}
                                 className={style.halfWidth}
                               />
@@ -142,7 +143,8 @@ const GeneralConfigurationForCustomers = () => {
                           <div className={`${style.editHealthCareGrid2} ${style.marginLeft20} ${style.marginTop10}`}>
                             <div className={style.entityLableStyle3}>Certification Language for Reviewer*</div>
                             <div className={style.displayInRow}>
-                              <InputGroup
+                              <TextArea
+                                rows={3}
                                 value={""}
                                 className={style.halfWidth}
                               />
@@ -151,7 +153,8 @@ const GeneralConfigurationForCustomers = () => {
                           <div className={`${style.editHealthCareGrid2} ${style.marginLeft20} ${style.marginTop10}`}>
                             <div className={style.entityLableStyle3}>Certification Language for Accounts Payable*</div>
                             <div className={style.displayInRow}>
-                              <InputGroup
+                              <TextArea
+                                rows={3}
                                 value={""}
                                 className={style.halfWidth}
                               />
@@ -161,7 +164,7 @@ const GeneralConfigurationForCustomers = () => {
                         <div className={`${style.floatRight} ${style.marginTop10}`}>
                           <button
                             className={`${style.buttonStyle} ${style.marginLeft20}`}
-                            // onClick={() => handleSave()}
+                          // onClick={() => handleSave()}
                           >
                             SAVE
                           </button>

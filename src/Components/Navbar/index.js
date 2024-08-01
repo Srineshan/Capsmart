@@ -340,7 +340,7 @@ const Navbar = () => {
             isContractManager && (
               <Link to={'/staffs'} className={style.noFontStyle}>
                 <div className={`${style.menuStyle} ${window.location.pathname.includes("/staffs") && style.activeMenuColor}`}>
-                  <p>STAFF MANAGER</p>
+                  <p>MANAGER WORKSPACE</p>
                 </div>
               </Link>
             )
@@ -349,12 +349,29 @@ const Navbar = () => {
             isContractManager && (
               <Link to={'/applications'} className={style.noFontStyle}>
                 <div className={`${style.menuStyle} ${window.location.pathname.includes("/applications") && style.activeMenuColor}`}>
-                  <p>APPLICATIONS</p>
+                  <p>STAFF APPLICATIONS</p>
                 </div>
               </Link>
             )
           }
-
+          {
+            isContractManager && (
+              // <Link to={'/'} className={style.noFontStyle}>
+              <div className={`${style.menuStyle} ${window.location.pathname.includes("/activeStaff") && style.activeMenuColor}`}>
+                <p>ACTIVE STAFF</p>
+              </div>
+              // </Link>
+            )
+          }
+          {
+            isContractManager && (
+              // <Link to={'/'} className={style.noFontStyle}>
+              <div className={`${style.menuStyle} ${window.location.pathname.includes("/inactiveStaff") && style.activeMenuColor}`}>
+                <p>INACTIVE STAFF</p>
+              </div>
+              // </Link>
+            )
+          }
           {/* {
             isContractManager && (
               <div>

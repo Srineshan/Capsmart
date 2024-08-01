@@ -8,114 +8,72 @@ import CommonMailingAddress from '../../Components/CommonFields/CommonMailingAdd
 import CommonDivider from '../../Components/CommonFields/CommonDivider';
 import { GET } from '../dataSaver';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-
-import style from './index.module.scss'
 import ApplicationFieldCard from '../../Components/ApplicationFieldCard';
 import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
 
+import style from './index.module.scss'
+import Step1 from './Step1';
+import { useParams } from 'react-router-dom';
+import Step2 from './Step2';
+import Step3 from './Step3';
+import Step4 from './Step4';
+import Step5 from './Step5';
+import Step6 from './Step6';
+import Step7 from './Step7';
+import Step8 from './Step8';
+import Step9 from './Step9';
+import Step10 from './Step10';
+
+
 const ApplicationForm = () => {
-    const [form1, setForm1] = useState();
-    const [form2, setForm2] = useState();
+    const { section, step } = useParams();
     const [basicForm, setBasicForm] = useState({})
 
     useEffect(() => {
-        getBasicForm()
         getPreApplication()
     }, [])
 
-    const getBasicForm = async () => {
-        const { data: basicForm } = await GET(
-            `application-management-service/preApplication/basicForm`
-        );
-        if (basicForm) {
-            const { data: form1 } = await GET(
-                `application-management-service/formSchema/${basicForm?.generalSchemas?.[0]?.id}`
-            );
-            let temp = form1;
-            if (temp.properties.applicant.properties !== null) {
-                delete temp.properties.applicant.properties['letterOfInterest']
-                delete temp.properties.applicant.properties['curriculumVitae']
-            }
-            setForm1(form1)
-            const { data: form2 } = await GET(
-                `application-management-service/formSchema/${basicForm?.generalSchemas?.[1]?.id}`
-            );
-            console.log(form2)
-            setForm2(form2)
-        }
-    }
-
     const getPreApplication = async () => {
         const { data: basicForm } = await GET(
-            `application-management-service/application/${`669f8d8a3c6ad75864d2ec8d`}`
+            `application-management-service/application/${`66a9d13792a3ce59d5bf166b`}`
         );
         setBasicForm(basicForm)
     }
+
+    const StepDisplay = () => {
+        switch (step) {
+            case 'step1':
+                return <Step1 basicForm={basicForm} setBasicForm={setBasicForm} />;
+            case 'step2':
+                return <Step2 basicForm={basicForm} setBasicForm={setBasicForm} />;
+            case 'step3':
+                return <Step3 basicForm={basicForm} setBasicForm={setBasicForm} />;
+            case 'step4':
+                return <Step4 basicForm={basicForm} setBasicForm={setBasicForm} />;
+            case 'step5':
+                return <Step5 basicForm={basicForm} setBasicForm={setBasicForm} />;
+            case 'step6':
+                return <Step6 basicForm={basicForm} setBasicForm={setBasicForm} />;
+            case 'step7':
+                return <Step7 basicForm={basicForm} setBasicForm={setBasicForm} />;
+            // case 'step8':
+            //     return <Step8 basicForm={basicForm} setBasicForm={setBasicForm} />;
+            // case 'step9':
+            //     return <Step9 basicForm={basicForm} setBasicForm={setBasicForm} />;
+            // case 'step10':
+            //     return <Step10 basicForm={basicForm} setBasicForm={setBasicForm} />;
+            default:
+                return <div>Step not found</div>;
+        }
+    };
+
+    console.log(section, step)
 
     return (
         <div className={style.screenBackground}>
             <ApplicationHeader title={'New {Doctor} {Full Time} Application For {First Last Name}'} />
             <div className={style.screenPadding}>
-                <div className={style.applicationScreenGrid}>
-                    <ProgressCard step={'STEP 1'} dataType={'Prepare your requirements'} title={'Verify Your Information'} timeNumber={1} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
-                    <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
-                </div>
-                <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
-                    <div className={style.applicationCardStyle}>
-                        {/* <CommonMailingAddress label={'Business Mailing Address*'} onChangeAddressLine1={() => { }} placeholderAddressLine1={'123 Street'} maxLengthAddressLine1={25} valueAddressLine1={''}
-                            onChangeAddressLine2={() => { }} placeholderAddressLine2={'Apartment 5'} maxLengthAddressLine2={25} valueAddressLine2={''} onChangeCity={() => { }} placeholderCity={'City'} maxLengthCity={25}
-                            valueCity={''} onChangeState={() => { }} placeholderState={'Province'} maxLengthState={25} valueState={''} onChangeZipcode={() => { }} placeholderZipcode={'Zipcode'} maxLengthZipcode={15} valueZipcode={''} /> */}
-                        {form1 !== undefined && 'applicant' in form1?.properties && (
-                            <ApplicationFieldCard object={form1?.properties?.applicant} gridStyle={style.twoCol} baseKey={'applicant'} basicForm={basicForm} setBasicForm={setBasicForm} />
-                        )}
-                        <CommonDivider />
-                        {form1 !== undefined && 'service' in form1?.properties && (
-                            <ApplicationFieldCard object={form1?.properties?.service} gridStyle={style.twoCol} baseKey={'service'} basicForm={basicForm} setBasicForm={setBasicForm} />
-                        )}
-                        <CommonDivider />
-                        <div className={`${style.backgroundCard} ${style.marginTop}`}>
-                            <div className={style.addedSites}>Added Sites</div>
-                            <div className={style.fourCol}>
-                                <div className={`${style.siteDisplayCard} ${style.siteDisplayGrid} ${style.marginTop}`}>
-                                    <div>
-                                        <div className={style.siteDisplayDepartmentTextStyle}>Department of Surgery </div>
-                                        <div className={style.siteDisplaySurgeryTextStyle}>Cardiothoracic Surgery</div>
-                                        <div className={`${style.siteDisplaySiteTextStyle} ${style.marginTop10}`}>Cambridge Memorial Hospital </div>
-                                    </div>
-                                    <DeleteOutlineIcon sx={{ color: '#7165E3', cursor: 'pointer' }} />
-                                </div>
-                                <div className={`${style.siteDisplayCard} ${style.siteDisplayGrid} ${style.marginTop}`}>
-                                    <div>
-                                        <div className={style.siteDisplayDepartmentTextStyle}>Department of Surgery </div>
-                                        <div className={style.siteDisplaySurgeryTextStyle}>General Surgery</div>
-                                        <div className={`${style.siteDisplaySiteTextStyle} ${style.marginTop10}`}>Cambridge Memorial Hospital </div>
-                                    </div>
-                                    <DeleteOutlineIcon sx={{ color: '#7165E3', cursor: 'pointer' }} />
-                                </div>
-                            </div>
-                        </div>
-                        <CommonDivider />
-                        {form2 !== undefined && 'natureOfPractice' in form2?.properties && (
-                            <ApplicationFieldCard object={form2?.properties?.natureOfPractice} gridStyle={style.twoCol} baseKey={'natureOfPractice'} basicForm={basicForm} setBasicForm={setBasicForm} />
-                        )}
-                        <CommonDivider />
-                        {form2 !== undefined && 'regionalCallResponsibilities' in form2?.properties && (
-                            <ApplicationFieldCard object={form2?.properties?.regionalCallResponsibilities} gridStyle={style.twoCol} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} />
-                        )}
-                        <CommonDivider />
-                        <div className={style.marginTop}>
-                            <CommonCheckBox checked={true} onChange={(e) => { }} label="I HAVE VERIFIED THE INFORMATION" />
-                        </div>
-                    </div>
-                    <div>
-                        <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-                        <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
-                        <div className={`${style.continue} ${style.marginTop10}`}>CONTINUE</div>
-                        {/* <div className={style.marginTop}>
-                            <ApplicationReferenceDocuments />
-                        </div> */}
-                    </div>
-                </div>
+                {StepDisplay()}
             </div>
         </div>
     )

@@ -1,37 +1,16 @@
 import React, { useState, useEffect, createRef, useCallback, useRef } from 'react';
-import DownloadLight from './../../images/downloadLightColor.png';
-import Download from '../../images/download.png'
-import PrintIcon from './../../images/printIcon.png';
-import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
-import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
-import DownloadIcon from '@mui/icons-material/Download';
-import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 import NoteAltOutlinedIcon from '@mui/icons-material/NoteAltOutlined';
-import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
-import Popover from '@mui/material/Popover';
-import GreenPage from './../../images/greenPage.png';
 import TimeSmartLogo from './../../images/timeSmartAI-logo-withoutbg.png';
 import StaffApplicationTiles from './staffApplicationTiles';
-import SearchBar from '../../Components/SearchBar';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
-import { GET, PUT, POST, TenantID } from '../dataSaver';
-import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import CircularProgress from "@mui/material/CircularProgress";
-import { SuccessToaster, ErrorToaster } from '../../utils/toaster';
-import { currentUser } from '../../utils/auth';
 import { format } from 'date-fns';
 import TableTwo from '../../Components/TableDesignTwo';
-import LeftStatsCard from '../../Components/LeftStatsCard';
-import LoadingScreen from '../../Components/LoadingScreen';
-import { toPDF } from '../../Components/ConvertToPdf';
-import { useReactToPrint } from "react-to-print";
-import CloseIcon from '@mui/icons-material/Close';
 import PublicIcon from '@mui/icons-material/Public';
 import PermIdentityIcon from '@mui/icons-material/PermIdentity';
 import style from './index.module.scss';
@@ -39,114 +18,31 @@ import SideBar from '../../Components/Sidebar';
 import ProgressBar from "@ramonak/react-progress-bar";
 import ApplicationRejection from './applicationRejectionDialog';
 import { useNavigate } from 'react-router-dom';
+import { GET, PUT, POST, TenantID } from '../dataSaver';
 
-const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog, contracts, getSelectedContract, getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page, getActiveContractView, getFilterValues, getHandleSort, sortValue, getTabFilter, getActiveApplicationView }) => {
+const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiveApplicationView }) => {
   const PDFRef = createRef();
   const navigate = useNavigate();
   const componentRef = useRef(null);
-  const filterRef = useRef();
-  const [requestAppointment, setRequestAppointment] = useState(true);
-  const [sentCompletion, setSentCompletion] = useState(true);
-  const [applicationRejected, setApplicationRejected] = useState(true);
 
-  const ApplicantsProcessData = [{
-    subStatus: "yellow",
-    applicantName: "LAST,First MI ",
-    applicantId: "7837428",
-    applicantType: "Doctor",
-    docs: "2/8",
-    dataStatus: "yellow",
-    disclosures: "7/9",
-    crs: "1",
-    notes: "1",
-    lastUpdated: "June 01 2024",
-    capManager: "lorem ipsum"
-  }, {
-    subStatus: "green",
-    applicantName: "LAST,First MI ",
-    applicantId: "7837428",
-    applicantType: "Doctor",
-    docs: "2/8",
-    dataStatus: "green",
-    disclosures: "7/9",
-    crs: "0",
-    notes: "1",
-    lastUpdated: "June 01 2024",
-    capManager: "lorem ipsum"
-  },
-  {
-    subStatus: "grey",
-    applicantName: "LAST,First MI ",
-    applicantId: "7837428",
-    applicantType: "Doctor",
-    docs: "2/8",
-    dataStatus: "yellow",
-    disclosures: "7/9",
-    crs: "2",
-    notes: "1",
-    lastUpdated: "June 01 2024",
-    capManager: "lorem ipsum"
-  },
-  ]
+  const [rejectionTab, setRejectionTab] = useState("rejected");
+  const [requestAppointment, setRequestAppointment] = useState(null);
+  const [sentCompletion, setSentCompletion] = useState(null);
+  const [showCardDetails, setShowCardDetails] = useState(false);
+  const [showCardAppointment, setShowCardAppointment] = useState(false);
+  const [showCardCompletion, setShowCardCompletion] = useState(false);
 
-  const ApplicationData = [{
-    applicantName: "LAST,First MI ",
-    applicantType: "Doctor",
-    department: "Department",
-    commiteeStatus: "yellow",
-    boardStatus: "grey",
-    ceoStatus: "grey",
-    lastUpdatedOn: "June 19, 2024",
-    lastUpdatedBy: "lorem ipsum",
-  },
-  {
-    applicantName: "LAST,First MI ",
-    applicantType: "Doctor",
-    department: "Department",
-    commiteeStatus: "green",
-    boardStatus: "yellow",
-    ceoStatus: "grey",
-    lastUpdatedOn: "June 19, 2024",
-    lastUpdatedBy: "lorem ipsum",
-  },
-  ]
+  const [applicationRejected, setApplicationRejected] = useState({
+    totalRejections: 0,
+    appointmentRequestsDenied: 0,
+    applicationsRejected: 0,
+    applicationsApprovedButDenied: 0
+  });
 
-  const ClarificationData = [
-    {
-      subStatus: "green",
-      applicantName: "LAST,First MI 89327439",
-      applicantType: "Doctor",
-      clarificationTitle: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Enim cum, quos possimus nostrum debitis autem!",
-      raisedBy: "Committee Member",
-      createdOn: "June 19, 2024",
-      lastUpdatedOn: "June 19, 2024",
-    },
-    {
-      subStatus: "green",
-      applicantName: "LAST,First MI 89327439",
-      applicantType: "Doctor",
-      clarificationTitle: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Enim cum, quos possimus nostrum debitis autem!",
-      raisedBy: "Committee Member",
-      createdOn: "June 19, 2024",
-      lastUpdatedOn: "June 19, 2024",
-    }
-  ]
-  const ApprovedData = [
-    {
-      subStatus: "yellow",
-      applicantName: "LAST,First MI 89327439",
-      applicantType: "Doctor",
-      approvedNotes: "Lorem ipsum dolor",
-      lastUpdatedOn: "June 19, 2024",
-    }
-  ]
+  const [tableData, setTableData] = useState([]);
+  const [rejectionListData, setRejectionListData] = useState([]);
 
-  const reactToPrintContent = useCallback(() => {
-    return componentRef.current;
-  }, [componentRef.current]);
-  const [selectedContractId, setSelectedContractId] = useState();
-
-  const applicantHeaderValues = ["", "Applicant Name & ID", "Applicant Type", "Docs", "Data", "Disclosures", "CRs", "Notes", "Last Updated", "Cap Manager", ""];
+  const applicantHeaderValues = ["", "Applicant Name", "Applicant Type", "Department", "Docs", "Data", "Disclosures", "CRs", "Notes", "Last Updated", "Last Updated By", "Manager", ""];
   const applicationHeaderValues = ["", "Applicant Name", "Applicant Type", "Department", "Commitee", "Board", "CEO", "Last Updated On", "Last Updated by", ""];
   const clarificationHeaderValues = ["", "Applicant Name", "Type", "Clarification Title", "Raised By", "Created On", "Last Updated On", ""];
   const approvedHeaderValues = ["", "Applicant Name", "Type", "Notes", "Last Updated On", ""];
@@ -157,216 +53,93 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
   const approvedColSortValues = [false, false, false, false, false, false, false, false, false];
 
   const [isPrintClicked, setIsPrintClicked] = useState(false);
-  const [isDownloadClicked, setIsDownloadClicked] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
-  const [isMyContract, setIsMyContract] = useState(true);
-  const [isDraft, setIsDraft] = useState(true);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [showPreImplementationDialog, setShowPreImplementationDialog] = useState(false);
   const [showApplicationRejectionDialog, setShowApplicationRejectionDialog] = useState(false);
-  const [showReviewAndApprovalStatusSummaryDialog, setShowReviewAndApprovalStatusSummaryDialog] = useState(false);
-  const open = Boolean(anchorEl);
-  const id = open ? 'simple-popover' : undefined;
-  const currentUserData = currentUser();
-  const [selectedContractPreImplementationData, setSelectedContractPreImplementationData] = useState();
-  const [metadata, setMetadata] = useState();
-  const [CSPSubDomain, setCSPSubDomain] = useState("");
-  let contractFiltersFromSession = sessionStorage.getItem('contractFilters')
-  const [contractFilterValues, setContractFilterValues] = useState(contractFiltersFromSession);
-  console.log(contractFilterValues, 'filter')
-  let bottomTextNumber = sessionStorage.getItem('bottomFilter')
-  const compensationPolicyAvailableValues = {
-    ACTIVITY_BASED: 'Activity Based',
-    FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITH_OFFSET: 'Fixed Amount For Timesheet Period With Offset',
-    SHIFT_OR_PER_DAY_BASED: 'Shift Or Per Day Based',
-    FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET: 'Fixed Amount For Timesheet Period Without Offset'
-  }
-
-  const contractPolicyTypeAvailableValues = {
-    NEWCONTRACTONEXPIRATION: 'New Contract Expiration',
-    ONETIMECONTRACTTERMINATEONEXPIRATION: 'One Time Contract Termination Expiration',
-    WRITTENCONTRACTEXTENSIONFORFIXEDTERM: 'Written Contract Extension For Fixed Term',
-    AUTORENEWAL: 'Auto Renewal'
-  }
-  console.log(contractFilterValues)
-  useEffect(() => {
-    getContractsMetadata();
-    getEntityData();
-    sessionStorage.removeItem('Selected Contract Status')
-  }, []);
-
-  useEffect(() => {
-    getContractsMetadata();
-  }, [bottomTextNumber]);
-
-  useEffect(() => {
-    console.log(JSON.parse(contractFiltersFromSession), 'contractFilter')
-    setContractFilterValues(JSON.parse(contractFiltersFromSession))
-  }, [contractFiltersFromSession])
-
-  const activateContracts = async (data, userData) => {
-    setSelectedContractId(data?.id);
-    let status = userData?.filter(data => !data?.ssoId?.id?.includes(`@${CSPSubDomain}`))?.length === 0 ? 'ACTIVE' : 'ACTIVATION_READY';
-    let activationData = {
-      "contractActivation": {
-        "activationNotes": {
-          "notes": ""
-        },
-        "activatedBy": {
-          "id": currentUserData?.id,
-          "name": {
-            "firstName": currentUserData?.firstName,
-            "lastName": currentUserData?.lastName
-          },
-          "email": {
-            "officialEmail": currentUserData?.email
-          }
-        }
-      }
-    }
-    await PUT(`contract-managment-service/contracts/${data?.id}/contractStatus/${status}`, activationData)
-      .then(response => {
-        SuccessToaster('Contract Activated Successfully');
-        getContracts();
-        getContractsMetadata();
-      })
-      .catch(error => { ErrorToaster('Contract Activation Failed'); })
-  };
-
-  const getUserData = async (data) => {
-    if (data?.id !== "" && data?.id !== undefined) {
-      const { data: userData } = await GET(
-        `user-management-service/user?contractID=${data?.id}`
-      );
-      if (userData) {
-        if (userData?.length !== 0) {
-          activateContracts(data, userData);
-        }
-      }
-    }
-  };
-
-  const contractExtension = (data) => {
-    getExtensionDialog(true);
-    getContractIdFromActive(data?.id);
-  }
-
-  const contractTermination = (data) => {
-    getTerminationDialog(true);
-    getContractIdFromActive(data?.id);
-  }
-
-  const contractClone = (data) => {
-    getCloneDialog(true);
-    getContractIdFromActive(data?.id);
-  }
-
-  const deleteDraft = (data) => {
-    getDeleteDraftDialog(true);
-    getContractIdFromActive(data?.id);
-  }
-
-  const getShowPreImplementationDialog = (data) => {
-    setShowPreImplementationDialog(true);
-    setSelectedContractId(data?.id);
-    setSelectedContractPreImplementationData(data);
-  }
-
-  const getPreImplementationDialogBoolean = (value) => {
-    setShowPreImplementationDialog(value);
-  }
 
   const getApplicationRejectionDialog = (value) => {
     setShowApplicationRejectionDialog(value);
-  }
-
-  const getReviewAndApprovalStatusSummaryDialog = (data) => {
-    setShowReviewAndApprovalStatusSummaryDialog(true);
-  }
-
-  const getReviewAndApprovalStatusSummaryDialogBoolean = (value) => {
-    setShowReviewAndApprovalStatusSummaryDialog(value);
-  }
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setIsPrintClicked(false);
-    setAnchorEl(null);
-  };
-
-  const getEntityData = async () => {
-    const { data: entityData } = await GET(`entity-service/entity/${TenantID}`);
-    // console.log("entity", entityData.subdomain);
-    setCSPSubDomain(entityData?.officialEmailDomain?.officialEmail);
-  };
-
-  const getContractors = (id) => {
-    let contractedUsers = [];
-    users?.filter(user => user?.contracts?.map(contract => contract?.roles?.map(role => role?.roleName)?.includes('Activity Logger') && contract?.id)?.includes(id))?.map(data => {
-      console.log('suffix check', data)
-      let name = `${data?.name?.firstName}, ${data?.name?.lastName?.toUpperCase() || ''} ${data?.name?.suffix?.suffix || ''}`
-      contractedUsers.push(name);
-    });
-    return contractedUsers;
+    setRejectionTab("rejected")
   }
 
   const onClickViewAndVerifyFunction = (data) => {
     getActiveApplicationView(true);
   }
 
-  const onClickFunction = (data) => {
-    // if (selectedContract === 'activestaffs') {
-    //   getActiveContractView(true);
-    // } else {
-    getNewContract(true);
-    getContractType(data?.contractTypeId?.id, data?.contractType);
-    getSelectedContractType(data?.newContract ? 'New Contract' : 'Existing Contract');
-    // }
-    getContractIdFromActive(data?.id);
-    console.log(data, 'contract data')
-    sessionStorage.setItem('Selected Contract Status', data?.contractStatus)
-  }
+  useEffect(() => {
+    getSentConfirmationCount();
+    getRequestAppointmentCount();
+    getRejectionCounts();
+  }, []);
 
-  const handleRenewalContracts = async (data) => {
-    // getNewContract(true);
-    // getContractType(data?.contractTypeId?.id, data?.contractType);
-    // getSelectedContractType('Existing Contract');
-    // console.log(data, 'contract data')
-    // sessionStorage.setItem('Selected Contract Status', "DRAFT")
-    // sessionStorage.setItem('contractType', data?.contractType)
-    // sessionStorage.setItem('existingContractId', data?.id)
-    // sessionStorage.setItem('priorContractId', data?.contractDetail?.contractId?.id)
-    // sessionStorage.setItem('method', 'POST')
-    if (!data?.contractDetail?.contractRenewed) {
-      const { data: userData } = await GET(
-        `contract-managment-service/contracts/${data?.id}/renewContract`
-      )
+  useEffect(() => {
+    getWorkflowUserData(selectedTab);
+  }, [selectedTab]);
 
-      if (userData) {
-        SuccessToaster('Contract Renewed Successfully');
-        getContracts();
-        getContractsMetadata();
-      } else { ErrorToaster('Contract Renewal Failed'); };
-    } else {
-      ErrorToaster('Contract Already Renewed');
+  useEffect(() => {
+    getRejectionData(rejectionTab);
+  }, [rejectionTab, showApplicationRejectionDialog]);
+
+  const handleIconClick = () => {
+    setShowCardDetails(prev => !prev);
+  };
+
+  const getWorkflowUserData = async () => {
+    try {
+      const response = await GET(`application-management-service/application/workflowUser?tab=${selectedTab}`);
+      console.log('Application data', response?.data.applications);
+      setTableData(response?.data?.applications);
+      return response?.data.applications || [];
+    } catch (error) {
+      console.error('Error fetching applications:', error);
+      return [];
     }
-  }
+  };
 
-  const handleDownloadClicked = () => {
-    toPDF(".contractList", `ContractsList_${format(new Date(), 'MM_dd_yy')}`);
-  }
+  console.log("rejectionTab", rejectionTab)
 
-  const handlePrint = useReactToPrint({
-    content: reactToPrintContent,
-    documentTitle: `ContractsList_${format(new Date(), 'MM_dd_yy')}`,
-    // onBeforeGetContent: handleOnBeforeGetContent,
-    // onBeforePrint: handleBeforePrint,
-    // onAfterPrint: handleAfterPrint,
-    removeAfterPrint: true
-  });
+  const getRejectionData = async () => {
+    try {
+      const response = await GET(`application-management-service/application/workflowUser?tab=${rejectionTab}`);
+      console.log('Rejection data', response?.data?.applications);
+      setRejectionListData(response?.data?.applications);
+      return response?.data.applications || [];
+    } catch (error) {
+      console.error('Error fetching applications:', error);
+      return [];
+    }
+  };
+
+  const getSentConfirmationCount = async () => {
+    await GET('application-management-service/application/sentToApplicant/status')
+      .then(response => {
+        setSentCompletion(response?.data.totalApplicationsSent || 0);
+      })
+      .catch(error => {
+        console.error('Error fetching request appointment count:', error);
+
+      });
+  };
+
+  const getRequestAppointmentCount = async () => {
+    await GET('application-management-service/preApplication')
+      .then(response => {
+        setRequestAppointment(response?.data.numberOfElements || 0);
+      })
+      .catch(error => {
+        console.error('Error fetching request appointment count:', error);
+
+      });
+  };
+
+  const getRejectionCounts = async () => {
+    await GET('application-management-service/application/rejected/meta')
+      .then(response => {
+        setApplicationRejected(response?.data);
+      })
+      .catch(error => {
+        console.error('Error fetching rejection counts:', error);
+      });
+  };
 
   let dot = [];
   let dotTooltipValues = [];
@@ -402,6 +175,7 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
     applicantName = [];
     applicantId = [];
     applicantType = [];
+    department = [];
     docs = [];
     docsHoverText = [];
     docsIcon = [];
@@ -413,26 +187,31 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
     notesHoverText = [];
     notesIcon = [];
     lastUpdated = [];
+    lastUpdatedBy = [];
     capManager = [];
     action = [];
 
-    ApplicantsProcessData?.map(data => {
-      dot.push(data?.subStatus);
-      applicantName.push(data?.applicantName);
-      applicantId.push(data?.applicantId);
-      applicantType.push(data?.applicantType);
-      docs.push(data?.docs);
+    tableData?.map(data => {
+      dot.push(data?.subStatus === 'REVIEW_INPROGRESS' ? 'yellow' : data?.subStatus === 'COMPLETED ' ? 'green' : 'grey');
+      applicantName.push(`${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` || '');
+      applicantId.push(data?.Id);
+      applicantType.push(data?.providerType.serviceProviderType);
+      department.push(data?.department);
+      docs.push(data?.docs || '2/8');
       docsHoverText.push(["Immunization History Verification From PCP pending"])
       docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} />);
-      dataStatus.push(data?.dataStatus);
-      disclosures.push(data?.disclosures);
-      crs.push(data?.crs);
+      dataStatus.push(data?.dataStatus || 'yellow');
+      disclosures.push(data?.disclosures || '7/9');
+      crs.push(data?.crs || '0');
       crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"])
-      notes.push(data?.notes);
+      notes.push(data?.notes || '1');
       notesIcon.push(<NoteAltOutlinedIcon style={{ fontSize: 20, color: `#52575D` }} />);
       notesHoverText.push(["June 13 00:00, Nina Grealy", "Lorem ipsum dolor sit amet, consetetur sadipscing."])
-      lastUpdated.push(format(new Date(data?.lastUpdated), 'MM-dd-yyyy'))
-      capManager.push(data?.capManager);
+      lastUpdated.push(format(new Date(data?.lastModifiedDate), 'MMM dd, yyyy'))
+      lastUpdatedBy.push('-')
+      // const lastUpdatedDate = new Date(data?.lastModifiedDate);
+      // lastUpdated.push(isNaN(lastUpdatedDate.getTime()) ? 'Invalid Date' : format(lastUpdatedDate, 'MM-dd-yyyy'));
+      capManager.push(data?.capManager || 'keerthana ');
       action.push(true);
     })
 
@@ -440,12 +219,14 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
       { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
       { "type": "text", "value": applicantName },
       { "type": "text", "value": applicantType },
+      { "type": "text", "value": department },
       { "type": "iconWithCount", "value": docs, "hoverText": docsHoverText, 'isShowHoverText': true, "icon": docsIcon },
       { "type": "dot", "value": dataStatus },
       { "type": "iconWithCount", "value": disclosures, "hoverText": docsHoverText, 'isShowHoverText': true, "icon": docsIcon },
       { "type": "countWithHover", "value": crs, "hoverText": crsHoverText },
       { "type": "iconWithCount", "value": notes, "hoverText": notesHoverText, 'isShowHoverText': true, "icon": notesIcon },
       { "type": "text", "value": lastUpdated },
+      { "type": "text", "value": lastUpdatedBy },
       { "type": "text", "value": capManager },
       { "type": "action", "value": action },
     ];
@@ -462,15 +243,15 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
     lastUpdatedBy = [];
     action = [];
 
-    ApplicationData?.map(data => {
+    tableData?.map(data => {
       dot.push("");
-      applicantName.push(data?.applicantName);
-      applicantType.push(data?.applicantType);
-      department.push(data?.department);
-      commiteeStatus.push(data?.commiteeStatus);
-      boardStatus.push(data?.boardStatus);
-      ceoStatus.push(data?.ceoStatus);
-      lastUpdatedOn.push(data?.lastUpdatedOn)
+      applicantName.push(`${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` || '');
+      applicantType.push(data?.providerType.serviceProviderType);
+      department.push(data?.department || 'department');
+      commiteeStatus.push(data?.commiteeStatus || 'yellow');
+      boardStatus.push(data?.boardStatus || 'green');
+      ceoStatus.push(data?.ceoStatus || 'grey');
+      lastUpdatedOn.push(format(new Date(data?.lastModifiedDate), 'MMM dd, yyyy'))
       lastUpdatedBy.push(data?.lastUpdatedBy);
       action.push(true);
     })
@@ -499,10 +280,10 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
     lastUpdatedOn = [];
     action = [];
 
-    ClarificationData?.map(data => {
-      dot.push(data?.subStatus);
-      applicantName.push(data?.applicantName);
-      applicantType.push(data?.applicantType);
+    tableData?.map(data => {
+      dot.push(data?.subStatus || 'green');
+      applicantName.push(`${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` || '');
+      applicantType.push(data?.providerType.serviceProviderType);
       clarificationTitle.push(data?.clarificationTitle);
       raisedBy.push(data?.raisedBy);
       createdOn.push(data?.createdOn);
@@ -530,12 +311,12 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
     lastUpdatedOn = [];
     action = [];
 
-    ApprovedData?.map(data => {
+    tableData?.map(data => {
       dot.push(data?.subStatus);
-      applicantName.push(data?.applicantName);
-      applicantType.push(data?.applicantType);
+      applicantName.push(`${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` || '');
+      applicantType.push(data?.providerType.serviceProviderType);
       approvedNotes.push(data?.approvedNotes);
-      lastUpdatedOn.push(data?.lastUpdatedOn);
+      lastUpdatedOn.push(format(new Date(data?.lastModifiedDate), 'MMM dd, yyyy'));
       action.push(true);
     })
 
@@ -584,45 +365,15 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
     { 'data': 'Send follow up disclosures', 'requiredValue': 'boolean', "onClick": '' },
   ]
 
-  const handleAddContract = () => {
-    sessionStorage.setItem('Selected Contract Status', "DRAFT")
-    getAddContract(true);
-  }
-
-  const getContractsMetadata = async () => {
-    console.log(bottomTextNumber, 'test')
-    let apiUrl = `contract-managment-service/contracts/metadata`;
-    if (bottomTextNumber !== 'undefined' && bottomTextNumber !== undefined && bottomTextNumber !== null) {
-      if (selectedContract === 'upcomingrenewals') {
-        apiUrl += `?UpcomingTabNoOfDays=${bottomTextNumber}`
-      }
-      if (selectedContract === 'expired/terminated') {
-        apiUrl += `?ExpiredTabNoOfDays=${bottomTextNumber}`
-      }
-    }
-    const { data: contractMetadata } = await GET(apiUrl);
-    setMetadata(contractMetadata);
-  };
-
   const getIsExpanded = (value) => {
     setIsExpanded(value);
   }
 
-  const getContractFilterValues = (value) => {
-    console.log(value, 'contractFilters')
-    // setContractFilterValues(value);
-    sessionStorage.setItem('contractFilters', JSON.stringify(value))
-  }
-
-  const updateFilter = (data, value) => {
-    filterRef.current.updateFilter(data, value);
-  }
-
-  let tableHeaderValues = selectedContract === 'Applicants' ? applicantHeaderValues : selectedContract === "Applications" ? applicationHeaderValues : selectedContract === "Clarifications" ? clarificationHeaderValues : approvedHeaderValues;
-  let tableSortValues = selectedContract === 'Applicants' ? applicantColSortValues : selectedContract === "Applications" ? applicationColSortValues : selectedContract === "Clarifications" ? clarificationColSortValues : approvedColSortValues;
-  let tableDataValues = selectedContract === 'Applicants' ? getApplicantValues() : selectedContract === "Applications" ? getApplicationValues() : selectedContract === "Clarifications" ? getClarificationValues() : getApprovedValues();
-  let actions = selectedContract === 'Applicants' ? applicantActionsData : selectedContract === "Applications" ? applicationActionsData : selectedContract === "Clarifications" ? clarificationActionsData : approvedActionsData;
-  let gridStyle = selectedContract === 'Applicants' ? style.applicantStaffGrid : selectedContract === "Applications" ? style.applicationStaffGrid : selectedContract === "Clarifications" ? style.clarificationStaffGrid : style.approvedStaffGrid;
+  let tableHeaderValues = selectedTab === 'applicantsToProcess' ? applicantHeaderValues : selectedTab === "applicationsUnderReview" ? applicationHeaderValues : selectedTab === "clarificationsRequired" ? clarificationHeaderValues : approvedHeaderValues;
+  let tableSortValues = selectedTab === 'applicantsToProcess' ? applicantColSortValues : selectedTab === "applicationsUnderReview" ? applicationColSortValues : selectedTab === "clarificationsRequired" ? clarificationColSortValues : approvedColSortValues;
+  let tableDataValues = selectedTab === 'applicantsToProcess' ? getApplicantValues() : selectedTab === "applicationsUnderReview" ? getApplicationValues() : selectedTab === "clarificationsRequired" ? getClarificationValues() : getApprovedValues();
+  let actions = selectedTab === 'applicantsToProcess' ? applicantActionsData : selectedTab === "applicationsUnderReview" ? applicationActionsData : selectedTab === "clarificationsRequired" ? clarificationActionsData : approvedActionsData;
+  let gridStyle = selectedTab === 'applicantsToProcess' ? style.applicantStaffGrid : selectedTab === "applicationsUnderReview" ? style.applicationStaffGrid : selectedTab === "clarificationsRequired" ? style.clarificationStaffGrid : style.approvedStaffGrid;
 
   return (
     <div className={style.margin20}>
@@ -641,17 +392,17 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
             <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
               <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
                 <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
-                  Request For Appointment (3)
+                  Requests For Appointment ({requestAppointment})
                 </div>
                 <div className={`${style.marginLeft10} `} >
-                  {!requestAppointment ? (
-                    <AddIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setRequestAppointment(!requestAppointment)} />
+                  {!showCardAppointment ? (
+                    <AddIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setShowCardAppointment(!showCardAppointment)} />
                   ) : (
-                    <RemoveIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setRequestAppointment(!requestAppointment)} />
+                    <RemoveIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setShowCardAppointment(!showCardAppointment)} />
                   )}
                 </div>
               </div>
-              {requestAppointment && (<>
+              {showCardAppointment && (<>
                 <div>
                   <div className={`${style.displayInCol} ${style.marginTop}`}>
                     <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginRight10}`}>
@@ -702,17 +453,17 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
             <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
               <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
                 <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
-                  Applications Sent for Completion (4)
+                  Applications Sent for Completion ({sentCompletion})
                 </div>
                 <div className={`${style.marginLeft10} `} >
-                  {!sentCompletion ? (
-                    <AddIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setSentCompletion(!sentCompletion)} />
+                  {!showCardCompletion ? (
+                    <AddIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setShowCardCompletion(!showCardCompletion)} />
                   ) : (
-                    <RemoveIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setSentCompletion(!sentCompletion)} />
+                    <RemoveIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setShowCardCompletion(!showCardCompletion)} />
                   )}
                 </div>
               </div>
-              {sentCompletion && (<>
+              {showCardCompletion && (<>
                 <div className={`${style.displayInCol} ${style.marginTop}`}>
                   <div className={`${style.warningTextAlign} ${style.staffTextStyle}`}>
                     <div className={style.progressbarStyle}>
@@ -761,25 +512,26 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
             <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
               <div className={`${style.displayInRow}  ${style.marginLeftRight10}`}>
                 <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
-                  Applications Rejected/Declined (8)
+                  Applications Rejected/Declined ({applicationRejected.totalRejections})
                 </div>
                 <div className={`${style.marginLeft10} `} >
-                  {!applicationRejected ? (
-                    <AddIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setApplicationRejected(!applicationRejected)} />
+                  {!showCardDetails ? (
+                    <AddIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setShowCardDetails(!showCardDetails)} />
                   ) : (
-                    <RemoveIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setApplicationRejected(!applicationRejected)} />
-                  )}                </div>
+                    <RemoveIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setShowCardDetails(!showCardDetails)} />
+                  )}
+                </div>
               </div>
               {
-                applicationRejected && (<>
+                showCardDetails && (<>
                   <div className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}>
-                    Appointment Requests Denied (5)
+                    Appointment Requests Denied ({applicationRejected.appointmentRequestsDenied})
                   </div>
                   <div className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`} onClick={() => { setShowApplicationRejectionDialog(true) }}>
-                    Applications Rejected (3)
+                    Applications Rejected ({applicationRejected.applicationsRejected})
                   </div>
                   <div className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}>
-                    Applications Approved But Declined (1)
+                    Applications Approved But Declined ({applicationRejected.applicationsApprovedButDenied})
                   </div>
                 </>)
               }
@@ -794,10 +546,9 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
           </div>
 
           <div className={`${style.spaceBetween} ${style.marginTop20} ${style.marginLeft30} `}>
-            <StaffApplicationTiles getSelectedContract={getSelectedContract} selectedContract={selectedContract}
-              metadata={metadata} getTabFilter={getTabFilter} />
-            <div className={`${style.spaceBetween} ${style.marginLeft} `}>
+            <StaffApplicationTiles getSelectedTab={getSelectedTab} selectedTab={selectedTab} />
 
+            <div className={`${style.spaceBetween} ${style.marginLeft} `}>
               <div className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`} >
                 <SearchOutlinedIcon sx={{ fontSize: isPrintClicked ? 20 : 25, color: isPrintClicked ? '#fff' : '#857AEF' }} />
               </div>
@@ -818,25 +569,13 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
                   <TableTwo
                     tableHeaderValues={tableHeaderValues}
                     tableDataValues={tableDataValues}
-                    tableData={selectedContract === 'Applicants' ? ApplicantsProcessData : selectedContract === "Applications" ? ApplicationData : selectedContract === "Clarifications" ? ClarificationData : ApprovedData}
-                    getNewContract={getNewContract}
-                    getContractType={getContractType}
-                    getSelectedContractType={getSelectedContractType}
-                    getContractIdFromActive={getContractIdFromActive}
+                    tableData={tableData}
                     gridStyle={gridStyle}
                     actions={actions}
-                    getSelectedPage={getSelectedPage}
                     scrollStyle={style.contractScrollStyle}
                     tableSortValues={tableSortValues}
                     heading={'There are no Record for you to manage'}
-                    // subHeading={'To add a new contract click on'}
-                    // onClickText={'Click To View A Short Tutorial On How To Add A Contract'}
-                    // buttonComponent={<div className={`${style.addStyle} ${style.alignCenter} ${style.marginLeft20}`}>
-                    //   <AddCircleOutlineIcon sx={{ fontSize: 20, color: 'white' }} />
-                    // </div>}
                     onClickFunction={() => { }}
-                    getHandleSort={getHandleSort}
-                    sortValue={sortValue}
                   />
                 </div>
               </div>
@@ -854,7 +593,7 @@ const StaffApplicationList = ({ isLoading, getSearchKey, searchKey, getDeleteDra
 
       {
         showApplicationRejectionDialog && (
-          <ApplicationRejection getApplicationRejectionDialog={getApplicationRejectionDialog} />
+          <ApplicationRejection getApplicationRejectionDialog={getApplicationRejectionDialog} rejectionListData={rejectionListData} rejectedCount={applicationRejected.applicationsRejected} />
         )
       }
     </div >

@@ -9,14 +9,15 @@ import { FormatPhoneNumber } from '../../utils/formatting';
 import CommonRadio from '../CommonFields/CommonRadio';
 import CommonSwitch from '../CommonFields/CommonSwitch';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
-
+import CheckIcon from '@mui/icons-material/Check';
 import style from './index.module.scss';
 import CommonCheckBox from '../CommonFields/CommonCheckBox';
 
 const TEXTFIELDLEN50 = 50;
 
-const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicForm, showAdd }) => {
+const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicForm, showAdd, addMoreType }) => {
     const [calendarStart, setCalendarStart] = useState(false);
+    const [isAddMore, setIsAddMore] = useState(false);
     const basicpath = 'basicDetails'
 
     useEffect(() => {
@@ -90,7 +91,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
     // };
 
     const renderField = (fieldKey, fieldData, baseKey, handleChange, getValueByPath, style, calendarStart, setCalendarStart) => {
-        if (!object?.then?.required?.includes(fieldKey) || getValueByPath(basicForm, `${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`) === Object.entries(object?.if?.properties)?.map(([key, data]) => data)[0]?.const) {
+        if ((!object?.then?.required?.includes(fieldKey) || getValueByPath(basicForm, `${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`) === Object.entries(object?.if?.properties)?.map(([key, data]) => data)[0]?.const) && fieldData.fieldType) {
             switch (fieldData.fieldType) {
                 case 'dropdown':
                     return (
@@ -177,6 +178,13 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                     );
                 case 'checkbox':
                     return (
+                        <CommonCheckBox
+                            checked={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)}
+                            onChange={(e) => handleChange(fieldKey, e.target.checked, baseKey)} label={fieldData.label}
+                        />
+                    );
+                case 'sitecheckbox':
+                    return (
                         <div className={`${style.siteDisplayCard} ${style.siteDisplayGrid} ${style.verticalAlignCenter}`}>
                             <CommonCheckBox
                                 checked={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)}
@@ -186,6 +194,23 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                                 <div className={style.siteDisplaySiteTextStyle}>Cambridge Memorial Hospital </div>
                                 <div className={style.siteDisplayDepartmentTextStyle}>Department of Surgery (Cardiothoracic Surgery)</div>
                             </div>
+                        </div>
+                    );
+                case 'addMoreFileupload':
+                    console.log(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`))
+                    return (
+                        <div className={style.addMoreUpload}>
+                            <div>
+                                <label for={`file-upload-dynamic-${fieldKey}`} className={`${style.displayInRow} ${style.cursorPointer} `}>
+                                    {getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) !== undefined && (
+                                        <div className={style.checkedCircleIcon}>
+                                            <CheckIcon sx={{ color: '#fff', fontSize: '17px' }} />
+                                        </div>
+                                    )}
+                                    <DescriptionOutlinedIcon sx={{ color: '#787f87', fontSize: '30px' }} />
+                                </label>
+                            </div>
+                            <input id={`file-upload-dynamic-${fieldKey}`} type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx" onChange={(e) => { handleChange(fieldKey, e.target.files[0], baseKey) }} />
                         </div>
                     );
                 case 'fileupload':
@@ -201,16 +226,17 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                         </div>
                     );
                 default:
-                    return <div key={fieldKey}></div>;
+                    return <div key={fieldKey}>{fieldData}</div>;
             }
         }
     };
 
-    const renderObjectFields = (object) => {
-        if (object?.properties) {
-            return Object.entries(object.properties).map(([key, data]) => {
+    const renderObjectFields = (object, properties) => {
+        if (properties) {
+            console.log('entered', properties)
+            return Object.entries(properties).map(([key, data]) => {
                 if (data.type === 'object' && data.properties && data.fieldType === null) {
-                    console.log('entered')
+                    console.log('entered', data?.properties)
                     // console.log(getValueByPath(basicForm, `${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`), 'value if', Object.entries(object?.if?.properties)?.map(([key, data]) => data)[0]?.const)
                     if (object?.if === null) {
                         return Object.entries(data.properties).map(([innerKey, innerData]) => {
@@ -222,6 +248,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                         return Object.entries(data.properties).map(([innerKey, innerData]) => {
                             console.log(innerData)
                             if (innerData.type === 'object') {
+                                console.log('entered', innerData)
                                 return Object.entries(innerData.properties).map(([innerKey2, innerData2]) => {
                                     return renderField(innerKey2, innerData2, `${baseKey}.${key}.${innerKey}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
                                 });
@@ -236,6 +263,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                         });
                     }
                     else {
+                        console.log('entered', data)
                         return Object.keys(data.properties)?.filter(data => data !== data?.then?.required).map(([innerKey, innerData]) => {
                             return renderField(innerKey, innerData, `${baseKey}.${key}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
                         });
@@ -256,9 +284,9 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
 
 
 
-    // const renderObjectFields = (object) => {
+    // const renderObjectFields = (object, properties) => {
     //     const renderFields = (data, path, parentObject) => {
-    //         if (data.type === 'object' && data.properties) {
+    //         if (data.type === 'object' && data.properties && data.fieldType === null) {
     //             // Check for conditions
     //             console.log('entered', data, path)
     //             if (data.if && getValueByPath(basicForm, `${path}.${Object.keys(parentObject.if.properties)[0]}`) !== parentObject.if.properties[Object.keys(parentObject.if.properties)[0]].const) {
@@ -271,13 +299,14 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
     //         } else if (data.type === 'array' && data.items?.properties) {
     //             console.log('entered', data, path)
     //             return Object.entries(data.items.properties).map(([key, value]) => renderFields(value, `${path}.${key}`, data));
+    //         } else if (data.type === 'object' && data.properties && data.fieldType !== null) {
+    //             return renderField(path.split('.').pop(), data, path, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
     //         } else {
     //             console.log('entered', data, path, path.split('.').pop())
     //             return renderField(path.split('.').pop(), data, path, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
     //         }
     //     };
-
-    //     return object?.properties ? Object.entries(object.properties).map(([key, data]) => renderFields(data, `${baseKey}.${key}`, object)) : null;
+    //     return properties ? Object.entries(properties).map(([key, data]) => renderFields(data, `${baseKey}.${key}`, object)) : null;
     // };
 
 
@@ -288,13 +317,39 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
 
     // console.log(object, Object.entries(object?.properties)?.map(([data, details]) => data), Object.entries(object?.properties)?.map(([data, details]) => details?.properties !== null && details?.properties !== undefined && Object.entries(details?.properties)?.map(([innerKey, innerData]) => innerData?.label)),
     //     getValueByPath(basicForm, `${'applicant'}.${"name"}.${'firstName'}`))
-    console.log(basicForm)
+    console.log(basicForm, object)
     return (
         <div className={`${window.location.pathname.includes('applicationForm') ? '' : style.backgroundCard} ${style.marginTop}`}>
             <div className={style.cardTitle}>{object?.label}</div>
-            <div className={`${gridStyle} ${object?.label !== null ? style.marginTop : ''}`}>
-                {renderObjectFields(object)}
-            </div>
+            {addMoreType ? (
+                <div className={`${style.addMoreBorder} ${style.marginTop}`}>
+                    {isAddMore ? (
+                        <div className={style.padding20}>
+                            <div className={style.addMoreText}>{object?.items?.label}</div>
+                            <div className={`${gridStyle} ${style.marginTop}`}>
+                                {object?.type === "object" ? renderObjectFields(object, object?.properties) : object?.type === "array" ? renderObjectFields(object, object?.items?.properties) : renderObjectFields(object, object?.properties)}
+                            </div>
+                            <div className={`${style.displayInRowRev} ${style.marginTop}`}>
+                                <div className={style.marginLeft}>
+                                    <div className={`${style.addMoreButton}`} onClick={() => setIsAddMore(false)}>SAVE & CLOSE</div>
+                                </div>
+                                <div>
+                                    <div className={`${style.addMoreButtonOutlined}`} onClick={() => setIsAddMore(true)}>SAVE & ADD MORE</div>
+                                </div>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.padding10}`}>
+                            <div className={style.addMoreText}>{object?.items?.label}</div>
+                            <div className={`${style.addMoreButton}`} onClick={() => setIsAddMore(true)}>ADD MORE</div>
+                        </div>
+                    )}
+                </div>
+            ) : (
+                <div className={`${gridStyle} ${object?.label !== null ? style.marginTop : ''}`}>
+                    {object?.type === "object" ? renderObjectFields(object, object?.properties) : object?.type === "array" ? renderObjectFields(object, object?.items?.properties) : renderObjectFields(object, object?.properties)}
+                </div>
+            )}
             {showAdd && (
                 <div className={`${style.spaceBetween} ${style.marginTop}`}>
                     <div></div>
