@@ -240,7 +240,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                         <div>
                             <div className={`${style.uploadButton} ${style.uploadGrid} ${style.verticalAlignCenter}`}>
                                 <DescriptionOutlinedIcon sx={{ color: '#787f87' }} />
-                                <label for={`file-upload-dynamic-${fieldKey}`} className={`${style.uploadText} `}>
+                                <label for={`file-upload-dynamic-${fieldKey}`} className={`${style.uploadText} ${style.cursorPointer}`}>
                                     {fieldData.label}
                                 </label>
                             </div>
