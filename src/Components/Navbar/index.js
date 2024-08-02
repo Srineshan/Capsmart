@@ -356,11 +356,11 @@ const Navbar = () => {
           }
           {
             isContractManager && (
-              // <Link to={'/'} className={style.noFontStyle}>
-              <div className={`${style.menuStyle} ${window.location.pathname.includes("/activeStaff") && style.activeMenuColor}`}>
-                <p>ACTIVE STAFF</p>
-              </div>
-              // </Link>
+              <Link to={'/activeStaff'} className={style.noFontStyle}>
+                <div className={`${style.menuStyle} ${window.location.pathname.includes("/activeStaff") && style.activeMenuColor}`}>
+                  <p>ACTIVE STAFF</p>
+                </div>
+              </Link>
             )
           }
           {

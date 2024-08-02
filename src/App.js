@@ -24,8 +24,9 @@ const FunctionalTitleForCustomer = React.lazy(() =>
   import("./Screens/ReferenceList/functionalTitleForCustomer")
 );
 const ActiveContracts = React.lazy(() => import("./Screens/ContractManager"));
-const ActiveStaffs = React.lazy(() => import("./Screens/StaffManager"));
+const StaffManager = React.lazy(() => import("./Screens/StaffManager"));
 const StaffApplication = React.lazy(() => import("./Screens/StaffApplication"));
+const ActiveStaff = React.lazy(() => import("./Screens/ActiveStaff"));
 const Welcome = React.lazy(() =>
   import("./Screens/SuperAdminDashboard/welcome")
 );
@@ -517,8 +518,9 @@ const App = ({ props }) => {
             <Routes>
               <Route path="/" element={<LoginRoute />} />
               <Route path="/contracts" element={<ActiveContracts />} />
-              <Route path="/staffs" element={<ActiveStaffs />} />
+              <Route path="/staffs" element={<StaffManager />} />
               <Route path="/applications" element={<StaffApplication />} />
+              <Route path="/activeStaff" element={<ActiveStaff />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/notifyUser" element={<Notify />} />
               <Route path="/trackContracts/:trackType" element={<TrackYourContracts />} />

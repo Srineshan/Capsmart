@@ -20,6 +20,7 @@ import { InputGroup } from "@blueprintjs/core";
 import style from "./index.module.scss";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
+import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
 
 const GeneralConfigurationForCustomers = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -33,7 +34,7 @@ const GeneralConfigurationForCustomers = () => {
   const [entityId, setEntityId] = useState("");
   const [lastUpdatedDate, setLastUpdatedDate] = useState("");
   const [mileageRateData, setMileageRateData] = useState([]);
-
+  const [selectedService, setSelectedService] = useState("0");
 
   const getAddMileageRateDialog = (value) => {
     setShowAddCompanyDialog(value);
@@ -126,12 +127,12 @@ const GeneralConfigurationForCustomers = () => {
               <div className={style.marginTop35}>
                 <div className={style.centreCardStyle}>
                   <div className={style.margin20}>
-                    <div className={style.customersAdminColumngrid3}>
+                    <div>
                       <div></div>
                       <div>
                         <div className={`${style.customersAdminCardStyle3} `}>
                           <div className={`${style.editHealthCareGrid2} ${style.marginLeft20} ${style.marginTop10}`}>
-                            <div className={style.entityLableStyle3}>Certification Language for Approver*</div>
+                            <div className={`${style.entityLableStyle} ${style.marginTop20}`}>Certification Language for Approver*</div>
                             <div className={style.displayInRow}>
                               <TextArea
                                 rows={3}
@@ -141,7 +142,7 @@ const GeneralConfigurationForCustomers = () => {
                             </div>
                           </div>
                           <div className={`${style.editHealthCareGrid2} ${style.marginLeft20} ${style.marginTop10}`}>
-                            <div className={style.entityLableStyle3}>Certification Language for Reviewer*</div>
+                            <div className={`${style.entityLableStyle} ${style.marginTop20}`}>Certification Language for Reviewer*</div>
                             <div className={style.displayInRow}>
                               <TextArea
                                 rows={3}
@@ -151,12 +152,42 @@ const GeneralConfigurationForCustomers = () => {
                             </div>
                           </div>
                           <div className={`${style.editHealthCareGrid2} ${style.marginLeft20} ${style.marginTop10}`}>
-                            <div className={style.entityLableStyle3}>Certification Language for Accounts Payable*</div>
+                            <div className={`${style.entityLableStyle} ${style.marginTop20}`}>Certification Language for Accounts Payable*</div>
                             <div className={style.displayInRow}>
                               <TextArea
                                 rows={3}
                                 value={""}
                                 className={style.halfWidth}
+                              />
+                            </div>
+                          </div>
+                          <div className={`${style.editHealthCareGrid2} ${style.marginLeft20} ${style.marginTop20}`}>
+                            <div className={`${style.entityLableStyle} ${style.marginTop20}`}>Nature of Service </div>
+                            <div className={`${style.fullWidth} ${style.displayFlex}`}>
+                              <CommonSelectField
+                                value={selectedService || "0"}
+                                onChange={(e) => setSelectedService(e.target.value)}
+                                className={`${style.fullWidth}`}
+                                firstOptionLabel={"Select Nature of Service..."}
+                                firstOptionValue={"0"}
+                                valueList={[
+                                  "Associate",
+                                  "affiliate",
+                                  "courtesy",
+                                  "extended class nursing",
+                                  "Short-Term Locum Tennens",
+                                  "Long-Term Locum Tennens",
+                                  "Intermittent Ongoing Locum Tennens",
+                                ]}
+                                labelList={["Associate",
+                                  "affiliate",
+                                  "courtesy",
+                                  "extended class nursing",
+                                  "Short-Term Locum Tennens",
+                                  "Long-Term Locum Tennens",
+                                  "Intermittent Ongoing Locum Tennens",]}
+                                disabledList={[false, false, false]}
+                                widthValue={400}
                               />
                             </div>
                           </div>
