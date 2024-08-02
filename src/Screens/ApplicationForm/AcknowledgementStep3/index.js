@@ -1,0 +1,53 @@
+import React, { useEffect, useState } from 'react';
+import ProgressCard from '../../../Components/ProgressCard';
+import ApplicationUserCard from '../../../Components/ApplicationUserCard';
+import ApplicationAssistanceCard from '../../../Components/ApplicationAssistanceCard';
+import CommonDivider from '../../../Components/CommonFields/CommonDivider';
+import logo from "../../../images/cambridgeHospital.png";
+import { GET } from '../../dataSaver';
+import { useNavigate } from 'react-router-dom';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import style from './index.module.scss';
+import CommonCheckBox from '../../../Components/CommonFields/CommonCheckBox';
+import ESign from '../../../Components/ESign';
+
+const ApplicationAcknowledgementStep3 = () => {
+    const [isChecked, setIsChecked] = useState(false);
+    const navigate = useNavigate()
+    return (
+        <div>
+            <div className={style.applicationScreenGrid}>
+                <ProgressCard step={'STEP 3'} dataType={'Forms'} title={'Authorization For The Release Of Information'} timeNumber={33} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
+            </div>
+            <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
+                <div>
+                    <div className={style.applicationCardStyle}>
+                        <div className={`${style.labelText} ${style.marginTop}`}>My making of this application and signature below indicate my understanding of and consent to the following (please note that references to Public Hospitals Act are not applicable to Homewood):</div>
+                        <div className={`${style.checkGrid} ${style.marginTop}`}>
+                            <CommonCheckBox checked={isChecked} onChange={(e) => setIsChecked(e.target.checked)} />
+                            <div className={`${style.descriptionStyle} ${style.marginTop10}`}>{`I, {applicant name}, an applicant for appointment to the Professional staff of the Cambridge Memorial Hospital herby authorize and consent to you, my treating physician, discussing with the chief of staff of the Hospital the treatments and consultations listed on the below which I have considered relevant to my ability to practice medicine.`}</div>
+                        </div>
+                        <div className={`${style.checkGrid} ${style.marginTop}`}>
+                            <WarningAmberIcon sx={{ color: '#F94848' }} />
+                            <div className={`${style.descriptionStyleBolder}`}>Your application cannot be processed without your authorization for the release of your medical information.</div>
+                        </div>
+                        <CommonDivider />
+                        <ESign />
+                    </div>
+                </div>
+                <div>
+                    <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
+                    <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
+                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate('/applicationForm/section1/acknowledgementStep4')} >CONTINUE</div>
+
+                    {/* <div className={style.marginTop}>
+                        <ApplicationReferenceDocuments />
+                    </div> */}
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export default ApplicationAcknowledgementStep3;

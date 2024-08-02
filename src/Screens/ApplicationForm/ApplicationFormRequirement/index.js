@@ -29,13 +29,13 @@ const ApplicationFormRequirement = () => {
             <ApplicationHeader title={'New {Doctor} {Full Time} Application For {First Last Name}'} />
             <div className={style.screenPadding}>
                 <div className={style.applicationScreenGrid}>
-                    <WelcomeCard title={'Welcome To Cambridge Memorial Hospitals Automated Credentialing & Privileging Portal!'} description={'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus.'} />
+                    <WelcomeCard title={'Welcome to Cambridge Memorial Hospitals Automated Credentialing & Privileging Portal!'} description={'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus.'} />
                     <ApplicationUserCard user={'Guest User'} applyingFor={'Contact'} />
                 </div>
                 <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                     <div>
                         <div className={style.applicationCardStyle}>
-                            <div className={style.titleTextStyle}>Recommended And Required List Of Documents To Have Readily Available For This Application</div>
+                            <div className={style.titleTextStyle}>Recommended & Required List of Documents to have Readily Available for this Application</div>
                             <div className={style.marginTop}>
                                 <RequiredDocumentCard array={requiredDocument} />
                             </div>

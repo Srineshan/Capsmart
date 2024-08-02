@@ -26,6 +26,20 @@ import Step10 from './Step10';
 import Step11 from './Step11';
 import Step12 from './Step12';
 import Step13 from './Step13';
+import ApplicationAcknowledgementStep1 from './AcknowledgementStep1';
+import ApplicationAcknowledgementStep2 from './AcknowledgementStep2';
+import ApplicationAcknowledgementStep3 from './AcknowledgementStep3';
+import ApplicationAcknowledgementStep4 from './AcknowledgementStep4';
+import ApplicationAcknowledgementStep8 from './AcknowledgementStep8';
+import ApplicationAcknowledgementStep7 from './AcknowledgementStep7';
+import ApplicationAcknowledgementStep6 from './AcknowledgementStep6';
+import ApplicationAcknowledgementStep5 from './AcknowledgementStep5';
+import ApplicationAcknowledgementStep9 from './AcknowledgementStep9';
+import ApplicationAcknowledgementStep10 from './AcknowledgementStep10';
+import ApplicationAcknowledgementStep11 from './AcknowledgementStep11';
+import ApplicationAcknowledgementStep12 from './AcknowledgementStep12';
+import PACSAdminStep1 from './PACSAdminStep1';
+import PACSAdminStep6 from './PACSAdminStep6';
 
 
 const ApplicationForm = () => {
@@ -38,7 +52,7 @@ const ApplicationForm = () => {
 
     const getPreApplication = async () => {
         const { data: basicForm } = await GET(
-            `application-management-service/application/${`66ab431925ff4442505d3920`}`
+            `application-management-service/application/${`66acc34d2f01f619d5e4a3bc`}`
         );
         setBasicForm(basicForm)
     }
@@ -71,6 +85,42 @@ const ApplicationForm = () => {
                 return <Step12 basicForm={basicForm} setBasicForm={setBasicForm} />;
             case 'step13':
                 return <Step13 basicForm={basicForm} setBasicForm={setBasicForm} />;
+            case 'acknowledgementStep1':
+                return <ApplicationAcknowledgementStep1 />;
+            case 'acknowledgementStep2':
+                return <ApplicationAcknowledgementStep2 />;
+            case 'acknowledgementStep3':
+                return <ApplicationAcknowledgementStep3 />;
+            case 'acknowledgementStep4':
+                return <ApplicationAcknowledgementStep4 />;
+            case 'acknowledgementStep5':
+                return <ApplicationAcknowledgementStep5 />;
+            case 'acknowledgementStep6':
+                return <ApplicationAcknowledgementStep6 />;
+            case 'acknowledgementStep7':
+                return <ApplicationAcknowledgementStep7 />;
+            case 'acknowledgementStep8':
+                return <ApplicationAcknowledgementStep8 />;
+            case 'acknowledgementStep9':
+                return <ApplicationAcknowledgementStep9 basicForm={basicForm} setBasicForm={setBasicForm} />;
+            case 'acknowledgementStep10':
+                return <ApplicationAcknowledgementStep10 basicForm={basicForm} setBasicForm={setBasicForm} />;
+            case 'acknowledgementStep11':
+                return <ApplicationAcknowledgementStep11 basicForm={basicForm} setBasicForm={setBasicForm} />;
+            case 'acknowledgementStep12':
+                return <ApplicationAcknowledgementStep12 />;
+            case 'pacsAdminStep1':
+                return <PACSAdminStep1 />;
+            // case 'pacsAdminStep2':
+            //     return <PACSAdminStep2 basicForm={basicForm} setBasicForm={setBasicForm} />;
+            // case 'pacsAdminStep3':
+            //     return <PACSAdminStep3 basicForm={basicForm} setBasicForm={setBasicForm} />;
+            // case 'pacsAdminStep4':
+            //     return <PACSAdminStep4 />;
+            // case 'pacsAdminStep5':
+            //     return <PACSAdminStep5 />;
+            case 'pacsAdminStep6':
+                return <PACSAdminStep6 />;
             default:
                 return <div>Step not found</div>;
         }

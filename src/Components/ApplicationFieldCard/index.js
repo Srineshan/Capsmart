@@ -184,7 +184,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                 case 'radiobutton':
                     return (
                         <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
-                            <div className={`${style.lableStyle} ${fieldData.label !== null ? style.marginRight : ''}`}>{fieldData.label}{fieldData.required?.includes(fieldKey) && '*'}</div>
+                            <div className={`${style.lableRadioStyle} ${fieldData.label !== null ? style.marginRight : ''}`}>{fieldData.label}{fieldData.required?.includes(fieldKey) && '*'}</div>
                             <CommonRadio
                                 className={style.leftAlign}
                                 value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)}
@@ -261,8 +261,24 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                     console.log('entered', data?.properties)
                     // console.log(getValueByPath(basicForm, `${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`), 'value if', Object.entries(object?.if?.properties)?.map(([key, data]) => data)[0]?.const)
                     if (object?.if === null) {
+                        console.log('entered', data?.properties)
                         return Object.entries(data.properties).map(([innerKey, innerData]) => {
-                            return renderField(innerKey, innerData, `${baseKey}.${key}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
+                            if (innerData.type === 'object' && innerData.properties && innerData.fieldType === null) {
+                                console.log('entered', innerData)
+                                return Object.entries(innerData.properties).map(([innerKey2, innerData2]) => {
+                                    return renderField(innerKey2, innerData2, `${baseKey}.${key}.${innerKey}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
+                                });
+                            } else if (innerData.type === 'array' && innerData.items?.properties) {
+                                console.log('entered', innerData)
+                                return Object.entries(innerData.items.properties).map(([innerKey2, innerData2]) => {
+                                    return renderField(innerKey2, innerData2, `${baseKey}.${key}.${innerKey}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
+                                });
+                            } else if (innerData.type === 'object' && innerData.properties && innerData.fieldType !== null) {
+                                return renderField(innerKey, innerData, `${baseKey}.${key}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
+                            } else {
+                                return renderField(innerKey, innerData, `${baseKey}.${key}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
+                            }
+                            // return renderField(innerKey, innerData, `${baseKey}.${key}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
                         });
                     }
                     else if (object?.if !== null && getValueByPath(basicForm, `${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`) === Object.entries(object?.if?.properties)?.map(([key, data]) => data)[0]?.const) {

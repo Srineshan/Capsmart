@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from "./../../images/metropolitan-hospital-logo.png";
+import logo from "./../../images/cambridgeHospital.png";
 import CrossPink from "../../images/crossPink.png";
 
 import style from './index.module.scss';

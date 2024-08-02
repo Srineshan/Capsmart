@@ -42,9 +42,7 @@ const Step13 = ({ basicForm, setBasicForm }) => {
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
-                    <div className={`${style.continue} ${style.marginTop10}`}
-                    // onClick={() => navigate('/applicationForm/section1/step14')}
-                    >CONTINUE</div>
+                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate('/applicationForm/section1/acknowledgementStep1')} >CONTINUE</div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
                     </div>

@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Shadows+Into+Light&display=swap');
+
+.signatureContainer {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    width: fit-content;
+}
+
+.signatureBorder {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-right: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.signatureDetails {
+    margin-left: 10px;
+}
+
+.signedBy {
+    font-size: 12px;
+    color: #888;
+    margin: 0;
+}
+
+.signatureName {
+    font-size: 24px;
+    font-family: 'Mistral', cursive;
+    margin: 5px 0;
+}
+
+.signatureId {
+    font-size: 12px;
+    color: #888;
+    margin: 0;
+}
+
+.signatureDate {
+    font-size: 16px;
+    color: #888;
+}
+
+.esign {
+    width: 30%;
+    display: flex;
+    flex-direction: row;
+}
+
+.marginTop {
+    margin-top: 20px;
+}

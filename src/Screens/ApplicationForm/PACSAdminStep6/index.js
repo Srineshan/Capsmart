@@ -1,0 +1,46 @@
+import React, { useEffect, useState } from 'react';
+import ProgressCard from '../../../Components/ProgressCard';
+import ApplicationUserCard from '../../../Components/ApplicationUserCard';
+import ApplicationAssistanceCard from '../../../Components/ApplicationAssistanceCard';
+import CommonDivider from '../../../Components/CommonFields/CommonDivider';
+import pdf from "../../../images/ParkingAgreement.png";
+import { GET } from '../../dataSaver';
+import { useNavigate } from 'react-router-dom';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import style from './index.module.scss';
+import CommonCheckBox from '../../../Components/CommonFields/CommonCheckBox';
+import ESign from '../../../Components/ESign';
+
+const PACSAdminStep6 = () => {
+    const [isChecked, setIsChecked] = useState(false);
+    const navigate = useNavigate()
+    return (
+        <div>
+            <div className={style.applicationScreenGrid}>
+                <ProgressCard step={'STEP 2'} dataType={'Disclosure'} title={'Parking Agreement'} timeNumber={2} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
+            </div>
+            <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
+                <div>
+                    <div className={style.applicationCardStyle}>
+                        <div className={`${style.labelText} ${style.marginTop}`}>My making of this application and signature below indicate my understanding of and consent to the following (please note that references to Public Hospitals Act are not applicable to Homewood):</div>
+                        <CommonDivider />
+                        <img src={pdf} alt="" className={style.pdfStyle} />
+                        <ESign />
+                    </div>
+                </div>
+                <div>
+                    <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
+                    <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
+                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate('/applicationForm/section1/pacsAdminStep6')} >CONTINUE</div>
+
+                    {/* <div className={style.marginTop}>
+                        <ApplicationReferenceDocuments />
+                    </div> */}
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export default PACSAdminStep6;
