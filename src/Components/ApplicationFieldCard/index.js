@@ -104,8 +104,8 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                             value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)}
                             onChange={(e) => handleChange(fieldKey, e.target.value, baseKey)}
                             className={style.fullWidth}
-                            firstOptionLabel={fieldData.label}
-                            firstOptionValue={fieldData.label}
+                            // firstOptionLabel={fieldData.label}
+                            // firstOptionValue={fieldData.label}
                             valueList={fieldData.enum}
                             labelList={fieldData.enum}
                             disabledList={fieldData.enum.map(data => false)}
@@ -120,7 +120,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                             className={style.fullWidth}
                             onChange={(e) => handleChange(fieldKey, e.target.value, baseKey)}
                             maxLength={TEXTFIELDLEN50}
-                            placeholder={fieldData.label}
+                            placeholder={fieldData.label !== null ? `Enter ${fieldData.label}` : null}
                             label={fieldData.label}
                             required={fieldData.required?.includes(fieldKey)}
                         />
@@ -134,7 +134,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                                 className={`${style.fullWidth} ${style.marginTop10}`}
                                 onChange={(e) => handleChange(fieldKey, e.target.value, baseKey)}
                                 maxLength={TEXTFIELDLEN50}
-                                placeholder={fieldData.label}
+                                placeholder={fieldData.label !== null ? `Enter ${fieldData.label}` : null}
                                 rows={4}
                             />
                         </div>
@@ -145,7 +145,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                             value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)}
                             className={style.fullWidth}
                             onChange={(e) => handleChange(fieldKey, FormatPhoneNumber(e.target.value), baseKey)}
-                            placeholder={fieldData.label}
+                            placeholder={fieldData.label !== null ? `Enter ${fieldData.label}` : null}
                             label={fieldData.label}
                             required={fieldData.required?.includes(fieldKey)}
                         />
@@ -183,7 +183,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                     );
                 case 'radiobutton':
                     return (
-                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
+                        <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
                             <div className={`${style.lableRadioStyle} ${fieldData.label !== null ? style.marginRight : ''}`}>{fieldData.label}{fieldData.required?.includes(fieldKey) && '*'}</div>
                             <CommonRadio
                                 className={style.leftAlign}
@@ -382,7 +382,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                     ) : (
                         <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.padding10}`}>
                             <div className={style.addMoreText}>{object?.items?.label}</div>
-                            <div className={`${style.addMoreButton} ${style.marginLeft}`} onClick={() => setIsAddMore(true)}>ADD MORE</div>
+                            <div className={`${style.addMoreButton} ${style.marginLeft}`} onClick={() => setIsAddMore(true)}>ADD</div>
                         </div>
                     )}
                 </div>

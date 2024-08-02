@@ -130,7 +130,7 @@ const ApplicationForm = () => {
 
     return (
         <div className={style.screenBackground}>
-            <ApplicationHeader title={'New {Doctor} {Full Time} Application For {First Last Name}'} />
+            <ApplicationHeader title={'New Physician / Doctor Application For Jane DOE, MD'} />
             <div className={style.screenPadding}>
                 {StepDisplay()}
             </div>

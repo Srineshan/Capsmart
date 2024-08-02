@@ -9,6 +9,7 @@ import { GET } from '../../dataSaver';
 import { useNavigate } from 'react-router-dom';
 
 import style from './index.module.scss';
+import NoDataBox from '../../../Components/ReusableSmallComponents/noDataBox';
 
 const Step12 = ({ basicForm, setBasicForm }) => {
     const [formSchema, setFormSchema] = useState();
@@ -40,6 +41,11 @@ const Step12 = ({ basicForm, setBasicForm }) => {
                         {formSchema !== undefined && 'criminalData2' in formSchema?.properties && (
                             <ApplicationFieldCard object={formSchema?.properties?.criminalData2} gridStyle={style.criminalHistoryGrid} baseKey={'criminalData2'} basicForm={basicForm} setBasicForm={setBasicForm} collapsableQuestionCard={true} />
                         )}
+                        <NoDataBox
+                            heading={'Information Requirement Alert'}
+                            subHeading={'For this application you are required to provide a valid police vulnerable check certificate .'}
+                            subHeading2={'You will not be able to submit your application if this is not provided.'}
+                        />
                     </div>
                 </div>
                 <div>

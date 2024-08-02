@@ -9,6 +9,7 @@ import ApplicationReferenceDocuments from '../../../Components/ApplicationRefere
 
 import style from './index.module.scss';
 import CommonDivider from '../../../Components/CommonFields/CommonDivider';
+import NoDataBox from '../../../Components/ReusableSmallComponents/noDataBox';
 
 const Step6 = ({ basicForm, setBasicForm }) => {
     const [formSchema, setFormSchema] = useState();
@@ -37,6 +38,11 @@ const Step6 = ({ basicForm, setBasicForm }) => {
                         {formSchema !== undefined && 'underGraduate' in formSchema?.properties && (
                             <ApplicationFieldCard object={formSchema?.properties?.underGraduate} gridStyle={style.EducationGrid} baseKey={'underGraduate'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} />
                         )}
+                        <NoDataBox
+                            heading={'Information Requirement Alert'}
+                            subHeading={'For this application you are required to provide information on all of the different undergraduate / graduate qualifications you have.'}
+                            subHeading2={'You will not be able to submit your application if this is not provided.'}
+                        />
                         <CommonDivider />
                         {formSchema !== undefined && 'postGraduate' in formSchema?.properties && (
                             <ApplicationFieldCard object={formSchema?.properties?.postGraduate} gridStyle={style.EducationGrid} baseKey={'postGraduate'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} />

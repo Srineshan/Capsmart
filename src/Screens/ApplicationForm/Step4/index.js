@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
 
 import style from './index.module.scss';
+import NoDataBox from '../../../Components/ReusableSmallComponents/noDataBox';
 
 const Step4 = ({ basicForm, setBasicForm }) => {
     const [formSchema, setFormSchema] = useState();
@@ -36,6 +37,11 @@ const Step4 = ({ basicForm, setBasicForm }) => {
                         {formSchema !== undefined && 'certifications' in formSchema?.properties && (
                             <ApplicationFieldCard object={formSchema?.properties?.certifications} gridStyle={style.licenseGrid} baseKey={'certifications'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} />
                         )}
+                        <NoDataBox
+                            heading={'Information Requirement Alert'}
+                            subHeading={'For this application you are required to provide information on all of the different Professional licenses & Board certification you have.'}
+                            subHeading2={'You will not be able to submit your application if this is not provided.'}
+                        />
                     </div>
                 </div>
                 <div>

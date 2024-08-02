@@ -2,14 +2,17 @@ import React from 'react';
 import style from './index.module.scss';
 
 
-const NoDataBox = ({ heading, subHeading, onClickText, onClickFunction, buttonComponent }) => {
+const NoDataBox = ({ heading, subHeading, subHeading2, onClickText, onClickFunction, buttonComponent }) => {
     return (
         <div className={`${style.noContractsBox} ${style.alignCenter}`}>
             <div>
                 <div className={style.noContractsFontStyle}>{heading}</div>
                 {subHeading !== '' && (
                     <div className={` ${style.marginTop20} ${style.displayInRow} ${style.justifyCenter} ${style.alignCenter}`}>
-                        <div className={`${style.noContractsSmallFontStyle}`}>{subHeading}</div>
+                        <div>
+                            <div className={`${style.noContractsSmallFontStyle}`}>{subHeading}</div>
+                            <div className={`${style.noContractsSmallFontStyleSubHeading2} ${style.marginTop20}`}>{subHeading2}</div>
+                        </div>
                         <div>{buttonComponent}</div>
                     </div>
                 )}

@@ -18,52 +18,53 @@ const StaffList = ({ isLoading, getSelectedApplicant, selectedApplicant, getActi
   const PDFRef = createRef();
   const componentRef = useRef(null);
 
-  const staffData = [{
-    subStatus: "grey",
-    workItem: "Application submitted for review",
-    workItemHoverText: ["Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas libero, repudiandae id."],
-    type: "credentialing Application",
-    applicantType: 'Nurse - Midwife',
-    applicantStaffName: "Karen K.",
-    assignedTo: 'Nina G',
-    createdOn: "June 01 2024",
-    dueDate: "June 01 2024"
-  },
-  {
-    subStatus: "yellow",
-    workItem: "n95 certificate expiring",
-    workItemHoverText: ["Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas libero, repudiandae id."],
-    type: "Active Staff",
-    applicantType: 'Physician - Cardiologist',
-    applicantStaffName: "Jason M.",
-    assignedTo: "Nina G.",
-    createdOn: "June 01 2024",
-    dueDate: "June 01 2024"
-  },
-  {
-    subStatus: "red",
-    workItem: "upcoming staff Reappointment",
-    workItemHoverText: ["Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas libero, repudiandae id."],
-    type: "Active Staff",
-    applicantType: 'Physician - Pediatrics',
-    applicantStaffName: "Hannanh Y.",
-    assignedTo: "Nina G.",
-    createdOn: "June 01 2024",
-    dueDate: "June 01 2024"
-  }
+  const staffData = [
+    //   {
+    //   subStatus: "grey",
+    //   workItem: "Application submitted for review",
+    //   workItemHoverText: ["Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas libero, repudiandae id."],
+    //   type: "credentialing Application",
+    //   applicantType: 'Nurse - Midwife',
+    //   applicantStaffName: "Karen K.",
+    //   assignedTo: 'Nina G',
+    //   createdOn: "June 01 2024",
+    //   dueDate: "June 01 2024"
+    // },
+    {
+      subStatus: "yellow",
+      workItem: "n95 certificate expiring",
+      workItemHoverText: ["Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas libero, repudiandae id."],
+      type: "Active Staff",
+      applicantType: 'Physician - Cardiologist',
+      applicantStaffName: "Jason M.",
+      assignedTo: "Nina G.",
+      createdOn: "June 01 2024",
+      dueDate: "June 01 2024"
+    },
+    {
+      subStatus: "red",
+      workItem: "upcoming staff Reappointment",
+      workItemHoverText: ["Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas libero, repudiandae id."],
+      type: "Active Staff",
+      applicantType: 'Physician - Pediatrics',
+      applicantStaffName: "Hannanh Y.",
+      assignedTo: "Nina G.",
+      createdOn: "June 01 2024",
+      dueDate: "June 01 2024"
+    }
   ]
 
   const activeHeaderValues = ["",
-    "Work Item ",
+    "Work Item",
     "Type",
-    "Applicant Type",
-    "Applicant / Staff Name",
+    "Staff Type",
+    "Staff Name",
     "Assigned To",
-    "Created On",
+    // "Created On",
     "Due Date",
     ""
   ];
-  const activeColSortValues = [false, false, false, false, false, true, true, false, false];
+  const activeColSortValues = [false, false, false, false, false, false, false, false];
   const [isPrintClicked, setIsPrintClicked] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
   const [isDraft, setIsDraft] = useState(true);
@@ -100,7 +101,7 @@ const StaffList = ({ isLoading, getSelectedApplicant, selectedApplicant, getActi
       applicantType.push(data?.applicantType)
       applicantStaffName.push(data?.applicantStaffName);
       assignedTo.push(data?.manager);
-      effectiveDate.push(format(new Date(data?.createdOn), 'MMM dd yyyy'))
+      // effectiveDate.push(format(new Date(data?.createdOn), 'MMM dd yyyy'))
       lastUpdated.push(format(new Date(data?.dueDate), 'MMM dd yyyy'))
       action.push(true);
     })
@@ -112,7 +113,7 @@ const StaffList = ({ isLoading, getSelectedApplicant, selectedApplicant, getActi
       { "type": "text", "value": applicantType },
       { "type": "text", "value": applicantStaffName },
       { "type": "text", "value": assignedTo },
-      { "type": "text", "value": effectiveDate },
+      // { "type": "text", "value": effectiveDate },
       { "type": "text", "value": lastUpdated },
       { "type": "action", "value": action },
     ];
@@ -205,7 +206,7 @@ const StaffList = ({ isLoading, getSelectedApplicant, selectedApplicant, getActi
               <div className={`${style.displayInRow} ${style.marginTop10}`}>
                 {selectedApplicant === 'activestaffs' ? (
                   <>
-                    <div className={`${style.headingForStaffs} ${style.bottomTextStyle}`}>TASKS TO ADDRESS</div>
+                    <div className={`${style.headingForStaffs} ${style.bottomTextStyle}`}>ACTIVE STAFF ITEMS TO ADDRESS</div>
                   </>
                 ) : (
                   <>

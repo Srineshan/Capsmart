@@ -11,7 +11,7 @@ const ApplicationUserCard = ({ user, applyingFor }) => {
             <div className={style.verticalSpaceBetween}>
                 <div className={`${style.nameStyle}`}>{user}</div>
                 <div className={`${style.applyingFor} ${style.marginTop10}`}>{applyingFor}</div>
-                <div className={`${style.connectToLinkedIn} ${style.marginTop10}`}>Connect To LinkedIn</div>
+                {/* <div className={`${style.connectToLinkedIn} ${style.marginTop10}`}>Connect To LinkedIn</div> */}
             </div>
         </div>
     )

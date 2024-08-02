@@ -60,7 +60,7 @@ const Step1 = ({ basicForm, setBasicForm }) => {
                     )}
                     <CommonDivider />
                     <div className={`${style.backgroundCard} ${style.marginTop}`}>
-                        <div className={style.cardTitle}>Added Sites</div>
+                        <div className={style.cardTitle}>Department / Speciality of Service</div>
                         <div className={style.fourCol}>
                             <div className={`${style.siteDisplayCard} ${style.siteDisplayGrid} ${style.marginTop}`}>
                                 <div>
@@ -70,27 +70,27 @@ const Step1 = ({ basicForm, setBasicForm }) => {
                                 </div>
                                 <DeleteOutlineIcon sx={{ color: '#7165E3', cursor: 'pointer' }} />
                             </div>
-                            <div className={`${style.siteDisplayCard} ${style.siteDisplayGrid} ${style.marginTop}`}>
+                            {/* <div className={`${style.siteDisplayCard} ${style.siteDisplayGrid} ${style.marginTop}`}>
                                 <div>
                                     <div className={style.siteDisplayDepartmentTextStyle}>Department of Surgery </div>
                                     <div className={style.siteDisplaySurgeryTextStyle}>General Surgery</div>
                                     <div className={`${style.siteDisplaySiteTextStyle} ${style.marginTop10}`}>Cambridge Memorial Hospital </div>
                                 </div>
                                 <DeleteOutlineIcon sx={{ color: '#7165E3', cursor: 'pointer' }} />
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                     <CommonDivider />
-                    {form2 !== undefined && 'natureOfPractice' in form2?.properties && (
+                    {/* {form2 !== undefined && 'natureOfPractice' in form2?.properties && (
                         <ApplicationFieldCard object={form2?.properties?.natureOfPractice} gridStyle={style.twoCol} baseKey={'natureOfPractice'} basicForm={basicForm} setBasicForm={setBasicForm} />
-                    )}
-                    <CommonDivider />
+                    )} */}
+                    {/* <CommonDivider /> */}
                     {form2 !== undefined && 'regionalCallResponsibilities' in form2?.properties && (
                         <ApplicationFieldCard object={form2?.properties?.regionalCallResponsibilities} gridStyle={style.twoCol} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} />
                     )}
                     <CommonDivider />
                     <div className={style.marginTop}>
-                        <CommonCheckBox checked={true} onChange={(e) => { }} label="I HAVE VERIFIED THE INFORMATION" />
+                        <CommonCheckBox checked={true} onChange={(e) => { }} label="I Have Verified the Information to be Correct, and would like to Proceed with my Application" />
                     </div>
                 </div>
                 <div>

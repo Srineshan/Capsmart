@@ -11,6 +11,7 @@ import style from './index.module.scss';
 import CommonCheckBox from '../../../Components/CommonFields/CommonCheckBox';
 import ESign from '../../../Components/ESign';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
+import NoDataBox from '../../../Components/ReusableSmallComponents/noDataBox';
 
 const ApplicationAcknowledgementStep11 = ({ basicForm, setBasicForm }) => {
     const [isChecked, setIsChecked] = useState(false);
@@ -42,6 +43,11 @@ const ApplicationAcknowledgementStep11 = ({ basicForm, setBasicForm }) => {
                         {formSchema !== undefined && 'physicianPaymentOrder' in formSchema?.properties && (
                             <ApplicationFieldCard object={formSchema?.properties?.physicianPaymentOrder} gridStyle={style.physicianPaymentOrderGrid} baseKey={'physicianPaymentOrder'} basicForm={basicForm} setBasicForm={setBasicForm} />
                         )}
+                        <NoDataBox
+                            heading={'Information Requirement Alert'}
+                            subHeading={'For this application you are required to provide a void cheque.'}
+                            subHeading2={'You will not be able to submit your application if this is not provided.'}
+                        />
                         {/* <img src={pdf} alt="" className={style.pdfStyle} />*/}
                         <ESign />
                     </div>
@@ -49,7 +55,7 @@ const ApplicationAcknowledgementStep11 = ({ basicForm, setBasicForm }) => {
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
-                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate('/applicationForm/section1/acknowledgementStep12')} >CONTINUE</div>
+                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate('/applicationForm/section1/acknowledgementStep11')} >CONTINUE</div>
 
                     {/* <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />

@@ -38,7 +38,7 @@ const Step2 = ({ basicForm, setBasicForm }) => {
                     <div className={`${style.descriptionText} ${style.marginTop10}`}>Ensure your documents are in the following formats: pdf, jpg, (add icons here) </div>
                     <div className={`${style.dragAndDropBox} ${style.marginTop}`}>
                         <div className={style.dragAndDropText}>Drag And Drop All Your File Here</div>
-                        <div className={style.dragAndDropDescriptionText}>Let Charlie our AI Credentialing assistant Organize, classify and extract data for your application</div>
+                        {/* <div className={style.dragAndDropDescriptionText}>Let Charlie our AI Credentialing assistant Organize, classify and extract data for your application</div> */}
                     </div>
                     <div className={`${style.tableHeader} ${style.tableGrid} ${style.marginTop}`}>
                         <div className={style.tableHeaderText}></div>
@@ -46,8 +46,8 @@ const Step2 = ({ basicForm, setBasicForm }) => {
                         <div className={style.tableHeaderText}>File Name</div>
                         <div className={style.tableHeaderText}>Date Uploaded</div>
                         <div className={style.tableHeaderText}></div>
-                        <div className={style.tableHeaderText}>Verified</div>
-                        <div className={style.tableHeaderText}>Valid</div>
+                        <div className={style.tableHeaderText}>Document Type</div>
+                        <div className={style.tableHeaderText}></div>
                     </div>
                     {basicForm?.documentsRequired?.map((data, index) => (
                         <div className={`${style.requiredDocumentCard} ${style.tableGrid} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''}  ${style.marginTop5}`}>
@@ -63,7 +63,8 @@ const Step2 = ({ basicForm, setBasicForm }) => {
                             </div>
                             <div className={style.documentTextStyle}></div>
                             <div className={style.documentTextStyle}></div>
-                            <div className={style.documentTextStyle}>{data?.required ? 'Mandatory' : 'Optional'}</div>
+                            <div className={style.documentTextStyle}></div>
+                            {/* <div className={style.documentTextStyle}>{data?.required ? 'Mandatory' : 'Optional'}</div> */}
                             <div className={style.documentTextStyle}></div>
                             <div className={style.documentTextStyle}></div>
                             <AddIcon sx={{ color: '#6F7479' }} className={style.cursorPointer} />

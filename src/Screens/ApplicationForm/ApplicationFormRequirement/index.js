@@ -17,8 +17,7 @@ import RequiredDocumentCard from '../../../Components/RequiredDocumentCard';
 const ApplicationFormRequirement = () => {
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(true);
-    const requiredDocument = [{ title: 'Passport Size Photo' }, { title: 'Curriculum Vitae' }
-        // , { title: 'Professional Liability Insurance Coverage' }, { title: 'Education / College Diplomas, Degrees & Certificate' }, { title: 'Vulnerable Sector Police Check' }
+    const requiredDocument = [{ title: 'Passport Size Photo' }, { title: 'Curriculum Vitae' }, { title: 'Professional Liability Insurance Coverage' }, { title: 'Education / College Diplomas, Degrees & Certificate' }, { title: 'Vulnerable Sector Police Check' }
     ]
     const getIsOpen = (value) => {
         setIsOpen(value);
@@ -26,7 +25,7 @@ const ApplicationFormRequirement = () => {
 
     return (
         <div className={style.screenBackground}>
-            <ApplicationHeader title={'New {Doctor} {Full Time} Application For {First Last Name}'} />
+            <ApplicationHeader title={'New Physician / Doctor Application For Jane DOE, MD'} />
             <div className={style.screenPadding}>
                 <div className={style.applicationScreenGrid}>
                     <WelcomeCard title={'Welcome to Cambridge Memorial Hospitals Automated Credentialing & Privileging Portal!'} description={'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus.'} />
