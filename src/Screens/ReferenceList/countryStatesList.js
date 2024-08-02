@@ -87,6 +87,7 @@ const CountryStatesList = ({ getAddStateList, getCountryList, selectedCountry })
     await DELETE(`entity-service/stateMaster/${id}`)
       .then((response) => {
         SuccessToaster("State Deleted Successfully");
+        getCountryList();
         getStateList();
       })
       .catch((error) => {
@@ -130,9 +131,9 @@ const CountryStatesList = ({ getAddStateList, getCountryList, selectedCountry })
                 <img
                   src={IndustriesEntityFolder}
                   alt=""
-                  className={`${style.colorFileStyle} ${style.marginLeft5}`}
+                  className={`${style.colorFileStyle} ${style.marginLeft10}`}
                 />
-                <p className={style.tableHeaderIndustriesFontStyle5}>
+                <p className={`${style.tableHeaderIndustriesFontStyle5} ${style.textUppercase}`}>
                   {selectedCountry?.country}
                 </p>
                 <p className={style.tableHeaderIndustriesFontStyle5}>

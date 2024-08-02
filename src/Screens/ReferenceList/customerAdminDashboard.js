@@ -1212,7 +1212,7 @@ const ClientAdminDashboard = () => {
                         <h5 className={`${style.headingForReferenceList}`}>
                           COUNTRIES WITH STATES ENTITY
                         </h5>
-                        <div
+                        {/* <div
                           className={`${style.optionsStyle} ${style.displayInCol}  `}
                         >
                           <div className={`${style.dashboardInsideCardStyle} `}>
@@ -1220,7 +1220,7 @@ const ClientAdminDashboard = () => {
                               DEFAULT LIST SETUP REQUIRED
                             </span>
                           </div>
-                        </div>
+                        </div> */}
                       </div>
                     </Link>
                   </div>
