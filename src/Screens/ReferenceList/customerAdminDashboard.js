@@ -1210,7 +1210,7 @@ const ClientAdminDashboard = () => {
                     >
                       <div className={style.dashboardCardStyle}>
                         <h5 className={`${style.headingForReferenceList}`}>
-                          COUNTRIES SUPPORTED WITH <br /> STATES
+                          COUNTRIES WITH STATES ENTITY
                         </h5>
                         <div
                           className={`${style.optionsStyle} ${style.displayInCol}  `}
