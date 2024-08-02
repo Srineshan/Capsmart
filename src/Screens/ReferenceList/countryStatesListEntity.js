@@ -19,9 +19,9 @@ import ArrowDown from "./../../images/arrowDown.png";
 import { GET, DELETE } from "../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import DeleteConfirmation from "../../Components/DeleteConfirmation";
-import AddStateType from "./addStateType";
+import AddStatesEntity from "./addStatesEntity";
 
-const CountryStatesList = ({ getAddStateList, getCountryList, selectedCountry }) => {
+const CountryStatesListEntity = ({ getAddStateList, getCountryList, selectedCountry }) => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [showDeleteState, setShowDeleteState] = useState(false);
   const [deleteCountryId, setDeleteCountryId] = useState("");
@@ -87,7 +87,6 @@ const CountryStatesList = ({ getAddStateList, getCountryList, selectedCountry })
     await DELETE(`entity-service/stateMaster/${id}`)
       .then((response) => {
         SuccessToaster("State Deleted Successfully");
-        getCountryList();
         getStateList();
       })
       .catch((error) => {
@@ -131,9 +130,9 @@ const CountryStatesList = ({ getAddStateList, getCountryList, selectedCountry })
                 <img
                   src={IndustriesEntityFolder}
                   alt=""
-                  className={`${style.colorFileStyle} ${style.marginLeft10}`}
+                  className={`${style.colorFileStyle} ${style.marginLeft5}`}
                 />
-                <p className={`${style.tableHeaderIndustriesFontStyle5} ${style.textUppercase}`}>
+                <p className={style.tableHeaderIndustriesFontStyle5}>
                   {selectedCountry?.country}
                 </p>
                 <p className={style.tableHeaderIndustriesFontStyle5}>
@@ -203,7 +202,7 @@ const CountryStatesList = ({ getAddStateList, getCountryList, selectedCountry })
         </div>
       </div>
 
-      {showStateDialog && <AddStateType getAddStateDialog={getAddStateDialog} countryId={selectedCountry?.id} getStateList={getStateList} isStateEdit={isStateEdit} selectedState={selectedState} />}
+      {showStateDialog && <AddStatesEntity getAddStateDialog={getAddStateDialog} countryId={selectedCountry?.id} getStateList={getStateList} isStateEdit={isStateEdit} selectedState={selectedState} />}
 
       {showDeleteConfirmation && (
         <DeleteConfirmation
@@ -224,4 +223,4 @@ const CountryStatesList = ({ getAddStateList, getCountryList, selectedCountry })
   );
 };
 
-export default CountryStatesList;
+export default CountryStatesListEntity;

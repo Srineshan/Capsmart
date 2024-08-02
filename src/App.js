@@ -118,6 +118,12 @@ const HolidayListByIndustries = React.lazy(() =>
 const CountriesSupportedWithStates = React.lazy(() =>
   import("./Screens/ReferenceList/countriesSupportedWithStates")
 );
+const CountriesWithStatesEntity = React.lazy(() =>
+  import("./Screens/ReferenceList/countriesWithStatesEntity")
+);
+// const CountryWithStatesEntity = React.lazy(() =>
+//   import("./Screens/ReferenceList/countryWithStatesEntity")
+// );
 const ProofOfDocumentationByEntity = React.lazy(() =>
   import("./Screens/ReferenceList/proofOfDocumentationByEntity")
 );
@@ -618,6 +624,14 @@ const App = ({ props }) => {
                 path="/referenceList/countriesSupportedWithStates"
                 element={<CountriesSupportedWithStates />}
               />
+              <Route
+                path="/referenceList/countryWithStatesEntity"
+                element={<CountriesWithStatesEntity />}
+              />
+              {/* <Route
+                path="/referenceList/countryWithStatesEntity"
+                element={<CountryWithStatesEntity />}
+              /> */}
               <Route
                 path="/referenceList/departmentsForCustomers"
                 element={<DepartmentsForCustomers />}

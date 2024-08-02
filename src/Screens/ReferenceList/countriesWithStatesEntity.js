@@ -20,7 +20,7 @@ import CountryStatesList from "./countryStatesList";
 import AddCountryType from "./addCountryType";
 import { DELETE, GET, POST, PUT, TenantID } from "../dataSaver";
 
-const CountriesSupportedWithStates = () => {
+const CountriesWithStatesEntity = () => {
   const [showCountryDialog, setShowCountryDialog] =
     useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
@@ -98,14 +98,14 @@ const CountriesSupportedWithStates = () => {
                 {
                   !stateList && (
                     <>
-                      <Link to={"/Screens/ReferenceList/superAdminDashboard"}><Icon icon="cross" size={25} intent={Intent.DANGER} className={`${style.marginLeft20} ${style.marginBottom5} ${style.crossColor}`} /></Link>
+                      <Link to={"/Screens/ReferenceList/customerAdminDashboard"}><Icon icon="cross" size={25} intent={Intent.DANGER} className={`${style.marginLeft20} ${style.marginBottom5} ${style.crossColor}`} /></Link>
                     </>
                   )
                 }
                 {
                   stateList && (
                     <>
-                      <Icon icon="cross" size={25} intent={Intent.DANGER} className={`${style.marginLeft20} ${style.marginBottom5} ${style.crossColor}`} onClick={() => { setStateList(false) }} />
+                      <Icon icon="cross" size={25} intent={Intent.DANGER} className={`${style.marginLeft20} ${style.marginBottom5} ${style.crossColor}`} onClick={() => { setStateList(false); getCountryList() }} />
                     </>
                   )
                 }
@@ -173,4 +173,4 @@ const CountriesSupportedWithStates = () => {
   );
 };
 
-export default CountriesSupportedWithStates;
+export default CountriesWithStatesEntity;

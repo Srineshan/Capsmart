@@ -1202,6 +1202,27 @@ const ClientAdminDashboard = () => {
                         </h5>
                       </div>
                     </Link>
+
+                    {/* //CountryandStates */}
+                    <Link
+                      to={"/referenceList/countryWithStatesEntity"}
+                      className={style.linkStyle}
+                    >
+                      <div className={style.dashboardCardStyle}>
+                        <h5 className={`${style.headingForReferenceList}`}>
+                          COUNTRIES WITH STATES ENTITY
+                        </h5>
+                        {/* <div
+                          className={`${style.optionsStyle} ${style.displayInCol}  `}
+                        >
+                          <div className={`${style.dashboardInsideCardStyle} `}>
+                            <span className={style.dashboardCardColorOption4}>
+                              DEFAULT LIST SETUP REQUIRED
+                            </span>
+                          </div>
+                        </div> */}
+                      </div>
+                    </Link>
                   </div>
                 </div>
               </div>
