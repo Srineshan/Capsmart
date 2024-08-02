@@ -261,7 +261,7 @@ const ContractServiceProviderBySite = () => {
           <div>
             {/* <SubNavbar/> */}
             <LevelTwoHeader
-              heading={"CONTRACTED SERVICE PROVIDERS BY ENTITY / SITE TYPES"}
+              heading={"HEALTHCARE PRACTIONER TYPE BY ENTITY / SITE"}
               updatedTime={`UPDATED ON ${lastUpdatedDate}`}
               path={"/Screens/ReferenceList/customerAdminDashboard"}
               callingFrom={"Customer Admin"}
