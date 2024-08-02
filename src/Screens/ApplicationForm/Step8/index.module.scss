@@ -77,21 +77,21 @@
     grid-column: span 2;
 }
 
-.trainingGrid {
+.privilegeGrid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 20px;
 }
 
-.trainingGrid> :nth-child(1) {
+.privilegeGrid> :nth-child(1) {
     grid-column: span 2;
 }
 
-.trainingGrid> :nth-child(2) {
+.privilegeGrid> :nth-child(2) {
     grid-column: span 2;
 }
 
-.trainingGrid> :nth-child(3) {
+.privilegeGrid> :nth-child(3) {
     grid-column: span 2;
 }
 

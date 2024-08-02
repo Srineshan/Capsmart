@@ -77,22 +77,10 @@
     grid-column: span 2;
 }
 
-.trainingGrid {
+.conductGrid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(1, 1fr);
     gap: 20px;
-}
-
-.trainingGrid> :nth-child(1) {
-    grid-column: span 4;
-}
-
-.trainingGrid> :nth-child(2) {
-    grid-column: span 4;
-}
-
-.trainingGrid> :nth-child(3) {
-    grid-column: span 4;
 }
 
 .progressStyle {
@@ -102,7 +90,7 @@
 }
 
 .progressStyleBackground {
-    background: transparent linear-gradient(90deg, #7165E3 0%, #7165E3 30%, #E9E9F0 33%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(90deg, #7165E3 0%, #7165E3 36%, #E9E9F0 39%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
 }
 
 .siteDisplayCard {

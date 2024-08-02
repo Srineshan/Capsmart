@@ -21,7 +21,7 @@ const Step10 = ({ basicForm, setBasicForm }) => {
 
     const getFormSchema = async () => {
         const { data: form } = await GET(
-            `application-management-service/formSchema/${basicForm?.formSchemas?.[7]?.id}`
+            `application-management-service/formSchema/${basicForm?.formSchemas?.[8]?.id}`
         );
         setFormSchema(form)
     }

@@ -23,6 +23,9 @@ import Step7 from './Step7';
 import Step8 from './Step8';
 import Step9 from './Step9';
 import Step10 from './Step10';
+import Step11 from './Step11';
+import Step12 from './Step12';
+import Step13 from './Step13';
 
 
 const ApplicationForm = () => {
@@ -35,7 +38,7 @@ const ApplicationForm = () => {
 
     const getPreApplication = async () => {
         const { data: basicForm } = await GET(
-            `application-management-service/application/${`66a9d13792a3ce59d5bf166b`}`
+            `application-management-service/application/${`66ab431925ff4442505d3920`}`
         );
         setBasicForm(basicForm)
     }
@@ -56,12 +59,18 @@ const ApplicationForm = () => {
                 return <Step6 basicForm={basicForm} setBasicForm={setBasicForm} />;
             case 'step7':
                 return <Step7 basicForm={basicForm} setBasicForm={setBasicForm} />;
-            // case 'step8':
-            //     return <Step8 basicForm={basicForm} setBasicForm={setBasicForm} />;
-            // case 'step9':
-            //     return <Step9 basicForm={basicForm} setBasicForm={setBasicForm} />;
-            // case 'step10':
-            //     return <Step10 basicForm={basicForm} setBasicForm={setBasicForm} />;
+            case 'step8':
+                return <Step8 basicForm={basicForm} setBasicForm={setBasicForm} />;
+            case 'step9':
+                return <Step9 basicForm={basicForm} setBasicForm={setBasicForm} />;
+            case 'step10':
+                return <Step10 basicForm={basicForm} setBasicForm={setBasicForm} />;
+            case 'step11':
+                return <Step11 basicForm={basicForm} setBasicForm={setBasicForm} />;
+            case 'step12':
+                return <Step12 basicForm={basicForm} setBasicForm={setBasicForm} />;
+            case 'step13':
+                return <Step13 basicForm={basicForm} setBasicForm={setBasicForm} />;
             default:
                 return <div>Step not found</div>;
         }

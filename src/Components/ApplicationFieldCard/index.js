@@ -12,12 +12,17 @@ import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import CheckIcon from '@mui/icons-material/Check';
 import style from './index.module.scss';
 import CommonCheckBox from '../CommonFields/CommonCheckBox';
+import { TextArea } from '@blueprintjs/core';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import CommonDivider from '../CommonFields/CommonDivider';
 
 const TEXTFIELDLEN50 = 50;
 
-const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicForm, showAdd, addMoreType }) => {
+const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicForm, showAdd, addMoreType, addMoreOpenBydefault, collapsableQuestionCard }) => {
     const [calendarStart, setCalendarStart] = useState(false);
-    const [isAddMore, setIsAddMore] = useState(false);
+    const [isAddMore, setIsAddMore] = useState(addMoreOpenBydefault ? true : false);
+    const [isCollapsableCard, setIsCollapsableCard] = useState(true);
     const basicpath = 'basicDetails'
 
     useEffect(() => {
@@ -120,6 +125,20 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                             required={fieldData.required?.includes(fieldKey)}
                         />
                     );
+                case 'textArea':
+                    return (
+                        <div>
+                            <div className={`${style.lableStyle}`}>{fieldData.label}{fieldData.required?.includes(fieldKey) && '*'}</div>
+                            <TextArea
+                                value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)}
+                                className={`${style.fullWidth} ${style.marginTop10}`}
+                                onChange={(e) => handleChange(fieldKey, e.target.value, baseKey)}
+                                maxLength={TEXTFIELDLEN50}
+                                placeholder={fieldData.label}
+                                rows={4}
+                            />
+                        </div>
+                    );
                 case 'cellNumber':
                     return (
                         <CommonPhoneField
@@ -164,13 +183,16 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                     );
                 case 'radiobutton':
                     return (
-                        <CommonRadio
-                            className={style.leftAlign}
-                            value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)}
-                            onChange={(e) => handleChange(fieldKey, e.target.value, baseKey)}
-                            radioValue={fieldData.enum}
-                            label={fieldData.enum}
-                        />
+                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
+                            <div className={`${style.lableStyle} ${fieldData.label !== null ? style.marginRight : ''}`}>{fieldData.label}{fieldData.required?.includes(fieldKey) && '*'}</div>
+                            <CommonRadio
+                                className={style.leftAlign}
+                                value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)}
+                                onChange={(e) => handleChange(fieldKey, e.target.value, baseKey)}
+                                radioValue={fieldData.enum}
+                                label={fieldData.enum}
+                            />
+                        </div>
                     );
                 case 'switchbutton':
                     return (
@@ -218,7 +240,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                         <div>
                             <div className={`${style.uploadButton} ${style.uploadGrid} ${style.verticalAlignCenter}`}>
                                 <DescriptionOutlinedIcon sx={{ color: '#787f87' }} />
-                                <label for={`file-upload-dynamic-${fieldKey}`} className={`${style.uploadText} `}>
+                                <label for={`file-upload-dynamic-${fieldKey}`} className={`${style.uploadText} ${style.cursorPointer}`}>
                                     {fieldData.label}
                                 </label>
                             </div>
@@ -321,7 +343,10 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
     return (
         <div className={`${window.location.pathname.includes('applicationForm') ? '' : style.backgroundCard} ${style.marginTop}`}>
             <div className={style.cardTitle}>{object?.label}</div>
-            {addMoreType ? (
+            {collapsableQuestionCard && (
+                <div className={style.addMoreDescriptionText}>{object?.description}</div>
+            )}
+            {(addMoreType && !collapsableQuestionCard) ? (
                 <div className={`${style.addMoreBorder} ${style.marginTop}`}>
                     {isAddMore ? (
                         <div className={style.padding20}>
@@ -341,9 +366,34 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                     ) : (
                         <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.padding10}`}>
                             <div className={style.addMoreText}>{object?.items?.label}</div>
-                            <div className={`${style.addMoreButton}`} onClick={() => setIsAddMore(true)}>ADD MORE</div>
+                            <div className={`${style.addMoreButton} ${style.marginLeft}`} onClick={() => setIsAddMore(true)}>ADD MORE</div>
                         </div>
                     )}
+                </div>
+            ) : (!addMoreType && collapsableQuestionCard) ? (
+                <div className={`${style.addMoreBorder} ${style.marginTop}`}>
+                    <div className={style.padding20}>
+                        <div className={style.spaceBetween}>
+                            <div className={style.collapsableCardText}>{Object.entries(object?.properties)?.map(([key, data]) => data)[0]?.label}</div>
+                            {isCollapsableCard ? (
+                                <div onClick={() => setIsCollapsableCard(false)}>
+                                    <KeyboardArrowUpIcon sx={{ color: '#c4bef3' }} />
+                                </div>
+                            ) : (
+                                <div onClick={() => setIsCollapsableCard(true)}>
+                                    <KeyboardArrowDownIcon sx={{ color: '#c4bef3' }} />
+                                </div>
+                            )}
+                        </div>
+                        {isCollapsableCard && (
+                            <>
+                                <CommonDivider />
+                                <div className={`${gridStyle} ${style.marginTop}`}>
+                                    {object?.type === "object" ? renderObjectFields(object, object?.properties) : object?.type === "array" ? renderObjectFields(object, object?.items?.properties) : renderObjectFields(object, object?.properties)}
+                                </div>
+                            </>
+                        )}
+                    </div>
                 </div>
             ) : (
                 <div className={`${gridStyle} ${object?.label !== null ? style.marginTop : ''}`}>

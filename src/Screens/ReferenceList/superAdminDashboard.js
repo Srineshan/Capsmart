@@ -46,9 +46,9 @@ const SuperAdminDashboard = () => {
     );
   };
 
-  useEffect(() => {
-    getReferenceList();
-  }, []);
+  // useEffect(() => {
+  //   getReferenceList();
+  // }, []);
 
   return (
     <Fragment>
@@ -102,13 +102,13 @@ const SuperAdminDashboard = () => {
                           </span>
                           <span className={style.dashboardCardColorOption2}>
                             LAST UPDATED ON{" "}
-                            {new Date(lastUpdatedDate?.industries?.lastModified)
+                            {/* {new Date(lastUpdatedDate?.industries?.lastModified)
                               .toLocaleString("en-US", {
                                 timeZone: "America/New_York",
                                 year: "numeric",
                                 month: "long",
                               })
-                              .toUpperCase()}
+                              .toUpperCase()} */}
                           </span>
                         </div>
                       </div>
@@ -129,13 +129,13 @@ const SuperAdminDashboard = () => {
                           </span>
                           <span className={style.dashboardCardColorOption2}>
                             LAST UPDATED ON{" "}
-                            {new Date(lastUpdatedDate.departments?.lastModified)
+                            {/* {new Date(lastUpdatedDate.departments?.lastModified)
                               .toLocaleString("en-US", {
                                 timeZone: "America/New_York",
                                 year: "numeric",
                                 month: "long",
                               })
-                              .toUpperCase()}
+                              .toUpperCase()} */}
                           </span>
                         </div>
                       </div>
@@ -159,7 +159,7 @@ const SuperAdminDashboard = () => {
                           </span>
                           <span className={style.dashboardCardColorOption2}>
                             LAST UPDATED ON{" "}
-                            {new Date(
+                            {/* {new Date(
                               lastUpdatedDate.contractedServiceProviders?.lastModified
                             )
                               .toLocaleString("en-US", {
@@ -167,7 +167,7 @@ const SuperAdminDashboard = () => {
                                 year: "numeric",
                                 month: "long",
                               })
-                              .toUpperCase()}{" "}
+                              .toUpperCase()}{" "} */}
                           </span>
                         </div>
                       </div>
@@ -188,7 +188,7 @@ const SuperAdminDashboard = () => {
                           </span>
                           <span className={style.dashboardCardColorOption2}>
                             LAST UPDATED ON{" "}
-                            {new Date(
+                            {/* {new Date(
                               lastUpdatedDate.functionalTitles?.lastModified
                             )
                               .toLocaleString("en-US", {
@@ -196,7 +196,7 @@ const SuperAdminDashboard = () => {
                                 year: "numeric",
                                 month: "long",
                               })
-                              .toUpperCase()}{" "}
+                              .toUpperCase()}{" "} */}
                           </span>
                         </div>
                       </div>
@@ -217,7 +217,7 @@ const SuperAdminDashboard = () => {
                           </span>
                           <span className={style.dashboardCardColorOption2}>
                             LAST UPDATED ON{" "}
-                            {new Date(
+                            {/* {new Date(
                               lastUpdatedDate.boardCertification?.lastModified
                             )
                               .toLocaleString("en-US", {
@@ -225,7 +225,7 @@ const SuperAdminDashboard = () => {
                                 year: "numeric",
                                 month: "long",
                               })
-                              .toUpperCase()}{" "}
+                              .toUpperCase()}{" "} */}
                           </span>
                         </div>
                       </div>
@@ -246,7 +246,7 @@ const SuperAdminDashboard = () => {
                           </span>
                           <span className={style.dashboardCardColorOption2}>
                             LAST UPDATED ON{" "}
-                            {new Date(
+                            {/* {new Date(
                               lastUpdatedDate.absenceResons?.lastModified
                             )
                               .toLocaleString("en-US", {
@@ -254,7 +254,7 @@ const SuperAdminDashboard = () => {
                                 year: "numeric",
                                 month: "long",
                               })
-                              .toUpperCase()}{" "}
+                              .toUpperCase()}{" "} */}
                           </span>
                         </div>
                       </div>
@@ -275,13 +275,13 @@ const SuperAdminDashboard = () => {
                           </span>
                           <span className={style.dashboardCardColorOption2}>
                             LAST UPDATED ON{" "}
-                            {new Date(lastUpdatedDate.nameSuffix?.lastModified)
+                            {/* {new Date(lastUpdatedDate.nameSuffix?.lastModified)
                               .toLocaleString("en-US", {
                                 timeZone: "America/New_York",
                                 year: "numeric",
                                 month: "long",
                               })
-                              .toUpperCase()}
+                              .toUpperCase()} */}
                           </span>
                         </div>
                       </div>
@@ -302,7 +302,7 @@ const SuperAdminDashboard = () => {
                           </span>
                           <span className={style.dashboardCardColorOption2}>
                             LAST UPDATED ON{" "}
-                            {new Date(
+                            {/* {new Date(
                               lastUpdatedDate.terminationReason?.lastModified
                             )
                               .toLocaleString("en-US", {
@@ -310,7 +310,7 @@ const SuperAdminDashboard = () => {
                                 year: "numeric",
                                 month: "long",
                               })
-                              .toUpperCase()}{" "}
+                              .toUpperCase()}{" "} */}
                           </span>
                         </div>
                       </div>
@@ -364,13 +364,13 @@ const SuperAdminDashboard = () => {
                           </span>
                           <span className={style.dashboardCardColorOption2}>
                             LAST UPDATED ON{" "}
-                            {new Date(lastUpdatedDate.holidayList?.lastModified)
+                            {/* {new Date(lastUpdatedDate.holidayList?.lastModified)
                               .toLocaleString("en-US", {
                                 timeZone: "America/New_York",
                                 year: "numeric",
                                 month: "long",
                               })
-                              .toUpperCase()}{" "}
+                              .toUpperCase()}{" "} */}
                           </span>
                         </div>
                       </div>
