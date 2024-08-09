@@ -45,6 +45,7 @@ import PACSAdminStep6 from './PACSAdminStep6';
 const ApplicationForm = () => {
     const { section, step } = useParams();
     const [basicForm, setBasicForm] = useState({})
+    const applicationId = '66acc34d2f01f619d5e4a3bc'
 
     useEffect(() => {
         getPreApplication()
@@ -52,7 +53,7 @@ const ApplicationForm = () => {
 
     const getPreApplication = async () => {
         const { data: basicForm } = await GET(
-            `application-management-service/application/${`66acc34d2f01f619d5e4a3bc`}`
+            `application-management-service/application/${applicationId}`
         );
         setBasicForm(basicForm)
     }
@@ -60,31 +61,31 @@ const ApplicationForm = () => {
     const StepDisplay = () => {
         switch (step) {
             case 'step1':
-                return <Step1 basicForm={basicForm} setBasicForm={setBasicForm} />;
+                return <Step1 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'step2':
-                return <Step2 basicForm={basicForm} setBasicForm={setBasicForm} />;
+                return <Step2 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'step3':
-                return <Step3 basicForm={basicForm} setBasicForm={setBasicForm} />;
+                return <Step3 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'step4':
-                return <Step4 basicForm={basicForm} setBasicForm={setBasicForm} />;
+                return <Step4 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'step5':
-                return <Step5 basicForm={basicForm} setBasicForm={setBasicForm} />;
+                return <Step5 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'step6':
-                return <Step6 basicForm={basicForm} setBasicForm={setBasicForm} />;
+                return <Step6 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'step7':
-                return <Step7 basicForm={basicForm} setBasicForm={setBasicForm} />;
+                return <Step7 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'step8':
-                return <Step8 basicForm={basicForm} setBasicForm={setBasicForm} />;
+                return <Step8 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'step9':
-                return <Step9 basicForm={basicForm} setBasicForm={setBasicForm} />;
+                return <Step9 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'step10':
-                return <Step10 basicForm={basicForm} setBasicForm={setBasicForm} />;
+                return <Step10 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'step11':
-                return <Step11 basicForm={basicForm} setBasicForm={setBasicForm} />;
+                return <Step11 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'step12':
-                return <Step12 basicForm={basicForm} setBasicForm={setBasicForm} />;
+                return <Step12 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'step13':
-                return <Step13 basicForm={basicForm} setBasicForm={setBasicForm} />;
+                return <Step13 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'acknowledgementStep1':
                 return <ApplicationAcknowledgementStep1 />;
             case 'acknowledgementStep2':
@@ -102,11 +103,11 @@ const ApplicationForm = () => {
             case 'acknowledgementStep8':
                 return <ApplicationAcknowledgementStep8 />;
             case 'acknowledgementStep9':
-                return <ApplicationAcknowledgementStep9 basicForm={basicForm} setBasicForm={setBasicForm} />;
+                return <ApplicationAcknowledgementStep9 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'acknowledgementStep10':
-                return <ApplicationAcknowledgementStep10 basicForm={basicForm} setBasicForm={setBasicForm} />;
+                return <ApplicationAcknowledgementStep10 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'acknowledgementStep11':
-                return <ApplicationAcknowledgementStep11 basicForm={basicForm} setBasicForm={setBasicForm} />;
+                return <ApplicationAcknowledgementStep11 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'acknowledgementStep12':
                 return <ApplicationAcknowledgementStep12 />;
             case 'pacsAdminStep1':

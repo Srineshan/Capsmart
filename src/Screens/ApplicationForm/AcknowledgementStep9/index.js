@@ -4,7 +4,8 @@ import ApplicationUserCard from '../../../Components/ApplicationUserCard';
 import ApplicationAssistanceCard from '../../../Components/ApplicationAssistanceCard';
 import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import logo from "../../../images/cambridgeHospital.png";
-import { GET } from '../../dataSaver';
+import { GET, PUT } from '../../dataSaver';
+import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import { useNavigate } from 'react-router-dom';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import style from './index.module.scss';
@@ -12,7 +13,7 @@ import CommonCheckBox from '../../../Components/CommonFields/CommonCheckBox';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import ESign from '../../../Components/ESign';
 
-const ApplicationAcknowledgementStep9 = ({ basicForm, setBasicForm }) => {
+const ApplicationAcknowledgementStep9 = ({ basicForm, setBasicForm, applicationId }) => {
     const [isChecked, setIsChecked] = useState(false);
     const navigate = useNavigate()
     const [formSchema, setFormSchema] = useState();
@@ -28,6 +29,24 @@ const ApplicationAcknowledgementStep9 = ({ basicForm, setBasicForm }) => {
         );
         setFormSchema(form)
     }
+
+    const handleSubmitApplicationReq = async () => {
+        let temp = {
+            schemaId: basicForm?.forms?.[12]?.schemaId,
+            data: basicForm?.forms?.[12]?.data
+        }
+        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[12]?.id}`, temp)
+            .then(response => {
+                console.log(response)
+                setBasicForm(response?.data)
+                SuccessToaster("Application Updated Successfully");
+                navigate('/applicationForm/section1/acknowledgementStep10')
+            })
+            .catch((error) => {
+                console.log(error)
+                ErrorToaster("Unexpected Error Updating Application");
+            });
+    }
     return (
         <div>
             <div className={style.applicationScreenGrid}>
@@ -40,7 +59,7 @@ const ApplicationAcknowledgementStep9 = ({ basicForm, setBasicForm }) => {
                         <div className={`${style.labelText} ${style.marginTop}`}>My making of this application and signature below indicate my understanding of and consent to the following (please note that references to Public Hospitals Act are not applicable to Homewood):</div>
                         <CommonDivider />
                         {formSchema !== undefined && 'accessAgreementFormPACSRequest' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.accessAgreementFormPACSRequest?.properties?.accessAgreementFormPACSRequest} gridStyle={style.pacsRequestGrid} baseKey={'accessAgreementFormPACSRequest'} basicForm={basicForm} setBasicForm={setBasicForm} />
+                            <ApplicationFieldCard object={formSchema?.properties?.accessAgreementFormPACSRequest?.properties?.accessAgreementFormPACSRequest} gridStyle={style.pacsRequestGrid} baseKey={'accessAgreementFormPACSRequest'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[12].data`} />
                         )}
                         <div className={`${style.boldNote} ${style.marginTop}`}>Your User ID and Password will be assigned to you and the PACS administrator will contact you with the information. Please read the below statement and Sign.</div>
                         <div className={style.marginTop}>
@@ -52,7 +71,7 @@ const ApplicationAcknowledgementStep9 = ({ basicForm, setBasicForm }) => {
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
-                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate('/applicationForm/section1/acknowledgementStep10')} >CONTINUE</div>
+                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => { handleSubmitApplicationReq() }} >CONTINUE</div>
 
                     {/* <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />

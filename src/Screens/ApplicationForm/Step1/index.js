@@ -52,11 +52,11 @@ const Step1 = ({ basicForm, setBasicForm }) => {
                             onChangeAddressLine2={() => { }} placeholderAddressLine2={'Apartment 5'} maxLengthAddressLine2={25} valueAddressLine2={''} onChangeCity={() => { }} placeholderCity={'City'} maxLengthCity={25}
                             valueCity={''} onChangeState={() => { }} placeholderState={'Province'} maxLengthState={25} valueState={''} onChangeZipcode={() => { }} placeholderZipcode={'Zipcode'} maxLengthZipcode={15} valueZipcode={''} /> */}
                     {form1 !== undefined && 'applicant' in form1?.properties && (
-                        <ApplicationFieldCard object={form1?.properties?.applicant} gridStyle={style.twoCol} baseKey={'applicant'} basicForm={basicForm} setBasicForm={setBasicForm} />
+                        <ApplicationFieldCard object={form1?.properties?.applicant} gridStyle={style.twoCol} baseKey={'applicant'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
                     )}
                     <CommonDivider />
                     {form1 !== undefined && 'service' in form1?.properties && (
-                        <ApplicationFieldCard object={form1?.properties?.service} gridStyle={style.twoCol} baseKey={'service'} basicForm={basicForm} setBasicForm={setBasicForm} />
+                        <ApplicationFieldCard object={form1?.properties?.service} gridStyle={style.twoCol} baseKey={'service'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
                     )}
                     <CommonDivider />
                     <div className={`${style.backgroundCard} ${style.marginTop}`}>
@@ -82,11 +82,11 @@ const Step1 = ({ basicForm, setBasicForm }) => {
                     </div>
                     <CommonDivider />
                     {/* {form2 !== undefined && 'natureOfPractice' in form2?.properties && (
-                        <ApplicationFieldCard object={form2?.properties?.natureOfPractice} gridStyle={style.twoCol} baseKey={'natureOfPractice'} basicForm={basicForm} setBasicForm={setBasicForm} />
+                        <ApplicationFieldCard object={form2?.properties?.natureOfPractice} gridStyle={style.twoCol} baseKey={'natureOfPractice'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
                     )} */}
                     {/* <CommonDivider /> */}
                     {form2 !== undefined && 'regionalCallResponsibilities' in form2?.properties && (
-                        <ApplicationFieldCard object={form2?.properties?.regionalCallResponsibilities} gridStyle={style.twoCol} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} />
+                        <ApplicationFieldCard object={form2?.properties?.regionalCallResponsibilities} gridStyle={style.twoCol} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
                     )}
                     <CommonDivider />
                     <div className={style.marginTop}>

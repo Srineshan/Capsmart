@@ -4,13 +4,14 @@ import ApplicationUserCard from '../../../Components/ApplicationUserCard';
 import ApplicationAssistanceCard from '../../../Components/ApplicationAssistanceCard';
 import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
-import { GET } from '../../dataSaver';
+import { GET, PUT } from '../../dataSaver';
 import { useNavigate } from 'react-router-dom';
 import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
+import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 
 import style from './index.module.scss';
 
-const Step3 = ({ basicForm, setBasicForm }) => {
+const Step3 = ({ basicForm, setBasicForm, applicationId }) => {
     const [formSchema, setFormSchema] = useState();
     const navigate = useNavigate()
     useEffect(() => {
@@ -25,6 +26,23 @@ const Step3 = ({ basicForm, setBasicForm }) => {
         );
         setFormSchema(form)
     }
+    const handleSubmitApplicationReq = async () => {
+        let temp = {
+            schemaId: basicForm?.forms?.[1]?.schemaId,
+            data: basicForm?.forms?.[1]?.data
+        }
+        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[1]?.id}`, temp)
+            .then(response => {
+                console.log(response)
+                setBasicForm(response?.data)
+                SuccessToaster("Application Updated Successfully");
+                navigate('/applicationForm/section1/step4')
+            })
+            .catch((error) => {
+                console.log(error)
+                ErrorToaster("Unexpected Error Updating Application");
+            });
+    }
     return (
         <div>
             <div className={style.applicationScreenGrid}>
@@ -38,11 +56,11 @@ const Step3 = ({ basicForm, setBasicForm }) => {
                             onChangeAddressLine2={() => { }} placeholderAddressLine2={'Apartment 5'} maxLengthAddressLine2={25} valueAddressLine2={''} onChangeCity={() => { }} placeholderCity={'City'} maxLengthCity={25}
                             valueCity={''} onChangeState={() => { }} placeholderState={'Province'} maxLengthState={25} valueState={''} onChangeZipcode={() => { }} placeholderZipcode={'Zipcode'} maxLengthZipcode={15} valueZipcode={''} /> */}
                         {formSchema !== undefined && 'contactAddress1' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.contactAddress1} gridStyle={style.homeMailingAddressGrid} baseKey={'contactAddress1'} basicForm={basicForm} setBasicForm={setBasicForm} />
+                            <ApplicationFieldCard object={formSchema?.properties?.contactAddress1} gridStyle={style.homeMailingAddressGrid} baseKey={'contactAddress1'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[1].data`} />
                         )}
                         <CommonDivider />
                         {formSchema !== undefined && 'contactAddress2' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.contactAddress2} gridStyle={style.businessMailingAddressGrid} baseKey={'contactAddress2'} basicForm={basicForm} setBasicForm={setBasicForm} />
+                            <ApplicationFieldCard object={formSchema?.properties?.contactAddress2} gridStyle={style.businessMailingAddressGrid} baseKey={'contactAddress2'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[1].data`} />
                         )}
                     </div>
                 </div>
@@ -50,7 +68,7 @@ const Step3 = ({ basicForm, setBasicForm }) => {
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
                     <div className={`${style.continue} ${style.marginTop10}`}
-                        onClick={() => navigate('/applicationForm/section1/step4')}
+                        onClick={() => { handleSubmitApplicationReq() }}
                     >CONTINUE</div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />

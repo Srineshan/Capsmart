@@ -5,13 +5,14 @@ import ApplicationAssistanceCard from '../../../Components/ApplicationAssistance
 import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
-import { GET } from '../../dataSaver';
+import { GET, PUT } from '../../dataSaver';
 import { useNavigate } from 'react-router-dom';
+import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 
 import style from './index.module.scss';
 import NoDataBox from '../../../Components/ReusableSmallComponents/noDataBox';
 
-const Step12 = ({ basicForm, setBasicForm }) => {
+const Step12 = ({ basicForm, setBasicForm, applicationId }) => {
     const [formSchema, setFormSchema] = useState();
     const navigate = useNavigate()
     useEffect(() => {
@@ -26,6 +27,24 @@ const Step12 = ({ basicForm, setBasicForm }) => {
         );
         setFormSchema(form)
     }
+
+    const handleSubmitApplicationReq = async () => {
+        let temp = {
+            schemaId: basicForm?.forms?.[10]?.schemaId,
+            data: basicForm?.forms?.[10]?.data
+        }
+        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[10]?.id}`, temp)
+            .then(response => {
+                console.log(response)
+                setBasicForm(response?.data)
+                SuccessToaster("Application Updated Successfully");
+                navigate('/applicationForm/section1/step13')
+            })
+            .catch((error) => {
+                console.log(error)
+                ErrorToaster("Unexpected Error Updating Application");
+            });
+    }
     return (
         <div>
             <div className={style.applicationScreenGrid}>
@@ -36,10 +55,10 @@ const Step12 = ({ basicForm, setBasicForm }) => {
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'criminalData1' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.criminalData1} gridStyle={style.criminalHistoryGrid} baseKey={'criminalData1'} basicForm={basicForm} setBasicForm={setBasicForm} collapsableQuestionCard={true} />
+                            <ApplicationFieldCard object={formSchema?.properties?.criminalData1} gridStyle={style.criminalHistoryGrid} baseKey={'criminalData1'} basicForm={basicForm} setBasicForm={setBasicForm} collapsableQuestionCard={true} stepPath={`forms[10].data`} />
                         )}
                         {formSchema !== undefined && 'criminalData2' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.criminalData2} gridStyle={style.criminalHistoryGrid} baseKey={'criminalData2'} basicForm={basicForm} setBasicForm={setBasicForm} collapsableQuestionCard={true} />
+                            <ApplicationFieldCard object={formSchema?.properties?.criminalData2} gridStyle={style.criminalHistoryGrid} baseKey={'criminalData2'} basicForm={basicForm} setBasicForm={setBasicForm} collapsableQuestionCard={true} stepPath={`forms[10].data`} />
                         )}
                         <NoDataBox
                             heading={'Information Requirement Alert'}
@@ -51,7 +70,7 @@ const Step12 = ({ basicForm, setBasicForm }) => {
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
-                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate('/applicationForm/section1/step13')}>CONTINUE</div>
+                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => { handleSubmitApplicationReq() }}>CONTINUE</div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
                     </div>

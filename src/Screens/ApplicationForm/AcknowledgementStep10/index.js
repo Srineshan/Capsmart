@@ -4,14 +4,16 @@ import ApplicationUserCard from '../../../Components/ApplicationUserCard';
 import ApplicationAssistanceCard from '../../../Components/ApplicationAssistanceCard';
 import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import logo from "../../../images/cambridgeHospital.png";
-import { GET } from '../../dataSaver';
+import { GET, PUT } from '../../dataSaver';
+import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
+
 import { useNavigate } from 'react-router-dom';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import style from './index.module.scss';
 import CommonCheckBox from '../../../Components/CommonFields/CommonCheckBox';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 
-const ApplicationAcknowledgementStep10 = ({ basicForm, setBasicForm }) => {
+const ApplicationAcknowledgementStep10 = ({ basicForm, setBasicForm, applicationId }) => {
     const [isChecked, setIsChecked] = useState(false);
     const navigate = useNavigate()
     const [formSchema, setFormSchema] = useState();
@@ -27,6 +29,24 @@ const ApplicationAcknowledgementStep10 = ({ basicForm, setBasicForm }) => {
         );
         setFormSchema(form)
     }
+
+    const handleSubmitApplicationReq = async () => {
+        let temp = {
+            schemaId: basicForm?.forms?.[13]?.schemaId,
+            data: basicForm?.forms?.[13]?.data
+        }
+        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[13]?.id}`, temp)
+            .then(response => {
+                console.log(response)
+                setBasicForm(response?.data)
+                SuccessToaster("Application Updated Successfully");
+                navigate('/applicationForm/section1/acknowledgementStep11')
+            })
+            .catch((error) => {
+                console.log(error)
+                ErrorToaster("Unexpected Error Updating Application");
+            });
+    }
     return (
         <div>
             <div className={style.applicationScreenGrid}>
@@ -39,7 +59,7 @@ const ApplicationAcknowledgementStep10 = ({ basicForm, setBasicForm }) => {
                         <div className={`${style.labelText} ${style.marginTop}`}>My making of this application and signature below indicate my understanding of and consent to the following (please note that references to Public Hospitals Act are not applicable to Homewood):</div>
                         <CommonDivider />
                         {formSchema !== undefined && 'pharmacySignatureTemplate' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.pharmacySignatureTemplate?.properties?.pharmacySignatureTemplate} gridStyle={style.pharmacySignatureAddressGrid} baseKey={'pharmacySignatureTemplate'} basicForm={basicForm} setBasicForm={setBasicForm} />
+                            <ApplicationFieldCard object={formSchema?.properties?.pharmacySignatureTemplate?.properties?.pharmacySignatureTemplate} gridStyle={style.pharmacySignatureAddressGrid} baseKey={'pharmacySignatureTemplate'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[13].data`} />
                         )}
                         <div className={style.displayInRowRev}>
                             <div className={`${style.continue} ${style.marginTop10} ${style.createButtonStyle}`} >CREATE</div>
@@ -49,7 +69,7 @@ const ApplicationAcknowledgementStep10 = ({ basicForm, setBasicForm }) => {
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
-                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate('/applicationForm/section1/acknowledgementStep11')} >CONTINUE</div>
+                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => { handleSubmitApplicationReq() }} >CONTINUE</div>
 
                     {/* <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />

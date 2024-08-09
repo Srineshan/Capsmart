@@ -3,14 +3,15 @@ import ProgressCard from '../../../Components/ProgressCard';
 import ApplicationUserCard from '../../../Components/ApplicationUserCard';
 import ApplicationAssistanceCard from '../../../Components/ApplicationAssistanceCard';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
-import { GET } from '../../dataSaver';
+import { GET, PUT } from '../../dataSaver';
 import { useNavigate } from 'react-router-dom';
 import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
+import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 
 import style from './index.module.scss';
 import NoDataBox from '../../../Components/ReusableSmallComponents/noDataBox';
 
-const Step4 = ({ basicForm, setBasicForm }) => {
+const Step4 = ({ basicForm, setBasicForm, applicationId }) => {
     const [formSchema, setFormSchema] = useState();
     const navigate = useNavigate()
     useEffect(() => {
@@ -25,6 +26,28 @@ const Step4 = ({ basicForm, setBasicForm }) => {
         );
         setFormSchema(form)
     }
+
+    const getIsSubmitClicked = (value, data) => {
+        if (value) {
+            handleSubmitApplicationReq(data)
+        }
+    }
+
+    const handleSubmitApplicationReq = async (data) => {
+        let temp = {
+            schemaId: data?.forms?.[2]?.schemaId,
+            data: data?.forms?.[2]?.data 
+        }
+        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[2]?.id}`, temp)
+            .then(response => {
+                console.log(response)
+                SuccessToaster("Application Updated Successfully");
+            })
+            .catch((error) => {
+                console.log(error)
+                ErrorToaster("Unexpected Error Updating Application");
+            });
+    }
     return (
         <div>
             <div className={style.applicationScreenGrid}>
@@ -35,7 +58,7 @@ const Step4 = ({ basicForm, setBasicForm }) => {
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'certifications' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.certifications} gridStyle={style.licenseGrid} baseKey={'certifications'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} />
+                            <ApplicationFieldCard object={formSchema?.properties?.certifications} gridStyle={style.licenseGrid} baseKey={'certifications'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} formId={basicForm?.forms?.[2]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} />
                         )}
                         <NoDataBox
                             heading={'Information Requirement Alert'}

@@ -3,15 +3,16 @@ import ProgressCard from '../../../Components/ProgressCard';
 import ApplicationUserCard from '../../../Components/ApplicationUserCard';
 import ApplicationAssistanceCard from '../../../Components/ApplicationAssistanceCard';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
-import { GET } from '../../dataSaver';
+import { GET, PUT } from '../../dataSaver';
 import { useNavigate } from 'react-router-dom';
 import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
+import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 
 import style from './index.module.scss';
 import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import NoDataBox from '../../../Components/ReusableSmallComponents/noDataBox';
 
-const Step6 = ({ basicForm, setBasicForm }) => {
+const Step6 = ({ basicForm, setBasicForm, applicationId }) => {
     const [formSchema, setFormSchema] = useState();
     const navigate = useNavigate()
     useEffect(() => {
@@ -26,6 +27,28 @@ const Step6 = ({ basicForm, setBasicForm }) => {
         );
         setFormSchema(form)
     }
+
+    const getIsSubmitClicked = (value, data) => {
+        if (value) {
+            handleSubmitApplicationReq(data)
+        }
+    }
+
+    const handleSubmitApplicationReq = async (data) => {
+        let temp = {
+            schemaId: data?.forms?.[4]?.schemaId,
+            data: data?.forms?.[4]?.data
+        }
+        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[4]?.id}`, temp)
+            .then(response => {
+                console.log(response)
+                SuccessToaster("Application Updated Successfully");
+            })
+            .catch((error) => {
+                console.log(error)
+                ErrorToaster("Unexpected Error Updating Application");
+            });
+    }
     return (
         <div>
             <div className={style.applicationScreenGrid}>
@@ -36,7 +59,7 @@ const Step6 = ({ basicForm, setBasicForm }) => {
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'underGraduate' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.underGraduate} gridStyle={style.EducationGrid} baseKey={'underGraduate'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} />
+                            <ApplicationFieldCard object={formSchema?.properties?.underGraduate} gridStyle={style.EducationGrid} baseKey={'underGraduate'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} formId={basicForm?.forms?.[4]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} />
                         )}
                         <NoDataBox
                             heading={'Information Requirement Alert'}
@@ -45,7 +68,7 @@ const Step6 = ({ basicForm, setBasicForm }) => {
                         />
                         <CommonDivider />
                         {formSchema !== undefined && 'postGraduate' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.postGraduate} gridStyle={style.EducationGrid} baseKey={'postGraduate'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} />
+                            <ApplicationFieldCard object={formSchema?.properties?.postGraduate} gridStyle={style.EducationGrid} baseKey={'postGraduate'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} formId={basicForm?.forms?.[4]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} />
                         )}
                     </div>
                 </div>

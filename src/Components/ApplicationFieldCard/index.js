@@ -16,30 +16,100 @@ import { TextArea } from '@blueprintjs/core';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import CommonDivider from '../CommonFields/CommonDivider';
+import { POST } from '../../Screens/dataSaver';
+import { SuccessToaster, ErrorToaster } from '../../utils/toaster';
 
 const TEXTFIELDLEN50 = 50;
 
-const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicForm, showAdd, addMoreType, addMoreOpenBydefault, collapsableQuestionCard }) => {
+const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicForm, showAdd, addMoreType, addMoreOpenBydefault, collapsableQuestionCard, isBasicPath, stepPath, formId, getIsSubmitClicked, applicationId }) => {
     const [calendarStart, setCalendarStart] = useState(false);
     const [isAddMore, setIsAddMore] = useState(addMoreOpenBydefault ? true : false);
     const [isCollapsableCard, setIsCollapsableCard] = useState(true);
-    const basicpath = 'basicDetails'
+    const basicpath = isBasicPath ? 'basicDetails' : stepPath
 
     useEffect(() => {
         renderObjectFields(object)
     }, [basicForm]);
 
-    const setNestedValue = (obj, path, value) => {
-        console.log(obj, path, value, 'Test')
-        const keys = path.split('.');
+    // const setNestedValue = (obj, path, value) => {
+    //     console.log(obj, path, value, 'Test')
+    //     const keys = path.split('.');
+    //     let current = obj;
+    //     console.log(current)
+    //     for (let i = 0; i < keys.length - 1; i++) {
+    //         if (!current[keys[i]]) current[keys[i]] = {};
+    //         current = current[keys[i]];
+    //     }
+
+    //     current[keys[keys.length - 1]] = value;
+    // };
+
+    const isFileObject = (value) => {
+        return value instanceof File;
+    };
+
+    const addNewDocument = async (file) => {
+        console.log(file, file?.name, 'Test')
+        let fileName = {
+            "fileName": file?.name
+        };
+        const formData = new FormData();
+
+        if (file !== null) {
+
+            formData.append('files', new Blob([JSON.stringify(fileName)], {
+                type: "application/json"
+            }));
+            formData.append('documents', file);
+
+            // await POST(`application-management-service/application/${applicationId}/files`, formData)
+            //     .then(response => {
+            //         SuccessToaster('File Uploaded Successfully');
+            //         console.log(response?.data)
+            //         return response?.data;
+            //     })
+            //     .catch(error => {
+            //         ErrorToaster('File Upload Failed');
+            //     })
+            try {
+                const response = await POST(`application-management-service/application/${applicationId}/files`, formData);
+                SuccessToaster('File Uploaded Successfully');
+                console.log(response?.data);
+                return response?.data;
+            } catch (error) {
+                ErrorToaster('File Upload Failed');
+                console.error(error);
+                return null;
+            }
+        }
+    }
+
+    const setNestedValue = async (obj, path, value) => {
+        console.log(obj, path, value, 'Test');
+
+        // Split the path into keys, handling both dot and bracket notation
+        const keys = path.split(/[\.\[\]]+/).filter(Boolean);
+
         let current = obj;
-        console.log(current)
         for (let i = 0; i < keys.length - 1; i++) {
-            if (!current[keys[i]]) current[keys[i]] = {};
-            current = current[keys[i]];
+            // Convert to a number if the key is an integer, to handle array indices correctly
+            const key = isNaN(keys[i]) ? keys[i] : Number(keys[i]);
+
+            if (!current[key]) {
+                // Check if the next key is a number to decide whether to create an array or an object
+                current[key] = isNaN(keys[i + 1]) ? {} : [];
+            }
+            current = current[key];
         }
 
-        current[keys[keys.length - 1]] = value;
+        const lastKey = isNaN(keys[keys.length - 1]) ? keys[keys.length - 1] : Number(keys[keys.length - 1]);
+        if (isFileObject(value)) {
+            let file = await addNewDocument(value);
+            console.log(file)
+            current[lastKey] = file;
+        } else {
+            current[lastKey] = value;
+        }
     };
 
     console.log(basicForm, 'Test')
@@ -99,9 +169,10 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
         if ((!object?.then?.required?.includes(fieldKey) || getValueByPath(basicForm, `${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`) === Object.entries(object?.if?.properties)?.map(([key, data]) => data)[0]?.const) && fieldData.fieldType) {
             switch (fieldData.fieldType) {
                 case 'dropdown':
+                    console.log(getValueByPath(basicForm, 'forms[1]'), `${basicpath}.${baseKey}.${fieldKey}`, 'dropdown', basicForm)
                     return (
                         <CommonSelectField
-                            value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)}
+                            value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
                             onChange={(e) => handleChange(fieldKey, e.target.value, baseKey)}
                             className={style.fullWidth}
                             // firstOptionLabel={fieldData.label}
@@ -116,13 +187,15 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                 case 'textbox':
                     return (
                         <CommonInputField
-                            value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)}
+                            value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || ''}
                             className={style.fullWidth}
-                            onChange={(e) => handleChange(fieldKey, e.target.value, baseKey)}
+                            onChange={(e) => handleChange(fieldKey, fieldData.type === "number" ? parseInt(e.target.value <= fieldData.maximum ? e.target.value : fieldData.maximum) : e.target.value, baseKey)}
                             maxLength={TEXTFIELDLEN50}
                             placeholder={fieldData.label !== null ? `Enter ${fieldData.label}` : null}
                             label={fieldData.label}
                             required={fieldData.required?.includes(fieldKey)}
+                            type={fieldData.type}
+                            min={fieldData.minimum}
                         />
                     );
                 case 'textArea':
@@ -130,7 +203,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                         <div>
                             <div className={`${style.lableStyle}`}>{fieldData.label}{fieldData.required?.includes(fieldKey) && '*'}</div>
                             <TextArea
-                                value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)}
+                                value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
                                 className={`${style.fullWidth} ${style.marginTop10}`}
                                 onChange={(e) => handleChange(fieldKey, e.target.value, baseKey)}
                                 maxLength={TEXTFIELDLEN50}
@@ -142,7 +215,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                 case 'cellNumber':
                     return (
                         <CommonPhoneField
-                            value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)}
+                            value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
                             className={style.fullWidth}
                             onChange={(e) => handleChange(fieldKey, FormatPhoneNumber(e.target.value), baseKey)}
                             placeholder={fieldData.label !== null ? `Enter ${fieldData.label}` : null}
@@ -157,10 +230,10 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                             open={calendarStart}
                             onOpen={() => setCalendarStart(true)}
                             onClose={() => setCalendarStart(false)}
-                            minDate={sub(new Date(), { years: 3 })}
-                            maxDate={add(new Date(), { months: 6 })}
-                            value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)}
-                            onChange={(newValue) => handleChange(fieldKey, format(new Date(newValue), 'yyyy-MM-dd'), baseKey)}
+                            // minDate={sub(new Date(), { years: 3 })}
+                            // maxDate={add(new Date(), { months: 6 })}
+                            value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
+                            onChange={(newValue) => handleChange(fieldKey, fieldData.format === "date-time" ? format(new Date(newValue), "yyyy-MM-dd'T'HH:mm:ss'Z'") : format(new Date(newValue), 'yyyy-MM-dd'), baseKey)}
                             InputProps={{
                                 style: {
                                     fontSize: 14,
@@ -187,7 +260,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                             <div className={`${style.lableRadioStyle} ${fieldData.label !== null ? style.marginRight : ''}`}>{fieldData.label}{fieldData.required?.includes(fieldKey) && '*'}</div>
                             <CommonRadio
                                 className={style.leftAlign}
-                                value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)}
+                                value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
                                 onChange={(e) => handleChange(fieldKey, e.target.value, baseKey)}
                                 radioValue={fieldData.enum}
                                 label={fieldData.enum}
@@ -196,12 +269,12 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                     );
                 case 'switchbutton':
                     return (
-                        <CommonSwitch label={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === true ? 'YES' : 'NO'} checked={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)} onChange={(e) => handleChange(fieldKey, e.target.checked, baseKey)} labelName={fieldData.label} />
+                        <CommonSwitch label={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === true ? 'YES' : 'NO'} checked={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null} onChange={(e) => handleChange(fieldKey, e.target.checked, baseKey)} labelName={fieldData.label} />
                     );
                 case 'checkbox':
                     return (
                         <CommonCheckBox
-                            checked={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)}
+                            checked={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
                             onChange={(e) => handleChange(fieldKey, e.target.checked, baseKey)} label={fieldData.label}
                         />
                     );
@@ -209,7 +282,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                     return (
                         <div className={`${style.siteDisplayCard} ${style.siteDisplayGrid} ${style.verticalAlignCenter}`}>
                             <CommonCheckBox
-                                checked={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)}
+                                checked={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
                                 onChange={(e) => handleChange(fieldKey, e.target.checked, baseKey)}
                             />
                             <div>
@@ -348,10 +421,35 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
     // };
 
 
+    // const getValueByPath = (obj, path) => {
+    //     console.log(path, path.split('.').reduce((acc, part) => acc && acc[part], basicForm), basicForm)
+    //     return path.split('.').reduce((acc, part) => acc && acc[part], basicForm);
+    // };
+
     const getValueByPath = (obj, path) => {
-        console.log(path, path.split('.').reduce((acc, part) => acc && acc[part], basicForm))
-        return path.split('.').reduce((acc, part) => acc && acc[part], basicForm);
+        const keys = path.split(/[\.\[\]]+/).filter(Boolean);
+        console.log(path, keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm), basicForm)
+        return keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm);
     };
+
+    const handleAddMore = () => {
+        let index = basicForm?.forms?.findIndex(data => data?.id === formId);
+        let temp = basicForm;
+        if (temp.forms[index].data === null) {
+            temp.forms[index].data = {};
+            temp.forms[index].data[baseKey] = [basicForm[baseKey]];
+        } else if (temp.forms[index].data[baseKey] === undefined) {
+            temp.forms[index].data[baseKey] = [];
+            temp.forms[index].data[baseKey].push(basicForm[baseKey])
+        } else {
+            temp.forms[index].data[baseKey].push(basicForm[baseKey])
+        }
+        delete basicForm[baseKey];
+        delete basicForm.undefined;
+        setBasicForm(temp);
+        getIsSubmitClicked(true, temp);
+        console.log(basicForm?.forms?.filter(data => data?.id === formId), basicForm[baseKey], 'addMore', index, basicForm, basicForm.baseKey)
+    }
 
     // console.log(object, Object.entries(object?.properties)?.map(([data, details]) => data), Object.entries(object?.properties)?.map(([data, details]) => details?.properties !== null && details?.properties !== undefined && Object.entries(details?.properties)?.map(([innerKey, innerData]) => innerData?.label)),
     //     getValueByPath(basicForm, `${'applicant'}.${"name"}.${'firstName'}`))
@@ -372,10 +470,10 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                             </div>
                             <div className={`${style.displayInRowRev} ${style.marginTop}`}>
                                 <div className={style.marginLeft}>
-                                    <div className={`${style.addMoreButton}`} onClick={() => setIsAddMore(false)}>SAVE & CLOSE</div>
+                                    <div className={`${style.addMoreButton}`} onClick={() => { setIsAddMore(false); handleAddMore() }}>SAVE & CLOSE</div>
                                 </div>
                                 <div>
-                                    <div className={`${style.addMoreButtonOutlined}`} onClick={() => setIsAddMore(true)}>SAVE & ADD MORE</div>
+                                    <div className={`${style.addMoreButtonOutlined}`} onClick={() => { handleAddMore() }}>SAVE & ADD MORE</div>
                                 </div>
                             </div>
                         </div>

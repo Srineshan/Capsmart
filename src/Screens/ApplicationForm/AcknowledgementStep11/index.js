@@ -4,7 +4,8 @@ import ApplicationUserCard from '../../../Components/ApplicationUserCard';
 import ApplicationAssistanceCard from '../../../Components/ApplicationAssistanceCard';
 import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import pdf from "../../../images/PhysicianPaymentOrder.png";
-import { GET } from '../../dataSaver';
+import { GET, PUT } from '../../dataSaver';
+import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import { useNavigate } from 'react-router-dom';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import style from './index.module.scss';
@@ -13,7 +14,7 @@ import ESign from '../../../Components/ESign';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import NoDataBox from '../../../Components/ReusableSmallComponents/noDataBox';
 
-const ApplicationAcknowledgementStep11 = ({ basicForm, setBasicForm }) => {
+const ApplicationAcknowledgementStep11 = ({ basicForm, setBasicForm, applicationId }) => {
     const [isChecked, setIsChecked] = useState(false);
     const navigate = useNavigate()
     const [formSchema, setFormSchema] = useState();
@@ -29,6 +30,24 @@ const ApplicationAcknowledgementStep11 = ({ basicForm, setBasicForm }) => {
         );
         setFormSchema(form)
     }
+
+    const handleSubmitApplicationReq = async () => {
+        let temp = {
+            schemaId: basicForm?.forms?.[14]?.schemaId,
+            data: basicForm?.forms?.[14]?.data
+        }
+        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[14]?.id}`, temp)
+            .then(response => {
+                console.log(response)
+                setBasicForm(response?.data)
+                SuccessToaster("Application Updated Successfully");
+                navigate('/applicationForm/section1/acknowledgementStep12')
+            })
+            .catch((error) => {
+                console.log(error)
+                ErrorToaster("Unexpected Error Updating Application");
+            });
+    }
     return (
         <div>
             <div className={style.applicationScreenGrid}>
@@ -41,7 +60,7 @@ const ApplicationAcknowledgementStep11 = ({ basicForm, setBasicForm }) => {
                         <div className={`${style.labelText} ${style.marginTop}`}>My making of this application and signature below indicate my understanding of and consent to the following (please note that references to Public Hospitals Act are not applicable to Homewood):</div>
                         <CommonDivider />
                         {formSchema !== undefined && 'physicianPaymentOrder' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.physicianPaymentOrder} gridStyle={style.physicianPaymentOrderGrid} baseKey={'physicianPaymentOrder'} basicForm={basicForm} setBasicForm={setBasicForm} />
+                            <ApplicationFieldCard object={formSchema?.properties?.physicianPaymentOrder} gridStyle={style.physicianPaymentOrderGrid} baseKey={'physicianPaymentOrder'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[14].data`} />
                         )}
                         <NoDataBox
                             heading={'Information Requirement Alert'}
@@ -55,7 +74,7 @@ const ApplicationAcknowledgementStep11 = ({ basicForm, setBasicForm }) => {
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
-                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate('/applicationForm/section1/acknowledgementStep11')} >CONTINUE</div>
+                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => { handleSubmitApplicationReq() }} >CONTINUE</div>
 
                     {/* <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />

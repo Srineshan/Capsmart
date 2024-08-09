@@ -194,13 +194,13 @@ const CreateStaffMemberApplication = () => {
                 {!isNextpage ? (
                     <>
                         {form !== undefined && 'applicant' in form?.properties && (
-                            <ApplicationFieldCard object={form?.properties?.applicant} gridStyle={style.threeCol} baseKey={'applicant'} basicForm={basicForm} setBasicForm={setBasicForm} />
+                            <ApplicationFieldCard object={form?.properties?.applicant} gridStyle={style.threeCol} baseKey={'applicant'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
                         )}
                         {form !== undefined && 'service' in form?.properties && (
-                            <ApplicationFieldCard object={form?.properties?.service} gridStyle={style.twoCol} baseKey={'service'} basicForm={basicForm} setBasicForm={setBasicForm} />
+                            <ApplicationFieldCard object={form?.properties?.service} gridStyle={style.twoCol} baseKey={'service'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
                         )}
                         {form !== undefined && 'interviewDetails' in form?.properties && (
-                            <ApplicationFieldCard object={form?.properties?.interviewDetails} gridStyle={style.jobInterviewGrid} baseKey={'interviewDetails'} basicForm={basicForm} setBasicForm={setBasicForm} />
+                            <ApplicationFieldCard object={form?.properties?.interviewDetails} gridStyle={style.jobInterviewGrid} baseKey={'interviewDetails'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
                         )}
                         <div className={style.spaceBetween}>
                             <div></div>
@@ -214,7 +214,7 @@ const CreateStaffMemberApplication = () => {
                     <>
                         {form !== undefined && 'sites' in form?.properties && (
                             <div className={style.siteCardGrid}>
-                                <ApplicationFieldCard object={form?.properties?.sites} gridStyle={style.siteGrid} baseKey={'sites'} basicForm={basicForm} setBasicForm={setBasicForm} showAdd={true} />
+                                <ApplicationFieldCard object={form?.properties?.sites} gridStyle={style.siteGrid} baseKey={'sites'} basicForm={basicForm} setBasicForm={setBasicForm} showAdd={true} isBasicPath={true} />
                                 <div className={`${style.backgroundCard} ${style.marginTop}`}>
                                     <div className={style.cardTitle}>Added Sites</div>
                                     <div className={`${style.siteDisplayCard} ${style.siteDisplayGrid} ${style.marginTop}`}>
@@ -235,10 +235,10 @@ const CreateStaffMemberApplication = () => {
                             </div>
                         )}
                         {form !== undefined && 'natureOfPractice' in form?.properties && (
-                            <ApplicationFieldCard object={form?.properties?.natureOfPractice} gridStyle={style.natureOfPracticeGrid} baseKey={'natureOfPractice'} basicForm={basicForm} setBasicForm={setBasicForm} />
+                            <ApplicationFieldCard object={form?.properties?.natureOfPractice} gridStyle={style.natureOfPracticeGrid} baseKey={'natureOfPractice'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
                         )}
                         {form !== undefined && 'regionalCallResponsibilities' in form?.properties && (
-                            <ApplicationFieldCard object={form?.properties?.regionalCallResponsibilities} gridStyle={style.jobInterviewGrid} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} />
+                            <ApplicationFieldCard object={form?.properties?.regionalCallResponsibilities} gridStyle={style.jobInterviewGrid} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
                         )}
                         <div className={style.spaceBetween}>
                             <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => setIsNextPage(false)}>BACK</div>
