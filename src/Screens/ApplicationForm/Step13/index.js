@@ -13,6 +13,7 @@ import style from './index.module.scss';
 
 const Step13 = ({ basicForm, setBasicForm, applicationId }) => {
     const [formSchema, setFormSchema] = useState();
+    const [isEdited, setIsEdited] = useState(false);
     const navigate = useNavigate()
     useEffect(() => {
         if (basicForm && !formSchema) {
@@ -28,21 +29,29 @@ const Step13 = ({ basicForm, setBasicForm, applicationId }) => {
     }
 
     const handleSubmitApplicationReq = async () => {
-        let temp = {
-            schemaId: basicForm?.forms?.[11]?.schemaId,
-            data: basicForm?.forms?.[11]?.data
+        if (isEdited) {
+            let temp = {
+                schemaId: basicForm?.forms?.[11]?.schemaId,
+                data: basicForm?.forms?.[11]?.data
+            }
+            await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[11]?.id}`, temp)
+                .then(response => {
+                    console.log(response)
+                    setBasicForm(response?.data)
+                    SuccessToaster("Application Updated Successfully");
+                    navigate('/applicationForm/section1/step14')
+                })
+                .catch((error) => {
+                    console.log(error)
+                    ErrorToaster("Unexpected Error Updating Application");
+                });
+        } else {
+            navigate('/applicationForm/section1/step14')
         }
-        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[11]?.id}`, temp)
-            .then(response => {
-                console.log(response)
-                setBasicForm(response?.data)
-                SuccessToaster("Application Updated Successfully");
-                navigate('/applicationForm/section1/acknowledgementStep1')
-            })
-            .catch((error) => {
-                console.log(error)
-                ErrorToaster("Unexpected Error Updating Application");
-            });
+    }
+
+    const getIsEdited = (value) => {
+        setIsEdited(value)
     }
     return (
         <div>
@@ -54,7 +63,7 @@ const Step13 = ({ basicForm, setBasicForm, applicationId }) => {
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'impactingPractice' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.impactingPractice} gridStyle={style.criminalHistoryGrid} baseKey={'impactingPractice'} basicForm={basicForm} setBasicForm={setBasicForm} collapsableQuestionCard={true} stepPath={`forms[11].data`} />
+                            <ApplicationFieldCard object={formSchema?.properties?.impactingPractice} gridStyle={style.criminalHistoryGrid} baseKey={'impactingPractice'} basicForm={basicForm} setBasicForm={setBasicForm} collapsableQuestionCard={true} stepPath={`forms[11].data`} setIsEdited={getIsEdited} />
                         )}
                     </div>
                 </div>

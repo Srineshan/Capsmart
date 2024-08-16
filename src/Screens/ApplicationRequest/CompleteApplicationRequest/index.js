@@ -42,7 +42,7 @@ const CompleteApplicationRequest = () => {
 
     const getPreApplication = async () => {
         const { data: basicForm } = await GET(
-            `application-management-service/application/${`66acc34d2f01f619d5e4a3bc`}`
+            `application-management-service/application/${`66bcac15da780016524126eb`}`
         );
         setBasicForm(basicForm)
     }

@@ -11,7 +11,7 @@ import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import style from './index.module.scss';
 import NoDataBox from '../../../Components/ReusableSmallComponents/noDataBox';
 
-const Step4 = ({ basicForm, setBasicForm, applicationId }) => {
+const Step4 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
     const navigate = useNavigate()
     useEffect(() => {
@@ -36,12 +36,13 @@ const Step4 = ({ basicForm, setBasicForm, applicationId }) => {
     const handleSubmitApplicationReq = async (data) => {
         let temp = {
             schemaId: data?.forms?.[2]?.schemaId,
-            data: data?.forms?.[2]?.data 
+            data: data?.forms?.[2]?.data
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[2]?.id}`, temp)
             .then(response => {
                 console.log(response)
                 SuccessToaster("Application Updated Successfully");
+                getPreApplication();
             })
             .catch((error) => {
                 console.log(error)
@@ -58,7 +59,7 @@ const Step4 = ({ basicForm, setBasicForm, applicationId }) => {
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'certifications' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.certifications} gridStyle={style.licenseGrid} baseKey={'certifications'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} formId={basicForm?.forms?.[2]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} />
+                            <ApplicationFieldCard object={formSchema?.properties?.certifications} gridStyle={style.licenseGrid} baseKey={'certifications'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} formId={basicForm?.forms?.[2]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} />
                         )}
                         <NoDataBox
                             heading={'Information Requirement Alert'}

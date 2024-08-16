@@ -14,6 +14,7 @@ import style from './index.module.scss';
 const Step3 = ({ basicForm, setBasicForm, applicationId }) => {
     const [formSchema, setFormSchema] = useState();
     const navigate = useNavigate()
+    const [isEdited, setIsEdited] = useState(false);
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
@@ -27,22 +28,31 @@ const Step3 = ({ basicForm, setBasicForm, applicationId }) => {
         setFormSchema(form)
     }
     const handleSubmitApplicationReq = async () => {
-        let temp = {
-            schemaId: basicForm?.forms?.[1]?.schemaId,
-            data: basicForm?.forms?.[1]?.data
+        if (isEdited) {
+            let temp = {
+                schemaId: basicForm?.forms?.[1]?.schemaId,
+                data: basicForm?.forms?.[1]?.data
+            }
+            await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[1]?.id}`, temp)
+                .then(response => {
+                    console.log(response)
+                    setBasicForm(response?.data)
+                    SuccessToaster("Application Updated Successfully");
+                    navigate('/applicationForm/section1/step4')
+                })
+                .catch((error) => {
+                    console.log(error)
+                    ErrorToaster("Unexpected Error Updating Application");
+                });
+        } else {
+            navigate('/applicationForm/section1/step4')
         }
-        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[1]?.id}`, temp)
-            .then(response => {
-                console.log(response)
-                setBasicForm(response?.data)
-                SuccessToaster("Application Updated Successfully");
-                navigate('/applicationForm/section1/step4')
-            })
-            .catch((error) => {
-                console.log(error)
-                ErrorToaster("Unexpected Error Updating Application");
-            });
     }
+
+    const getIsEdited = (value) => {
+        setIsEdited(value)
+    }
+
     return (
         <div>
             <div className={style.applicationScreenGrid}>
@@ -56,11 +66,11 @@ const Step3 = ({ basicForm, setBasicForm, applicationId }) => {
                             onChangeAddressLine2={() => { }} placeholderAddressLine2={'Apartment 5'} maxLengthAddressLine2={25} valueAddressLine2={''} onChangeCity={() => { }} placeholderCity={'City'} maxLengthCity={25}
                             valueCity={''} onChangeState={() => { }} placeholderState={'Province'} maxLengthState={25} valueState={''} onChangeZipcode={() => { }} placeholderZipcode={'Zipcode'} maxLengthZipcode={15} valueZipcode={''} /> */}
                         {formSchema !== undefined && 'contactAddress1' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.contactAddress1} gridStyle={style.homeMailingAddressGrid} baseKey={'contactAddress1'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[1].data`} />
+                            <ApplicationFieldCard object={formSchema?.properties?.contactAddress1} gridStyle={style.homeMailingAddressGrid} baseKey={'contactAddress1'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[1].data`} setIsEdited={getIsEdited} />
                         )}
                         <CommonDivider />
                         {formSchema !== undefined && 'contactAddress2' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.contactAddress2} gridStyle={style.businessMailingAddressGrid} baseKey={'contactAddress2'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[1].data`} />
+                            <ApplicationFieldCard object={formSchema?.properties?.contactAddress2} gridStyle={style.businessMailingAddressGrid} baseKey={'contactAddress2'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[1].data`} setIsEdited={getIsEdited} />
                         )}
                     </div>
                 </div>

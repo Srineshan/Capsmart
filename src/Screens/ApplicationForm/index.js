@@ -26,6 +26,7 @@ import Step10 from './Step10';
 import Step11 from './Step11';
 import Step12 from './Step12';
 import Step13 from './Step13';
+import Step14 from './Step14';
 import ApplicationAcknowledgementStep1 from './AcknowledgementStep1';
 import ApplicationAcknowledgementStep2 from './AcknowledgementStep2';
 import ApplicationAcknowledgementStep3 from './AcknowledgementStep3';
@@ -40,13 +41,17 @@ import ApplicationAcknowledgementStep11 from './AcknowledgementStep11';
 import ApplicationAcknowledgementStep12 from './AcknowledgementStep12';
 import PACSAdminStep1 from './PACSAdminStep1';
 import PACSAdminStep6 from './PACSAdminStep6';
+import LoginDialog from '../../Components/LoginDialog';
 
 
 const ApplicationForm = () => {
     const { section, step } = useParams();
     const [basicForm, setBasicForm] = useState({})
-    const applicationId = '66acc34d2f01f619d5e4a3bc'
-
+    const applicationId = '66bcac15da780016524126eb'
+    const [isOpen, setIsOpen] = useState(true);
+    const getIsOpen = (value) => {
+        setIsOpen(value);
+    }
     useEffect(() => {
         getPreApplication()
     }, [])
@@ -67,25 +72,27 @@ const ApplicationForm = () => {
             case 'step3':
                 return <Step3 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'step4':
-                return <Step4 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
+                return <Step4 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'step5':
-                return <Step5 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
+                return <Step5 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'step6':
-                return <Step6 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
+                return <Step6 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'step7':
-                return <Step7 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
+                return <Step7 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'step8':
                 return <Step8 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'step9':
                 return <Step9 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'step10':
-                return <Step10 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
+                return <Step10 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'step11':
                 return <Step11 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'step12':
                 return <Step12 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'step13':
                 return <Step13 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
+            case 'step14':
+                return <Step14 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'acknowledgementStep1':
                 return <ApplicationAcknowledgementStep1 />;
             case 'acknowledgementStep2':
@@ -135,6 +142,7 @@ const ApplicationForm = () => {
             <div className={style.screenPadding}>
                 {StepDisplay()}
             </div>
+            {/* <LoginDialog getIsOpen={getIsOpen} days={15} /> */}
         </div>
     )
 }

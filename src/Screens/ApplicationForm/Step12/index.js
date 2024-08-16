@@ -14,6 +14,7 @@ import NoDataBox from '../../../Components/ReusableSmallComponents/noDataBox';
 
 const Step12 = ({ basicForm, setBasicForm, applicationId }) => {
     const [formSchema, setFormSchema] = useState();
+    const [isEdited, setIsEdited] = useState(false);
     const navigate = useNavigate()
     useEffect(() => {
         if (basicForm && !formSchema) {
@@ -29,21 +30,29 @@ const Step12 = ({ basicForm, setBasicForm, applicationId }) => {
     }
 
     const handleSubmitApplicationReq = async () => {
-        let temp = {
-            schemaId: basicForm?.forms?.[10]?.schemaId,
-            data: basicForm?.forms?.[10]?.data
+        if (isEdited) {
+            let temp = {
+                schemaId: basicForm?.forms?.[10]?.schemaId,
+                data: basicForm?.forms?.[10]?.data
+            }
+            await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[10]?.id}`, temp)
+                .then(response => {
+                    console.log(response)
+                    setBasicForm(response?.data)
+                    SuccessToaster("Application Updated Successfully");
+                    navigate('/applicationForm/section1/step13')
+                })
+                .catch((error) => {
+                    console.log(error)
+                    ErrorToaster("Unexpected Error Updating Application");
+                });
+        } else {
+            navigate('/applicationForm/section1/step13')
         }
-        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[10]?.id}`, temp)
-            .then(response => {
-                console.log(response)
-                setBasicForm(response?.data)
-                SuccessToaster("Application Updated Successfully");
-                navigate('/applicationForm/section1/step13')
-            })
-            .catch((error) => {
-                console.log(error)
-                ErrorToaster("Unexpected Error Updating Application");
-            });
+    }
+
+    const getIsEdited = (value) => {
+        setIsEdited(value)
     }
     return (
         <div>
@@ -55,10 +64,10 @@ const Step12 = ({ basicForm, setBasicForm, applicationId }) => {
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'criminalData1' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.criminalData1} gridStyle={style.criminalHistoryGrid} baseKey={'criminalData1'} basicForm={basicForm} setBasicForm={setBasicForm} collapsableQuestionCard={true} stepPath={`forms[10].data`} />
+                            <ApplicationFieldCard object={formSchema?.properties?.criminalData1} gridStyle={style.criminalHistoryGrid} baseKey={'criminalData1'} basicForm={basicForm} setBasicForm={setBasicForm} collapsableQuestionCard={true} stepPath={`forms[10].data`} setIsEdited={getIsEdited} />
                         )}
                         {formSchema !== undefined && 'criminalData2' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.criminalData2} gridStyle={style.criminalHistoryGrid} baseKey={'criminalData2'} basicForm={basicForm} setBasicForm={setBasicForm} collapsableQuestionCard={true} stepPath={`forms[10].data`} />
+                            <ApplicationFieldCard object={formSchema?.properties?.criminalData2} gridStyle={style.criminalHistoryGrid} baseKey={'criminalData2'} basicForm={basicForm} setBasicForm={setBasicForm} collapsableQuestionCard={true} stepPath={`forms[10].data`} setIsEdited={getIsEdited} />
                         )}
                         <NoDataBox
                             heading={'Information Requirement Alert'}

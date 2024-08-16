@@ -3,6 +3,7 @@ import CommonPhoneField from '../../Components/CommonFields/CommonPhoneField';
 import CommonInputField from '../CommonFields/CommonInputField';
 import CommonSelectField from '../CommonFields/CommonSelectField';
 import CommonDateField from '../CommonFields/CommonDateField';
+import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 import { TextField } from '@mui/material';
 import { add, format, sub } from 'date-fns';
 import { FormatPhoneNumber } from '../../utils/formatting';
@@ -18,17 +19,19 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import CommonDivider from '../CommonFields/CommonDivider';
 import { POST } from '../../Screens/dataSaver';
 import { SuccessToaster, ErrorToaster } from '../../utils/toaster';
+import TableTwo from '../TableDesignTwo';
 
 const TEXTFIELDLEN50 = 50;
 
-const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicForm, showAdd, addMoreType, addMoreOpenBydefault, collapsableQuestionCard, isBasicPath, stepPath, formId, getIsSubmitClicked, applicationId }) => {
+const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicForm, showAdd, addMoreType, addMoreOpenBydefault, collapsableQuestionCard, isBasicPath, stepPath, formId, getIsSubmitClicked, applicationId, tableGrid, setIsEdited }) => {
     const [calendarStart, setCalendarStart] = useState(false);
     const [isAddMore, setIsAddMore] = useState(addMoreOpenBydefault ? true : false);
     const [isCollapsableCard, setIsCollapsableCard] = useState(true);
-    const basicpath = isBasicPath ? 'basicDetails' : stepPath
-
+    const basicpath = isBasicPath ? 'basicDetails' : stepPath;
+    const [isTableEdit, setIsTableEdit] = useState(false);
     useEffect(() => {
         renderObjectFields(object)
+        console.log('entered')
     }, [basicForm]);
 
     // const setNestedValue = (obj, path, value) => {
@@ -116,6 +119,9 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
 
     const handleChange = (path, value, basePath, basePath2, basePath3) => {
         console.log(path, value, basePath, baseKey, 'Check')
+        if (stepPath !== undefined) {
+            setIsEdited(true);
+        }
         setBasicForm((prevData) => {
             const newData = { ...prevData };
             if (basePath3 && basePath2 && basePath && path) {
@@ -358,12 +364,12 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                         console.log(getValueByPath(basicForm, `${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`), 'value if', Object.entries(object?.if?.properties)?.map(([key, data]) => data)[0]?.const, 'data', data)
                         return Object.entries(data.properties).map(([innerKey, innerData]) => {
                             console.log(innerData)
-                            if (innerData.type === 'object') {
+                            if (innerData.type === 'object' && innerData.properties && innerData.fieldType === null) {
                                 console.log('entered', innerData)
                                 return Object.entries(innerData.properties).map(([innerKey2, innerData2]) => {
                                     return renderField(innerKey2, innerData2, `${baseKey}.${key}.${innerKey}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
                                 });
-                            } else if (innerData.type === 'array') {
+                            } else if (innerData.type === 'array' && innerData.items?.properties) {
                                 console.log('entered', innerData)
                                 return Object.entries(innerData.items.properties).map(([innerKey2, innerData2]) => {
                                     return renderField(innerKey2, innerData2, `${baseKey}.${key}.${innerKey}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
@@ -379,7 +385,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                             return renderField(innerKey, innerData, `${baseKey}.${key}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
                         });
                     }
-                } else if (data.type === 'array' && data.items?.properties) {
+                } else if (data.type === 'array' && data.items?.properties && data.fieldType === null) {
                     return Object.entries(data.items.properties).map(([innerKey, innerData]) => {
                         return renderField(innerKey, innerData, `${baseKey}.${key}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
                     });
@@ -435,14 +441,16 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
     const handleAddMore = () => {
         let index = basicForm?.forms?.findIndex(data => data?.id === formId);
         let temp = basicForm;
-        if (temp.forms[index].data === null) {
-            temp.forms[index].data = {};
-            temp.forms[index].data[baseKey] = [basicForm[baseKey]];
-        } else if (temp.forms[index].data[baseKey] === undefined) {
-            temp.forms[index].data[baseKey] = [];
-            temp.forms[index].data[baseKey].push(basicForm[baseKey])
-        } else {
-            temp.forms[index].data[baseKey].push(basicForm[baseKey])
+        if (!isTableEdit) {
+            if (temp.forms[index].data === null) {
+                temp.forms[index].data = {};
+                temp.forms[index].data[baseKey] = [basicForm[baseKey]];
+            } else if (temp.forms[index].data[baseKey] === undefined) {
+                temp.forms[index].data[baseKey] = [];
+                temp.forms[index].data[baseKey].push(basicForm[baseKey])
+            } else {
+                temp.forms[index].data[baseKey].push(basicForm[baseKey])
+            }
         }
         delete basicForm[baseKey];
         delete basicForm.undefined;
@@ -450,6 +458,54 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
         getIsSubmitClicked(true, temp);
         console.log(basicForm?.forms?.filter(data => data?.id === formId), basicForm[baseKey], 'addMore', index, basicForm, basicForm.baseKey)
     }
+
+    const getApplicantValues = (array) => {
+        let temp = [];
+        if (object?.tableHeaders !== null && basicForm?.forms?.filter(data => data?.id === formId)[0]?.data !== null) {
+            Object.keys(object?.tableHeaders)?.map((data, index) => {
+                if (data !== "file") {
+                    temp.push({ "type": "text", "value": array?.map(innerData => innerData[data]) });
+                } else {
+                    temp.push({ "type": "icon", "icon": array?.map(innerData => <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.file?.fileURL, '_blank'); }} />), 'isShowHoverText': false });
+                }
+                if (index === Object.keys(object?.tableHeaders)?.length - 1) {
+                    temp.push({ "type": "action", "value": array?.map(innerData => actions) })
+                }
+            })
+        }
+        console.log(temp, array)
+        return temp;
+    }
+
+    const handleEdit = (data) => {
+        setIsTableEdit(true);
+        console.log(stepPath, basicForm)
+        setIsAddMore(true);
+        setBasicForm(prevData => {
+            const temp = { ...prevData };
+            temp[stepPath] = {};
+            temp[stepPath][baseKey] = data;
+            return temp;
+        });
+    }
+
+    const handleDelete = (data) => {
+        let index = basicForm?.forms?.findIndex(data => data?.id === formId);
+        console.log(stepPath, basicForm)
+        let temp = basicForm;
+        temp.forms[index].data[baseKey] = temp.forms[index].data[baseKey].filter(obj => !isEqual(obj, data))
+        console.log(temp)
+        getIsSubmitClicked(true, temp);
+    }
+
+    const isEqual = (obj1, obj2) => {
+        return JSON.stringify(obj1) === JSON.stringify(obj2);
+    };
+
+    const actions = [
+        { 'data': 'Edit', 'requiredValue': 'boolean', "onClick": handleEdit },
+        { 'data': 'Delete', 'requiredValue': 'boolean', "onClick": handleDelete },
+    ]
 
     // console.log(object, Object.entries(object?.properties)?.map(([data, details]) => data), Object.entries(object?.properties)?.map(([data, details]) => details?.properties !== null && details?.properties !== undefined && Object.entries(details?.properties)?.map(([innerKey, innerData]) => innerData?.label)),
     //     getValueByPath(basicForm, `${'applicant'}.${"name"}.${'firstName'}`))
@@ -461,27 +517,42 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                 <div className={style.addMoreDescriptionText}>{object?.description}</div>
             )}
             {(addMoreType && !collapsableQuestionCard) ? (
-                <div className={`${style.addMoreBorder} ${style.marginTop}`}>
-                    {isAddMore ? (
-                        <div className={style.padding20}>
-                            <div className={style.addMoreText}>{object?.items?.label}</div>
-                            <div className={`${gridStyle} ${style.marginTop}`}>
-                                {object?.type === "object" ? renderObjectFields(object, object?.properties) : object?.type === "array" ? renderObjectFields(object, object?.items?.properties) : renderObjectFields(object, object?.properties)}
-                            </div>
-                            <div className={`${style.displayInRowRev} ${style.marginTop}`}>
-                                <div className={style.marginLeft}>
-                                    <div className={`${style.addMoreButton}`} onClick={() => { setIsAddMore(false); handleAddMore() }}>SAVE & CLOSE</div>
+                <div>
+                    <div className={`${style.addMoreBorder} ${style.marginTop}`}>
+                        {isAddMore ? (
+                            <div className={style.padding20}>
+                                <div className={style.addMoreText}>{object?.items?.label}</div>
+                                <div className={`${gridStyle} ${style.marginTop}`}>
+                                    {object?.type === "object" ? renderObjectFields(object, object?.properties) : object?.type === "array" ? renderObjectFields(object, object?.items?.properties) : renderObjectFields(object, object?.properties)}
                                 </div>
-                                <div>
-                                    <div className={`${style.addMoreButtonOutlined}`} onClick={() => { handleAddMore() }}>SAVE & ADD MORE</div>
+                                <div className={`${style.displayInRowRev} ${style.marginTop}`}>
+                                    <div className={style.marginLeft}>
+                                        <div className={`${style.addMoreButton}`} onClick={() => { setIsAddMore(false); handleAddMore() }}>SAVE & CLOSE</div>
+                                    </div>
+                                    <div>
+                                        <div className={`${style.addMoreButtonOutlined}`} onClick={() => { handleAddMore() }}>SAVE & ADD MORE</div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ) : (
-                        <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.padding10}`}>
-                            <div className={style.addMoreText}>{object?.items?.label}</div>
-                            <div className={`${style.addMoreButton} ${style.marginLeft}`} onClick={() => setIsAddMore(true)}>ADD</div>
-                        </div>
+                        ) : (
+                            <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.padding10}`}>
+                                <div className={style.addMoreText}>{object?.items?.label}</div>
+                                <div className={`${style.addMoreButton} ${style.marginLeft}`} onClick={() => setIsAddMore(true)}>ADD</div>
+                            </div>
+                        )}
+                    </div>
+                    {object?.tableHeaders !== null && basicForm?.forms?.filter(data => data?.id === formId)[0]?.data !== null && (
+                        <TableTwo
+                            tableHeaderValues={Object.values(object?.tableHeaders)}
+                            tableDataValues={getApplicantValues(basicForm?.forms?.filter(data => data?.id === formId)[0]?.data[baseKey])}
+                            tableData={basicForm?.forms?.filter(data => data?.id === formId)[0]?.data[baseKey]}
+                            gridStyle={tableGrid}
+                            actions={actions}
+                            scrollStyle={style.contractScrollStyle}
+                            tableSortValues={[]}
+                            heading={'There are no Record for you to manage'}
+                            onClickFunction={() => { }}
+                        />
                     )}
                 </div>
             ) : (!addMoreType && collapsableQuestionCard) ? (

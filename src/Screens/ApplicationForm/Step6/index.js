@@ -12,7 +12,7 @@ import style from './index.module.scss';
 import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import NoDataBox from '../../../Components/ReusableSmallComponents/noDataBox';
 
-const Step6 = ({ basicForm, setBasicForm, applicationId }) => {
+const Step6 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
     const navigate = useNavigate()
     useEffect(() => {
@@ -43,6 +43,7 @@ const Step6 = ({ basicForm, setBasicForm, applicationId }) => {
             .then(response => {
                 console.log(response)
                 SuccessToaster("Application Updated Successfully");
+                getPreApplication()
             })
             .catch((error) => {
                 console.log(error)
@@ -59,7 +60,7 @@ const Step6 = ({ basicForm, setBasicForm, applicationId }) => {
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'underGraduate' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.underGraduate} gridStyle={style.EducationGrid} baseKey={'underGraduate'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} formId={basicForm?.forms?.[4]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} />
+                            <ApplicationFieldCard object={formSchema?.properties?.underGraduate} gridStyle={style.EducationGrid} baseKey={'underGraduate'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} formId={basicForm?.forms?.[4]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} />
                         )}
                         <NoDataBox
                             heading={'Information Requirement Alert'}
@@ -68,7 +69,7 @@ const Step6 = ({ basicForm, setBasicForm, applicationId }) => {
                         />
                         <CommonDivider />
                         {formSchema !== undefined && 'postGraduate' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.postGraduate} gridStyle={style.EducationGrid} baseKey={'postGraduate'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} formId={basicForm?.forms?.[4]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} />
+                            <ApplicationFieldCard object={formSchema?.properties?.postGraduate} gridStyle={style.EducationGrid} baseKey={'postGraduate'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} formId={basicForm?.forms?.[4]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} />
                         )}
                     </div>
                 </div>

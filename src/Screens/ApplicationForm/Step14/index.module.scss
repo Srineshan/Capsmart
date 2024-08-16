@@ -59,43 +59,29 @@
     gap: 20px;
 }
 
-.healthCareGrid {
+.licenseGrid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 20px;
 }
 
-.healthCareGrid> :nth-child(1) {
-    grid-column: span 4;
-}
-
-.healthCareGrid> :nth-child(2) {
+.licenseGrid> :nth-child(1) {
     grid-column: span 2;
 }
 
-.healthCareGrid> :nth-child(3) {
+.licenseGrid> :nth-child(2) {
     grid-column: span 2;
 }
 
-.trainingGrid {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 20px;
+.licenseGrid> :nth-child(3) {
+    grid-column: span 2;
 }
 
-.trainingGrid> :nth-child(1) {
-    grid-column: span 6;
+.licenseGrid> :nth-child(4) {
+    grid-column: span 2;
 }
 
-.trainingGrid> :nth-child(2) {
-    grid-column: span 6;
-}
-
-.trainingGrid> :nth-child(3) {
-    grid-column: span 4;
-}
-
-.trainingGrid> :nth-child(4) {
+.licenseGrid> :nth-child(5) {
     grid-column: span 2;
 }
 
@@ -106,7 +92,7 @@
 }
 
 .progressStyleBackground {
-    background: transparent linear-gradient(90deg, #7165E3 0%, #7165E3 30%, #E9E9F0 33%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(90deg, #7165E3 0%, #7165E3 19%, #E9E9F0 21%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
 }
 
 .siteDisplayCard {

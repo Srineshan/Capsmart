@@ -194,3 +194,9 @@
 .businessMailingAddressGrid> :nth-child(4) {
     grid-column: 1 / -1;
 }
+
+.tableGrid {
+    display: grid;
+    grid-template-columns: 20% 20% 21% 20% 10% 3%;
+    gap: 1%;
+}
