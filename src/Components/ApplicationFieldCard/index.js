@@ -20,6 +20,7 @@ import CommonDivider from '../CommonFields/CommonDivider';
 import { POST } from '../../Screens/dataSaver';
 import { SuccessToaster, ErrorToaster } from '../../utils/toaster';
 import TableTwo from '../TableDesignTwo';
+import CommonDropZone from '../CommonFields/CommonDropZone';
 
 const TEXTFIELDLEN50 = 50;
 
@@ -29,6 +30,8 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
     const [isCollapsableCard, setIsCollapsableCard] = useState(true);
     const basicpath = isBasicPath ? 'basicDetails' : stepPath;
     const [isTableEdit, setIsTableEdit] = useState(false);
+    const [files, setFiles] = useState([]);
+
     useEffect(() => {
         renderObjectFields(object)
         console.log('entered')
@@ -48,7 +51,15 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
     // };
 
     const isFileObject = (value) => {
-        return value instanceof File;
+        if (value instanceof File) {
+            return true;
+        }
+
+        if (Array.isArray(value)) {
+            return value.every(item => item instanceof File);
+        }
+
+        return false;
     };
 
     const addNewDocument = async (file) => {
@@ -87,6 +98,32 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
         }
     }
 
+    const changeHandler = async (event) => {
+        console.log(event)
+        setFiles(event);
+        const formData = new FormData();
+        let fileNameArray = [];
+        event?.forEach(file => {
+            fileNameArray.push({ "fileName": file?.name });
+            formData.append('documents', file); // Append each file individually
+        });
+
+        formData.append('files', new Blob([JSON.stringify(fileNameArray)], {
+            type: "application/json"
+        }));
+        console.log(fileNameArray)
+        try {
+            const response = await POST(`application-management-service/application/${applicationId}/files/bulk`, formData);
+            SuccessToaster('File Uploaded Successfully');
+            console.log(response?.data);
+            return response?.data;
+        } catch (error) {
+            ErrorToaster('File Upload Failed');
+            console.error(error);
+            return null;
+        }
+    };
+
     const setNestedValue = async (obj, path, value) => {
         console.log(obj, path, value, 'Test');
 
@@ -106,8 +143,14 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
         }
 
         const lastKey = isNaN(keys[keys.length - 1]) ? keys[keys.length - 1] : Number(keys[keys.length - 1]);
+        console.log(value)
         if (isFileObject(value)) {
-            let file = await addNewDocument(value);
+            let file;
+            if (Array.isArray(value)) {
+                file = await changeHandler(value);
+            } else {
+                file = await addNewDocument(value);
+            }
             console.log(file)
             current[lastKey] = file;
         } else {
@@ -326,6 +369,10 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                             <input id={`file-upload-dynamic-${fieldKey}`} type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx" onChange={(e) => { handleChange(fieldKey, e.target.files[0], baseKey) }} />
                         </div>
                     );
+                case 'bulkFileupload':
+                    return (
+                        <CommonDropZone title={fieldData.label} description={fieldData.description} changeHandler={(acceptedFiles) => { handleChange(fieldKey, acceptedFiles, baseKey) }} />
+                    );
                 default:
                     return <div key={fieldKey}>{fieldData}</div>;
             }
@@ -347,7 +394,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                                 return Object.entries(innerData.properties).map(([innerKey2, innerData2]) => {
                                     return renderField(innerKey2, innerData2, `${baseKey}.${key}.${innerKey}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
                                 });
-                            } else if (innerData.type === 'array' && innerData.items?.properties) {
+                            } else if (innerData.type === 'array' && innerData.items?.properties && innerData.fieldType === null) {
                                 console.log('entered', innerData)
                                 return Object.entries(innerData.items.properties).map(([innerKey2, innerData2]) => {
                                     return renderField(innerKey2, innerData2, `${baseKey}.${key}.${innerKey}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
@@ -513,7 +560,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
     return (
         <div className={`${window.location.pathname.includes('applicationForm') ? '' : style.backgroundCard} ${style.marginTop}`}>
             <div className={style.cardTitle}>{object?.label}</div>
-            {collapsableQuestionCard && (
+            {object?.description !== null && (
                 <div className={style.addMoreDescriptionText}>{object?.description}</div>
             )}
             {(addMoreType && !collapsableQuestionCard) ? (

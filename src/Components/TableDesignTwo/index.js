@@ -377,8 +377,8 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
                                         <div onMouseEnter={(e) => handleClickIcon(e, index, tableDataIndex)}
                                             onMouseLeave={() => handleCloseIcon()}
                                             aria-owns={openIcon ? 'mouse-over-popover' : undefined}
-                                            aria-haspopup="true">
-                                            <Typography className={`${style.cursorPointer} ${style.verticalAlignCenter}`} >
+                                            aria-haspopup="true" className={style.fullWidth}>
+                                            <Typography className={`${style.cursorPointer} ${style.verticalAlignCenter} ${style.fullWidth}`} >
                                                 {tableData?.icon?.[index]}
                                                 {tableData?.isShowHoverText && index === selectedMenuIndex && tableDataIndex === selectedMenuColIndex && (
                                                     <Popover
@@ -401,6 +401,10 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
                                                     </Popover>
                                                 )}
                                             </Typography>
+                                        </div>
+                                    ) : tableData?.type === "field" ? (
+                                        <div className={style.fullWidth}>
+                                            {tableData?.field?.[index]}
                                         </div>
                                     ) : tableData?.type === "site" ? (
                                         tableData?.value?.[index]?.length !== 0 ?
@@ -504,7 +508,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
                                         </div>
                                     ) : ''
                                 ))}
-                            </div>
+                            </div >
                         </>
                     )) : (
                         // <div>
@@ -527,7 +531,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
                 }
 
             </div>
-        </div>
+        </div >
     )
 }
 

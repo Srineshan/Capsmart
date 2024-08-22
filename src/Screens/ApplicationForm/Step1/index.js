@@ -6,18 +6,26 @@ import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import CommonCheckBox from '../../../Components/CommonFields/CommonCheckBox';
-import { GET } from '../../dataSaver';
+import { GET, PUT } from '../../dataSaver';
 import { useNavigate } from 'react-router-dom';
+import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 
 import style from './index.module.scss';
+import AIAssistantDialog from '../../../Components/AIAssistantDialog';
 
-const Step1 = ({ basicForm, setBasicForm }) => {
+const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
     const [form1, setForm1] = useState();
     const [form2, setForm2] = useState();
     const navigate = useNavigate()
+    const [isOpen, setIsOpen] = useState(true);
+
     useEffect(() => {
         getBasicForm()
     }, [])
+
+    const getIsOpen = (value) => {
+        setIsOpen(value);
+    }
 
     const getBasicForm = async () => {
         const { data: basicForm } = await GET(
@@ -25,7 +33,7 @@ const Step1 = ({ basicForm, setBasicForm }) => {
         );
         if (basicForm) {
             const { data: form1 } = await GET(
-                `application-management-service/formSchema/${basicForm?.generalSchemas?.[0]?.id}`
+                `application-management-service/formSchema/${basicForm?.generalSchemas?.[1]?.id}`
             );
             let temp = form1;
             if (temp.properties.applicant.properties !== null) {
@@ -34,12 +42,29 @@ const Step1 = ({ basicForm, setBasicForm }) => {
             }
             setForm1(form1)
             const { data: form2 } = await GET(
-                `application-management-service/formSchema/${basicForm?.generalSchemas?.[1]?.id}`
+                `application-management-service/formSchema/${basicForm?.generalSchemas?.[2]?.id}`
             );
             console.log(form2)
             setForm2(form2)
         }
     }
+
+    const handleSubmitApplicationReq = async () => {
+        let data = basicForm;
+        console.log(data)
+        await PUT(`application-management-service/application/${applicationId}`, data)
+            .then(response => {
+                console.log(response)
+                setBasicForm(response?.data)
+                SuccessToaster("Staff Member Application Updated Successfully");
+                navigate('/applicationForm/section1/step2')
+            })
+            .catch((error) => {
+                console.log(error)
+                ErrorToaster("Unexpected Error Updating Staff Member Application");
+            });
+    }
+
     return (
         <div>
             <div className={style.applicationScreenGrid}>
@@ -96,12 +121,13 @@ const Step1 = ({ basicForm, setBasicForm }) => {
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
-                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate('/applicationForm/section1/step2')}>CONTINUE</div>
+                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()}>CONTINUE</div>
                     {/* <div className={style.marginTop}>
                             <ApplicationReferenceDocuments />
                         </div> */}
                 </div>
             </div>
+            {/* <AIAssistantDialog getIsOpen={getIsOpen} /> */}
         </div>
     )
 }

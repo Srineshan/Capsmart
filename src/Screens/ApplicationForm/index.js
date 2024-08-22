@@ -27,6 +27,7 @@ import Step11 from './Step11';
 import Step12 from './Step12';
 import Step13 from './Step13';
 import Step14 from './Step14';
+import Step15 from './Step15';
 import ApplicationAcknowledgementStep1 from './AcknowledgementStep1';
 import ApplicationAcknowledgementStep2 from './AcknowledgementStep2';
 import ApplicationAcknowledgementStep3 from './AcknowledgementStep3';
@@ -47,7 +48,7 @@ import LoginDialog from '../../Components/LoginDialog';
 const ApplicationForm = () => {
     const { section, step } = useParams();
     const [basicForm, setBasicForm] = useState({})
-    const applicationId = '66bcac15da780016524126eb'
+    const applicationId = '66bf43f0b51f2f3485e6e47d'
     const [isOpen, setIsOpen] = useState(true);
     const getIsOpen = (value) => {
         setIsOpen(value);
@@ -93,6 +94,8 @@ const ApplicationForm = () => {
                 return <Step13 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'step14':
                 return <Step14 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
+            case 'step15':
+                return <Step15 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'acknowledgementStep1':
                 return <ApplicationAcknowledgementStep1 />;
             case 'acknowledgementStep2':

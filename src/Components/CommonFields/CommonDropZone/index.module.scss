@@ -1,0 +1,29 @@
+.uploadTextStyle {
+    text-align: center;
+    font: normal normal 600 20px/28px Montserrat;
+    color: #7165E3;
+    text-transform: capitalize;
+}
+
+.uploadImgStyle {
+    height: 50px;
+    margin-bottom: 20px;
+    object-fit: contain;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.uploadBorderStyle {
+    background: #F5F5F8 0% 0% no-repeat padding-box;
+    border: 2px dashed #d7d4f7;
+    border-radius: 4px;
+    padding: 20px;
+}
+
+.uploadDescriptionText {
+    text-align: center;
+    font: normal normal 300 14px/14px Montserrat;
+    color: #52575D;
+}

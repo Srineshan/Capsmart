@@ -112,7 +112,7 @@
 
 .tableGrid {
     display: grid;
-    grid-template-columns: 4% 26% 19% 18% 7% 7% 7% 4%;
+    grid-template-columns: 50% 15% 32%;
     gap: 1%;
 }
 
@@ -156,4 +156,41 @@
 
 .cursorPointer {
     cursor: pointer;
+}
+
+.twoCol {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.uploadTextStyle {
+    text-align: center;
+    font: normal normal 600 20px/28px Montserrat;
+    color: #7165E3;
+    text-transform: capitalize;
+}
+
+.uploadBorderStyle {
+    background: #F5F5F8 0% 0% no-repeat padding-box;
+    border: 2px dashed #d7d4f7;
+    border-radius: 4px;
+    padding: 20px;
+    cursor: pointer;
+}
+
+.uploadDescriptionText {
+    text-align: center;
+    font: normal normal 300 14px/14px Montserrat;
+    color: #52575D;
+}
+
+.gridStyle {
+    display: grid;
+    grid-template-columns: 5% 25% 5% 20% 14% 9% 9% 5%;
+    gap: 1%;
+}
+
+.fullWidth {
+    width: 100%;
 }

@@ -127,7 +127,7 @@ const CreateStaffMemberApplication = () => {
         if (basicForm) {
             if (applicationId === '') {
                 const { data: form } = await GET(
-                    `application-management-service/formSchema/${basicForm?.generalSchemas?.[0]?.id}`
+                    `application-management-service/formSchema/${basicForm?.generalSchemas?.[1]?.id}`
                 );
                 let temp = form;
                 if (temp.properties.applicant.properties !== null) {
@@ -137,7 +137,7 @@ const CreateStaffMemberApplication = () => {
                 setForm(form)
             } else {
                 const { data: form } = await GET(
-                    `application-management-service/formSchema/${basicForm?.generalSchemas?.[1]?.id}`
+                    `application-management-service/formSchema/${basicForm?.generalSchemas?.[2]?.id}`
                 );
                 setForm(form)
             }

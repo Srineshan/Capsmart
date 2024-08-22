@@ -1,0 +1,66 @@
+import React, { useState } from 'react'
+import { Dialog, Classes, Icon, Intent } from '@blueprintjs/core';
+import Timer from "./../../images/Timer.png";
+import CrossPink from "../../images/crossPink.png";
+import style from './index.module.scss'
+
+const AIAssistantDialog = ({ getIsOpen }) => {
+    const [isContinue, setIsContinue] = useState(false);
+    return (
+        <Dialog isOpen={getIsOpen} onClose={() => getIsOpen(false)} className={`${style.loginDialog} ${style.loginDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
+            <div>
+                <div className={style.whiteBackground}>
+                    <div className={style.spaceBetween}>
+                        <div></div>
+                        <p className={style.loginHeaderText}><span className={style.bold}>Cap</span>Smart</p>
+                        <img
+                            src={CrossPink}
+                            alt="cross"
+                            className={`${style.crossStyle} ${style.cursorPointer} `}
+                            onClick={() => { getIsOpen(false) }}
+                        />
+                    </div>
+                    <div className={`${style.featureTextStyle} ${style.marginTop}`}>Our Smart features and <span className={style.featureTextHighlight}> AI assistant</span> shortens your time to complete,</div>
+                    <div className={`${style.featureGrid} ${style.marginTop40}`}>
+                        <div className={style.alignCenter}>
+                            <div>
+                                <div className={`${style.withOrWithoutText} ${style.withoutOpacity}`}>Without Smart AI</div>
+                                <div className={`${style.featureTextStyle} ${style.withoutValueOpacity} ${style.valueFont}`}>3 Hours 2 mins</div>
+                            </div>
+                        </div>
+                        <div className={style.alignCenter}>
+                            <div>
+                                <div className={style.withOrWithoutText}>With Smart AI Assistance</div>
+                                <div className={`${style.featureTextStyle} ${style.featureTextHighlight} ${style.valueFont}`}>30 Mins</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className={`${style.threeCol} ${style.marginTop40}`}>
+                        <div className={style.advantagesCard}>
+                            <img src={Timer} alt='' className={style.advantagesImageStyle} />
+                            <div className={`${style.advantageHeading} ${style.marginTop}`}>90% Faster</div>
+                            <div className={`${style.advantageDescription} ${style.marginTop10}`}>Than other conventional credentialing Platforms</div>
+                        </div>
+                        <div className={style.advantagesCard}>
+                            <img src={Timer} alt='' className={style.advantagesImageStyle} />
+                            <div className={`${style.advantageHeading} ${style.marginTop}`}>Auto-Fill</div>
+                            <div className={`${style.advantageDescription} ${style.marginTop10}`}>Scan all the documents and Autofill the data fields</div>
+                        </div>
+                        <div className={style.advantagesCard}>
+                            <img src={Timer} alt='' className={style.advantagesImageStyle} />
+                            <div className={`${style.advantageHeading} ${style.marginTop}`}>Stay Updated</div>
+                            <div className={`${style.advantageDescription} ${style.marginTop10}`}>Get Notifications when your documents approach expiry</div>
+                        </div>
+                    </div>
+                </div>
+                <div className={`${style.daysToCompleteCard}`}>
+                    <div className={`${style.verticalAlignCenter} ${style.alignRight}`}>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => { setIsContinue(true) }}>CONTINUE</div>
+                    </div>
+                </div>
+            </div>
+        </Dialog>
+    )
+}
+
+export default AIAssistantDialog;

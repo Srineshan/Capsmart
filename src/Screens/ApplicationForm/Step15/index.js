@@ -10,9 +10,12 @@ import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 
 import style from './index.module.scss';
 import NoDataBox from '../../../Components/ReusableSmallComponents/noDataBox';
+import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 
-const Step14 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) => {
+const Step15 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
+    const [isEdited, setIsEdited] = useState(false);
+
     const navigate = useNavigate()
     useEffect(() => {
         if (basicForm && !formSchema) {
@@ -22,7 +25,7 @@ const Step14 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =
 
     const getFormSchema = async () => {
         const { data: form } = await GET(
-            `application-management-service/formSchema/${basicForm?.formSchemas?.[16]?.id}`
+            `application-management-service/formSchema/${basicForm?.formSchemas?.[17]?.id}`
         );
         setFormSchema(form)
     }
@@ -35,10 +38,10 @@ const Step14 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =
 
     const handleSubmitApplicationReq = async (data) => {
         let temp = {
-            schemaId: data?.forms?.[16]?.schemaId,
-            data: data?.forms?.[16]?.data
+            schemaId: data?.forms?.[17]?.schemaId,
+            data: data?.forms?.[17]?.data
         }
-        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[16]?.id}`, temp)
+        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[17]?.id}`, temp)
             .then(response => {
                 console.log(response)
                 SuccessToaster("Application Updated Successfully");
@@ -49,17 +52,25 @@ const Step14 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =
                 ErrorToaster("Unexpected Error Updating Application");
             });
     }
+
+    const getIsEdited = (value) => {
+        setIsEdited(value)
+    }
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 14'} dataType={'Forms'} title={formSchema?.title} timeNumber={2} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                <ProgressCard step={'STEP 15'} dataType={'Forms'} title={formSchema?.title} timeNumber={2} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
                     <div className={style.applicationCardStyle}>
-                        {formSchema !== undefined && 'respiratoryFitTesting' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.respiratoryFitTesting} gridStyle={style.licenseGrid} baseKey={'respiratoryFitTesting'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} formId={basicForm?.forms?.[16]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} />
+                        {formSchema !== undefined && 'professionalStaffImmunizationAndSurveillancePolicyInformationSheet' in formSchema?.properties && (
+                            <ApplicationFieldCard object={formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet} gridStyle={style.licenseGrid} baseKey={'professionalStaffImmunizationAndSurveillancePolicyInformationSheet'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} formId={basicForm?.forms?.[17]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} />
+                        )}
+                        <CommonDivider />
+                        {formSchema !== undefined && 'primaryCarePhysicianForVerificationOfImmunizationHistory' in formSchema?.properties && (
+                            <ApplicationFieldCard object={formSchema?.properties?.primaryCarePhysicianForVerificationOfImmunizationHistory} gridStyle={style.twoCol} baseKey={'primaryCarePhysicianForVerificationOfImmunizationHistory'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[17].data`} setIsEdited={getIsEdited} />
                         )}
                         {/* <NoDataBox
                             heading={'Information Requirement Alert'}
@@ -81,4 +92,4 @@ const Step14 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =
     )
 }
 
-export default Step14;
+export default Step15;

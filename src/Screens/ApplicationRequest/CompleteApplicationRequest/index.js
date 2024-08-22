@@ -26,13 +26,13 @@ const CompleteApplicationRequest = () => {
         if (basicForm) {
             if (!isNextpage) {
                 const { data: form } = await GET(
-                    `application-management-service/formSchema/${basicForm?.generalSchemas?.[0]?.id}`
+                    `application-management-service/formSchema/${basicForm?.generalSchemas?.[1]?.id}`
                 );
                 console.log(form)
                 setForm(form)
             } else {
                 const { data: form } = await GET(
-                    `application-management-service/formSchema/${basicForm?.generalSchemas?.[1]?.id}`
+                    `application-management-service/formSchema/${basicForm?.generalSchemas?.[2]?.id}`
                 );
                 console.log(form)
                 setForm(form)
@@ -42,7 +42,7 @@ const CompleteApplicationRequest = () => {
 
     const getPreApplication = async () => {
         const { data: basicForm } = await GET(
-            `application-management-service/application/${`66bcac15da780016524126eb`}`
+            `application-management-service/application/${`66bf43f0b51f2f3485e6e47d`}`
         );
         setBasicForm(basicForm)
     }
