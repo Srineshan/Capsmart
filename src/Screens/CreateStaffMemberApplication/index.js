@@ -118,14 +118,14 @@ const CreateStaffMemberApplication = () => {
     )
     useEffect(() => {
         getBasicForm()
-    }, [applicationId])
+    }, [isNextpage])
 
     const getBasicForm = async () => {
         const { data: basicForm } = await GET(
             `application-management-service/preApplication/basicForm`
         );
         if (basicForm) {
-            if (applicationId === '') {
+            if (!isNextpage) {
                 const { data: form } = await GET(
                     `application-management-service/formSchema/${basicForm?.generalSchemas?.[1]?.id}`
                 );
@@ -205,7 +205,7 @@ const CreateStaffMemberApplication = () => {
                         <div className={style.spaceBetween}>
                             <div></div>
                             <div className={style.displayInRow}>
-                                <div className={`${style.saveInProgress} ${style.marginTop}`}>DISCARD</div>
+                                {/* <div className={`${style.saveInProgress} ${style.marginTop}`}>DISCARD</div> */}
                                 <div className={`${style.continue} ${style.marginTop} ${style.marginLeft}`} onClick={() => handleSubmitApplicationReq()}>Next</div>
                             </div>
                         </div>
@@ -243,8 +243,8 @@ const CreateStaffMemberApplication = () => {
                         <div className={style.spaceBetween}>
                             <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => setIsNextPage(false)}>BACK</div>
                             <div className={style.displayInRow}>
-                                <div className={`${style.saveInProgress} ${style.marginTop}`} >SEND APPLICATION LINK</div>
-                                <div className={`${style.continue} ${style.marginTop} ${style.marginLeft}`} onClick={() => handleSubmitApplicationReq()}>Next</div>
+                                {/* <div className={`${style.saveInProgress} ${style.marginTop}`} >SEND APPLICATION LINK</div> */}
+                                <div className={`${style.continue} ${style.marginTop} ${style.marginLeft}`} onClick={() => handleSubmitApplicationReq()}>SEND APPLICATION LINK</div>
                             </div>
                         </div>
                     </>
