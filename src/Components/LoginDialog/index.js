@@ -3,9 +3,20 @@ import { Dialog, Classes, Icon, Intent } from '@blueprintjs/core';
 import logo from "./../../images/cambridgeHospital.png";
 import CrossPink from "../../images/crossPink.png";
 import style from './index.module.scss'
+import { InputAdornment, IconButton } from "@material-ui/core";
+import TextField from '@mui/material/TextField';
+import Visibility from "@material-ui/icons/Visibility";
+import VisibilityOff from "@material-ui/icons/VisibilityOff";
+
+
+
 
 const LoginDialog = ({ getIsOpen, days }) => {
     const [isContinue, setIsContinue] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+
+    const handleClickShowPassword = () => setShowPassword(!showPassword);
+
     return !isContinue ? (
         <Dialog isOpen={true} onClose={() => getIsOpen(false)} className={`${style.welcomeDialog} ${style.loginDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
             <div>
@@ -69,7 +80,65 @@ const LoginDialog = ({ getIsOpen, days }) => {
                             <div className={style.heading}>Create Your Account</div>
                             <div className={style.createAccountHelpText}>CHM uses capsmart for to processing new staff member applications and reappointments. you can Register as a user with CapSmart and avail its benefits</div>
                             <div className={style.marginTop}>
-
+                            <div className={style.extentionLableStyle}>Your Email(Username)</div>
+                                <TextField size="small" className={style.fullWidth}
+                                    //  onChange={(e) => setProfile({ ...profile, email: e.target.value })}
+                                    inputProps={{
+                                        style: {
+                                            height: 15,
+                                        },
+                                    }} />
+                            </div>
+                            <div className={style.marginTop}>
+                            <div className={style.extentionLableStyle}>Create Your Password</div>
+                                <TextField size="small" className={style.fullWidth}
+                                    type={showPassword ? 'text' : "password"}
+                                    inputProps={{
+                                        style: {
+                                            height: 15,
+                                        },
+                                        autoComplete: 'new-password'
+                                    }}
+                                    InputProps={{ // <-- This is where the toggle button is added.
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={handleClickShowPassword}
+                                                >
+                                                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        )
+                                    }}
+                                />
+                            </div>
+                            <div className={style.marginTop}>
+                            <div className={style.extentionLableStyle}>Confirm Your Password</div>
+                                <TextField size="small" className={style.fullWidth}
+                                    type={showPassword ? 'text' : "password"}
+                                    inputProps={{
+                                        style: {
+                                            height: 15,
+                                        },
+                                        autoComplete: 'new-password'
+                                    }}
+                                    InputProps={{ // <-- This is where the toggle button is added.
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={handleClickShowPassword}
+                                                >
+                                                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        )
+                                    }}
+                                />
+                            </div>
+                            <div className={style.marginTop}>
+                                <button className={style.registerButton}>Register</button>
                             </div>
                         </div>
                     </div>

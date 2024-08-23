@@ -3413,12 +3413,15 @@ input[type="number"] {
 }
 
 
+
+
+
 /**
  * Tabs
  */
 .tabs {
   display: flex;
-  flex-wrap: wrap; // make sure it wraps
+  flex-wrap: nowrap; /* Items will stay in a single line */
   gap: 5px;
   opacity: 1;
 }
