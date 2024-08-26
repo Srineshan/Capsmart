@@ -1,0 +1,146 @@
+.referenceListContainer {
+  max-width: 1000px;
+  margin: 10px auto 0;
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.topContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 15px;
+  background-color: #bdb8f2;
+  height: 5px;
+  //   letter-spacing: -1px;
+  font: normal normal bold 12px/20px Montserrat;
+}
+
+.cancelIcon {
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  font-size: 24px;
+  color: #a678c3;
+}
+
+.card {
+  padding: 15px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  position: relative;
+  font: normal normal bold 12px/20px Montserrat;
+  color: #52575d;
+}
+
+.cardItem {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.card:hover {
+  background-color: #eeebeb;
+}
+
+.cardTitle {
+  margin: 0;
+  color: #52575d;
+  font: normal normal bold 18px/20px Montserrat;
+}
+
+.cardCommonTitleDescription {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.cardStatus {
+  width: 100%;
+  text-align: center;
+  color: #52575d;
+  font: normal normal bold 18px/20px Montserrat;
+}
+
+.cardButton {
+  width: 100%;
+  border: none;
+  background-color: inherit;
+  cursor: pointer;
+  margin: 0;
+  color: #52575d;
+  font: normal normal bold 12px/20px Montserrat;
+  border-bottom: 4px solid #dbdada;
+}
+
+.cardDescription {
+  color: #52575d;
+  font: normal normal 12px/20px Montserrat;
+}
+
+.message {
+  color: #a59bfc;
+  text-align: left;
+  font: normal normal bold 12px/20px Montserrat;
+
+  //   font-weight: 900;
+  margin-left: 62px;
+}
+
+.cardCompleteStatus {
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 200px;
+}
+
+.popupMessage {
+  display: none;
+  position: absolute;
+  //   bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgb(54, 37, 111);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  white-space: nowrap;
+  font: normal normal bold 12px/20px Montserrat;
+}
+
+.card:hover .popupMessage {
+  display: block;
+}
+
+.marginTop10 {
+  margin-top: 10px;
+}
+
+.applicationConfiguration {
+  text-align: left;
+  color: #52575d;
+  font: normal normal bold 20px/20px Montserrat;
+}
+
+.textAlignCenterMargin0 {
+  text-align: center;
+}
+
+.steps {
+  margin-right: 10px;
+  color: #52575d;
+  margin-top: -15px;
+}
+
+.lightText {
+  opacity: 0.5;
+}

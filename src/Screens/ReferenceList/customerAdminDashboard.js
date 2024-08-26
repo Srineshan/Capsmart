@@ -95,6 +95,761 @@ const ClientAdminDashboard = () => {
                       className={style.linkStyle}
                     >
                       <div className={style.dashboardCardStyle}>
+                        {/* <h5 className={`${style.headingForReferenceList}`}>
+                          DEPARTMENTS / SERVICE AREAS BY ENTITY / SITE
+                        </h5> */}
+                        <h5 className={`${style.headingForReferenceList}`}>
+                          APPLICANT TYPE BY ENTITIES / SITES
+                        </h5>
+                        {lastUpdatedDate?.departments?.standardList === true &&
+                          lastUpdatedDate?.departments?.lastModified !== null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol}`}
+                          >
+                            <span className={style.dashboardCardColorOption1}>
+                              STANDARD LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.departments?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.departments?.standardList === false &&
+                          lastUpdatedDate?.departments?.lastModified !== null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol}`}
+                          >
+                            <span
+                              className={`${style.dashboardCardColorOption3}`}
+                            >
+                              MY CUSTOM LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.departments?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.departments?.lastModified === null ? (
+                          <div
+                            className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
+                          >
+                            <span className={style.dashboardCardColorOption4}>
+                              SETUP REQUIRED
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </Link>
+                    <Link
+                      to={"/referenceList/departmentsForCustomers"}
+                      className={style.linkStyle}
+                    >
+                      <div className={style.dashboardCardStyle}>
+                        <h5 className={`${style.headingForReferenceList}`}>
+                          DEPARTMENTS / SERVICE AREAS BY ENTITY TYPES
+                        </h5>
+                        {lastUpdatedDate?.departments?.standardList === true &&
+                          lastUpdatedDate?.departments?.lastModified !== null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol}`}
+                          >
+                            <span className={style.dashboardCardColorOption1}>
+                              STANDARD LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.departments?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.departments?.standardList === false &&
+                          lastUpdatedDate?.departments?.lastModified !== null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol}`}
+                          >
+                            <span
+                              className={`${style.dashboardCardColorOption3}`}
+                            >
+                              MY CUSTOM LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.departments?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.departments?.lastModified === null ? (
+                          <div
+                            className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
+                          >
+                            <span className={style.dashboardCardColorOption4}>
+                              SETUP REQUIRED
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </Link>
+                    <Link
+                      to={"/referenceList/suffixByCustomer"}
+                      className={style.linkStyle}
+                    >
+                      <div className={style.dashboardCardStyle}>
+                        <h5 className={`${style.headingForReferenceList}`}>
+                          FUNCTIONAL TITLES FOR REGISTERED USERS BY ROLE
+                        </h5>
+                        {/* <h5 className={`${style.headingForReferenceList}`}>
+                          NAME SUFFIX
+                        </h5> */}
+                        {lastUpdatedDate?.nameSuffix?.standardList === true &&
+                          lastUpdatedDate?.nameSuffix?.lastModified !== null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol}`}
+                          >
+                            <span className={style.dashboardCardColorOption1}>
+                              STANDARD LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.nameSuffix?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.nameSuffix?.standardList === false &&
+                          lastUpdatedDate?.nameSuffix?.lastModified !== null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
+                          >
+                            <span
+                              className={`${style.dashboardCardColorOption3}`}
+                            >
+                              MY CUSTOM LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.nameSuffix?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.nameSuffix?.lastModified === null ? (
+                          <div
+                            className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
+                          >
+                            <span className={style.dashboardCardColorOption4}>
+                              SETUP REQUIRED
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </Link>
+                    <Link
+                      to="/referenceList/contractServiceProviderBySiteType"
+                      className={style.linkStyle}
+                    >
+                      {" "}
+                      <div className={style.dashboardCardStyle}>
+                        {/* <h5 className={`${style.headingForReferenceList}`}>
+                          HEALTHCARE PRACTIONER TYPE BY ENTITY / SITE
+                        </h5> */}
+                        <h5 className={`${style.headingForReferenceList}`}>
+                          BOARD CERTIFICATION SPECIALITIES BY INDUSTRIES
+                        </h5>
+                        {lastUpdatedDate?.contractedServiceProviders
+                          ?.standardList === true &&
+                          lastUpdatedDate?.contractedServiceProviders
+                            ?.lastModified !== null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol}`}
+                          >
+                            <span className={style.dashboardCardColorOption1}>
+                              STANDARD LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.contractedServiceProviders?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.contractedServiceProviders
+                          ?.standardList === false &&
+                          lastUpdatedDate?.contractedServiceProviders
+                            ?.lastModified !== null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
+                          >
+                            <span
+                              className={`${style.dashboardCardColorOption3}`}
+                            >
+                              MY CUSTOM LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.contractedServiceProviders?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.contractedServiceProviders
+                          ?.lastModified === null ? (
+                          <div
+                            className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
+                          >
+                            <span className={style.dashboardCardColorOption4}>
+                              SETUP REQUIRED
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </Link>
+                    <Link
+                      to="/referenceList/contractTerminationReasonForCustomer"
+                      className={style.linkStyle}
+                    >
+                      <div className={style.dashboardCardStyle}>
+                        <h5 className={`${style.headingForReferenceList}`}>
+                          PROOF OF DOCUMENTATION BY APPLICANT TYPES
+                        </h5>
+                        {/* <h5 className={`${style.headingForReferenceList}`}>
+                          APPLICANT CREDENTIALING DOC
+                        </h5> */}
+                        {lastUpdatedDate?.terminationReason?.standardList ===
+                          true &&
+                          lastUpdatedDate?.terminationReason?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol}`}
+                          >
+                            <span className={style.dashboardCardColorOption1}>
+                              STANDARD LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.terminationReason?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.terminationReason?.standardList ===
+                          false &&
+                          lastUpdatedDate?.terminationReason?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
+                          >
+                            <span
+                              className={`${style.dashboardCardColorOption3}`}
+                            >
+                              MY CUSTOM LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.terminationReason?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.terminationReason?.lastModified ===
+                          null ? (
+                          <div
+                            className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
+                          >
+                            <span className={style.dashboardCardColorOption4}>
+                              SETUP REQUIRED
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </Link>
+                    <Link
+                      to="/referenceList/contractTerminationReasonForCustomer"
+                      className={style.linkStyle}
+                    >
+                      <div className={style.dashboardCardStyle}>
+                        <h5 className={`${style.headingForReferenceList}`}>
+                          STAFF PRIVILEGES BY DEPARTMENT & SERVICE AREAS
+                        </h5>
+                        {lastUpdatedDate?.terminationReason?.standardList ===
+                          true &&
+                          lastUpdatedDate?.terminationReason?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol}`}
+                          >
+                            <span className={style.dashboardCardColorOption1}>
+                              STANDARD LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.terminationReason?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.terminationReason?.standardList ===
+                          false &&
+                          lastUpdatedDate?.terminationReason?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
+                          >
+                            <span
+                              className={`${style.dashboardCardColorOption3}`}
+                            >
+                              MY CUSTOM LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.terminationReason?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.terminationReason?.lastModified ===
+                          null ? (
+                          <div
+                            className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
+                          >
+                            <span className={style.dashboardCardColorOption4}>
+                              SETUP REQUIRED
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </Link>
+                    <Link
+                      to="/referenceList/contractTerminationReasonForCustomer"
+                      className={style.linkStyle}
+                    >
+                      <div className={style.dashboardCardStyle}>
+                        <h5 className={`${style.headingForReferenceList}`}>
+                          PROFESSIONAL CONDUCT DISCLOSURE
+                        </h5>
+                        {lastUpdatedDate?.terminationReason?.standardList ===
+                          true &&
+                          lastUpdatedDate?.terminationReason?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol}`}
+                          >
+                            <span className={style.dashboardCardColorOption1}>
+                              STANDARD LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.terminationReason?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.terminationReason?.standardList ===
+                          false &&
+                          lastUpdatedDate?.terminationReason?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
+                          >
+                            <span
+                              className={`${style.dashboardCardColorOption3}`}
+                            >
+                              MY CUSTOM LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.terminationReason?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.terminationReason?.lastModified ===
+                          null ? (
+                          <div
+                            className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
+                          >
+                            <span className={style.dashboardCardColorOption4}>
+                              SETUP REQUIRED
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </Link>
+                    <Link
+                      to="/referenceList/contractTerminationReasonForCustomer"
+                      className={style.linkStyle}
+                    >
+                      <div className={style.dashboardCardStyle}>
+                        <h5 className={`${style.headingForReferenceList}`}>
+                          ACKNOWLEDGEMENT FORMS
+                        </h5>
+                        {lastUpdatedDate?.terminationReason?.standardList ===
+                          true &&
+                          lastUpdatedDate?.terminationReason?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol}`}
+                          >
+                            <span className={style.dashboardCardColorOption1}>
+                              STANDARD LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.terminationReason?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.terminationReason?.standardList ===
+                          false &&
+                          lastUpdatedDate?.terminationReason?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
+                          >
+                            <span
+                              className={`${style.dashboardCardColorOption3}`}
+                            >
+                              MY CUSTOM LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.terminationReason?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.terminationReason?.lastModified ===
+                          null ? (
+                          <div
+                            className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
+                          >
+                            <span className={style.dashboardCardColorOption4}>
+                              SETUP REQUIRED
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </Link>
+                    <Link
+                      to="/referenceList/contractTerminationReasonForCustomer"
+                      className={style.linkStyle}
+                    >
+                      <div className={style.dashboardCardStyle}>
+                        <h5 className={`${style.headingForReferenceList}`}>
+                          HOLIDAY LIST BY INDUSTRIES
+                        </h5>
+                        {lastUpdatedDate?.terminationReason?.standardList ===
+                          true &&
+                          lastUpdatedDate?.terminationReason?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol}`}
+                          >
+                            <span className={style.dashboardCardColorOption1}>
+                              STANDARD LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.terminationReason?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.terminationReason?.standardList ===
+                          false &&
+                          lastUpdatedDate?.terminationReason?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
+                          >
+                            <span
+                              className={`${style.dashboardCardColorOption3}`}
+                            >
+                              MY CUSTOM LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.terminationReason?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.terminationReason?.lastModified ===
+                          null ? (
+                          <div
+                            className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
+                          >
+                            <span className={style.dashboardCardColorOption4}>
+                              SETUP REQUIRED
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </Link>
+                    <Link
+                      to="/referenceList/contractTerminationReasonForCustomer"
+                      className={style.linkStyle}
+                    >
+                      <div className={style.dashboardCardStyle}>
+                        <h5 className={`${style.headingForReferenceList}`}>
+                          CONTRACT DOCUMENT TYPES FOR UPLOAD
+                        </h5>
+                        {lastUpdatedDate?.contractType?.standardList === true &&
+                          lastUpdatedDate?.contractType?.lastModified !== null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol}`}
+                          >
+                            <span className={style.dashboardCardColorOption1}>
+                              STANDARD LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.contractType?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.contractType?.standardList ===
+                          false &&
+                          lastUpdatedDate?.contractType?.lastModified !== null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
+                          >
+                            <span
+                              className={`${style.dashboardCardColorOption3}`}
+                            >
+                              MY CUSTOM LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.contractType?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.contractType?.lastModified ===
+                          null ? (
+                          <div
+                            className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
+                          >
+                            <span className={style.dashboardCardColorOption4}>
+                              SETUP REQUIRED
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </Link>
+                    {/* <Link
+                      to={"/referenceList/departmentsForCustomers"}
+                      className={style.linkStyle}
+                    >
+                      <div className={style.dashboardCardStyle}>
                         <h5 className={`${style.headingForReferenceList}`}>
                           DEPARTMENTS / SERVICE AREAS BY ENTITY / SITE
                         </h5>
@@ -160,7 +915,7 @@ const ClientAdminDashboard = () => {
                           <></>
                         )}
                       </div>
-                    </Link>
+                    </Link> */}
                     {/* <Link
                       to={"/referenceList/absenceReasonsForCustomer"}
                       className={style.linkStyle}
@@ -237,7 +992,7 @@ const ClientAdminDashboard = () => {
                         )}
                       </div>
                     </Link> */}
-                    <Link
+                    {/* <Link
                       to={"/referenceList/suffixByCustomer"}
                       className={style.linkStyle}
                     >
@@ -246,7 +1001,7 @@ const ClientAdminDashboard = () => {
                           NAME SUFFIX
                         </h5>
                         {lastUpdatedDate?.nameSuffix?.standardList === true &&
-                          lastUpdatedDate?.nameSuffix?.lastModified !== null ? (
+                        lastUpdatedDate?.nameSuffix?.lastModified !== null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol}`}
                           >
@@ -270,7 +1025,7 @@ const ClientAdminDashboard = () => {
                         )}
 
                         {lastUpdatedDate?.nameSuffix?.standardList === false &&
-                          lastUpdatedDate?.nameSuffix?.lastModified !== null ? (
+                        lastUpdatedDate?.nameSuffix?.lastModified !== null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
                           >
@@ -319,8 +1074,8 @@ const ClientAdminDashboard = () => {
                         </h5>
                         {lastUpdatedDate?.contractedServiceProviders
                           ?.standardList === true &&
-                          lastUpdatedDate?.contractedServiceProviders
-                            ?.lastModified !== null ? (
+                        lastUpdatedDate?.contractedServiceProviders
+                          ?.lastModified !== null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol}`}
                           >
@@ -345,8 +1100,8 @@ const ClientAdminDashboard = () => {
 
                         {lastUpdatedDate?.contractedServiceProviders
                           ?.standardList === false &&
-                          lastUpdatedDate?.contractedServiceProviders
-                            ?.lastModified !== null ? (
+                        lastUpdatedDate?.contractedServiceProviders
+                          ?.lastModified !== null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
                           >
@@ -396,7 +1151,7 @@ const ClientAdminDashboard = () => {
                         </h5>
                         {lastUpdatedDate?.terminationReason?.standardList ===
                           true &&
-                          lastUpdatedDate?.terminationReason?.lastModified !==
+                        lastUpdatedDate?.terminationReason?.lastModified !==
                           null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol}`}
@@ -422,7 +1177,7 @@ const ClientAdminDashboard = () => {
 
                         {lastUpdatedDate?.terminationReason?.standardList ===
                           false &&
-                          lastUpdatedDate?.terminationReason?.lastModified !==
+                        lastUpdatedDate?.terminationReason?.lastModified !==
                           null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
@@ -449,7 +1204,7 @@ const ClientAdminDashboard = () => {
                         )}
 
                         {lastUpdatedDate?.terminationReason?.lastModified ===
-                          null ? (
+                        null ? (
                           <div
                             className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
                           >
@@ -461,10 +1216,8 @@ const ClientAdminDashboard = () => {
                           <></>
                         )}
                       </div>
-                    </Link>
-
+                    </Link> */}
                   </div>
-
                 </div>
                 <div className={style.margin20}>
                   <div className={style.grid4}>
@@ -472,10 +1225,12 @@ const ClientAdminDashboard = () => {
                       to={"/referenceList/functionalTitleForCustomer"}
                       className={style.linkStyle}
                     >
-                      {" "}
                       <div className={style.dashboardCardStyle}>
-                        <h5 className={`${style.headingForReferenceList}`}>
+                        {/* <h5 className={`${style.headingForReferenceList}`}>
                           FUNCTIONAL TITLES FOR PROVIDERS
+                        </h5> */}
+                        <h5 className={`${style.headingForReferenceList}`}>
+                          CREDENTIALING & PRIVILEGING CATEGORY BY APPLICANT TYPE
                         </h5>
                         {lastUpdatedDate?.functionalTitles?.standardList ===
                           true &&
@@ -549,10 +1304,12 @@ const ClientAdminDashboard = () => {
                       to="/referenceList/contractTerminationReasonForCustomer"
                       className={style.linkStyle}
                     >
-                      {" "}
                       <div className={style.dashboardCardStyle}>
-                        <h5 className={`${style.headingForReferenceList}`}>
+                        {/* <h5 className={`${style.headingForReferenceList}`}>
                           APPLICATIONS WORKFLOW
+                        </h5> */}
+                        <h5 className={`${style.headingForReferenceList}`}>
+                          BILLING SPECIALITY CODE BY ENTITY TYPE
                         </h5>
                         {lastUpdatedDate?.terminationReason?.standardList ===
                           true &&
@@ -626,10 +1383,13 @@ const ClientAdminDashboard = () => {
                       to="/referenceList/contractTerminationReasonForCustomer"
                       className={style.linkStyle}
                     >
-                      {" "}
                       <div className={style.dashboardCardStyle}>
-                        <h5 className={`${style.headingForReferenceList}`}>
+                        {/* <h5 className={`${style.headingForReferenceList}`}>
                           CONSENT AND ACKNOWLEDGEMENT FORMS
+                        </h5> */}
+                        <h5 className={`${style.headingForReferenceList}`}>
+                          LICENCE / CERTIFICATION INSTITUTION BY COUNTRY
+                          INDUSTRY{" "}
                         </h5>
                         {lastUpdatedDate?.terminationReason?.standardList ===
                           true &&
@@ -699,6 +1459,770 @@ const ClientAdminDashboard = () => {
                         )}
                       </div>
                     </Link>
+                    <Link
+                      to="/referenceList/contractTerminationReasonForCustomer"
+                      className={style.linkStyle}
+                    >
+                      <div className={style.dashboardCardStyle}>
+                        <h5 className={`${style.headingForReferenceList}`}>
+                          MALPRACTICE CARRIERS BY COUNTRY BY INDUSTRY
+                        </h5>
+                        {lastUpdatedDate?.terminationReason?.standardList ===
+                          true &&
+                          lastUpdatedDate?.terminationReason?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol}`}
+                          >
+                            <span className={style.dashboardCardColorOption1}>
+                              STANDARD LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.terminationReason?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.terminationReason?.standardList ===
+                          false &&
+                          lastUpdatedDate?.terminationReason?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
+                          >
+                            <span
+                              className={`${style.dashboardCardColorOption3}`}
+                            >
+                              MY CUSTOM LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.terminationReason?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.terminationReason?.lastModified ===
+                          null ? (
+                          <div
+                            className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
+                          >
+                            <span className={style.dashboardCardColorOption4}>
+                              SETUP REQUIRED
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </Link>
+                    <Link
+                      to="/referenceList/contractTerminationReasonForCustomer"
+                      className={style.linkStyle}
+                    >
+                      <div className={style.dashboardCardStyle}>
+                        <h5 className={`${style.headingForReferenceList}`}>
+                          EDUCATIONAL INSTITUTIONS BY COUNTRY BY INDUSTRY{" "}
+                        </h5>
+                        {lastUpdatedDate?.terminationReason?.standardList ===
+                          true &&
+                          lastUpdatedDate?.terminationReason?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol}`}
+                          >
+                            <span className={style.dashboardCardColorOption1}>
+                              STANDARD LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.terminationReason?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.terminationReason?.standardList ===
+                          false &&
+                          lastUpdatedDate?.terminationReason?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
+                          >
+                            <span
+                              className={`${style.dashboardCardColorOption3}`}
+                            >
+                              MY CUSTOM LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.terminationReason?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.terminationReason?.lastModified ===
+                          null ? (
+                          <div
+                            className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
+                          >
+                            <span className={style.dashboardCardColorOption4}>
+                              SETUP REQUIRED
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </Link>
+
+                    <Link
+                      to="/referenceList/contractTerminationReasonForCustomer"
+                      className={style.linkStyle}
+                    >
+                      <div className={style.dashboardCardStyle}>
+                        <h5 className={`${style.headingForReferenceList}`}>
+                          QUALIFICATION BY INDUSTRY AND APPLICANT TYPE
+                        </h5>
+                        {lastUpdatedDate?.terminationReason?.standardList ===
+                          true &&
+                          lastUpdatedDate?.terminationReason?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol}`}
+                          >
+                            <span className={style.dashboardCardColorOption1}>
+                              STANDARD LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.terminationReason?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.terminationReason?.standardList ===
+                          false &&
+                          lastUpdatedDate?.terminationReason?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
+                          >
+                            <span
+                              className={`${style.dashboardCardColorOption3}`}
+                            >
+                              MY CUSTOM LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.terminationReason?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.terminationReason?.lastModified ===
+                          null ? (
+                          <div
+                            className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
+                          >
+                            <span className={style.dashboardCardColorOption4}>
+                              SETUP REQUIRED
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </Link>
+                    <Link
+                      to="/referenceList/contractTerminationReasonForCustomer"
+                      className={style.linkStyle}
+                    >
+                      <div className={style.dashboardCardStyle}>
+                        <h5 className={`${style.headingForReferenceList}`}>
+                          IMMUNIZATION REFERENCE LIST BY COUNTRY & INDUSTRY{" "}
+                        </h5>
+                        {lastUpdatedDate?.terminationReason?.standardList ===
+                          true &&
+                          lastUpdatedDate?.terminationReason?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol}`}
+                          >
+                            <span className={style.dashboardCardColorOption1}>
+                              STANDARD LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.terminationReason?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.terminationReason?.standardList ===
+                          false &&
+                          lastUpdatedDate?.terminationReason?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
+                          >
+                            <span
+                              className={`${style.dashboardCardColorOption3}`}
+                            >
+                              MY CUSTOM LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.terminationReason?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.terminationReason?.lastModified ===
+                          null ? (
+                          <div
+                            className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
+                          >
+                            <span className={style.dashboardCardColorOption4}>
+                              SETUP REQUIRED
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </Link>
+                    <Link
+                      to="/referenceList/contractTerminationReasonForCustomer"
+                      className={style.linkStyle}
+                    >
+                      <div className={style.dashboardCardStyle}>
+                        <h5 className={`${style.headingForReferenceList}`}>
+                          DISCLOSURE BY APPLICANT TYPE{" "}
+                        </h5>
+                        {lastUpdatedDate?.terminationReason?.standardList ===
+                          true &&
+                          lastUpdatedDate?.terminationReason?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol}`}
+                          >
+                            <span className={style.dashboardCardColorOption1}>
+                              STANDARD LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.terminationReason?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.terminationReason?.standardList ===
+                          false &&
+                          lastUpdatedDate?.terminationReason?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
+                          >
+                            <span
+                              className={`${style.dashboardCardColorOption3}`}
+                            >
+                              MY CUSTOM LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.terminationReason?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.terminationReason?.lastModified ===
+                          null ? (
+                          <div
+                            className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
+                          >
+                            <span className={style.dashboardCardColorOption4}>
+                              SETUP REQUIRED
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </Link>
+                    <Link
+                      to="/referenceList/contractTerminationReasonForCustomer"
+                      className={style.linkStyle}
+                    >
+                      <div className={style.dashboardCardStyle}>
+                        <h5 className={`${style.headingForReferenceList}`}>
+                          ACKNOWLEDGEMENTS
+                        </h5>
+                        {lastUpdatedDate?.terminationReason?.standardList ===
+                          true &&
+                          lastUpdatedDate?.terminationReason?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol}`}
+                          >
+                            <span className={style.dashboardCardColorOption1}>
+                              STANDARD LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.terminationReason?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.terminationReason?.standardList ===
+                          false &&
+                          lastUpdatedDate?.terminationReason?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
+                          >
+                            <span
+                              className={`${style.dashboardCardColorOption3}`}
+                            >
+                              MY CUSTOM LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.terminationReason?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.terminationReason?.lastModified ===
+                          null ? (
+                          <div
+                            className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
+                          >
+                            <span className={style.dashboardCardColorOption4}>
+                              SETUP REQUIRED
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </Link>
+                    <Link
+                      to="/referenceList/contractTerminationReasonForCustomer"
+                      className={style.linkStyle}
+                    >
+                      <div className={style.dashboardCardStyle}>
+                        <h5 className={`${style.headingForReferenceList}`}>
+                          CONSENTS
+                        </h5>
+                        {lastUpdatedDate?.terminationReason?.standardList ===
+                          true &&
+                          lastUpdatedDate?.terminationReason?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol}`}
+                          >
+                            <span className={style.dashboardCardColorOption1}>
+                              STANDARD LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.terminationReason?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.terminationReason?.standardList ===
+                          false &&
+                          lastUpdatedDate?.terminationReason?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
+                          >
+                            <span
+                              className={`${style.dashboardCardColorOption3}`}
+                            >
+                              MY CUSTOM LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.terminationReason?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.terminationReason?.lastModified ===
+                          null ? (
+                          <div
+                            className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
+                          >
+                            <span className={style.dashboardCardColorOption4}>
+                              SETUP REQUIRED
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </Link>
+                    {/* <Link
+                      to={"/referenceList/functionalTitleForCustomer"}
+                      className={style.linkStyle}
+                    >
+                      {" "}
+                      <div className={style.dashboardCardStyle}>
+                        <h5 className={`${style.headingForReferenceList}`}>
+                          FUNCTIONAL TITLES FOR PROVIDERS
+                        </h5>
+                        {lastUpdatedDate?.functionalTitles?.standardList ===
+                          true &&
+                        lastUpdatedDate?.functionalTitles?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol}`}
+                          >
+                            <span className={style.dashboardCardColorOption1}>
+                              STANDARD LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.functionalTitles?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.functionalTitles?.standardList ===
+                          false &&
+                        lastUpdatedDate?.functionalTitles?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
+                          >
+                            <span
+                              className={`${style.dashboardCardColorOption3}`}
+                            >
+                              MY CUSTOM LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.functionalTitles?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.functionalTitles?.lastModified ===
+                        null ? (
+                          <div
+                            className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
+                          >
+                            <span className={style.dashboardCardColorOption4}>
+                              SETUP REQUIRED
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </Link>
+                    <Link
+                      to="/referenceList/contractTerminationReasonForCustomer"
+                      className={style.linkStyle}
+                    >
+                      {" "}
+                      <div className={style.dashboardCardStyle}>
+                        <h5 className={`${style.headingForReferenceList}`}>
+                          APPLICATIONS WORKFLOW
+                        </h5>
+                        {lastUpdatedDate?.terminationReason?.standardList ===
+                          true &&
+                        lastUpdatedDate?.terminationReason?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol}`}
+                          >
+                            <span className={style.dashboardCardColorOption1}>
+                              STANDARD LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.terminationReason?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.terminationReason?.standardList ===
+                          false &&
+                        lastUpdatedDate?.terminationReason?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
+                          >
+                            <span
+                              className={`${style.dashboardCardColorOption3}`}
+                            >
+                              MY CUSTOM LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.terminationReason?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.terminationReason?.lastModified ===
+                        null ? (
+                          <div
+                            className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
+                          >
+                            <span className={style.dashboardCardColorOption4}>
+                              SETUP REQUIRED
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </Link>
+                    <Link
+                      to="/referenceList/contractTerminationReasonForCustomer"
+                      className={style.linkStyle}
+                    >
+                      {" "}
+                      <div className={style.dashboardCardStyle}>
+                        <h5 className={`${style.headingForReferenceList}`}>
+                          CONSENT AND ACKNOWLEDGEMENT FORMS
+                        </h5>
+                        {lastUpdatedDate?.terminationReason?.standardList ===
+                          true &&
+                        lastUpdatedDate?.terminationReason?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol}`}
+                          >
+                            <span className={style.dashboardCardColorOption1}>
+                              STANDARD LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.terminationReason?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.terminationReason?.standardList ===
+                          false &&
+                        lastUpdatedDate?.terminationReason?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
+                          >
+                            <span
+                              className={`${style.dashboardCardColorOption3}`}
+                            >
+                              MY CUSTOM LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.terminationReason?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.terminationReason?.lastModified ===
+                        null ? (
+                          <div
+                            className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
+                          >
+                            <span className={style.dashboardCardColorOption4}>
+                              SETUP REQUIRED
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </Link> */}
                     {/* <Link
                       to="/referenceList/contractTerminationReasonForCustomer"
                       className={style.linkStyle}
@@ -853,7 +2377,7 @@ const ClientAdminDashboard = () => {
                         )}
                       </div>
                     </Link> */}
-                    <Link
+                    {/* <Link
                       to={"/referenceList/holidayScheduleForCustomers"}
                       className={style.linkStyle}
                     >
@@ -862,7 +2386,7 @@ const ClientAdminDashboard = () => {
                           HOLIDAY LIST
                         </h5>
                         {lastUpdatedDate?.holidayList?.standardList === true &&
-                          lastUpdatedDate?.holidayList?.lastModified !== null ? (
+                        lastUpdatedDate?.holidayList?.lastModified !== null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol}`}
                           >
@@ -886,7 +2410,7 @@ const ClientAdminDashboard = () => {
                         )}
 
                         {lastUpdatedDate?.holidayList?.standardList === false &&
-                          lastUpdatedDate?.holidayList?.lastModified !== null ? (
+                        lastUpdatedDate?.holidayList?.lastModified !== null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
                           >
@@ -923,7 +2447,7 @@ const ClientAdminDashboard = () => {
                           <></>
                         )}
                       </div>
-                    </Link>
+                    </Link> */}
                   </div>
                 </div>
                 <div className={style.margin20}>
@@ -1026,7 +2550,7 @@ const ClientAdminDashboard = () => {
                         </div>
                       </div>
                     </Link> */}
-                    <Link
+                    {/* <Link
                       to={"/referenceList/organizationCostCenters"}
                       className={style.linkStyle}
                     >
@@ -1036,8 +2560,8 @@ const ClientAdminDashboard = () => {
                         </h5>
                         {lastUpdatedDate?.costCenterAndServiceLocation
                           ?.standardList === true &&
-                          lastUpdatedDate?.costCenterAndServiceLocation
-                            ?.lastModified !== null ? (
+                        lastUpdatedDate?.costCenterAndServiceLocation
+                          ?.lastModified !== null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol}`}
                           >
@@ -1062,8 +2586,8 @@ const ClientAdminDashboard = () => {
 
                         {lastUpdatedDate?.costCenterAndServiceLocation
                           ?.standardList === false &&
-                          lastUpdatedDate?.costCenterAndServiceLocation
-                            ?.lastModified !== null ? (
+                        lastUpdatedDate?.costCenterAndServiceLocation
+                          ?.lastModified !== null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
                           >
@@ -1101,7 +2625,7 @@ const ClientAdminDashboard = () => {
                           <></>
                         )}
                       </div>
-                    </Link>
+                    </Link> */}
                     {/* <Link
                       to={"/referenceList/contractTypeForCustomer"}
                       className={style.linkStyle}
@@ -1192,7 +2716,7 @@ const ClientAdminDashboard = () => {
                     </Link> */}
 
                     {/* //generalConfigurationForCustomers */}
-                    <Link
+                    {/* <Link
                       to={"/referenceList/generalConfigurationForCustomers"}
                       className={style.linkStyle}
                     >
@@ -1201,18 +2725,18 @@ const ClientAdminDashboard = () => {
                           GENERAL CONFIGURATION
                         </h5>
                       </div>
-                    </Link>
+                    </Link> */}
 
                     {/* //CountryandStates */}
-                    <Link
+                    {/* <Link
                       to={"/referenceList/countryWithStatesEntity"}
                       className={style.linkStyle}
                     >
                       <div className={style.dashboardCardStyle}>
                         <h5 className={`${style.headingForReferenceList}`}>
                           COUNTRIES WITH STATES ENTITY
-                        </h5>
-                        {/* <div
+                        </h5> */}
+                    {/* <div
                           className={`${style.optionsStyle} ${style.displayInCol}  `}
                         >
                           <div className={`${style.dashboardInsideCardStyle} `}>
@@ -1221,8 +2745,8 @@ const ClientAdminDashboard = () => {
                             </span>
                           </div>
                         </div> */}
-                      </div>
-                    </Link>
+                    {/* </div>
+                    </Link> */}
                   </div>
                 </div>
               </div>

@@ -201,6 +201,10 @@ const CompleteApplicationRequest = React.lazy(() =>
 const CreateStaffMemberApplication = React.lazy(() =>
   import("./Screens/CreateStaffMemberApplication")
 );
+
+const ApplicationSetup = React.lazy(() =>
+  import("./Screens/ApplicationSetup/ApplicationConfiguration")
+);
 const App = ({ props }) => {
   const [accessToken, setAccessToken] = useState(Auth());
   const [tenantId, setTenantId] = useState(GetEntityDetails());
@@ -718,7 +722,10 @@ const App = ({ props }) => {
               <Route path="/applicationRequest" element={<ApplicationRequest />} />
               <Route path="/completeApplicationRequest" element={<CompleteApplicationRequest />} />
               <Route path="/createStaffMemberApplication" element={<CreateStaffMemberApplication />} />
+              <Route path="/applicationSetup" element={<ApplicationSetup />} />
+
             </Routes>
+
           </>
           {/* ) : (
             <Routes>
