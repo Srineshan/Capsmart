@@ -138,7 +138,7 @@
     text-decoration: underline;
     font: normal normal bold 14px/30px Montserrat;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: #2b16e4;
 }
 
 .continue {
@@ -197,6 +197,14 @@
     font: normal normal bold 22px/39px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
+    line-height: 1.4;
+    font-weight: 600;
+}
+
+.alertHeading{
+    font: normal normal bold 18px/30px Montserrat;
+    color: #52575D;
+    letter-spacing: 0px;
 }
 
 .createAccountHelpText {
@@ -219,6 +227,84 @@
     font: normal normal normal 13px/20px Montserrat;
     color: #52575D;
     text-transform: capitalize;
+    font-weight: 600;
     opacity: 1;
     margin-top: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center; 
+    width: 100%;
+
 }
+
+.passwordHint {
+    color: green;
+    background-color: #f0f0f0; 
+    padding: 2px 8px;
+    font-size: 0.9rem;
+}
+.passcode-input {
+    display: flex;
+    justify-content: space-between;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  
+  .passcode-input-field {
+    width: 40px !important;
+    height: 50px !important;
+    border: 2px solid pink;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 20px;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  
+  .passcode-input-field:focus {
+    border-color: darkpink;
+  }
+  .customWidth {
+    padding: 20px;
+    width: 40%; 
+    max-width: 700px !important; 
+    margin: 0 auto; 
+    box-shadow: 0 20px 0px #7165E3 !important; 
+    border-radius: 15px !important; 
+  }
+  
+.heading span {
+    display: inline-block;
+    margin-top: -4px; 
+  }
+  
+  .justifyCenter {
+    display:flex;
+    flex-direction: column;
+    margin-left: 45px;
+    margin-top: 95px;
+}
+
+.marginTop30 {
+    margin-top: 30px;
+}
+ .container{
+    width: 70%;
+ }
+
+ .PassCodeCenter{
+    display:flex;
+    flex-direction: column;
+justify-content: center;
+margin-left: 45px;
+
+ }
+ .passCode{
+    width: 80%;
+ }
+
+ .halfWidth{
+    width: 450px;
+ }
+
+  
