@@ -19,6 +19,8 @@ import ProgressBar from "@ramonak/react-progress-bar";
 import ApplicationRejection from './applicationRejectionDialog';
 import { useNavigate } from 'react-router-dom';
 import { GET, PUT, POST, TenantID } from '../dataSaver';
+import ReactToPrint, { useReactToPrint } from 'react-to-print';
+
 
 const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiveApplicationView }) => {
   const PDFRef = createRef();
@@ -42,7 +44,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
   const [tableData, setTableData] = useState([]);
   const [rejectionListData, setRejectionListData] = useState([]);
 
-  const applicantHeaderValues = ["", "Applicant Name", "Applicant Type", "Department", "Docs", "Data", "Disclosures", "CRs", "Notes", "Last Updated", "Last Updated By", "Manager", ""];
+  const applicantHeaderValues = ["", "Applicant Name", "Applicant Type", "Department", "Docs", "Data", "Disclosures", "CRs", "Notes", "Last Updated","Last Updated By", ""];
   const applicationHeaderValues = ["", "Applicant Name", "Applicant Type", "Department", "Commitee", "Board", "CEO", "Last Updated On", "Last Updated by", ""];
   const clarificationHeaderValues = ["", "Applicant Name", "Type", "Clarification Title", "Raised By", "Created On", "Last Updated On", ""];
   const approvedHeaderValues = ["", "Applicant Name", "Type", "Notes", "Last Updated On", ""];
@@ -55,6 +57,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
   const [isPrintClicked, setIsPrintClicked] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
   const [showApplicationRejectionDialog, setShowApplicationRejectionDialog] = useState(false);
+
 
   const getApplicationRejectionDialog = (value) => {
     setShowApplicationRejectionDialog(value);
@@ -112,7 +115,8 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
   const getSentConfirmationCount = async () => {
     await GET('application-management-service/application/sentToApplicant/status')
       .then(response => {
-        setSentCompletion(response?.data.totalApplicationsSent || 0);
+        setSentCompletion(response?.data || null);
+        console.log("sentCompletion", response?.data);
       })
       .catch(error => {
         console.error('Error fetching request appointment count:', error);
@@ -130,6 +134,17 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
 
       });
   };
+
+
+  const reactToPrintContent = useCallback(() => {
+    return componentRef.current;
+}, [componentRef.current]);
+
+  const handlePrintClick = useReactToPrint({
+    content: reactToPrintContent,
+    documentTitle: "Staff Application",
+    removeAfterPrint: true
+  });
 
   const getRejectionCounts = async () => {
     await GET('application-management-service/application/rejected/meta')
@@ -192,11 +207,11 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
     action = [];
 
     tableData?.map(data => {
-      dot.push(data?.subStatus === 'REVIEW_INPROGRESS' ? 'yellow' : data?.subStatus === 'COMPLETED ' ? 'green' : 'grey');
+      dot.push(data?.status === 'REVIEW_INPROGRESS' ? 'yellow' : data?.status === 'COMPLETED' ? 'green' : 'grey');
       applicantName.push(`${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` || '');
       applicantId.push(data?.Id);
       applicantType.push(data?.providerType.serviceProviderType);
-      department.push(data?.department);
+      department.push(data?.sites?.siteDepartments?.site?.department?.name || '-');
       docs.push(data?.docs || '2/8');
       docsHoverText.push(["Immunization History Verification From PCP pending"])
       docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} />);
@@ -211,7 +226,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
       lastUpdatedBy.push('-')
       // const lastUpdatedDate = new Date(data?.lastModifiedDate);
       // lastUpdated.push(isNaN(lastUpdatedDate.getTime()) ? 'Invalid Date' : format(lastUpdatedDate, 'MM-dd-yyyy'));
-      capManager.push(data?.capManager || 'keerthana ');
+      // capManager.push(data?.interviewDetails?.interviewedBy || '- ');
       action.push(true);
     })
 
@@ -227,7 +242,6 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
       { "type": "iconWithCount", "value": notes, "hoverText": notesHoverText, 'isShowHoverText': true, "icon": notesIcon },
       { "type": "text", "value": lastUpdated },
       { "type": "text", "value": lastUpdatedBy },
-      { "type": "text", "value": capManager },
       { "type": "action", "value": action },
     ];
   }
@@ -247,12 +261,12 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
       dot.push("");
       applicantName.push(`${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` || '');
       applicantType.push(data?.providerType.serviceProviderType);
-      department.push(data?.department || 'department');
+      department.push(data?.sites?.siteDepartments?.site?.department?.name || '-');
       commiteeStatus.push(data?.commiteeStatus || 'yellow');
       boardStatus.push(data?.boardStatus || 'green');
       ceoStatus.push(data?.ceoStatus || 'grey');
       lastUpdatedOn.push(format(new Date(data?.lastModifiedDate), 'MMM dd, yyyy'))
-      lastUpdatedBy.push(data?.lastUpdatedBy);
+      lastUpdatedBy.push(data?.updatedBy || '-');
       action.push(true);
     })
 
@@ -389,7 +403,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
               </div>
             </div>
 
-            <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
+            {/* <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
               <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
                 <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
                   Requests For Appointment ({requestAppointment})
@@ -448,12 +462,12 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
                   </div>
                 </div>
               </>)}
-            </div>
+            </div> */}
 
             <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
               <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
                 <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
-                  Applications Sent for Completion ({sentCompletion})
+                Applications Sent for Completion ({sentCompletion?.totalApplicationsSent || 0})
                 </div>
                 <div className={`${style.marginLeft10} `} >
                   {!showCardCompletion ? (
@@ -463,50 +477,30 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
                   )}
                 </div>
               </div>
-              {showCardCompletion && (<>
-                <div className={`${style.displayInCol} ${style.marginTop}`}>
-                  <div className={`${style.warningTextAlign} ${style.staffTextStyle}`}>
-                    <div className={style.progressbarStyle}>
-                      <div className={style.spaceBetween}>
-                        <div className={style.statisticsProgress}>
-                          <div className={`${style.greyDotStyle} `}></div>
-                          <div className={style.marginLeft10}>Jane DOE</div> <span className={style.textStyleProgress}> (Nurse) </span></div>
-                        <p className={style.progressTopText}>Due in 15 Days</p>
-                      </div>
-                      <ProgressBar completed={6} isLabelVisible={false} height='5px' bgColor='#7165E3' baseBgColor="#E9E9F0" className={style.marginLeft20} />
-                      <div className={style.progressBottomText}>95% remaining</div>
-                    </div>
-                  </div>
+              
+              {showCardCompletion && (
+    <div style={{ maxHeight: '200px', overflowY: 'auto', padding: '10px' }}> 
+      {sentCompletion?.applicationsStatus?.map((status, index) => (
+        <div key={index} className={`${style.displayInCol} ${style.marginTop}`}>
+          <div className={`${style.warningTextAlign} ${style.staffTextStyle}`}>
+            <div className={style.progressbarStyle}>
+              <div className={style.spaceBetween}>
+                <div className={style.statisticsProgress}>
+                  <div className={`${style.greyDotStyle}`}></div>
+                  <div className={style.marginLeft10}>{`${status.basicDetail.applicant.name.firstName} ${status.basicDetail.applicant.name.lastName}`}</div>
+                  <span className={style.textStyleProgress}> ({status.providerType.serviceProviderType}) </span>
                 </div>
-                <div className={`${style.displayInCol} ${style.marginTop}`}>
-                  <div className={`${style.warningTextAlign} ${style.staffTextStyle}`}>
-                    <div className={style.progressbarStyle}>
-                      <div className={style.spaceBetween}>
-                        <div className={style.statisticsProgress}>
-                          <div className={`${style.greenDotStyle} `}></div>
-                          <div className={style.marginLeft10}>Jane DOE</div> <span className={style.textStyleProgress}> (Nurse) </span></div>
-                        <p className={style.progressTopText}>Due in 2 Days</p>
-                      </div>
-                      <ProgressBar completed={100} isLabelVisible={false} height='5px' bgColor='#7165E3' baseBgColor="#E9E9F0" className={style.marginLeft20} />
-                      <div className={style.progressBottomText}>0% remaining</div>
-                    </div>
-                  </div>
-                </div>
-                <div className={`${style.displayInCol} ${style.marginTop}`}>
-                  <div className={`${style.warningTextAlign} ${style.staffTextStyle}`}>
-                    <div className={style.progressbarStyle}>
-                      <div className={style.spaceBetween}>
-                        <div className={style.statisticsProgress}>
-                          <div className={`${style.yellowDotStyle} `}></div>
-                          <div className={style.marginLeft10}>Kate SLATE</div> <span className={style.textStyleProgress}> (Doctor) </span></div>
-                        <p className={style.progressTopText}>Due in 7 Days</p>
-                      </div>
-                      <ProgressBar completed={60} isLabelVisible={false} height='5px' bgColor='#7165E3' baseBgColor="#E9E9F0" className={style.marginLeft20} />
-                      <div className={style.progressBottomText}>40% remaining</div>
-                    </div>
-                  </div>
-                </div>
-              </>)}
+                <p className={style.progressTopText}>{status.dueDays} Days Due</p>
+              </div>
+              <ProgressBar completed={100 - status.remainingCompletionPercentage} isLabelVisible={false} height='5px' bgColor='#7165E3' baseBgColor="#E9E9F0" className={style.marginLeft20} />
+              <div className={style.progressBottomText}>{status.remainingCompletionPercentage}% remaining</div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )}
+
             </div>
 
             <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
@@ -552,8 +546,9 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
               <div className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`} >
                 <SearchOutlinedIcon sx={{ fontSize: isPrintClicked ? 20 : 25, color: isPrintClicked ? '#fff' : '#857AEF' }} />
               </div>
-              <div className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginRight}`} >
-                <PrintOutlinedIcon sx={{ fontSize: isPrintClicked ? 20 : 25, color: isPrintClicked ? '#fff' : '#857AEF' }} />
+              <div className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginRight}`}
+ >
+                <PrintOutlinedIcon sx={{ fontSize: isPrintClicked ? 20 : 25, color: isPrintClicked ? '#fff' : '#857AEF' }} onClick={handlePrintClick}/>
               </div>
 
             </div>
