@@ -235,6 +235,11 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
         { 'data': 'Replace', 'requiredValue': 'boolean', "onClick": handleReplace },
         { 'data': 'Delete', 'requiredValue': 'boolean', "onClick": handleDelete },
     ]
+
+    const getIsEdited = (value) => {
+        setIsEdited(value)
+    }
+
     return (
         <div>
             <div className={style.applicationScreenGrid}>
@@ -346,7 +351,11 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
                 </div>
             </div>
             {isShowESignDialog && (
-                <ESignDialog getIsOpen={getIsOpen} />
+                <ESignDialog getIsOpen={getIsOpen} tempValue={tempValue} baseKey={'setUpYourSignature'} applicationId={applicationId} basicForm={basicForm} setBasicForm={setBasicForm}>
+                    {formSchema !== undefined && 'setUpYourSignature' in formSchema?.properties && (
+                        <ApplicationFieldCard object={formSchema?.properties?.setUpYourSignature} gridStyle={style.twoCol} baseKey={'setUpYourSignature'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[0].data`} setIsEdited={getIsEdited} />
+                    )}
+                </ESignDialog>
             )}
         </div>
     )

@@ -24,7 +24,7 @@ import CommonDropZone from '../CommonFields/CommonDropZone';
 
 const TEXTFIELDLEN50 = 50;
 
-const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicForm, showAdd, addMoreType, addMoreOpenBydefault, collapsableQuestionCard, isBasicPath, stepPath, formId, getIsSubmitClicked, applicationId, tableGrid, setIsEdited }) => {
+const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicForm, showAdd, addMoreType, addMoreOpenBydefault, collapsableQuestionCard, isBasicPath, stepPath, formId, getIsSubmitClicked, applicationId, tableGrid, setIsEdited, heading, subHeading, subHeading2 }) => {
     const [calendarStart, setCalendarStart] = useState(false);
     const [isAddMore, setIsAddMore] = useState(addMoreOpenBydefault ? true : false);
     const [isCollapsableCard, setIsCollapsableCard] = useState(true);
@@ -215,7 +215,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
     // };
 
     const renderField = (fieldKey, fieldData, baseKey, handleChange, getValueByPath, style, calendarStart, setCalendarStart) => {
-        if ((!object?.then?.required?.includes(fieldKey) || getValueByPath(basicForm, `${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`) === Object.entries(object?.if?.properties)?.map(([key, data]) => data)[0]?.const) && fieldData.fieldType) {
+        if ((!object?.then?.required?.includes(fieldKey) || getValueByPath(basicForm, `${basicpath}.${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`) === Object.entries(object?.if?.properties)?.map(([key, data]) => data)[0]?.const) && fieldData.fieldType) {
             switch (fieldData.fieldType) {
                 case 'dropdown':
                     console.log(getValueByPath(basicForm, 'forms[1]'), `${basicpath}.${baseKey}.${fieldKey}`, 'dropdown', basicForm)
@@ -385,7 +385,6 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
             return Object.entries(properties).map(([key, data]) => {
                 if (data.type === 'object' && data.properties && data.fieldType === null) {
                     console.log('entered', data?.properties)
-                    // console.log(getValueByPath(basicForm, `${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`), 'value if', Object.entries(object?.if?.properties)?.map(([key, data]) => data)[0]?.const)
                     if (object?.if === null) {
                         console.log('entered', data?.properties)
                         return Object.entries(data.properties).map(([innerKey, innerData]) => {
@@ -404,11 +403,10 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                             } else {
                                 return renderField(innerKey, innerData, `${baseKey}.${key}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
                             }
-                            // return renderField(innerKey, innerData, `${baseKey}.${key}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
                         });
                     }
-                    else if (object?.if !== null && getValueByPath(basicForm, `${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`) === Object.entries(object?.if?.properties)?.map(([key, data]) => data)[0]?.const) {
-                        console.log(getValueByPath(basicForm, `${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`), 'value if', Object.entries(object?.if?.properties)?.map(([key, data]) => data)[0]?.const, 'data', data)
+                    else if (object?.if !== null && getValueByPath(basicForm, `${basicpath}.${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`) === Object.entries(object?.if?.properties)?.map(([key, data]) => data)[0]?.const) {
+                        console.log(getValueByPath(basicForm, `${basicpath}.${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`), 'value if', Object.entries(object?.if?.properties)?.map(([key, data]) => data)[0]?.const, 'data', data)
                         return Object.entries(data.properties).map(([innerKey, innerData]) => {
                             console.log(innerData)
                             if (innerData.type === 'object' && innerData.properties && innerData.fieldType === null) {
@@ -427,7 +425,8 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                         });
                     }
                     else {
-                        console.log('entered', data)
+                        console.log(getValueByPath(basicForm, `${basicpath}.${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`), 'value if', Object.entries(object?.if?.properties)?.map(([key, data]) => data)[0]?.const, 'data', data, `${basicpath}.${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`, basicForm)
+                        console.log('entered', data, 'if')
                         return Object.keys(data.properties)?.filter(data => data !== data?.then?.required).map(([innerKey, innerData]) => {
                             return renderField(innerKey, innerData, `${baseKey}.${key}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
                         });
@@ -452,22 +451,22 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
     //     const renderFields = (data, path, parentObject) => {
     //         if (data.type === 'object' && data.properties && data.fieldType === null) {
     //             // Check for conditions
-    //             console.log('entered', data, path)
-    //             if (data.if && getValueByPath(basicForm, `${path}.${Object.keys(parentObject.if.properties)[0]}`) !== parentObject.if.properties[Object.keys(parentObject.if.properties)[0]].const) {
-    //                 console.log('entered', data, path, getValueByPath(basicForm, `${path}.${Object.keys(parentObject.if.properties)[0]}`), parentObject.if.properties[Object.keys(parentObject.if.properties)[0]].const)
+    //             console.log('entered', data, path.split('.').pop(), parentObject, data.if ? getValueByPath(basicForm, `${basicpath}.${path}.${Object.keys(data.if.properties)[0]}`) !== data.if.properties[Object.keys(data.if.properties)[0]].const : '-')
+    //             if (data.if && getValueByPath(basicForm, `${basicpath}.${path}.${Object.keys(data.if.properties)[0]}`) !== data.if.properties[Object.keys(data.if.properties)[0]].const) {
+    //                 console.log('entered', data, path, getValueByPath(basicForm, `${basicpath}.${path}.${Object.keys(data.if.properties)[0]}`), data.if.properties[Object.keys(data.if.properties)[0]].const)
     //                 return null;
     //             } else {
     //                 console.log('entered', data, path)
-    //                 return Object.entries(data.properties).map(([key, value]) => renderFields(value, `${path}.${key}`, data));
+    //                 return Object.entries(data.properties).map(([key, value]) => renderFields(value, `${basicpath}.${path}.${key}`, data));
     //             }
     //         } else if (data.type === 'array' && data.items?.properties) {
     //             console.log('entered', data, path)
-    //             return Object.entries(data.items.properties).map(([key, value]) => renderFields(value, `${path}.${key}`, data));
+    //             return Object.entries(data.items.properties).map(([key, value]) => renderFields(value, `${basicpath}.${path}.${key}`, data));
     //         } else if (data.type === 'object' && data.properties && data.fieldType !== null) {
-    //             return renderField(path.split('.').pop(), data, path, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
+    //             return renderField(path.split('.').pop(), data, `${basicpath}.${path}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
     //         } else {
     //             console.log('entered', data, path, path.split('.').pop())
-    //             return renderField(path.split('.').pop(), data, path, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
+    //             return renderField(path.split('.').pop(), data, `${basicpath}.${path}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
     //         }
     //     };
     //     return properties ? Object.entries(properties).map(([key, data]) => renderFields(data, `${baseKey}.${key}`, object)) : null;
@@ -481,7 +480,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
 
     const getValueByPath = (obj, path) => {
         const keys = path.split(/[\.\[\]]+/).filter(Boolean);
-        console.log(path, keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm), basicForm)
+        console.log(path, keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm), basicForm, 'if')
         return keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm);
     };
 
@@ -597,7 +596,9 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                             actions={actions}
                             scrollStyle={style.contractScrollStyle}
                             tableSortValues={[]}
-                            heading={'There are no Record for you to manage'}
+                            heading={heading}
+                            subHeading={subHeading}
+                            subHeading2={subHeading2}
                             onClickFunction={() => { }}
                         />
                     )}
