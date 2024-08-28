@@ -2899,45 +2899,167 @@
   margin-top: -2px;
 }
 
-.sitesSlider {
-  // padding: 20px;
-  background-color: #f5f5f5;
+.twoLevelHeaderButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  // padding: 8px 16px;
 }
 
-.title {
+.addNewButton {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.sideBar {
+  padding: 20px;
+  background-color: #ffffff;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  height: 100vh;
+}
+
+.siteTitle {
   text-align: start;
+  font: normal normal bold 14px/20px Montserrat;
   color: #52575d;
 }
 
 .sidebarContent {
   background-color: #e2e1ff;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
   border-radius: 4px;
   display: flex;
   flex-direction: column;
   color: #52575d;
   border: 1px solid #52575d;
+  padding: 10px;
+  width: 100%;
 }
 
 .siteDetails {
   display: flex;
-  text-align: start;
   justify-content: space-between; /* Align name and count horizontally */
   align-items: center; /* Align name and count vertically */
-  width: 100%;
+}
+
+.siteName,
+.siteCount {
+  font: normal normal bold 14px/20px Montserrat;
+  color: #52575d;
 }
 
 .siteType {
   color: #52575d;
-  font: normal normal bold 10px/20px Montserrat;
+  font: normal normal 10px/20px Montserrat;
 }
 
-// .siteCount {
-//   border-radius: 50%;
-//   color: #52575d;
-//   padding: 10px 20px;
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-//   font: normal normal bold 12px/20px Montserrat;
+.sideActiveBackground {
+  background-color: #d2d0f5;
+}
+
+.sideNonActiveBackground {
+  background-color: #efeefc;
+}
+
+.siteType {
+  color: #52575d;
+  text-align: left;
+  font: normal normal bold 10px/10px Montserrat;
+}
+
+.title {
+  color: #52575d;
+  text-align: left;
+  font: normal normal bold 14px/20px Montserrat;
+}
+.applicantTypeBackground {
+  background-color: #ededf3;
+}
+
+.applicantList {
+  position: relative; /* This makes the absolute positioning relative to this div */
+  padding-bottom: 60px;
+  width: 100%;
+  margin: 0 auto;
+  font: normal normal bold 10px/10px Montserrat;
+  background-color: white;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  padding: 10px;
+  height: 100vh;
+}
+
+.applicantTable {
+  width: 100%;
+  text-align: left;
+  border-collapse: collapse;
+}
+
+.applicantHeader {
+  line-height: 2;
+  background-color: #d2d0f5;
+  font: normal normal bold 14px/20px Montserrat;
+  color: #52575d;
+}
+
+.applicantItem {
+  line-height: 1.5;
+  font: normal normal bold 14px/20px Montserrat;
+  color: #52575d;
+}
+
+.applicantItem > td {
+  padding: 8px 12px;
+}
+
+// .applicantItem > td:nth-child(2),
+// .applicantItem > td:nth-child(3) {
+//   min-width: 150px;
 // }
+
+.actions {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.marginLeft20 {
+  margin-left: 20px;
+}
+
+.colorFileStyle {
+  cursor: pointer;
+}
+
+.actionsFooter {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.actionsFooterButton {
+  font: normal normal bold 14px/20px Montserrat;
+  padding: 8px 10px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 7px;
+}
+
+.backgroundBlue {
+  background-color: #7165e3;
+}
+
+.textColorWhite {
+  color: white;
+}
+.textColurBlue {
+  color: #7165e3;
+}
+.borderNone {
+  border: none;
+}

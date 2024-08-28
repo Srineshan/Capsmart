@@ -22,8 +22,8 @@ import AddNewEntity from "../../images/addEntity.png";
 import AddRefresh from "../../images/refreshEntity.png";
 import { Icon, Intent } from "@blueprintjs/core";
 import ArrowDown from "./../../images/arrowDown.png";
-import { siteTimeZone } from '../../utils/formatting';
-
+import { siteTimeZone } from "../../utils/formatting";
+import AddIcon from "@mui/icons-material/Add";
 import style from "./index.module.scss";
 import { formatInTimeZone } from "date-fns-tz";
 
@@ -54,8 +54,8 @@ const LevelTwoHeader = ({
         timeFrame === "Last 60 days"
           ? 60
           : timeFrame === "Last 90 days"
-            ? 90
-            : 0;
+          ? 90
+          : 0;
       if (timeFrame === "This Week") {
         setFrom(startOfWeek(new Date()));
         setTo(endOfWeek(new Date()));
@@ -216,12 +216,38 @@ const LevelTwoHeader = ({
         )}
 
         {!needHeader && !hideClose && (
-          <img
-            src={CrossPink}
-            alt="cross"
-            className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft20}`}
-            onClick={() => onCloseLevel2()}
-          />
+          <div>
+            <button
+              className={style.borderNone}
+              style={{
+                border: "none",
+                borderRadius: "5px",
+                backgroundColor: "#7165e3",
+              }}
+              onClick={() => {
+                console.log("Add Item button clicked");
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "white",
+                }}
+                className={style.backgroundBlue}
+              >
+                <AddIcon />
+                <span> Add New</span>
+              </div>
+            </button>
+            <img
+              src={CrossPink}
+              alt="cross"
+              className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft20}`}
+              onClick={() => onCloseLevel2()}
+            />
+          </div>
         )}
 
         {needHeader && callingFrom === "Super Admin" && (

@@ -32,7 +32,7 @@ const AddNewDepartments = ({
   const [departName, setDepartName] = useState("");
   const [createdDate, setCreatedDate] = useState("");
   const [addService, setAddService] = useState(true);
-  const [serviceAreaSuper, setServiceAreaSuper] = useState([{ name: '' }]);
+  const [serviceAreaSuper, setServiceAreaSuper] = useState([{ name: "" }]);
   const [serviceLocation, setServiceLocation] = useState([]);
   const [selectedLocations, setSelectedLocations] = useState([]);
   const [selectedLocationDeleteId, setSelectedLocationDeleteId] = useState("");
@@ -285,7 +285,7 @@ const AddNewDepartments = ({
   };
 
   const addServiceArea = () => {
-    setServiceAreaSuper([...serviceAreaSuper, { name: '' }]);
+    setServiceAreaSuper([...serviceAreaSuper, { name: "" }]);
   };
 
   const handleAddMoreClick = () => {
@@ -344,8 +344,8 @@ const AddNewDepartments = ({
       }),
     };
 
-    console.log("selectedDepart", selectedDepart)
-    console.log("DataPayload", data)
+    console.log("selectedDepart", selectedDepart);
+    console.log("DataPayload", data);
     // let ApiData = callingFrom === "Customer Admin" && !isEdit ? data : [data];
     let ApiData = callingFrom === "Customer Admin" ? [data] : data;
 
@@ -357,7 +357,9 @@ const AddNewDepartments = ({
 
     await POST(ApiUrl, JSON.stringify(ApiData))
       .then((response) => {
-        SuccessToaster(`Department ${isEdit ? "Updated" : "Added"} Successfully`);
+        SuccessToaster(
+          `Department ${isEdit ? "Updated" : "Added"} Successfully`
+        );
         getEntityData();
       })
       .catch((error) => {
@@ -381,18 +383,27 @@ const AddNewDepartments = ({
       setDepartName(selectedDepart?.departmentName?.name);
       setCreatedDate(selectedDepart?.createdDate);
 
-      if (callingFrom === "Customer Admin" && selectedDepart?.serviceAreas.length > 0) {
+      if (
+        callingFrom === "Customer Admin" &&
+        selectedDepart?.serviceAreas.length > 0
+      ) {
         setServiceAreaList(selectedDepart?.serviceAreas);
         setAddService(true);
       } else {
         setAddService(false);
       }
 
-      if (callingFrom === "Super Admin" && selectedDepart?.serviceAreas.length > 0) {
+      if (
+        callingFrom === "Super Admin" &&
+        selectedDepart?.serviceAreas.length > 0
+      ) {
         setServiceAreaSuper(selectedDepart?.serviceAreas);
       }
 
-      if (selectedDepart?.serviceLocations !== undefined && selectedDepart?.serviceLocations.length > 0) {
+      if (
+        selectedDepart?.serviceLocations !== undefined &&
+        selectedDepart?.serviceLocations.length > 0
+      ) {
         setSelectedLocations(selectedDepart?.serviceLocations);
         setAddService(false);
       } else {
@@ -460,8 +471,7 @@ const AddNewDepartments = ({
                 className={style.fullWidth}
                 onChange={(e) => setDepartName(e.target.value)}
               />
-              {
-                callingFrom === "Customer Admin" &&
+              {callingFrom === "Customer Admin" && (
                 <Checkbox
                   value="ADD SERVICES"
                   checked={addService}
@@ -469,7 +479,7 @@ const AddNewDepartments = ({
                   className={` ${style.marginLeft20} ${style.marginTop}`}
                   label="ADD SERVICES"
                 />
-              }
+              )}
             </div>
           </div>
           <div
@@ -499,8 +509,12 @@ const AddNewDepartments = ({
                       className={`${style.editHealthCareGrid2} `}
                       key={`${index}${serviceAreaSuper[index]}`}
                     >
-                      <div className={`${style.entityLableStyle}`}>Service Area* {index + 1}</div>
-                      <div className={`${style.displayInRow} ${style.marginTop10}`}>
+                      <div className={`${style.entityLableStyle}`}>
+                        Service Area* {index + 1}
+                      </div>
+                      <div
+                        className={`${style.displayInRow} ${style.marginTop10}`}
+                      >
                         <InputGroup
                           name="name"
                           value={serviceArea?.name}
@@ -627,7 +641,6 @@ const AddNewDepartments = ({
                       )}
                     </div>
                   )}
-
                 </>
               );
             })}
