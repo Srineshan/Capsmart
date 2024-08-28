@@ -183,6 +183,9 @@ const SuperAdminDashboard = React.lazy(() =>
 const ClientAdminDashboard = React.lazy(() =>
   import("./Screens/ReferenceList/customerAdminDashboard")
 );
+const ApplicantTypesByEntity = React.lazy(() =>
+  import("./Screens/ReferenceList/applicantTypesByEntity")
+);
 const Thankyou = React.lazy(() =>
   import("./Screens/SuperAdminDashboard/thankyou")
 );
@@ -638,6 +641,10 @@ const App = ({ props }) => {
                 path="/referenceList/countryWithStatesEntity"
                 element={<CountryWithStatesEntity />}
               /> */}
+              <Route
+                path="/referenceList/applicantTypesByEntity"
+                element={<ApplicantTypesByEntity />}
+              />
               <Route
                 path="/referenceList/departmentsForCustomers"
                 element={<DepartmentsForCustomers />}

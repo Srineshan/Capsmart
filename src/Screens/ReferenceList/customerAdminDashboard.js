@@ -91,7 +91,7 @@ const ClientAdminDashboard = () => {
                 <div className={style.margin20}>
                   <div className={style.grid4}>
                     <Link
-                      to={"/referenceList/departmentsForCustomers"}
+                      to={"/referenceList/applicantTypesByEntity"}
                       className={style.linkStyle}
                     >
                       <div className={style.dashboardCardStyle}>
@@ -1992,7 +1992,7 @@ const ClientAdminDashboard = () => {
                         )}
                       </div>
                     </Link>
-                    {/* <Link
+                    <Link
                       to={"/referenceList/functionalTitleForCustomer"}
                       className={style.linkStyle}
                     >
@@ -2003,7 +2003,7 @@ const ClientAdminDashboard = () => {
                         </h5>
                         {lastUpdatedDate?.functionalTitles?.standardList ===
                           true &&
-                        lastUpdatedDate?.functionalTitles?.lastModified !==
+                          lastUpdatedDate?.functionalTitles?.lastModified !==
                           null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol}`}
@@ -2029,7 +2029,7 @@ const ClientAdminDashboard = () => {
 
                         {lastUpdatedDate?.functionalTitles?.standardList ===
                           false &&
-                        lastUpdatedDate?.functionalTitles?.lastModified !==
+                          lastUpdatedDate?.functionalTitles?.lastModified !==
                           null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
@@ -2056,7 +2056,7 @@ const ClientAdminDashboard = () => {
                         )}
 
                         {lastUpdatedDate?.functionalTitles?.lastModified ===
-                        null ? (
+                          null ? (
                           <div
                             className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
                           >
@@ -2080,7 +2080,7 @@ const ClientAdminDashboard = () => {
                         </h5>
                         {lastUpdatedDate?.terminationReason?.standardList ===
                           true &&
-                        lastUpdatedDate?.terminationReason?.lastModified !==
+                          lastUpdatedDate?.terminationReason?.lastModified !==
                           null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol}`}
@@ -2106,7 +2106,7 @@ const ClientAdminDashboard = () => {
 
                         {lastUpdatedDate?.terminationReason?.standardList ===
                           false &&
-                        lastUpdatedDate?.terminationReason?.lastModified !==
+                          lastUpdatedDate?.terminationReason?.lastModified !==
                           null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
@@ -2133,7 +2133,7 @@ const ClientAdminDashboard = () => {
                         )}
 
                         {lastUpdatedDate?.terminationReason?.lastModified ===
-                        null ? (
+                          null ? (
                           <div
                             className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
                           >
@@ -2150,14 +2150,13 @@ const ClientAdminDashboard = () => {
                       to="/referenceList/contractTerminationReasonForCustomer"
                       className={style.linkStyle}
                     >
-                      {" "}
                       <div className={style.dashboardCardStyle}>
                         <h5 className={`${style.headingForReferenceList}`}>
                           CONSENT AND ACKNOWLEDGEMENT FORMS
                         </h5>
                         {lastUpdatedDate?.terminationReason?.standardList ===
                           true &&
-                        lastUpdatedDate?.terminationReason?.lastModified !==
+                          lastUpdatedDate?.terminationReason?.lastModified !==
                           null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol}`}
@@ -2183,7 +2182,7 @@ const ClientAdminDashboard = () => {
 
                         {lastUpdatedDate?.terminationReason?.standardList ===
                           false &&
-                        lastUpdatedDate?.terminationReason?.lastModified !==
+                          lastUpdatedDate?.terminationReason?.lastModified !==
                           null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
@@ -2210,7 +2209,7 @@ const ClientAdminDashboard = () => {
                         )}
 
                         {lastUpdatedDate?.terminationReason?.lastModified ===
-                        null ? (
+                          null ? (
                           <div
                             className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
                           >
@@ -2222,7 +2221,7 @@ const ClientAdminDashboard = () => {
                           <></>
                         )}
                       </div>
-                    </Link> */}
+                    </Link>
                     {/* <Link
                       to="/referenceList/contractTerminationReasonForCustomer"
                       className={style.linkStyle}

@@ -1,4 +1,4 @@
-@import '../../styles/mixins.scss';
+@import "../../styles/mixins.scss";
 
 .adminRectangleBox {
   width: 100%;
@@ -97,7 +97,6 @@
   padding: 20px;
 }
 
-
 .padding5 {
   padding: 5px;
 }
@@ -157,7 +156,6 @@
 .marginRight60 {
   margin-right: 60px;
 }
-
 
 .marginBottomZero {
   margin-bottom: 0px;
@@ -406,9 +404,7 @@
   @media (min-width: 1824px) {
     font: normal normal bolder 16px/18px Montserrat !important;
   }
-
 }
-
 
 .optionsStyle {
   width: 100%;
@@ -427,7 +423,6 @@
   @media (min-width: 1224px) {
     font: normal normal bolder 12px/16px Montserrat !important;
     margin-top: 5px !important;
-
   }
 
   @media (min-width: 1824px) {
@@ -444,7 +439,7 @@
 }
 
 .dashboardCardColorOption3 {
-  color: #7165E3;
+  color: #7165e3;
 }
 
 .dashboardCardColorOption4 {
@@ -667,7 +662,6 @@
   align-items: center;
   display: grid;
   grid-template-columns: 60% 20% 10% 5% 5%;
-
 }
 
 .tableHeaderDepartment {
@@ -901,7 +895,6 @@
   align-items: center;
   margin-top: 5px;
   grid-template-columns: 60% 15% 12% 6% 5%;
-  ;
 }
 
 .departmentTableData {
@@ -1078,7 +1071,6 @@
   align-items: center;
   margin-top: 5px;
   grid-template-columns: 4% 55% 8% 20% 6% 6%;
-  ;
 }
 
 .terminationInnerFolderData {
@@ -1458,7 +1450,7 @@
 }
 
 .addStyle {
-  background: #7165E3 0% 0% no-repeat padding-box;
+  background: #7165e3 0% 0% no-repeat padding-box;
   box-shadow: 0px 0px 6px #00000029;
   border-radius: 8px;
   height: 33px;
@@ -1675,7 +1667,6 @@
   grid-template-columns: 12% 78% 10% 5%;
 }
 
-
 .HolidayListBackground {
   background: #ffffff 0% 0% no-repeat padding-box;
   display: grid;
@@ -1692,7 +1683,6 @@
   text-transform: uppercase;
 }
 
-
 .holidayHeaderTextStyle {
   font: normal normal 600 16px/18px Montserrat;
   letter-spacing: 0.05px;
@@ -1702,7 +1692,6 @@
   margin-left: 10px;
   text-transform: uppercase;
 }
-
 
 .healthCareHeaderTextStyle2 {
   font: normal normal 600 15px/20px Montserrat;
@@ -1867,7 +1856,7 @@
 }
 
 .terminationReasonSideRows {
-  background: #928AE1 0% 0% no-repeat padding-box;
+  background: #928ae1 0% 0% no-repeat padding-box;
   font-weight: normal;
   min-height: 50px;
   width: 98%;
@@ -1887,7 +1876,7 @@
   align-items: center;
   padding: 20px;
   box-shadow: 0px 3px 6px #00000045;
-  border: 0.4000000059604645px solid #200DD1;
+  border: 0.4000000059604645px solid #200dd1;
 }
 
 .boardCertificationInnerFolderRows {
@@ -1943,7 +1932,6 @@
   display: grid;
   grid-template-columns: 7% 80% 10%;
 }
-
 
 .boardCertificationTextStyle1 {
   text-align: left;
@@ -2087,7 +2075,6 @@
   margin-top: 4px;
   // grid-template-columns: 3% 30% 15% 10% 15% 18% 5% 5%;
   grid-template-columns: 1% 27% 24% 15% 10% 13% 5% 5%;
-  ;
 }
 
 .holidayScheduleTableData1 {
@@ -2286,7 +2273,6 @@
   display: grid;
   grid-template-columns: 10% 50% 40%;
   padding: 10px;
-
 }
 
 .customersAdminInnerRowsStyle4 {
@@ -2302,7 +2288,6 @@
   align-items: center;
   display: flex;
   padding: 10px;
-
 }
 
 .customersAdminInnerRowsStyle5 {
@@ -2504,7 +2489,7 @@
 }
 
 .customListTopHeaderForCostCenter {
-  background: #BEB9F2 0% 0% no-repeat padding-box;
+  background: #beb9f2 0% 0% no-repeat padding-box;
   font-weight: medium;
   height: 55px;
   width: 95%;
@@ -2514,8 +2499,6 @@
   align-items: center;
   padding: 20px;
 }
-
-
 
 .customerAdminTableData3 {
   min-height: 50px;
@@ -2559,7 +2542,7 @@
 }
 
 .costCenterLocationCard {
-  background: #EFEEFC 0% 0% no-repeat padding-box;
+  background: #efeefc 0% 0% no-repeat padding-box;
   font-weight: normal;
   min-height: 50px;
   width: 93%;
@@ -2845,7 +2828,7 @@
   padding: 5px 15px;
   display: inline-block;
   opacity: 0.51;
-  color: #52575D;
+  color: #52575d;
 }
 
 .inputBoxStyle {
@@ -2865,14 +2848,15 @@
   color: #7165e3;
 }
 
-.inputGroupText>input {
+.inputGroupText > input {
   text-align: center;
 }
 
 .selectDropdownInputBox {
   border-radius: 4px;
-  background: transparent url('../../images/arrowDown.png') 0% 0% no-repeat padding-box;
-  border: 1px solid #E9E9F0;
+  background: transparent url("../../images/arrowDown.png") 0% 0% no-repeat
+    padding-box;
+  border: 1px solid #e9e9f0;
   background-position: right center;
   background-repeat: no-repeat;
   background-size: 2.5ex;
@@ -2880,11 +2864,11 @@
 }
 
 .holidayTableDataColor1 {
-  background-color: #F5F5F8;
+  background-color: #f5f5f8;
 }
 
 .holidayTableDataColor2 {
-  background-color: #EFEEFC;
+  background-color: #efeefc;
 }
 
 .headerStyle {
@@ -2914,3 +2898,46 @@
   opacity: 1;
   margin-top: -2px;
 }
+
+.sitesSlider {
+  // padding: 20px;
+  background-color: #f5f5f5;
+}
+
+.title {
+  text-align: start;
+  color: #52575d;
+}
+
+.sidebarContent {
+  background-color: #e2e1ff;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  color: #52575d;
+  border: 1px solid #52575d;
+}
+
+.siteDetails {
+  display: flex;
+  text-align: start;
+  justify-content: space-between; /* Align name and count horizontally */
+  align-items: center; /* Align name and count vertically */
+  width: 100%;
+}
+
+.siteType {
+  color: #52575d;
+  font: normal normal bold 10px/20px Montserrat;
+}
+
+// .siteCount {
+//   border-radius: 50%;
+//   color: #52575d;
+//   padding: 10px 20px;
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   font: normal normal bold 12px/20px Montserrat;
+// }
