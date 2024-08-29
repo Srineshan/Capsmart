@@ -94,7 +94,11 @@ const DepartmentsForCustomers = () => {
     );
     const date = new Date(lastModifiedDate.departments?.lastModified);
     setLastUpdatedDate(
-      `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
+      `${formatInTimeZone(
+        date,
+        siteTimeZone(),
+        "MMM d, yyyy HH:mm"
+      )} ${timeZoneAbbreviation()}`
     );
   };
 
@@ -513,11 +517,11 @@ const DepartmentsForCustomers = () => {
                                                   src={DeleteHcFolder}
                                                   alt=""
                                                   className={`${style.colorFileStyle} ${style.marginLeft20}`}
-                                                // onClick={() =>
-                                                //   handleDeleteDepartmentService(
-                                                //     data?.id
-                                                //   )
-                                                // }
+                                                  // onClick={() =>
+                                                  //   handleDeleteDepartmentService(
+                                                  //     data?.id
+                                                  //   )
+                                                  // }
                                                 />
                                               </div>
                                             </div>
@@ -568,11 +572,11 @@ const DepartmentsForCustomers = () => {
                                                           src={DeleteHcRow}
                                                           alt=""
                                                           className={`${style.colorFileStyle} ${style.marginLeft20}`}
-                                                        // onClick={() =>
-                                                        //   handleDeleteDepartmentService(
-                                                        //     data?.id
-                                                        //   )
-                                                        // }
+                                                          // onClick={() =>
+                                                          //   handleDeleteDepartmentService(
+                                                          //     data?.id
+                                                          //   )
+                                                          // }
                                                         />
                                                       </div>
                                                     </div>
@@ -622,11 +626,11 @@ const DepartmentsForCustomers = () => {
                                                                 }
                                                                 alt=""
                                                                 className={`${style.colorFileStyle} ${style.marginLeft20}`}
-                                                              // onClick={() =>
-                                                              //   handleDeleteDepartmentService(
-                                                              //     data?.id
-                                                              //   )
-                                                              // }
+                                                                // onClick={() =>
+                                                                //   handleDeleteDepartmentService(
+                                                                //     data?.id
+                                                                //   )
+                                                                // }
                                                               />
                                                             </div>
                                                           </div>
@@ -675,11 +679,11 @@ const DepartmentsForCustomers = () => {
                                                   src={DeleteHcRow}
                                                   alt=""
                                                   className={`${style.colorFileStyle} ${style.marginLeft20}`}
-                                                // onClick={() =>
-                                                //   handleDeleteDepartmentService(
-                                                //     data?.id
-                                                //   )
-                                                // }
+                                                  // onClick={() =>
+                                                  //   handleDeleteDepartmentService(
+                                                  //     data?.id
+                                                  //   )
+                                                  // }
                                                 />
                                               </div>
                                             </div>
@@ -723,11 +727,11 @@ const DepartmentsForCustomers = () => {
                                                         src={DeleteHcRow}
                                                         alt=""
                                                         className={`${style.colorFileStyle} ${style.marginLeft20}`}
-                                                      // onClick={() =>
-                                                      //   handleDeleteDepartmentService(
-                                                      //     data?.id
-                                                      //   )
-                                                      // }
+                                                        // onClick={() =>
+                                                        //   handleDeleteDepartmentService(
+                                                        //     data?.id
+                                                        //   )
+                                                        // }
                                                       />
                                                     </div>
                                                   </div>

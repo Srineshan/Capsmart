@@ -156,12 +156,39 @@
 }
 
 .buttonStyle {
-  background-color: #7165E3;
+  background-color: #7165e3;
   color: white;
-  border: 1px solid #7165E3;
+  border: 1px solid #7165e3;
   height: 40px;
   width: 140px;
-  border-radius: 10px;
   margin-bottom: -20px;
-  box-shadow: 0px 3px 11px #7165E3;
+}
+
+.addNewButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #7165e3;
+  padding: 5px;
+  box-shadow: 0px 3px 11px #7165e3;
+}
+
+.textColurBlue {
+  color: #7165e3;
+}
+
+.borderNone {
+  border: none;
+}
+
+.backgroundBlue {
+  background-color: #7165e3;
+}
+
+.textColorWhite {
+  color: white;
+}
+
+.borderRadius5 {
+  border-radius: 5px;
 }
