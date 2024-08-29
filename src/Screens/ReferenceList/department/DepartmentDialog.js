@@ -12,6 +12,7 @@ import {
   Switch,
 } from "@blueprintjs/core";
 import AddHealthcareGroup from "./../../../images/addGroupBlue.png";
+import WritingFile from "./../../../images/writing-file.svg"; // Adjust the path as necessary
 import ArrowDown from "./../../../images/arrowDown.png"; // Import arrowDown image
 
 import style from "./../index.module.scss";
@@ -55,10 +56,10 @@ function DepartmentDialog({ onClose }) {
               alt="refresh"
               className={`${style.departmentFlag} ${style.marginRight15}  `}
             />
-            <span className={`${style.departmentCountryName}`}>USA</span>
+            <span className={`${style.departmentCountryName} ${style.marginLeft10}`}>USA</span>
             <img
               src={ArrowDown}
-              className={`${style.colorFileStyle2} ${style.ArrowUp}`}
+              className={`${style.colorFileStyle2} ${style.ArrowDown} ${style.marginRight15}`}
               alt=""
             />
           </div>
@@ -68,11 +69,18 @@ function DepartmentDialog({ onClose }) {
             </p>
           </div>
           <div>
+            <img
+              src={WritingFile}
+              className={style.dialogCrossStyle}
+              alt="Writing File"
+            />
+          </div>
+          <div>
             <Icon
               icon="cross"
-              size={20}
+              size={30}
               intent={Intent.DANGER}
-              className={style.dialogCrossStyle}
+              className={style.departmentCrossStyle}
             />
           </div>
         </div>

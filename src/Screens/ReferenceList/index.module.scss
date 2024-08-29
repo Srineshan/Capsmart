@@ -1149,7 +1149,7 @@
 
 .healthCareDialogStyle {
   height: 80%;
-  width: 50% !important;
+  width: 60% !important;
   border-radius: 20px;
 }
 
@@ -3217,5 +3217,17 @@
   color: #52575d;
   text-transform: uppercase;
   opacity: 1;
-  margin-top: -2px;
+}
+.departmentCrossStyle {
+  color: linear-gradient(#7165e3, #ff6562) !important;
+  cursor: pointer;
+}
+.marginLeft10 {
+  margin-left: 10px;
+}
+.departmentFileStyle2 {
+  height: 30px !important;
+  width: 30px !important;
+  object-fit: contain;
+  cursor: pointer;
 }
