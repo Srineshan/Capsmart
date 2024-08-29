@@ -2944,11 +2944,6 @@
   color: #52575d;
 }
 
-.siteType {
-  color: #52575d;
-  font: normal normal 10px/20px Montserrat;
-}
-
 .sideActiveBackground {
   background-color: #d2d0f5;
 }
@@ -2957,7 +2952,8 @@
   background-color: #efeefc;
 }
 
-.siteType {
+.siteType,
+.siteDescription {
   color: #52575d;
   text-align: left;
   font: normal normal bold 10px/10px Montserrat;
@@ -2990,12 +2986,13 @@
 }
 
 .headerNotice {
-  background-color: #fce4e4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff8f8;
   font: normal normal bold 10px/10px Montserrat;
-  color: #d00000;
-  padding: 10px;
+  color: #e89797;
   margin-bottom: 10px;
-  font-size: 14px;
   border-radius: 4px;
   text-align: center;
 }
@@ -3033,6 +3030,7 @@
   overflow: hidden;
   padding-left: 3px;
   border: 1px solid;
+  color: #52575d;
 }
 
 .rightAligned {
@@ -3059,15 +3057,16 @@
 }
 
 .sideActiveBackground {
-  background-color: #f0f0f0;
+  background-color: #d3d0f6;
 }
 
 .sideNonActiveBackground {
-  background-color: #fafafb;
+  background-color: #efeefc;
 }
 
 .dragIcon {
   font-weight: bold;
+  color: #52575d;
 }
 
 .actions {
@@ -3115,6 +3114,9 @@
 .textColorWhite {
   color: white;
 }
+.textColorGrey {
+  color: #52575d;
+}
 
 .textColurBlue {
   color: #7165e3;
@@ -3126,7 +3128,7 @@
 .toggleSwitch {
   position: relative;
   display: inline-block;
-  width: 40px;  // Adjust the width of the switch
+  width: 40px; // Adjust the width of the switch
   height: 20px; // Adjust the height of the switch
 
   input {
@@ -3149,8 +3151,8 @@
     &:before {
       position: absolute;
       content: "";
-      height: 14px;  // Adjust the height of the slider button
-      width: 14px;   // Adjust the width of the slider button
+      height: 14px; // Adjust the height of the slider button
+      width: 14px; // Adjust the width of the slider button
       left: 3px;
       bottom: 3px;
       background-color: white;
@@ -3188,12 +3190,11 @@
 }
 
 .flagBoxContainer {
-  background-color: lightgray; 
-  padding: 5px; 
-  border-radius: 5px; 
-  width: 140px; 
-  height: 37px; 
-
+  background-color: lightgray;
+  padding: 5px;
+  border-radius: 5px;
+  width: 140px;
+  height: 37px;
 }
 .departmentDialogStyle {
   height: 80%;

@@ -154,9 +154,14 @@ const HolidayScheduleForCustomers = React.lazy(() =>
 const CostCenterAndLocations = React.lazy(() =>
   import("./Screens/ReferenceList/costCenterAndLocations")
 );
-const DepartmentsForCustomers = React.lazy(() =>
-  import("./Screens/ReferenceList/departmentsForCustomers")
+// const DepartmentsForCustomers = React.lazy(() =>
+//   import("./Screens/ReferenceList/departmentsForCustomers")
+// );
+
+const DepartmentsService = React.lazy(() =>
+  import("./Screens/ReferenceList/department/DepartmentService")
 );
+
 const CustomerManagement = React.lazy(() =>
   import("./Screens/SuperAdminDashboard/customerManagement")
 );
@@ -730,10 +735,11 @@ const App = ({ props }) => {
                 path="/referenceList/applicantTypesByEntity"
                 element={<ApplicantTypesByEntity />}
               />
-              <Route
+              {/* <Route
                 path="/referenceList/departmentsForCustomers"
                 element={<DepartmentsForCustomers />}
-              />
+              /> */}
+
               <Route
                 path="/referenceList/departmentsForCustomerMultiSite"
                 element={<DepartmentsForCustomersMultiSite />}
@@ -788,7 +794,7 @@ const App = ({ props }) => {
               />
               <Route
                 path="/referenceList/departmentsForCustomers"
-                element={<DepartmentsForCustomers />}
+                element={<DepartmentsService />}
               />
               <Route
                 path="/referenceList/mileageRateForCustomers"

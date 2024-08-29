@@ -16,7 +16,7 @@ import ApplicantTable from "../common/Table";
 import ApplicantSideBar from "../common/SideBar";
 import { ReferenceListActionButton } from "../common/ReferenceListActionButton";
 
-const ApplicantTypesByEntity = () => {
+const DepartmentService = () => {
   const [isSelected, setIsSelected] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
   const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
@@ -47,24 +47,28 @@ const ApplicantTypesByEntity = () => {
       id: 1,
       name: "(SITE NAME)",
       type: "Hospital / Acute Care Facility (ACF) site type",
+      description: "4 Service Area / Speciality",
       count: 7,
     },
     {
       id: 2,
       name: "(SITE NAME)",
       type: "Hospital / Acute Care Facility (ACF) site type",
+      description: "4 Service Area / Speciality",
       count: 7,
     },
     {
       id: 3,
       name: "(SITE NAME)",
       type: "Hospital / Acute Care Facility (ACF) site type",
+      description: "4 Service Area / Speciality",
       count: 7,
     },
     {
       id: 4,
       name: "(SITE NAME)",
       type: "Hospital / Acute Care Facility (ACF) site type",
+      description: "4 Service Area / Speciality",
       count: 7,
     },
   ];
@@ -209,10 +213,9 @@ const ApplicantTypesByEntity = () => {
               <ApplicantTable
                 applicantTypes={applicantTypes}
                 applicantNotice={
-                  "Applicant types are ordered as they will appear on forms. To change the order, click and drag "
+                  "{Departments / Service Areas} type are ordered as they will appear on the forms. To change the order , click and drag = to the applicant type"
                 }
               />
-
               <ReferenceListActionButton
                 button1={"Save In-Progress"}
                 button2={" Mark as Done"}
@@ -242,4 +245,4 @@ const ApplicantTypesByEntity = () => {
   );
 };
 
-export default ApplicantTypesByEntity;
+export default DepartmentService;
