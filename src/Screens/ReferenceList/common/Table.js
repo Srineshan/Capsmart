@@ -3,60 +3,57 @@ import RenewDark from "./../../../images/renewDark.png";
 import DeleteHcFolder from "./../../../images/deleteHcFolder.png";
 import EditHcFolder from "./../../../images/editHcRow.png";
 import style from "./../index.module.scss";
+import DragHandleIcon from "@mui/icons-material/DragHandle";
 
 const ApplicantTable = ({ applicantTypes }) => {
   return (
-    <table className={style.applicantTable}>
-      <thead>
-        <tr className={style.applicantHeader}>
-          <th>APPLICANT TYPES</th>
-          <th>LAST UPDATED</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {applicantTypes &&
-          applicantTypes.map((applicant) => (
-            <tr className={style.applicantItem} key={applicant.id}>
-              <td>{applicant.type}</td>
-              <td>{applicant.lastUpdated}</td>
-              <td>
-                <div className={style.actions}>
+    <div className={style.applicantTableContainer}>
+      <div className={style.headerNotice}>
+        Applicant types are ordered as they will appear on forms. To change the
+        order, click and drag <span className={style.dragIcon}>=</span> next to
+        the applicant type.
+      </div>
+      <table className={style.applicantTable}>
+        <thead>
+          <tr className={style.applicantHeader}>
+            <th className={style.firstColumn}>APPLICANT TYPES</th>
+            <th className={style.rightAligned}>LAST UPDATED</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {applicantTypes &&
+            applicantTypes.map((applicant, index) => (
+              <tr
+                className={`${style.applicantItem} ${
+                  index % 2 === 0
+                    ? style.sideNonActiveBackground
+                    : style.sideActiveBackground
+                }`}
+                key={applicant.id}
+              >
+                <td className={`${style.leftAligned} ${style.firstColumn}`}>
+                  {applicant.type}
+                </td>
+                <td className={style.rightAligned}>{applicant.lastUpdated}</td>
+                <td className={style.actions}>
                   <img
                     src={EditHcFolder}
-                    alt=""
-                    className={style.colorFileStyle}
-                    // Uncomment and customize the onClick handlers as needed
-                    // onClick={() => {
-                    //   setIsEdit(true);
-                    //   getAddEntityDialog(true);
-                    //   setSelectedDepartmentService(data);
-                    // }}
+                    alt="Edit"
+                    className={style.actionIcon}
                   />
                   <img
                     src={DeleteHcFolder}
-                    alt=""
-                    className={`${style.colorFileStyle} ${style.marginLeft20}`}
-                    // Uncomment and customize the onClick handlers as needed
-                    // onClick={() =>
-                    //   handleDeleteDepartmentService(applicant.id)
-                    // }
+                    alt="Delete"
+                    className={style.actionIcon}
                   />
-                  <img
-                    src={RenewDark}
-                    alt=""
-                    className={`${style.colorFileStyle} ${style.marginLeft20}`}
-                    // Uncomment and customize the onClick handlers as needed
-                    // onClick={() =>
-                    //   handleRenewDepartmentService(applicant.id)
-                    // }
-                  />
-                </div>
-              </td>
-            </tr>
-          ))}
-      </tbody>
-    </table>
+                  <DragHandleIcon className={style.actionIcon} />
+                </td>
+              </tr>
+            ))}
+        </tbody>
+      </table>
+    </div>
   );
 };
 

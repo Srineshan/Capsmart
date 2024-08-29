@@ -1,0 +1,108 @@
+.labelInputWrapper {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px; /* Space between each label-input pair */
+  align-items: flex-start; /* Align items at the start horizontally */
+}
+
+.entityLableStyle {
+  color: #52575d;
+  font: normal normal normal 14px/15px Montserrat;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+  width: 100%;
+}
+
+.fullWidthInput {
+  width: 100%;
+  margin: 0;
+}
+
+.outlinedButton {
+  background-color: white;
+  font: normal normal normal 14px/20px Montserrat;
+  color: #7165e3;
+  border: 1px solid #7165e3;
+  padding: 8px 30px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.whiteBackground {
+  background-color: white;
+}
+
+.buttonStyle {
+  font: normal normal normal 14px/20px Montserrat;
+  background-color: #7165e3;
+  color: white;
+  padding: 8px 30px;
+  cursor: pointer;
+  border-radius: 4px;
+  border: none;
+}
+
+.marginLeft20 {
+  margin-left: 20px;
+}
+
+.spaceBetween {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.floatRight {
+  float: right;
+}
+
+.marginTop20 {
+  margin-top: 20px;
+}
+
+.dialogCrossStyle {
+  cursor: pointer;
+}
+
+.extensionStyle {
+  font: normal normal bold 14px/20px Montserrat;
+  color: #7165e3;
+}
+
+.healthCareDialogStyle {
+  height: 80%;
+  width: 50% !important;
+  border-radius: 20px !important;
+  background-color: white;
+}
+
+.extensionDialogBackground {
+  background-color: white;
+}
+
+.ReferenceListEntityBorder {
+  border-bottom: 1px solid #dee2e6;
+  margin-bottom: 20px;
+}
+
+.addHealthCareBoxStyle {
+  border: 1px solid #d4d0fb;
+  border-radius: 8px;
+  width: 100%;
+  margin-top: 20px;
+  padding: 20px;
+}
+
+.extentionGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  row-gap: 20px;
+}
+
+.colorFileStyle3 {
+  filter: brightness(0.5);
+}
+
+.marginRight {
+  margin-right: 10px;
+}

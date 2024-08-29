@@ -26,6 +26,7 @@ import { siteTimeZone } from "../../utils/formatting";
 import AddIcon from "@mui/icons-material/Add";
 import style from "./index.module.scss";
 import { formatInTimeZone } from "date-fns-tz";
+import AddNewApplicantDialog from "../../Screens/ReferenceList/applicantTypeByEntity/AddNewApplicantDialog ";
 
 const LevelTwoHeader = ({
   heading,
@@ -47,6 +48,7 @@ const LevelTwoHeader = ({
     useState(true);
   const [from, setFrom] = useState(startOfWeek(new Date()));
   const [to, setTo] = useState(endOfWeek(new Date()));
+  const [isDialogOpen, setIsDialogOpen] = useState(false); // State to control dialog open/close
 
   useEffect(() => {
     if (needDateFilter) {
@@ -93,6 +95,13 @@ const LevelTwoHeader = ({
     }
   };
 
+  const handleOpenDialog = () => {
+    setIsDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+  };
   return (
     <div className={`${style.spaceBetween} ${style.marginTop5}`}>
       <div className={`${style.displayInRow}`}>
@@ -218,25 +227,10 @@ const LevelTwoHeader = ({
         {!needHeader && !hideClose && (
           <div>
             <button
-              className={style.borderNone}
-              style={{
-                border: "none",
-                borderRadius: "5px",
-                backgroundColor: "#7165e3",
-              }}
-              onClick={() => {
-                console.log("Add Item button clicked");
-              }}
+              className={`${style.borderNone} ${style.backgroundBlue} ${style.borderRadius5}`}
+              onClick={handleOpenDialog} // Open dialog on button click
             >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "white",
-                }}
-                className={style.backgroundBlue}
-              >
+              <div className={` ${style.addNewButton} ${style.textColorWhite}`}>
                 <AddIcon />
                 <span> Add New</span>
               </div>
@@ -317,6 +311,10 @@ const LevelTwoHeader = ({
           </>
         )}
       </div>
+      <AddNewApplicantDialog
+        open={isDialogOpen}
+        handleClose={handleCloseDialog}
+      />
     </div>
   );
 };

@@ -2899,13 +2899,6 @@
   margin-top: -2px;
 }
 
-.twoLevelHeaderButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  // padding: 8px 16px;
-}
-
 .addNewButton {
   display: flex !important;
   align-items: center !important;
@@ -2991,38 +2984,99 @@
   height: 100vh;
 }
 
+.applicantTableContainer {
+  width: 100%;
+}
+
+.headerNotice {
+  background-color: #fce4e4;
+  font: normal normal bold 10px/10px Montserrat;
+  color: #d00000;
+  padding: 10px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  border-radius: 4px;
+  text-align: center;
+}
+
 .applicantTable {
   width: 100%;
-  text-align: left;
-  border-collapse: collapse;
+  border-collapse: separate; /* Allow for rounded corners */
+  border-spacing: 0 5px; /* Space between rows */
+  padding: 10px;
 }
 
 .applicantHeader {
-  line-height: 2;
   background-color: #d2d0f5;
-  font: normal normal bold 14px/20px Montserrat;
   color: #52575d;
+  font: normal normal bold 10px/10px Montserrat;
+  text-align: left;
+  height: 30px;
+  padding-left: 5px;
+}
+
+.firstColumn {
+  min-width: 400px;
+  padding: 10px;
+}
+.applicantItem > td {
+  vertical-align: middle;
+  height: 30px;
 }
 
 .applicantItem {
-  line-height: 1.5;
-  font: normal normal bold 14px/20px Montserrat;
-  color: #52575d;
+  background-color: #ffffff;
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+  overflow: hidden;
+  padding-left: 3px;
+  border: 1px solid;
 }
 
-.applicantItem > td {
-  padding: 8px 12px;
+.rightAligned {
+  text-align: right;
 }
 
-// .applicantItem > td:nth-child(2),
-// .applicantItem > td:nth-child(3) {
-//   min-width: 150px;
-// }
+.leftAligned {
+  text-align: left;
+}
 
 .actions {
   display: flex;
-  align-items: flex-end;
+  gap: 10px;
+}
+
+.actionIcon {
+  cursor: pointer;
+  width: 25px;
+}
+
+.dragHandle {
+  cursor: move;
+  text-align: center;
+}
+
+.sideActiveBackground {
+  background-color: #f0f0f0;
+}
+
+.sideNonActiveBackground {
+  background-color: #fafafb;
+}
+
+.dragIcon {
+  font-weight: bold;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
   justify-content: flex-end;
+}
+
+.colorFileStyle {
+  cursor: pointer;
 }
 
 .marginLeft20 {
@@ -3053,13 +3107,18 @@
 .backgroundBlue {
   background-color: #7165e3;
 }
+.backgroundWhite {
+  background-color: #ffffff;
+}
 
 .textColorWhite {
   color: white;
 }
+
 .textColurBlue {
   color: #7165e3;
 }
+
 .borderNone {
   border: none;
 }
