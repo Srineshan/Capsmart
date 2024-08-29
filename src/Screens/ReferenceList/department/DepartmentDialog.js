@@ -12,8 +12,8 @@ import {
   Switch,
 } from "@blueprintjs/core";
 import AddHealthcareGroup from "./../../../images/addGroupBlue.png";
-import WritingFile from "./../../../images/writing-file.svg"; // Adjust the path as necessary
-import ArrowDown from "./../../../images/arrowDown.png"; // Import arrowDown image
+import WritingFile from "./../../../images/writing-file.svg";
+import ArrowDown from "./../../../images/arrowDown.png";
 
 import style from "./../index.module.scss";
 
@@ -56,7 +56,11 @@ function DepartmentDialog({ onClose }) {
               alt="refresh"
               className={`${style.departmentFlag} ${style.marginRight15}  `}
             />
-            <span className={`${style.departmentCountryName} ${style.marginLeft10}`}>USA</span>
+            <span
+              className={`${style.departmentCountryName} ${style.marginLeft10}`}
+            >
+              USA
+            </span>
             <img
               src={ArrowDown}
               className={`${style.colorFileStyle2} ${style.ArrowDown} ${style.marginRight15}`}
@@ -131,9 +135,9 @@ function DepartmentDialog({ onClose }) {
         </div>
         <div>
           <div className={`${style.floatRight} ${style.marginTop20}`}>
-            <button className={style.outlinedButton}>SAVE & EXIT</button>
+            <button className={style.dialogOutlinedButton}>SAVE & EXIT</button>
             <button
-              className={`${style.buttonStyle} ${style.marginLeft20}`}
+              className={`${style.dialogButtonStyle} ${style.marginLeft20}`}
               onClick={onClose} // Close the dialog when clicked
             >
               SAVE & ADD MORE

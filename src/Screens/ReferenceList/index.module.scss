@@ -3223,9 +3223,38 @@
 .marginLeft10 {
   margin-left: 10px;
 }
+.marginLeft40{
+  margin-left: 40px;
+
+}
 .departmentFileStyle2 {
   height: 30px !important;
   width: 30px !important;
   object-fit: contain;
+  cursor: pointer;
+}
+.flex {
+  display: flex;
+}
+.validation {
+  display: flex;
+  align-items: center;
+}
+.dialogOutlinedButton {
+  background-color: white;
+  color: #7165e3;
+  border: 1px solid #9c93eb;
+  height: 40px;
+  width: 140px;
+  margin-bottom: -20px;
+  cursor: pointer;
+}
+.dialogButtonStyle {
+  background-color: #7165e3;
+  color: white;
+  border: 1px solid #7165e3;
+  height: 40px;
+  width: 140px;
+  margin-bottom: -20px;
   cursor: pointer;
 }
