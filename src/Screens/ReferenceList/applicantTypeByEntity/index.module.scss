@@ -71,7 +71,7 @@
 
 .healthCareDialogStyle {
   height: 80%;
-  width: 50% !important;
+  width: 60% !important;
   border-radius: 20px !important;
   background-color: white;
 }
@@ -105,4 +105,46 @@
 
 .marginRight {
   margin-right: 10px;
+}
+.flagBoxContainer {
+  background-color: lightgray;
+  padding: 5px;
+  border-radius: 5px;
+  width: 140px;
+  height: 37px;
+}
+.departmentDialogStyle {
+  height: 80%;
+  width: 60% !important;
+  border-radius: 20px;
+}
+.departmentFlag {
+  width: 40px;
+  height: 20px;
+  background: transparent 0% 0% no-repeat padding-box;
+  border: 1px solid #7165e3;
+  opacity: 1;
+}
+.departmentCountryName {
+  width: 35px;
+  height: 10px;
+  text-align: left;
+  font: normal normal 600 20px/41px Proxima Nova;
+  letter-spacing: 2.3px;
+  color: #52575d;
+  text-transform: uppercase;
+  opacity: 1;
+}
+.departmentCrossStyle {
+  color: linear-gradient(#7165e3, #ff6562) !important;
+  cursor: pointer;
+}
+.marginLeft10 {
+  margin-left: 10px;
+}
+.departmentFileStyle2 {
+  height: 30px !important;
+  width: 30px !important;
+  object-fit: contain;
+  cursor: pointer;
 }

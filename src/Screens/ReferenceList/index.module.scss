@@ -1149,7 +1149,7 @@
 
 .healthCareDialogStyle {
   height: 80%;
-  width: 50% !important;
+  width: 60% !important;
   border-radius: 20px;
 }
 
@@ -3126,7 +3126,7 @@
 .toggleSwitch {
   position: relative;
   display: inline-block;
-  width: 40px;  // Adjust the width of the switch
+  width: 40px; // Adjust the width of the switch
   height: 20px; // Adjust the height of the switch
 
   input {
@@ -3149,8 +3149,8 @@
     &:before {
       position: absolute;
       content: "";
-      height: 14px;  // Adjust the height of the slider button
-      width: 14px;   // Adjust the width of the slider button
+      height: 14px; // Adjust the height of the slider button
+      width: 14px; // Adjust the width of the slider button
       left: 3px;
       bottom: 3px;
       background-color: white;
@@ -3188,12 +3188,11 @@
 }
 
 .flagBoxContainer {
-  background-color: lightgray; 
-  padding: 5px; 
-  border-radius: 5px; 
-  width: 140px; 
-  height: 37px; 
-
+  background-color: lightgray;
+  padding: 5px;
+  border-radius: 5px;
+  width: 140px;
+  height: 37px;
 }
 .departmentDialogStyle {
   height: 80%;
@@ -3216,5 +3215,17 @@
   color: #52575d;
   text-transform: uppercase;
   opacity: 1;
-  margin-top: -2px;
+}
+.departmentCrossStyle {
+  color: linear-gradient(#7165e3, #ff6562) !important;
+  cursor: pointer;
+}
+.marginLeft10 {
+  margin-left: 10px;
+}
+.departmentFileStyle2 {
+  height: 30px !important;
+  width: 30px !important;
+  object-fit: contain;
+  cursor: pointer;
 }

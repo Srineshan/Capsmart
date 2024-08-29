@@ -1,6 +1,8 @@
 import React from "react";
 import { Dialog, Classes, Icon, Intent, InputGroup } from "@blueprintjs/core";
 import style from "./index.module.scss";
+import WritingFile from "./../../../images/writing-file.svg"; // Adjust the path as necessary
+import ArrowDown from "./../../../images/arrowDown.png"; // Import arrowDown image
 
 const AddNewApplicantDialog = ({ open, handleClose }) => {
   //   const arrowDown = () => (
@@ -21,17 +23,48 @@ const AddNewApplicantDialog = ({ open, handleClose }) => {
         className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}
       >
         <div className={style.spaceBetween}>
-          <p className={style.extensionStyle}>
-            Add New Applicant Type for {"{"}Healthcare{"}"}
-          </p>
-
-          <Icon
-            icon="cross"
-            size={20}
-            intent={Intent.DANGER}
-            className={style.dialogCrossStyle}
-            onClick={handleClose}
-          />
+          <div
+            className={`${style.flagBoxContainer}`}
+            style={{ marginBottom: "10px" }}
+          >
+            <img
+              src={
+                "https://upload.wikimedia.org/wikipedia/en/thumb/a/a4/Flag_of_the_United_States.svg/125px-Flag_of_the_United_States.svg.png"
+              }
+              alt="refresh"
+              className={`${style.departmentFlag} ${style.marginRight15}  `}
+            />
+            <span
+              className={`${style.departmentCountryName} ${style.marginLeft10}`}
+            >
+              USA
+            </span>
+            <img
+              src={ArrowDown}
+              className={`${style.colorFileStyle2} ${style.ArrowDown} ${style.marginRight15}`}
+              alt=""
+            />
+          </div>
+          <div>
+            <p className={style.extensionStyle}>
+              Add New Applicant Type for {"{"}Healthcare{"}"}
+            </p>
+          </div>
+          <div>
+            <img
+              src={WritingFile}
+              className={style.dialogCrossStyle}
+              alt="Writing File"
+            />
+          </div>
+          <div>
+            <Icon
+              icon="cross"
+              size={30}
+              intent={Intent.DANGER}
+              className={style.departmentCrossStyle}
+            />
+          </div>
         </div>
         <div className={style.ReferenceListEntityBorder}></div>
         <div className={`${style.addHealthCareBoxStyle}`}>
