@@ -356,6 +356,7 @@
 .spaceBetween {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
 .dashboardCardStyle {
@@ -3062,4 +3063,99 @@
 }
 .borderNone {
   border: none;
+}
+.toggleSwitch {
+  position: relative;
+  display: inline-block;
+  width: 40px;  // Adjust the width of the switch
+  height: 20px; // Adjust the height of the switch
+
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc; // Background color when off
+    transition: 0.4s;
+    border-radius: 34px; // Make the slider rounded
+
+    &:before {
+      position: absolute;
+      content: "";
+      height: 14px;  // Adjust the height of the slider button
+      width: 14px;   // Adjust the width of the slider button
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%; // Make the slider button rounded
+    }
+  }
+
+  input:checked + .slider {
+    background-color: #4caf50; // Background color when on
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(20px); // Slide the button to the right when checked
+  }
+
+  /* Optional: Customize the appearance for smaller screens */
+  @media (max-width: 768px) {
+    width: 30px;
+    height: 15px;
+
+    .slider:before {
+      height: 12px;
+      width: 12px;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(15px);
+    }
+  }
+}
+
+.switchContainer {
+  display: flex;
+}
+
+.flagBoxContainer {
+  background-color: lightgray; 
+  padding: 5px; 
+  border-radius: 5px; 
+  width: 140px; 
+  height: 37px; 
+
+}
+.departmentDialogStyle {
+  height: 80%;
+  width: 60% !important;
+  border-radius: 20px;
+}
+.departmentFlag {
+  width: 40px;
+  height: 20px;
+  background: transparent 0% 0% no-repeat padding-box;
+  border: 1px solid #7165e3;
+  opacity: 1;
+}
+.departmentCountryName {
+  width: 35px;
+  height: 10px;
+  text-align: left;
+  font: normal normal 600 20px/41px Proxima Nova;
+  letter-spacing: 2.3px;
+  color: #52575d;
+  text-transform: uppercase;
+  opacity: 1;
+  margin-top: -2px;
 }

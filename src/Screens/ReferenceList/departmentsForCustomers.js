@@ -30,6 +30,7 @@ import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleChec
 import SearchBar from "../../Components/SearchBar";
 import { formatInTimeZone } from "date-fns-tz";
 import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
+import DepartmentDialog from "./department/DepartmentDialog";
 
 const DepartmentsForCustomers = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -56,12 +57,22 @@ const DepartmentsForCustomers = () => {
   const [selectAllList, setSelectAllList] = useState([]);
   const [checkedAll, setCheckedAll] = useState(false);
   const [searchKey, setSearchKey] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
 
   useEffect(() => {
     if (entityId !== "" && entityId !== undefined) {
       getLastModifiedDate();
     }
   }, [entityId]);
+
+  const handleImageClick = () => {
+    setIsDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+  };
 
   const getIsExpanded = (value) => {
     setIsExpanded(value);
@@ -409,14 +420,11 @@ const DepartmentsForCustomers = () => {
                             : "MY CUSTOM LIST TO USE"}{" "}
                         </p>
                         <img
-                          src={AddNewEntity}
-                          alt="OpenFolder"
-                          className={`${style.colorFileStyle} ${style.marginLeft70} `}
-                          onClick={() => {
-                            getAddEntityDialog(true);
-                            setIsEdit(false);
-                          }}
-                        ></img>
+        src={AddNewEntity}
+        alt="OpenFolder"
+        className={`${style.colorFileStyle} ${style.marginLeft70}`}
+        onClick={handleImageClick} 
+      />
                       </div>
                       <div
                         className={`${style.searchboxHeaderFontStyle} ${style.displayInRow}`}
@@ -770,6 +778,12 @@ const DepartmentsForCustomers = () => {
             </div>
           </div>
         </div>
+
+        {isDialogOpen && (
+        <DepartmentDialog
+          onClose={handleCloseDialog} // Pass close handler to dialog
+        />
+      )}
 
         {showAddEntityDialog && (
           <AddNewDepartments
