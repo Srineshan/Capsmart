@@ -390,7 +390,7 @@ const ClientAdminDashboard = () => {
                       </div>
                     </Link>
                     <Link
-                      to="/referenceList/contractTerminationReasonForCustomer"
+                      to="/referenceList/ProofOfDocumentByApplicantType"
                       className={style.linkStyle}
                     >
                       <div className={style.dashboardCardStyle}>

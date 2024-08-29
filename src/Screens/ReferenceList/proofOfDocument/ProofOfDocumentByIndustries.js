@@ -16,7 +16,7 @@ import ApplicantTable from "../common/Table";
 import ApplicantSideBar from "../common/SideBar";
 import { ReferenceListActionButton } from "../common/ReferenceListActionButton";
 
-const proofOfDocument = () => {
+const ProofOfDocumentByIndustries = () => {
   const [isSelected, setIsSelected] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
   const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
@@ -71,19 +71,34 @@ const proofOfDocument = () => {
 
   const applicantTypes = [
     {
-      type: "Doctor / Physician",
+      name: "Blood Bank",
+      type: "Proof of Qualification",
+      requirment: "Optional",
       lastUpdated: "Aug 16, 2024",
-      sub: [
-        {
-          type: "Doctor / Physician",
-          lastUpdated: "Aug 16, 2024",
-        },
-      ],
     },
-    { type: "MidWife", lastUpdated: "Aug 16, 2024" },
-    { type: "Nurse", lastUpdated: "Aug 16, 2024" },
-    { type: "Nurse", lastUpdated: "Aug 16, 2024" },
+    {
+      name: "Blood Bank",
+      type: "Proof of Qualification",
+      requirment: "Optional",
+      lastUpdated: "Aug 16, 2024",
+    },
+    {
+      name: "Blood Bank",
+      type: "Proof of Qualification",
+      requirment: "Optional",
+      lastUpdated: "Aug 16, 2024",
+    },
+    {
+      name: "Blood Bank",
+      type: "Proof of Qualification",
+      requirment: "Optional",
+      lastUpdated: "Aug 16, 2024",
+    },
   ];
+
+  const tableHeadKeys = ["NAME", "", "TYPE", "REQUIRMENT", "LAST UPDATED"];
+  const tableDataKeys = ["name", "", "type", "requirment", "lastUpdated"];
+  console.log(tableHeadKeys);
 
   useEffect(() => {
     if (entityId !== "" && entityId !== undefined) {
@@ -212,6 +227,9 @@ const proofOfDocument = () => {
                 applicantNotice={
                   "Applicant types are ordered as they will appear on forms. To change the order, click and drag "
                 }
+                tableDataKeys={tableDataKeys}
+                tableHeadKeys={tableHeadKeys}
+                groupFirstTwoColumn={true}
               />
 
               <ReferenceListActionButton
@@ -243,4 +261,4 @@ const proofOfDocument = () => {
   );
 };
 
-export default proofOfDocument;
+export default ProofOfDocumentByIndustries;

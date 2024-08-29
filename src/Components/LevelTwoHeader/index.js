@@ -27,7 +27,6 @@ import AddIcon from "@mui/icons-material/Add";
 import style from "./index.module.scss";
 import { formatInTimeZone } from "date-fns-tz";
 import AddNewApplicantDialog from "../../Screens/ReferenceList/applicantTypeByEntity/AddNewApplicantDialog ";
-import DepartmentDialog from "../../Screens/ReferenceList/department/DepartmentDialog";
 
 const LevelTwoHeader = ({
   heading,
@@ -318,9 +317,6 @@ const LevelTwoHeader = ({
           open={isDialogOpen}
           handleClose={handleCloseDialog}
         />
-      )}
-      {tileType == "DepartmentService" && (
-        <DepartmentDialog open={isDialogOpen} onClose={handleCloseDialog} />
       )}
     </div>
   );

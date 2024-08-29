@@ -3021,6 +3021,11 @@
   min-width: 400px;
   padding: 10px;
 }
+.twoColumn {
+  min-width: 400px;
+  padding: 10px;
+}
+
 .applicantItem > td {
   vertical-align: middle;
   height: 30px;
@@ -3041,6 +3046,9 @@
   text-align: right;
 }
 
+.centerAligned {
+  text-align: center;
+}
 .leftAligned {
   text-align: left;
 }
@@ -3237,9 +3245,8 @@
 .marginLeft10 {
   margin-left: 10px;
 }
-.marginLeft40{
+.marginLeft40 {
   margin-left: 40px;
-
 }
 .departmentFileStyle2 {
   height: 30px !important;

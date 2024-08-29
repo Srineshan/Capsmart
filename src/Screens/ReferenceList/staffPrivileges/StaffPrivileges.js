@@ -75,22 +75,7 @@ const StaffPrivileges = () => {
       title: "Bood Bank",
       category: "Needle Puncture",
       type: "No",
-      lastUpdated: "Aug 16, 2024",
-      details: [
-        {
-          id: "021",
-          title: "Bood Bank",
-          category: "Needle Puncture",
-          type: "No",
-          lastUpdated: "Aug 16, 2024",
-        },
-      ],
-    },
-    {
-      id: "021",
-      title: "Bood Bank",
-      category: "Needle Puncture",
-      type: "No",
+      pod: "Yes",
       lastUpdated: "Aug 16, 2024",
     },
     {
@@ -98,6 +83,8 @@ const StaffPrivileges = () => {
       title: "Bood Bank",
       category: "Needle Puncture",
       type: "No",
+      pod: "Yes",
+
       lastUpdated: "Aug 16, 2024",
     },
     {
@@ -105,10 +92,35 @@ const StaffPrivileges = () => {
       title: "Bood Bank",
       category: "Needle Puncture",
       type: "No",
+      pod: "Yes",
+      lastUpdated: "Aug 16, 2024",
+    },
+    {
+      id: "021",
+      title: "Bood Bank",
+      category: "Needle Puncture",
+      type: "No",
+      pod: "Yes",
       lastUpdated: "Aug 16, 2024",
     },
   ];
 
+  const tableHeadKeys = [
+    "ID",
+    "TITLE",
+    "CATEGORY",
+    "TYPE",
+    "POD",
+    "LAST UPDATED",
+  ];
+  const tableDataKeys = [
+    "id",
+    "title",
+    "category",
+    "type",
+    "pod",
+    "lastUpdated",
+  ];
   useEffect(() => {
     if (entityId !== "" && entityId !== undefined) {
       getLastModifiedDate();
@@ -215,7 +227,9 @@ const StaffPrivileges = () => {
         <div className={style.padding20}>
           <div>
             <LevelTwoHeader
-              heading={"Applicant Types by Entity Types"}
+              heading={
+                "Staff Privileges for department & service areas by applicant types"
+              }
               updatedTime={`UPDATED ON ${lastUpdatedDate}`}
               path={"/Screens/ReferenceList/customerAdminDashboard"}
               callingFrom={"Customer Admin"}
@@ -236,9 +250,8 @@ const StaffPrivileges = () => {
               <h1 className={style.title}>All Applicant Types</h1>
               <ApplicantTable
                 applicantTypes={applicantTypes}
-                applicantNotice={
-                  "{Departments / Service Areas} type are ordered as they will appear on the forms. To change the order , click and drag = to the applicant type"
-                }
+                tableDataKeys={tableDataKeys}
+                tableHeadKeys={tableHeadKeys}
               />
               <ReferenceListActionButton
                 button1={"Save In-Progress"}

@@ -146,6 +146,9 @@ const CountriesWithStatesEntity = React.lazy(() =>
 const ProofOfDocumentationByEntity = React.lazy(() =>
   import("./Screens/ReferenceList/proofOfDocumentationByEntity")
 );
+const ProofOfDocumentByIndustries = React.lazy(() =>
+  import("./Screens/ReferenceList/proofOfDocument/ProofOfDocumentByIndustries")
+);
 const ContractDocumentTypeForUpload = React.lazy(() =>
   import("./Screens/ReferenceList/contractDoumentTypeForUpload")
 );
@@ -715,6 +718,10 @@ const App = ({ props }) => {
               <Route
                 path="/referenceList/proofOfDocumentByEntity"
                 element={<ProofOfDocumentationByEntity />}
+              />
+              <Route
+                path="/referenceList/ProofOfDocumentByApplicantType"
+                element={<ProofOfDocumentByIndustries />}
               />
               <Route
                 path="/referenceList/contractDoumentTypeForUpload"

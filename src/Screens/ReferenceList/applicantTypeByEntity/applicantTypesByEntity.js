@@ -71,20 +71,15 @@ const ApplicantTypesByEntity = () => {
 
   const applicantTypes = [
     {
-      type: "Doctor / Physician",
+      applicant_type: "Doctor / Physician",
       lastUpdated: "Aug 16, 2024",
-      sub: [
-        {
-          type: "Doctor / Physician",
-          lastUpdated: "Aug 16, 2024",
-        },
-      ],
     },
-    { type: "MidWife", lastUpdated: "Aug 16, 2024" },
-    { type: "Nurse", lastUpdated: "Aug 16, 2024" },
-    { type: "Nurse", lastUpdated: "Aug 16, 2024" },
+    { applicant_type: "MidWife", lastUpdated: "Aug 16, 2024" },
+    { applicant_type: "Nurse", lastUpdated: "Aug 16, 2024" },
+    { applicant_type: "Nurse", lastUpdated: "Aug 16, 2024" },
   ];
-
+  const tableHeadKeys = ["APPLICANT TYPE", "LAST UPDATED"];
+  const tableDataKeys = ["applicant_type", "lastUpdated"];
   useEffect(() => {
     if (entityId !== "" && entityId !== undefined) {
       getLastModifiedDate();
@@ -212,6 +207,8 @@ const ApplicantTypesByEntity = () => {
                 applicantNotice={
                   "Applicant types are ordered as they will appear on forms. To change the order, click and drag "
                 }
+                tableDataKeys={tableDataKeys}
+                tableHeadKeys={tableHeadKeys}
               />
 
               <ReferenceListActionButton

@@ -30,7 +30,6 @@ import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleChec
 import SearchBar from "../../Components/SearchBar";
 import { formatInTimeZone } from "date-fns-tz";
 import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
-import DepartmentDialog from "./department/DepartmentDialog";
 
 const DepartmentsForCustomers = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -58,7 +57,6 @@ const DepartmentsForCustomers = () => {
   const [checkedAll, setCheckedAll] = useState(false);
   const [searchKey, setSearchKey] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
 
   useEffect(() => {
     if (entityId !== "" && entityId !== undefined) {
@@ -265,10 +263,9 @@ const DepartmentsForCustomers = () => {
               <div></div>
             </SideBar>
           </div>
-
           <div>
             <LevelTwoHeader
-              heading={"DEPARTMENTS / SERVICE AREAS FOR CUSTOMER SITE"}
+              heading={"DEPARTMENTS / SERVICE AREAS BY ENTITY TYPES"}
               updatedTime={`UPDATED ON ${lastUpdatedDate}`}
               path={"/Screens/ReferenceList/customerAdminDashboard"}
               callingFrom={"Customer Admin"}
@@ -424,11 +421,11 @@ const DepartmentsForCustomers = () => {
                             : "MY CUSTOM LIST TO USE"}{" "}
                         </p>
                         <img
-        src={AddNewEntity}
-        alt="OpenFolder"
-        className={`${style.colorFileStyle} ${style.marginLeft70}`}
-        onClick={handleImageClick} 
-      />
+                          src={AddNewEntity}
+                          alt="OpenFolder"
+                          className={`${style.colorFileStyle} ${style.marginLeft70}`}
+                          onClick={handleImageClick}
+                        />
                       </div>
                       <div
                         className={`${style.searchboxHeaderFontStyle} ${style.displayInRow}`}
@@ -782,12 +779,6 @@ const DepartmentsForCustomers = () => {
             </div>
           </div>
         </div>
-
-        {isDialogOpen && (
-        <DepartmentDialog
-          onClose={handleCloseDialog} // Pass close handler to dialog
-        />
-      )}
 
         {showAddEntityDialog && (
           <AddNewDepartments
