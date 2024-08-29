@@ -2934,13 +2934,17 @@
 
 .siteDetails {
   display: flex;
-  justify-content: space-between; /* Align name and count horizontally */
-  align-items: center; /* Align name and count vertically */
+  justify-content: space-between;
+  align-items: center;
 }
 
-.siteName,
+.siteName {
+  font: normal normal bold 12px/20px Montserrat;
+  color: #52575d;
+  text-align: left;
+}
 .siteCount {
-  font: normal normal bold 14px/20px Montserrat;
+  font: normal normal bold 12px/20px Montserrat;
   color: #52575d;
 }
 
@@ -3073,6 +3077,14 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
+}
+
+.subApplicantItem {
+  background-color: #f9f9f9; /* Slightly different background color for sub-items */
+}
+
+.subItem td {
+  padding-left: 30px; /* Add padding to the left for sub-items */
 }
 
 .colorFileStyle {

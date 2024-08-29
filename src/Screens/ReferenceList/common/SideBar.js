@@ -1,10 +1,10 @@
 import React from "react";
 import style from "./../index.module.scss";
 
-const ApplicantSideBar = ({ sites }) => {
+const ApplicantSideBar = ({ sites, siteTitle }) => {
   return (
     <div className={style.sideBar}>
-      <p className={style.siteTitle}>All Sites</p>
+      <p className={style.siteTitle}>{siteTitle}</p>
       {sites.map((site, index) => (
         <div
           key={index}

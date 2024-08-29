@@ -16,7 +16,7 @@ import ApplicantTable from "../common/Table";
 import ApplicantSideBar from "../common/SideBar";
 import { ReferenceListActionButton } from "../common/ReferenceListActionButton";
 
-const ApplicantTypesByEntity = () => {
+const StaffPrivileges = () => {
   const [isSelected, setIsSelected] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
   const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
@@ -45,25 +45,25 @@ const ApplicantTypesByEntity = () => {
   const sites = [
     {
       id: 1,
-      name: "(SITE NAME)",
+      name: "{DEPARTMENT SERVICE AREA / SPECIALITY}",
       type: "Hospital / Acute Care Facility (ACF) site type",
       count: 7,
     },
     {
       id: 2,
-      name: "(SITE NAME)",
+      name: "{DEPARTMENT SERVICE AREA / SPECIALITY}",
       type: "Hospital / Acute Care Facility (ACF) site type",
       count: 7,
     },
     {
       id: 3,
-      name: "(SITE NAME)",
+      name: "{DEPARTMENT SERVICE AREA / SPECIALITY}",
       type: "Hospital / Acute Care Facility (ACF) site type",
       count: 7,
     },
     {
       id: 4,
-      name: "(SITE NAME)",
+      name: "{DEPARTMENT SERVICE AREA / SPECIALITY}",
       type: "Hospital / Acute Care Facility (ACF) site type",
       count: 7,
     },
@@ -71,18 +71,42 @@ const ApplicantTypesByEntity = () => {
 
   const applicantTypes = [
     {
-      type: "Doctor / Physician",
+      id: "021",
+      title: "Bood Bank",
+      category: "Needle Puncture",
+      type: "No",
       lastUpdated: "Aug 16, 2024",
-      sub: [
+      details: [
         {
-          type: "Doctor / Physician",
+          id: "021",
+          title: "Bood Bank",
+          category: "Needle Puncture",
+          type: "No",
           lastUpdated: "Aug 16, 2024",
         },
       ],
     },
-    { type: "MidWife", lastUpdated: "Aug 16, 2024" },
-    { type: "Nurse", lastUpdated: "Aug 16, 2024" },
-    { type: "Nurse", lastUpdated: "Aug 16, 2024" },
+    {
+      id: "021",
+      title: "Bood Bank",
+      category: "Needle Puncture",
+      type: "No",
+      lastUpdated: "Aug 16, 2024",
+    },
+    {
+      id: "021",
+      title: "Bood Bank",
+      category: "Needle Puncture",
+      type: "No",
+      lastUpdated: "Aug 16, 2024",
+    },
+    {
+      id: "021",
+      title: "Bood Bank",
+      category: "Needle Puncture",
+      type: "No",
+      lastUpdated: "Aug 16, 2024",
+    },
   ];
 
   useEffect(() => {
@@ -196,7 +220,7 @@ const ApplicantTypesByEntity = () => {
               path={"/Screens/ReferenceList/customerAdminDashboard"}
               callingFrom={"Customer Admin"}
               needHeader={false}
-              tileType={"Applicant"}
+              tileType={"DepartmentService"}
             />
           </div>
           <div
@@ -204,16 +228,18 @@ const ApplicantTypesByEntity = () => {
               isExpanded ? style.bigCardGrid : style.smallCardGrid
             }`}
           >
-            <ApplicantSideBar sites={sites} siteTitle={"All Site"} />
+            <ApplicantSideBar
+              sites={sites}
+              siteTitle={"Cambride Memorial Hospitals"}
+            />
             <div className={style.applicantList}>
               <h1 className={style.title}>All Applicant Types</h1>
               <ApplicantTable
                 applicantTypes={applicantTypes}
                 applicantNotice={
-                  "Applicant types are ordered as they will appear on forms. To change the order, click and drag "
+                  "{Departments / Service Areas} type are ordered as they will appear on the forms. To change the order , click and drag = to the applicant type"
                 }
               />
-
               <ReferenceListActionButton
                 button1={"Save In-Progress"}
                 button2={" Mark as Done"}
@@ -243,4 +269,4 @@ const ApplicantTypesByEntity = () => {
   );
 };
 
-export default ApplicantTypesByEntity;
+export default StaffPrivileges;

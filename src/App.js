@@ -105,9 +105,11 @@ const ReferenceList = React.lazy(() => import("./Screens/ReferenceList"));
 const IndustriesWithEntityTypes = React.lazy(() =>
   import("./Screens/ReferenceList/industriesWithEntityTypes")
 );
+
 const DepartmentsByEntityTypes = React.lazy(() =>
   import("./Screens/ReferenceList/departmentsByEntityTypes")
 );
+
 const ContractedServiceProvidedByIndustries = React.lazy(() =>
   import("./Screens/ReferenceList/contractedServiceProvider")
 );
@@ -160,6 +162,9 @@ const CostCenterAndLocations = React.lazy(() =>
 
 const DepartmentsService = React.lazy(() =>
   import("./Screens/ReferenceList/department/DepartmentService")
+);
+const StaffPrivilegesByDepartment = React.lazy(() =>
+  import("./Screens/ReferenceList/staffPrivileges/StaffPrivileges")
 );
 
 const CustomerManagement = React.lazy(() =>
@@ -795,6 +800,10 @@ const App = ({ props }) => {
               <Route
                 path="/referenceList/departmentsForCustomers"
                 element={<DepartmentsService />}
+              />
+              <Route
+                path="/referenceList/staffPrivilegesByDepartment"
+                element={<StaffPrivilegesByDepartment />}
               />
               <Route
                 path="/referenceList/mileageRateForCustomers"

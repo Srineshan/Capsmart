@@ -75,18 +75,22 @@ const DepartmentService = () => {
 
   const applicantTypes = [
     {
-      id: 1,
       type: "Doctor / Physician",
       lastUpdated: "Aug 16, 2024",
-      details: {
-        id: 1,
-        type: "Doctor / Physician",
-        lastUpdated: "Aug 16, 2024",
-      },
+      sub: [
+        {
+          type: "Doctor / Physician",
+          lastUpdated: "Aug 16, 2024",
+        },
+        {
+          type: "Doctor / Physician",
+          lastUpdated: "Aug 16, 2024",
+        },
+      ],
     },
-    { id: 2, type: "MidWife", lastUpdated: "Aug 16, 2024" },
-    { id: 3, type: "Nurse", lastUpdated: "Aug 16, 2024" },
-    { id: 4, type: "Nurse", lastUpdated: "Aug 16, 2024" },
+    { type: "MidWife", lastUpdated: "Aug 16, 2024" },
+    { type: "Nurse", lastUpdated: "Aug 16, 2024" },
+    { type: "Nurse", lastUpdated: "Aug 16, 2024" },
   ];
 
   useEffect(() => {
@@ -208,7 +212,7 @@ const DepartmentService = () => {
               isExpanded ? style.bigCardGrid : style.smallCardGrid
             }`}
           >
-            <ApplicantSideBar sites={sites} />
+            <ApplicantSideBar sites={sites} siteTitle={"All Site"} />
             <div className={style.applicantList}>
               <h1 className={style.title}>All Applicant Types</h1>
               <ApplicantTable
