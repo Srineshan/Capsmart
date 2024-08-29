@@ -27,6 +27,7 @@ import AddIcon from "@mui/icons-material/Add";
 import style from "./index.module.scss";
 import { formatInTimeZone } from "date-fns-tz";
 import AddNewApplicantDialog from "../../Screens/ReferenceList/applicantTypeByEntity/AddNewApplicantDialog ";
+import DepartmentDialog from "../../Screens/ReferenceList/department/DepartmentDialog";
 
 const LevelTwoHeader = ({
   heading,
@@ -42,6 +43,7 @@ const LevelTwoHeader = ({
   Title,
   path,
   callingFrom,
+  tileType,
 }) => {
   const [timeFrame, setTimeFrame] = useState("This Week");
   const [showCustomRangeSelection, setShowCustomRangeSelection] =
@@ -102,6 +104,7 @@ const LevelTwoHeader = ({
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
   };
+
   return (
     <div className={`${style.spaceBetween} ${style.marginTop5}`}>
       <div className={`${style.displayInRow}`}>
@@ -300,21 +303,25 @@ const LevelTwoHeader = ({
             />
 
             <Link to={path}>
-              {" "}
               <Icon
                 icon="cross"
                 size={25}
                 intent={Intent.DANGER}
                 className={`${style.marginLeft20} ${style.marginBottom5}`}
-              />{" "}
+              />
             </Link>
           </>
         )}
       </div>
-      <AddNewApplicantDialog
-        open={isDialogOpen}
-        handleClose={handleCloseDialog}
-      />
+      {tileType == "Applicant" && (
+        <AddNewApplicantDialog
+          open={isDialogOpen}
+          handleClose={handleCloseDialog}
+        />
+      )}
+      {tileType == "DepartmentService" && (
+        <DepartmentDialog open={isDialogOpen} onClose={handleCloseDialog} />
+      )}
     </div>
   );
 };

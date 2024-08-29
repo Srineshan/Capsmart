@@ -5,13 +5,18 @@ import EditHcFolder from "./../../../images/editHcRow.png";
 import style from "./../index.module.scss";
 import DragHandleIcon from "@mui/icons-material/DragHandle";
 
-const ApplicantTable = ({ applicantTypes }) => {
+const ApplicantTable = ({ applicantTypes, applicantNotice }) => {
+  console.log(applicantNotice);
+
   return (
     <div className={style.applicantTableContainer}>
       <div className={style.headerNotice}>
-        Applicant types are ordered as they will appear on forms. To change the
-        order, click and drag <span className={style.dragIcon}>=</span> next to
-        the applicant type.
+        <p> {applicantNotice}</p>{" "}
+        <DragHandleIcon
+          className={style.textColorGrey}
+          style={{ color: "black" }}
+        />
+        <p> {"  next to the applicant type."}</p>
       </div>
       <table className={style.applicantTable}>
         <thead>
@@ -26,9 +31,7 @@ const ApplicantTable = ({ applicantTypes }) => {
             applicantTypes.map((applicant, index) => (
               <tr
                 className={`${style.applicantItem} ${
-                  index % 2 === 0
-                    ? style.sideNonActiveBackground
-                    : style.sideActiveBackground
+                  index % 2 === 0 ? "" : style.sideNonActiveBackground
                 }`}
                 key={applicant.id}
               >
