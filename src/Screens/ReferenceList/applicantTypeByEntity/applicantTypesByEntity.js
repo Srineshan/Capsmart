@@ -196,6 +196,7 @@ const ApplicantTypesByEntity = () => {
               path={"/Screens/ReferenceList/customerAdminDashboard"}
               callingFrom={"Customer Admin"}
               needHeader={false}
+              tileType={"Applicant"}
             />
           </div>
           <div

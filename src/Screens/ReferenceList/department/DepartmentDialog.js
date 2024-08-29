@@ -17,7 +17,7 @@ import ArrowDown from "./../../../images/arrowDown.png"; // Import arrowDown ima
 
 import style from "./../index.module.scss";
 
-function DepartmentDialog({ onClose }) {
+function DepartmentDialog({ open, onClose }) {
   const [isSwitchOn, setIsSwitchOn] = useState(false);
 
   const handleSwitchChange = (event) => {
@@ -37,7 +37,7 @@ function DepartmentDialog({ onClose }) {
   };
   return (
     <Dialog
-      isOpen={true}
+      isOpen={open}
       className={`${style.departmentDialogStyle} ${style.dialogPaddingBottom}`}
       onClose={onClose}
     >
@@ -56,7 +56,11 @@ function DepartmentDialog({ onClose }) {
               alt="refresh"
               className={`${style.departmentFlag} ${style.marginRight15}  `}
             />
-            <span className={`${style.departmentCountryName} ${style.marginLeft10}`}>USA</span>
+            <span
+              className={`${style.departmentCountryName} ${style.marginLeft10}`}
+            >
+              USA
+            </span>
             <img
               src={ArrowDown}
               className={`${style.colorFileStyle2} ${style.ArrowDown} ${style.marginRight15}`}
@@ -81,6 +85,7 @@ function DepartmentDialog({ onClose }) {
               size={30}
               intent={Intent.DANGER}
               className={style.departmentCrossStyle}
+              onClick={onClose}
             />
           </div>
         </div>

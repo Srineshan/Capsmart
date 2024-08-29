@@ -200,6 +200,7 @@ const DepartmentService = () => {
               path={"/Screens/ReferenceList/customerAdminDashboard"}
               callingFrom={"Customer Admin"}
               needHeader={false}
+              tileType={"DepartmentService"}
             />
           </div>
           <div

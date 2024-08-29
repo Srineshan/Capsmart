@@ -63,6 +63,7 @@ const AddNewApplicantDialog = ({ open, handleClose }) => {
               size={30}
               intent={Intent.DANGER}
               className={style.departmentCrossStyle}
+              onClick={handleClose}
             />
           </div>
         </div>
