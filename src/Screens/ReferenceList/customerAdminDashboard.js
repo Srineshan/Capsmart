@@ -845,77 +845,7 @@ const ClientAdminDashboard = () => {
                         )}
                       </div>
                     </Link>
-                    {/* <Link
-                      to={"/referenceList/departmentsForCustomers"}
-                      className={style.linkStyle}
-                    >
-                      <div className={style.dashboardCardStyle}>
-                        <h5 className={`${style.headingForReferenceList}`}>
-                          DEPARTMENTS / SERVICE AREAS BY ENTITY / SITE
-                        </h5>
-                        {lastUpdatedDate?.departments?.standardList === true &&
-                          lastUpdatedDate?.departments?.lastModified !== null ? (
-                          <div
-                            className={`${style.optionsStyle} ${style.displayInCol}`}
-                          >
-                            <span className={style.dashboardCardColorOption1}>
-                              STANDARD LIST IN USE
-                            </span>
-                            <span className={style.dashboardCardColorOption2}>
-                              {`LAST UPDATED ON ${new Date(
-                                lastUpdatedDate.departments?.lastModified
-                              )
-                                .toLocaleString("en-US", {
-                                  timeZone: "America/New_York",
-                                  year: "numeric",
-                                  month: "long",
-                                })
-                                .toUpperCase()}`}
-                            </span>
-                          </div>
-                        ) : (
-                          <></>
-                        )}
 
-                        {lastUpdatedDate?.departments?.standardList === false &&
-                          lastUpdatedDate?.departments?.lastModified !== null ? (
-                          <div
-                            className={`${style.optionsStyle} ${style.displayInCol}`}
-                          >
-                            <span
-                              className={`${style.dashboardCardColorOption3}`}
-                            >
-                              MY CUSTOM LIST IN USE
-                            </span>
-                            <span className={style.dashboardCardColorOption2}>
-                              {`LAST UPDATED ON ${new Date(
-                                lastUpdatedDate.departments?.lastModified
-                              )
-                                .toLocaleString("en-US", {
-                                  timeZone: "America/New_York",
-                                  year: "numeric",
-                                  month: "long",
-                                })
-                                .toUpperCase()}`}
-                            </span>
-                          </div>
-                        ) : (
-                          <></>
-                        )}
-
-                        {lastUpdatedDate?.departments?.lastModified === null ? (
-                          <div
-                            className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
-                          >
-                            <span className={style.dashboardCardColorOption4}>
-                              SETUP REQUIRED
-                            </span>
-                          </div>
-                        ) : (
-                          <></>
-                        )}
-                      </div>
-                    </Link> */}
                     {/* <Link
                       to={"/referenceList/absenceReasonsForCustomer"}
                       className={style.linkStyle}
@@ -992,7 +922,7 @@ const ClientAdminDashboard = () => {
                         )}
                       </div>
                     </Link> */}
-                    {/* <Link
+                    <Link
                       to={"/referenceList/suffixByCustomer"}
                       className={style.linkStyle}
                     >
@@ -1063,7 +993,7 @@ const ClientAdminDashboard = () => {
                         )}
                       </div>
                     </Link>
-                    <Link
+                    {/* <Link
                       to="/referenceList/contractServiceProviderBySiteType"
                       className={style.linkStyle}
                     >
