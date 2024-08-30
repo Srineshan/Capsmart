@@ -1564,7 +1564,6 @@
   border: 1px solid #9c93eb;
   height: 40px;
   width: 140px;
-  border-radius: 10px;
   margin-bottom: -20px;
   cursor: pointer;
 }
@@ -1575,7 +1574,6 @@
   border: 1px solid #7165e3;
   height: 40px;
   width: 140px;
-  border-radius: 10px;
   margin-bottom: -20px;
   cursor: pointer;
 }
@@ -3178,70 +3176,6 @@
 .borderNone {
   border: none;
 }
-.toggleSwitch {
-  position: relative;
-  display: inline-block;
-  width: 40px; // Adjust the width of the switch
-  height: 20px; // Adjust the height of the switch
-
-  input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-
-  .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc; // Background color when off
-    transition: 0.4s;
-    border-radius: 34px; // Make the slider rounded
-
-    &:before {
-      position: absolute;
-      content: "";
-      height: 14px; // Adjust the height of the slider button
-      width: 14px; // Adjust the width of the slider button
-      left: 3px;
-      bottom: 3px;
-      background-color: white;
-      transition: 0.4s;
-      border-radius: 50%; // Make the slider button rounded
-    }
-  }
-
-  input:checked + .slider {
-    background-color: #4caf50; // Background color when on
-  }
-
-  input:checked + .slider:before {
-    transform: translateX(20px); // Slide the button to the right when checked
-  }
-
-  /* Optional: Customize the appearance for smaller screens */
-  @media (max-width: 768px) {
-    width: 30px;
-    height: 15px;
-
-    .slider:before {
-      height: 12px;
-      width: 12px;
-    }
-
-    input:checked + .slider:before {
-      transform: translateX(15px);
-    }
-  }
-}
-
-.switchContainer {
-  display: flex;
-}
-
 .flagBoxContainer {
   background-color: lightgray;
   padding: 5px;
@@ -3416,7 +3350,7 @@
   transition: background-color 0.3s ease;
 
   &:hover {
-      background-color: #f0f0f0;
+    background-color: #f0f0f0;
   }
 }
 
@@ -3427,6 +3361,73 @@
   margin-left: 10px;
 
   &:hover {
-      background-color: #5637b0;
+    background-color: #5637b0;
   }
+}
+.customSelect {
+  width: 240px !important;
+}
+.toggleContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Adjust the spacing between label and toggle */
+}
+
+.toggleLabel {
+  font-size: 14px; /* Adjust the font size if necessary */
+  color: #757575; /* Adjust color to match your design */
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #4caf50;
+}
+
+input:checked + .slider:before {
+  transform: translateX(14px);
+}
+
+/* Optional: Add a shadow for a subtle effect */
+.slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+.slider:before {
+  box-shadow: 0 0 2px #2196F3;
 }
