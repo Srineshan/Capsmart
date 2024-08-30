@@ -26,8 +26,7 @@ import { siteTimeZone } from "../../utils/formatting";
 import AddIcon from "@mui/icons-material/Add";
 import style from "./index.module.scss";
 import { formatInTimeZone } from "date-fns-tz";
-import AddNewApplicantDialog from "../../Screens/ReferenceList/applicantTypeByEntity/AddNewApplicantDialog ";
-
+import { StaffPrivilegeDialog } from "../../Screens/ReferenceList/staffPrivileges/staffPrivilegeDialog";
 const LevelTwoHeader = ({
   heading,
   updatedTime,
@@ -313,7 +312,7 @@ const LevelTwoHeader = ({
         )}
       </div>
       {tileType == "StaffPrivileges" && (
-        <AddNewApplicantDialog
+        <StaffPrivilegeDialog
           open={isDialogOpen}
           handleClose={handleCloseDialog}
         />

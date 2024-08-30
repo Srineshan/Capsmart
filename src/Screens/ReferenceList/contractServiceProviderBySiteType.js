@@ -54,7 +54,6 @@ const ContractServiceProviderBySite = () => {
   const [multisiteEntity, setMultisiteEntity] = useState(false);
   const [siteEntityCount, setSiteEntityCount] = useState("");
 
-
   useEffect(() => {
     getEntity();
     getEntityTypes();
@@ -90,7 +89,7 @@ const ContractServiceProviderBySite = () => {
     const { data: entity } = await GET(`entity-service/entity`);
     setEntityDetails(entity);
     setEntityId(entity?.[0]?.id);
-    setMultisiteEntity(entity?.[0]?.multiSiteEntity)
+    setMultisiteEntity(entity?.[0]?.multiSiteEntity);
   };
 
   const getLastModifiedDate = async () => {
@@ -101,7 +100,11 @@ const ContractServiceProviderBySite = () => {
       lastModifiedDate.contractedServiceProviders?.lastModified
     );
     setLastUpdatedDate(
-      `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
+      `${formatInTimeZone(
+        date,
+        siteTimeZone(),
+        "MMM d, yyyy HH:mm"
+      )} ${timeZoneAbbreviation()}`
     );
   };
 
@@ -148,7 +151,7 @@ const ContractServiceProviderBySite = () => {
     setSelectedIndex(index);
     setSiteTypeId(data?.siteTypeId);
     setSelectedEntityType(data?.siteTypeName);
-    setSiteEntityCount(data?.numberOfSites)
+    setSiteEntityCount(data?.numberOfSites);
   };
 
   const handleSelectContractedServiceProvider = (e, innerData) => {
@@ -261,7 +264,7 @@ const ContractServiceProviderBySite = () => {
           <div>
             {/* <SubNavbar/> */}
             <LevelTwoHeader
-              heading={"HEALTHCARE PRACTIONER TYPE BY ENTITY / SITE"}
+              heading={"APPLICANT TYPE BY ENTITY TYPE"}
               updatedTime={`UPDATED ON ${lastUpdatedDate}`}
               path={"/Screens/ReferenceList/customerAdminDashboard"}
               callingFrom={"Customer Admin"}
@@ -302,7 +305,11 @@ const ContractServiceProviderBySite = () => {
                               <p
                                 className={`${style.tableHeaderIndustriesFontStyle} ${style.textUppercase} ${style.marginLeft10}`}
                               >
-                                {`${multisiteEntity === true ? "( " + data?.numberOfSites + " SITES )" : ""}`}
+                                {`${
+                                  multisiteEntity === true
+                                    ? "( " + data?.numberOfSites + " SITES )"
+                                    : ""
+                                }`}
                               </p>
                               <img
                                 src={
@@ -450,7 +457,13 @@ const ContractServiceProviderBySite = () => {
                                   <p
                                     className={`${style.tableHeaderIndustriesFontStyle} ${style.textUppercase} ${style.marginLeft10}`}
                                   >
-                                    {`${multisiteEntity === true ? "( " + data?.numberOfSites + " SITES )" : ""}`}
+                                    {`${
+                                      multisiteEntity === true
+                                        ? "( " +
+                                          data?.numberOfSites +
+                                          " SITES )"
+                                        : ""
+                                    }`}
                                   </p>
                                   <img
                                     src={
@@ -464,7 +477,7 @@ const ContractServiceProviderBySite = () => {
                                       setSelectedIndex(index);
                                       setSiteTypeId(data?.siteTypeId);
                                       setSelectedEntityType(data?.siteTypeName);
-                                      setSiteEntityCount(data?.numberOfSites)
+                                      setSiteEntityCount(data?.numberOfSites);
                                     }}
                                   />
                                 </div>
