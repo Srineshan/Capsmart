@@ -27,7 +27,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
     const [isShowESignDialog, setIsShowESignDialog] = useState(false);
     const [files, setFiles] = useState([]);
     const [replaceFileIndex, setReplaceFileIndex] = useState(-1)
-    let tempValue = basicForm?.forms?.[0]?.data === null ? { setUpYourSignature: {}, table: {} } : basicForm?.forms?.[0]?.data;
+    let tempValue = basicForm?.forms?.[0]?.data === null ? { setUpYourSignature: {}, table: [] } : basicForm?.forms?.[0]?.data;
     const navigate = useNavigate()
     useEffect(() => {
         if (basicForm) {
@@ -39,7 +39,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
         const { data: form } = await GET(
             `application-management-service/formSchema/${basicForm?.formSchemas?.[0]?.id}`
         );
-        setFormSchema(form)
+        setFormSchema(form?.schema)
     }
 
     const getIsOpen = (value) => {
@@ -243,7 +243,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 2'} dataType={'Prepare your requirements'} title={'Upload your Documents'} timeNumber={1} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                <ProgressCard step={''} dataType={'Process Required Documents'} title={'Upload your Documents'} timeNumber={1} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
@@ -326,7 +326,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
                     <TableTwo
                         tableHeaderValues={['', 'File Uploaded', 'Size', 'Document Type', 'Requirement', 'Verified', 'Valid', '']}
                         tableDataValues={getApplicantValues(tempValue?.table)}
-                        tableData={tempValue?.table}
+                        tableData={tempValue?.table || []}
                         gridStyle={style.gridStyle}
                         actions={actions}
                         // scrollStyle={style.contractScrollStyle}

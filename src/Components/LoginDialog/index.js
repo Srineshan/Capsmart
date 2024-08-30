@@ -4,9 +4,11 @@ import logo from "./../../images/cambridgeHospital.png";
 import CrossPink from "../../images/crossPink.png";
 import style from "./index.module.scss";
 import { InputAdornment, IconButton } from "@material-ui/core";
+import { useNavigate } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
+import { Descope, useDescope } from '@descope/react-sdk';
 import { WidthFull } from "@mui/icons-material";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -14,10 +16,14 @@ import Slider from "react-slick";
 import "./login.css";
 
 const LoginDialog = ({ getIsOpen, days }) => {
+  // const { login, register, sendOTP, verifyOTP } = useDescope();
+  const descopeSdk = useDescope();
   const [isContinue, setIsContinue] = useState(false);
-
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState("");
+  const [mobile, setMobile] = useState('');
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const [isPasswordStrong, setIsPasswordStrong] = useState(true);
   const [isRegistrationComplete, setIsRegistrationComplete] = useState(true);
@@ -48,7 +54,25 @@ const LoginDialog = ({ getIsOpen, days }) => {
     return regex.test(password);
   };
 
-  const handleRegisterClick = () => {
+  const handleRegisterClick = async () => {
+    try {
+      console.log(email, password)
+      // await SignUpOrInFlow(email, password);
+      const resp = await descopeSdk.password.signUp(email, password);
+      if (!resp.ok) {
+        console.log("Failed to sign up via password")
+        console.log("Status Code: " + resp.code)
+        console.log("Error Code: " + resp.error.errorCode)
+        console.log("Error Description: " + resp.error.errorDescription)
+        console.log("Error Message: " + resp.error.errorMessage)
+      }
+      else {
+        console.log("Successfully signed up via password")
+        console.log(resp);
+      }
+    } catch (error) {
+      console.error('Registration failed:', error);
+    }
     if (!validatePassword(password)) {
       setIsPasswordStrong(false); // Display the password hint
     } else {
@@ -176,19 +200,19 @@ const LoginDialog = ({ getIsOpen, days }) => {
     >
       <div>
         <div className={style.whiteBackground}>
-          <div className={style.spaceBetween}>
-            <div></div>
+          <div className={style.alignCenter}>
+            {/* <div></div> */}
             <p className={style.loginHeaderText}>
               <span className={style.bold}>Cap</span>Smart
             </p>
-            <img
+            {/* <img
               src={CrossPink}
               alt="cross"
               className={`${style.crossStyle} ${style.cursorPointer} `}
               onClick={() => {
                 getIsOpen(false);
               }}
-            />
+            /> */}
           </div>
           <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
           <div className={style.welcomeText}>Welcome!</div>
@@ -222,7 +246,7 @@ const LoginDialog = ({ getIsOpen, days }) => {
         >
           <div className={`${style.verticalAlignCenter} ${style.alignCenter}`}>
             <div className={style.textStyle}>{"YOU HAVE"}</div>
-            <div className={style.daysCountStyle}>{days}</div>
+            <div className={style.daysCountStyle}>{days || 15}</div>
             <div className={`${style.textStyle}`}>{"DAYS TO COMPLETE"}</div>
           </div>
         </div>
@@ -236,92 +260,91 @@ const LoginDialog = ({ getIsOpen, days }) => {
       canOutsideClickClose={false}
       canEscapeKeyClose={false}
     >
-      <div>
-        <div className={style.whiteBackground}>
-          <div className={style.loginGrid}>
-            <div>
-              <div
-                className={` ${style.marginTop} ${style.displayInRow} ${style.alignCenter}`}
-              >
-                <img
-                  src={logo}
-                  alt="Hospital Logo"
-                  className={`${style.logoInLogin}`}
-                />
-                <div className={style.borderLeft}></div>
-                <p className={style.loginHeaderText}>
-                  <span className={style.bold}>Cap</span>Smart
-                </p>
+      <div className={style.whiteBackground}>
+        <div className={style.loginGrid}>
+          <div>
+            <div
+              className={` ${style.marginTop} ${style.displayInRow} ${style.alignCenter}`}
+            >
+              <img
+                src={logo}
+                alt="Hospital Logo"
+                className={`${style.logoInLogin}`}
+              />
+              <div className={style.borderLeft}></div>
+              <p className={style.loginHeaderText}>
+                <span className={style.bold}>Cap</span>Smart
+              </p>
+            </div>
+            <Slider {...settings}>
+              <div>
+                <div className={`${style.alignCenter} ${style.marginTop}`}>
+                  <div className={style.descriptionContainer}>
+                    <div className={`${style.loginDescription}`}>
+                      Maintain All Your Credentialing And Privileging Data
+                    </div>
+                    <div
+                      className={`${style.loginDescription} ${style.marginTop}`}
+                    >
+                      Manage Care Template Forms Required
+                    </div>
+                    <div
+                      className={`${style.loginDescription} ${style.marginTop}`}
+                    >
+                      Securely Manage Your Documents And Ensure Its
+                      Credibility
+                    </div>
+                    <div
+                      className={`${style.loginDescription} ${style.marginTop}`}
+                    >
+                      Manage Content & Disclosure Forms
+                    </div>
+                  </div>
+                </div>
               </div>
-              <Slider {...settings}>
-                <div>
-                  <div className={`${style.alignCenter} ${style.marginTop}`}>
-                    <div className={style.descriptionContainer}>
-                      <div className={`${style.loginDescription}`}>
-                        Maintain All Your Credentialing And Privileging Data
-                      </div>
-                      <div
-                        className={`${style.loginDescription} ${style.marginTop}`}
-                      >
-                        Manage Care Template Forms Required
-                      </div>
-                      <div
-                        className={`${style.loginDescription} ${style.marginTop}`}
-                      >
-                        Securely Manage Your Documents And Ensure Its
-                        Credibility
-                      </div>
-                      <div
-                        className={`${style.loginDescription} ${style.marginTop}`}
-                      >
-                        Manage Content & Disclosure Forms
-                      </div>
+              <div>
+                <div className={`${style.alignCenter} ${style.marginTop}`}>
+                  <div className={style.descriptionContainer}>
+                    <div className={`${style.loginDescription}`}>
+                      Maintain All Your Credentialing And Privileging Data
+                    </div>
+                    <div
+                      className={`${style.loginDescription} ${style.marginTop}`}
+                    >
+                      Manage Care Template Forms Required
+                    </div>
+                    <div
+                      className={`${style.loginDescription} ${style.marginTop}`}
+                    >
+                      Securely Manage Your Documents And Ensure Its
+                      Credibility
+                    </div>
+                    <div
+                      className={`${style.loginDescription} ${style.marginTop}`}
+                    >
+                      Manage Content & Disclosure Forms
                     </div>
                   </div>
                 </div>
-                <div>
-                  <div className={`${style.alignCenter} ${style.marginTop}`}>
-                    <div className={style.descriptionContainer}>
-                      <div className={`${style.loginDescription}`}>
-                        Maintain All Your Credentialing And Privileging Data
-                      </div>
-                      <div
-                        className={`${style.loginDescription} ${style.marginTop}`}
-                      >
-                        Manage Care Template Forms Required
-                      </div>
-                      <div
-                        className={`${style.loginDescription} ${style.marginTop}`}
-                      >
-                        Securely Manage Your Documents And Ensure Its
-                        Credibility
-                      </div>
-                      <div
-                        className={`${style.loginDescription} ${style.marginTop}`}
-                      >
-                        Manage Content & Disclosure Forms
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Slider>
+              </div>
+            </Slider>
 
-              <div className={`${style.alignCenter} ${style.marginTop}`}>
-                <div>
-                  <div
-                    className={`${style.loginDescription} ${style.textAlignCenter}`}
-                  >
-                    Track Application Process
-                  </div>
-                  <div className={`${style.helpText} ${style.marginTop10}`}>
-                    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed
-                    diam nonumy eirmod tempor invidunt ut labore et dolore
-                    magna.
-                  </div>
+            <div className={`${style.alignCenter} ${style.marginTop}`}>
+              <div>
+                <div
+                  className={`${style.loginDescription} ${style.textAlignCenter}`}
+                >
+                  Track Application Process
+                </div>
+                <div className={`${style.helpText} ${style.marginTop10}`}>
+                  Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed
+                  diam nonumy eirmod tempor invidunt ut labore et dolore
+                  magna.
                 </div>
               </div>
             </div>
-            {isRegistrationComplete && (
+          </div>
+          {/* {isRegistrationComplete && (
               <div className={style.createYourAccountSectionPadding}>
                 <div className={style.heading}>Create Your Account</div>
                 <div className={style.createAccountHelpText}>
@@ -336,6 +359,8 @@ const LoginDialog = ({ getIsOpen, days }) => {
                   <TextField
                     size="medium"
                     className={style.fullWidth}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     inputProps={{
                       style: {
                         height: 15,
@@ -447,8 +472,10 @@ const LoginDialog = ({ getIsOpen, days }) => {
                 <TextField
                   size="medium"
                   type="text"
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
+                  // value={code}
+                  // onChange={(e) => setCode(e.target.value)}
+                  value={mobile}
+                  onChange={(e) => setMobile(e.target.value)}
                   inputProps={{
                     style: {
                       height: 15,
@@ -513,16 +540,26 @@ const LoginDialog = ({ getIsOpen, days }) => {
                   <span className={style.bold}>Resend Code</span>
                 </div>
               </div>
-            )}
-          </div>
+            )} */}
+          <Descope
+            flowId="new-flow"
+            theme="light"
+            onSuccess={(e) => {
+              console.log(e.detail.user.name)
+              console.log(e.detail.user.email)
+            }}
+            onError={(err) => {
+              console.log("Error!", err)
+            }}
+          />
         </div>
+      </div>
+      <div
+        className={`${style.daysToCompleteCard} ${style.marginTop} ${style.displayInRow} ${style.alignCenter}`}
+      >
         <div
-          className={`${style.daysToCompleteCard} ${style.marginTop} ${style.displayInRow} ${style.alignCenter}`}
-        >
-          <div
-            className={`${style.verticalAlignCenter} ${style.alignCenter}`}
-          ></div>
-        </div>
+          className={`${style.verticalAlignCenter} ${style.alignCenter}`}
+        ></div>
       </div>
     </Dialog>
   );

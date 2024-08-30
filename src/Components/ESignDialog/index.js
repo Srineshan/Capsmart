@@ -12,7 +12,7 @@ import CommonSelectField from '../CommonFields/CommonSelectField';
 const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, basicForm, setBasicForm }) => {
     const [isContinue, setIsContinue] = useState(false);
     const [selectedESignFormat, setSelectedESignFormat] = useState('DRAW');
-    const [selectedESignTypeStyle, setSelectedESignTypeStyle] = useState('Dancing Script');
+    const [selectedESignTypeStyle, setSelectedESignTypeStyle] = useState('calgary-script-ot');
     const [isShowDrawCanvas, setIsShowDrawCanvas] = useState(false);
     const [eSignType, setESignType] = useState('');
     const [isShowType, setIsShowType] = useState(false);
@@ -159,7 +159,7 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                             ) : ( */}
                             <div>
                                 <div className={`${style.justifyCenter} ${style.verticalAlignCenter} ${style.editableTextHeight}`}>
-                                    <EditableText value={eSignType} placeholder='I' className={`${style.typeInputStyle} ${style.typeTextStyle}`} onChange={(e) => setESignType(e)} />
+                                    <EditableText value={eSignType} placeholder='I' className={`${style.typeInputStyle} ${style.typeTextStyle}`} style={{ fontFamily: `${selectedESignTypeStyle}` }} onChange={(e) => setESignType(e)} />
                                 </div>
                                 <div className={style.typeFieldStyle}>
                                     <CommonSelectField
@@ -170,9 +170,9 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                                             "Change Style"
                                         }
                                         firstOptionValue={""}
-                                        valueList={['Dancing Script']}
-                                        labelList={['Dancing Script']}
-                                        disabledList={['Dancing Script']?.map((data) => false)}
+                                        valueList={['calgary-script-ot', 'miss-fitzpatrick', 'mr-sandsfort', 'fave-script-pro']}
+                                        labelList={['Calgary-Script-Ot', 'Miss-Fitzpatrick', 'Mr-Sandsfort', 'Fave-Script-Pro']}
+                                        disabledList={['calgary-script-ot', 'miss-fitzpatrick', 'mr-sandsfort', 'fave-script-pro']?.map((data) => false)}
                                     />
                                 </div>
                             </div>

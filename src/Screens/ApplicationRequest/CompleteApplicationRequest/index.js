@@ -21,7 +21,7 @@ const CompleteApplicationRequest = () => {
 
     const getBasicForm = async () => {
         const { data: basicForm } = await GET(
-            `application-management-service/preApplication/basicForm`
+            `application-management-service/application/basicForm`
         );
         if (basicForm) {
             if (!isNextpage) {
@@ -42,7 +42,7 @@ const CompleteApplicationRequest = () => {
 
     const getPreApplication = async () => {
         const { data: basicForm } = await GET(
-            `application-management-service/application/${`66bf43f0b51f2f3485e6e47d`}`
+            `application-management-service/application/${`66d1cae19354e9022ad82027`}`
         );
         setBasicForm(basicForm)
     }

@@ -23,12 +23,12 @@ const Step8 = ({ basicForm, setBasicForm }) => {
         const { data: form } = await GET(
             `application-management-service/formSchema/${basicForm?.formSchemas?.[6]?.id}`
         );
-        setFormSchema(form)
+        setFormSchema(form?.schema)
     }
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 8'} dataType={'Documents and Data'} title={formSchema?.title} timeNumber={20} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                <ProgressCard step={'STEP 6'} dataType={''} title={formSchema?.title} timeNumber={20} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>

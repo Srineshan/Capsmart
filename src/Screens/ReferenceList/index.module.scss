@@ -242,7 +242,7 @@
 
 .userNameStyle {
   text-align: left;
-  font: normal normal 600 15px/13px Montserrat;
+  font: normal normal 600 15px/13px proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
 }
@@ -277,7 +277,7 @@
 
 .loginStatus {
   text-align: left;
-  font: normal normal normal 11px/15px Montserrat;
+  font: normal normal normal 11px/15px proxima-nova;
   letter-spacing: 0px;
   color: #b3b8bd;
   text-transform: uppercase;
@@ -382,7 +382,7 @@
 }
 
 .headingForReferenceList {
-  font: normal normal bolder 12px/18px Montserrat !important;
+  font: normal normal bolder 12px/18px proxima-nova !important;
   letter-spacing: 0px;
   text-align: left;
   color: #000000;
@@ -392,19 +392,19 @@
   height: calc(100% - 60px);
 
   @media (min-width: 768px) and (max-width: 991px) {
-    font: normal normal bolder 9px/12px Montserrat !important;
+    font: normal normal bolder 9px/12px proxima-nova !important;
   }
 
   @media (min-width: 992px) and (max-width: 1199px) {
-    font: normal normal bolder 10px/12px Montserrat !important;
+    font: normal normal bolder 10px/12px proxima-nova !important;
   }
 
   @media (min-width: 1224px) {
-    font: normal normal bolder 12px/16px Montserrat !important;
+    font: normal normal bolder 12px/16px proxima-nova !important;
   }
 
   @media (min-width: 1824px) {
-    font: normal normal bolder 16px/18px Montserrat !important;
+    font: normal normal bolder 16px/18px proxima-nova !important;
   }
 
 }
@@ -414,24 +414,24 @@
   width: 100%;
   display: flex;
   justify-content: center;
-  font: normal normal normal 12px/14px Montserrat;
+  font: normal normal normal 12px/14px proxima-nova;
 
   @media (min-width: 768px) and (max-width: 991px) {
-    font: normal normal bolder 8px/12px Montserrat !important;
+    font: normal normal bolder 8px/12px proxima-nova !important;
   }
 
   @media (min-width: 992px) and (max-width: 1199px) {
-    font: normal normal bolder 10px/12px Montserrat !important;
+    font: normal normal bolder 10px/12px proxima-nova !important;
   }
 
   @media (min-width: 1224px) {
-    font: normal normal bolder 12px/16px Montserrat !important;
+    font: normal normal bolder 12px/16px proxima-nova !important;
     margin-top: 5px !important;
 
   }
 
   @media (min-width: 1824px) {
-    font: normal normal bolder 14px/16px Montserrat !important;
+    font: normal normal bolder 14px/16px proxima-nova !important;
   }
 }
 
@@ -488,7 +488,7 @@
 }
 
 .industriesCardTextStyle1 {
-  font: normal normal bold 20px/30px Montserrat;
+  font: normal normal bold 20px/30px proxima-nova;
   color: #52575d;
   letter-spacing: 0px;
   text-transform: uppercase;
@@ -499,7 +499,7 @@
   box-shadow: 0px 3px 6px #00000029;
   border: 0.4000000059604645px solid #beb8f9;
   border-radius: 6px;
-  font: normal normal bold 27px/55px Montserrat;
+  font: normal normal bold 27px/55px proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   text-transform: uppercase;
@@ -534,7 +534,7 @@
 }
 
 .addMoreTextStyle {
-  font: normal normal medium 20px/34px Montserrat;
+  font: normal normal medium 20px/34px proxima-nova;
   letter-spacing: 0px;
   color: #7165e3;
   text-transform: uppercase;
@@ -597,7 +597,7 @@
   width: 45px;
   height: 20px;
   text-align: left;
-  font: normal normal 600 20px/41px Proxima Nova;
+  font: normal normal 600 20px/41px proxima-nova;
   letter-spacing: 2.3px;
   color: #52575d;
   text-transform: uppercase;
@@ -696,7 +696,7 @@
 }
 
 .tableHeaderIndustriesFontStyle {
-  font: normal normal bold 12px/18px Montserrat;
+  font: normal normal bold 12px/18px proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   opacity: 1;
@@ -708,7 +708,7 @@
 }
 
 .tableHeaderIndustriesFontStyle2 {
-  font: normal normal bold 14px/20px Montserrat;
+  font: normal normal bold 14px/20px proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   opacity: 1;
@@ -718,7 +718,7 @@
 }
 
 .tableHeaderIndustriesFontStyle7 {
-  font: normal normal bold 14px/20px Montserrat;
+  font: normal normal bold 14px/20px proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   opacity: 1;
@@ -727,7 +727,7 @@
 }
 
 .tableHeaderIndustriesFontStyle3 {
-  font: normal normal bold 14px/20px Montserrat;
+  font: normal normal bold 14px/20px proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   opacity: 1;
@@ -737,7 +737,7 @@
 }
 
 .tableHeaderIndustriesFontStyle4 {
-  font: normal normal bold 12px/20px Montserrat;
+  font: normal normal bold 12px/20px proxima-nova;
   letter-spacing: 0px;
   color: rgb(22, 22, 22);
   opacity: 1;
@@ -747,7 +747,7 @@
 }
 
 .tableHeaderIndustriesFontStyle6 {
-  font: normal normal bold 14px/20px Montserrat;
+  font: normal normal bold 14px/20px proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   opacity: 1;
@@ -756,7 +756,7 @@
 }
 
 .searchboxHeaderFontStyle {
-  font: normal normal bold 12px/18px Montserrat;
+  font: normal normal bold 12px/18px proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   opacity: 1;
@@ -767,7 +767,7 @@
 }
 
 .tableSubHeaderIndustriesFontStyle {
-  font: normal 15px/20px Montserrat;
+  font: normal 15px/20px proxima-nova;
   letter-spacing: 0px;
   color: #494a51;
   opacity: 1;
@@ -1106,7 +1106,7 @@
 }
 
 .tableDataFontStyle {
-  font: normal normal normal 15px/17px Montserrat;
+  font: normal normal normal 15px/17px proxima-nova;
   letter-spacing: 0px;
   color: #484c51;
   opacity: 1;
@@ -1116,7 +1116,7 @@
 }
 
 .tableDataFontStyle1 {
-  font: normal normal normal 15px/17px Montserrat;
+  font: normal normal normal 15px/17px proxima-nova;
   letter-spacing: 0px;
   color: #484c51;
   opacity: 1;
@@ -1126,7 +1126,7 @@
 }
 
 .tableDataFontStyle2 {
-  font: normal normal normal 13px/16px Montserrat;
+  font: normal normal normal 13px/16px proxima-nova;
   letter-spacing: 0px;
   color: #1c2127;
   opacity: 1;
@@ -1136,7 +1136,7 @@
 }
 
 .tableDataFontStyle3 {
-  font: normal normal normal 15px/17px Montserrat;
+  font: normal normal normal 15px/17px proxima-nova;
   letter-spacing: 0px;
   color: #484c51;
   opacity: 1;
@@ -1147,7 +1147,7 @@
 
 .poweredBy {
   text-align: left;
-  font: normal normal normal 11px/14px Montserrat;
+  font: normal normal normal 11px/14px proxima-nova;
   letter-spacing: 0px;
   color: #7165e3;
   opacity: 1;
@@ -1178,7 +1178,7 @@
 
 .extensionStyle {
   text-align: left;
-  font: normal normal bold 18px/20px Montserrat;
+  font: normal normal bold 18px/20px proxima-nova;
   letter-spacing: 0px;
   color: #7165e3;
   text-transform: capitalize;
@@ -1187,7 +1187,7 @@
 
 .dialogTitleStyle {
   text-align: left;
-  font: normal normal bold 20px/18px Montserrat;
+  font: normal normal bold 20px/18px proxima-nova;
   letter-spacing: 0px;
   color: #7165e3;
   text-transform: capitalize;
@@ -1207,7 +1207,7 @@
 
 .extentionLableStyle {
   text-align: left;
-  font: normal normal normal 13px/17px Montserrat;
+  font: normal normal normal 13px/17px proxima-nova;
   letter-spacing: 0px;
   color: #b3b8bd;
   text-transform: capitalize;
@@ -1221,7 +1221,7 @@
 
 .peachDataStyle {
   text-align: center;
-  font: normal normal medium 17px/21px Montserrat;
+  font: normal normal medium 17px/21px proxima-nova;
   letter-spacing: 2.04px;
   color: #bc666e;
   text-transform: lowercase;
@@ -1328,7 +1328,7 @@
 
 .radioTextStyle {
   text-align: left;
-  font: normal normal medium 18px/20px Montserrat;
+  font: normal normal medium 18px/20px proxima-nova;
   letter-spacing: 0px;
   color: #656565;
 }
@@ -1343,7 +1343,7 @@
 
 .podCountStyle {
   text-align: center;
-  font: normal normal 600 28px/34px Montserrat;
+  font: normal normal 600 28px/34px proxima-nova;
   width: 50px;
   color: #7165e3;
   text-transform: uppercase;
@@ -1351,7 +1351,7 @@
 
 .podHeaderTextStyle {
   text-align: center;
-  font: normal normal bold 15px/17px Montserrat;
+  font: normal normal bold 15px/17px proxima-nova;
   letter-spacing: 2.4px;
   color: #52575d;
   text-transform: uppercase;
@@ -1419,7 +1419,7 @@
 
 .nestedDataTextStyle {
   text-align: left;
-  font: normal normal medium 16px/16px Montserrat;
+  font: normal normal medium 16px/16px proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   text-transform: capitalize;
@@ -1501,7 +1501,7 @@
 
 .entityLableStyle {
   text-align: left;
-  font: normal normal normal 13px/17px Montserrat;
+  font: normal normal normal 13px/17px proxima-nova;
   letter-spacing: 0px;
   color: #b3b8bd;
   margin-top: 5px;
@@ -1509,7 +1509,7 @@
 
 .entityLableStyle1 {
   text-align: left;
-  font: normal normal medium 20px/24px Montserrat;
+  font: normal normal medium 20px/24px proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   opacity: 0.5;
@@ -1591,7 +1591,7 @@
   background-color: #7165e3;
   color: white;
   border: 1px solid #7165e3;
-  font: normal normal bold 16px/17px Montserrat;
+  font: normal normal bold 16px/17px proxima-nova;
   letter-spacing: 1.5px;
   height: 40px;
   width: 150px;
@@ -1623,7 +1623,7 @@
 }
 
 .healthCareListFontStyle {
-  font: normal normal medium 13px/17px Montserrat;
+  font: normal normal medium 13px/17px proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   opacity: 1;
@@ -1683,7 +1683,7 @@
 }
 
 .healthCareHeaderTextStyle {
-  font: normal normal 600 18px/22px Montserrat;
+  font: normal normal 600 18px/22px proxima-nova;
   letter-spacing: 3.05px;
   color: #6d6d6d;
   text-align: left;
@@ -1694,7 +1694,7 @@
 
 
 .holidayHeaderTextStyle {
-  font: normal normal 600 16px/18px Montserrat;
+  font: normal normal 600 16px/18px proxima-nova;
   letter-spacing: 0.05px;
   color: #6d6d6d;
   text-align: left;
@@ -1705,7 +1705,7 @@
 
 
 .healthCareHeaderTextStyle2 {
-  font: normal normal 600 15px/20px Montserrat;
+  font: normal normal 600 15px/20px proxima-nova;
   letter-spacing: 0px;
   color: #6d6d6d;
   text-align: left;
@@ -1725,13 +1725,13 @@
 }
 
 .healthCareLeftCardFontStyle {
-  font: normal normal normal 15px/25px Montserrat;
+  font: normal normal normal 15px/25px proxima-nova;
   letter-spacing: 0px;
 }
 
 .HealthCareListBackground2 {
   background: #d3d0f6 0% 0% no-repeat padding-box;
-  font: normal normal bold 18px/25px Montserrat;
+  font: normal normal bold 18px/25px proxima-nova;
 }
 
 .DepartmentEntityCardStyle {
@@ -1947,7 +1947,7 @@
 
 .boardCertificationTextStyle1 {
   text-align: left;
-  font: normal normal bold 18px/21px Montserrat;
+  font: normal normal bold 18px/21px proxima-nova;
   letter-spacing: 0px;
   color: #333131;
   text-transform: uppercase;
@@ -1956,7 +1956,7 @@
 
 .costCenterLeftCardText {
   text-align: left;
-  font: normal normal bold 18px/21px Montserrat;
+  font: normal normal bold 18px/21px proxima-nova;
   letter-spacing: 0px;
   color: #333131;
   text-transform: uppercase;
@@ -1964,14 +1964,14 @@
 
 .boardCertificationTextStyle2 {
   text-align: left;
-  font: normal normal normal 16px/20px Montserrat;
+  font: normal normal normal 16px/20px proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
 }
 
 .TextStyle1 {
   text-align: left;
-  font: normal normal normal 14px/17px Montserrat;
+  font: normal normal normal 14px/17px proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   margin-top: 5px;
@@ -1979,7 +1979,7 @@
 
 .TextStyle2 {
   text-align: left;
-  font: normal normal normal 14px/17px Montserrat;
+  font: normal normal normal 14px/17px proxima-nova;
   letter-spacing: 0px;
   color: #050505;
   margin-top: 5px;
@@ -1987,7 +1987,7 @@
 
 .TextStyle3 {
   text-align: left;
-  font: normal normal bold 12px/15px Montserrat;
+  font: normal normal bold 12px/15px proxima-nova;
   letter-spacing: 0.7px;
   color: white;
   margin-top: 5px;
@@ -1995,7 +1995,7 @@
 
 .TextStyle4 {
   text-align: left;
-  font: normal normal normal 14px/18px Montserrat;
+  font: normal normal normal 14px/18px proxima-nova;
   letter-spacing: 0px;
   color: #050505;
   margin-top: 5px;
@@ -2005,7 +2005,7 @@
 
 .TextStyle5 {
   text-align: left;
-  font: normal normal normal 14px/16px Montserrat;
+  font: normal normal normal 14px/16px proxima-nova;
   letter-spacing: 0px;
   color: #050505;
   margin-top: 10px;
@@ -2014,7 +2014,7 @@
 
 .holidayScheduleLeftCardTextStyle {
   text-align: left;
-  font: normal normal normal 12px/15px Montserrat;
+  font: normal normal normal 12px/15px proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   margin-top: 5px;
@@ -2022,7 +2022,7 @@
 
 .holidayScheduleLeftCardTextStyle1 {
   text-align: left;
-  font: normal normal normal 15px/28px Montserrat;
+  font: normal normal normal 15px/28px proxima-nova;
   letter-spacing: 0px;
   color: #050505;
   opacity: 1;
@@ -2030,7 +2030,7 @@
 
 .dialogInputTextValue {
   text-align: left;
-  font: normal normal medium 20px/24px Montserrat;
+  font: normal normal medium 20px/24px proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
 }
@@ -2125,7 +2125,7 @@
 
 .entityLableStyle2 {
   text-align: left;
-  font: normal normal normal 13px/17px Montserrat;
+  font: normal normal normal 13px/17px proxima-nova;
   letter-spacing: 0px;
   color: #b3b8bd;
   opacity: 1;
@@ -2133,7 +2133,7 @@
 
 .entityLableStyle3 {
   text-align: left;
-  font: normal normal normal 13px/17px Montserrat;
+  font: normal normal normal 13px/17px proxima-nova;
   letter-spacing: 0px;
   color: #000000;
   margin-top: 5px;
@@ -2144,7 +2144,7 @@
   display: flex;
   justify-content: center;
   margin-top: 10px;
-  font: normal normal bold 14px/18px Montserrat;
+  font: normal normal bold 14px/18px proxima-nova;
   letter-spacing: 2.4px;
   // color: #303236;
   color: #000000;
@@ -2163,7 +2163,7 @@
 
 .holidayScheduleCardtextStyle1 {
   padding: 50px;
-  font: normal normal normal 20px/24px Montserrat;
+  font: normal normal normal 20px/24px proxima-nova;
   letter-spacing: 0px;
   // color: #d8d8d8;
   color: #777777;
@@ -2412,7 +2412,7 @@
 
 .customersAdminTableFontStyle {
   text-align: left;
-  font: normal normal normal 16px/20px Montserrat;
+  font: normal normal normal 16px/20px proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   opacity: 1;
@@ -2422,13 +2422,13 @@
 
 .costCenterFontStyle {
   text-align: left;
-  font: normal normal normal 14px/15px Montserrat;
+  font: normal normal normal 14px/15px proxima-nova;
   color: #52575d;
 }
 
 .customersAdminTableFontStyle1 {
   text-align: left;
-  font: normal normal normal 18px/25px Montserrat;
+  font: normal normal normal 18px/25px proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   opacity: 1;
@@ -2665,7 +2665,7 @@
 }
 
 .fontStyle {
-  font: normal normal bold 11px/17px Montserrat;
+  font: normal normal bold 11px/17px proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   text-transform: uppercase;
@@ -2689,7 +2689,7 @@
 }
 
 .healthCareHeaderTextStyle3 {
-  font: normal normal 600 16px/20px Montserrat;
+  font: normal normal 600 16px/20px proxima-nova;
   letter-spacing: 0px;
   color: #6d6d6d;
   text-align: left;
@@ -2777,7 +2777,7 @@
 }
 
 .healthCareHeaderTextStyle4 {
-  font: normal normal 600 20px/22px Montserrat;
+  font: normal normal 600 20px/22px proxima-nova;
   letter-spacing: 3.05px;
   color: #333131;
   text-align: left;
@@ -2788,7 +2788,7 @@
 
 .HealthCareListBackground5 {
   background: #ebe9fb 0% 0% no-repeat padding-box;
-  font: normal normal bold 18px/25px Montserrat;
+  font: normal normal bold 18px/25px proxima-nova;
 }
 
 .healthCareListCardStyle2 {
@@ -2811,7 +2811,7 @@
 }
 
 .healthCareHeaderTextStyle6 {
-  font: normal normal 600 15px/20px Montserrat;
+  font: normal normal 600 15px/20px proxima-nova;
   letter-spacing: 0px;
   color: #6d6d6d;
   text-align: left;
@@ -2821,11 +2821,11 @@
 }
 
 .healthCareHeaderTextStyle7 {
-  font: normal normal bolder 15px/25px Montserrat;
+  font: normal normal bolder 15px/25px proxima-nova;
 }
 
 .tableHeaderIndustriesFontStyle5 {
-  font: normal normal bold 15px/25px Montserrat;
+  font: normal normal bold 15px/25px proxima-nova;
   letter-spacing: 0px;
   color: #272a2e;
   opacity: 1;
@@ -2907,7 +2907,7 @@
   width: 45px;
   height: 20px;
   text-align: left;
-  font: normal normal 600 20px/41px Montserrat;
+  font: normal normal 600 20px/41px proxima-nova;
   letter-spacing: 2.3px;
   color: #52575d;
   text-transform: uppercase;

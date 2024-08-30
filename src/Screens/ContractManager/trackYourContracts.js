@@ -687,7 +687,7 @@ const TrackYourContracts = () => {
                                             sx={{
                                                 '& .MuiInputBase-input': {
                                                     backgroundColor: "#F1EFFC",
-                                                    font: ' normal normal bold 15px/18px Montserrat',
+                                                    font: ' normal normal bold 15px/18px proxima-nova',
                                                     color: '#52575D',
                                                     textAlign: 'left'
                                                 }
@@ -735,7 +735,7 @@ const TrackYourContracts = () => {
                                             sx={{
                                                 '& .MuiInputBase-input': {
                                                     backgroundColor: "#F1EFFC",
-                                                    font: ' normal normal bold 15px/18px Montserrat',
+                                                    font: ' normal normal bold 15px/18px proxima-nova',
                                                     color: '#52575D',
                                                     textAlign: 'left'
                                                 }
@@ -794,7 +794,7 @@ const TrackYourContracts = () => {
                                             sx={{
                                                 '& .MuiInputBase-input': {
                                                     backgroundColor: "#F1EFFC",
-                                                    font: ' normal normal bold 15px/18px Montserrat',
+                                                    font: ' normal normal bold 15px/18px proxima-nova',
                                                     color: '#52575D',
                                                     textAlign: 'left'
                                                 }
@@ -841,7 +841,7 @@ const TrackYourContracts = () => {
                                             sx={{
                                                 '& .MuiInputBase-input': {
                                                     backgroundColor: "#F1EFFC",
-                                                    font: ' normal normal bold 15px/18px Montserrat',
+                                                    font: ' normal normal bold 15px/18px proxima-nova',
                                                     color: '#52575D',
                                                     textAlign: 'left'
                                                 }

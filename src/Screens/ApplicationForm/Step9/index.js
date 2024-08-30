@@ -24,7 +24,7 @@ const Step9 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
         const { data: form } = await GET(
             `application-management-service/formSchema/${basicForm?.formSchemas?.[15]?.id}`
         );
-        setFormSchema(form)
+        setFormSchema(form?.schema)
     }
 
     const getIsSubmitClicked = (value, data) => {
@@ -52,7 +52,7 @@ const Step9 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 9'} dataType={'Documents and Data'} title={formSchema?.title} timeNumber={20} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                <ProgressCard step={'STEP 7'} dataType={''} title={formSchema?.title} timeNumber={20} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
@@ -66,7 +66,7 @@ const Step9 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
-                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate('/applicationForm/section1/step10')}>CONTINUE</div>
+                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate('/applicationForm/section1/step14')}>CONTINUE</div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
                     </div>

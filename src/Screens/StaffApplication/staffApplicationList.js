@@ -44,7 +44,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
   const [tableData, setTableData] = useState([]);
   const [rejectionListData, setRejectionListData] = useState([]);
 
-  const applicantHeaderValues = ["", "Applicant Name", "Applicant Type", "Department", "Docs", "Data", "Disclosures", "CRs", "Notes", "Last Updated","Last Updated By", ""];
+  const applicantHeaderValues = ["", "Applicant Name", "Applicant Type", "Department", "Docs", "Data", "Disclosures", "CRs", "Notes", "Last Updated", "Last Updated By", ""];
   const applicationHeaderValues = ["", "Applicant Name", "Applicant Type", "Department", "Commitee", "Board", "CEO", "Last Updated On", "Last Updated by", ""];
   const clarificationHeaderValues = ["", "Applicant Name", "Type", "Clarification Title", "Raised By", "Created On", "Last Updated On", ""];
   const approvedHeaderValues = ["", "Applicant Name", "Type", "Notes", "Last Updated On", ""];
@@ -138,7 +138,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
 
   const reactToPrintContent = useCallback(() => {
     return componentRef.current;
-}, [componentRef.current]);
+  }, [componentRef.current]);
 
   const handlePrintClick = useReactToPrint({
     content: reactToPrintContent,
@@ -422,7 +422,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
                     <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginRight10}`}>
                       <p className={style.staffPragraphStyle}>Dave FILIP <span style={{
                         color: "#52575D",
-                        font: "normal normal bold 16px/24px Proxima Nova"
+                        font: "normal normal bold 16px/24px proxima-nova"
                       }}> (Doctor) </span> <span className={style.dayTextStyle}
                         style={{
                           border: "0.4px solid #14B15A",
@@ -436,7 +436,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
                     <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginRight10}`}>
                       <p className={style.staffPragraphStyle}>Dave FILIP <span style={{
                         color: "#52575D",
-                        font: "normal normal bold 16px/24px Proxima Nova"
+                        font: "normal normal bold 16px/24px proxima-nova"
                       }}> (Doctor) </span> <span className={style.dayTextStyle}
                         style={{
                           border: "0.4px solid #FEC106",
@@ -450,7 +450,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
                     <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginRight10}`}>
                       <p className={style.staffPragraphStyle}>Anna KARIN <span style={{
                         color: "#52575D",
-                        font: "normal normal bold 16px/24px Proxima Nova"
+                        font: "normal normal bold 16px/24px proxima-nova"
                       }}> (Doctor) </span> <span className={style.dayTextStyle}
                         style={{
                           border: "0.4px solid #F94848",
@@ -467,7 +467,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
             <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
               <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
                 <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
-                Applications Sent for Completion ({sentCompletion?.totalApplicationsSent || 0})
+                  Applications Sent for Completion ({sentCompletion?.totalApplicationsSent || 0})
                 </div>
                 <div className={`${style.marginLeft10} `} >
                   {!showCardCompletion ? (
@@ -477,29 +477,29 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
                   )}
                 </div>
               </div>
-              
+
               {showCardCompletion && (
-    <div style={{ maxHeight: '200px', overflowY: 'auto', padding: '10px' }}> 
-      {sentCompletion?.applicationsStatus?.map((status, index) => (
-        <div key={index} className={`${style.displayInCol} ${style.marginTop}`}>
-          <div className={`${style.warningTextAlign} ${style.staffTextStyle}`}>
-            <div className={style.progressbarStyle}>
-              <div className={style.spaceBetween}>
-                <div className={style.statisticsProgress}>
-                  <div className={`${style.greyDotStyle}`}></div>
-                  <div className={style.marginLeft10}>{`${status.basicDetail.applicant.name.firstName} ${status.basicDetail.applicant.name.lastName}`}</div>
-                  <span className={style.textStyleProgress}> ({status.providerType.serviceProviderType}) </span>
+                <div style={{ maxHeight: '200px', overflowY: 'auto', padding: '10px' }}>
+                  {sentCompletion?.applicationsStatus?.map((status, index) => (
+                    <div key={index} className={`${style.displayInCol} ${style.marginTop}`}>
+                      <div className={`${style.warningTextAlign} ${style.staffTextStyle}`}>
+                        <div className={style.progressbarStyle}>
+                          <div className={style.spaceBetween}>
+                            <div className={style.statisticsProgress}>
+                              <div className={`${style.greyDotStyle}`}></div>
+                              <div className={style.marginLeft10}>{`${status.basicDetail.applicant.name.firstName} ${status.basicDetail.applicant.name.lastName}`}</div>
+                              <span className={style.textStyleProgress}> ({status.providerType.serviceProviderType}) </span>
+                            </div>
+                            <p className={style.progressTopText}>{status.dueDays} Days Due</p>
+                          </div>
+                          <ProgressBar completed={100 - status.remainingCompletionPercentage} isLabelVisible={false} height='5px' bgColor='#7165E3' baseBgColor="#E9E9F0" className={style.marginLeft20} />
+                          <div className={style.progressBottomText}>{status.remainingCompletionPercentage}% remaining</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <p className={style.progressTopText}>{status.dueDays} Days Due</p>
-              </div>
-              <ProgressBar completed={100 - status.remainingCompletionPercentage} isLabelVisible={false} height='5px' bgColor='#7165E3' baseBgColor="#E9E9F0" className={style.marginLeft20} />
-              <div className={style.progressBottomText}>{status.remainingCompletionPercentage}% remaining</div>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  )}
+              )}
 
             </div>
 
@@ -547,8 +547,8 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
                 <SearchOutlinedIcon sx={{ fontSize: isPrintClicked ? 20 : 25, color: isPrintClicked ? '#fff' : '#857AEF' }} />
               </div>
               <div className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginRight}`}
- >
-                <PrintOutlinedIcon sx={{ fontSize: isPrintClicked ? 20 : 25, color: isPrintClicked ? '#fff' : '#857AEF' }} onClick={handlePrintClick}/>
+              >
+                <PrintOutlinedIcon sx={{ fontSize: isPrintClicked ? 20 : 25, color: isPrintClicked ? '#fff' : '#857AEF' }} onClick={handlePrintClick} />
               </div>
 
             </div>

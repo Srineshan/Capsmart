@@ -1,10 +1,10 @@
 @import url('https://fonts.googleapis.com/css?family=Josefin+Sans');
-@import url('https://fonts.googleapis.com/css2?family=Montserrat');
+@import url('https://fonts.googleapis.com/css2?family=proxima-nova');
 @import url('https://fonts.googleapis.com/css2?family=Roboto');
 @import url('https://fonts.googleapis.com/css?family=Proxima+Nova');
 
 body {
-	font-family: 'Montserrat, Roboto, Proxima Nova';
+	font-family: 'proxima-nova, Roboto, proxima-nova';
 	scrollbar-width: none !important;
 }
 

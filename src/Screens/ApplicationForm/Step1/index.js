@@ -29,23 +29,18 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
 
     const getBasicForm = async () => {
         const { data: basicForm } = await GET(
-            `application-management-service/preApplication/basicForm`
+            `application-management-service/application/basicForm`
         );
         if (basicForm) {
             const { data: form1 } = await GET(
                 `application-management-service/formSchema/${basicForm?.generalSchemas?.[1]?.id}`
             );
-            let temp = form1;
+            let temp = form1?.schema;
             if (temp.properties.applicant.properties !== null) {
                 delete temp.properties.applicant.properties['letterOfInterest']
                 delete temp.properties.applicant.properties['curriculumVitae']
             }
-            setForm1(form1)
-            const { data: form2 } = await GET(
-                `application-management-service/formSchema/${basicForm?.generalSchemas?.[2]?.id}`
-            );
-            console.log(form2)
-            setForm2(form2)
+            setForm1(form1?.schema)
         }
     }
 
@@ -68,7 +63,7 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 1'} dataType={'Prepare your requirements'} title={'Verify Your Information'} timeNumber={1} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                <ProgressCard step={''} dataType={'Process Required Documents'} title={'Verify Your Information'} timeNumber={1} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
@@ -80,11 +75,22 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
                         <ApplicationFieldCard object={form1?.properties?.applicant} gridStyle={style.twoCol} baseKey={'applicant'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
                     )}
                     <CommonDivider />
-                    {form1 !== undefined && 'service' in form1?.properties && (
-                        <ApplicationFieldCard object={form1?.properties?.service} gridStyle={style.twoCol} baseKey={'service'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+                    {form1 !== undefined && 'credentialingPrivilegeCategory' in form1?.properties && (
+                        <ApplicationFieldCard object={form1?.properties?.credentialingPrivilegeCategory} gridStyle={style.credentialingGrid} baseKey={'credentialingPrivilegeCategory'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
                     )}
                     <CommonDivider />
-                    <div className={`${style.backgroundCard} ${style.marginTop}`}>
+                    {form1 !== undefined && 'departmentSpecialty' in form1?.properties && (
+                        <ApplicationFieldCard object={form1?.properties?.departmentSpecialty} gridStyle={style.twoCol} baseKey={'departmentSpecialty'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+                    )}
+                    {form1 !== undefined && 'regionalCallResponsibilities' in form1?.properties && (
+                        <ApplicationFieldCard object={form1?.properties?.regionalCallResponsibilities} gridStyle={style.twoCol} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+                    )}
+                    <CommonDivider />
+                    {form1 !== undefined && 'billingNumber' in form1?.properties && (
+                        <ApplicationFieldCard object={form1?.properties?.billingNumber} gridStyle={style.twoCol} baseKey={'billingNumber'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+                    )}
+                    {/*<CommonDivider />
+                     <div className={`${style.backgroundCard} ${style.marginTop}`}>
                         <div className={style.cardTitle}>Department / Speciality of Service</div>
                         <div className={style.fourCol}>
                             <div className={`${style.siteDisplayCard} ${style.siteDisplayGrid} ${style.marginTop}`}>
@@ -95,28 +101,21 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
                                 </div>
                                 <DeleteOutlineIcon sx={{ color: '#7165E3', cursor: 'pointer' }} />
                             </div>
-                            {/* <div className={`${style.siteDisplayCard} ${style.siteDisplayGrid} ${style.marginTop}`}>
+                             <div className={`${style.siteDisplayCard} ${style.siteDisplayGrid} ${style.marginTop}`}>
                                 <div>
                                     <div className={style.siteDisplayDepartmentTextStyle}>Department of Surgery </div>
                                     <div className={style.siteDisplaySurgeryTextStyle}>General Surgery</div>
                                     <div className={`${style.siteDisplaySiteTextStyle} ${style.marginTop10}`}>Cambridge Memorial Hospital </div>
                                 </div>
                                 <DeleteOutlineIcon sx={{ color: '#7165E3', cursor: 'pointer' }} />
-                            </div> */}
+                            </div> 
                         </div>
                     </div>
                     <CommonDivider />
-                    {/* {form2 !== undefined && 'natureOfPractice' in form2?.properties && (
-                        <ApplicationFieldCard object={form2?.properties?.natureOfPractice} gridStyle={style.twoCol} baseKey={'natureOfPractice'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
-                    )} */}
-                    {/* <CommonDivider /> */}
-                    {form2 !== undefined && 'regionalCallResponsibilities' in form2?.properties && (
-                        <ApplicationFieldCard object={form2?.properties?.regionalCallResponsibilities} gridStyle={style.twoCol} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
-                    )}
-                    <CommonDivider />
+
                     <div className={style.marginTop}>
                         <CommonCheckBox checked={true} onChange={(e) => { }} label="I Have Verified the Information to be Correct, and would like to Proceed with my Application" />
-                    </div>
+                    </div> */}
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
@@ -127,7 +126,9 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
                         </div> */}
                 </div>
             </div>
-            {/* <AIAssistantDialog getIsOpen={getIsOpen} /> */}
+            {isOpen && (
+                <AIAssistantDialog getIsOpen={getIsOpen} />
+            )}
         </div>
     )
 }
