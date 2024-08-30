@@ -17,7 +17,6 @@ import ApplicantSideBar from "../common/SideBar";
 import { ReferenceListActionButton } from "../common/ReferenceListActionButton";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Typography from "@mui/material/Typography";
-import Link from "@mui/material/Link";
 
 const ApplicantTypesByEntity = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -82,6 +81,7 @@ const ApplicantTypesByEntity = () => {
     { applicant_type: "Nurse", lastUpdated: "Aug 16, 2024" },
     { applicant_type: "Nurse", lastUpdated: "Aug 16, 2024" },
   ];
+
   const tableHeadKeys = ["APPLICANT TYPE", "LAST UPDATED"];
   const tableDataKeys = ["applicant_type", "lastUpdated"];
 
@@ -184,6 +184,7 @@ const ApplicantTypesByEntity = () => {
   const handleSiteClick = (siteName) => {
     setSelectedSiteName(siteName);
   };
+
   useEffect(() => {
     if (siteTypeId !== "" && siteTypeId !== undefined) {
       getDepartmentServiceMaster();

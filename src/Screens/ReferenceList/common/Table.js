@@ -13,7 +13,7 @@ const ApplicantTable = ({
 }) => {
   return (
     <div className={style.applicantTableContainer}>
-      {applicantNotice && (
+      {/* {applicantNotice && (
         <div className={style.headerNotice}>
           <p> {applicantNotice}</p>
           <DragHandleIcon
@@ -21,7 +21,7 @@ const ApplicantTable = ({
           />
           <p> {"  next to the applicant type."}</p>
         </div>
-      )}
+      )} */}
       <table className={style.applicantTable}>
         <thead>
           <tr className={style.applicantHeader}>
@@ -37,8 +37,6 @@ const ApplicantTable = ({
                 </th>
               ))}
 
-            {/* <th className={style.firstColumn}>APPLICANT TYPES</th>
-            <th className={style.rightAligned}>LAST UPDATED</th> */}
             <th></th>
           </tr>
         </thead>

@@ -1,17 +1,32 @@
 import React, { useState } from "react";
 import style from "./../index.module.scss";
 
-const ApplicantSideBar = ({ sites, siteTitle, onSelectSite }) => {
+const ApplicantSideBar = ({ sites, siteTitle, onSelectSite, siteDropdown }) => {
+  console.log(sites);
+
   const [activeIndex, setActiveIndex] = useState(0);
 
   const handleSiteClick = (index, site) => {
+    console.log(site);
+
     setActiveIndex(index);
-    onSelectSite(site.name);
+    onSelectSite(site);
   };
 
   return (
     <div className={style.sideBar}>
-      <p className={style.siteTitle}>{siteTitle}</p>
+      <div>
+        {siteDropdown ? (
+          <select
+            className={style.dropdown}
+            onChange={(e) => onSelectSite(e.target.value)}
+          >
+            <option value={siteTitle}>{siteTitle}</option>
+          </select>
+        ) : (
+          <p className={style.siteTitle}>{siteTitle}</p>
+        )}
+      </div>
       {sites.map((site, index) => (
         <div
           key={index}
@@ -20,19 +35,22 @@ const ApplicantSideBar = ({ sites, siteTitle, onSelectSite }) => {
               ? style.sideActiveBackground
               : style.sideNonActiveBackground
           }`}
-          onClick={() => handleSiteClick(index, site)}
+          onClick={() => {
+            console.log(site?.length);
+            handleSiteClick(index, site.siteName?.siteName);
+          }}
         >
           <div className={style.siteDetails}>
             <p className={style.siteName}>
               {"{"}
-              {site.name}
+              {site.siteName?.siteName}
               {"}"}
             </p>
-            <div className={style.siteCount}>{site.count}</div>
+            <div className={style.siteCount}>{site?.length}</div>
           </div>
           <p className={style.siteType}>
             {"{"}
-            {site.type}
+            {site.siteType.type}
             {"}"}
           </p>
           {site.description && (

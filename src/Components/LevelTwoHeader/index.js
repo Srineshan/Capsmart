@@ -27,6 +27,7 @@ import AddIcon from "@mui/icons-material/Add";
 import style from "./index.module.scss";
 import { formatInTimeZone } from "date-fns-tz";
 // import { StaffPrivilegeDialog } from "../../Screens/ReferenceList/staffPrivileges/staffPrivilegeDialog";
+import { ProofOfDocumentDialog } from "../../Screens/ReferenceList/proofOfDocument/proofOfDocumentDialog";
 const LevelTwoHeader = ({
   heading,
   updatedTime,
@@ -96,6 +97,8 @@ const LevelTwoHeader = ({
   };
 
   const handleOpenDialog = () => {
+    console.log(tileType);
+
     setIsDialogOpen(true);
   };
 
@@ -317,6 +320,12 @@ const LevelTwoHeader = ({
           handleClose={handleCloseDialog}
         />
       )} */}
+      {tileType == "ProofOfDocument" && (
+        <ProofOfDocumentDialog
+          open={isDialogOpen}
+          handleClose={handleCloseDialog}
+        />
+      )}
     </div>
   );
 };

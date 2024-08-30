@@ -15,6 +15,7 @@ import { siteTimeZone, timeZoneAbbreviation } from "../../../utils/formatting";
 import ApplicantTable from "../common/Table";
 import ApplicantSideBar from "../common/SideBar";
 import { ReferenceListActionButton } from "../common/ReferenceListActionButton";
+import { Typography } from "@material-ui/core";
 
 const StaffPrivileges = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -41,6 +42,7 @@ const StaffPrivileges = () => {
   const [selectAllList, setSelectAllList] = useState([]);
   const [checkedAll, setCheckedAll] = useState(false);
   const [searchKey, setSearchKey] = useState("");
+  const [selectedApplicantType, setSelectedApplicantType] = useState("");
 
   const sites = [
     {
@@ -220,6 +222,16 @@ const StaffPrivileges = () => {
     }
   }, [siteTypeId, entityDetails, searchKey]);
 
+  useEffect(() => {
+    if (entityTypes.length > 0) {
+      setSelectedApplicantType(entityTypes[0]?.siteType?.type);
+    }
+  }, [entityTypes]);
+
+  const handleSiteClick = (siteName) => {
+    setSelectedApplicantType(siteName);
+  };
+
   return (
     <Fragment>
       <Navbar />
@@ -243,11 +255,33 @@ const StaffPrivileges = () => {
             }`}
           >
             <ApplicantSideBar
-              sites={sites}
+              sites={entityTypes}
               siteTitle={"Cambride Memorial Hospitals"}
+              onSelectSite={handleSiteClick}
+              siteDropdown={true}
             />
             <div className={style.applicantList}>
-              <h1 className={style.title}>All Applicant Types</h1>
+              <div className={`${style.Tabletitle} `}>
+                <Typography className={style.tableTitleContent}>
+                  Cambride Memorial Hospitals
+                </Typography>
+                <Typography
+                  className={`${style.tableTitleContentArrow} ${style.tableTitleContent}`}
+                >
+                  {">"}
+                </Typography>
+                <Typography className={style.tableTitleContent}>
+                  {`{${selectedApplicantType}}`}
+                </Typography>
+                <Typography
+                  className={`${style.tableTitleContentArrow} ${style.tableTitleContent}`}
+                >
+                  {">"}
+                </Typography>
+                <Typography className={style.tableTitleContent}>
+                  All Applicant Types
+                </Typography>
+              </div>
               <ApplicantTable
                 applicantTypes={applicantTypes}
                 tableDataKeys={tableDataKeys}

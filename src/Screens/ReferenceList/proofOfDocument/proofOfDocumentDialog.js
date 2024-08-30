@@ -8,13 +8,16 @@ import {
   RadioGroup,
   Radio,
   Checkbox,
+  TextArea,
 } from "@blueprintjs/core";
-import ArrowDown from "./../../images/arrowDown.png";
-import style from "./index.module.scss";
-import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
-import { POST, GET, PUT, TenantID } from "./../dataSaver";
+import ArrowDown from "./../../../images/arrowDown.png";
+import style from "./../index.module.scss";
+import { ErrorToaster, SuccessToaster } from "./../../../utils/toaster";
+import { POST, GET, PUT, TenantID } from "./../../dataSaver";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { Switch, makeStyles } from "@material-ui/core";
+import CommonInputField from "../../../Components/CommonFields/CommonInputField";
+import WritingFile from "./../../../images/writing-file.svg";
 
 const useStyles = makeStyles({
   switch: {
@@ -27,18 +30,20 @@ const useStyles = makeStyles({
   },
 });
 
-const AddTerminationReasonsForCustomer = ({
+export const ProofOfDocumentDialog = ({
   getAddEntityDialog,
   selectedTermination,
   isSecondary,
   isEdit,
   getTerminationReasonData,
   siteTypeId,
+  handleClose,
+  open,
 }) => {
   const [terminationId, setTerminationId] = useState(
     selectedTermination?.id ? selectedTermination?.id : ""
   );
-  const [terminationBy, setTerminationBy] = useState("CONTRACTOR");
+  const [terminationBy, setTerminationBy] = useState("Passport Picture");
   const [primaryReason, setPrimaryReason] = useState("");
   const [secondaryReason, setSecondaryReason] = useState("");
   const [currentEntityType, setCurrentEntityType] = useState(
@@ -53,6 +58,24 @@ const AddTerminationReasonsForCustomer = ({
   const [writtenNotice, setWrittenNotice] = useState(true);
   const [subReasonFields, setSubReasonFields] = useState([]);
   const classes = useStyles();
+  const [checks, setChecks] = useState({
+    documentFormat: true,
+    documentType: true,
+    nameVerification: true,
+  });
+  const [selectedOption, setSelectedOption] = useState("mandatory");
+
+  const handleChange = (event) => {
+    setSelectedOption(event.target.value);
+  };
+
+  const handleCheckboxChange = (e) => {
+    const { name, checked } = e.target;
+    setChecks((prevChecks) => ({
+      ...prevChecks,
+      [name]: checked,
+    }));
+  };
 
   useEffect(() => {
     getEntityData();
@@ -224,71 +247,252 @@ const AddTerminationReasonsForCustomer = ({
 
   return (
     <Dialog
-      isOpen={getAddEntityDialog}
-      onClose={() => getAddEntityDialog(false)}
+      //   isOpen={getAddEntityDialog}
+      //   onClose={() => getAddEntityDialog(false)}
+      isOpen={open}
+      onClose={handleClose}
       className={`${style.healthCareDialogStyle} ${style.dialogPaddingBottom}`}
     >
       <div
         className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}
       >
         <div className={style.spaceBetween}>
-          <p
-            className={style.extensionStyle}
-          >{`Add / Edit Termination Reasons`}</p>
-          <Icon
-            icon="cross"
-            size={20}
-            intent={Intent.DANGER}
-            className={style.dialogCrossStyle}
-            onClick={() => {
-              getAddEntityDialog(false);
-              getTerminationReasonData();
-            }}
-          />
+          <div
+            className={`${style.flagBoxContainer}`}
+            style={{ marginBottom: "10px" }}
+          >
+            <img
+              src={
+                "https://upload.wikimedia.org/wikipedia/en/thumb/a/a4/Flag_of_the_United_States.svg/125px-Flag_of_the_United_States.svg.png"
+              }
+              alt="refresh"
+              className={`${style.departmentFlag} ${style.marginRight15}  `}
+            />
+            <span
+              className={`${style.departmentCountryName} ${style.marginLeft10}`}
+            >
+              USA
+            </span>
+            <img
+              src={ArrowDown}
+              className={`${style.colorFileStyle2} ${style.ArrowDown} ${style.marginRight15}`}
+              alt=""
+            />
+          </div>
+          <div>
+            <p className={style.extensionStyle}>{`Setup your New PoD`}</p>
+          </div>
+          <div>
+            <img
+              src={WritingFile}
+              className={style.dialogCrossStyle}
+              alt="Writing File"
+            />
+          </div>
+          <div>
+            <Icon
+              icon="cross"
+              size={30}
+              intent={Intent.DANGER}
+              className={style.departmentCrossStyle}
+              onClick={handleClose}
+            />
+          </div>
         </div>
         <div className={style.ReferenceListEntityBorder}></div>
         <div className={`${style.addHealthCareBoxStyle}`}>
-          <div className={`${style.extentionGrid}`}>
-            <div className={style.entityLableStyle}>Entity Type*</div>
-            <div className={style.displayInRow}>
+          <div>
+            <div className={style.entityLableStyle}>APPLICANT TYPE*</div>
+            <select
+              value={currentEntityType}
+              className={style.fullWidth}
+              // rightElement={arrowDown()}
+              onChange={(obj) => {
+                setCurrentEntityType(obj.target.value);
+              }}
+            >
+              <option value="">MultiSelect</option>
+              {entityTypes.map((type) => (
+                <option value={type.siteTypeId}>{type.siteTypeName}</option>
+              ))}
+            </select>
+          </div>
+          <div className={`${style.marginTop20}`}>
+            <div className={style.entityLableStyle}>DOCUMENT TYPE</div>
+            <select
+              value={terminationBy}
+              defaultValue={terminationBy}
+              className={style.fullWidth}
+              // rightElement={arrowDown()}
+              onChange={(obj) => {
+                setTerminationBy(obj.target.value);
+              }}
+            >
+              <option value="CONTRACTOR">For Cause By Contractor</option>
+              <option value="ENTITY">For Cause By Entity</option>
+            </select>
+          </div>
+          <div className={`${style.marginTop20}`}>
+            <div className={style.entityLableStyle}>DOCUMENT TYPE</div>
+            <CommonInputField
+              className={style.fullWidth}
+              placeholder="PassPort Picture"
+            />
+          </div>
+          <div className={`${style.marginTop20}`}>
+            <div className={style.entityLableStyle}>
+              INSTRUCTIONAL TEXT//HELP GUIDE
+            </div>
+            <TextArea
+              className={style.fullWidth}
+              placeholder="Enter Text Here"
+              rows={3}
+            />
+          </div>
+          <div className={`${style.marginTop20}`}>
+            <div className={style.entityLableStyle}>VERIFICATION CHECK</div>
+            <div className={style.flex}>
+              <div className={`${style.marginLeft10} ${style.flex}`}>
+                <input
+                  type="checkbox"
+                  checked={checks.documentFormat}
+                  onChange={handleCheckboxChange}
+                />
+                <label className={style.marginLeft10}>
+                  Document Format Check
+                </label>
+              </div>
+              <div className={`${style.marginLeft10} ${style.flex}`}>
+                <input
+                  type="checkbox"
+                  checked={checks.documentType}
+                  onChange={handleCheckboxChange}
+                />
+                <label className={style.marginLeft10}>Document Type</label>
+              </div>
+              <div className={`${style.marginLeft10} ${style.flex}`}>
+                <input
+                  type="checkbox"
+                  checked={checks.nameVerification}
+                  onChange={handleCheckboxChange}
+                />
+                <label className={style.marginLeft10}>Name Verification</label>
+              </div>
+            </div>
+          </div>
+          <div className={`${style.marginTop20}`}>
+            <div className={style.entityLableStyle}>VALIDATION CHECK</div>
+            <div className={style.validation}>
+              <div className={`${style.marginLeft10} ${style.flex}`}>
+                <input
+                  type="checkbox"
+                  checked={checks.documentFormat}
+                  onChange={handleCheckboxChange}
+                />
+                <label className={style.marginLeft10}>
+                  Document Expiration
+                </label>
+              </div>
+              <div className={`${style.marginLeft10} ${style.flex}`}>
+                <input
+                  type="checkbox"
+                  checked={checks.documentType}
+                  onChange={handleCheckboxChange}
+                />
+                <label className={style.marginLeft10}>Document Expiry in</label>
+              </div>
+              <select
+                value={3}
+                className={style.marginLeft10}
+                style={{ borderRadius: "0", width: "70px" }} // Adjust the width as needed
+              >
+                <option value={1}>1</option>
+                <option value={2}>2</option>
+                <option value={3}>3</option>
+                <option value={4}>4</option>
+              </select>
+              <select
+                value={3}
+                className={style.marginLeft10}
+                style={{ borderRadius: "0", width: "90px" }} // Adjust the width as needed
+              >
+                <option value={1}>Month</option>
+                <option value={2}>Day</option>
+              </select>
+            </div>
+            <div className={`${style.marginTop20}`}>
+              <div className={style.entityLableStyle}>Requirement</div>
+              <div className={style.flex}>
+                <div className={`${style.marginLeft40} ${style.flex}`}>
+                  <FormControlLabel
+                    control={
+                      <Radio
+                        checked={selectedOption === "mandatory"}
+                        onChange={handleChange}
+                        value="mandatory"
+                        sx={{ "& .MuiSvgIcon-root": { borderRadius: "50%" } }}
+                      />
+                    }
+                  />
+                  <label>Mandatory</label>
+                </div>
+                <div className={`${style.marginLeft40} ${style.flex}`}>
+                  <FormControlLabel
+                    control={
+                      <Radio
+                        checked={selectedOption === "recommended"}
+                        onChange={handleChange}
+                        value="recommended"
+                        sx={{ "& .MuiSvgIcon-root": { borderRadius: "50%" } }}
+                      />
+                    }
+                  />
+                  <label>Recommened</label>
+                </div>
+                <div className={`${style.marginLeft40} ${style.flex}`}>
+                  <FormControlLabel
+                    control={
+                      <Radio
+                        checked={selectedOption === "optional"}
+                        onChange={handleChange}
+                        value="optional"
+                        sx={{ "& .MuiSvgIcon-root": { borderRadius: "50%" } }}
+                      />
+                    }
+                  />
+                  <label>Optional</label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className={style.flex}>
+            <div>
+              <div className={style.entityLableStyle}>ALLOWED FORMAT</div>
               <select
                 value={currentEntityType}
-                className={style.fullWidth}
-                // rightElement={arrowDown()}
-                onChange={(obj) => {
-                  setCurrentEntityType(obj.target.value);
-                }}
+                rightElement={arrowDown()}
+                style={{ borderRadius: "0", width: "250px" }}
               >
-                <option value="">Select Entity Type</option>
-                {entityTypes.map((type) => (
-                  <option value={type.siteTypeId}>{type.siteTypeName}</option>
-                ))}
+                <option value="">PNG/jpeg</option>
               </select>
             </div>
-          </div>
-          <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <div className={style.entityLableStyle}>
-              For Cause Terminating Party*
-            </div>
-            <div className={style.displayInRow}>
+            <div className={style.marginLeft10}>
+              <div className={style.entityLableStyle}>MAX SIZE ALLOWED:</div>
               <select
-                value={terminationBy}
-                defaultValue={terminationBy}
-                className={style.fullWidth}
-                // rightElement={arrowDown()}
-                onChange={(obj) => {
-                  setTerminationBy(obj.target.value);
-                }}
+                value={currentEntityType}
+                rightElement={arrowDown()}
+                style={{ borderRadius: "0", width: "250px" }}
               >
-                <option value="CONTRACTOR">For Cause By Contractor</option>
-                <option value="ENTITY">For Cause By Entity</option>
+                <option value="">5 MB</option>
               </select>
             </div>
           </div>
-          <div
+
+          {/* <div
             className={`${style.ReferenceListEntityBorder} ${style.marginTop20}`}
-          ></div>
-          <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+          ></div> */}
+          <div></div>
+          {/* <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <div className={style.entityLableStyle}>
               Primary Termination Reason*
             </div>
@@ -373,7 +577,7 @@ const AddTerminationReasonsForCustomer = ({
                 </div>
               )}
             </div>
-          </div>
+          </div> */}
 
           {addSubReasons && (
             <>
@@ -421,19 +625,19 @@ const AddTerminationReasonsForCustomer = ({
         <div>
           <div className={`${style.floatRight} ${style.marginTop20}`}>
             <button
-              className={style.outlinedButton}
+              className={style.dialogOutlinedButton}
               onClick={() => {
                 getAddEntityDialog(false);
                 getTerminationReasonData();
               }}
             >
-              CANCEL
+              SAVE & EXIT
             </button>
             <button
               onClick={() => SaveSubmitHandler("Save & Exit")}
-              className={`${style.buttonStyle} ${style.marginLeft20}`}
+              className={`${style.dialogButtonStyle} ${style.marginLeft20}`}
             >
-              SAVE
+              SAVE & ADD MORE
             </button>
           </div>
         </div>
@@ -441,5 +645,3 @@ const AddTerminationReasonsForCustomer = ({
     </Dialog>
   );
 };
-
-export default AddTerminationReasonsForCustomer;

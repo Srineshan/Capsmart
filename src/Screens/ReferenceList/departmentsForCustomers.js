@@ -56,21 +56,12 @@ const DepartmentsForCustomers = () => {
   const [selectAllList, setSelectAllList] = useState([]);
   const [checkedAll, setCheckedAll] = useState(false);
   const [searchKey, setSearchKey] = useState("");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
     if (entityId !== "" && entityId !== undefined) {
       getLastModifiedDate();
     }
   }, [entityId]);
-
-  const handleImageClick = () => {
-    setIsDialogOpen(true);
-  };
-
-  const handleCloseDialog = () => {
-    setIsDialogOpen(false);
-  };
 
   const getIsExpanded = (value) => {
     setIsExpanded(value);
@@ -423,9 +414,12 @@ const DepartmentsForCustomers = () => {
                         <img
                           src={AddNewEntity}
                           alt="OpenFolder"
-                          className={`${style.colorFileStyle} ${style.marginLeft70}`}
-                          onClick={handleImageClick}
-                        />
+                          className={`${style.colorFileStyle} ${style.marginLeft70} `}
+                          onClick={() => {
+                            getAddEntityDialog(true);
+                            setIsEdit(false);
+                          }}
+                        ></img>
                       </div>
                       <div
                         className={`${style.searchboxHeaderFontStyle} ${style.displayInRow}`}

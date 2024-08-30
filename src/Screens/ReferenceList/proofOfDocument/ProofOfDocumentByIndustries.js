@@ -15,6 +15,8 @@ import { siteTimeZone, timeZoneAbbreviation } from "../../../utils/formatting";
 import ApplicantTable from "../common/Table";
 import ApplicantSideBar from "../common/SideBar";
 import { ReferenceListActionButton } from "../common/ReferenceListActionButton";
+import Breadcrumbs from "@mui/material/Breadcrumbs";
+import Typography from "@mui/material/Typography";
 
 const ProofOfDocumentByIndustries = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -41,6 +43,7 @@ const ProofOfDocumentByIndustries = () => {
   const [selectAllList, setSelectAllList] = useState([]);
   const [checkedAll, setCheckedAll] = useState(false);
   const [searchKey, setSearchKey] = useState("");
+  const [selectedApplicantType, setSelectedApplicantType] = useState("");
 
   const sites = [
     {
@@ -98,7 +101,6 @@ const ProofOfDocumentByIndustries = () => {
 
   const tableHeadKeys = ["NAME", "", "TYPE", "REQUIRMENT", "LAST UPDATED"];
   const tableDataKeys = ["name", "", "type", "requirment", "lastUpdated"];
-  console.log(tableHeadKeys);
 
   useEffect(() => {
     if (entityId !== "" && entityId !== undefined) {
@@ -159,6 +161,12 @@ const ProofOfDocumentByIndustries = () => {
   };
 
   useEffect(() => {
+    if (entityTypes.length > 0) {
+      setSelectedApplicantType(entityTypes[0]?.siteType?.type);
+    }
+  }, [entityTypes]);
+
+  useEffect(() => {
     let tempDepartmentService = departmentServiceMaster
       ?.filter(
         (data) =>
@@ -199,6 +207,10 @@ const ProofOfDocumentByIndustries = () => {
     }
   }, [siteTypeId, entityDetails, searchKey]);
 
+  const handleSiteClick = (siteName) => {
+    setSelectedApplicantType(siteName);
+  };
+
   return (
     <Fragment>
       <Navbar />
@@ -206,12 +218,13 @@ const ProofOfDocumentByIndustries = () => {
         <div className={style.padding20}>
           <div>
             <LevelTwoHeader
-              heading={"Applicant Types by Entity Types"}
+              getAddEntityDialog={getAddEntityDialog}
+              heading={"Proof of Documentation By Industries"}
               updatedTime={`UPDATED ON ${lastUpdatedDate}`}
               path={"/Screens/ReferenceList/customerAdminDashboard"}
               callingFrom={"Customer Admin"}
               needHeader={false}
-              tileType={"Applicant"}
+              tileType={"ProofOfDocument"}
             />
           </div>
           <div
@@ -219,9 +232,25 @@ const ProofOfDocumentByIndustries = () => {
               isExpanded ? style.bigCardGrid : style.smallCardGrid
             }`}
           >
-            <ApplicantSideBar sites={sites} siteTitle={"All Site"} />
+            <ApplicantSideBar
+              sites={entityTypes}
+              siteTitle={"All Applicant Type"}
+              onSelectSite={handleSiteClick}
+            />
             <div className={style.applicantList}>
-              <h1 className={style.title}>All Applicant Types</h1>
+              <div className={`${style.Tabletitle} `}>
+                <Typography className={style.tableTitleContent}>
+                  {`{${selectedApplicantType}}`}
+                </Typography>
+                <Typography
+                  className={`${style.tableTitleContentArrow} ${style.tableTitleContent}`}
+                >
+                  {">"}
+                </Typography>
+                <Typography className={style.tableTitleContent}>
+                  All Documents
+                </Typography>
+              </div>
               <ApplicantTable
                 applicantTypes={applicantTypes}
                 applicantNotice={
@@ -231,7 +260,6 @@ const ProofOfDocumentByIndustries = () => {
                 tableHeadKeys={tableHeadKeys}
                 groupFirstTwoColumn={true}
               />
-
               <ReferenceListActionButton
                 button1={"Save In-Progress"}
                 button2={" Mark as Done"}
