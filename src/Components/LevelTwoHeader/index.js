@@ -26,7 +26,7 @@ import { siteTimeZone } from "../../utils/formatting";
 import AddIcon from "@mui/icons-material/Add";
 import style from "./index.module.scss";
 import { formatInTimeZone } from "date-fns-tz";
-// import { StaffPrivilegeDialog } from "../../Screens/ReferenceList/staffPrivileges/staffPrivilegeDialog";
+import StaffPrivilegeDialog from "../../Screens/ReferenceList/staffPrivileges/staffPrivilegeDialog";
 import { ProofOfDocumentDialog } from "../../Screens/ReferenceList/proofOfDocument/proofOfDocumentDialog";
 const LevelTwoHeader = ({
   heading,
@@ -314,12 +314,12 @@ const LevelTwoHeader = ({
           </>
         )}
       </div>
-      {/* {tileType == "StaffPrivileges" && (
+      {tileType == "StaffPrivileges" && (
         <StaffPrivilegeDialog
           open={isDialogOpen}
           handleClose={handleCloseDialog}
         />
-      )} */}
+      )}
       {tileType == "ProofOfDocument" && (
         <ProofOfDocumentDialog
           open={isDialogOpen}

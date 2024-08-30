@@ -9,12 +9,33 @@ import {
   Radio,
   Checkbox,
 } from "@blueprintjs/core";
-import ArrowDown from "./../../images/arrowDown.png";
+import ArrowDown from "./../../../images/arrowDown.png";
 import style from "./../index.module.scss";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { Switch, Typography, makeStyles } from "@material-ui/core";
 
-function staffPrivilegeDialog({ open, handleClose }) {
+const StaffPrivilegeDialog = ({
+  open,
+  handleClose,
+  isEdit,
+  selectedTermination,
+}) => {
+  const [secondaryReasonList, setSecondaryReasonList] = useState([]);
+  const [secondaryReason, setSecondaryReason] = useState("");
+  const [entityTypes, setEntityTypes] = useState([]);
+  const [primaryReason, setPrimaryReason] = useState("");
+  const [currentEntityType, setCurrentEntityType] = useState(
+    selectedTermination?.entityId?.id ? selectedTermination?.entityId?.id : ""
+  );
+  const arrowDown = () => {
+    return (
+      <img
+        src={ArrowDown}
+        className={`${style.colorFileStyle3} ${style.marginRight}`}
+        alt=""
+      />
+    );
+  };
   return (
     <Dialog
       isOpen={open}
@@ -25,9 +46,9 @@ function staffPrivilegeDialog({ open, handleClose }) {
         className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}
       >
         <div className={style.spaceBetween}>
-          <p
-            className={style.extensionStyle}
-          >{`Add / Edit Termination Reasons For ${selectedTitle}`}</p>
+          <p className={style.extensionStyle}>
+            Setup and maintain your Staff Privileges
+          </p>
           <div className={`${style.displayInRow}`}>
             {/* <div className={`${style.displayInRow} ${style.marginRight20}`}>
                 <img
@@ -53,6 +74,7 @@ function staffPrivilegeDialog({ open, handleClose }) {
               size={20}
               intent={Intent.DANGER}
               className={style.dialogCrossStyle}
+              onClick={handleClose}
             />
           </div>
         </div>
@@ -62,7 +84,7 @@ function staffPrivilegeDialog({ open, handleClose }) {
             <div className={style.entityLableStyle}>Industry Type*</div>
             <div className={style.displayInRow}>
               <select
-                value={currentindustryType}
+                value={""}
                 className={style.fullWidth}
                 rightElement={arrowDown()}
               >
@@ -159,6 +181,5 @@ function staffPrivilegeDialog({ open, handleClose }) {
       </div>
     </Dialog>
   );
-}
-
-export default staffPrivilegeDialog;
+};
+export default StaffPrivilegeDialog;

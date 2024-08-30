@@ -70,7 +70,7 @@ const ApplicantTable = ({
                       alt="Delete"
                       className={style.actionIcon}
                     />
-                    <DragHandleIcon className={style.actionIcon} />
+                    {/* <DragHandleIcon className={style.actionIcon} /> */}
                   </td>
                 </tr>
                 {applicant.sub &&
@@ -102,7 +102,7 @@ const ApplicantTable = ({
                           alt="Delete"
                           className={style.actionIcon}
                         />
-                        <DragHandleIcon className={style.actionIcon} />
+                        {/* <DragHandleIcon className={style.actionIcon} /> */}
                       </td>
                     </tr>
                   ))}
