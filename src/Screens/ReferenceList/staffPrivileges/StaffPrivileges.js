@@ -234,7 +234,7 @@ const StaffPrivileges = () => {
               path={"/Screens/ReferenceList/customerAdminDashboard"}
               callingFrom={"Customer Admin"}
               needHeader={false}
-              tileType={"DepartmentService"}
+              tileType={"StaffPrivileges"}
             />
           </div>
           <div

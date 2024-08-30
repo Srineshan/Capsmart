@@ -312,7 +312,7 @@ const LevelTwoHeader = ({
           </>
         )}
       </div>
-      {tileType == "Applicant" && (
+      {tileType == "StaffPrivileges" && (
         <AddNewApplicantDialog
           open={isDialogOpen}
           handleClose={handleCloseDialog}

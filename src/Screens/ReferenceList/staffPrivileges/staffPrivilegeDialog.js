@@ -14,11 +14,12 @@ import style from "./../index.module.scss";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { Switch, Typography, makeStyles } from "@material-ui/core";
 
-function staffPrivilegeDialog() {
+function staffPrivilegeDialog({ open, handleClose }) {
   return (
     <>
       <Dialog
-        isOpen={getAddEntityDialog}
+        isOpen={open}
+        onClose={handleClose}
         className={`${style.healthCareDialogStyle} ${style.dialogPaddingBottom}`}
       >
         <div
