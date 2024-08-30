@@ -25,7 +25,7 @@ const Step13 = ({ basicForm, setBasicForm, applicationId }) => {
         const { data: form } = await GET(
             `application-management-service/formSchema/${basicForm?.formSchemas?.[11]?.id}`
         );
-        setFormSchema(form)
+        setFormSchema(form?.schema)
     }
 
     const handleSubmitApplicationReq = async () => {
@@ -39,14 +39,14 @@ const Step13 = ({ basicForm, setBasicForm, applicationId }) => {
                     console.log(response)
                     setBasicForm(response?.data)
                     SuccessToaster("Application Updated Successfully");
-                    navigate('/applicationForm/section1/step14')
+                    navigate('/applicationForm/section1/acknowledgementStep1')
                 })
                 .catch((error) => {
                     console.log(error)
                     ErrorToaster("Unexpected Error Updating Application");
                 });
         } else {
-            navigate('/applicationForm/section1/step14')
+            navigate('/applicationForm/section1/acknowledgementStep1')
         }
     }
 
@@ -56,7 +56,7 @@ const Step13 = ({ basicForm, setBasicForm, applicationId }) => {
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 13'} dataType={'Documents and Data'} title={formSchema?.title} timeNumber={26} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                <ProgressCard step={'STEP 13'} dataType={''} title={formSchema?.title} timeNumber={26} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>

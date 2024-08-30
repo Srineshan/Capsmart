@@ -25,7 +25,7 @@ const Step11 = ({ basicForm, setBasicForm, applicationId }) => {
         const { data: form } = await GET(
             `application-management-service/formSchema/${basicForm?.formSchemas?.[9]?.id}`
         );
-        setFormSchema(form)
+        setFormSchema(form?.schema)
     }
 
     const handleSubmitApplicationReq = async () => {
@@ -56,7 +56,7 @@ const Step11 = ({ basicForm, setBasicForm, applicationId }) => {
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 11'} dataType={'Documents and Data'} title={formSchema?.title} timeNumber={22} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                <ProgressCard step={'STEP 11'} dataType={''} title={formSchema?.title} timeNumber={22} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>

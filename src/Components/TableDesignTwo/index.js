@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePagination, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, onClickText, onClickFunction, buttonComponent, getHandleSort, sortValue }) => {
+const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePagination, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, subHeading2, onClickText, onClickFunction, buttonComponent, getHandleSort, sortValue }) => {
     const [showOptions, setShowOptions] = useState(false);
     const [selectedMenuIndex, setSelectedMenuIndex] = useState(-1);
     const [selectedMenuColIndex, setSelectedMenuColIndex] = useState(-1);
@@ -516,8 +516,9 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
                         //     <p className={style.noDataTextStyle}>no records found so far...</p>
                         // </div>
                         <NoDataBox
-                            heading={heading}
+                            heading={heading || 'No Records Found So Far'}
                             subHeading={subHeading}
+                            subHeading2={subHeading2}
                             onClickText={onClickText}
                             buttonComponent={buttonComponent}
                             onClickFunction={onClickFunction}

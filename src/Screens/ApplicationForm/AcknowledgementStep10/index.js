@@ -16,6 +16,7 @@ import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 const ApplicationAcknowledgementStep10 = ({ basicForm, setBasicForm, applicationId }) => {
     const [isChecked, setIsChecked] = useState(false);
     const navigate = useNavigate()
+    const [isEdited, setIsEdited] = useState(false);
     const [formSchema, setFormSchema] = useState();
     useEffect(() => {
         if (basicForm && !formSchema) {
@@ -23,29 +24,37 @@ const ApplicationAcknowledgementStep10 = ({ basicForm, setBasicForm, application
         }
     }, [basicForm])
 
+    const getIsEdited = (value) => {
+        setIsEdited(value)
+    }
+
     const getFormSchema = async () => {
         const { data: form } = await GET(
             `application-management-service/formSchema/${basicForm?.formSchemas?.[13]?.id}`
         );
-        setFormSchema(form)
+        setFormSchema(form?.schema)
     }
 
     const handleSubmitApplicationReq = async () => {
-        let temp = {
-            schemaId: basicForm?.forms?.[13]?.schemaId,
-            data: basicForm?.forms?.[13]?.data
+        if (isEdited) {
+            let temp = {
+                schemaId: basicForm?.forms?.[13]?.schemaId,
+                data: basicForm?.forms?.[13]?.data
+            }
+            await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[13]?.id}`, temp)
+                .then(response => {
+                    console.log(response)
+                    setBasicForm(response?.data)
+                    SuccessToaster("Application Updated Successfully");
+                    navigate('/applicationForm/section1/acknowledgementStep11')
+                })
+                .catch((error) => {
+                    console.log(error)
+                    ErrorToaster("Unexpected Error Updating Application");
+                });
+        } else {
+            navigate('/applicationForm/section1/acknowledgementStep11')
         }
-        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[13]?.id}`, temp)
-            .then(response => {
-                console.log(response)
-                setBasicForm(response?.data)
-                SuccessToaster("Application Updated Successfully");
-                navigate('/applicationForm/section1/acknowledgementStep11')
-            })
-            .catch((error) => {
-                console.log(error)
-                ErrorToaster("Unexpected Error Updating Application");
-            });
     }
     return (
         <div>
@@ -59,7 +68,7 @@ const ApplicationAcknowledgementStep10 = ({ basicForm, setBasicForm, application
                         <div className={`${style.labelText} ${style.marginTop}`}>My making of this application and signature below indicate my understanding of and consent to the following (please note that references to Public Hospitals Act are not applicable to Homewood):</div>
                         <CommonDivider />
                         {formSchema !== undefined && 'pharmacySignatureTemplate' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.pharmacySignatureTemplate?.properties?.pharmacySignatureTemplate} gridStyle={style.pharmacySignatureAddressGrid} baseKey={'pharmacySignatureTemplate'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[13].data`} />
+                            <ApplicationFieldCard object={formSchema?.properties?.pharmacySignatureTemplate?.properties?.pharmacySignatureTemplate} gridStyle={style.pharmacySignatureAddressGrid} baseKey={'pharmacySignatureTemplate'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[13].data`} setIsEdited={getIsEdited} />
                         )}
                         <div className={style.displayInRowRev}>
                             <div className={`${style.continue} ${style.marginTop10} ${style.createButtonStyle}`} >CREATE</div>

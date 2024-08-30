@@ -73,7 +73,7 @@ const ProgressCard = ({ step, dataType, title, timeNumber, timeText, progressSty
             <div className={style.spaceBetween}>
                 <div className={style.displayInRow}>
                     <div className={style.stepTextStyle}>{step}</div>
-                    {/* <div className={`${style.dataTypeCollectionsTextStyle}  ${style.marginLeft}`}>{dataType}</div> */}
+                    <div className={`${style.dataTypeCollectionsTextStyle}  ${step !== '' ? style.marginLeft : ''}`}>{dataType}</div>
                 </div>
                 <div className={style.timeSpentText}>Time spent</div>
             </div>

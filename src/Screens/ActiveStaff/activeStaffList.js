@@ -288,7 +288,7 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getActiveAppl
                     <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginRight10}`}>
                       <p className={style.staffPragraphStyle}>Dave FILIP <span style={{
                         color: "#52575D",
-                        font: "normal normal bold 16px/24px Proxima Nova"
+                        font: "normal normal bold 16px/24px proxima-nova"
                       }}> (Doctor) </span> <span className={style.dayTextStyle}
                         style={{
                           border: "0.4px solid #14B15A",
@@ -302,7 +302,7 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getActiveAppl
                     <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginRight10}`}>
                       <p className={style.staffPragraphStyle}>Dave FILIP <span style={{
                         color: "#52575D",
-                        font: "normal normal bold 16px/24px Proxima Nova"
+                        font: "normal normal bold 16px/24px proxima-nova"
                       }}> (Doctor) </span> <span className={style.dayTextStyle}
                         style={{
                           border: "0.4px solid #FEC106",
@@ -316,7 +316,7 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getActiveAppl
                     <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginRight10}`}>
                       <p className={style.staffPragraphStyle}>Anna KARIN <span style={{
                         color: "#52575D",
-                        font: "normal normal bold 16px/24px Proxima Nova"
+                        font: "normal normal bold 16px/24px proxima-nova"
                       }}> (Doctor) </span> <span className={style.dayTextStyle}
                         style={{
                           border: "0.4px solid #F94848",

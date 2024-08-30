@@ -28,7 +28,7 @@
 }
 
 .headingForContracts {
-    font: normal normal bolder 15px/20px Proxima Nova !important;
+    font: normal normal bolder 15px/20px proxima-nova !important;
     letter-spacing: 0px;
     text-align: left;
     color: #52575D;
@@ -36,7 +36,7 @@
     opacity: 1;
 
     @include breakpoint(md) {
-        font: normal normal bold 14px/12px Proxima Nova;
+        font: normal normal bold 14px/12px proxima-nova;
     }
 }
 
@@ -144,12 +144,12 @@
     margin: -3px 0px 0 0px;
     text-align: left;
     float: right !important;
-    font: normal normal bold 12px/12px Montserrat;
+    font: normal normal bold 12px/12px proxima-nova;
     color: #52575D;
 
     span {
         @include breakpoint(md) {
-            font: normal normal bold 10px/12px Montserrat !important;
+            font: normal normal bold 10px/12px proxima-nova !important;
         }
     }
 }
@@ -161,12 +161,12 @@
 .descriptionText {
     text-align: left;
     float: right !important;
-    font: normal normal bold 10px/12px Montserrat;
+    font: normal normal bold 10px/12px proxima-nova;
     color: #52575D;
 
     span {
         @include breakpoint(md) {
-            font: normal normal bold 10px/12px Montserrat !important;
+            font: normal normal bold 10px/12px proxima-nova !important;
         }
     }
 }

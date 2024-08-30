@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { Dialog, Classes, Icon, Intent } from '@blueprintjs/core';
 import Timer from "./../../images/Timer.png";
+import Reminder from "./../../images/reminder.png";
+import DataEntry from "./../../images/dataEntry.png";
 import CrossPink from "../../images/crossPink.png";
 import style from './index.module.scss'
 
@@ -42,12 +44,12 @@ const AIAssistantDialog = ({ getIsOpen }) => {
                             <div className={`${style.advantageDescription} ${style.marginTop10}`}>Than other conventional credentialing Platforms</div>
                         </div>
                         <div className={style.advantagesCard}>
-                            <img src={Timer} alt='' className={style.advantagesImageStyle} />
+                            <img src={Reminder} alt='' className={style.advantagesImageStyle} />
                             <div className={`${style.advantageHeading} ${style.marginTop}`}>Auto-Fill</div>
                             <div className={`${style.advantageDescription} ${style.marginTop10}`}>Scan all the documents and Autofill the data fields</div>
                         </div>
                         <div className={style.advantagesCard}>
-                            <img src={Timer} alt='' className={style.advantagesImageStyle} />
+                            <img src={DataEntry} alt='' className={style.advantagesImageStyle} />
                             <div className={`${style.advantageHeading} ${style.marginTop}`}>Stay Updated</div>
                             <div className={`${style.advantageDescription} ${style.marginTop10}`}>Get Notifications when your documents approach expiry</div>
                         </div>
@@ -55,7 +57,7 @@ const AIAssistantDialog = ({ getIsOpen }) => {
                 </div>
                 <div className={`${style.daysToCompleteCard}`}>
                     <div className={`${style.verticalAlignCenter} ${style.alignRight}`}>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => { setIsContinue(true) }}>CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => { getIsOpen(false) }}>CONTINUE</div>
                     </div>
                 </div>
             </div>

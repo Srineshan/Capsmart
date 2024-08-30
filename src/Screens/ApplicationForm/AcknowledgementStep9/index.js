@@ -16,6 +16,7 @@ import ESign from '../../../Components/ESign';
 const ApplicationAcknowledgementStep9 = ({ basicForm, setBasicForm, applicationId }) => {
     const [isChecked, setIsChecked] = useState(false);
     const navigate = useNavigate()
+    const [isEdited, setIsEdited] = useState(false);
     const [formSchema, setFormSchema] = useState();
     useEffect(() => {
         if (basicForm && !formSchema) {
@@ -23,29 +24,37 @@ const ApplicationAcknowledgementStep9 = ({ basicForm, setBasicForm, applicationI
         }
     }, [basicForm])
 
+    const getIsEdited = (value) => {
+        setIsEdited(value)
+    }
+
     const getFormSchema = async () => {
         const { data: form } = await GET(
             `application-management-service/formSchema/${basicForm?.formSchemas?.[12]?.id}`
         );
-        setFormSchema(form)
+        setFormSchema(form?.schema)
     }
 
     const handleSubmitApplicationReq = async () => {
-        let temp = {
-            schemaId: basicForm?.forms?.[12]?.schemaId,
-            data: basicForm?.forms?.[12]?.data
+        if (isEdited) {
+            let temp = {
+                schemaId: basicForm?.forms?.[12]?.schemaId,
+                data: basicForm?.forms?.[12]?.data
+            }
+            await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[12]?.id}`, temp)
+                .then(response => {
+                    console.log(response)
+                    setBasicForm(response?.data)
+                    SuccessToaster("Application Updated Successfully");
+                    navigate('/applicationForm/section1/acknowledgementStep10')
+                })
+                .catch((error) => {
+                    console.log(error)
+                    ErrorToaster("Unexpected Error Updating Application");
+                });
+        } else {
+            navigate('/applicationForm/section1/acknowledgementStep10')
         }
-        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[12]?.id}`, temp)
-            .then(response => {
-                console.log(response)
-                setBasicForm(response?.data)
-                SuccessToaster("Application Updated Successfully");
-                navigate('/applicationForm/section1/acknowledgementStep10')
-            })
-            .catch((error) => {
-                console.log(error)
-                ErrorToaster("Unexpected Error Updating Application");
-            });
     }
     return (
         <div>
@@ -59,10 +68,10 @@ const ApplicationAcknowledgementStep9 = ({ basicForm, setBasicForm, applicationI
                         <div className={`${style.labelText} ${style.marginTop}`}>My making of this application and signature below indicate my understanding of and consent to the following (please note that references to Public Hospitals Act are not applicable to Homewood):</div>
                         <CommonDivider />
                         {formSchema !== undefined && 'accessAgreementFormPACSRequest' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.accessAgreementFormPACSRequest?.properties?.accessAgreementFormPACSRequest} gridStyle={style.pacsRequestGrid} baseKey={'accessAgreementFormPACSRequest'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[12].data`} />
+                            <ApplicationFieldCard object={formSchema?.properties?.accessAgreementFormPACSRequest?.properties?.accessAgreementFormPACSRequest} gridStyle={style.pacsRequestGrid} baseKey={'accessAgreementFormPACSRequest'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[12].data`} setIsEdited={getIsEdited} />
                         )}
                         {formSchema !== undefined && 'agreeToComplyWithHospitalPolicy' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.agreeToComplyWithHospitalPolicy?.properties?.agreeToComplyWithHospitalPolicy} gridStyle={style.pacsRequestGrid} baseKey={'agreeToComplyWithHospitalPolicy'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[12].data`} />
+                            <ApplicationFieldCard object={formSchema?.properties?.agreeToComplyWithHospitalPolicy?.properties?.agreeToComplyWithHospitalPolicy} gridStyle={style.pacsRequestGrid} baseKey={'agreeToComplyWithHospitalPolicy'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[12].data`} setIsEdited={getIsEdited} />
                         )}
                         <div className={`${style.boldNote} ${style.marginTop}`}>Your User ID and Password will be assigned to you and the PACS administrator will contact you with the information. Please read the below statement and Sign.</div>
                         <div className={style.marginTop}>
