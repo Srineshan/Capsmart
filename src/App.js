@@ -212,9 +212,14 @@ const SuperAdminDashboard = React.lazy(() =>
 const ClientAdminDashboard = React.lazy(() =>
   import("./Screens/ReferenceList/customerAdminDashboard")
 );
+// const ApplicantTypesByEntity = React.lazy(() =>
+//   import("./Screens/ReferenceList//referenceList/contractServiceProviderBySiteType")
+// );
+
 const ApplicantTypesByEntity = React.lazy(() =>
-  import("./Screens/ReferenceList/applicantTypeByEntity/applicantTypesByEntity")
+  import("./Screens/ReferenceList/contractServiceProviderBySiteType")
 );
+
 const Thankyou = React.lazy(() =>
   import("./Screens/SuperAdminDashboard/thankyou")
 );
