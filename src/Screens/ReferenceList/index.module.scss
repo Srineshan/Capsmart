@@ -3145,7 +3145,13 @@
   display: flex;
   gap: 10px;
 }
-
+.DisclosureDialogButton {
+  font: normal normal bold 14px/20px Montserrat;
+  padding: 8px 10px;
+  cursor: pointer;
+  border: none;
+  border-radius: 7px;
+}
 .actionsFooterButton {
   font: normal normal bold 14px/20px Montserrat;
   padding: 8px 10px;
@@ -3164,6 +3170,9 @@
 
 .textColorWhite {
   color: white;
+}
+.borderColorGrey {
+  border: 1px solid #52575d;
 }
 .textColorGrey {
   color: #52575d;
@@ -3264,6 +3273,9 @@
   margin-bottom: 15px;
 }
 
+.switchFontStyle {
+  text-align: center;
+}
 .label {
   flex: 1;
   color: #4a4a4a;
@@ -3271,6 +3283,10 @@
   font-weight: 500;
 }
 
+.switchLabel {
+  color: #4a4a4a;
+  font: normal normal bold 10px/20px Montserrat;
+}
 .radioGroup {
   display: flex;
   gap: 10px;
@@ -3430,4 +3446,93 @@ input:checked + .slider:before {
 
 .slider:before {
   box-shadow: 0 0 2px #2196F3;
+
+// DisclosureByIndustriesDialog.module.scss
+
+.marginBottom10 {
+  margin-bottom: 10px;
+}
+
+.whiteSpaceNowrap {
+  white-space: nowrap;
+}
+
+.marginRight15 {
+  margin-right: 15px;
+}
+
+.width80 {
+  width: 80%;
+}
+
+.flexDisplay {
+  display: flex;
+}
+
+.alignItemsCenter {
+  align-items: center;
+}
+
+.gap15 {
+  gap: 15px;
+}
+
+.marginTop20 {
+  margin-top: 20px;
+}
+
+.borderSolid {
+  border: 1px solid #dae0dc;
+}
+
+.borderRadius5 {
+  border-radius: 5px;
+}
+
+.padding5 {
+  padding: 5px;
+}
+
+.width20 {
+  width: 20%;
+}
+
+.justifyContentEnd {
+  justify-content: flex-end;
+}
+
+.flexEndCenter {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.flexBetween {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.textAlignLeft {
+  text-align: left;
+}
+
+.gap30 {
+  gap: 30px;
+}
+
+.paddingBottom10 {
+  padding-bottom: 10px;
+}
+
+.gap102 {
+  gap: 102px;
+}
+
+.borderRadius10 {
+  border-radius: 10px;
+}
+
+.gap400 {
+  gap: 400px;
 }

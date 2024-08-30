@@ -30,7 +30,7 @@ const useStyles = makeStyles({
   },
 });
 
-export const ProofOfDocumentDialog = ({
+const ProofOfDocumentDialog = ({
   getAddEntityDialog,
   selectedTermination,
   isSecondary,
@@ -645,3 +645,5 @@ export const ProofOfDocumentDialog = ({
     </Dialog>
   );
 };
+
+export default ProofOfDocumentDialog;
