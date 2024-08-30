@@ -15,6 +15,9 @@ import { siteTimeZone, timeZoneAbbreviation } from "../../../utils/formatting";
 import ApplicantTable from "../common/Table";
 import ApplicantSideBar from "../common/SideBar";
 import { ReferenceListActionButton } from "../common/ReferenceListActionButton";
+import Breadcrumbs from "@mui/material/Breadcrumbs";
+import Typography from "@mui/material/Typography";
+import Link from "@mui/material/Link";
 
 const ApplicantTypesByEntity = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -41,29 +44,30 @@ const ApplicantTypesByEntity = () => {
   const [selectAllList, setSelectAllList] = useState([]);
   const [checkedAll, setCheckedAll] = useState(false);
   const [searchKey, setSearchKey] = useState("");
+  const [selectedSiteName, setSelectedSiteName] = useState("");
 
   const sites = [
     {
       id: 1,
-      name: "(SITE NAME)",
+      name: "SITE NAME 1",
       type: "Hospital / Acute Care Facility (ACF) site type",
       count: 7,
     },
     {
       id: 2,
-      name: "(SITE NAME)",
+      name: "SITE NAME 2",
       type: "Hospital / Acute Care Facility (ACF) site type",
       count: 7,
     },
     {
       id: 3,
-      name: "(SITE NAME)",
+      name: "SITE NAME 3",
       type: "Hospital / Acute Care Facility (ACF) site type",
       count: 7,
     },
     {
       id: 4,
-      name: "(SITE NAME)",
+      name: "SITE NAME 4",
       type: "Hospital / Acute Care Facility (ACF) site type",
       count: 7,
     },
@@ -80,6 +84,11 @@ const ApplicantTypesByEntity = () => {
   ];
   const tableHeadKeys = ["APPLICANT TYPE", "LAST UPDATED"];
   const tableDataKeys = ["applicant_type", "lastUpdated"];
+
+  useEffect(() => {
+    setSelectedSiteName(sites[0]?.name || "");
+  }, []);
+
   useEffect(() => {
     if (entityId !== "" && entityId !== undefined) {
       getLastModifiedDate();
@@ -172,6 +181,9 @@ const ApplicantTypesByEntity = () => {
     getEntityTypes();
   }, []);
 
+  const handleSiteClick = (siteName) => {
+    setSelectedSiteName(siteName);
+  };
   useEffect(() => {
     if (siteTypeId !== "" && siteTypeId !== undefined) {
       getDepartmentServiceMaster();
@@ -199,9 +211,22 @@ const ApplicantTypesByEntity = () => {
               isExpanded ? style.bigCardGrid : style.smallCardGrid
             }`}
           >
-            <ApplicantSideBar sites={sites} siteTitle={"All Site"} />
-            <div className={style.applicantList}>
-              <h1 className={style.title}>All Applicant Types</h1>
+            <ApplicantSideBar
+              sites={sites}
+              siteTitle={"All Sites"}
+              onSelectSite={handleSiteClick}
+            />
+            <div className={`${style.applicantList} `}>
+              <Breadcrumbs separator=">" className={`${style.Tabletitle} `}>
+                <Typography className={style.tableTitleContent}>
+                  {"{"}
+                  {selectedSiteName}
+                  {"}"}
+                </Typography>
+                <Typography className={style.tableTitleContent}>
+                  All Applicant Types
+                </Typography>
+              </Breadcrumbs>
               <ApplicantTable
                 applicantTypes={applicantTypes}
                 applicantNotice={

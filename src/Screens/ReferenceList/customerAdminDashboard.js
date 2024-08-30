@@ -236,18 +236,17 @@ const ClientAdminDashboard = () => {
                       </div>
                     </Link>
                     <Link
-                      to={"/referenceList/suffixByCustomer"}
+                      to={"/referenceList/functionalTitleForCustomer"}
                       className={style.linkStyle}
                     >
                       <div className={style.dashboardCardStyle}>
                         <h5 className={`${style.headingForReferenceList}`}>
                           FUNCTIONAL TITLES FOR REGISTERED USERS BY ROLE
                         </h5>
-                        {/* <h5 className={`${style.headingForReferenceList}`}>
-                          NAME SUFFIX
-                        </h5> */}
-                        {lastUpdatedDate?.nameSuffix?.standardList === true &&
-                        lastUpdatedDate?.nameSuffix?.lastModified !== null ? (
+                        {lastUpdatedDate?.functionalTitles?.standardList ===
+                          true &&
+                        lastUpdatedDate?.functionalTitles?.lastModified !==
+                          null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol}`}
                           >
@@ -256,7 +255,7 @@ const ClientAdminDashboard = () => {
                             </span>
                             <span className={style.dashboardCardColorOption2}>
                               {`LAST UPDATED ON ${new Date(
-                                lastUpdatedDate.nameSuffix?.lastModified
+                                lastUpdatedDate.functionalTitles?.lastModified
                               )
                                 .toLocaleString("en-US", {
                                   timeZone: "America/New_York",
@@ -270,8 +269,10 @@ const ClientAdminDashboard = () => {
                           <></>
                         )}
 
-                        {lastUpdatedDate?.nameSuffix?.standardList === false &&
-                        lastUpdatedDate?.nameSuffix?.lastModified !== null ? (
+                        {lastUpdatedDate?.functionalTitles?.standardList ===
+                          false &&
+                        lastUpdatedDate?.functionalTitles?.lastModified !==
+                          null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
                           >
@@ -282,7 +283,7 @@ const ClientAdminDashboard = () => {
                             </span>
                             <span className={style.dashboardCardColorOption2}>
                               {`LAST UPDATED ON ${new Date(
-                                lastUpdatedDate.nameSuffix?.lastModified
+                                lastUpdatedDate.functionalTitles?.lastModified
                               )
                                 .toLocaleString("en-US", {
                                   timeZone: "America/New_York",
@@ -296,7 +297,8 @@ const ClientAdminDashboard = () => {
                           <></>
                         )}
 
-                        {lastUpdatedDate?.nameSuffix?.lastModified === null ? (
+                        {lastUpdatedDate?.functionalTitles?.lastModified ===
+                        null ? (
                           <div
                             className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
                           >
@@ -1926,7 +1928,6 @@ const ClientAdminDashboard = () => {
                       to={"/referenceList/functionalTitleForCustomer"}
                       className={style.linkStyle}
                     >
-                      {" "}
                       <div className={style.dashboardCardStyle}>
                         <h5 className={`${style.headingForReferenceList}`}>
                           FUNCTIONAL TITLES FOR PROVIDERS

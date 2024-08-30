@@ -2916,10 +2916,21 @@
 
 .siteTitle {
   text-align: start;
-  font: normal normal bold 14px/20px Montserrat;
+  font: normal normal bold 20px/20px Montserrat;
   color: #52575d;
 }
 
+.Tabletitle {
+  display: flex !important;
+  align-items: center !important;
+  padding-top: 5px;
+  justify-content: left !important;
+}
+.tableTitleContent {
+  font: normal normal bold 20px/20px Montserrat !important;
+  color: #52575d !important;
+  padding-bottom: 10px;
+}
 .sidebarContent {
   background-color: #e2e1ff;
   margin-bottom: 15px;
@@ -2963,11 +2974,6 @@
   font: normal normal bold 10px/10px Montserrat;
 }
 
-.title {
-  color: #52575d;
-  text-align: left;
-  font: normal normal bold 14px/20px Montserrat;
-}
 .applicantTypeBackground {
   background-color: #ededf3;
 }
@@ -2996,11 +3002,17 @@
   background-color: #fff8f8;
   font: normal normal bold 10px/10px Montserrat;
   color: #e89797;
-  margin-bottom: 10px;
+  padding: 5px;
+  // margin-bottom: 10px;
   border-radius: 4px;
   text-align: center;
+  border: 1px solid #e89797;
 }
 
+.HeaderNoticeDragIcon {
+  height: 10px;
+  width: 10px;
+}
 .applicantTable {
   width: 100%;
   border-collapse: separate; /* Allow for rounded corners */
@@ -3060,7 +3072,9 @@
 
 .actionIcon {
   cursor: pointer;
-  width: 25px;
+  width: 20px;
+  height: 20px;
+  color: #52575d;
 }
 
 .dragHandle {
@@ -3278,4 +3292,8 @@
   width: 140px;
   margin-bottom: -20px;
   cursor: pointer;
+}
+
+.customSiteLink {
+  text-decoration: none;
 }

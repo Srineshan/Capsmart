@@ -10,7 +10,6 @@ const ApplicantTable = ({
   applicantNotice,
   tableDataKeys,
   tableHeadKeys,
-  groupFirstTwoColumn,
 }) => {
   return (
     <div className={style.applicantTableContainer}>
@@ -18,8 +17,7 @@ const ApplicantTable = ({
         <div className={style.headerNotice}>
           <p> {applicantNotice}</p>
           <DragHandleIcon
-            className={style.textColorGrey}
-            style={{ color: "black" }}
+            className={`${style.textColorGrey} ${style.HeaderNoticeDragIcon}`}
           />
           <p> {"  next to the applicant type."}</p>
         </div>
