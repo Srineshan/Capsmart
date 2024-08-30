@@ -19,6 +19,7 @@ import { Switch, makeStyles } from "@material-ui/core";
 import CommonInputField from "../../../Components/CommonFields/CommonInputField";
 import WritingFile from "./../../../images/writing-file.svg";
 import { BorderAllRounded } from "@material-ui/icons";
+import Divider from "@mui/material/Divider";
 
 const useStyles = makeStyles({
   switch: {
@@ -203,7 +204,7 @@ const DisclosureByIndustriesDialog = ({
             </div>
           </div>
 
-          <div style={{ display: "flex" }} className={`${style.marginTop20}`}>
+          <div className={`${style.marginTop20}`}>
             <div
               style={{
                 whiteSpace: "wrap",
@@ -221,6 +222,14 @@ const DisclosureByIndustriesDialog = ({
               rows={3}
             />
           </div>
+
+          <Divider
+            style={{
+              margin: "20px 0",
+              backgroundColor: "#b3b8bd",
+              height: "1px",
+            }}
+          />
           <div className={`${style.marginTop20}`}>
             <div className={style.entityLableStyle}>DISCLOSURE TEXT</div>
             <TextArea
@@ -229,41 +238,80 @@ const DisclosureByIndustriesDialog = ({
               rows={3}
             />
           </div>
-          <div className={style.formSection}>
-            <div className={style.formGroup}>
-              <label className={style.label}>RESPONSE OPTIONS:</label>
-              <div className={style.radioGroup}>
-                <label className={style.radioLabel}>
+          <div style={{ marginTop: "20px" }}>
+            <div
+              style={{
+                display: "flex",
+                textAlign: "left",
+                gap: "30px",
+                paddingBottom: "10px",
+              }}
+            >
+              <label>RESPONSE OPTIONS:</label>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "20px",
+                }}
+              >
+                <div
+                  className={style.radioLabel}
+                  style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                >
                   <input type="radio" name="response-options" value="yes-no" />
                   Yes / No
-                </label>
-                <label className={style.radioLabel}>
+                </div>
+                <div
+                  className={style.radioLabel}
+                  style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                >
                   <input
                     type="radio"
-                    name="response-options"
+                    name="response-option"
                     value="yes-no-na"
                   />
                   Yes / No / Not Applicable
-                </label>
+                </div>
               </div>
             </div>
 
-            <div className={style.formGroup}>
-              <label className={style.label}>SUPPORTING DOCUMENTATION:</label>
-              <label className={style.switch}>
-                <input type="checkbox" />
-                <span className={style.slider}></span>
+            <div
+              style={{ display: "flex", gap: "340px", alignItems: "center" }}
+            >
+              <label className={style.switchLabel}>
+                SUPPORTING DOCUMENTATION:
               </label>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={writtenNotice}
+                    onChange={(e) => setWrittenNotice(e.target.checked)}
+                    className={classes.switch}
+                  />
+                }
+                className={`${style.switchFontStyle}`}
+                label={writtenNotice ? "YES" : "NO"}
+              />
             </div>
 
-            <div className={style.formGroup}>
-              <label className={style.label}>
+            <div
+              style={{ display: "flex", gap: "300px", alignItems: "center" }}
+            >
+              <label className={style.switchLabel}>
                 REQUIRES DISCLOSURES VERIFICATION:
               </label>
-              <label className={style.switch}>
-                <input type="checkbox" checked />
-                <span className={style.slider}></span>
-              </label>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={writtenNotice}
+                    onChange={(e) => setWrittenNotice(e.target.checked)}
+                    className={classes.switch}
+                  />
+                }
+                className={`${style.switchFontStyle}`}
+                label={writtenNotice ? "YES" : "NO"}
+              />
             </div>
 
             <div className={style.formGroup}>
@@ -277,23 +325,44 @@ const DisclosureByIndustriesDialog = ({
               </select>
             </div>
 
-            <div className={style.formGroup}>
-              <label className={style.label}>
+            <div
+              style={{ display: "flex", gap: "102px", alignItems: "center" }}
+            >
+              <label className={style.switchLabel}>
                 RELEASE OF INFORMATION AUTHORIZATION AND CONSENT FORM REQUIRED:
               </label>
-              <label className={style.switch}>
-                <input type="checkbox" />
-                <span className={style.slider}></span>
-              </label>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={writtenNotice}
+                    onChange={(e) => setWrittenNotice(e.target.checked)}
+                    className={classes.switch}
+                  />
+                }
+                className={`${style.switchFontStyle}`}
+                label={writtenNotice ? "YES" : "NO"}
+              />
             </div>
           </div>
 
           <div></div>
         </div>
-        <div>
+        <div style={{ display: "flex", alignItems: "center", gap: "400px" }}>
+          <button
+            style={{ borderRadius: "10px" }}
+            className={`${style.dialogOutlinedButton} ${style.marginTop10}`}
+          >
+            BULK UPLOAD
+          </button>
           <div className={`${style.floatRight} ${style.marginTop20}`}>
-            <button className={style.dialogOutlinedButton}>SAVE & EXIT</button>
             <button
+              style={{ borderRadius: "10px" }}
+              className={style.dialogOutlinedButton}
+            >
+              SAVE & EXIT
+            </button>
+            <button
+              style={{ borderRadius: "10px" }}
               className={`${style.dialogButtonStyle} ${style.marginLeft20}`}
             >
               SAVE & ADD MORE

@@ -322,18 +322,18 @@ const LevelTwoHeader = ({
           handleClose={handleCloseDialog}
         />
       )}
-      {tileType == "ProofOfDocument" && (
+      {/* {tileType == "ProofOfDocument" && (
         <DisclosureByIndustriesDialog
           open={isDialogOpen}
           handleClose={handleCloseDialog}
         />
-      )}
-      {/* {tileType == "ProofOfDocument" && (
+      )} */}
+      {tileType == "ProofOfDocument" && (
         <ProofOfDocumentDialog
           open={isDialogOpen}
           handleClose={handleCloseDialog}
         />
-      )} */}
+      )}
     </div>
   );
 };
