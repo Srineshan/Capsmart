@@ -130,10 +130,10 @@ export const disCosureDialog = ({
               <select
                 value={currentEntityType}
                 className={style.fullWidth}
-                // rightElement={arrowDown()}
-                onChange={(obj) => {
-                  setCurrentEntityType(obj.target.value);
-                }}
+                rightElement={arrowDown()}
+                // onChange={(obj) => {
+                //   setCurrentEntityType(obj.target.value);
+                // }}
               >
                 <option value="">MultiSelect</option>
                 {entityTypes.map((type) => (
@@ -142,26 +142,23 @@ export const disCosureDialog = ({
               </select>
             </div>
             <div className={`${style.marginTop20}`}>
-              <div className={style.entityLableStyle}>DOCUMENT TYPE</div>
-              <select
-                value={terminationBy}
-                defaultValue={terminationBy}
-                className={style.fullWidth}
-                // rightElement={arrowDown()}
-                onChange={(obj) => {
-                  setTerminationBy(obj.target.value);
-                }}
-              >
-                <option value="CONTRACTOR">For Cause By Contractor</option>
-                <option value="ENTITY">For Cause By Entity</option>
-              </select>
+              <div className={style.entityLableStyle}>DISCLOSURE CATEGORY:</div>
+              <input className={style.fullWidth} value="PROFESSIONAL LICENSING, PRIVILEGE AND MEMBERSHIP HISTORY"></input>
+              <div className={`${style.entityLableStyle} ${style.marginTop15}`}>
+              Written Notice Served
             </div>
-            <div className={`${style.marginTop20}`}>
-              <div className={style.entityLableStyle}>DOCUMENT TYPE</div>
-              <CommonInputField
-                className={style.fullWidth}
-                placeholder="PassPort Picture"
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={writtenNotice}
+                    onChange={(e) => setWrittenNotice(e.target.checked)}
+                    className={classes.switch}
+                  />
+                }
+                className={`${style.switchFontStyle}`}
+                label={writtenNotice ? "YES" : "NO"}
               />
+
             </div>
             <div className={`${style.marginTop20}`}>
               <div className={style.entityLableStyle}>
@@ -174,143 +171,63 @@ export const disCosureDialog = ({
               />
             </div>
             <div className={`${style.marginTop20}`}>
-              <div className={style.entityLableStyle}>VERIFICATION CHECK</div>
-              <div className={style.flex}>
-                <div className={`${style.marginLeft10} ${style.flex}`}>
-                  <input
-                    type="checkbox"
-                    checked={checks.documentFormat}
-                    onChange={handleCheckboxChange}
-                  />
-                  <label className={style.marginLeft10}>
-                    Document Format Check
-                  </label>
-                </div>
-                <div className={`${style.marginLeft10} ${style.flex}`}>
-                  <input
-                    type="checkbox"
-                    checked={checks.documentType}
-                    onChange={handleCheckboxChange}
-                  />
-                  <label className={style.marginLeft10}>Document Type</label>
-                </div>
-                <div className={`${style.marginLeft10} ${style.flex}`}>
-                  <input
-                    type="checkbox"
-                    checked={checks.nameVerification}
-                    onChange={handleCheckboxChange}
-                  />
-                  <label className={style.marginLeft10}>Name Verification</label>
-                </div>
+              <div className={style.entityLableStyle}>
+                DISCLOSURE TEXT
               </div>
+              <TextArea
+                className={style.fullWidth}
+                placeholder="Enter Text Here"
+                rows={3}
+              />
             </div>
-            <div className={`${style.marginTop20}`}>
-              <div className={style.entityLableStyle}>VALIDATION CHECK</div>
-              <div className={style.validation}>
-                <div className={`${style.marginLeft10} ${style.flex}`}>
-                  <input
-                    type="checkbox"
-                    checked={checks.documentFormat}
-                    onChange={handleCheckboxChange}
-                  />
-                  <label className={style.marginLeft10}>
-                    Document Expiration
-                  </label>
+            <div className={style.formSection}>
+            <div className={style.formGroup}>
+                <label className={style.label}>RESPONSE OPTIONS:</label>
+                <div className={style.radioGroup}>
+                    <label className={style.radioLabel}>
+                        <input type="radio" name="response-options" value="yes-no" />
+                        Yes / No
+                    </label>
+                    <label className={style.radioLabel}>
+                        <input type="radio" name="response-options" value="yes-no-na" />
+                        Yes / No / Not Applicable
+                    </label>
                 </div>
-                <div className={`${style.marginLeft10} ${style.flex}`}>
-                  <input
-                    type="checkbox"
-                    checked={checks.documentType}
-                    onChange={handleCheckboxChange}
-                  />
-                  <label className={style.marginLeft10}>Document Expiry in</label>
-                </div>
-                <select
-                  value={3}
-                  className={style.marginLeft10}
-                  style={{ borderRadius: "0", width: "70px" }} // Adjust the width as needed
-                >
-                  <option value={1}>1</option>
-                  <option value={2}>2</option>
-                  <option value={3}>3</option>
-                  <option value={4}>4</option>
-                </select>
-                <select
-                  value={3}
-                  className={style.marginLeft10}
-                  style={{ borderRadius: "0", width: "90px" }} // Adjust the width as needed
-                >
-                  <option value={1}>Month</option>
-                  <option value={2}>Day</option>
-                </select>
-              </div>
-              <div className={`${style.marginTop20}`}>
-                <div className={style.entityLableStyle}>Requirement</div>
-                <div className={style.flex}>
-                  <div className={`${style.marginLeft40} ${style.flex}`}>
-                    <FormControlLabel
-                      control={
-                        <Radio
-                          checked={selectedOption === "mandatory"}
-                          onChange={handleChange}
-                          value="mandatory"
-                          sx={{ "& .MuiSvgIcon-root": { borderRadius: "50%" } }}
-                        />
-                      }
-                    />
-                    <label>Mandatory</label>
-                  </div>
-                  <div className={`${style.marginLeft40} ${style.flex}`}>
-                    <FormControlLabel
-                      control={
-                        <Radio
-                          checked={selectedOption === "recommended"}
-                          onChange={handleChange}
-                          value="recommended"
-                          sx={{ "& .MuiSvgIcon-root": { borderRadius: "50%" } }}
-                        />
-                      }
-                    />
-                    <label>Recommened</label>
-                  </div>
-                  <div className={`${style.marginLeft40} ${style.flex}`}>
-                    <FormControlLabel
-                      control={
-                        <Radio
-                          checked={selectedOption === "optional"}
-                          onChange={handleChange}
-                          value="optional"
-                          sx={{ "& .MuiSvgIcon-root": { borderRadius: "50%" } }}
-                        />
-                      }
-                    />
-                    <label>Optional</label>
-                  </div>
-                </div>
-              </div>
             </div>
-            <div className={style.flex}>
-              <div>
-                <div className={style.entityLableStyle}>ALLOWED FORMAT</div>
-                <select
-                  value={currentEntityType}
-                  rightElement={arrowDown()}
-                  style={{ borderRadius: "0", width: "250px" }}
-                >
-                  <option value="">PNG/jpeg</option>
-                </select>
-              </div>
-              <div className={style.marginLeft10}>
-                <div className={style.entityLableStyle}>MAX SIZE ALLOWED:</div>
-                <select
-                  value={currentEntityType}
-                  rightElement={arrowDown()}
-                  style={{ borderRadius: "0", width: "250px" }}
-                >
-                  <option value="">5 MB</option>
-                </select>
-              </div>
+
+            <div className={style.formGroup}>
+                <label className={style.label}>SUPPORTING DOCUMENTATION:</label>
+                <label className={style.switch}>
+                    <input type="checkbox" />
+                    <span className={style.slider}></span>
+                </label>
             </div>
+
+            <div className={style.formGroup}>
+                <label className={style.label}>REQUIRES DISCLOSURES VERIFICATION:</label>
+                <label className={style.switch}>
+                    <input type="checkbox" checked />
+                    <span className={style.slider}></span>
+                </label>
+            </div>
+
+            <div className={style.formGroup}>
+                <label className={style.label}>REQUIRED FROM:</label>
+                <select className={style.select}>
+                    <option value="practising-physician">practising physician</option>
+                    <option value="current-employer">current employer</option>
+                    <option value="former-employer">former employer</option>
+                </select>
+            </div>
+
+            <div className={style.formGroup}>
+                <label className={style.label}>RELEASE OF INFORMATION AUTHORIZATION AND CONSENT FORM REQUIRED:</label>
+                <label className={style.switch}>
+                    <input type="checkbox" />
+                    <span className={style.slider}></span>
+                </label>
+            </div>
+</div>
   
             <div></div>
           </div>
