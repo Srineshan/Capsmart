@@ -18,6 +18,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import { Switch, makeStyles } from "@material-ui/core";
 import CommonInputField from "../../../Components/CommonFields/CommonInputField";
 import WritingFile from "./../../../images/writing-file.svg";
+import { BorderAllRounded } from "@material-ui/icons";
 
 const useStyles = makeStyles({
   switch: {
@@ -120,8 +121,14 @@ const DisclosureByIndustriesDialog = ({
         </div>
         <div className={style.ReferenceListEntityBorder}></div>
         <div className={`${style.addHealthCareBoxStyle}`}>
-          <div>
-            <div className={style.entityLableStyle}>APPLICANT TYPE*</div>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <div
+              className={style.entityLableStyle}
+              style={{ whiteSpace: "nowrap", marginRight: "15px" }} // Adjust margin as needed
+            >
+              APPLICANT TYPE*
+            </div>
+
             <select
               value={currentEntityType}
               className={style.fullWidth}
@@ -136,32 +143,79 @@ const DisclosureByIndustriesDialog = ({
               ))}
             </select>
           </div>
-          <div className={`${style.marginTop20}`}>
-            <div className={style.entityLableStyle}>DISCLOSURE CATEGORY:</div>
-            <input
-              className={style.fullWidth}
-              value="PROFESSIONAL LICENSING, PRIVILEGE AND MEMBERSHIP HISTORY"
-            ></input>
-            <div className={`${style.entityLableStyle} ${style.marginTop15}`}>
-              Written Notice Served
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              width: "100%",
+              gap: "15px",
+            }}
+            className={style.marginTop20}
+          >
+            <div style={{ flex: "0 0 auto", width: "80%", display: "flex" }}>
+              <div
+                style={{
+                  whiteSpace: "wrap",
+                  marginRight: "5px",
+                }}
+                className={style.entityLableStyle}
+              >
+                DISCLOSURE CATEGORY:
+              </div>
+              <input
+                style={{
+                  border: "1px solid #dae0dc",
+                  borderRadius: "5px",
+                  padding: "5px",
+                }}
+                className={`${style.fullWidth}`}
+                value="PROFESSIONAL LICENSING, PRIVILEGE AND MEMBERSHIP HISTORY"
+              />
             </div>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={writtenNotice}
-                  onChange={(e) => setWrittenNotice(e.target.checked)}
-                  className={classes.switch}
+            <div
+              style={{
+                display: "flex",
+                width: "20%",
+                justifyContent: "flex-end",
+                alignItems: "center",
+              }}
+            >
+              <div style={{ width: "50%" }}>
+                <div
+                  className={`${style.entityLableStyle} ${style.marginTop15}`}
+                >
+                  ADD SUB CATEGORY
+                </div>
+              </div>
+              <div>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={writtenNotice}
+                      onChange={(e) => setWrittenNotice(e.target.checked)}
+                      className={classes.switch}
+                    />
+                  }
+                  className={`${style.switchFontStyle}`}
+                  label={writtenNotice ? "YES" : "NO"}
                 />
-              }
-              className={`${style.switchFontStyle}`}
-              label={writtenNotice ? "YES" : "NO"}
-            />
+              </div>
+            </div>
           </div>
-          <div className={`${style.marginTop20}`}>
-            <div className={style.entityLableStyle}>
+
+          <div style={{ display: "flex" }} className={`${style.marginTop20}`}>
+            <div
+              style={{
+                whiteSpace: "wrap",
+              }}
+              className={style.entityLableStyle}
+            >
               INSTRUCTIONAL TEXT//HELP GUIDE
             </div>
             <TextArea
+              style={{
+                marginRight: "210px",
+              }}
               className={style.fullWidth}
               placeholder="Enter Text Here"
               rows={3}

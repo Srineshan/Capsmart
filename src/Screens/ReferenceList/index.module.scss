@@ -3167,6 +3167,9 @@
 .textColorWhite {
   color: white;
 }
+.borderColorGrey {
+  border: 1px solid #52575d;
+}
 .textColorGrey {
   color: #52575d;
 }
@@ -3416,7 +3419,7 @@
   transition: background-color 0.3s ease;
 
   &:hover {
-      background-color: #f0f0f0;
+    background-color: #f0f0f0;
   }
 }
 
@@ -3427,6 +3430,6 @@
   margin-left: 10px;
 
   &:hover {
-      background-color: #5637b0;
+    background-color: #5637b0;
   }
 }
