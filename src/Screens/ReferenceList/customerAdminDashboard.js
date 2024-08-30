@@ -699,17 +699,15 @@ const ClientAdminDashboard = () => {
                       </div>
                     </Link>
                     <Link
-                      to="/referenceList/contractTerminationReasonForCustomer"
+                      to={"/referenceList/holidayScheduleForCustomers"}
                       className={style.linkStyle}
                     >
                       <div className={style.dashboardCardStyle}>
                         <h5 className={`${style.headingForReferenceList}`}>
                           HOLIDAY LIST BY INDUSTRIES
                         </h5>
-                        {lastUpdatedDate?.terminationReason?.standardList ===
-                          true &&
-                        lastUpdatedDate?.terminationReason?.lastModified !==
-                          null ? (
+                        {lastUpdatedDate?.holidayList?.standardList === true &&
+                        lastUpdatedDate?.holidayList?.lastModified !== null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol}`}
                           >
@@ -718,7 +716,7 @@ const ClientAdminDashboard = () => {
                             </span>
                             <span className={style.dashboardCardColorOption2}>
                               {`LAST UPDATED ON ${new Date(
-                                lastUpdatedDate.terminationReason?.lastModified
+                                lastUpdatedDate.holidayList?.lastModified
                               )
                                 .toLocaleString("en-US", {
                                   timeZone: "America/New_York",
@@ -732,10 +730,8 @@ const ClientAdminDashboard = () => {
                           <></>
                         )}
 
-                        {lastUpdatedDate?.terminationReason?.standardList ===
-                          false &&
-                        lastUpdatedDate?.terminationReason?.lastModified !==
-                          null ? (
+                        {lastUpdatedDate?.holidayList?.standardList === false &&
+                        lastUpdatedDate?.holidayList?.lastModified !== null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
                           >
@@ -746,7 +742,7 @@ const ClientAdminDashboard = () => {
                             </span>
                             <span className={style.dashboardCardColorOption2}>
                               {`LAST UPDATED ON ${new Date(
-                                lastUpdatedDate.terminationReason?.lastModified
+                                lastUpdatedDate.holidayList?.lastModified
                               )
                                 .toLocaleString("en-US", {
                                   timeZone: "America/New_York",
@@ -760,8 +756,7 @@ const ClientAdminDashboard = () => {
                           <></>
                         )}
 
-                        {lastUpdatedDate?.terminationReason?.lastModified ===
-                        null ? (
+                        {lastUpdatedDate?.holidayList?.lastModified === null ? (
                           <div
                             className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
                           >
