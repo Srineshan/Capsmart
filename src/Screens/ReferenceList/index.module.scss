@@ -3312,3 +3312,117 @@
 .customSiteLink {
   text-decoration: none;
 }
+.formSection {
+  padding: 20px;
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.formGroup {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.label {
+  flex: 1;
+  color: #4a4a4a;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.radioGroup {
+  display: flex;
+  gap: 10px;
+}
+
+.radioLabel {
+  font-weight: normal;
+}
+
+.select {
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+.switch input:checked + .slider {
+  background-color: #2196f3;
+}
+
+.switch input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+.formButtonsContainer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 20px 0 0;
+  border-top: 1px solid #e0e0e0;
+}
+
+.saveExitButton {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  color: #4a4a4a;
+  font-size: 14px;
+  padding: 10px 20px;
+  margin-left: 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+      background-color: #f0f0f0;
+  }
+}
+
+.saveAddMoreButton {
+  background-color: #6644d0;
+  border: none;
+  color: #ffffff;
+  margin-left: 10px;
+
+  &:hover {
+      background-color: #5637b0;
+  }
+}
