@@ -381,7 +381,7 @@
 }
 
 .headingForReferenceList {
-  font: normal normal bolder 12px/18px proxima-nova !important;
+  font: normal normal 500 15px/18px proxima-nova !important;
   letter-spacing: 0px;
   text-align: left;
   color: #000000;
@@ -391,19 +391,19 @@
   height: calc(100% - 60px);
 
   @media (min-width: 768px) and (max-width: 991px) {
-    font: normal normal bolder 9px/12px proxima-nova !important;
+    font: normal normal 500 10px/12px proxima-nova !important;
   }
 
   @media (min-width: 992px) and (max-width: 1199px) {
-    font: normal normal bolder 10px/12px proxima-nova !important;
+    font: normal normal 500 12px/14px proxima-nova !important;
   }
 
   @media (min-width: 1224px) {
-    font: normal normal bolder 12px/16px proxima-nova !important;
+    font: normal normal 500 14px/16px proxima-nova !important;
   }
 
   @media (min-width: 1824px) {
-    font: normal normal bolder 16px/18px proxima-nova !important;
+    font: normal normal 500 16px/18px proxima-nova !important;
   }
 }
 
@@ -2847,14 +2847,13 @@
   color: #7165e3;
 }
 
-.inputGroupText > input {
+.inputGroupText>input {
   text-align: center;
 }
 
 .selectDropdownInputBox {
   border-radius: 4px;
-  background: transparent url("../../images/arrowDown.png") 0% 0% no-repeat
-    padding-box;
+  background: transparent url("../../images/arrowDown.png") 0% 0% no-repeat padding-box;
   border: 1px solid #e9e9f0;
   background-position: right center;
   background-repeat: no-repeat;
@@ -2914,13 +2913,13 @@
 
 .siteTitle {
   text-align: start;
-  font: normal normal bold 15px/20px Montserrat;
+  font: normal normal bold 15px/20px proxima-nova;
   color: #52575d;
 }
 
 .dropdown {
   text-align: start;
-  font: normal normal bold 12px/20px Montserrat;
+  font: normal normal bold 12px/20px proxima-nova;
   color: #52575d;
   width: 100%;
   padding-bottom: 5px !important;
@@ -2934,10 +2933,11 @@
 }
 
 .tableTitleContent {
-  font: normal normal bold 15px/20px Montserrat !important;
+  font: normal normal bold 15px/20px proxima-nova !important;
   color: #52575d !important;
   padding-bottom: 10px;
 }
+
 .tableTitleContentArrow {
   padding-left: 5px;
   padding-right: 5px;
@@ -2963,12 +2963,13 @@
 }
 
 .siteName {
-  font: normal normal bold 12px/20px Montserrat;
+  font: normal normal bold 12px/20px proxima-nova;
   color: #52575d;
   text-align: left;
 }
+
 .siteCount {
-  font: normal normal bold 12px/20px Montserrat;
+  font: normal normal bold 12px/20px proxima-nova;
   color: #52575d;
 }
 
@@ -2984,7 +2985,7 @@
 .siteDescription {
   color: #52575d;
   text-align: left;
-  font: normal normal bold 10px/10px Montserrat;
+  font: normal normal bold 10px/10px proxima-nova;
 }
 
 .applicantTypeBackground {
@@ -2992,11 +2993,12 @@
 }
 
 .applicantList {
-  position: relative; /* This makes the absolute positioning relative to this div */
+  position: relative;
+  /* This makes the absolute positioning relative to this div */
   padding-bottom: 60px;
   width: 100%;
   margin: 0 auto;
-  font: normal normal bold 10px/10px Montserrat;
+  font: normal normal bold 10px/10px proxima-nova;
   background-color: white;
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
@@ -3013,7 +3015,7 @@
   align-items: center;
   justify-content: center;
   background-color: #fff8f8;
-  font: normal normal bold 10px/10px Montserrat;
+  font: normal normal bold 10px/10px proxima-nova;
   color: #e89797;
   padding: 5px;
   // margin-bottom: 10px;
@@ -3037,7 +3039,7 @@
 .applicantHeader {
   background-color: #d2d0f5;
   color: #52575d;
-  font: normal normal bold 10px/10px Montserrat;
+  font: normal normal bold 10px/10px proxima-nova;
   text-align: left;
   height: 30px;
   padding-left: 5px;
@@ -3047,16 +3049,18 @@
   min-width: 400px;
   padding: 10px;
 }
+
 .twoColumn {
   min-width: 400px;
   padding: 10px;
 }
 
-.applicantItem > td {
+.applicantItem>td {
   vertical-align: middle;
   height: 30px;
 }
-.applicantItem > tr {
+
+.applicantItem>tr {
   vertical-align: middle;
   height: 30px;
 }
@@ -3078,6 +3082,7 @@
 .centerAligned {
   text-align: center;
 }
+
 .leftAligned {
   text-align: left;
 }
@@ -3119,11 +3124,13 @@
 }
 
 .subApplicantItem {
-  background-color: #f9f9f9; /* Slightly different background color for sub-items */
+  background-color: #f9f9f9;
+  /* Slightly different background color for sub-items */
 }
 
 .subItem td {
-  padding-left: 30px; /* Add padding to the left for sub-items */
+  padding-left: 30px;
+  /* Add padding to the left for sub-items */
 }
 
 .colorFileStyle {
@@ -3145,15 +3152,17 @@
   display: flex;
   gap: 10px;
 }
+
 .DisclosureDialogButton {
-  font: normal normal bold 14px/20px Montserrat;
+  font: normal normal bold 14px/20px proxima-nova;
   padding: 8px 10px;
   cursor: pointer;
   border: none;
   border-radius: 7px;
 }
+
 .actionsFooterButton {
-  font: normal normal bold 14px/20px Montserrat;
+  font: normal normal bold 14px/20px proxima-nova;
   padding: 8px 10px;
   font-size: 16px;
   cursor: pointer;
@@ -3164,6 +3173,7 @@
 .backgroundBlue {
   background-color: #7165e3;
 }
+
 .backgroundWhite {
   background-color: #ffffff;
 }
@@ -3171,9 +3181,11 @@
 .textColorWhite {
   color: white;
 }
+
 .borderColorGrey {
   border: 1px solid #52575d;
 }
+
 .textColorGrey {
   color: #52575d;
 }
@@ -3185,6 +3197,7 @@
 .borderNone {
   border: none;
 }
+
 .flagBoxContainer {
   background-color: lightgray;
   padding: 5px;
@@ -3192,11 +3205,13 @@
   width: 140px;
   height: 37px;
 }
+
 .departmentDialogStyle {
   height: 80%;
   width: 60% !important;
   border-radius: 20px;
 }
+
 .departmentFlag {
   width: 40px;
   height: 20px;
@@ -3204,6 +3219,7 @@
   border: 1px solid #7165e3;
   opacity: 1;
 }
+
 .departmentCountryName {
   width: 35px;
   height: 10px;
@@ -3214,29 +3230,36 @@
   text-transform: uppercase;
   opacity: 1;
 }
+
 .departmentCrossStyle {
   color: linear-gradient(#7165e3, #ff6562) !important;
   cursor: pointer;
 }
+
 .marginLeft10 {
   margin-left: 10px;
 }
+
 .marginLeft40 {
   margin-left: 40px;
 }
+
 .departmentFileStyle2 {
   height: 30px !important;
   width: 30px !important;
   object-fit: contain;
   cursor: pointer;
 }
+
 .flex {
   display: flex;
 }
+
 .validation {
   display: flex;
   align-items: center;
 }
+
 .dialogOutlinedButton {
   background-color: white;
   color: #7165e3;
@@ -3246,6 +3269,7 @@
   margin-bottom: -20px;
   cursor: pointer;
 }
+
 .dialogButtonStyle {
   background-color: #7165e3;
   color: white;
@@ -3259,6 +3283,7 @@
 .customSiteLink {
   text-decoration: none;
 }
+
 .formSection {
   padding: 20px;
   background-color: #fff;
@@ -3276,6 +3301,7 @@
 .switchFontStyle {
   text-align: center;
 }
+
 .label {
   flex: 1;
   color: #4a4a4a;
@@ -3285,8 +3311,9 @@
 
 .switchLabel {
   color: #4a4a4a;
-  font: normal normal bold 10px/20px Montserrat;
+  font: normal normal bold 10px/20px proxima-nova;
 }
+
 .radioGroup {
   display: flex;
   gap: 10px;
@@ -3339,11 +3366,11 @@
   border-radius: 50%;
 }
 
-.switch input:checked + .slider {
+.switch input:checked+.slider {
   background-color: #2196f3;
 }
 
-.switch input:checked + .slider:before {
+.switch input:checked+.slider:before {
   transform: translateX(20px);
 }
 
@@ -3380,18 +3407,23 @@
     background-color: #5637b0;
   }
 }
+
 .customSelect {
   width: 240px !important;
 }
+
 .toggleContainer {
   display: flex;
   align-items: center;
-  gap: 10px; /* Adjust the spacing between label and toggle */
+  gap: 10px;
+  /* Adjust the spacing between label and toggle */
 }
 
 .toggleLabel {
-  font-size: 14px; /* Adjust the font size if necessary */
-  color: #757575; /* Adjust color to match your design */
+  font-size: 14px;
+  /* Adjust the font size if necessary */
+  color: #757575;
+  /* Adjust color to match your design */
 }
 
 .switch {
@@ -3431,11 +3463,11 @@
   border-radius: 50%;
 }
 
-input:checked + .slider {
+input:checked+.slider {
   background-color: #4caf50;
 }
 
-input:checked + .slider:before {
+input:checked+.slider:before {
   transform: translateX(14px);
 }
 
@@ -3446,6 +3478,7 @@ input:checked + .slider:before {
 
 .slider:before {
   box-shadow: 0 0 2px #2196F3;
+}
 
 // DisclosureByIndustriesDialog.module.scss
 

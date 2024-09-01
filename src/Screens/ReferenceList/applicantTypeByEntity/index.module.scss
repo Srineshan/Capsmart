@@ -1,13 +1,15 @@
 .labelInputWrapper {
   display: flex;
   flex-direction: column;
-  margin-bottom: 20px; /* Space between each label-input pair */
-  align-items: flex-start; /* Align items at the start horizontally */
+  margin-bottom: 20px;
+  /* Space between each label-input pair */
+  align-items: flex-start;
+  /* Align items at the start horizontally */
 }
 
 .entityLableStyle {
   color: #52575d;
-  font: normal normal normal 14px/15px Montserrat;
+  font: normal normal normal 14px/15px proxima-nova;
   text-transform: uppercase;
   margin-bottom: 5px;
   width: 100%;
@@ -20,7 +22,7 @@
 
 .outlinedButton {
   background-color: white;
-  font: normal normal normal 14px/20px Montserrat;
+  font: normal normal normal 14px/20px proxima-nova;
   color: #7165e3;
   border: 1px solid #7165e3;
   padding: 8px 30px;
@@ -33,7 +35,7 @@
 }
 
 .buttonStyle {
-  font: normal normal normal 14px/20px Montserrat;
+  font: normal normal normal 14px/20px proxima-nova;
   background-color: #7165e3;
   color: white;
   padding: 8px 30px;
@@ -65,7 +67,7 @@
 }
 
 .extensionStyle {
-  font: normal normal bold 14px/20px Montserrat;
+  font: normal normal bold 14px/20px proxima-nova;
   color: #7165e3;
 }
 
@@ -106,6 +108,7 @@
 .marginRight {
   margin-right: 10px;
 }
+
 .flagBoxContainer {
   background-color: lightgray;
   padding: 5px;
@@ -113,11 +116,13 @@
   width: 140px;
   height: 37px;
 }
+
 .departmentDialogStyle {
   height: 80%;
   width: 60% !important;
   border-radius: 20px;
 }
+
 .departmentFlag {
   width: 40px;
   height: 20px;
@@ -125,6 +130,7 @@
   border: 1px solid #7165e3;
   opacity: 1;
 }
+
 .departmentCountryName {
   width: 35px;
   height: 10px;
@@ -135,13 +141,16 @@
   text-transform: uppercase;
   opacity: 1;
 }
+
 .departmentCrossStyle {
   color: linear-gradient(#7165e3, #ff6562) !important;
   cursor: pointer;
 }
+
 .marginLeft10 {
   margin-left: 10px;
 }
+
 .departmentFileStyle2 {
   height: 30px !important;
   width: 30px !important;

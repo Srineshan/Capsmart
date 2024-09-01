@@ -250,9 +250,8 @@ const StaffPrivileges = () => {
             />
           </div>
           <div
-            className={`${
-              isExpanded ? style.bigCardGrid : style.smallCardGrid
-            }`}
+            className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid
+              }`}
           >
             <ApplicantSideBar
               sites={entityTypes}
@@ -271,7 +270,7 @@ const StaffPrivileges = () => {
                   {">"}
                 </Typography>
                 <Typography className={style.tableTitleContent}>
-                  {`{${selectedApplicantType}}`}
+                  {`${selectedApplicantType}`}
                 </Typography>
                 <Typography
                   className={`${style.tableTitleContentArrow} ${style.tableTitleContent}`}

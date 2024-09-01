@@ -30,11 +30,10 @@ const ApplicantSideBar = ({ sites, siteTitle, onSelectSite, siteDropdown }) => {
       {sites.map((site, index) => (
         <div
           key={index}
-          className={`${style.sidebarContent} ${
-            index === activeIndex
+          className={`${style.sidebarContent} ${index === activeIndex
               ? style.sideActiveBackground
               : style.sideNonActiveBackground
-          }`}
+            }`}
           onClick={() => {
             console.log(site?.length);
             handleSiteClick(index, site.siteName?.siteName);
@@ -42,16 +41,12 @@ const ApplicantSideBar = ({ sites, siteTitle, onSelectSite, siteDropdown }) => {
         >
           <div className={style.siteDetails}>
             <p className={style.siteName}>
-              {"{"}
               {site.siteName?.siteName}
-              {"}"}
             </p>
             <div className={style.siteCount}>{site?.length}</div>
           </div>
           <p className={style.siteType}>
-            {"{"}
             {site.siteType.type}
-            {"}"}
           </p>
           {site.description && (
             <p className={style.siteDescription}>{site.description}</p>
