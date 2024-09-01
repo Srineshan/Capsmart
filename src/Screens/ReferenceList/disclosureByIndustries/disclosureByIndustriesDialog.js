@@ -49,6 +49,11 @@ const DisclosureByIndustriesDialog = ({
   const [noticePeriod, setNoticePeriod] = useState("0");
   const [curePeriod, setCurePeriod] = useState("0");
   const [writtenNotice, setWrittenNotice] = useState(true);
+  const [supportingDocumentation, setSupportingDocumentation] = useState(true);
+  const [requiresDisclosureVerification, setRequiresDisclosureVerification] =
+    useState(true);
+  const [releaseOfInfoAuthorization, setReleaseOfInfoAuthorization] =
+    useState(true);
   const [subReasonFields, setSubReasonFields] = useState([]);
   const classes = useStyles();
   const [checks, setChecks] = useState({
@@ -77,11 +82,8 @@ const DisclosureByIndustriesDialog = ({
       <div
         className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}
       >
-        <div className={style.spaceBetween}>
-          <div
-            className={`${style.flagBoxContainer}`}
-            style={{ marginBottom: "10px" }}
-          >
+        <div className={style.spaceBetween} style={{ display: "flex" }}>
+          <div className={`${style.flagBoxContainer} ${style.marginBottom10}`}>
             <img
               src={
                 "https://upload.wikimedia.org/wikipedia/en/thumb/a/a4/Flag_of_the_United_States.svg/125px-Flag_of_the_United_States.svg.png"
@@ -122,17 +124,16 @@ const DisclosureByIndustriesDialog = ({
         </div>
         <div className={style.ReferenceListEntityBorder}></div>
         <div className={`${style.addHealthCareBoxStyle}`}>
-          <div style={{ display: "flex", alignItems: "center" }}>
+          <div className={`${style.flexDisplay} ${style.alignItemsCenter}`}>
             <div
-              className={style.entityLableStyle}
-              style={{ whiteSpace: "nowrap", marginRight: "15px" }} // Adjust margin as needed
+              className={`${style.entityLableStyle} ${style.whiteSpaceNowrap} ${style.marginRight15}`}
             >
               APPLICANT TYPE*
             </div>
 
             <select
               value={currentEntityType}
-              className={style.fullWidth}
+              className={`${style.fullWidth} ${style.entityLableStyle}`}
               rightElement={arrowDown()}
               // onChange={(obj) => {
               //   setCurrentEntityType(obj.target.value);
@@ -145,43 +146,23 @@ const DisclosureByIndustriesDialog = ({
             </select>
           </div>
           <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              width: "100%",
-              gap: "15px",
-            }}
-            className={style.marginTop20}
+            className={`${style.marginTop20} ${style.flexDisplay} ${style.alignItemsCenter} ${style.gap15} ${style.fullWidth}`}
           >
-            <div style={{ flex: "0 0 auto", width: "80%", display: "flex" }}>
+            <div
+              className={`${style.flexDisplay} ${style.flexRatio} ${style.width80}`}
+            >
               <div
-                style={{
-                  whiteSpace: "wrap",
-                  marginRight: "5px",
-                }}
-                className={style.entityLableStyle}
+                className={`${style.entityLableStyle} ${style.whiteSpaceWrap} ${style.marginRight5}`}
               >
                 DISCLOSURE CATEGORY:
               </div>
               <input
-                style={{
-                  border: "1px solid #dae0dc",
-                  borderRadius: "5px",
-                  padding: "5px",
-                }}
-                className={`${style.fullWidth}`}
+                className={`${style.fullWidth} ${style.padding5} ${style.borderRadius5} ${style.boderColor}`}
                 value="PROFESSIONAL LICENSING, PRIVILEGE AND MEMBERSHIP HISTORY"
               />
             </div>
-            <div
-              style={{
-                display: "flex",
-                width: "20%",
-                justifyContent: "flex-end",
-                alignItems: "center",
-              }}
-            >
-              <div style={{ width: "50%" }}>
+            <div className={`${style.width20} ${style.actions}`}>
+              <div className={style.width50}>
                 <div
                   className={`${style.entityLableStyle} ${style.marginTop15}`}
                 >
@@ -197,7 +178,7 @@ const DisclosureByIndustriesDialog = ({
                       className={classes.switch}
                     />
                   }
-                  className={`${style.switchFontStyle}`}
+                  className={`${style.entityLableStyle}`}
                   label={writtenNotice ? "YES" : "NO"}
                 />
               </div>
@@ -206,65 +187,48 @@ const DisclosureByIndustriesDialog = ({
 
           <div className={`${style.marginTop20}`}>
             <div
-              style={{
-                whiteSpace: "wrap",
-              }}
-              className={style.entityLableStyle}
+              className={`${style.entityLableStyle} ${style.whiteSpaceWrap}`}
             >
               INSTRUCTIONAL TEXT//HELP GUIDE
             </div>
             <TextArea
-              style={{
-                marginRight: "210px",
-              }}
-              className={style.fullWidth}
+              className={`${style.fullWidth} ${style.marginRight210}`}
               placeholder="Enter Text Here"
               rows={3}
             />
           </div>
 
           <Divider
-            style={{
-              margin: "20px 0",
-              backgroundColor: "#b3b8bd",
-              height: "1px",
-            }}
+            className={`${style.height1} ${style.dividerBackground} ${
+              style.margin20 - 0
+            }`}
           />
           <div className={`${style.marginTop20}`}>
             <div className={style.entityLableStyle}>DISCLOSURE TEXT</div>
             <TextArea
-              className={style.fullWidth}
+              className={`${style.fullWidth} ${style.entityLableStyle}`}
               placeholder="Enter Text Here"
               rows={3}
             />
           </div>
-          <div style={{ marginTop: "20px" }}>
+          <div className={`${style.marginTop20}`}>
             <div
-              style={{
-                display: "flex",
-                textAlign: "left",
-                gap: "30px",
-                paddingBottom: "10px",
-              }}
+              className={`${style.flexDisplay} ${style.textAlignLeft} ${style.gap30} ${style.paddingBottom10}`}
             >
-              <label>RESPONSE OPTIONS:</label>
+              <label className={style.entityLableStyle}>
+                RESPONSE OPTIONS:
+              </label>
               <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "20px",
-                }}
+                className={`${style.flexDisplay} ${style.alignItemsCenter} ${style.gap20}`}
               >
                 <div
-                  className={style.radioLabel}
-                  style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                  className={`${style.radioLabel} ${style.flexDisplay} ${style.alignItemsCenter} ${style.gap8} ${style.entityLableStyle}`}
                 >
                   <input type="radio" name="response-options" value="yes-no" />
                   Yes / No
                 </div>
                 <div
-                  className={style.radioLabel}
-                  style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                  className={`${style.radioLabel} ${style.flexDisplay} ${style.alignItemsCenter} ${style.gap8} ${style.entityLableStyle}`}
                 >
                   <input
                     type="radio"
@@ -277,69 +241,91 @@ const DisclosureByIndustriesDialog = ({
             </div>
 
             <div
-              style={{ display: "flex", gap: "340px", alignItems: "center" }}
+              className={`${style.flexDisplay} ${style.alignItemsCenter} ${style.gap313} ${style.entityLableStyle}`}
             >
-              <label className={style.switchLabel}>
-                SUPPORTING DOCUMENTATION:
+              <label className={` ${style.entityLableStyle}`}>
+                Supporting Documentation:
               </label>
               <FormControlLabel
                 control={
                   <Switch
-                    checked={writtenNotice}
-                    onChange={(e) => setWrittenNotice(e.target.checked)}
+                    checked={supportingDocumentation}
+                    onChange={(e) =>
+                      setSupportingDocumentation(e.target.checked)
+                    }
                     className={classes.switch}
                   />
                 }
-                className={`${style.switchFontStyle}`}
+                className={` ${style.entityLableStyle}`}
                 label={writtenNotice ? "YES" : "NO"}
               />
             </div>
 
             <div
-              style={{ display: "flex", gap: "300px", alignItems: "center" }}
+              className={`${style.flexDisplay} ${style.alignItemsCenter} ${style.gap284}`}
             >
-              <label className={style.switchLabel}>
-                REQUIRES DISCLOSURES VERIFICATION:
+              <label className={style.entityLableStyle}>
+                Requires Disclosures Verification:
               </label>
               <FormControlLabel
                 control={
                   <Switch
-                    checked={writtenNotice}
-                    onChange={(e) => setWrittenNotice(e.target.checked)}
+                    checked={requiresDisclosureVerification}
+                    onChange={(e) =>
+                      setRequiresDisclosureVerification(e.target.checked)
+                    }
                     className={classes.switch}
                   />
                 }
-                className={`${style.switchFontStyle}`}
+                className={`${style.entityLableStyle}`}
                 label={writtenNotice ? "YES" : "NO"}
               />
+              {requiresDisclosureVerification && (
+                <div className={style.formGroup}>
+                  <label className={style.entityLableStyle}>
+                    REQUIRED FROM:
+                  </label>
+                  <select
+                    className={`${style.select} ${style.entityLableStyle}`}
+                  >
+                    <option value="practising-physician">
+                      practising physician
+                    </option>
+                    <option value="current-employer">current employer</option>
+                    <option value="former-employer">former employer</option>
+                  </select>
+                </div>
+              )}
             </div>
 
-            <div className={style.formGroup}>
-              <label className={style.label}>REQUIRED FROM:</label>
-              <select className={style.select}>
+            {/* <div className={style.formGroup}>
+              <label className={style.entityLableStyle}>REQUIRED FROM:</label>
+              <select className={`${style.select} ${style.entityLableStyle}`}>
                 <option value="practising-physician">
                   practising physician
                 </option>
                 <option value="current-employer">current employer</option>
                 <option value="former-employer">former employer</option>
               </select>
-            </div>
+            </div> */}
 
             <div
-              style={{ display: "flex", gap: "102px", alignItems: "center" }}
+              className={`${style.flexDisplay} ${style.alignItemsCenter} ${style.gap60}`}
             >
-              <label className={style.switchLabel}>
-                RELEASE OF INFORMATION AUTHORIZATION AND CONSENT FORM REQUIRED:
+              <label className={style.entityLableStyle}>
+                Release of Information Autheorization and Consent Form Required:
               </label>
               <FormControlLabel
                 control={
                   <Switch
-                    checked={writtenNotice}
-                    onChange={(e) => setWrittenNotice(e.target.checked)}
+                    checked={releaseOfInfoAuthorization}
+                    onChange={(e) =>
+                      setReleaseOfInfoAuthorization(e.target.checked)
+                    }
                     className={classes.switch}
                   />
                 }
-                className={`${style.switchFontStyle}`}
+                className={`${style.entityLableStyle}`}
                 label={writtenNotice ? "YES" : "NO"}
               />
             </div>
@@ -347,23 +333,22 @@ const DisclosureByIndustriesDialog = ({
 
           <div></div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "400px" }}>
+        <div
+          className={`${style.flexDisplay} ${style.alignItemsCenter} ${style.gap400}`}
+        >
           <button
-            style={{ borderRadius: "10px" }}
-            className={`${style.dialogOutlinedButton} ${style.marginTop10}`}
+            className={`${style.dialogOutlinedButton} ${style.marginTop10} ${style.borderRadius10} `}
           >
             BULK UPLOAD
           </button>
           <div className={`${style.floatRight} ${style.marginTop20}`}>
             <button
-              style={{ borderRadius: "10px" }}
-              className={style.dialogOutlinedButton}
+              className={`${style.dialogOutlinedButton} ${style.borderRadius10}`}
             >
               SAVE & EXIT
             </button>
             <button
-              style={{ borderRadius: "10px" }}
-              className={`${style.dialogButtonStyle} ${style.marginLeft20}`}
+              className={`${style.dialogButtonStyle} ${style.marginLeft20} ${style.borderRadius10}`}
             >
               SAVE & ADD MORE
             </button>

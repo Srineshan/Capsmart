@@ -600,14 +600,14 @@ const ProofOfDocumentDialog = ({
                 <div></div>
                 {secondaryReasonList[secondaryReasonList.length - 1] !== "" ? (
                   <div
-                    className={`${style.buttonStyle3} ${style.addMoreCardStyle}`}
+                    className={`${style.buttonStyle3} ${style.addMoreCardStyle}  ${style.borderRadius10}`}
                     onClick={() => handleAddMore()}
                   >
                     ADD MORE
                   </div>
                 ) : (
                   <div
-                    className={`${style.addMoreTextStyle} ${style.addMoreCardStyle}`}
+                    className={`${style.addMoreTextStyle} ${style.addMoreCardStyle}  ${style.borderRadius10}`}
                   >
                     ADD MORE
                   </div>
@@ -625,7 +625,7 @@ const ProofOfDocumentDialog = ({
         <div>
           <div className={`${style.floatRight} ${style.marginTop20}`}>
             <button
-              className={style.dialogOutlinedButton}
+              className={`${style.dialogOutlinedButton}  ${style.borderRadius10}`}
               onClick={() => {
                 getAddEntityDialog(false);
                 getTerminationReasonData();
@@ -635,7 +635,7 @@ const ProofOfDocumentDialog = ({
             </button>
             <button
               onClick={() => SaveSubmitHandler("Save & Exit")}
-              className={`${style.dialogButtonStyle} ${style.marginLeft20}`}
+              className={`${style.dialogButtonStyle} ${style.marginLeft20}  ${style.borderRadius10}`}
             >
               SAVE & ADD MORE
             </button>

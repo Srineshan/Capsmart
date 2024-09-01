@@ -1512,6 +1512,9 @@
   display: flex !important;
 }
 
+.flexRatio {
+  flex: 0 0 auto;
+}
 .fullWidth {
   width: 100% !important;
 }
@@ -1531,7 +1534,9 @@
 .width140 {
   width: 140% !important;
 }
-
+.boderColor {
+  border: 1px solid #dae0dc;
+}
 .width25 {
   width: 20%;
 }
@@ -3441,12 +3446,12 @@ input:checked + .slider:before {
 
 /* Optional: Add a shadow for a subtle effect */
 .slider {
-  box-shadow: 0 0 1px #2196F3;
+  box-shadow: 0 0 1px #2196f3;
 }
 
 .slider:before {
-  box-shadow: 0 0 2px #2196F3;
-
+  box-shadow: 0 0 2px #2196f3;
+}
 // DisclosureByIndustriesDialog.module.scss
 
 .marginBottom10 {
@@ -3456,9 +3461,18 @@ input:checked + .slider:before {
 .whiteSpaceNowrap {
   white-space: nowrap;
 }
+.whiteSpaceWrap {
+  white-space: nowrap;
+}
 
 .marginRight15 {
   margin-right: 15px;
+}
+.marginRight5 {
+  margin-right: 5px;
+}
+.marginRight210 {
+  margin-right: 210px;
 }
 
 .width80 {
@@ -3477,8 +3491,26 @@ input:checked + .slider:before {
   gap: 15px;
 }
 
+.gap8 {
+  gap: 8px;
+}
+.gap20 {
+  gap: 20px;
+}
+
 .marginTop20 {
   margin-top: 20px;
+}
+
+.margin20-0 {
+  margin: 20px 0px;
+}
+
+.dividerBackground {
+  background-color: #b3b8bd;
+}
+.height1 {
+  height: 1px;
 }
 
 .borderSolid {
@@ -3487,6 +3519,9 @@ input:checked + .slider:before {
 
 .borderRadius5 {
   border-radius: 5px;
+}
+.borderRadius10 {
+  border-radius: 10px;
 }
 
 .padding5 {
@@ -3525,8 +3560,8 @@ input:checked + .slider:before {
   padding-bottom: 10px;
 }
 
-.gap102 {
-  gap: 102px;
+.gap60 {
+  gap: 60px;
 }
 
 .borderRadius10 {
@@ -3535,4 +3570,11 @@ input:checked + .slider:before {
 
 .gap400 {
   gap: 400px;
+}
+
+.gap284 {
+  gap: 284px;
+}
+.gap313 {
+  gap: 313px;
 }
