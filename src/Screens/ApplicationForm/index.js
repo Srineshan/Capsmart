@@ -48,7 +48,7 @@ import LoginDialog from '../../Components/LoginDialog';
 const ApplicationForm = () => {
     const { section, step } = useParams();
     const [basicForm, setBasicForm] = useState({})
-    const applicationId = '66bf43f0b51f2f3485e6e47d'
+    const applicationId = '66d1cae19354e9022ad82027'
     const [isOpen, setIsOpen] = useState(true);
     const getIsOpen = (value) => {
         setIsOpen(value);
@@ -143,7 +143,17 @@ const ApplicationForm = () => {
         <div className={style.screenBackground}>
             <ApplicationHeader title={'New Physician / Doctor Application For Jane DOE, MD'} />
             <div className={style.screenPadding}>
+                {/* <div className={style.applicationScreenGrid}> */}
                 {StepDisplay()}
+                {/* <div>
+                        <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
+                        <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate('/applicationForm/section1/acknowledgementStep1')} >CONTINUE</div>
+                        <div className={style.marginTop}>
+                            <ApplicationReferenceDocuments />
+                        </div>
+                    </div>
+                </div> */}
             </div>
             {/* <LoginDialog getIsOpen={getIsOpen} days={15} /> */}
         </div>

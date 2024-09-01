@@ -10,7 +10,7 @@
 
 .breadcrumbStyle {
     text-align: left;
-    font: normal normal 600 12px/24px Montserrat;
+    font: normal normal 600 12px/24px proxima-nova;
     letter-spacing: 1.5px;
     color: #646D82;
     text-transform: uppercase;
@@ -33,7 +33,7 @@
 
 .cardTitle {
     text-align: left;
-    font: normal normal 600 17px/28px Montserrat;
+    font: normal normal 600 17px/28px proxima-nova;
     letter-spacing: 0px;
     color: #52575D;
     text-transform: capitalize;
@@ -57,6 +57,12 @@
     gap: 20px;
 }
 
+.regionalCallGrid {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 20px;
+}
+
 .siteGrid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -65,6 +71,72 @@
 
 .siteGrid> :nth-child(1) {
     grid-column: 1 / -1;
+}
+
+.credentialingGrid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 10px;
+}
+
+.credentialingGrid> :nth-child(1) {
+    grid-column: span 5;
+}
+
+.credentialingGrid> :nth-child(2) {
+    grid-column: span 2;
+}
+
+.credentialingGrid> :nth-child(3) {
+    grid-column: span 2;
+}
+
+.appointmentGrid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 10px;
+}
+
+.appointmentGrid> :nth-child(1) {
+    grid-column: span 3;
+}
+
+.appointmentGrid> :nth-child(2) {
+    grid-column: span 3;
+}
+
+.applicantGrid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+}
+
+.applicantGrid> :nth-child(1) {
+    grid-column: span 2;
+}
+
+.applicantGrid> :nth-child(2) {
+    grid-column: span 2;
+}
+
+.applicantGrid> :nth-child(3) {
+    grid-column: span 2;
+}
+
+.applicantGrid> :nth-child(4) {
+    grid-column: span 2;
+}
+
+.applicantGrid> :nth-child(5) {
+    grid-column: span 2;
+}
+
+.applicantGrid> :nth-child(6) {
+    grid-column: 1/-4;
+}
+
+.applicantGrid> :nth-child(7) {
+    grid-column: span 3;
 }
 
 .spaceBetween {
@@ -83,11 +155,11 @@
     border: 0.5px solid #7165E3;
     border-radius: 8px;
     text-align: center;
-    font: normal normal bold 14px/30px Montserrat;
+    font: normal normal bold 14px/30px proxima-nova;
     letter-spacing: 0px;
     color: #7165E3;
     text-transform: uppercase;
-    padding: 5px 20px;
+    padding: 5px 80px;
     cursor: pointer;
 }
 
@@ -96,11 +168,11 @@
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 8px;
     text-align: center;
-    font: normal normal bold 14px/30px Montserrat;
+    font: normal normal bold 14px/30px proxima-nova;
     letter-spacing: 0px;
     color: #FFFFFF;
     text-transform: uppercase;
-    padding: 5px 20px;
+    padding: 5px 80px;
     cursor: pointer;
 }
 
@@ -157,13 +229,13 @@
 
 .siteDisplaySiteTextStyle {
     text-align: left;
-    font: normal normal bold 14px/30px Montserrat;
+    font: normal normal bold 14px/30px proxima-nova;
     color: #52575D99;
 }
 
 .siteDisplayDepartmentTextStyle {
     text-align: left;
-    font: normal normal bold 12px/24px Montserrat;
+    font: normal normal bold 12px/24px proxima-nova;
     letter-spacing: 0px;
     color: #52575D;
 }

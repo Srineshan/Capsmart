@@ -1,6 +1,6 @@
 @import '../../styles/mixins.scss';
 
-.navbarStyle{
+.navbarStyle {
     top: 0px;
     left: 0px;
     width: 100%;
@@ -9,12 +9,12 @@
     opacity: 1;
 }
 
-.displayInRow{
+.displayInRow {
     display: flex;
     flex-direction: row;
 }
 
-.logo{
+.logo {
     top: 0px;
     left: 42px;
     width: 184px;
@@ -22,52 +22,52 @@
     opacity: 1;
 }
 
-.menuStyle{
+.menuStyle {
     margin-top: 30px;
     padding: 0 15px;
-    font: normal normal bold 14px/20px Montserrat;
+    font: normal normal bold 14px/20px proxima-nova;
     letter-spacing: 1.5px;
     color: #646D82;
 }
 
-.logoutStyle{
+.logoutStyle {
     margin: 25px 0 0 30px;
     padding: 0 15px;
-    font: normal normal bold 15px/25px Montserrat;
+    font: normal normal bold 15px/25px proxima-nova;
     letter-spacing: 1.5px;
     color: #646D82;
 }
 
-.activeMenuColor{
+.activeMenuColor {
     color: #7165E3;
-    border-bottom:5px solid #7165E3;
-    padding-bottom:3px;
-    font: normal normal 600 15px/25px Montserrat;
+    border-bottom: 5px solid #7165E3;
+    padding-bottom: 3px;
+    font: normal normal 600 15px/25px proxima-nova;
     margin-top: 27px;
 }
 
-.icons{
+.icons {
     width: 40px;
     height: 40px;
     margin: 20px 0 0 20px;
     cursor: pointer;
 }
 
-.logoutIcons{
+.logoutIcons {
     width: 40px;
     height: 40px;
     margin: 20px 20px 0 -10px;
     cursor: pointer;
 }
 
-.notificationIcon{
+.notificationIcon {
     margin-top: 20px;
     margin-left: -10px;
     width: 20px;
     height: 20px;
 }
 
-.notificationCount{
+.notificationCount {
     margin-top: 23px;
     margin-left: -16px;
     width: 12px;
@@ -75,12 +75,12 @@
     object-fit: cover;
 }
 
-.spaceBetween{
+.spaceBetween {
     display: flex;
     justify-content: space-between;
 }
 
-.optionsCardStyle{
+.optionsCardStyle {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 11px #52575D;
     border-radius: 4px 4px 0px 0px;
@@ -88,20 +88,20 @@
     position: absolute;
 }
 
-.options{
+.options {
     padding: 10px;
 }
 
-.options:hover{
+.options:hover {
     background: #EBF2F7 0% 0% no-repeat padding-box;
     color: #7064DE;
 }
 
-.noFontStyle{
+.noFontStyle {
     text-decoration: none !important;
     color: black;
 }
 
-.marginLeft30{
-    margin-left:30px;
+.marginLeft30 {
+    margin-left: 30px;
 }

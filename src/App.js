@@ -21,6 +21,7 @@ import axios from "axios";
 import jwt from "jwt-decode";
 import MileageRateForCustomers from "./Screens/ReferenceList/mileageRateForCustomers";
 import GeneralConfigurationForCustomers from "./Screens/ReferenceList/generalConfigurationForCustomers";
+import LoginDialog from "./Components/LoginDialog";
 
 const ReportType = React.lazy(() => import("./Screens/Reports/reportType"));
 const ReportTypeOverview = React.lazy(() =>
@@ -856,7 +857,7 @@ const App = ({ props }) => {
                 path="/createStaffMemberApplication"
                 element={<CreateStaffMemberApplication />}
               />
-              <Route path="/applicationSetup" element={<ApplicationSetup />} />
+              <Route path="/loginPage" element={<LoginDialog />} />
             </Routes>
           </>
           {/* ) : (

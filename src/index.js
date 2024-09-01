@@ -9,6 +9,7 @@ import "@blueprintjs/icons/lib/css/blueprint-icons.css";
 import "@blueprintjs/datetime/lib/css/blueprint-datetime.css";
 import { ErrorBoundary } from "react-error-boundary";
 import { browserName, browserVersion, osName, osVersion, isMobile, isDesktop, isTablet } from "react-device-detect";
+import { AuthProvider } from '@descope/react-sdk';
 import UnexpectedError from './Components/ErrorPage/unexpectedError';
 import { TenantID, POST } from './Screens/dataSaver';
 import { currentUser } from './utils/auth';
@@ -141,9 +142,11 @@ const logError = async (error, info) => {
 const rootElement = document.getElementById("root");
 if (window.self === window.top) {
   ReactDOM.render(
-    <ErrorBoundary FallbackComponent={UnexpectedError} onError={logError}>
-      <App />
-    </ErrorBoundary>
+    <AuthProvider projectId={process.env.REACT_APP_DESCOPE_PROJECT_ID}>
+      <ErrorBoundary FallbackComponent={UnexpectedError} onError={logError}>
+        <App />
+      </ErrorBoundary>
+    </AuthProvider >
     , rootElement);
 }
 // ReactDOM.render(

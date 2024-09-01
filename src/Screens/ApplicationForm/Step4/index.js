@@ -24,7 +24,7 @@ const Step4 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
         const { data: form } = await GET(
             `application-management-service/formSchema/${basicForm?.formSchemas?.[2]?.id}`
         );
-        setFormSchema(form)
+        setFormSchema(form?.schema)
     }
 
     const getIsSubmitClicked = (value, data) => {
@@ -52,20 +52,19 @@ const Step4 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 4'} dataType={'Forms'} title={formSchema?.title} timeNumber={2} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                <ProgressCard step={'STEP 3'} dataType={''} title={formSchema?.title} timeNumber={2} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'certifications' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.certifications} gridStyle={style.licenseGrid} baseKey={'certifications'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} formId={basicForm?.forms?.[2]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} />
+                            <ApplicationFieldCard object={formSchema?.properties?.certifications} gridStyle={style.licenseGrid} baseKey={'certifications'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} formId={basicForm?.forms?.[2]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid}
+                                heading={'Information Requirement Alert'}
+                                subHeading={'For this application you are required to provide information on all of the different Professional licenses & Board certification you have.'}
+                                subHeading2={'You will not be able to submit your application if this is not provided.'}
+                            />
                         )}
-                        <NoDataBox
-                            heading={'Information Requirement Alert'}
-                            subHeading={'For this application you are required to provide information on all of the different Professional licenses & Board certification you have.'}
-                            subHeading2={'You will not be able to submit your application if this is not provided.'}
-                        />
                     </div>
                 </div>
                 <div>

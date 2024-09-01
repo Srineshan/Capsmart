@@ -24,7 +24,7 @@ const Step10 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =
         const { data: form } = await GET(
             `application-management-service/formSchema/${basicForm?.formSchemas?.[8]?.id}`
         );
-        setFormSchema(form)
+        setFormSchema(form?.schema)
     }
 
     const getIsSubmitClicked = (value, data) => {
@@ -52,7 +52,7 @@ const Step10 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 10'} dataType={'Documents and Data'} title={formSchema?.title} timeNumber={20} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                <ProgressCard step={'STEP 10'} dataType={''} title={formSchema?.title} timeNumber={20} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>

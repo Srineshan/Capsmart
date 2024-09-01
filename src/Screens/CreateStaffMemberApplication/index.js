@@ -13,7 +13,6 @@ const CreateStaffMemberApplication = () => {
     const [basicForm, setBasicForm] = useState(
         {
             "applicant": {
-                "id": "string",
                 "name": {
                     "firstName": "",
                     "lastName": "",
@@ -31,7 +30,6 @@ const CreateStaffMemberApplication = () => {
             },
             "basicDetails": {
                 "applicant": {
-                    "id": "",
                     "name": {
                         "firstName": "",
                         "lastName": "",
@@ -40,78 +38,36 @@ const CreateStaffMemberApplication = () => {
                     "email": {
                         "officialEmail": ""
                     },
-                    "mobileNumber": "",
-                    "category": "GUEST"
-                },
-                "providerType": {
-                    "id": "",
-                    "serviceProviderType": ""
-                },
-                "natureOfService": {
-                    "id": "",
-                    "name": ""
-                },
-                "proposedStartDate": "2024-07-12",
-                "curriculumVitae": {
-                    "filePath": "",
-                    "fileName": "",
-                    "fileURL": ""
-                },
-                "letterOfInterest": {
-                    "filePath": "",
-                    "fileName": "",
-                    "fileURL": ""
-                },
-                "interviewDetails": {
-                    "interviewDate": "2024-07-12",
-                    "interviewedBy": ""
-                },
-                "sites": {
-                    "siteDepartments": [
-                        {
-                            "site": {
-                                "id": "",
-                                "name": ""
-                            },
-                            "department": {
-                                "id": "",
-                                "name": ""
-                            },
-                            "speciality": {
-                                "id": "",
-                                "name": ""
-                            }
-                        }
-                    ]
-                },
-                "natureOfPractice": {
-                    "natureOfPracticeType": "",
-                    "partTimeDetails": {
-                        "locumTenensType": "",
-                        "startDate": "2024-07-12",
-                        "endDate": "2024-07-12"
+                    "cellPhone": "",
+                    "applicantType": "",
+                    "startDate": "",
+                    "category": "GUEST",
+                    "curriculumVitae": {
+                        "filePath": "",
+                        "fileName": "",
+                        "fileURL": ""
+                    },
+                    "letterOfInterest": {
+                        "filePath": "",
+                        "fileName": "",
+                        "fileURL": ""
                     }
+                },
+                "credentialingPrivilegeCategory": {
+                    "credentialingCategory": "",
+                    "from": null,
+                    "to": null
+                },
+                "departmentSpecialty": {
+                    "department": "",
+                    "specialty": ""
                 },
                 "regionalCallResponsibilities": {
-                    "applicable": true,
-                    "sites": {
-                        "siteDepartments": [
-                            {
-                                "site": {
-                                    "id": "",
-                                    "name": ""
-                                },
-                                "department": {
-                                    "id": "",
-                                    "name": ""
-                                },
-                                "speciality": {
-                                    "id": "",
-                                    "name": ""
-                                }
-                            }
-                        ]
-                    }
+                    "regionalCallResponsibilities": ""
+                },
+                "billingNumber": {
+                    "billingNumber": "",
+                    "specialityBillingCode": ""
                 }
             }
         }
@@ -122,25 +78,25 @@ const CreateStaffMemberApplication = () => {
 
     const getBasicForm = async () => {
         const { data: basicForm } = await GET(
-            `application-management-service/preApplication/basicForm`
+            `application-management-service/application/basicForm`
         );
         if (basicForm) {
-            if (!isNextpage) {
-                const { data: form } = await GET(
-                    `application-management-service/formSchema/${basicForm?.generalSchemas?.[1]?.id}`
-                );
-                let temp = form;
-                if (temp.properties.applicant.properties !== null) {
-                    delete temp.properties.applicant.properties['letterOfInterest']
-                    delete temp.properties.applicant.properties['curriculumVitae']
-                }
-                setForm(form)
-            } else {
-                const { data: form } = await GET(
-                    `application-management-service/formSchema/${basicForm?.generalSchemas?.[2]?.id}`
-                );
-                setForm(form)
+            // if (!isNextpage) {
+            const { data: form } = await GET(
+                `application-management-service/formSchema/${basicForm?.generalSchemas?.[1]?.id}`
+            );
+            let temp = form?.schema;
+            if (temp.properties.applicant.properties !== null) {
+                delete temp.properties.applicant.properties['letterOfInterest']
+                delete temp.properties.applicant.properties['curriculumVitae']
             }
+            setForm(form?.schema)
+            // } else {
+            //     const { data: form } = await GET(
+            //         `application-management-service/formSchema/${basicForm?.generalSchemas?.[2]?.id}`
+            //     );
+            //     setForm(form)
+            // }
         }
     }
 
@@ -191,26 +147,31 @@ const CreateStaffMemberApplication = () => {
             <ApplicationHeader title={'Create A New Staff Member Application'} />
             <div className={style.screenPadding}>
                 <div className={style.breadcrumbStyle}>{`CAP MANAGER > APPLICATIONS >> NEW APPLICATION`}</div>
-                {!isNextpage ? (
-                    <>
-                        {form !== undefined && 'applicant' in form?.properties && (
-                            <ApplicationFieldCard object={form?.properties?.applicant} gridStyle={style.threeCol} baseKey={'applicant'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
-                        )}
-                        {form !== undefined && 'service' in form?.properties && (
-                            <ApplicationFieldCard object={form?.properties?.service} gridStyle={style.twoCol} baseKey={'service'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
-                        )}
-                        {form !== undefined && 'interviewDetails' in form?.properties && (
-                            <ApplicationFieldCard object={form?.properties?.interviewDetails} gridStyle={style.jobInterviewGrid} baseKey={'interviewDetails'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
-                        )}
-                        <div className={style.spaceBetween}>
-                            <div></div>
+                {/* {!isNextpage ? ( */}
+                <>
+                    {form !== undefined && 'applicant' in form?.properties && (
+                        <ApplicationFieldCard object={form?.properties?.applicant} gridStyle={style.applicantGrid} baseKey={'applicant'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+                    )}
+                    {form !== undefined && 'credentialingPrivilegeCategory' in form?.properties && (
+                        <ApplicationFieldCard object={form?.properties?.credentialingPrivilegeCategory} gridStyle={style.credentialingGrid} baseKey={'credentialingPrivilegeCategory'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+                    )}
+                    {form !== undefined && 'departmentSpecialty' in form?.properties && (
+                        <ApplicationFieldCard object={form?.properties?.departmentSpecialty} gridStyle={style.appointmentGrid} baseKey={'departmentSpecialty'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+                    )}
+                    {form !== undefined && 'regionalCallResponsibilities' in form?.properties && (
+                        <ApplicationFieldCard object={form?.properties?.regionalCallResponsibilities} gridStyle={style.regionalCallGrid} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+                    )}
+                    <div className={style.spaceBetween}>
+                        <div></div>
+                        <div className={style.displayInRow}>
                             <div className={style.displayInRow}>
-                                {/* <div className={`${style.saveInProgress} ${style.marginTop}`}>DISCARD</div> */}
-                                <div className={`${style.continue} ${style.marginTop} ${style.marginLeft}`} onClick={() => handleSubmitApplicationReq()}>Next</div>
+                                <div className={`${style.saveInProgress} ${style.marginTop}`}>DISCARD</div>
+                                <div className={`${style.continue} ${style.marginTop} ${style.marginLeft}`} onClick={() => handleSubmitApplicationReq()}>CONTINUE</div>
                             </div>
                         </div>
-                    </>
-                ) : (
+                    </div>
+                </>
+                {/* ) : (
                     <>
                         {form !== undefined && 'sites' in form?.properties && (
                             <div className={style.siteCardGrid}>
@@ -243,12 +204,11 @@ const CreateStaffMemberApplication = () => {
                         <div className={style.spaceBetween}>
                             <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => setIsNextPage(false)}>BACK</div>
                             <div className={style.displayInRow}>
-                                {/* <div className={`${style.saveInProgress} ${style.marginTop}`} >SEND APPLICATION LINK</div> */}
                                 <div className={`${style.continue} ${style.marginTop} ${style.marginLeft}`} onClick={() => handleSubmitApplicationReq()}>SEND APPLICATION LINK</div>
                             </div>
                         </div>
                     </>
-                )}
+                )} */}
                 {/* {
                     <>
                         {form !== undefined && 'sites' in form?.properties && (
