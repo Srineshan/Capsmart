@@ -329,13 +329,13 @@ const LevelTwoHeader = ({
           handleClose={handleCloseDialog}
         />
       )} */}
-      {tileType == "ProofOfDocument" && (
+      {/* {tileType == "ProofOfDocument" && (
         <ProofOfDocumentDialog
           open={isDialogOpen}
           handleClose={handleCloseDialog}
         />
-      )}
-      {tileType == "consents" && (
+      )} */}
+      {tileType == "ProofOfDocument" && (
         <ConsentsDialog open={isDialogOpen} handleClose={handleCloseDialog} />
       )}
     </div>

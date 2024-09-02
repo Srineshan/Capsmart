@@ -34,6 +34,8 @@ const ConsentsDialog = ({
   isEdit,
   getTerminationReasonData,
   siteTypeId,
+  handleClose,
+  open,
 }) => {
   const [terminationId, setTerminationId] = useState(
     selectedTermination?.id ? selectedTermination?.id : ""
@@ -224,8 +226,10 @@ const ConsentsDialog = ({
 
   return (
     <Dialog
-      isOpen={getAddEntityDialog}
-      onClose={() => getAddEntityDialog(false)}
+      // isOpen={getAddEntityDialog}
+      // onClose={() => getAddEntityDialog(false)}
+      isOpen={open}
+      onClose={handleClose}
       className={`${style.healthCareDialogStyle} ${style.dialogPaddingBottom}`}
     >
       <div
@@ -238,10 +242,11 @@ const ConsentsDialog = ({
             size={20}
             intent={Intent.DANGER}
             className={style.dialogCrossStyle}
-            onClick={() => {
-              getAddEntityDialog(false);
-              getTerminationReasonData();
-            }}
+            // onClick={() => {
+            //   getAddEntityDialog(false);
+            //   getTerminationReasonData();
+            // }}
+            onClick={handleClose}
           />
         </div>
         <div className={style.ReferenceListEntityBorder}></div>
