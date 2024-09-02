@@ -11,8 +11,8 @@ import {
 } from "@blueprintjs/core";
 import ArrowDown from "./../../../images/arrowDown.png";
 import style from "./../index.module.scss";
-import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
-import { POST, GET, PUT, TenantID } from "./../dataSaver";
+import { ErrorToaster, SuccessToaster } from "./../../../utils/toaster";
+import { POST, GET, PUT, TenantID } from "./../../dataSaver";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { Switch, makeStyles } from "@material-ui/core";
 
@@ -224,282 +224,214 @@ const ConsentsDialog = ({
 
   return (
     <Dialog
-      isOpen={open}
-      onClose={handleClose}
+      isOpen={getAddEntityDialog}
+      onClose={() => getAddEntityDialog(false)}
       className={`${style.healthCareDialogStyle} ${style.dialogPaddingBottom}`}
     >
       <div
         className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}
       >
-        <div className={style.spaceBetween} style={{ display: "flex" }}>
-          <div className={`${style.flagBoxContainer} ${style.marginBottom10}`}>
-            <img
-              src={
-                "https://upload.wikimedia.org/wikipedia/en/thumb/a/a4/Flag_of_the_United_States.svg/125px-Flag_of_the_United_States.svg.png"
-              }
-              alt="refresh"
-              className={`${style.departmentFlag} ${style.marginRight15}  `}
-            />
-            <span
-              className={`${style.departmentCountryName} ${style.marginLeft10}`}
-            >
-              USA
-            </span>
-            <img
-              src={ArrowDown}
-              className={`${style.colorFileStyle2} ${style.ArrowDown} ${style.marginRight15}`}
-              alt=""
-            />
-          </div>
-          <div>
-            <p className={style.extensionStyle}>{`Setup your New PoD`}</p>
-          </div>
-          <div>
-            <img
-              src={WritingFile}
-              className={style.dialogCrossStyle}
-              alt="Writing File"
-            />
-          </div>
-          <div>
-            <Icon
-              icon="cross"
-              size={30}
-              intent={Intent.DANGER}
-              className={style.departmentCrossStyle}
-              onClick={handleClose}
-            />
-          </div>
+        <div className={style.spaceBetween}>
+          <p className={style.extensionStyle}>{`Setup your Consent Forms`}</p>
+          <Icon
+            icon="cross"
+            size={20}
+            intent={Intent.DANGER}
+            className={style.dialogCrossStyle}
+            onClick={() => {
+              getAddEntityDialog(false);
+              getTerminationReasonData();
+            }}
+          />
         </div>
         <div className={style.ReferenceListEntityBorder}></div>
         <div className={`${style.addHealthCareBoxStyle}`}>
-          <div className={`${style.flexDisplay} ${style.alignItemsCenter}`}>
-            <div
-              className={`${style.entityLableStyle} ${style.whiteSpaceNowrap} ${style.marginRight15}`}
-            >
-              APPLICANT TYPE*
+          <div className={`${style.extentionGrid}`}>
+            <div className={style.entityLableStyle}>Entity Type*</div>
+            <div className={style.displayInRow}>
+              <select
+                value={currentEntityType}
+                className={style.fullWidth}
+                // rightElement={arrowDown()}
+                onChange={(obj) => {
+                  setCurrentEntityType(obj.target.value);
+                }}
+              >
+                <option value="">Select Entity Type</option>
+                {entityTypes.map((type) => (
+                  <option value={type.siteTypeId}>{type.siteTypeName}</option>
+                ))}
+              </select>
             </div>
-
-            <select
-              value={currentEntityType}
-              className={`${style.fullWidth} ${style.entityLableStyle}`}
-              rightElement={arrowDown()}
-              // onChange={(obj) => {
-              //   setCurrentEntityType(obj.target.value);
-              // }}
-            >
-              <option value="">MultiSelect</option>
-              {entityTypes.map((type) => (
-                <option value={type.siteTypeId}>{type.siteTypeName}</option>
-              ))}
-            </select>
           </div>
+          {/* <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+            <div className={style.entityLableStyle}>
+              For Cause Terminating Party*
+            </div>
+            <div className={style.displayInRow}>
+              <select
+                value={terminationBy}
+                defaultValue={terminationBy}
+                className={style.fullWidth}
+                // rightElement={arrowDown()}
+                onChange={(obj) => {
+                  setTerminationBy(obj.target.value);
+                }}
+              >
+                <option value="CONTRACTOR">For Cause By Contractor</option>
+                <option value="ENTITY">For Cause By Entity</option>
+              </select>
+            </div>
+          </div> */}
           <div
-            className={`${style.marginTop20} ${style.flexDisplay} ${style.alignItemsCenter} ${style.gap15} ${style.fullWidth}`}
-          >
-            <div
-              className={`${style.flexDisplay} ${style.flexRatio} ${style.width80}`}
-            >
-              <div
-                className={`${style.entityLableStyle} ${style.whiteSpaceWrap} ${style.marginRight5}`}
-              >
-                DISCLOSURE CATEGORY:
-              </div>
-              <input
-                className={`${style.fullWidth} ${style.padding5} ${style.borderRadius5} ${style.boderColor}`}
-                value="PROFESSIONAL LICENSING, PRIVILEGE AND MEMBERSHIP HISTORY"
+            className={`${style.ReferenceListEntityBorder} ${style.marginTop20}`}
+          ></div>
+          <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+            <div className={style.entityLableStyle}>
+              Primary Termination Reason*
+            </div>
+            <div className={style.displayInRow}>
+              <InputGroup
+                value={primaryReason}
+                id="primaryReasonEl"
+                className={style.halfWidth}
+                onChange={(obj) => setPrimaryReason(obj.target.value)}
+              />
+              <Checkbox
+                value="ADD SUB-REASONS"
+                checked={addSubReasons}
+                onChange={(e) => handleAddSubReasons(e.target.checked)}
+                className={` ${style.marginLeft20} ${style.marginTop}`}
+                label="ADD SUB-REASONS"
               />
             </div>
-            <div className={`${style.width20} ${style.actions}`}>
-              <div className={style.width50}>
-                <div
-                  className={`${style.entityLableStyle} ${style.marginTop15}`}
-                >
-                  ADD SUB CATEGORY
-                </div>
-              </div>
-              <div>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={writtenNotice}
-                      onChange={(e) => setWrittenNotice(e.target.checked)}
-                      className={classes.switch}
-                    />
-                  }
-                  className={`${style.entityLableStyle}`}
-                  label={writtenNotice ? "YES" : "NO"}
-                />
-              </div>
-            </div>
           </div>
-
-          <div className={`${style.marginTop20}`}>
-            <div
-              className={`${style.entityLableStyle} ${style.whiteSpaceWrap}`}
-            >
-              INSTRUCTIONAL TEXT//HELP GUIDE
+          <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+            <div className={`${style.entityLableStyle} ${style.marginTop15}`}>
+              Written Notice Served
             </div>
-            <TextArea
-              className={`${style.fullWidth} ${style.marginRight210}`}
-              placeholder="Enter Text Here"
-              rows={3}
-            />
-          </div>
-
-          <Divider
-            className={`${style.height1} ${style.dividerBackground} ${
-              style.margin20 - 0
-            }`}
-          />
-          <div className={`${style.marginTop20}`}>
-            <div className={style.entityLableStyle}>DISCLOSURE TEXT</div>
-            <TextArea
-              className={`${style.fullWidth} ${style.entityLableStyle}`}
-              placeholder="Enter Text Here"
-              rows={3}
-            />
-          </div>
-          <div className={`${style.marginTop20}`}>
             <div
-              className={`${style.flexDisplay} ${style.textAlignLeft} ${style.gap30} ${style.paddingBottom10}`}
+              className={`${style.displayInRow} ${style.displayTerminationPeriod}`}
             >
-              <label className={style.entityLableStyle}>
-                RESPONSE OPTIONS:
-              </label>
-              <div
-                className={`${style.flexDisplay} ${style.alignItemsCenter} ${style.gap20}`}
-              >
-                <div
-                  className={`${style.radioLabel} ${style.flexDisplay} ${style.alignItemsCenter} ${style.gap8} ${style.entityLableStyle}`}
-                >
-                  <input type="radio" name="response-options" value="yes-no" />
-                  Yes / No
-                </div>
-                <div
-                  className={`${style.radioLabel} ${style.flexDisplay} ${style.alignItemsCenter} ${style.gap8} ${style.entityLableStyle}`}
-                >
-                  <input
-                    type="radio"
-                    name="response-option"
-                    value="yes-no-na"
-                  />
-                  Yes / No / Not Applicable
-                </div>
-              </div>
-            </div>
-
-            <div
-              className={`${style.flexDisplay} ${style.alignItemsCenter} ${style.gap313} ${style.entityLableStyle}`}
-            >
-              <label className={` ${style.entityLableStyle}`}>
-                Supporting Documentation:
-              </label>
               <FormControlLabel
                 control={
                   <Switch
-                    checked={supportingDocumentation}
-                    onChange={(e) =>
-                      setSupportingDocumentation(e.target.checked)
-                    }
+                    checked={writtenNotice}
+                    onChange={(e) => setWrittenNotice(e.target.checked)}
                     className={classes.switch}
                   />
                 }
-                className={` ${style.entityLableStyle}`}
+                className={`${style.switchFontStyle}`}
                 label={writtenNotice ? "YES" : "NO"}
               />
-            </div>
-
-            <div
-              className={`${style.flexDisplay} ${style.alignItemsCenter} ${style.gap284}`}
-            >
-              <label className={style.entityLableStyle}>
-                Requires Disclosures Verification:
-              </label>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={requiresDisclosureVerification}
-                    onChange={(e) =>
-                      setRequiresDisclosureVerification(e.target.checked)
-                    }
-                    className={classes.switch}
-                  />
-                }
-                className={`${style.entityLableStyle}`}
-                label={writtenNotice ? "YES" : "NO"}
-              />
-              {requiresDisclosureVerification && (
-                <div className={style.formGroup}>
-                  <label className={style.entityLableStyle}>
-                    REQUIRED FROM:
-                  </label>
-                  <select
-                    className={`${style.select} ${style.entityLableStyle}`}
+              {writtenNotice && (
+                <div className={`${style.displayInRow} ${style.inputBoxStyle}`}>
+                  <div
+                    className={`${style.displayInCol} ${style.inputBoxStyle}`}
                   >
-                    <option value="practising-physician">
-                      practising physician
-                    </option>
-                    <option value="current-employer">current employer</option>
-                    <option value="former-employer">former employer</option>
-                  </select>
+                    <label
+                      htmlFor="notice"
+                      className={`${style.labelTextAlignCenter} ${style.labelTextAlignColor}`}
+                    >
+                      Notice Period
+                    </label>
+                    <InputGroup
+                      type="number"
+                      value={noticePeriod}
+                      className={`${style.width100} ${style.inputGroupText}`}
+                      onChange={(e) => setNoticePeriod(e.target.value)}
+                      rightElement={
+                        <span className={`${style.rightElementText} `}>
+                          Days
+                        </span>
+                      }
+                    />
+                  </div>
+                  <div
+                    className={`${style.displayInCol} ${style.inputBoxStyle}`}
+                  >
+                    <label
+                      htmlFor="cure"
+                      className={`${style.labelTextAlignCenter} ${style.labelTextAlignColor}`}
+                    >
+                      Cure Period
+                    </label>
+                    <InputGroup
+                      type="number"
+                      value={curePeriod}
+                      className={`${style.width100} ${style.inputGroupText}`}
+                      onChange={(e) => setCurePeriod(e.target.value)}
+                      rightElement={
+                        <span className={`${style.rightElementText}`}>
+                          Days
+                        </span>
+                      }
+                    />
+                  </div>
                 </div>
               )}
             </div>
-
-            {/* <div className={style.formGroup}>
-              <label className={style.entityLableStyle}>REQUIRED FROM:</label>
-              <select className={`${style.select} ${style.entityLableStyle}`}>
-                <option value="practising-physician">
-                  practising physician
-                </option>
-                <option value="current-employer">current employer</option>
-                <option value="former-employer">former employer</option>
-              </select>
-            </div> */}
-
-            <div
-              className={`${style.flexDisplay} ${style.alignItemsCenter} ${style.gap60}`}
-            >
-              <label className={style.entityLableStyle}>
-                Release of Information Autheorization and Consent Form Required:
-              </label>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={releaseOfInfoAuthorization}
-                    onChange={(e) =>
-                      setReleaseOfInfoAuthorization(e.target.checked)
-                    }
-                    className={classes.switch}
-                  />
-                }
-                className={`${style.entityLableStyle}`}
-                label={writtenNotice ? "YES" : "NO"}
-              />
-            </div>
           </div>
 
-          <div></div>
+          {addSubReasons && (
+            <>
+              <div className={`${style.addHealthCareBoxStyle}`}>
+                {/* <div className={`${style.editHealthCareGrid2}`}>
+                                    <div className={style.entityLableStyle}>
+                                        Sub-Reason For Termination*
+                                    </div>
+                                    <div className={style.displayInRow}>
+                                        <InputGroup
+                                            value={secondaryReason}
+                                            className={style.fullWidth}
+                                            onChange={(obj) => setSecondaryReason(obj.target.value)}
+                                        />
+                                    </div>
+                                </div> */}
+                {subReasonFields}
+              </div>
+              <div className={`${style.spaceBetween} ${style.marginTop20}`}>
+                <div></div>
+                {secondaryReasonList[secondaryReasonList.length - 1] !== "" ? (
+                  <div
+                    className={`${style.buttonStyle3} ${style.addMoreCardStyle}`}
+                    onClick={() => handleAddMore()}
+                  >
+                    ADD MORE
+                  </div>
+                ) : (
+                  <div
+                    className={`${style.addMoreTextStyle} ${style.addMoreCardStyle}`}
+                  >
+                    ADD MORE
+                  </div>
+                )}
+                {/* <div
+                  className={`${style.buttonStyle3} ${style.addMoreCardStyle}`}
+                  onClick={() => handleAddMore()}
+                >
+                  ADD MORE
+                </div> */}
+              </div>
+            </>
+          )}
         </div>
-        <div
-          className={`${style.flexDisplay} ${style.alignItemsCenter} ${style.gap400}`}
-        >
-          <button
-            className={`${style.dialogOutlinedButton} ${style.marginTop10} ${style.borderRadius10} `}
-          >
-            BULK UPLOAD
-          </button>
+        <div>
           <div className={`${style.floatRight} ${style.marginTop20}`}>
             <button
-              className={`${style.dialogOutlinedButton} ${style.borderRadius10}`}
+              className={style.outlinedButton}
+              onClick={() => {
+                getAddEntityDialog(false);
+                getTerminationReasonData();
+              }}
             >
-              SAVE & EXIT
+              CANCEL
             </button>
             <button
-              className={`${style.dialogButtonStyle} ${style.marginLeft20} ${style.borderRadius10}`}
+              onClick={() => SaveSubmitHandler("Save & Exit")}
+              className={`${style.buttonStyle} ${style.marginLeft20}`}
             >
-              SAVE & ADD MORE
+              SAVE
             </button>
           </div>
         </div>

@@ -319,6 +319,8 @@ const TerminationReasonForCustomer = () => {
               path={"/Screens/ReferenceList/customerAdminDashboard"}
               callingFrom={"Customer Admin"}
               needHeader={true}
+              tileType={"consents"}
+
             />
 
             <div className={style.marginTop35}>

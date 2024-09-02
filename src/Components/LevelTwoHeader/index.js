@@ -29,6 +29,7 @@ import { formatInTimeZone } from "date-fns-tz";
 import StaffPrivilegeDialog from "../../Screens/ReferenceList/staffPrivileges/staffPrivilegeDialog";
 import ProofOfDocumentDialog from "../../Screens/ReferenceList/proofOfDocument/proofOfDocumentDialog";
 import DisclosureByIndustriesDialog from "../../Screens/ReferenceList/disclosureByIndustries/disclosureByIndustriesDialog";
+import ConsentsDialog from "../../Screens/ReferenceList/consents/consentsDialog";
 
 const LevelTwoHeader = ({
   heading,
@@ -333,6 +334,9 @@ const LevelTwoHeader = ({
           open={isDialogOpen}
           handleClose={handleCloseDialog}
         />
+      )}
+      {tileType == "consents" && (
+        <ConsentsDialog open={isDialogOpen} handleClose={handleCloseDialog} />
       )}
     </div>
   );
