@@ -673,6 +673,7 @@ const App = ({ props }) => {
               <Route path="/activeCustomers" element={<CustomerManagement />} />
               <Route path="/customerSetup" element={<CustomerSetup />} />
               <Route path="/referenceList" element={<ReferenceList />} />
+              <Route path="/applicationSetup" element={<ApplicationSetup />} />
               <Route
                 path="/Screens/ReferenceList/superAdminDashboard"
                 element={<SuperAdminDashboard />}
