@@ -1549,6 +1549,10 @@
   float: right;
 }
 
+.floatLeft {
+  float: left;
+}
+
 .customFileUpload {
   cursor: pointer;
   width: 70px;
@@ -3577,4 +3581,68 @@ input:checked + .slider:before {
 }
 .gap313 {
   gap: 313px;
+}
+.imageSpaceAlignment {
+  width: 25%;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.fileUploadContainer {
+  border: 2px dashed #ccc;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 300px; /* Adjust the width as needed */
+  margin: 0 auto; /* Center the container horizontally */
+  position: relative;
+}
+
+.fileUploadLabel {
+  cursor: pointer;
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 5px; /* Space between the label and the sublabel */
+}
+
+.fileUploadSubLabel {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 10px; /* Space between the sublabel and the input */
+}
+
+.fileUploadInput {
+  opacity: 0; /* Hide the default file input */
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  cursor: pointer;
+}
+
+.acknowledgementListContainer {
+  position: relative;
+  text-align: center;
+  margin: 10px 0; 
+}
+
+.acknowledgementListEntityBorder {
+  background-color: #ebf2f7;
+  height: 3px;
+  width: 100%; 
+  display: inline-block; 
+}
+
+.acknowledgementText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white; /* Background color same as the line to cover it behind the text */
+  padding: 0 10px; /* Adjust padding to ensure text visibility */
+  z-index: 1; /* Ensures the text is above the line */
 }
