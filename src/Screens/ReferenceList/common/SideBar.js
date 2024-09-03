@@ -16,6 +16,7 @@ const ApplicantSideBar = ({
     setActiveIndex(index);
     onSelectSite(site);
   };
+  console.log(applicantType);
 
   return (
     <div className={style.sideBar}>
