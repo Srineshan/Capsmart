@@ -30,6 +30,7 @@ import StaffPrivilegeDialog from "../../Screens/ReferenceList/staffPrivileges/st
 import ProofOfDocumentDialog from "../../Screens/ReferenceList/proofOfDocument/proofOfDocumentDialog";
 import DisclosureByIndustriesDialog from "../../Screens/ReferenceList/disclosureByIndustries/disclosureByIndustriesDialog";
 import ConsentsDialog from "../../Screens/ReferenceList/consents/consentsDialog";
+import AcknowledgmentDialog from "../../Screens/ReferenceList/acknowledgment/AcknowledgmentDialog";
 
 const LevelTwoHeader = ({
   heading,

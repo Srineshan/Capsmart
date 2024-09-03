@@ -16,6 +16,7 @@ import { POST, GET, PUT, TenantID } from "./../../dataSaver";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { Switch, makeStyles } from "@material-ui/core";
 import WritingFile from "./../../../images/writing-file.svg";
+import CommonDropZone from "../../../Components/CommonFields/CommonDropZone";
 import Editor from "../common/Editor";
 
 const useStyles = makeStyles({
@@ -29,7 +30,7 @@ const useStyles = makeStyles({
   },
 });
 
-const ConsentsDialog = ({
+const AcknowledgmentDialog = ({
   getAddEntityDialog,
   selectedTermination,
   isSecondary,
@@ -240,7 +241,9 @@ const ConsentsDialog = ({
         className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}
       >
         <div className={style.spaceBetween}>
-          <p className={style.extensionStyle}>{`Setup your Consent Forms`}</p>
+          <p
+            className={style.extensionStyle}
+          >{`Setup your Acknowledgement Forms`}</p>
           <div className={`${style.floatRight} ${style.imageSpaceAlignment}`}>
             <img
               src={WritingFile}
@@ -265,7 +268,7 @@ const ConsentsDialog = ({
         <div className={style.ReferenceListEntityBorder}></div>
         <div className={`${style.addHealthCareBoxStyle}`}>
           <div>
-            <div className={style.entityLableStyle}>Entity Type*</div>
+            <div className={style.entityLableStyle}>APPLICANT TYPE*</div>
             <select
               value={currentEntityType}
               className={style.fullWidth}
@@ -274,7 +277,7 @@ const ConsentsDialog = ({
                 setCurrentEntityType(obj.target.value);
               }}
             >
-              <option value="">Select Entity Type</option>
+              <option value="">Select Applicant Type</option>
               {entityTypes.map((type) => (
                 <option value={type.siteTypeId}>{type.siteTypeName}</option>
               ))}
@@ -285,7 +288,7 @@ const ConsentsDialog = ({
           ></div>
 
           <div className={style.marginTop20}>
-            <div className={style.entityLableStyle}>CONSENTS TILE*</div>
+            <div className={style.entityLableStyle}>ACKNOWLEDGEMENT TILE*</div>
             <select
               value={terminationBy}
               defaultValue={terminationBy}
@@ -300,55 +303,75 @@ const ConsentsDialog = ({
             </select>
           </div>
           <div className={style.marginTop20}>
+            <div className={style.entityLableStyle}>
+              ACKNOWLEGEMENT CONTENTS*
+            </div>
+            <Editor />
+          </div>
+
+          <div className={style.acknowledgementListContainer}>
+            <div className={style.acknowledgementListEntityBorder}></div>
+            <span className={style.acknowledgementText}>OR</span>
+          </div>
+
+          {/* <div className={style.marginTop20} style={{display:"flex"}}>
+          <div className={style.fileUploadContainer}>
+  <label htmlFor="file-upload-help" className={style.fileUploadLabel}>
+    Upload Your Document
+  </label>
+  <span className={style.fileUploadSubLabel}>Upload your files or drag & drop from your cabinet</span>
+  <input id="file-upload-help" type="file" className={style.fileUploadInput} />
+</div>
+<div className={style.fileUploadContainer}>
+  <label htmlFor="file-upload-help" className={style.fileUploadLabel}>
+    Upload File
+  </label>
+  <span className={style.fileUploadSubLabel}>Max size: 5MB</span>
+  <input id="file-upload-help" type="file" className={style.fileUploadInput} />
+</div>
+
+          </div> */}
+          <div
+            className={`${style.twoCol} ${style.marginTop}`}
+            style={{ gap: "20px" }}
+          >
+            <CommonDropZone
+              title={"Upload Your Documents"}
+              description={"Upload your files or drag & drop from your cabinet"}
+            />
+            <CommonDropZone
+              title={"Upload A Photo"}
+              description={
+                "Click a picture with your Camera or upload from Gallery."
+              }
+            />
+          </div>
+
+          <div className={style.marginTop20}>
             <div className={style.entityLableStyle}>DISCLAIMER CONTENTS*</div>
             <Editor />
           </div>
-          <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <div className={`${style.entityLableStyle} ${style.marginTop15}`}>
-              Alert Note Required
-            </div>
-            <div className={style.displayInRow}>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={writtenNotice}
-                    onChange={(e) => setWrittenNotice(e.target.checked)}
-                    className={classes.switch}
-                  />
-                }
-                className={`${style.switchFontStyle}`}
-                label={writtenNotice ? "YES" : "NO"}
-              />
-              {writtenNotice && (
-                <div
-                  className={`${style.displayInRow} ${style.inputBoxStyle} ${style.fullWidth}`}
-                >
-                  <InputGroup
-                    value="Enter Alert Notice Here"
-                    className={style.fullWidth}
-                  ></InputGroup>
-                </div>
-              )}
-            </div>
-          </div>
+
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <div className={`${style.entityLableStyle} ${style.marginTop15}`}>
               Applicant Signature Required
             </div>
-            <div
-              className={`${style.displayInRow} ${style.displayTerminationPeriod}`}
-            >
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={signature}
-                    onChange={(e) => setSignature(e.target.checked)}
-                    className={classes.switch}
-                  />
-                }
-                className={`${style.switchFontStyle}`}
-                label={signature ? "YES" : "NO"}
-              />
+            <div>
+              <div style={{ display: "flex", alignItems: "flex-end" }}>
+                <p style={{ marginRight: "10px" }}>
+                  {signature ? "YES" : "NO"}
+                </p>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={signature}
+                      onChange={(e) => setSignature(e.target.checked)}
+                      className={classes.switch}
+                    />
+                  }
+                  className={`${style.switchFontStyle}`}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -389,4 +412,4 @@ const ConsentsDialog = ({
   );
 };
 
-export default ConsentsDialog;
+export default AcknowledgmentDialog;

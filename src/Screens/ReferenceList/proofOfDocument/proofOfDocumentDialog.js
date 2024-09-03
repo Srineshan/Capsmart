@@ -42,6 +42,23 @@ const ProofOfDocumentDialog = ({
   documents,
   getAddEntityTypes,
 }) => {
+  const [documentName, setDocumentName] = useState("");
+  const [helpText, setHelpText] = useState("");
+  const [checks, setChecks] = useState({
+    documentFormat: true,
+    documentType: true,
+    nameVerification: true,
+    documentExpiration: true,
+  });
+  const [selectedOption, setSelectedOption] = useState("mandatory");
+  const [allowedFormat, setAllowedFormat] = useState("PNG/jpeg");
+  const [maxSizeAllowed, setMaxSizeAllowed] = useState("5 MB");
+  const [days, setDays] = useState(3);
+  const [timePeriod, setTimePeriod] = useState("Month");
+  const [tenantID, setTenantID] = useState("string");
+  const [applicantTypeID, setApplicantTypeID] = useState("1");
+  const [applicantType, setApplicantType] = useState("Doctor Physician");
+
   const [terminationId, setTerminationId] = useState(
     selectedTermination?.id ? selectedTermination?.id : ""
   );
@@ -60,12 +77,6 @@ const ProofOfDocumentDialog = ({
   const [writtenNotice, setWrittenNotice] = useState(true);
   const [subReasonFields, setSubReasonFields] = useState([]);
   const classes = useStyles();
-  const [checks, setChecks] = useState({
-    documentFormat: true,
-    documentType: true,
-    nameVerification: true,
-  });
-  const [selectedOption, setSelectedOption] = useState("mandatory");
 
   const handleChange = (event) => {
     setSelectedOption(event.target.value);
@@ -148,78 +159,47 @@ const ProofOfDocumentDialog = ({
     setSubReasonFields(temp);
   };
 
-  const SaveSubmitHandler = async (type) => {
-    // let SecondaryReasonData = [];
-    // if (selectedTermination?.secondary_reasons) {
-    //     SecondaryReasonData = [...selectedTermination.secondary_reasons];
-    // } else {
-    //     SecondaryReasonData = [];
-    // }
-    // if (secondaryReason !== "") {
-    //     SecondaryReasonData.push(secondaryReason);
-    // }
-
-    if (currentEntityType === "") {
-      ErrorToaster("Enter All Mandatory Data");
-      return;
-    }
-
+  const SaveSubmitHandler = async () => {
     const data = {
-      ...(isEdit && { id: terminationId }),
-      ...(isEdit && { createdDate: createdDate }),
-      ...(isEdit && { lastModifiedDate: new Date() }),
-      terminationBy: terminationBy,
-      primary_reason: primaryReason,
-      secondary_reasons:
-        secondaryReasonList[secondaryReasonList.length - 1] === ""
-          ? secondaryReasonList.splice(0, secondaryReasonList.length - 1)
-          : secondaryReasonList,
-      siteTypeId: {
-        id: currentEntityType,
+      tenant: {
+        id: tenantID,
       },
-      entityId: {
-        id: TenantID,
+      applicantTypes: [
+        {
+          id: currentEntityType,
+          applicantType: currentEntityType,
+        },
+      ],
+      documentName: documentName,
+      documentType: terminationBy,
+      helpText: helpText,
+      requirementLevel: selectedOption.toUpperCase(),
+      documentValidator: {
+        documentFormatCheck: checks.documentFormat,
+        documentTypeCheck: checks.documentType,
+        documentNameValidation: checks.nameVerification,
       },
-      noticePeriodInDays: noticePeriod,
-      curePeriodInDays: curePeriod,
-      customized: true,
-      writtenNoticeServed: writtenNotice,
+      validationCheck: {
+        documentExpiration: checks.documentExpiration,
+        documentExpiry: {
+          days: days,
+          timePeriod: timePeriod.toUpperCase(),
+        },
+      },
+      format: allowedFormat,
+      size: {
+        size: parseInt(maxSizeAllowed),
+        unit: maxSizeAllowed.includes("MB") ? "MB" : "KB",
+      },
     };
 
-    // console.log(data);
-
-    if (!isEdit) {
-      await POST("entity-service/terminationReason", JSON.stringify([data]))
-        .then((response) => {
-          SuccessToaster("Termination Added Successfully");
-          getTerminationReasonData();
-          getAddEntityDialog(false);
-        })
-        .catch((error) => {
-          ErrorToaster(error);
-        });
-    } else {
-      await PUT(
-        `entity-service/terminationReason/${terminationId}`,
-        JSON.stringify(data)
-      )
-        .then((response) => {
-          SuccessToaster("Termination Updated Successfully");
-          getTerminationReasonData();
-          getAddEntityDialog(false);
-        })
-        .catch((error) => {
-          ErrorToaster(error);
-        });
+    try {
+      await POST(`entity-service/document/?${tenantID}`, JSON.stringify(data));
+      SuccessToaster("Document saved successfully");
+      handleClose(); // Close the dialog
+    } catch (error) {
+      ErrorToaster(error.message);
     }
-
-    // if (type !== "Add More") {
-    //   getAddEntityDialog(false);
-    // } else {
-    //   setPrimaryReason("");
-    //   setSecondaryReason("");
-    //   document.getElementById("primaryReasonEl").focus();
-    // }
   };
 
   const handleAddMore = () => {
@@ -309,9 +289,7 @@ const ProofOfDocumentDialog = ({
               value={currentEntityType}
               className={style.fullWidth}
               // rightElement={arrowDown()}
-              onChange={(obj) => {
-                setCurrentEntityType(obj.target.value);
-              }}
+              onChange={(e) => setCurrentEntityType(e.target.value)}
             >
               <option value="">MultiSelect</option>
               {documents.map((type) =>
@@ -344,6 +322,8 @@ const ProofOfDocumentDialog = ({
           <div className={`${style.marginTop20}`}>
             <div className={style.entityLableStyle}>DOCUMENT NAME</div>
             <CommonInputField
+              value={documentName}
+              onChange={(e) => setDocumentName(e.target.value)}
               className={style.fullWidth}
               placeholder="PassPort Picture"
             />
@@ -353,6 +333,8 @@ const ProofOfDocumentDialog = ({
               INSTRUCTIONAL TEXT//HELP GUIDE
             </div>
             <TextArea
+              value={helpText}
+              onChange={(e) => setHelpText(e.target.value)}
               className={style.fullWidth}
               placeholder="Enter Text Here"
               rows={3}
@@ -365,7 +347,9 @@ const ProofOfDocumentDialog = ({
                 <input
                   type="checkbox"
                   checked={checks.documentFormat}
-                  onChange={handleCheckboxChange}
+                  onChange={(e) =>
+                    setChecks({ ...checks, documentFormat: e.target.checked })
+                  }
                 />
                 <label className={style.marginLeft10}>
                   Document Format Check
@@ -375,7 +359,9 @@ const ProofOfDocumentDialog = ({
                 <input
                   type="checkbox"
                   checked={checks.documentType}
-                  onChange={handleCheckboxChange}
+                  onChange={(e) =>
+                    setChecks({ ...checks, documentType: e.target.checked })
+                  }
                 />
                 <label className={style.marginLeft10}>Document Type</label>
               </div>
@@ -383,7 +369,9 @@ const ProofOfDocumentDialog = ({
                 <input
                   type="checkbox"
                   checked={checks.nameVerification}
-                  onChange={handleCheckboxChange}
+                  onChange={(e) =>
+                    setChecks({ ...checks, nameVerification: e.target.checked })
+                  }
                 />
                 <label className={style.marginLeft10}>Name Verification</label>
               </div>
@@ -634,13 +622,12 @@ const ProofOfDocumentDialog = ({
         <div>
           <div className={`${style.floatRight} ${style.marginTop20}`}>
             <button
-              className={`${style.dialogOutlinedButton}  ${style.borderRadius10}`}
-              onClick={() => {
-                getAddEntityTypes();
-              }}
+              className={`${style.dialogOutlinedButton} ${style.borderRadius10}`}
+              onClick={SaveSubmitHandler}
             >
               SAVE & EXIT
             </button>
+
             <button
               onClick={() => SaveSubmitHandler("Save & Exit")}
               className={`${style.dialogButtonStyle} ${style.marginLeft20}  ${style.borderRadius10}`}

@@ -145,10 +145,8 @@ const ProofOfDocumentByIndustries = () => {
     );
   };
 
-  const getAddEntityTypes = async () => {
-    await POST(
-      `entity-service/document/?${TenantID}`
-    );
+  const getAddEntityTypes = async (data) => {
+    await POST(`entity-service/document/?${TenantID}`, data);
   };
   const getEntityTypes = async () => {
     console.log("TenantID", TenantID);
