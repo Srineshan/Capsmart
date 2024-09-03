@@ -43,34 +43,7 @@ const StaffPrivileges = () => {
   const [checkedAll, setCheckedAll] = useState(false);
   const [searchKey, setSearchKey] = useState("");
   const [selectedApplicantType, setSelectedApplicantType] = useState("");
-
-  const sites = [
-    {
-      id: 1,
-      name: "{DEPARTMENT SERVICE AREA / SPECIALITY}",
-      type: "Hospital / Acute Care Facility (ACF) site type",
-      count: 7,
-    },
-    {
-      id: 2,
-      name: "{DEPARTMENT SERVICE AREA / SPECIALITY}",
-      type: "Hospital / Acute Care Facility (ACF) site type",
-      count: 7,
-    },
-    {
-      id: 3,
-      name: "{DEPARTMENT SERVICE AREA / SPECIALITY}",
-      type: "Hospital / Acute Care Facility (ACF) site type",
-      count: 7,
-    },
-    {
-      id: 4,
-      name: "{DEPARTMENT SERVICE AREA / SPECIALITY}",
-      type: "Hospital / Acute Care Facility (ACF) site type",
-      count: 7,
-    },
-  ];
-
+  const [sites, setSites] = useState([]);
   const applicantTypes = [
     {
       id: "021",
@@ -143,6 +116,10 @@ const StaffPrivileges = () => {
     setEntityId(entity?.[0]?.id);
   };
 
+  const getAddEntityTypes = async (data) => {
+    await POST(`entity-service/document/?${TenantID}`, data);
+  };
+
   const getLastModifiedDate = async () => {
     const { data: lastModifiedDate } = await GET(
       `entity-service/referenceList/entity/${entityId}`
@@ -158,14 +135,24 @@ const StaffPrivileges = () => {
   };
 
   const getEntityTypes = async () => {
-    const { data: entityType } = await GET(`entity-service/entity/${TenantID}`);
+    const { data: entityType } = await GET(
+      `entity-service/staffPrivilege/${TenantID}`
+    );
+
+    console.log(entityType);
+
     // console.log(entityType?.sites)
     if (entityType?.sites?.length !== 0) {
-      setSiteTypeId(entityType?.sites?.[0]?.siteType?.id);
-      setSelectedEntityType(entityType?.sites?.[0]?.siteType?.type);
-      setEntityTypes(entityType?.sites);
+      const allApplicantTypes = entityType.flatMap(
+        (entity) => entity.sites || []
+      );
+      setSites(entityType.sites);
+      // setSiteTypeId(entityType?.sites?.[0]?.siteType?.id);
+      // setSelectedEntityType(entityType?.sites?.[0]?.siteType?.type);
+      // setEntityTypes(entityType?.sites);
     }
   };
+  console.log(sites);
 
   const getDepartmentServiceMaster = async () => {
     const { data: departmentServiceMaster } = await GET(
@@ -214,6 +201,7 @@ const StaffPrivileges = () => {
     getEntity();
     getEntityTypes();
   }, []);
+  console.log(sites);
 
   useEffect(() => {
     if (siteTypeId !== "" && siteTypeId !== undefined) {
@@ -231,6 +219,7 @@ const StaffPrivileges = () => {
   const handleSiteClick = (siteName) => {
     setSelectedApplicantType(siteName);
   };
+  console.log(sites);
 
   return (
     <Fragment>
@@ -255,7 +244,7 @@ const StaffPrivileges = () => {
             }`}
           >
             <ApplicantSideBar
-              sites={entityTypes}
+              sites={sites.map((item) => item.siteName)}
               siteTitle={"Cambride Memorial Hospitals"}
               onSelectSite={handleSiteClick}
               siteDropdown={true}

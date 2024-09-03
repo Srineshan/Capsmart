@@ -49,6 +49,7 @@ const LevelTwoHeader = ({
   tileType,
   documents,
   getAddEntityTypes,
+  getEntityTypes,
 }) => {
   const [timeFrame, setTimeFrame] = useState("This Week");
   const [showCustomRangeSelection, setShowCustomRangeSelection] =
@@ -338,6 +339,7 @@ const LevelTwoHeader = ({
           handleClose={handleCloseDialog}
           documents={documents}
           getAddEntityTypes={getAddEntityTypes}
+          getEntityTypes={getEntityTypes}
         />
       )}
       {/* {tileType == "ProofOfDocument" && (

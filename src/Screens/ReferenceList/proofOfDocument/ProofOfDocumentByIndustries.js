@@ -103,7 +103,6 @@ const ProofOfDocumentByIndustries = () => {
   ];
 
   const tableHeadKeys = ["NAME", "", "TYPE", "REQUIRMENT", "LAST UPDATED"];
-
   const tableDataKeys = [
     "documentName",
     "",
@@ -149,12 +148,14 @@ const ProofOfDocumentByIndustries = () => {
   const getAddEntityTypes = async (data) => {
     await POST(`entity-service/document/?${TenantID}`, data);
   };
+
   const getEntityTypes = async () => {
     console.log("TenantID", TenantID);
 
     const { data: entityType } = await GET(
       `entity-service/document/?${TenantID}`
     );
+
     setDocuments(entityType);
     const allApplicantTypes = entityType.flatMap(
       (entity) => entity.applicantTypes || []
@@ -259,6 +260,7 @@ const ProofOfDocumentByIndustries = () => {
               needHeader={false}
               tileType={"ProofOfDocument"}
               documents={documents}
+              getEntityTypes={getEntityTypes}
               getAddEntityTypes={getAddEntityTypes}
               handleOpenDialog={handleOpenDialog}
               handleClose={handleCloseDialog}
@@ -270,9 +272,10 @@ const ProofOfDocumentByIndustries = () => {
             }`}
           >
             <ApplicantSideBar
-              applicantType={applicantTypes}
+              applicantType={applicantTypes.map((item) => item.applicantType)}
               siteTitle={"All Applicant Type"}
               onSelectSite={handleSiteClick}
+              tileType={"ProofOfDocument"}
             />
             <div className={style.applicantList}>
               <div className={`${style.Tabletitle} `}>

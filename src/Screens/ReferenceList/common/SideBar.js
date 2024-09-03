@@ -6,9 +6,8 @@ const ApplicantSideBar = ({
   siteTitle,
   onSelectSite,
   siteDropdown,
+  tileType,
 }) => {
-  console.log(applicantType);
-
   const [activeIndex, setActiveIndex] = useState(0);
 
   const handleSiteClick = (index, site) => {
@@ -17,7 +16,6 @@ const ApplicantSideBar = ({
     setActiveIndex(index);
     onSelectSite(site);
   };
-  console.log(applicantType);
 
   return (
     <div className={style.sideBar}>
@@ -42,16 +40,16 @@ const ApplicantSideBar = ({
               : style.sideNonActiveBackground
           }`}
           onClick={() => {
-            handleSiteClick(index, site.applicantType);
+            handleSiteClick(index, site);
           }}
         >
           <div className={style.siteDetails}>
             <p className={style.siteName}>
               {"{"}
-              {site.applicantType}
+              {site}
               {"}"}
             </p>
-            <div className={style.siteCount}>{site?.length}</div>
+            {/* <div className={style.siteCount}>{site?.length}</div> */}
           </div>
           {/* <p className={style.siteType}>
             {"{"}

@@ -41,6 +41,8 @@ const ProofOfDocumentDialog = ({
   open,
   documents,
   selectedApplicant,
+  getAddEntityTypes,
+  getEntityTypes,
 }) => {
   const [documentName, setDocumentName] = useState("");
   const [selectedOption, setSelectedOption] = useState("mandatory");
@@ -241,6 +243,7 @@ const ProofOfDocumentDialog = ({
     } catch (error) {
       ErrorToaster(error.message);
     }
+    getEntityTypes();
     handleClose();
   };
 
