@@ -1,8 +1,13 @@
 import React, { useState } from "react";
 import style from "./../index.module.scss";
 
-const ApplicantSideBar = ({ sites, siteTitle, onSelectSite, siteDropdown }) => {
-  console.log(sites);
+const ApplicantSideBar = ({
+  applicantType,
+  siteTitle,
+  onSelectSite,
+  siteDropdown,
+}) => {
+  console.log(applicantType);
 
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -12,6 +17,7 @@ const ApplicantSideBar = ({ sites, siteTitle, onSelectSite, siteDropdown }) => {
     setActiveIndex(index);
     onSelectSite(site);
   };
+  console.log(applicantType);
 
   return (
     <div className={style.sideBar}>
@@ -27,7 +33,7 @@ const ApplicantSideBar = ({ sites, siteTitle, onSelectSite, siteDropdown }) => {
           <p className={style.siteTitle}>{siteTitle}</p>
         )}
       </div>
-      {sites.map((site, index) => (
+      {applicantType.map((site, index) => (
         <div
           key={index}
           className={`${style.sidebarContent} ${
@@ -36,26 +42,25 @@ const ApplicantSideBar = ({ sites, siteTitle, onSelectSite, siteDropdown }) => {
               : style.sideNonActiveBackground
           }`}
           onClick={() => {
-            console.log(site?.length);
-            handleSiteClick(index, site.siteName?.siteName);
+            handleSiteClick(index, site.applicantType);
           }}
         >
           <div className={style.siteDetails}>
             <p className={style.siteName}>
               {"{"}
-              {site.siteName?.siteName}
+              {site.applicantType}
               {"}"}
             </p>
             <div className={style.siteCount}>{site?.length}</div>
           </div>
-          <p className={style.siteType}>
+          {/* <p className={style.siteType}>
             {"{"}
             {site.siteType.type}
             {"}"}
           </p>
           {site.description && (
             <p className={style.siteDescription}>{site.description}</p>
-          )}
+          )} */}
         </div>
       ))}
     </div>

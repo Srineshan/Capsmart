@@ -46,6 +46,8 @@ const LevelTwoHeader = ({
   path,
   callingFrom,
   tileType,
+  documents,
+  getAddEntityTypes,
 }) => {
   const [timeFrame, setTimeFrame] = useState("This Week");
   const [showCustomRangeSelection, setShowCustomRangeSelection] =
@@ -329,15 +331,17 @@ const LevelTwoHeader = ({
           handleClose={handleCloseDialog}
         />
       )} */}
-      {/* {tileType == "ProofOfDocument" && (
+      {tileType == "ProofOfDocument" && (
         <ProofOfDocumentDialog
           open={isDialogOpen}
           handleClose={handleCloseDialog}
+          documents={documents}
+          getAddEntityTypes={getAddEntityTypes}
         />
-      )} */}
-      {tileType == "ProofOfDocument" && (
-        <ConsentsDialog open={isDialogOpen} handleClose={handleCloseDialog} />
       )}
+      {/* {tileType == "ProofOfDocument" && (
+        <ConsentsDialog open={isDialogOpen} handleClose={handleCloseDialog} />
+      )} */}
     </div>
   );
 };

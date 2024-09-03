@@ -39,6 +39,8 @@ const ProofOfDocumentDialog = ({
   siteTypeId,
   handleClose,
   open,
+  documents,
+  getAddEntityTypes,
 }) => {
   const [terminationId, setTerminationId] = useState(
     selectedTermination?.id ? selectedTermination?.id : ""
@@ -312,9 +314,13 @@ const ProofOfDocumentDialog = ({
               }}
             >
               <option value="">MultiSelect</option>
-              {entityTypes.map((type) => (
-                <option value={type.siteTypeId}>{type.siteTypeName}</option>
-              ))}
+              {documents.map((type) =>
+                type.applicantTypes.map((applicant) => (
+                  <option value={applicant.id}>
+                    {applicant.applicantType}
+                  </option>
+                ))
+              )}
             </select>
           </div>
           <div className={`${style.marginTop20}`}>
@@ -328,12 +334,15 @@ const ProofOfDocumentDialog = ({
                 setTerminationBy(obj.target.value);
               }}
             >
-              <option value="CONTRACTOR">For Cause By Contractor</option>
-              <option value="ENTITY">For Cause By Entity</option>
+              {documents.map((document) => (
+                <option value={document.documentType}>
+                  {document.documentType}
+                </option>
+              ))}
             </select>
           </div>
           <div className={`${style.marginTop20}`}>
-            <div className={style.entityLableStyle}>DOCUMENT TYPE</div>
+            <div className={style.entityLableStyle}>DOCUMENT NAME</div>
             <CommonInputField
               className={style.fullWidth}
               placeholder="PassPort Picture"
@@ -627,8 +636,7 @@ const ProofOfDocumentDialog = ({
             <button
               className={`${style.dialogOutlinedButton}  ${style.borderRadius10}`}
               onClick={() => {
-                getAddEntityDialog(false);
-                getTerminationReasonData();
+                getAddEntityTypes();
               }}
             >
               SAVE & EXIT
