@@ -16,7 +16,7 @@ import { POST, GET, PUT, TenantID } from "./../../dataSaver";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { Switch, makeStyles } from "@material-ui/core";
 import WritingFile from "./../../../images/writing-file.svg";
-import Editor from "../common/Editor";
+// import Editor from "../common/Editor";
 
 const useStyles = makeStyles({
   switch: {
@@ -301,7 +301,7 @@ const ConsentsDialog = ({
           </div>
           <div className={style.marginTop20}>
             <div className={style.entityLableStyle}>DISCLAIMER CONTENTS*</div>
-            <Editor />
+            {/* <Editor /> */}
           </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <div className={`${style.entityLableStyle} ${style.marginTop15}`}>

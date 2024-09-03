@@ -1,16 +1,33 @@
-import React from "react";
+import React, { useState } from "react";
 import RenewDark from "./../../../images/renewDark.png";
 import DeleteHcFolder from "./../../../images/deleteHcFolder.png";
 import EditHcFolder from "./../../../images/editHcRow.png";
 import style from "./../index.module.scss";
 import DragHandleIcon from "@mui/icons-material/DragHandle";
+import ProofOfDocumentDialog from "../proofOfDocument/proofOfDocumentDialog";
 
 const ApplicantTable = ({
   applicantTypes,
   applicantNotice,
   tableDataKeys,
   tableHeadKeys,
+  documents,
+  handleClose,
 }) => {
+  const [selectedApplicant, setSelectedApplicant] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const handleEditClick = (applicant) => {
+    console.log(applicant);
+    setSelectedApplicant(applicant);
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setSelectedApplicant(null);
+  };
+
   return (
     <div className={style.applicantTableContainer}>
       {/* {applicantNotice && (
@@ -64,6 +81,7 @@ const ApplicantTable = ({
                       src={EditHcFolder}
                       alt="Edit"
                       className={style.actionIcon}
+                      onClick={() => handleEditClick(applicant)}
                     />
                     <img
                       src={DeleteHcFolder}
@@ -110,6 +128,16 @@ const ApplicantTable = ({
             ))}
         </tbody>
       </table>
+      {selectedApplicant && (
+        <ProofOfDocumentDialog
+          open={openDialog}
+          onClose={handleCloseDialog}
+          selectedApplicant={selectedApplicant}
+          documents={documents}
+          isEdit={true}
+          handleClose={handleClose}
+        />
+      )}
     </div>
   );
 };

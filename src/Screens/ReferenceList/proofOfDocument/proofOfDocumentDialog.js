@@ -40,22 +40,14 @@ const ProofOfDocumentDialog = ({
   handleClose,
   open,
   documents,
-  getAddEntityTypes,
+  selectedApplicant,
 }) => {
   const [documentName, setDocumentName] = useState("");
-  const [helpText, setHelpText] = useState("");
-  const [checks, setChecks] = useState({
-    documentFormat: true,
-    documentType: true,
-    nameVerification: true,
-    documentExpiration: true,
-  });
   const [selectedOption, setSelectedOption] = useState("mandatory");
   const [allowedFormat, setAllowedFormat] = useState("PNG/jpeg");
   const [maxSizeAllowed, setMaxSizeAllowed] = useState("5 MB");
   const [days, setDays] = useState(3);
   const [timePeriod, setTimePeriod] = useState("Month");
-  const [tenantID, setTenantID] = useState("string");
   const [applicantTypeID, setApplicantTypeID] = useState("1");
   const [applicantType, setApplicantType] = useState("Doctor Physician");
 
@@ -65,9 +57,20 @@ const ProofOfDocumentDialog = ({
   const [terminationBy, setTerminationBy] = useState("Passport Picture");
   const [primaryReason, setPrimaryReason] = useState("");
   const [secondaryReason, setSecondaryReason] = useState("");
+  const [newApplicantType, setNewApplicantType] = useState({
+    id: "",
+    applicantType: "",
+  });
   const [currentEntityType, setCurrentEntityType] = useState(
     selectedTermination?.entityId?.id ? selectedTermination?.entityId?.id : ""
   );
+  const [helpText, setHelpText] = useState("");
+  const [checks, setChecks] = useState({
+    documentFormatCheck: true,
+    documentNameValidation: true,
+    documentTypeCheck: true,
+  });
+
   const [entityTypes, setEntityTypes] = useState([]);
   const [createdDate, setCreatedDate] = useState("");
   const [secondaryReasonList, setSecondaryReasonList] = useState([]);
@@ -97,9 +100,20 @@ const ProofOfDocumentDialog = ({
   // console.log(selectedTermination);
   useEffect(() => {
     if (isEdit) {
-      setCurrentEntityType(siteTypeId);
-      setTerminationId(selectedTermination?.id);
+      setCurrentEntityType(selectedApplicant.applicantTypes);
+      setDocumentName(selectedApplicant.documentName);
       setTerminationBy(selectedTermination?.terminationBy);
+      setHelpText(selectedTermination?.helpText);
+      setChecks({
+        documentFormatCheck:
+          selectedApplicant.documentFormatCheck ??
+          selectedApplicant.documentFormatCheck,
+
+        documentNameValidation: selectedApplicant.documentNameValidation || "",
+        documentTypeCheck:
+          selectedApplicant.documentTypeCheck ??
+          selectedApplicant.documentTypeCheck,
+      });
       setPrimaryReason(selectedTermination?.primary_reason);
       setCreatedDate(selectedTermination?.createdDate);
       setNoticePeriod(selectedTermination?.noticePeriodInDays);
@@ -160,19 +174,50 @@ const ProofOfDocumentDialog = ({
   };
 
   const SaveSubmitHandler = async () => {
+    // Ensure TenantID is a valid string
+    if (!TenantID || typeof TenantID !== "string") {
+      ErrorToaster("Invalid Tenant ID");
+      return;
+    }
+
+    // Ensure currentEntityType is correctly set and valid
+    if (
+      !newApplicantType ||
+      typeof newApplicantType.id !== "string" ||
+      typeof newApplicantType.applicantType !== "string"
+    ) {
+      console.log(typeof newApplicantType.id, newApplicantType.id);
+      console.log(
+        typeof newApplicantType.applicantType,
+        newApplicantType.applicantType
+      );
+
+      ErrorToaster("Invalid Entity Type");
+      return;
+    }
+
+    // Parsing and validating maxSizeAllowed and its unit
+    const sizeValue = parseInt(maxSizeAllowed);
+    if (isNaN(sizeValue)) {
+      ErrorToaster("Invalid Max Size Allowed");
+      return;
+    }
+
+    const unit = maxSizeAllowed.includes("MB") ? "MB" : "KB";
+
     const data = {
       tenant: {
-        id: tenantID,
+        id: TenantID, // Make sure TenantID is valid
       },
       applicantTypes: [
         {
-          id: currentEntityType,
-          applicantType: currentEntityType,
+          id: newApplicantType.id, // Ensure this is the correct ID
+          applicantType: newApplicantType.applicantType, // This should be a string, not an ID
         },
       ],
-      documentName: documentName,
-      documentType: terminationBy,
-      helpText: helpText,
+      documentName: documentName || "Document Name", // Ensure this has a value
+      documentType: terminationBy || "Document Type", // Ensure this has a value
+      helpText: helpText || "", // Help text should be a string
       requirementLevel: selectedOption.toUpperCase(),
       documentValidator: {
         documentFormatCheck: checks.documentFormat,
@@ -182,24 +227,27 @@ const ProofOfDocumentDialog = ({
       validationCheck: {
         documentExpiration: checks.documentExpiration,
         documentExpiry: {
-          days: days,
-          timePeriod: timePeriod.toUpperCase(),
+          days: days, // Ensure this is a number
+          timePeriod: timePeriod.toUpperCase(), // This should be a valid string like "MONTH" or "YEAR"
         },
       },
-      format: allowedFormat,
+      format: allowedFormat || "JPEG", // Format should be a string
       size: {
-        size: parseInt(maxSizeAllowed),
-        unit: maxSizeAllowed.includes("MB") ? "MB" : "KB",
+        size: sizeValue, // This should be a number
+        unit: unit, // This should be "MB" or "KB"
       },
     };
 
+    console.log("data", data);
+
     try {
-      await POST(`entity-service/document/?${tenantID}`, JSON.stringify(data));
+      await POST(`entity-service/document/?${TenantID}`, JSON.stringify(data));
       SuccessToaster("Document saved successfully");
-      handleClose(); // Close the dialog
+      // Close the dialog
     } catch (error) {
       ErrorToaster(error.message);
     }
+    handleClose();
   };
 
   const handleAddMore = () => {
@@ -220,6 +268,16 @@ const ProofOfDocumentDialog = ({
     );
   };
 
+  const handleSelectChange = (e) => {
+    console.log("Select change triggered");
+    const selectedOption = e.target.selectedOptions[0]; // Get the selected option
+    const id = selectedOption.getAttribute("data-id"); // Retrieve the 'id' using 'data-id' attribute
+    const applicantType = selectedOption.value; // The 'value' of the selected option
+    console.log(id, applicantType);
+
+    setNewApplicantType({ id, applicantType });
+  };
+
   const handleAddSubReasons = (checked) => {
     setAddSubReasons(checked);
     if (checked && secondaryReasonList?.length === 0) {
@@ -229,8 +287,6 @@ const ProofOfDocumentDialog = ({
 
   return (
     <Dialog
-      //   isOpen={getAddEntityDialog}
-      //   onClose={() => getAddEntityDialog(false)}
       isOpen={open}
       onClose={handleClose}
       className={`${style.healthCareDialogStyle} ${style.dialogPaddingBottom}`}
@@ -247,8 +303,8 @@ const ProofOfDocumentDialog = ({
               src={
                 "https://upload.wikimedia.org/wikipedia/en/thumb/a/a4/Flag_of_the_United_States.svg/125px-Flag_of_the_United_States.svg.png"
               }
-              alt="refresh"
-              className={`${style.departmentFlag} ${style.marginRight15}  `}
+              alt="USA Flag"
+              className={`${style.departmentFlag} ${style.marginRight15}`}
             />
             <span
               className={`${style.departmentCountryName} ${style.marginLeft10}`}
@@ -258,11 +314,11 @@ const ProofOfDocumentDialog = ({
             <img
               src={ArrowDown}
               className={`${style.colorFileStyle2} ${style.ArrowDown} ${style.marginRight15}`}
-              alt=""
+              alt="Dropdown Arrow"
             />
           </div>
           <div>
-            <p className={style.extensionStyle}>{`Setup your New PoD`}</p>
+            <p className={style.extensionStyle}>Setup your New PoD</p>
           </div>
           <div>
             <img
@@ -286,34 +342,52 @@ const ProofOfDocumentDialog = ({
           <div>
             <div className={style.entityLableStyle}>APPLICANT TYPE*</div>
             <select
-              value={currentEntityType}
+              value={newApplicantType.applicantType}
               className={style.fullWidth}
-              // rightElement={arrowDown()}
-              onChange={(e) => setCurrentEntityType(e.target.value)}
+              onChange={(e) => {
+                console.log("changes");
+
+                const selectedOption = e.target.selectedOptions[0];
+                if (selectedOption) {
+                  const id = selectedOption.getAttribute("data-id");
+                  const applicantType = selectedOption.value;
+                  setNewApplicantType({ id, applicantType });
+                }
+              }}
             >
               <option value="">MultiSelect</option>
-              {documents.map((type) =>
-                type.applicantTypes.map((applicant) => (
-                  <option value={applicant.id}>
-                    {applicant.applicantType}
-                  </option>
-                ))
-              )}
+              {documents.length > 0 &&
+                documents.map((document) =>
+                  document.applicantTypes.map((applicant) => (
+                    <option
+                      key={applicant.id}
+                      value={
+                        selectedApplicant
+                          ? selectedApplicant.applicantTypes
+                              ?.map((item) => item.applicantType)
+                              .join(", ")
+                          : applicant.applicantType
+                      }
+                      data-id={applicant.id}
+                    >
+                      {applicant.applicantType}
+                    </option>
+                  ))
+                )}
             </select>
           </div>
           <div className={`${style.marginTop20}`}>
             <div className={style.entityLableStyle}>DOCUMENT TYPE</div>
             <select
               value={terminationBy}
-              defaultValue={terminationBy}
               className={style.fullWidth}
-              // rightElement={arrowDown()}
-              onChange={(obj) => {
-                setTerminationBy(obj.target.value);
-              }}
+              onChange={(e) => setNewApplicantType(e.target.value)}
             >
               {documents.map((document) => (
-                <option value={document.documentType}>
+                <option
+                  key={document.documentType}
+                  value={document.documentType}
+                >
                   {document.documentType}
                 </option>
               ))}
@@ -340,15 +414,19 @@ const ProofOfDocumentDialog = ({
               rows={3}
             />
           </div>
+
           <div className={`${style.marginTop20}`}>
             <div className={style.entityLableStyle}>VERIFICATION CHECK</div>
             <div className={style.flex}>
               <div className={`${style.marginLeft10} ${style.flex}`}>
                 <input
                   type="checkbox"
-                  checked={checks.documentFormat}
+                  checked={checks.documentFormatCheck}
                   onChange={(e) =>
-                    setChecks({ ...checks, documentFormat: e.target.checked })
+                    setChecks({
+                      ...checks,
+                      documentFormatCheck: e.target.checked,
+                    })
                   }
                 />
                 <label className={style.marginLeft10}>
@@ -358,9 +436,12 @@ const ProofOfDocumentDialog = ({
               <div className={`${style.marginLeft10} ${style.flex}`}>
                 <input
                   type="checkbox"
-                  checked={checks.documentType}
+                  checked={checks.documentTypeCheck}
                   onChange={(e) =>
-                    setChecks({ ...checks, documentType: e.target.checked })
+                    setChecks({
+                      ...checks,
+                      documentTypeCheck: e.target.checked,
+                    })
                   }
                 />
                 <label className={style.marginLeft10}>Document Type</label>
@@ -368,9 +449,12 @@ const ProofOfDocumentDialog = ({
               <div className={`${style.marginLeft10} ${style.flex}`}>
                 <input
                   type="checkbox"
-                  checked={checks.nameVerification}
+                  checked={checks.documentNameValidation}
                   onChange={(e) =>
-                    setChecks({ ...checks, nameVerification: e.target.checked })
+                    setChecks({
+                      ...checks,
+                      documentNameValidation: e.target.checked,
+                    })
                   }
                 />
                 <label className={style.marginLeft10}>Name Verification</label>
@@ -383,8 +467,13 @@ const ProofOfDocumentDialog = ({
               <div className={`${style.marginLeft10} ${style.flex}`}>
                 <input
                   type="checkbox"
-                  checked={checks.documentFormat}
-                  onChange={handleCheckboxChange}
+                  checked={checks.documentExpiration}
+                  onChange={(e) =>
+                    setChecks({
+                      ...checks,
+                      documentExpiration: e.target.checked,
+                    })
+                  }
                 />
                 <label className={style.marginLeft10}>
                   Document Expiration
@@ -394,14 +483,16 @@ const ProofOfDocumentDialog = ({
                 <input
                   type="checkbox"
                   checked={checks.documentType}
-                  onChange={handleCheckboxChange}
+                  onChange={(e) =>
+                    setChecks({ ...checks, documentType: e.target.checked })
+                  }
                 />
                 <label className={style.marginLeft10}>Document Expiry in</label>
               </div>
               <select
-                value={3}
-                className={style.marginLeft10}
-                style={{ borderRadius: "0", width: "70px" }} // Adjust the width as needed
+                value={days}
+                onChange={(e) => setDays(Number(e.target.value))}
+                style={{ borderRadius: "0", width: "70px" }}
               >
                 <option value={1}>1</option>
                 <option value={2}>2</option>
@@ -409,12 +500,12 @@ const ProofOfDocumentDialog = ({
                 <option value={4}>4</option>
               </select>
               <select
-                value={3}
-                className={style.marginLeft10}
-                style={{ borderRadius: "0", width: "90px" }} // Adjust the width as needed
+                value={timePeriod}
+                onChange={(e) => setTimePeriod(e.target.value)}
+                style={{ borderRadius: "0", width: "90px" }}
               >
-                <option value={1}>Month</option>
-                <option value={2}>Day</option>
+                <option value="Month">Month</option>
+                <option value="Day">Day</option>
               </select>
             </div>
             <div className={`${style.marginTop20}`}>
@@ -444,7 +535,7 @@ const ProofOfDocumentDialog = ({
                       />
                     }
                   />
-                  <label>Recommened</label>
+                  <label>Recommended</label>
                 </div>
                 <div className={`${style.marginLeft40} ${style.flex}`}>
                   <FormControlLabel
@@ -466,155 +557,39 @@ const ProofOfDocumentDialog = ({
             <div>
               <div className={style.entityLableStyle}>ALLOWED FORMAT</div>
               <select
-                value={currentEntityType}
-                rightElement={arrowDown()}
+                value={allowedFormat}
+                onChange={(e) => setAllowedFormat(e.target.value)}
                 style={{ borderRadius: "0", width: "250px" }}
               >
-                <option value="">PNG/jpeg</option>
+                <option value="PNG/jpeg">PNG/jpeg</option>
               </select>
             </div>
             <div className={style.marginLeft10}>
               <div className={style.entityLableStyle}>MAX SIZE ALLOWED:</div>
               <select
-                value={currentEntityType}
-                rightElement={arrowDown()}
+                value={maxSizeAllowed}
+                onChange={(e) => setMaxSizeAllowed(e.target.value)}
                 style={{ borderRadius: "0", width: "250px" }}
               >
-                <option value="">5 MB</option>
+                <option value="5 MB">5 MB</option>
               </select>
             </div>
           </div>
-
-          {/* <div
-            className={`${style.ReferenceListEntityBorder} ${style.marginTop20}`}
-          ></div> */}
-          <div></div>
-          {/* <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <div className={style.entityLableStyle}>
-              Primary Termination Reason*
-            </div>
-            <div className={style.displayInRow}>
-              <InputGroup
-                value={primaryReason}
-                id="primaryReasonEl"
-                className={style.halfWidth}
-                onChange={(obj) => setPrimaryReason(obj.target.value)}
-              />
-              <Checkbox
-                value="ADD SUB-REASONS"
-                checked={addSubReasons}
-                onChange={(e) => handleAddSubReasons(e.target.checked)}
-                className={` ${style.marginLeft20} ${style.marginTop}`}
-                label="ADD SUB-REASONS"
-              />
-            </div>
-          </div>
-          <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <div className={`${style.entityLableStyle} ${style.marginTop15}`}>
-              Written Notice Served
-            </div>
-            <div
-              className={`${style.displayInRow} ${style.displayTerminationPeriod}`}
-            >
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={writtenNotice}
-                    onChange={(e) => setWrittenNotice(e.target.checked)}
-                    className={classes.switch}
-                  />
-                }
-                className={`${style.switchFontStyle}`}
-                label={writtenNotice ? "YES" : "NO"}
-              />
-              {writtenNotice && (
-                <div className={`${style.displayInRow} ${style.inputBoxStyle}`}>
-                  <div
-                    className={`${style.displayInCol} ${style.inputBoxStyle}`}
-                  >
-                    <label
-                      htmlFor="notice"
-                      className={`${style.labelTextAlignCenter} ${style.labelTextAlignColor}`}
-                    >
-                      Notice Period
-                    </label>
-                    <InputGroup
-                      type="number"
-                      value={noticePeriod}
-                      className={`${style.width100} ${style.inputGroupText}`}
-                      onChange={(e) => setNoticePeriod(e.target.value)}
-                      rightElement={
-                        <span className={`${style.rightElementText} `}>
-                          Days
-                        </span>
-                      }
-                    />
-                  </div>
-                  <div
-                    className={`${style.displayInCol} ${style.inputBoxStyle}`}
-                  >
-                    <label
-                      htmlFor="cure"
-                      className={`${style.labelTextAlignCenter} ${style.labelTextAlignColor}`}
-                    >
-                      Cure Period
-                    </label>
-                    <InputGroup
-                      type="number"
-                      value={curePeriod}
-                      className={`${style.width100} ${style.inputGroupText}`}
-                      onChange={(e) => setCurePeriod(e.target.value)}
-                      rightElement={
-                        <span className={`${style.rightElementText}`}>
-                          Days
-                        </span>
-                      }
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-          </div> */}
-
           {addSubReasons && (
             <>
               <div className={`${style.addHealthCareBoxStyle}`}>
-                {/* <div className={`${style.editHealthCareGrid2}`}>
-                                    <div className={style.entityLableStyle}>
-                                        Sub-Reason For Termination*
-                                    </div>
-                                    <div className={style.displayInRow}>
-                                        <InputGroup
-                                            value={secondaryReason}
-                                            className={style.fullWidth}
-                                            onChange={(obj) => setSecondaryReason(obj.target.value)}
-                                        />
-                                    </div>
-                                </div> */}
                 {subReasonFields}
               </div>
               <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                 <div></div>
                 {secondaryReasonList[secondaryReasonList.length - 1] !== "" ? (
                   <div
-                    className={`${style.buttonStyle3} ${style.addMoreCardStyle}  ${style.borderRadius10}`}
+                    className={`${style.buttonStyle3} ${style.addMoreCardStyle} ${style.borderRadius10}`}
                     onClick={() => handleAddMore()}
                   >
                     ADD MORE
                   </div>
-                ) : (
-                  <div
-                    className={`${style.addMoreTextStyle} ${style.addMoreCardStyle}  ${style.borderRadius10}`}
-                  >
-                    ADD MORE
-                  </div>
-                )}
-                {/* <div
-                  className={`${style.buttonStyle3} ${style.addMoreCardStyle}`}
-                  onClick={() => handleAddMore()}
-                >
-                  ADD MORE
-                </div> */}
+                ) : null}
               </div>
             </>
           )}
@@ -629,7 +604,7 @@ const ProofOfDocumentDialog = ({
             </button>
 
             <button
-              onClick={() => SaveSubmitHandler("Save & Exit")}
+              onClick={SaveSubmitHandler}
               className={`${style.dialogButtonStyle} ${style.marginLeft20}  ${style.borderRadius10}`}
             >
               SAVE & ADD MORE

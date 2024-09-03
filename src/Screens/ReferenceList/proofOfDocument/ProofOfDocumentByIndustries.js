@@ -46,6 +46,7 @@ const ProofOfDocumentByIndustries = () => {
   const [checkedAll, setCheckedAll] = useState(false);
   const [searchKey, setSearchKey] = useState("");
   const [selectedApplicantType, setSelectedApplicantType] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const sites = [
     {
@@ -235,6 +236,14 @@ const ProofOfDocumentByIndustries = () => {
     setSelectedApplicantType(siteName);
   };
 
+  const handleOpenDialog = () => {
+    setIsDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+  };
+
   return (
     <Fragment>
       <Navbar />
@@ -251,6 +260,8 @@ const ProofOfDocumentByIndustries = () => {
               tileType={"ProofOfDocument"}
               documents={documents}
               getAddEntityTypes={getAddEntityTypes}
+              handleOpenDialog={handleOpenDialog}
+              handleClose={handleCloseDialog}
             />
           </div>
           <div
@@ -285,6 +296,10 @@ const ProofOfDocumentByIndustries = () => {
                 tableDataKeys={tableDataKeys}
                 tableHeadKeys={tableHeadKeys}
                 groupFirstTwoColumn={true}
+                tileType={"ProofOfDocument"}
+                documents={documents}
+                getAddEntityTypes={getAddEntityTypes}
+                handleClose={handleCloseDialog}
               />
               <ReferenceListActionButton
                 button1={"Save In-Progress"}
