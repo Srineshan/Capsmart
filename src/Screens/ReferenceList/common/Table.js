@@ -5,6 +5,7 @@ import EditHcFolder from "./../../../images/editHcRow.png";
 import style from "./../index.module.scss";
 import DragHandleIcon from "@mui/icons-material/DragHandle";
 import ProofOfDocumentDialog from "../proofOfDocument/proofOfDocumentDialog";
+import { POST, GET, PUT, TenantID, DELETE } from "./../../dataSaver";
 
 const ApplicantTable = ({
   applicantTypes,
@@ -13,6 +14,7 @@ const ApplicantTable = ({
   tableHeadKeys,
   documents,
   handleClose,
+  tileType,
 }) => {
   const [selectedApplicant, setSelectedApplicant] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
@@ -26,6 +28,20 @@ const ApplicantTable = ({
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setSelectedApplicant(null);
+  };
+
+  const handleDelete = async (id) => {
+    if (tileType === "ProofOfDocument") {
+      try {
+        await DELETE(`entity-service/document/?${TenantID}&${id}`, {
+          id: id, // Adding the 'id' header required by the server
+        });
+
+        console.log("Document deleted successfully");
+      } catch (error) {
+        console.error("Error deleting document:", error);
+      }
+    }
   };
 
   return (
@@ -87,6 +103,7 @@ const ApplicantTable = ({
                       src={DeleteHcFolder}
                       alt="Delete"
                       className={style.actionIcon}
+                      onClick={() => handleDelete(applicant.id)}
                     />
                     {/* <DragHandleIcon className={style.actionIcon} /> */}
                   </td>

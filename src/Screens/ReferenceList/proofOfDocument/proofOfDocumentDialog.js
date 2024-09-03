@@ -44,7 +44,7 @@ const ProofOfDocumentDialog = ({
 }) => {
   const [documentName, setDocumentName] = useState("");
   const [selectedOption, setSelectedOption] = useState("mandatory");
-  const [allowedFormat, setAllowedFormat] = useState("PNG/jpeg");
+  const [allowedFormat, setAllowedFormat] = useState("PNG");
   const [maxSizeAllowed, setMaxSizeAllowed] = useState("5 MB");
   const [days, setDays] = useState(3);
   const [timePeriod, setTimePeriod] = useState("Month");
@@ -186,12 +186,6 @@ const ProofOfDocumentDialog = ({
       typeof newApplicantType.id !== "string" ||
       typeof newApplicantType.applicantType !== "string"
     ) {
-      console.log(typeof newApplicantType.id, newApplicantType.id);
-      console.log(
-        typeof newApplicantType.applicantType,
-        newApplicantType.applicantType
-      );
-
       ErrorToaster("Invalid Entity Type");
       return;
     }
@@ -231,7 +225,7 @@ const ProofOfDocumentDialog = ({
           timePeriod: timePeriod.toUpperCase(), // This should be a valid string like "MONTH" or "YEAR"
         },
       },
-      format: allowedFormat || "JPEG", // Format should be a string
+      format: allowedFormat || "JPEG",
       size: {
         size: sizeValue, // This should be a number
         unit: unit, // This should be "MB" or "KB"
@@ -561,7 +555,8 @@ const ProofOfDocumentDialog = ({
                 onChange={(e) => setAllowedFormat(e.target.value)}
                 style={{ borderRadius: "0", width: "250px" }}
               >
-                <option value="PNG/jpeg">PNG/jpeg</option>
+                <option value="PNG">PNG</option>
+                <option value="JPEG">JPEG</option>
               </select>
             </div>
             <div className={style.marginLeft10}>
