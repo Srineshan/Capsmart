@@ -6,6 +6,7 @@ import style from "./../index.module.scss";
 import DragHandleIcon from "@mui/icons-material/DragHandle";
 import ProofOfDocumentDialog from "../proofOfDocument/proofOfDocumentDialog";
 import { POST, GET, PUT, TenantID, DELETE } from "./../../dataSaver";
+import ConsentsDialog from "../consents/consentsDialog";
 
 const ApplicantTable = ({
   applicantTypes,
@@ -149,8 +150,19 @@ const ApplicantTable = ({
             ))}
         </tbody>
       </table>
-      {selectedApplicant && (
+      {selectedApplicant && tileType == "ProofOfDocument" && (
         <ProofOfDocumentDialog
+          open={openDialog}
+          onClose={handleCloseDialog}
+          selectedApplicant={selectedApplicant}
+          documents={documents}
+          isEdit={true}
+          handleClose={handleClose}
+        />
+      )}
+
+      {selectedApplicant && tileType == "Consent" && (
+        <ConsentsDialog
           open={openDialog}
           onClose={handleCloseDialog}
           selectedApplicant={selectedApplicant}

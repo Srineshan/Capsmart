@@ -147,9 +147,11 @@ const CountriesWithStatesEntity = React.lazy(() =>
 const ProofOfDocumentationByEntity = React.lazy(() =>
   import("./Screens/ReferenceList/proofOfDocumentationByEntity")
 );
+
 const ProofOfDocumentByIndustries = React.lazy(() =>
   import("./Screens/ReferenceList/proofOfDocument/ProofOfDocumentByIndustries")
 );
+
 const ContractDocumentTypeForUpload = React.lazy(() =>
   import("./Screens/ReferenceList/contractDoumentTypeForUpload")
 );
@@ -169,6 +171,12 @@ const DepartmentsForCustomers = React.lazy(() =>
 // );
 const StaffPrivilegesByDepartment = React.lazy(() =>
   import("./Screens/ReferenceList/staffPrivileges/StaffPrivileges")
+);
+const AcknowledgementForm = React.lazy(() =>
+  import("./Screens/ReferenceList/acknowledgment/Acknowledge")
+);
+const Consent = React.lazy(() =>
+  import("./Screens/ReferenceList/consents/Consents")
 );
 
 const CustomerManagement = React.lazy(() =>
@@ -819,6 +827,11 @@ const App = ({ props }) => {
                 path="/referenceList/staffPrivilegesByDepartment"
                 element={<StaffPrivilegesByDepartment />}
               />
+              <Route
+                path="/referenceList/AcknowledgementForms"
+                element={<AcknowledgementForm />}
+              />
+              <Route path="/referenceList/consents" element={<Consent />} />
               <Route
                 path="/referenceList/mileageRateForCustomers"
                 element={<MileageRateForCustomers />}
