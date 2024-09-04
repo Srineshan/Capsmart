@@ -623,7 +623,7 @@ const ClientAdminDashboard = () => {
                       </div>
                     </Link>
                     <Link
-                      to="/referenceList/AcknowledgementForms"
+                      to="/referenceList/acknowledgementForms"
                       className={style.linkStyle}
                     >
                       <div className={style.dashboardCardStyle}>

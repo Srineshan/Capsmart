@@ -38,6 +38,7 @@ const useStyles = makeStyles({
 const AcknowledgmentDialog = ({
   getAddEntityDialog,
   selectedTermination,
+  selectedAcknowledgement,
   isSecondary,
   isEdit,
   getTerminationReasonData,
@@ -66,6 +67,7 @@ const AcknowledgmentDialog = ({
   const [eInitialRequired, setEInitialRequired] = useState(false);
   const [applicantTypeList, setApplicantTypeList] = useState([]);
   const [applicantType, setApplicantType] = useState([]);
+  const [selectedApplicantType, setSelectedApplicantType] = useState([]);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState();
   const [file, setFile] = useState();
@@ -100,6 +102,33 @@ const AcknowledgmentDialog = ({
       }
     }
   }, [selectedTermination]);
+
+  useEffect(() => {
+    if (isEdit) {
+      let temp = [];
+      selectedAcknowledgement?.applicantTypes?.map(data => {
+        temp.push(data?.id)
+      })
+      setApplicantType(temp);
+      setSelectedApplicantType(selectedAcknowledgement?.applicantTypes);
+      setTitle(selectedAcknowledgement?.title);
+      setFile(selectedAcknowledgement?.file);
+      setContent(selectedAcknowledgement?.content?.content);
+      setDisclaimer(selectedAcknowledgement?.disclaimer?.content);
+      setEInitialRequired(selectedAcknowledgement?.einitialRequiredOnEachPage);
+      setSignatureRequired(selectedAcknowledgement?.esignatureRequiredOnEachPage);
+    }
+  }, [selectedAcknowledgement]);
+
+  useEffect(() => {
+    if (applicantType?.length !== 0) {
+      let temp = [];
+      applicantType?.map(data => {
+        temp.push(applicantTypeList?.filter(applicantData => applicantData?.id === data)?.map(innerData => innerData)?.[0])
+      })
+      setSelectedApplicantType(temp);
+    }
+  }, [applicantType]);
 
   useEffect(() => {
     getSubReasons();
@@ -237,21 +266,21 @@ const AcknowledgmentDialog = ({
   const handleSaveAcknowledgementForm = async () => {
 
     const data = {
-      "applicantTypes": applicantType,
+      "applicantTypes": selectedApplicantType,
       "title": title,
       "content": {
-        "content": "string"
+        "content": content
       },
       "file": file,
-      "contentType": contentType,
+      "contentType": "Text",
       "disclaimer": {
-        "content": "string"
+        "content": disclaimer
       },
       "einitialRequiredOnEachPage": eInitialRequired,
       "esignatureRequiredOnEachPage": signatureRequired
     };
 
-
+    console.log(data)
     if (!isEdit) {
       await POST("entity-service/acknowledgementForm", JSON.stringify(data))
         .then((response) => {
@@ -263,7 +292,7 @@ const AcknowledgmentDialog = ({
         });
     } else {
       await PUT(
-        `entity-service/acknowledgementForm/${terminationId}`,
+        `entity-service/acknowledgementForm/${selectedAcknowledgement?.id}`,
         JSON.stringify(data)
       )
         .then((response) => {
@@ -461,8 +490,9 @@ const AcknowledgmentDialog = ({
             <div className={style.entityLableStyle}>
               ACKNOWLEDGEMENT FORM CONTENT*
             </div>
-            {/* <Editor /> */}
-            <MarkdownEditor getValue={getContentValue} />
+            <Editor editorHtml={content}
+              onChange={getContentValue} />
+            {/* <MarkdownEditor getValue={getContentValue} /> */}
 
           </div>
 
@@ -497,7 +527,8 @@ const AcknowledgmentDialog = ({
             <div className={style.entityLableStyle}>DISCLAIMER CONTENTS*</div>
             {/* <Editor /> */}
             <div>
-              <MarkdownEditor getValue={getDisclaimerValue} />
+              <Editor editorHtml={disclaimer}
+                onChange={getDisclaimerValue} />
             </div>
           </div>
 
@@ -552,10 +583,10 @@ const AcknowledgmentDialog = ({
             <div className={style.floatLeft}>
               <button
                 className={style.outlinedButton}
-                onClick={() => {
-                  getAddEntityDialog(false);
-                  getTerminationReasonData();
-                }}
+              // onClick={() => {
+              //   getAddEntityDialog(false);
+              //   getTerminationReasonData();
+              // }}
               >
                 BULK UPLOAD
               </button>
@@ -571,7 +602,7 @@ const AcknowledgmentDialog = ({
                 CANCEL
               </button>
               <button
-                onClick={() => SaveSubmitHandler("Save & Exit")}
+                onClick={() => handleSaveAcknowledgementForm()}
                 className={`${style.buttonStyle} ${style.marginLeft20}`}
               >
                 SAVE

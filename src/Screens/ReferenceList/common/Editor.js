@@ -298,7 +298,7 @@ export default class Editor extends Component {
           ref={(el) => {
             this.quillRef = el;
           }}
-          value={this.state.editorHtml}
+          value={this.state.editorHtml || this.props.editorHtml}
           onChange={(content) => {
             this.setState({ editorHtml: content });
             this.props.onChange(content);
@@ -356,16 +356,16 @@ export default class Editor extends Component {
   }
 }
 
-// Editor.modules = {
-//   toolbar: {
-//     container: "#toolbar",
-//     handlers: {
-//       insertCustomVariables: function (value) {
-//         const quill = this.quill;
-//         const cursorPosition = quill.getSelection().index;
-//         quill.insertText(cursorPosition, value);
-//         quill.setSelection(cursorPosition + value.length);
-//       },
-//     },
-//   },
-// };
+Editor.modules = {
+  toolbar: {
+    container: "#toolbar",
+    handlers: {
+      insertCustomVariables: function (value) {
+        const quill = this.quill;
+        const cursorPosition = quill.getSelection().index;
+        quill.insertText(cursorPosition, value);
+        quill.setSelection(cursorPosition + value.length);
+      },
+    },
+  },
+};

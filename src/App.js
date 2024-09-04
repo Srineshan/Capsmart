@@ -103,16 +103,15 @@ const TasksAndAlerts = React.lazy(() =>
 );
 const ReferenceList = React.lazy(() => import("./Screens/ReferenceList"));
 
-const AcknowledgementForm = React.lazy(() =>
-  import("./Screens/ReferenceList/acknowledgment")
-);
-
 const IndustriesWithEntityTypes = React.lazy(() =>
   import("./Screens/ReferenceList/industriesWithEntityTypes")
 );
 
 const DepartmentsByEntityTypes = React.lazy(() =>
   import("./Screens/ReferenceList/departmentsByEntityTypes")
+);
+const AcknowledgementForm = React.lazy(() =>
+  import("./Screens/ReferenceList/acknowledgment/Acknowledge")
 );
 
 const ContractedServiceProvidedByIndustries = React.lazy(() =>
@@ -834,7 +833,7 @@ const App = ({ props }) => {
                 element={<StaffPrivilegesByDepartment />}
               />
               <Route
-                path="/referenceList/AcknowledgementForms"
+                path="/referenceList/acknowledgementForms"
                 element={<AcknowledgementForm />}
               />
               <Route path="/referenceList/consents" element={<Consent />} />

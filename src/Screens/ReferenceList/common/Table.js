@@ -7,6 +7,7 @@ import DragHandleIcon from "@mui/icons-material/DragHandle";
 import ProofOfDocumentDialog from "../proofOfDocument/proofOfDocumentDialog";
 import { POST, GET, PUT, TenantID, DELETE } from "./../../dataSaver";
 import ConsentsDialog from "../consents/consentsDialog";
+import AcknowledgmentDialog from "../acknowledgment/AcknowledgmentDialog";
 
 const ApplicantTable = ({
   applicantTypes,
@@ -92,8 +93,16 @@ const ApplicantTable = ({
                         keyIndex === 0 ? style.leftAligned : style.rightAligned
                       } ${keyIndex === 0 ? style.firstColumn : ""}`}
                     >
-                      {key == "applicantType"
+                      {key === "applicantType"
                         ? applicant.applicantType[key]
+                        : key === "disclaimer"
+                        ? applicant[key]?.content != null
+                          ? "Yes"
+                          : "No"
+                        : key === "esignatureRequiredOnEachPage"
+                        ? applicant[key] === true
+                          ? "Required"
+                          : "NA"
                         : applicant[key] || "N/A"}
                     </td>
                   ))}
@@ -128,7 +137,7 @@ const ApplicantTable = ({
                               : style.rightAligned
                           } ${keyIndex === 0 ? style.firstColumn : ""}`}
                         >
-                          {subApplicant[key]}
+                          {subApplicant.key}
                         </td>
                       ))}
                       <td className={style.actions}>
@@ -155,6 +164,17 @@ const ApplicantTable = ({
           open={openDialog}
           onClose={handleCloseDialog}
           selectedApplicant={selectedApplicant}
+          documents={documents}
+          isEdit={true}
+          handleClose={handleClose}
+        />
+      )}
+
+      {selectedApplicant && tileType == "Acknowedgement" && (
+        <AcknowledgmentDialog
+          open={openDialog}
+          onClose={handleCloseDialog}
+          selectedAcknowledgement={selectedApplicant}
           documents={documents}
           isEdit={true}
           handleClose={handleClose}
