@@ -481,6 +481,7 @@
 .twoCol {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  gap: 20px;
 }
 
 .industriesCardTextStyle1 {
@@ -1192,6 +1193,12 @@
   grid-gap: 20px;
 }
 
+.signatureGrid {
+  display: grid;
+  grid-template-columns: 30% 69%;
+  grid-gap: 1%;
+}
+
 .podGrid {
   display: grid;
   grid-template-columns: 100px 1fr;
@@ -1494,9 +1501,9 @@
 
 .entityLableStyle {
   text-align: left;
-  font: normal normal normal 13px/17px proxima-nova;
+  font: normal normal normal 15px/20px proxima-nova;
   letter-spacing: 0px;
-  color: #b3b8bd;
+  color: #52575d;
   margin-top: 5px;
 }
 

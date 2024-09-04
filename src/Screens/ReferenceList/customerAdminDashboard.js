@@ -623,7 +623,7 @@ const ClientAdminDashboard = () => {
                       </div>
                     </Link>
                     <Link
-                      to="/referenceList/contractTerminationReasonForCustomer"
+                      to="/referenceList/acknowledgementForms"
                       className={style.linkStyle}
                     >
                       <div className={style.dashboardCardStyle}>
@@ -2672,25 +2672,6 @@ const ClientAdminDashboard = () => {
                         </div> */}
                     {/* </div>
                     </Link> */}
-                    <Link
-                      to={"/referenceList/countriesSupportedWithStates"}
-                      className={style.linkStyle}
-                    >
-                      <div className={style.dashboardCardStyle}>
-                        <h5 className={`${style.headingForReferenceList}`}>
-                          COUNTRIES SUPPORTED WITH <br /> STATES
-                        </h5>
-                        <div
-                          className={`${style.optionsStyle} ${style.displayInCol}  `}
-                        >
-                          <div className={`${style.dashboardInsideCardStyle} `}>
-                            <span className={style.dashboardCardColorOption4}>
-                              DEFAULT LIST SETUP REQUIRED
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </Link>
                   </div>
                 </div>
               </div>

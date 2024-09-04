@@ -9,8 +9,8 @@ const CommonInputField = ({ onChange, readOnly, className, leftElement, placehol
     console.log(error)
     return (
         <div>
-            <div className={`${style.lableStyle}`}>{label}{required && '*'}</div>
-            <InputGroup value={value} onChange={onChange} readOnly={contractStatus === "ACTIVE" ? true : readOnly} className={`${className}  ${style.marginTop}`} leftElement={leftElement}
+            {/* <div className={`${style.lableStyle}`}>{label}{required && '*'}</div> */}
+            <InputGroup value={value} onChange={onChange} readOnly={contractStatus === "ACTIVE" ? true : readOnly} className={`${className}`} leftElement={leftElement}
                 placeholder={placeholder} maxLength={maxLength} onFocus={onFocus} disabled={disabled} type={type} min={min} key={key} defaultValue={defaultValue}
                 onKeyDown={(type === 'number' || type === 'tel') ? preventNegativeValues : () => { }} onBlur={onBlur} intent={error ? Intent.DANGER : Intent.NONE} />
         </div>
