@@ -17,12 +17,12 @@ import ApplicantSideBar from "../common/SideBar";
 import { ReferenceListActionButton } from "../common/ReferenceListActionButton";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Typography from "@mui/material/Typography";
-import TableTwo from "../../../Components/TableDesignTwo";
 
 const Consents = () => {
   const [isSelected, setIsSelected] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
   const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
+  const [applicantTypeList, setApplicantTypeList] = useState([]);
 
   const [entityDetails, setEntityDetails] = useState({});
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -48,35 +48,7 @@ const Consents = () => {
   const [searchKey, setSearchKey] = useState("");
   const [selectedApplicantType, setSelectedApplicantType] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  const sites = ["SITE NAME", "SITE NAME"];
-
-  const applicantType = [
-    {
-      name: "Consent Form Title",
-      type: "Yes",
-      requirment: "Required",
-      lastUpdated: "Aug 16, 2024",
-    },
-    {
-      name: "Consent Form Title",
-      type: "No",
-      requirment: "NA",
-      lastUpdated: "Aug 16, 2024",
-    },
-    {
-      name: "Consent Form Title",
-      type: "Yes",
-      requirment: "Required",
-      lastUpdated: "Aug 16, 2024",
-    },
-    {
-      name: "Consent Form Title",
-      type: "No",
-      requirment: "NA",
-      lastUpdated: "Aug 16, 2024",
-    },
-  ];
+  const [consentForms, setConsentForms] = useState([]);
 
   const tableHeadKeys = [
     "CONSENT FORM",
@@ -84,13 +56,29 @@ const Consents = () => {
     "SIGNATURE",
     "LAST UPDATED",
   ];
-  const tableDataKeys = ["name", "type", "requirment", "lastUpdated"];
+
+  const tableDataKeys = [
+    "title",
+    "alertNote",
+    "esignatureRequired",
+    "lastModifiedData",
+  ];
 
   useEffect(() => {
     if (entityId !== "" && entityId !== undefined) {
       getLastModifiedDate();
     }
   }, [entityId]);
+
+  useEffect(() => {
+    getConsent();
+    getApplicantType();
+  }, []);
+
+  const getApplicantType = async () => {
+    const { data: types } = await GET("entity-service/applicantType");
+    setApplicantTypeList(types);
+  };
 
   const getIsExpanded = (value) => {
     setIsExpanded(value);
@@ -104,6 +92,11 @@ const Consents = () => {
     const { data: entity } = await GET(`entity-service/entity`);
     setEntityDetails(entity);
     setEntityId(entity?.[0]?.id);
+  };
+
+  const getConsent = async () => {
+    const { data: consentForm } = await GET(`entity-service/consentForm`);
+    setConsentForms(consentForm);
   };
 
   const getLastModifiedDate = async () => {
@@ -128,7 +121,7 @@ const Consents = () => {
     console.log("TenantID", TenantID);
 
     const { data: entityType } = await GET(
-      `entity-service/document/?${TenantID}`
+      `entity-service/consentForm/?${TenantID}`
     );
 
     setDocuments(entityType);
@@ -234,7 +227,7 @@ const Consents = () => {
               callingFrom={"Customer Admin"}
               needHeader={false}
               tileType={"Consent"}
-              documents={documents}
+              documents={consentForms}
               getEntityTypes={getEntityTypes}
               getAddEntityTypes={getAddEntityTypes}
               handleOpenDialog={handleOpenDialog}
@@ -247,8 +240,10 @@ const Consents = () => {
             }`}
           >
             <ApplicantSideBar
-              applicantType={sites}
-              type={sites}
+              applicantType={applicantTypeList?.map(
+                (data) => data?.applicantType
+              )}
+              siteType={applicantTypeList?.map((data) => data?.siteType)}
               siteTitle={"All Applicant Type"}
               onSelectSite={handleSiteClick}
               tileType={"Consent"}
@@ -267,19 +262,8 @@ const Consents = () => {
                   All Consent Form
                 </Typography>
               </div>
-              {/* <TableTwo
-                tableHeaderValues={tableHeadKeys}
-                tableDataValues={applicantType}
-                tableData={applicantType}
-                // gridStyle={gridStyle}
-                // actions={actions}
-                scrollStyle={style.contractScrollStyle}
-                // tableSortValues={tableSortValues}
-                heading={"There are no Record for you to manage"}
-                onClickFunction={() => {}}
-              /> */}
               <ApplicantTable
-                applicantTypes={applicantType}
+                applicantTypes={consentForms}
                 applicantNotice={
                   "Applicant types are ordered as they will appear on forms. To change the order, click and drag "
                 }

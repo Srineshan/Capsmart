@@ -39,41 +39,282 @@ const ConsentsDialog = ({
   siteTypeId,
   handleClose,
   open,
-  selectedApplicant,
+  selectedConsent,
 }) => {
+  const [entityTypes, setEntityTypes] = useState([]);
   const [applicantTypes, setApplicantTypes] = useState([]);
   const [consentTitle, setConsentTitle] = useState("");
-  const [consentConsents, setconsentConsents] = useState();
+  const [consent, setConsent] = useState();
   const [currentApplicantType, setCurrentApplicantType] = useState(
     selectedTermination?.entityId?.id ? selectedTermination?.entityId?.id : ""
   );
+  const [selectedApplicantType, setSelectedApplicantType] = useState([]);
+  const [applicantType, setApplicantType] = useState([]);
+  const [applicantTypeList, setApplicantTypeList] = useState([]);
+
   const [alertNote, setAlertNote] = useState(true);
   const [alertNotice, setAlertNotice] = useState("");
-  const [signature, setSignature] = useState(false);
+  const [signatureRequired, setSignatureRequired] = useState(false);
+
   const classes = useStyles();
 
   useEffect(() => {
     getEntityData();
+    getApplicantType();
   }, []);
 
+  // useEffect(() => {
+  //   if (isEdit) {
+  //     setCurrentEntityType(siteTypeId);
+  //     setTerminationId(selectedTermination?.id);
+  //     setTerminationBy(selectedTermination?.terminationBy);
+  //     setPrimaryReason(selectedTermination?.primary_reason);
+  //     setCreatedDate(selectedTermination?.createdDate);
+  //     setNoticePeriod(selectedTermination?.noticePeriodInDays);
+  //     setCurePeriod(selectedTermination?.curePeriodInDays);
+  //     setWrittenNotice(selectedTermination?.writtenNoticeServed);
+  //     setSecondaryReasonList(selectedTermination?.secondary_reasons);
+  //     setAddSubReasons(
+  //       selectedTermination?.secondary_reasons?.length > 0 ? true : false
+  //     );
+  //     if (isSecondary) {
+  //       setSecondaryReason(selectedTermination?.secondary_reasons[0]);
+  //     }
+  //   }
+  // }, [selectedTermination]);
+
+  useEffect(() => {
+    if (isEdit) {
+      let temp = [];
+      selectedConsent?.applicantTypes?.map((data) => {
+        temp.push(data?.id);
+      });
+      setApplicantType(temp);
+      setSelectedApplicantType(selectedConsent?.applicantTypes);
+      setApplicantTypes(selectedConsent?.title);
+      setConsent(selectedConsent?.content);
+      setAlertNote(selectedConsent?.alertNoteRequired);
+      setAlertNotice(selectedConsent?.alertNote);
+      setSignatureRequired(selectedConsent?.esignatureRequired);
+    }
+  }, [selectedConsent]);
+
+  useEffect(() => {
+    if (applicantType?.length !== 0) {
+      let temp = [];
+      applicantType?.map((data) => {
+        temp.push(
+          applicantTypeList
+            ?.filter((applicantData) => applicantData?.id === data)
+            ?.map((innerData) => innerData)?.[0]
+        );
+      });
+      setSelectedApplicantType(temp);
+    }
+  }, [applicantType]);
+
+  // useEffect(() => {
+  //   getSubReasons();
+  // }, [secondaryReasonList]);
+
   const getEntityData = async () => {
-    const { data: types } = await GET("entity-service/applicantType");
-    setApplicantTypes(types);
+    const { data: types } = await GET("entity-service/entity/entityType");
+    setEntityTypes(types);
   };
+
+  const getApplicantType = async () => {
+    const { data: types } = await GET("entity-service/applicantType");
+    setApplicantTypeList(types);
+  };
+
+  const getContentValue = (data) => {
+    setConsent(data);
+    console.log(data);
+  };
+
+  // const handleSubReasonValue = (i, value) => {
+  //   let temp = secondaryReasonList;
+  //   temp[i] = value;
+  //   setSecondaryReasonList(temp);
+  //   setSecondaryReason(value);
+  //   // getSubReasons();
+  //   // console.log(temp, value, secondaryReasonList);
+  // };
+
+  // const getSubReasons = () => {
+  //   // console.log('entered', secondaryReasonList)
+  //   let temp = [];
+  //   for (let i = 0; i < secondaryReasonList?.length; i++) {
+  //     // console.log(i);
+  //     temp[i] = (
+  //       <div
+  //         className={`${style.editHealthCareGrid2}`}
+  //         key={`${i}${secondaryReasonList[i]}`}
+  //       >
+  //         <div className={style.entityLableStyle}>
+  //           Sub-Reason For Termination {i + 1}*
+  //         </div>
+  //         <div className={style.displayInRow}>
+  //           <InputGroup
+  //             defaultValue={secondaryReasonList[i]}
+  //             className={style.fullWidth}
+  //             onChange={(e) => handleSubReasonValue(i, e.target.value)}
+  //           />
+  //         </div>
+  //       </div>
+  //     );
+  //   }
+  //   setSubReasonFields(temp);
+  // };
+
+  // const SaveSubmitHandler = async (type) => {
+  //   // let SecondaryReasonData = [];
+  //   // if (selectedTermination?.secondary_reasons) {
+  //   //     SecondaryReasonData = [...selectedTermination.secondary_reasons];
+  //   // } else {
+  //   //     SecondaryReasonData = [];
+  //   // }
+  //   // if (secondaryReason !== "") {
+  //   //     SecondaryReasonData.push(secondaryReason);
+  //   // }
+
+  //   if (currentEntityType === "") {
+  //     ErrorToaster("Enter All Mandatory Data");
+  //     return;
+  //   }
+
+  //   const data = {
+  //     ...(isEdit && { id: terminationId }),
+  //     ...(isEdit && { createdDate: createdDate }),
+  //     ...(isEdit && { lastModifiedDate: new Date() }),
+  //     terminationBy: terminationBy,
+  //     primary_reason: primaryReason,
+  //     secondary_reasons:
+  //       secondaryReasonList[secondaryReasonList.length - 1] === ""
+  //         ? secondaryReasonList.splice(0, secondaryReasonList.length - 1)
+  //         : secondaryReasonList,
+  //     siteTypeId: {
+  //       id: currentEntityType,
+  //     },
+  //     entityId: {
+  //       id: TenantID,
+  //     },
+  //     noticePeriodInDays: noticePeriod,
+  //     curePeriodInDays: curePeriod,
+  //     customized: true,
+  //     writtenNoticeServed: writtenNotice,
+  //   };
+
+  //   // console.log(data);
+
+  //   if (!isEdit) {
+  //     await POST("entity-service/terminationReason", JSON.stringify([data]))
+  //       .then((response) => {
+  //         SuccessToaster("Termination Added Successfully");
+  //         getTerminationReasonData();
+  //         getAddEntityDialog(false);
+  //       })
+  //       .catch((error) => {
+  //         ErrorToaster(error);
+  //       });
+  //   } else {
+  //     await PUT(
+  //       `entity-service/terminationReason/${terminationId}`,
+  //       JSON.stringify(data)
+  //     )
+  //       .then((response) => {
+  //         SuccessToaster("Termination Updated Successfully");
+  //         getTerminationReasonData();
+  //         getAddEntityDialog(false);
+  //       })
+  //       .catch((error) => {
+  //         ErrorToaster(error);
+  //       });
+  //   }
+
+  //   // if (type !== "Add More") {
+  //   //   getAddEntityDialog(false);
+  //   // } else {
+  //   //   setPrimaryReason("");
+  //   //   setSecondaryReason("");
+  //   //   document.getElementById("primaryReasonEl").focus();
+  //   // }
+  // };
+
+  const handleSaveConsentForm = async () => {
+    const data = {
+      applicantType: {
+        id: "string",
+        applicantType: currentApplicantType,
+      },
+      title: consentTitle,
+      content: consent,
+      alertNote: alertNotice,
+      esignatureRequired: signatureRequired,
+      alertNoteRequired: alertNote,
+    };
+
+    // {
+    //   applicantTypes: selectedApplicantType,
+    //   title: title,
+    //   content: {
+    //     content: content,
+    //   },
+    //   file: file,
+    //   contentType: "Text",
+    //   disclaimer: {
+    //     content: disclaimer,
+    //   },
+    //   einitialRequiredOnEachPage: eInitialRequired,
+    //   esignatureRequiredOnEachPage: signatureRequired,
+    // };
+
+    console.log(data);
+    if (!isEdit) {
+      await POST("entity-service/consentForm", JSON.stringify(data))
+        .then((response) => {
+          SuccessToaster("Consent Form Added Successfully");
+          handleClose(true);
+        })
+        .catch((error) => {
+          ErrorToaster(error);
+        });
+    } else {
+      await PUT(
+        `entity-service/consentForm/${selectedConsent?.id}`,
+        JSON.stringify(data)
+      )
+        .then((response) => {
+          SuccessToaster("Consent Form Updated Successfully");
+          handleClose(true);
+        })
+        .catch((error) => {
+          ErrorToaster(error);
+        });
+    }
+  };
+
+  // const handleAddMore = () => {
+  //   let temp = secondaryReasonList;
+  //   temp.push("");
+  //   // console.log(temp);
+  //   setSecondaryReasonList(temp);
+  //   getSubReasons();
+  // };
 
   const handleEditorChange = (content) => {
-    setconsentConsents(content);
+    setConsent(content);
   };
 
-  const SaveSubmitHandler = async () => {
-    console.log("Current Entity Type:", currentApplicantType);
-    console.log("Consent Title:", consentTitle);
-    console.log("Consent Contents:", consentConsents);
-    console.log("Alert Note Required:", alertNote);
-    console.log("Alert Notice:", alertNote);
-    console.log("Applicant e-Signature Required:", signature);
-    handleClose();
-  };
+  // const SaveSubmitHandler = async () => {
+  //   console.log("Current Entity Type:", currentApplicantType);
+  //   console.log("Consent Title:", consentTitle);
+  //   console.log("Consent Contents:", consentConsents);
+  //   console.log("Alert Note Required:", alertNote);
+  //   console.log("Alert Notice:", alertNote);
+  //   console.log("Applicant e-Signature Required:", signature);
+  //   handleClose();
+  // };
 
   return (
     <Dialog
@@ -122,7 +363,7 @@ const ConsentsDialog = ({
               }}
             >
               <option value="">Select Applicant Type</option>
-              {applicantTypes.map((type) => (
+              {applicantTypeList.map((type) => (
                 <option value={type.applicantType}>{type.applicantType}</option>
               ))}
             </select>
@@ -145,10 +386,7 @@ const ConsentsDialog = ({
           </div>
           <div className={style.marginTop20}>
             <div className={style.entityLableStyle}>CONSENT CONTENTS*</div>
-            <Editor
-              editorHtml={consentConsents}
-              onChange={handleEditorChange}
-            />
+            <Editor editorHtml={consent} onChange={handleEditorChange} />
           </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <div className={`${style.entityLableStyle} ${style.marginTop15}`}>
@@ -190,13 +428,13 @@ const ConsentsDialog = ({
               <FormControlLabel
                 control={
                   <Switch
-                    checked={signature}
-                    onChange={(e) => setSignature(e.target.checked)}
+                    checked={signatureRequired}
+                    onChange={(e) => setSignatureRequired(e.target.checked)}
                     className={classes.switch}
                   />
                 }
                 className={`${style.switchFontStyle}`}
-                label={signature ? "YES" : "NO"}
+                label={signatureRequired ? "YES" : "NO"}
               />
             </div>
           </div>
@@ -226,7 +464,7 @@ const ConsentsDialog = ({
                 CANCEL
               </button>
               <button
-                onClick={() => SaveSubmitHandler("Save & Exit")}
+                onClick={() => handleSaveConsentForm()}
                 className={`${style.buttonStyle} ${style.marginLeft20}`}
               >
                 SAVE

@@ -99,7 +99,8 @@ const ApplicantTable = ({
                         ? applicant[key]?.content != null
                           ? "Yes"
                           : "No"
-                        : key === "esignatureRequiredOnEachPage"
+                        : key === "esignatureRequiredOnEachPage" ||
+                          key == "esignatureRequired"
                         ? applicant[key] === true
                           ? "Required"
                           : "NA"
@@ -185,7 +186,7 @@ const ApplicantTable = ({
         <ConsentsDialog
           open={openDialog}
           onClose={handleCloseDialog}
-          selectedApplicant={selectedApplicant}
+          selectedConsent={selectedApplicant}
           documents={documents}
           isEdit={true}
           handleClose={handleClose}
