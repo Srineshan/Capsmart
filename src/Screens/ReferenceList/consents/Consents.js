@@ -17,6 +17,7 @@ import ApplicantSideBar from "../common/SideBar";
 import { ReferenceListActionButton } from "../common/ReferenceListActionButton";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Typography from "@mui/material/Typography";
+import TableTwo from "../../../Components/TableDesignTwo";
 
 const Consents = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -266,6 +267,17 @@ const Consents = () => {
                   All Consent Form
                 </Typography>
               </div>
+              {/* <TableTwo
+                tableHeaderValues={tableHeadKeys}
+                tableDataValues={applicantType}
+                tableData={applicantType}
+                // gridStyle={gridStyle}
+                // actions={actions}
+                scrollStyle={style.contractScrollStyle}
+                // tableSortValues={tableSortValues}
+                heading={"There are no Record for you to manage"}
+                onClickFunction={() => {}}
+              /> */}
               <ApplicantTable
                 applicantTypes={applicantType}
                 applicantNotice={

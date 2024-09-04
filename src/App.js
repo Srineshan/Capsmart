@@ -176,9 +176,7 @@ const DepartmentsForCustomers = React.lazy(() =>
 const StaffPrivilegesByDepartment = React.lazy(() =>
   import("./Screens/ReferenceList/staffPrivileges/StaffPrivileges")
 );
-const AcknowledgementForm = React.lazy(() =>
-  import("./Screens/ReferenceList/acknowledgment/Acknowledge")
-);
+
 const Consent = React.lazy(() =>
   import("./Screens/ReferenceList/consents/Consents")
 );
@@ -335,53 +333,53 @@ const App = ({ props }) => {
       browserName === "Chrome"
         ? "CHROME"
         : browserName === "Firefox"
-          ? "FIREFOX"
-          : browserName === "Safari"
-            ? "SAFARI"
-            : browserName === "Opera"
-              ? "OPERA"
-              : browserName === "Edge"
-                ? "EDGE"
-                : browserName === "Internet Explorer"
-                  ? "INTERNETEXPLORER"
-                  : browserName === "Chromium"
-                    ? "CHROMIUM"
-                    : browserName === "Yandex"
-                      ? "YANDEX"
-                      : browserName === "IE"
-                        ? "IE"
-                        : browserName === "Mobile Safari"
-                          ? "MOBILESAFARI"
-                          : browserName === "Edge Chromium"
-                            ? "EDGECHROMIUM"
-                            : browserName === "MIUI Browser"
-                              ? "MIUIBROWSER"
-                              : browserName === "Samsung Browser"
-                                ? "SAMSUNGBROWSER"
-                                : "";
+        ? "FIREFOX"
+        : browserName === "Safari"
+        ? "SAFARI"
+        : browserName === "Opera"
+        ? "OPERA"
+        : browserName === "Edge"
+        ? "EDGE"
+        : browserName === "Internet Explorer"
+        ? "INTERNETEXPLORER"
+        : browserName === "Chromium"
+        ? "CHROMIUM"
+        : browserName === "Yandex"
+        ? "YANDEX"
+        : browserName === "IE"
+        ? "IE"
+        : browserName === "Mobile Safari"
+        ? "MOBILESAFARI"
+        : browserName === "Edge Chromium"
+        ? "EDGECHROMIUM"
+        : browserName === "MIUI Browser"
+        ? "MIUIBROWSER"
+        : browserName === "Samsung Browser"
+        ? "SAMSUNGBROWSER"
+        : "";
 
     let os =
       osName === "Windows"
         ? "WINDOWS"
         : osName === "Linux"
-          ? "LINUX"
-          : osName === "Mac OS"
-            ? "MAC"
-            : osName === "iOS"
-              ? "IOS"
-              : osName === "Android"
-                ? "ANDROID"
-                : osName === "Windows Phone"
-                  ? "WINDOWSPHONE"
-                  : "";
+        ? "LINUX"
+        : osName === "Mac OS"
+        ? "MAC"
+        : osName === "iOS"
+        ? "IOS"
+        : osName === "Android"
+        ? "ANDROID"
+        : osName === "Windows Phone"
+        ? "WINDOWSPHONE"
+        : "";
 
     let deviceType = isDesktop
       ? "DESKTOP"
       : isMobile
-        ? "MOBILE"
-        : isTablet
-          ? "TABLET"
-          : "";
+      ? "MOBILE"
+      : isTablet
+      ? "TABLET"
+      : "";
     let interceptorsInfo = sessionStorage.getItem("interceptorsInfo");
 
     let data = {
@@ -702,10 +700,10 @@ const App = ({ props }) => {
                 path="/referenceList/departmentsByEntityTypes"
                 element={<DepartmentsByEntityTypes />}
               />
-              <Route
+              {/* <Route
                 path="/referenceList/acknowledgementForms"
                 element={<AcknowledgementForm />}
-              />
+              /> */}
               <Route
                 path="/referenceList/functionalTitles"
                 element={<FunctionalTitles />}

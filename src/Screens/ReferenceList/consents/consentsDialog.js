@@ -17,6 +17,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import { Switch, makeStyles } from "@material-ui/core";
 import WritingFile from "./../../../images/writing-file.svg";
 import Editor from "../common/Editor";
+import CommonInputField from "../../../Components/CommonFields/CommonInputField";
 
 const useStyles = makeStyles({
   switch: {
@@ -41,7 +42,7 @@ const ConsentsDialog = ({
   selectedApplicant,
 }) => {
   const [applicantTypes, setApplicantTypes] = useState([]);
-  const [consentTitle, setConsentTitle] = useState("CONTRACTOR");
+  const [consentTitle, setConsentTitle] = useState("");
   const [consentConsents, setconsentConsents] = useState();
   const [currentApplicantType, setCurrentApplicantType] = useState(
     selectedTermination?.entityId?.id ? selectedTermination?.entityId?.id : ""
@@ -132,18 +133,15 @@ const ConsentsDialog = ({
 
           <div className={style.marginTop20}>
             <div className={style.entityLableStyle}>CONSENT TITLE*</div>
-            <select
+            <CommonInputField
               value={consentTitle}
               defaultValue={consentTitle}
               className={style.fullWidth}
-              // rightElement={arrowDown()}
+              placeholder="Enter Consent Title Here"
               onChange={(obj) => {
                 setConsentTitle(obj.target.value);
               }}
-            >
-              <option value="CONTRACTOR">For Cause By Contractor</option>
-              <option value="ENTITY">For Cause By Entity</option>
-            </select>
+            />
           </div>
           <div className={style.marginTop20}>
             <div className={style.entityLableStyle}>CONSENT CONTENTS*</div>
