@@ -84,7 +84,12 @@ const Acknowledge = () => {
     "SIGNATURE",
     "LAST UPDATED",
   ];
-  const tableDataKeys = ["title", "esignatureRequiredOnEachPage", "esignatureRequiredOnEachPage", "lastModifiedDate"];
+  const tableDataKeys = [
+    "title",
+    "disclaimer",
+    "esignatureRequiredOnEachPage",
+    "lastModifiedDate",
+  ];
 
   useEffect(() => {
     if (entityId !== "" && entityId !== undefined) {
@@ -93,9 +98,9 @@ const Acknowledge = () => {
   }, [entityId]);
 
   useEffect(() => {
-    getAcknowledgement()
-    getApplicantType()
-  }, [])
+    getAcknowledgement();
+    getApplicantType();
+  }, []);
 
   const getApplicantType = async () => {
     const { data: types } = await GET("entity-service/applicantType");
@@ -116,9 +121,10 @@ const Acknowledge = () => {
     setEntityId(entity?.[0]?.id);
   };
 
-
   const getAcknowledgement = async () => {
-    const { data: acknowledgementForm } = await GET(`entity-service/acknowledgementForm`);
+    const { data: acknowledgementForm } = await GET(
+      `entity-service/acknowledgementForm`
+    );
     setAcknowledgementForms(acknowledgementForm);
   };
 
@@ -258,12 +264,15 @@ const Acknowledge = () => {
             />
           </div>
           <div
-            className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid
-              }`}
+            className={`${
+              isExpanded ? style.bigCardGrid : style.smallCardGrid
+            }`}
           >
             <ApplicantSideBar
-              applicantType={applicantTypeList?.map(data => data?.applicantType)}
-              siteType={applicantTypeList?.map(data => data?.siteType)}
+              applicantType={applicantTypeList?.map(
+                (data) => data?.applicantType
+              )}
+              siteType={applicantTypeList?.map((data) => data?.siteType)}
               siteTitle={"All Applicant Type"}
               onSelectSite={handleSiteClick}
               tileType={"Acknowedgement"}

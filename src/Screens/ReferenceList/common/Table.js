@@ -91,17 +91,27 @@ const ApplicantTable = ({
             applicantTypes.map((applicant, index) => (
               <React.Fragment key={applicant.id}>
                 <tr
-                  className={`${style.applicantItem} ${index % 2 === 0 ? "" : style.sideNonActiveBackground
-                    }`}
+                  className={`${style.applicantItem} ${
+                    index % 2 === 0 ? "" : style.sideNonActiveBackground
+                  }`}
                 >
                   {tableDataKeys.map((key, keyIndex) => (
                     <td
                       key={keyIndex}
-                      className={`${keyIndex === 0 ? style.leftAligned : style.rightAligned
-                        } ${keyIndex === 0 ? style.firstColumn : ""}`}
+                      className={`${
+                        keyIndex === 0 ? style.leftAligned : style.rightAligned
+                      } ${keyIndex === 0 ? style.firstColumn : ""}`}
                     >
-                      {key == "applicantType"
+                      {key === "applicantType"
                         ? applicant.applicantType[key]
+                        : key === "disclaimer"
+                        ? applicant[key]?.content != null
+                          ? "Yes"
+                          : "No"
+                        : key === "esignatureRequiredOnEachPage"
+                        ? applicant[key] === true
+                          ? "Required"
+                          : "NA"
                         : applicant[key] || "N/A"}
                     </td>
                   ))}
@@ -130,10 +140,11 @@ const ApplicantTable = ({
                       {tableDataKeys.map((key, keyIndex) => (
                         <td
                           key={keyIndex}
-                          className={`${keyIndex === 0
-                            ? style.leftAligned
-                            : style.rightAligned
-                            } ${keyIndex === 0 ? style.firstColumn : ""}`}
+                          className={`${
+                            keyIndex === 0
+                              ? style.leftAligned
+                              : style.rightAligned
+                          } ${keyIndex === 0 ? style.firstColumn : ""}`}
                         >
                           {subApplicant.key}
                         </td>

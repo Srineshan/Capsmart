@@ -4,7 +4,7 @@ import "react-quill/dist/quill.snow.css";
 
 // Custom bold blot
 let Inline = Quill.import("blots/inline");
-class BoldBlot extends Inline { }
+class BoldBlot extends Inline {}
 BoldBlot.blotName = "bold";
 BoldBlot.tagName = "strong";
 Quill.register("formats/bold", BoldBlot);
@@ -313,7 +313,7 @@ export default class Editor extends Component {
         <div
           className="saved-content"
           dangerouslySetInnerHTML={{ __html: this.state.savedHtml }}
-        // style={{ all: "inherit" }}
+          // style={{ all: "inherit" }}
         />
         {/* {this.state.showUrlModal && (
           <div className="modal">
