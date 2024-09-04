@@ -15,11 +15,14 @@ import style from "./../index.module.scss";
 import { ErrorToaster, SuccessToaster } from "./../../../utils/toaster";
 import { POST, GET, PUT, TenantID } from "./../../dataSaver";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import { Switch, makeStyles } from "@material-ui/core";
-import CommonInputField from "../../../Components/CommonFields/CommonInputField";
+import { Switch, TextField, makeStyles } from "@material-ui/core";
 import WritingFile from "./../../../images/writing-file.svg";
 import { BorderAllRounded } from "@material-ui/icons";
 import Divider from "@mui/material/Divider";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import CommonInputField from "../../../Components/CommonFields/CommonInputField";
 
 const useStyles = makeStyles({
   switch: {
@@ -35,13 +38,23 @@ const DisclosureByIndustriesDialog = ({
   handleClose,
   open,
   selectedTermination,
+  selectedDisclosure,
+  isSecondary,
+  isEdit,
+  getTerminationReasonData,
+  siteTypeId,
 }) => {
+  const TEXTFIELDLEN50 = 50;
   const [terminationBy, setTerminationBy] = useState("Passport Picture");
   const [primaryReason, setPrimaryReason] = useState("");
   const [secondaryReason, setSecondaryReason] = useState("");
   const [currentEntityType, setCurrentEntityType] = useState(
     selectedTermination?.entityId?.id ? selectedTermination?.entityId?.id : ""
   );
+  const [terminationId, setTerminationId] = useState(
+    selectedTermination?.id ? selectedTermination?.id : ""
+  );
+
   const [entityTypes, setEntityTypes] = useState([]);
   const [createdDate, setCreatedDate] = useState("");
   const [secondaryReasonList, setSecondaryReasonList] = useState([]);
@@ -62,6 +75,146 @@ const DisclosureByIndustriesDialog = ({
     nameVerification: true,
   });
   const [selectedOption, setSelectedOption] = useState("mandatory");
+  const [applicantType, setApplicantType] = useState([]);
+  const [siteType, setSiteType] = useState([]);
+  const [applicantTypeList, setApplicantTypeList] = useState([]);
+  const [siteTypeList, setSiteTypeList] = useState([]);
+  const [selectedApplicantType, setSelectedApplicantType] = useState([]);
+
+  const [supportingDocument, setSupportingDocument] = useState(false);
+  const [disclosureText, setDisclosureText] = useState("");
+  const [instructionalText, setInstructionalText] = useState("");
+
+  useEffect(() => {
+    if (isEdit) {
+      console.log(selectedDisclosure);
+      let temp = [];
+      selectedDisclosure?.applicantTypes?.map((data) => {
+        temp.push(data?.id);
+      });
+      setApplicantType(temp);
+      setSelectedApplicantType(selectedDisclosure?.applicantTypes);
+      setInstructionalText(selectedDisclosure?.instructionalText);
+      setDisclosureText(selectedDisclosure?.disclosureText);
+      setSupportingDocument(selectedDisclosure?.supportingDocumentRequired);
+      setRequiresDisclosureVerification(
+        selectedDisclosure.verificationRequired
+      );
+    }
+  }, [selectedDisclosure]);
+
+  useEffect(() => {
+    if (applicantType?.length !== 0) {
+      let temp = [];
+      applicantType?.map((data) => {
+        temp.push(
+          applicantTypeList
+            ?.filter((applicantData) => applicantData?.id === data)
+            ?.map((innerData) => innerData)?.[0]
+        );
+      });
+      setSelectedApplicantType(temp);
+    }
+  }, [applicantType]);
+
+  useEffect(() => {
+    getSubReasons();
+  }, [secondaryReasonList]);
+
+  const handleSubReasonValue = (i, value) => {
+    let temp = secondaryReasonList;
+    temp[i] = value;
+    setSecondaryReasonList(temp);
+    setSecondaryReason(value);
+    // getSubReasons();
+    // console.log(temp, value, secondaryReasonList);
+  };
+  const getSubReasons = () => {
+    // console.log('entered', secondaryReasonList)
+    let temp = [];
+    for (let i = 0; i < secondaryReasonList?.length; i++) {
+      // console.log(i);
+      temp[i] = (
+        <div
+          className={`${style.editHealthCareGrid2}`}
+          key={`${i}${secondaryReasonList[i]}`}
+        >
+          <div className={style.entityLableStyle}>
+            Sub-Reason For Termination {i + 1}*
+          </div>
+          <div className={style.displayInRow}>
+            <InputGroup
+              defaultValue={secondaryReasonList[i]}
+              className={style.fullWidth}
+              onChange={(e) => handleSubReasonValue(i, e.target.value)}
+            />
+          </div>
+        </div>
+      );
+    }
+    setSubReasonFields(temp);
+  };
+
+  const handleSaveAcknowledgementForm = async () => {
+    // const data = {
+    //   applicantTypes: selectedApplicantType,
+    //   title: title,
+    //   content: {
+    //     content: content,
+    //   },
+    //   file: file,
+    //   contentType: "Text",
+    //   disclaimer: {
+    //     content: disclaimer,
+    //   },
+    //   einitialRequiredOnEachPage: eInitialRequired,
+    //   esignatureRequiredOnEachPage: signatureRequired,
+    // };
+
+    // if (!isEdit) {
+    //   await POST("entity-service/disclosure", JSON.stringify(data))
+    //     .then((response) => {
+    //       SuccessToaster("Acknowledgement Form Added Successfully");
+    //       handleClose(true);
+    //     })
+    //     .catch((error) => {
+    //       ErrorToaster(error);
+    //     });
+    // } else {
+    //   await PUT(
+    //     `entity-service/disclosure/${selectedDisclosure?.id}`,
+    //     JSON.stringify(data)
+    //   )
+    //     .then((response) => {
+    //       SuccessToaster("Acknowledgement Form Updated Successfully");
+    //       handleClose(true);
+    //     })
+    //     .catch((error) => {
+    //       ErrorToaster(error);
+    //     });
+    // }
+  };
+
+  const handleApplicantTypeChange = (value) => {
+    setApplicantType(typeof value === "string" ? value.split(",") : value);
+  };
+  const getApplicantType = async () => {
+    const { data: types } = await GET("entity-service/applicantType");
+    setApplicantTypeList(types);
+  };
+  const getSiteType = async () => {
+    const { data: types } = await GET("entity-service/sites");
+    console.log("typestypes", types);
+    setSiteTypeList(types);
+  };
+  const handleSiteTypeChange = (value) => {
+    setSiteType(value);
+  };
+
+  useEffect(() => {
+    getApplicantType();
+    getSiteType();
+  }, []);
 
   const arrowDown = () => {
     return (
@@ -83,27 +236,8 @@ const DisclosureByIndustriesDialog = ({
         className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}
       >
         <div className={style.spaceBetween} style={{ display: "flex" }}>
-          <div className={`${style.flagBoxContainer} ${style.marginBottom10}`}>
-            <img
-              src={
-                "https://upload.wikimedia.org/wikipedia/en/thumb/a/a4/Flag_of_the_United_States.svg/125px-Flag_of_the_United_States.svg.png"
-              }
-              alt="refresh"
-              className={`${style.departmentFlag} ${style.marginRight15}  `}
-            />
-            <span
-              className={`${style.departmentCountryName} ${style.marginLeft10}`}
-            >
-              USA
-            </span>
-            <img
-              src={ArrowDown}
-              className={`${style.colorFileStyle2} ${style.ArrowDown} ${style.marginRight15}`}
-              alt=""
-            />
-          </div>
           <div>
-            <p className={style.extensionStyle}>{`Setup your New PoD`}</p>
+            <p className={style.extensionStyle}>{`Setup your Disclosure`}</p>
           </div>
           <div>
             <img
@@ -124,91 +258,133 @@ const DisclosureByIndustriesDialog = ({
         </div>
         <div className={style.ReferenceListEntityBorder}></div>
         <div className={`${style.addHealthCareBoxStyle}`}>
-          <div className={`${style.flexDisplay} ${style.alignItemsCenter}`}>
-            <div
-              className={`${style.entityLableStyle} ${style.whiteSpaceNowrap} ${style.marginRight15}`}
-            >
-              APPLICANT TYPE*
-            </div>
-
-            <select
-              value={currentEntityType}
-              className={`${style.fullWidth} ${style.entityLableStyle}`}
-              rightElement={arrowDown()}
-              // onChange={(obj) => {
-              //   setCurrentEntityType(obj.target.value);
-              // }}
-            >
-              <option value="">MultiSelect</option>
-              {entityTypes.map((type) => (
-                <option value={type.siteTypeId}>{type.siteTypeName}</option>
-              ))}
-            </select>
-          </div>
-          <div
-            className={`${style.marginTop20} ${style.flexDisplay} ${style.alignItemsCenter} ${style.gap15} ${style.fullWidth}`}
-          >
-            <div
-              className={`${style.flexDisplay} ${style.flexRatio} ${style.width80}`}
-            >
-              <div
-                className={`${style.entityLableStyle} ${style.whiteSpaceWrap} ${style.marginRight5}`}
+          <div>
+            <div className={style.entityLableStyle}>APPLICANT TYPE*</div>
+            <FormControl className={style.fullWidth} size="small">
+              <Select
+                labelId="demo-multiple-checkbox-label"
+                id="demo-multiple-checkbox"
+                multiple
+                value={applicantType}
+                onChange={(e) => handleApplicantTypeChange(e.target.value)}
+                SelectDisplayProps={{
+                  style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 },
+                }}
               >
-                DISCLOSURE CATEGORY:
-              </div>
-              <input
-                className={`${style.fullWidth} ${style.padding5} ${style.borderRadius5} ${style.boderColor}`}
-                value="PROFESSIONAL LICENSING, PRIVILEGE AND MEMBERSHIP HISTORY"
-              />
+                {applicantTypeList?.map((data, index) => (
+                  <MenuItem value={data?.id} key={index}>
+                    {data?.applicantType}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </div>
+
+          <div className={`${style.marginTop20}`}>
+            <div
+              className={style.entityLableStyle}
+              style={{ marginRight: "20px" }}
+            >
+              DISCLOSURE CATEGORY
             </div>
-            <div className={`${style.width20} ${style.actions}`}>
-              <div className={style.width50}>
-                <div
-                  className={`${style.entityLableStyle} ${style.marginTop15}`}
-                >
-                  ADD SUB CATEGORY
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <div style={{ marginRight: "20px" }}>
+                <FormControl style={{ width: "300px" }}>
+                  <Select
+                    labelId="demo-select-small"
+                    id="demo-select-small"
+                    value={siteType}
+                    onChange={(e) => handleSiteTypeChange(e.target.value)}
+                    SelectDisplayProps={{
+                      style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 },
+                    }}
+                  >
+                    {siteTypeList.map((type) => (
+                      <MenuItem key={type.value} value={type.value}>
+                        {type.siteName}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </div>
+
+              <div
+                className={`${style.width20} ${style.actions}`}
+                style={{ display: "flex" }}
+              >
+                <div className={style.width50} style={{ marginRight: "40px" }}>
+                  <div className={style.entityLableStyle}>ADD SUB CATEGORY</div>
+                </div>
+
+                <div style={{ display: "flex" }}>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={writtenNotice}
+                        onChange={(e) => setWrittenNotice(e.target.checked)}
+                        className={classes.switch}
+                      />
+                    }
+                    className={`${style.entityLableStyle}`}
+                    label={writtenNotice ? "YES" : "NO"}
+                    style={{ marginRight: "10px" }}
+                  />
+
+                  <div
+                    style={{
+                      marginLeft: "10px",
+                      width: writtenNotice ? "150px" : "0",
+                      transition: "width 0.3s",
+                    }}
+                  >
+                    {writtenNotice && (
+                      <TextField
+                        variant="outlined"
+                        size="small"
+                        placeholder="Enter Sub Category"
+                        style={{ width: "150px" }}
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
-              <div>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={writtenNotice}
-                      onChange={(e) => setWrittenNotice(e.target.checked)}
-                      className={classes.switch}
-                    />
-                  }
-                  className={`${style.entityLableStyle}`}
-                  label={writtenNotice ? "YES" : "NO"}
-                />
-              </div>
             </div>
           </div>
 
           <div className={`${style.marginTop20}`}>
-            <div
-              className={`${style.entityLableStyle} ${style.whiteSpaceWrap}`}
-            >
-              INSTRUCTIONAL TEXT//HELP GUIDE
+            <div className={style.entityLableStyle}>
+              INSTRUCTIONAL TEXT/HELP GUIDE
             </div>
-            <TextArea
-              className={`${style.fullWidth} ${style.marginRight210}`}
-              placeholder="Enter Text Here"
-              rows={3}
+            <CommonInputField
+              value={instructionalText}
+              className={style.fullWidth}
+              onChange={(e) => setInstructionalText(e.target.value)}
+              maxLength={TEXTFIELDLEN50}
+              placeholder={"EnterText Here"}
+              label={"ACKNOWLEDGEMENT FORM TITLE"}
+              required={true}
             />
           </div>
+          <div
+            className={`${style.ReferenceListEntityBorder} ${style.marginTop20}`}
+          ></div>
 
-          <Divider
-            className={`${style.height1} ${style.dividerBackground} ${
-              style.margin20 - 0
-            }`}
-          />
           <div className={`${style.marginTop20}`}>
             <div className={style.entityLableStyle}>DISCLOSURE TEXT</div>
-            <TextArea
-              className={`${style.fullWidth} ${style.entityLableStyle}`}
-              placeholder="Enter Text Here"
-              rows={3}
+            <CommonInputField
+              value={disclosureText}
+              className={style.fullWidth}
+              onChange={(e) => setDisclosureText(e.target.value)}
+              maxLength={TEXTFIELDLEN50}
+              placeholder={"EnterText Here"}
+              label={"ACKNOWLEDGEMENT FORM TITLE"}
+              required={true}
             />
           </div>
           <div className={`${style.marginTop20}`}>
@@ -240,94 +416,95 @@ const DisclosureByIndustriesDialog = ({
               </div>
             </div>
 
-            <div
-              className={`${style.flexDisplay} ${style.alignItemsCenter} ${style.gap313} ${style.entityLableStyle}`}
-            >
-              <label className={` ${style.entityLableStyle}`}>
-                Supporting Documentation:
-              </label>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={supportingDocumentation}
-                    onChange={(e) =>
-                      setSupportingDocumentation(e.target.checked)
+            <div className={`${style.signatureGrid} ${style.marginTop20}`}>
+              <div className={`${style.entityLableStyle} ${style.marginTop15}`}>
+                Supporting Documentation
+              </div>
+              <div>
+                <div style={{ display: "flex", alignItems: "flex-end" }}>
+                  <p style={{ marginRight: "10px" }}>
+                    {supportingDocument ? "YES" : "NO"}
+                  </p>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={supportingDocument}
+                        onChange={(e) =>
+                          setSupportingDocument(e.target.checked)
+                        }
+                        className={classes.switch}
+                      />
                     }
-                    className={classes.switch}
+                    className={`${style.switchFontStyle}`}
                   />
-                }
-                className={` ${style.entityLableStyle}`}
-                label={writtenNotice ? "YES" : "NO"}
-              />
-            </div>
-
-            <div
-              className={`${style.flexDisplay} ${style.alignItemsCenter} ${style.gap284}`}
-            >
-              <label className={style.entityLableStyle}>
-                Requires Disclosures Verification:
-              </label>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={requiresDisclosureVerification}
-                    onChange={(e) =>
-                      setRequiresDisclosureVerification(e.target.checked)
-                    }
-                    className={classes.switch}
-                  />
-                }
-                className={`${style.entityLableStyle}`}
-                label={writtenNotice ? "YES" : "NO"}
-              />
-              {requiresDisclosureVerification && (
-                <div className={style.formGroup}>
-                  <label className={style.entityLableStyle}>
-                    REQUIRED FROM:
-                  </label>
-                  <select
-                    className={`${style.select} ${style.entityLableStyle}`}
-                  >
-                    <option value="practising-physician">
-                      practising physician
-                    </option>
-                    <option value="current-employer">current employer</option>
-                    <option value="former-employer">former employer</option>
-                  </select>
                 </div>
-              )}
+              </div>
             </div>
-
-            {/* <div className={style.formGroup}>
-              <label className={style.entityLableStyle}>REQUIRED FROM:</label>
-              <select className={`${style.select} ${style.entityLableStyle}`}>
-                <option value="practising-physician">
-                  practising physician
-                </option>
-                <option value="current-employer">current employer</option>
-                <option value="former-employer">former employer</option>
-              </select>
-            </div> */}
-
-            <div
-              className={`${style.flexDisplay} ${style.alignItemsCenter} ${style.gap60}`}
-            >
-              <label className={style.entityLableStyle}>
-                Release of Information Autheorization and Consent Form Required:
-              </label>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={releaseOfInfoAuthorization}
-                    onChange={(e) =>
-                      setReleaseOfInfoAuthorization(e.target.checked)
+            <div className={`${style.signatureGrid} ${style.marginTop20}`}>
+              <div className={`${style.entityLableStyle} ${style.marginTop15}`}>
+                Requires Disclosures Verification:
+              </div>
+              <div>
+                <div style={{ display: "flex", alignItems: "flex-end" }}>
+                  <p style={{ marginRight: "10px" }}>
+                    {requiresDisclosureVerification ? "YES" : "NO"}
+                  </p>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={requiresDisclosureVerification}
+                        onChange={(e) =>
+                          setRequiresDisclosureVerification(e.target.checked)
+                        }
+                        className={classes.switch}
+                      />
                     }
-                    className={classes.switch}
+                    className={`${style.switchFontStyle}`}
                   />
-                }
-                className={`${style.entityLableStyle}`}
-                label={writtenNotice ? "YES" : "NO"}
-              />
+                  {requiresDisclosureVerification && (
+                    <div className={style.formGroup}>
+                      <label className={style.entityLableStyle}>
+                        REQUIRED FROM:
+                      </label>
+                      <select
+                        className={`${style.select} ${style.entityLableStyle}`}
+                      >
+                        <option value="practising-physician">
+                          practising physician
+                        </option>
+                        <option value="current-employer">
+                          current employer
+                        </option>
+                        <option value="former-employer">former employer</option>
+                      </select>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className={`${style.signatureGrid} ${style.marginTop20}`}>
+              <div className={`${style.entityLableStyle} ${style.marginTop15}`}>
+                Release of Information Autheorization and Consent Form Required:
+              </div>
+              <div>
+                <div style={{ display: "flex", alignItems: "flex-end" }}>
+                  <p style={{ marginRight: "10px" }}>
+                    {releaseOfInfoAuthorization ? "YES" : "NO"}
+                  </p>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={releaseOfInfoAuthorization}
+                        onChange={(e) =>
+                          setReleaseOfInfoAuthorization(e.target.checked)
+                        }
+                        className={classes.switch}
+                      />
+                    }
+                    className={`${style.switchFontStyle}`}
+                  />
+                </div>
+              </div>
             </div>
           </div>
 

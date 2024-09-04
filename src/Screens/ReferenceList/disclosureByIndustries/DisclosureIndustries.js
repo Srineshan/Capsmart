@@ -21,6 +21,7 @@ const DisclosureIndustries = () => {
 
   const [entityDetails, setEntityDetails] = useState({});
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [applicantId, setApplicantId] = useState("");
 
   const [siteTypeId, setSiteTypeId] = useState("");
   const [selectedEntityType, setSelectedEntityType] = useState("");
@@ -43,6 +44,8 @@ const DisclosureIndustries = () => {
   const [searchKey, setSearchKey] = useState("");
   const [selectedApplicantType, setSelectedApplicantType] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [applicantTypeList, setApplicantTypeList] = useState([]);
+  const [disclosureForms, setDisclosureForms] = useState([]);
 
   const tableHeadKeys = [
     "DISCLOSURE CATEGORY",
@@ -63,18 +66,35 @@ const DisclosureIndustries = () => {
     }
   }, [entityId]);
 
-  const getIsExpanded = (value) => {
-    setIsExpanded(value);
-  };
-
   const getAddEntityDialog = (value) => {
     setShowAddEntityDialog(value);
   };
 
+  useEffect(() => {
+    getApplicantType();
+  }, []);
+
+  useEffect(() => {
+    getDisclosure(applicantId);
+  }, [applicantId]);
+
+  const getApplicantType = async () => {
+    const { data: types } = await GET("entity-service/applicantType");
+    setApplicantTypeList(types);
+  };
   const getEntity = async () => {
     const { data: entity } = await GET(`entity-service/entity`);
     setEntityDetails(entity);
     setEntityId(entity?.[0]?.id);
+  };
+
+  const getDisclosure = async (id) => {
+    if (id !== "") {
+      const { data: acknowledgementForm } = await GET(
+        `entity-service/acknowledgementForm?applicantTypeId=${id}`
+      );
+      setDisclosureForms(acknowledgementForm);
+    }
   };
 
   const getLastModifiedDate = async () => {
@@ -194,6 +214,11 @@ const DisclosureIndustries = () => {
     setIsDialogOpen(false);
   };
 
+  const getSelectedTile = (data) => {
+    setApplicantId(data);
+    getDisclosure(data);
+  };
+
   return (
     <Fragment>
       <Navbar />
@@ -207,8 +232,8 @@ const DisclosureIndustries = () => {
               path={"/Screens/ReferenceList/customerAdminDashboard"}
               callingFrom={"Customer Admin"}
               needHeader={false}
-              tileType={"ProofOfDocument"}
-              documents={documents}
+              tileType={"Disclosure Industries"}
+              documents={disclosureForms}
               getEntityTypes={getEntityTypes}
               getAddEntityTypes={getAddEntityTypes}
               handleOpenDialog={handleOpenDialog}
@@ -222,9 +247,12 @@ const DisclosureIndustries = () => {
           >
             <ApplicantSideBar
               applicantType={applicantTypes.map((item) => item.applicantType)}
+              siteType={applicantTypeList?.map((data) => data?.siteType)}
               siteTitle={"All Applicant Type"}
               onSelectSite={handleSiteClick}
               tileType={"Disclosure"}
+              selectedTile={getSelectedTile}
+              sideBarList={applicantTypeList}
             />
             <div className={style.applicantList}>
               <div className={`${style.Tabletitle} `}>
@@ -237,7 +265,7 @@ const DisclosureIndustries = () => {
                   {">"}
                 </Typography>
                 <Typography className={style.tableTitleContent}>
-                  All Documents
+                  All Disclosure Forms
                 </Typography>
               </div>
               <ApplicantTable
@@ -249,7 +277,7 @@ const DisclosureIndustries = () => {
                 tableHeadKeys={tableHeadKeys}
                 groupFirstTwoColumn={true}
                 tileType={"Disclosure"}
-                documents={documents}
+                documents={disclosureForms}
                 getAddEntityTypes={getAddEntityTypes}
                 handleClose={handleCloseDialog}
               />

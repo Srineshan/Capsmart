@@ -9,6 +9,7 @@ import { POST, GET, PUT, TenantID, DELETE } from "./../../dataSaver";
 import StaffPrivilegeDialog from "../staffPrivileges/staffPrivilegeDialog";
 import ConsentsDialog from "../consents/consentsDialog";
 import AcknowledgmentDialog from "../acknowledgment/AcknowledgmentDialog";
+import DisclosureByIndustriesDialog from "../disclosureByIndustries/disclosureByIndustriesDialog";
 
 const ApplicantTable = ({
   applicantTypes,
@@ -195,6 +196,17 @@ const ApplicantTable = ({
           handleClose={handleClose}
         />
       )}
+            {selectedApplicant && tileType == "Disclosure Industries" && (
+        <DisclosureByIndustriesDialog
+          open={openDialog}
+          onClose={handleCloseDialog}
+          selectedDisclosure={selectedApplicant}
+          documents={documents}
+          isEdit={true}
+          handleClose={handleClose}
+        />
+      )}
+
 
       {selectedApplicant && tileType == "Consent" && (
         <ConsentsDialog

@@ -31,7 +31,6 @@ import ProofOfDocumentDialog from "../../Screens/ReferenceList/proofOfDocument/p
 import DisclosureByIndustriesDialog from "../../Screens/ReferenceList/disclosureByIndustries/disclosureByIndustriesDialog";
 import ConsentsDialog from "../../Screens/ReferenceList/consents/consentsDialog";
 import AcknowledgmentDialog from "../../Screens/ReferenceList/acknowledgment/AcknowledgmentDialog";
-import DisclosureIndustries from "../../Screens/ReferenceList/disclosureByIndustries/DisclosureIndustries";
 
 const LevelTwoHeader = ({
   heading,
@@ -329,7 +328,7 @@ const LevelTwoHeader = ({
         />
       )}
       {tileType == "Disclosure Industries" && (
-        <DisclosureIndustries
+        <DisclosureByIndustriesDialog
           open={isDialogOpen}
           handleClose={handleCloseDialog}
         />
