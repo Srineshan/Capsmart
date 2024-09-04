@@ -17,7 +17,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import { Switch, makeStyles } from "@material-ui/core";
 import WritingFile from "./../../../images/writing-file.svg";
 import CommonDropZone from "../../../Components/CommonFields/CommonDropZone";
-// import Editor from "../common/Editor";
+import Editor from "../common/Editor";
 
 const useStyles = makeStyles({
   switch: {
@@ -306,7 +306,7 @@ const AcknowledgmentDialog = ({
             <div className={style.entityLableStyle}>
               ACKNOWLEGEMENT CONTENTS*
             </div>
-            {/* <Editor /> */}
+            <Editor />
           </div>
 
           <div className={style.acknowledgementListContainer}>
@@ -349,7 +349,7 @@ const AcknowledgmentDialog = ({
 
           <div className={style.marginTop20}>
             <div className={style.entityLableStyle}>DISCLAIMER CONTENTS*</div>
-            {/* <Editor /> */}
+            <Editor />
           </div>
 
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
