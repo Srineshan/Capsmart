@@ -29,8 +29,10 @@ const ProofOfDocumentByIndustries = () => {
   const [siteTypeId, setSiteTypeId] = useState("");
   const [selectedEntityType, setSelectedEntityType] = useState("");
   const [entityTypes, setEntityTypes] = useState([]);
+  const [applicantTypes, setApplicantTypes] = useState([]);
   const [departmentServiceMaster, setDepartmentServiceMaster] = useState([]);
   const [departmentService, setDepartmentService] = useState([]);
+  const [documents, setDocuments] = useState([]);
   const [selectedDepartmentServiceArea, setSelectedDepartmentServiceArea] =
     useState([]);
   const [selectedDepartmentService, setSelectedDepartmentService] = useState(
@@ -44,6 +46,7 @@ const ProofOfDocumentByIndustries = () => {
   const [checkedAll, setCheckedAll] = useState(false);
   const [searchKey, setSearchKey] = useState("");
   const [selectedApplicantType, setSelectedApplicantType] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const sites = [
     {
@@ -72,7 +75,7 @@ const ProofOfDocumentByIndustries = () => {
     },
   ];
 
-  const applicantTypes = [
+  const applicantType = [
     {
       name: "Blood Bank",
       type: "Proof of Qualification",
@@ -100,7 +103,13 @@ const ProofOfDocumentByIndustries = () => {
   ];
 
   const tableHeadKeys = ["NAME", "", "TYPE", "REQUIRMENT", "LAST UPDATED"];
-  const tableDataKeys = ["name", "", "type", "requirment", "lastUpdated"];
+  const tableDataKeys = [
+    "documentName",
+    "",
+    "documentType",
+    "requirementLevel",
+    "lastModifiedDate",
+  ];
 
   useEffect(() => {
     if (entityId !== "" && entityId !== undefined) {
@@ -136,14 +145,31 @@ const ProofOfDocumentByIndustries = () => {
     );
   };
 
+  const getAddEntityTypes = async (data) => {
+    await POST(`entity-service/document/?${TenantID}`, data);
+  };
+
   const getEntityTypes = async () => {
-    const { data: entityType } = await GET(`entity-service/entity/${TenantID}`);
-    // console.log(entityType?.sites)
-    if (entityType?.sites?.length !== 0) {
-      setSiteTypeId(entityType?.sites?.[0]?.siteType?.id);
-      setSelectedEntityType(entityType?.sites?.[0]?.siteType?.type);
-      setEntityTypes(entityType?.sites);
-    }
+    console.log("TenantID", TenantID);
+
+    const { data: entityType } = await GET(
+      `entity-service/document/?${TenantID}`
+    );
+
+    setDocuments(entityType);
+    const allApplicantTypes = entityType.flatMap(
+      (entity) => entity.applicantTypes || []
+    );
+
+    setApplicantTypes(allApplicantTypes);
+
+    // // console.log(entityType?.sites)
+    // if (entityType?.sites?.length !== 0) {
+    //   setSiteTypeId(entityType?.sites?.[0]?.siteType?.id);
+    //   setSelectedEntityType(entityType?.sites?.[0]?.siteType?.type);
+    //   setEntityTypes(entityType?.sites);
+    // }
+    console.log(applicantTypes);
   };
 
   const getDepartmentServiceMaster = async () => {
@@ -161,10 +187,10 @@ const ProofOfDocumentByIndustries = () => {
   };
 
   useEffect(() => {
-    if (entityTypes.length > 0) {
-      setSelectedApplicantType(entityTypes[0]?.siteType?.type);
+    if (applicantTypes.length > 0) {
+      setSelectedApplicantType(applicantTypes[0]?.applicantType);
     }
-  }, [entityTypes]);
+  }, [applicantTypes]);
 
   useEffect(() => {
     let tempDepartmentService = departmentServiceMaster
@@ -211,6 +237,14 @@ const ProofOfDocumentByIndustries = () => {
     setSelectedApplicantType(siteName);
   };
 
+  const handleOpenDialog = () => {
+    setIsDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+  };
+
   return (
     <Fragment>
       <Navbar />
@@ -225,6 +259,11 @@ const ProofOfDocumentByIndustries = () => {
               callingFrom={"Customer Admin"}
               needHeader={false}
               tileType={"ProofOfDocument"}
+              documents={documents}
+              getEntityTypes={getEntityTypes}
+              getAddEntityTypes={getAddEntityTypes}
+              handleOpenDialog={handleOpenDialog}
+              handleClose={handleCloseDialog}
             />
           </div>
           <div
@@ -233,9 +272,10 @@ const ProofOfDocumentByIndustries = () => {
             }`}
           >
             <ApplicantSideBar
-              sites={entityTypes}
+              applicantType={applicantTypes.map((item) => item.applicantType)}
               siteTitle={"All Applicant Type"}
               onSelectSite={handleSiteClick}
+              tileType={"ProofOfDocument"}
             />
             <div className={style.applicantList}>
               <div className={`${style.Tabletitle} `}>
@@ -252,13 +292,17 @@ const ProofOfDocumentByIndustries = () => {
                 </Typography>
               </div>
               <ApplicantTable
-                applicantTypes={applicantTypes}
+                applicantTypes={documents}
                 applicantNotice={
                   "Applicant types are ordered as they will appear on forms. To change the order, click and drag "
                 }
                 tableDataKeys={tableDataKeys}
                 tableHeadKeys={tableHeadKeys}
                 groupFirstTwoColumn={true}
+                tileType={"ProofOfDocument"}
+                documents={documents}
+                getAddEntityTypes={getAddEntityTypes}
+                handleClose={handleCloseDialog}
               />
               <ReferenceListActionButton
                 button1={"Save In-Progress"}

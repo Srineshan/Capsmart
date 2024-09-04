@@ -223,14 +223,14 @@ const StaffPrivilegeDialog = ({
                 <>
                   {primaryReason.length > 0 || secondaryReason.length > 0 ? (
                     <div
-                      className={`${style.buttonStyle3} ${style.addMoreCardStyle}`}
+                      className={`${style.buttonStyle3} ${style.addMoreCardStyle}  ${style.borderRadius10}`}
                       // onClick={() => SaveSubmitHandler("Add More")}
                     >
                       ADD MORE
                     </div>
                   ) : (
                     <div
-                      className={`${style.addMoreCardStyle} ${style.addMoreTextStyle}`}
+                      className={`${style.addMoreCardStyle} ${style.addMoreTextStyle}  ${style.borderRadius10}`}
                       // onClick={() => SaveSubmitHandler("Add More")}
                     >
                       ADD MORE
@@ -242,9 +242,9 @@ const StaffPrivilegeDialog = ({
           </div>
         </div>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <div className={style.marginTop20} style={{ float: "left" }}>
+          <div className={`${style.marginTop20} `} style={{ float: "left" }}>
             <button
-              className={style.outlinedButton}
+              className={`${style.outlinedButton} ${style.borderRadius10}`}
               //   onClick={() => getAddEntityDialog(false)}
             >
               BULK UPLOAD
@@ -252,14 +252,14 @@ const StaffPrivilegeDialog = ({
           </div>
           <div className={`${style.floatRight} ${style.marginTop20}`}>
             <button
-              className={style.outlinedButton}
+              className={`${style.outlinedButton} ${style.borderRadius10}`}
               //   onClick={() => getAddEntityDialog(false)}
             >
               SAVE & EXIT
             </button>
             <button
               //   onClick={() => SaveSubmitHandler("Save & Exit")}
-              className={`${style.buttonStyle} ${style.marginLeft20}`}
+              className={`${style.buttonStyle} ${style.marginLeft20} ${style.borderRadius10}`}
             >
               SAVE & ADD MORE
             </button>

@@ -29,6 +29,8 @@ import { formatInTimeZone } from "date-fns-tz";
 import StaffPrivilegeDialog from "../../Screens/ReferenceList/staffPrivileges/staffPrivilegeDialog";
 import ProofOfDocumentDialog from "../../Screens/ReferenceList/proofOfDocument/proofOfDocumentDialog";
 import DisclosureByIndustriesDialog from "../../Screens/ReferenceList/disclosureByIndustries/disclosureByIndustriesDialog";
+import ConsentsDialog from "../../Screens/ReferenceList/consents/consentsDialog";
+import AcknowledgmentDialog from "../../Screens/ReferenceList/acknowledgment/AcknowledgmentDialog";
 
 const LevelTwoHeader = ({
   heading,
@@ -45,6 +47,9 @@ const LevelTwoHeader = ({
   path,
   callingFrom,
   tileType,
+  documents,
+  getAddEntityTypes,
+  getEntityTypes,
 }) => {
   const [timeFrame, setTimeFrame] = useState("This Week");
   const [showCustomRangeSelection, setShowCustomRangeSelection] =
@@ -332,8 +337,14 @@ const LevelTwoHeader = ({
         <ProofOfDocumentDialog
           open={isDialogOpen}
           handleClose={handleCloseDialog}
+          documents={documents}
+          getAddEntityTypes={getAddEntityTypes}
+          getEntityTypes={getEntityTypes}
         />
       )}
+      {/* {tileType == "ProofOfDocument" && (
+        <ConsentsDialog open={isDialogOpen} handleClose={handleCloseDialog} />
+      )} */}
     </div>
   );
 };

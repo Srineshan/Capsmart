@@ -21,7 +21,7 @@ const StaffPrivileges = () => {
   const [isSelected, setIsSelected] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
   const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
-
+  const [tableData, setTableData] = useState();
   const [entityDetails, setEntityDetails] = useState({});
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -43,34 +43,7 @@ const StaffPrivileges = () => {
   const [checkedAll, setCheckedAll] = useState(false);
   const [searchKey, setSearchKey] = useState("");
   const [selectedApplicantType, setSelectedApplicantType] = useState("");
-
-  const sites = [
-    {
-      id: 1,
-      name: "{DEPARTMENT SERVICE AREA / SPECIALITY}",
-      type: "Hospital / Acute Care Facility (ACF) site type",
-      count: 7,
-    },
-    {
-      id: 2,
-      name: "{DEPARTMENT SERVICE AREA / SPECIALITY}",
-      type: "Hospital / Acute Care Facility (ACF) site type",
-      count: 7,
-    },
-    {
-      id: 3,
-      name: "{DEPARTMENT SERVICE AREA / SPECIALITY}",
-      type: "Hospital / Acute Care Facility (ACF) site type",
-      count: 7,
-    },
-    {
-      id: 4,
-      name: "{DEPARTMENT SERVICE AREA / SPECIALITY}",
-      type: "Hospital / Acute Care Facility (ACF) site type",
-      count: 7,
-    },
-  ];
-
+  const [sites, setSites] = useState([]);
   const applicantTypes = [
     {
       id: "021",
@@ -108,21 +81,14 @@ const StaffPrivileges = () => {
   ];
 
   const tableHeadKeys = [
-    "ID",
-    "TITLE",
+    // "ID",
+    // "TITLE",
     "CATEGORY",
-    "TYPE",
-    "POD",
+    // "TYPE",
+    // "POD",
     "LAST UPDATED",
   ];
-  const tableDataKeys = [
-    "id",
-    "title",
-    "category",
-    "type",
-    "pod",
-    "lastUpdated",
-  ];
+  const tableDataKeys = ["applicantType", "lastModifiedDate"];
   useEffect(() => {
     if (entityId !== "" && entityId !== undefined) {
       getLastModifiedDate();
@@ -143,6 +109,10 @@ const StaffPrivileges = () => {
     setEntityId(entity?.[0]?.id);
   };
 
+  const getAddEntityTypes = async (data) => {
+    await POST(`entity-service/document/?${TenantID}`, data);
+  };
+
   const getLastModifiedDate = async () => {
     const { data: lastModifiedDate } = await GET(
       `entity-service/referenceList/entity/${entityId}`
@@ -158,14 +128,15 @@ const StaffPrivileges = () => {
   };
 
   const getEntityTypes = async () => {
-    const { data: entityType } = await GET(`entity-service/entity/${TenantID}`);
-    // console.log(entityType?.sites)
-    if (entityType?.sites?.length !== 0) {
-      setSiteTypeId(entityType?.sites?.[0]?.siteType?.id);
-      setSelectedEntityType(entityType?.sites?.[0]?.siteType?.type);
-      setEntityTypes(entityType?.sites);
+    const { data: entityType } = await GET(`entity-service/staffPrivilege`);
+
+    if (entityType) {
+      const allSites = entityType.flatMap((entity) => entity.sites || []);
+      setEntityTypes(allSites);
+      setTableData(entityType);
     }
   };
+  console.log(entityTypes);
 
   const getDepartmentServiceMaster = async () => {
     const { data: departmentServiceMaster } = await GET(
@@ -224,13 +195,14 @@ const StaffPrivileges = () => {
 
   useEffect(() => {
     if (entityTypes.length > 0) {
-      setSelectedApplicantType(entityTypes[0]?.siteType?.type);
+      setSelectedApplicantType(entityTypes[0]?.siteName?.siteName);
     }
   }, [entityTypes]);
 
   const handleSiteClick = (siteName) => {
     setSelectedApplicantType(siteName);
   };
+  console.log(tableData);
 
   return (
     <Fragment>
@@ -254,7 +226,9 @@ const StaffPrivileges = () => {
               }`}
           >
             <ApplicantSideBar
-              sites={entityTypes}
+              applicantType={
+                entityTypes?.map((item) => item.siteName.siteName) || []
+              }
               siteTitle={"Cambride Memorial Hospitals"}
               onSelectSite={handleSiteClick}
               siteDropdown={true}
@@ -281,11 +255,15 @@ const StaffPrivileges = () => {
                   All Applicant Types
                 </Typography>
               </div>
-              <ApplicantTable
-                applicantTypes={applicantTypes}
-                tableDataKeys={tableDataKeys}
-                tableHeadKeys={tableHeadKeys}
-              />
+              {tableData && (
+                <ApplicantTable
+                  applicantTypes={
+                    tableData && tableData.length > 0 && tableData
+                  }
+                  tableDataKeys={tableDataKeys}
+                  tableHeadKeys={tableHeadKeys}
+                />
+              )}
               <ReferenceListActionButton
                 button1={"Save In-Progress"}
                 button2={" Mark as Done"}

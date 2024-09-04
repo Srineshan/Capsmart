@@ -16,8 +16,6 @@ const ApplicantTable = ({
   handleClose,
   tileType,
 }) => {
-  console.log(applicantTypes);
-
   const [selectedApplicant, setSelectedApplicant] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -76,7 +74,7 @@ const ApplicantTable = ({
           </tr>
         </thead>
         <tbody>
-          {applicantTypes.length &&
+          {applicantTypes &&
             applicantTypes.map((applicant, index) => (
               <React.Fragment key={applicant.id}>
                 <tr
@@ -91,9 +89,7 @@ const ApplicantTable = ({
                         keyIndex === 0 ? style.leftAligned : style.rightAligned
                       } ${keyIndex === 0 ? style.firstColumn : ""}`}
                     >
-                      {key == "applicantType"
-                        ? applicant.applicantType[key]
-                        : applicant[key] || "N/A"}
+                      {applicant[key]}
                     </td>
                   ))}
                   <td className={style.actions}>
