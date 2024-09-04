@@ -14,7 +14,7 @@ import ApplicantSideBar from "../common/SideBar";
 import { ReferenceListActionButton } from "../common/ReferenceListActionButton";
 import Typography from "@mui/material/Typography";
 
-const ProofOfDocumentByIndustries = () => {
+const DisclosureIndustries = () => {
   const [isSelected, setIsSelected] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
   const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
@@ -44,14 +44,16 @@ const ProofOfDocumentByIndustries = () => {
   const [selectedApplicantType, setSelectedApplicantType] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-
-
-  const tableHeadKeys = ["NAME", "", "TYPE", "REQUIRMENT", "LAST UPDATED"];
+  const tableHeadKeys = [
+    "DISCLOSURE CATEGORY",
+    "SUPPORTING DOCUMENTATION",
+    "VERIFICATION",
+    "LAST UPDATED",
+  ];
   const tableDataKeys = [
-    "documentName",
-    "",
-    "documentType",
-    "requirementLevel",
+    "category",
+    "supportingDocumentRequired",
+    "verificationRequired",
     "lastModifiedDate",
   ];
 
@@ -90,14 +92,14 @@ const ProofOfDocumentByIndustries = () => {
   };
 
   const getAddEntityTypes = async (data) => {
-    await POST(`entity-service/document/?${TenantID}`, data);
+    await POST(`entity-service/disclosure/?${TenantID}`, data);
   };
 
   const getEntityTypes = async () => {
     console.log("TenantID", TenantID);
 
     const { data: entityType } = await GET(
-      `entity-service/document/?${TenantID}`
+      `entity-service/disclosure/?${TenantID}`
     );
 
     setDocuments(entityType);
@@ -106,22 +108,17 @@ const ProofOfDocumentByIndustries = () => {
         entity.lastModifiedDate
       ).toLocaleDateString("en-US", {
         year: "numeric",
-        month: "short", // Full month name like "September"
+        month: "short",
         day: "numeric",
       });
       entity.lastModifiedDate = modifiedLastModifiedDate;
-      return entity; // Return the modified entity
+      entity.verificationRequired = entity.verificationRequired ? "YES" : "NO";
+      entity.supportingDocumentRequired = entity.supportingDocumentRequired
+        ? "YES"
+        : "NO";
+      return entity;
     });
-
     setApplicantTypes(allApplicantTypes);
-
-    // // console.log(entityType?.sites)
-    // if (entityType?.sites?.length !== 0) {
-    //   setSiteTypeId(entityType?.sites?.[0]?.siteType?.id);
-    //   setSelectedEntityType(entityType?.sites?.[0]?.siteType?.type);
-    //   setEntityTypes(entityType?.sites);
-    // }
-    console.log(applicantTypes);
   };
 
   const getDepartmentServiceMaster = async () => {
@@ -205,7 +202,7 @@ const ProofOfDocumentByIndustries = () => {
           <div>
             <LevelTwoHeader
               getAddEntityDialog={getAddEntityDialog}
-              heading={"Proof of Documentation By Industries"}
+              heading={"Disclosure"}
               updatedTime={`UPDATED ON ${lastUpdatedDate}`}
               path={"/Screens/ReferenceList/customerAdminDashboard"}
               callingFrom={"Customer Admin"}
@@ -227,7 +224,7 @@ const ProofOfDocumentByIndustries = () => {
               applicantType={applicantTypes.map((item) => item.applicantType)}
               siteTitle={"All Applicant Type"}
               onSelectSite={handleSiteClick}
-              tileType={"ProofOfDocument"}
+              tileType={"Disclosure"}
             />
             <div className={style.applicantList}>
               <div className={`${style.Tabletitle} `}>
@@ -251,7 +248,7 @@ const ProofOfDocumentByIndustries = () => {
                 tableDataKeys={tableDataKeys}
                 tableHeadKeys={tableHeadKeys}
                 groupFirstTwoColumn={true}
-                tileType={"ProofOfDocument"}
+                tileType={"Disclosure"}
                 documents={documents}
                 getAddEntityTypes={getAddEntityTypes}
                 handleClose={handleCloseDialog}
@@ -285,4 +282,4 @@ const ProofOfDocumentByIndustries = () => {
   );
 };
 
-export default ProofOfDocumentByIndustries;
+export default DisclosureIndustries;

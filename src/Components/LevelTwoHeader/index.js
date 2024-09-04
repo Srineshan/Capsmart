@@ -31,6 +31,7 @@ import ProofOfDocumentDialog from "../../Screens/ReferenceList/proofOfDocument/p
 import DisclosureByIndustriesDialog from "../../Screens/ReferenceList/disclosureByIndustries/disclosureByIndustriesDialog";
 import ConsentsDialog from "../../Screens/ReferenceList/consents/consentsDialog";
 import AcknowledgmentDialog from "../../Screens/ReferenceList/acknowledgment/AcknowledgmentDialog";
+import DisclosureIndustries from "../../Screens/ReferenceList/disclosureByIndustries/DisclosureIndustries";
 
 const LevelTwoHeader = ({
   heading,
@@ -327,6 +328,13 @@ const LevelTwoHeader = ({
           handleClose={handleCloseDialog}
         />
       )}
+      {tileType == "Disclosure Industries" && (
+        <DisclosureIndustries
+          open={isDialogOpen}
+          handleClose={handleCloseDialog}
+        />
+      )}
+
       {/* {tileType == "ProofOfDocument" && (
         <DisclosureByIndustriesDialog
           open={isDialogOpen}
@@ -342,6 +350,16 @@ const LevelTwoHeader = ({
           getEntityTypes={getEntityTypes}
         />
       )}
+      {tileType == "" && (
+        <ProofOfDocumentDialog
+          open={isDialogOpen}
+          handleClose={handleCloseDialog}
+          documents={documents}
+          getAddEntityTypes={getAddEntityTypes}
+          getEntityTypes={getEntityTypes}
+        />
+      )}
+
       {/* {tileType == "ProofOfDocument" && (
         <ConsentsDialog open={isDialogOpen} handleClose={handleCloseDialog} />
       )} */}

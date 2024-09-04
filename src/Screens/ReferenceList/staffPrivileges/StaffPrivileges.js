@@ -44,41 +44,7 @@ const StaffPrivileges = () => {
   const [searchKey, setSearchKey] = useState("");
   const [selectedApplicantType, setSelectedApplicantType] = useState("");
   const [sites, setSites] = useState([]);
-  const applicantTypes = [
-    {
-      id: "021",
-      title: "Bood Bank",
-      category: "Needle Puncture",
-      type: "No",
-      pod: "Yes",
-      lastUpdated: "Aug 16, 2024",
-    },
-    {
-      id: "021",
-      title: "Bood Bank",
-      category: "Needle Puncture",
-      type: "No",
-      pod: "Yes",
-
-      lastUpdated: "Aug 16, 2024",
-    },
-    {
-      id: "021",
-      title: "Bood Bank",
-      category: "Needle Puncture",
-      type: "No",
-      pod: "Yes",
-      lastUpdated: "Aug 16, 2024",
-    },
-    {
-      id: "021",
-      title: "Bood Bank",
-      category: "Needle Puncture",
-      type: "No",
-      pod: "Yes",
-      lastUpdated: "Aug 16, 2024",
-    },
-  ];
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const tableHeadKeys = [
     // "ID",
@@ -133,10 +99,10 @@ const StaffPrivileges = () => {
     if (entityType) {
       const allSites = entityType.flatMap((entity) => entity.sites || []);
       setEntityTypes(allSites);
+
       setTableData(entityType);
     }
   };
-  console.log(entityTypes);
 
   const getDepartmentServiceMaster = async () => {
     const { data: departmentServiceMaster } = await GET(
@@ -195,7 +161,7 @@ const StaffPrivileges = () => {
 
   useEffect(() => {
     if (entityTypes.length > 0) {
-      setSelectedApplicantType(entityTypes[0]?.siteName?.siteName);
+      setSelectedApplicantType(entityTypes[0]?.name);
     }
   }, [entityTypes]);
 
@@ -203,6 +169,10 @@ const StaffPrivileges = () => {
     setSelectedApplicantType(siteName);
   };
   console.log(tableData);
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+  };
 
   return (
     <Fragment>
@@ -227,9 +197,7 @@ const StaffPrivileges = () => {
             }`}
           >
             <ApplicantSideBar
-              applicantType={
-                entityTypes?.map((item) => item.siteName.siteName) || []
-              }
+              applicantType={entityTypes?.map((item) => item.name) || []}
               siteTitle={"Cambride Memorial Hospitals"}
               onSelectSite={handleSiteClick}
               siteDropdown={true}
@@ -263,6 +231,8 @@ const StaffPrivileges = () => {
                   }
                   tableDataKeys={tableDataKeys}
                   tableHeadKeys={tableHeadKeys}
+                  tileType={"StaffPrivilege"}
+                  handleClose={handleCloseDialog}
                 />
               )}
               <ReferenceListActionButton

@@ -6,6 +6,7 @@ import style from "./../index.module.scss";
 import DragHandleIcon from "@mui/icons-material/DragHandle";
 import ProofOfDocumentDialog from "../proofOfDocument/proofOfDocumentDialog";
 import { POST, GET, PUT, TenantID, DELETE } from "./../../dataSaver";
+import StaffPrivilegeDialog from "../staffPrivileges/staffPrivilegeDialog";
 
 const ApplicantTable = ({
   applicantTypes,
@@ -149,7 +150,7 @@ const ApplicantTable = ({
             ))}
         </tbody>
       </table>
-      {selectedApplicant && (
+      {selectedApplicant && tileType === "ProofOfDocument" && (
         <ProofOfDocumentDialog
           open={openDialog}
           onClose={handleCloseDialog}
@@ -159,6 +160,17 @@ const ApplicantTable = ({
           handleClose={handleClose}
         />
       )}
+
+{selectedApplicant && tileType === "StaffPrivilege" && (
+        <StaffPrivilegeDialog
+          open={openDialog}
+          onClose={handleCloseDialog}
+          selectedApplicant={selectedApplicant}
+          isEdit={true}
+          handleClose={handleClose}
+        />
+      )}
+
     </div>
   );
 };

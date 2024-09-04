@@ -31,22 +31,17 @@ const useStyles = makeStyles({
 });
 
 const ProofOfDocumentDialog = ({
-  getAddEntityDialog,
   selectedTermination,
   isSecondary,
   isEdit,
-  getTerminationReasonData,
-  siteTypeId,
   handleClose,
   open,
   documents,
   selectedApplicant,
-  getAddEntityTypes,
-  getEntityTypes,
 }) => {
   const [documentName, setDocumentName] = useState("");
   const [selectedOption, setSelectedOption] = useState("mandatory");
-  const [allowedFormat, setAllowedFormat] = useState("PNG");
+  const [allowedFormat, setAllowedFormat] = useState("PNG/jpeg");
   const [maxSizeAllowed, setMaxSizeAllowed] = useState("5 MB");
   const [days, setDays] = useState(3);
   const [timePeriod, setTimePeriod] = useState("Month");
@@ -188,11 +183,16 @@ const ProofOfDocumentDialog = ({
       typeof newApplicantType.id !== "string" ||
       typeof newApplicantType.applicantType !== "string"
     ) {
+      console.log(typeof newApplicantType.id, newApplicantType.id);
+      console.log(
+        typeof newApplicantType.applicantType,
+        newApplicantType.applicantType
+      );
+
       ErrorToaster("Invalid Entity Type");
       return;
     }
 
-    // Parsing and validating maxSizeAllowed and its unit
     const sizeValue = parseInt(maxSizeAllowed);
     if (isNaN(sizeValue)) {
       ErrorToaster("Invalid Max Size Allowed");
@@ -227,7 +227,7 @@ const ProofOfDocumentDialog = ({
           timePeriod: timePeriod.toUpperCase(), // This should be a valid string like "MONTH" or "YEAR"
         },
       },
-      format: allowedFormat || "JPEG",
+      format: allowedFormat || "JPEG", // Format should be a string
       size: {
         size: sizeValue, // This should be a number
         unit: unit, // This should be "MB" or "KB"
@@ -243,7 +243,6 @@ const ProofOfDocumentDialog = ({
     } catch (error) {
       ErrorToaster(error.message);
     }
-    getEntityTypes();
     handleClose();
   };
 
@@ -558,8 +557,7 @@ const ProofOfDocumentDialog = ({
                 onChange={(e) => setAllowedFormat(e.target.value)}
                 style={{ borderRadius: "0", width: "250px" }}
               >
-                <option value="PNG">PNG</option>
-                <option value="JPEG">JPEG</option>
+                <option value="PNG/jpeg">PNG/jpeg</option>
               </select>
             </div>
             <div className={style.marginLeft10}>
