@@ -293,7 +293,7 @@ const AcknowledgmentDialog = ({
         });
     } else {
       await PUT(
-        `entity-service/acknowledgementForm?id=${selectedAcknowledgement?.id}`,
+        `entity-service/acknowledgementForm/${selectedAcknowledgement?.id}`,
         JSON.stringify(data)
       )
         .then((response) => {

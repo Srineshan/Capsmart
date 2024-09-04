@@ -42,7 +42,7 @@ const Acknowledge = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [entityId, setEntityId] = useState("");
   const [lastUpdatedDate, setLastUpdatedDate] = useState("");
-
+  const [applicantId, setApplicantId] = useState("");
   const [selectAllList, setSelectAllList] = useState([]);
   const [checkedAll, setCheckedAll] = useState(false);
   const [searchKey, setSearchKey] = useState("");
@@ -98,9 +98,12 @@ const Acknowledge = () => {
   }, [entityId]);
 
   useEffect(() => {
-    getAcknowledgement();
     getApplicantType();
   }, []);
+
+  useEffect(() => {
+    getAcknowledgement(applicantId);
+  }, [applicantId]);
 
   const getApplicantType = async () => {
     const { data: types } = await GET("entity-service/applicantType");
@@ -121,11 +124,13 @@ const Acknowledge = () => {
     setEntityId(entity?.[0]?.id);
   };
 
-  const getAcknowledgement = async () => {
-    const { data: acknowledgementForm } = await GET(
-      `entity-service/acknowledgementForm`
-    );
-    setAcknowledgementForms(acknowledgementForm);
+  const getAcknowledgement = async (id) => {
+    if (id !== "") {
+      const { data: acknowledgementForm } = await GET(
+        `entity-service/acknowledgementForm?applicantTypeId=${id}`
+      );
+      setAcknowledgementForms(acknowledgementForm);
+    }
   };
 
   const getLastModifiedDate = async () => {
@@ -242,6 +247,11 @@ const Acknowledge = () => {
     setIsDialogOpen(false);
   };
 
+  const getSelectedTile = (data) => {
+    setApplicantId(data)
+    getAcknowledgement(data)
+  }
+
   return (
     <Fragment>
       <Navbar />
@@ -264,9 +274,8 @@ const Acknowledge = () => {
             />
           </div>
           <div
-            className={`${
-              isExpanded ? style.bigCardGrid : style.smallCardGrid
-            }`}
+            className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid
+              }`}
           >
             <ApplicantSideBar
               applicantType={applicantTypeList?.map(
@@ -276,6 +285,8 @@ const Acknowledge = () => {
               siteTitle={"All Applicant Type"}
               onSelectSite={handleSiteClick}
               tileType={"Acknowedgement"}
+              selectedTile={getSelectedTile}
+              sideBarList={applicantTypeList}
             />
             <div className={style.applicantList}>
               <div className={`${style.Tabletitle} `}>
