@@ -15,21 +15,25 @@ import { siteTimeZone, timeZoneAbbreviation } from "../../../utils/formatting";
 import ApplicantTable from "../common/Table";
 import ApplicantSideBar from "../common/SideBar";
 import { ReferenceListActionButton } from "../common/ReferenceListActionButton";
-import { Typography } from "@material-ui/core";
+import Breadcrumbs from "@mui/material/Breadcrumbs";
+import Typography from "@mui/material/Typography";
+import TableTwo from "../../../Components/TableDesignTwo";
 
-const StaffPrivileges = () => {
+const Consents = () => {
   const [isSelected, setIsSelected] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
   const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
-  const [tableData, setTableData] = useState();
+
   const [entityDetails, setEntityDetails] = useState({});
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const [siteTypeId, setSiteTypeId] = useState("");
   const [selectedEntityType, setSelectedEntityType] = useState("");
   const [entityTypes, setEntityTypes] = useState([]);
+  const [applicantTypes, setApplicantTypes] = useState([]);
   const [departmentServiceMaster, setDepartmentServiceMaster] = useState([]);
   const [departmentService, setDepartmentService] = useState([]);
+  const [documents, setDocuments] = useState([]);
   const [selectedDepartmentServiceArea, setSelectedDepartmentServiceArea] =
     useState([]);
   const [selectedDepartmentService, setSelectedDepartmentService] = useState(
@@ -43,18 +47,45 @@ const StaffPrivileges = () => {
   const [checkedAll, setCheckedAll] = useState(false);
   const [searchKey, setSearchKey] = useState("");
   const [selectedApplicantType, setSelectedApplicantType] = useState("");
-  const [sites, setSites] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+  const sites = ["SITE NAME", "SITE NAME"];
+
+  const applicantType = [
+    {
+      name: "Consent Form Title",
+      type: "Yes",
+      requirment: "Required",
+      lastUpdated: "Aug 16, 2024",
+    },
+    {
+      name: "Consent Form Title",
+      type: "No",
+      requirment: "NA",
+      lastUpdated: "Aug 16, 2024",
+    },
+    {
+      name: "Consent Form Title",
+      type: "Yes",
+      requirment: "Required",
+      lastUpdated: "Aug 16, 2024",
+    },
+    {
+      name: "Consent Form Title",
+      type: "No",
+      requirment: "NA",
+      lastUpdated: "Aug 16, 2024",
+    },
+  ];
+
   const tableHeadKeys = [
-    // "ID",
-    // "TITLE",
-    "CATEGORY",
-    // "TYPE",
-    // "POD",
+    "CONSENT FORM",
+    "ALERT NOTE",
+    "SIGNATURE",
     "LAST UPDATED",
   ];
-  const tableDataKeys = ["applicantType", "lastModifiedDate"];
+  const tableDataKeys = ["name", "type", "requirment", "lastUpdated"];
+
   useEffect(() => {
     if (entityId !== "" && entityId !== undefined) {
       getLastModifiedDate();
@@ -75,10 +106,6 @@ const StaffPrivileges = () => {
     setEntityId(entity?.[0]?.id);
   };
 
-  const getAddEntityTypes = async (data) => {
-    await POST(`entity-service/document/?${TenantID}`, data);
-  };
-
   const getLastModifiedDate = async () => {
     const { data: lastModifiedDate } = await GET(
       `entity-service/referenceList/entity/${entityId}`
@@ -93,15 +120,31 @@ const StaffPrivileges = () => {
     );
   };
 
+  const getAddEntityTypes = async (data) => {
+    await POST(`entity-service/document/?${TenantID}`, data);
+  };
+
   const getEntityTypes = async () => {
-    const { data: entityType } = await GET(`entity-service/staffPrivilege`);
+    console.log("TenantID", TenantID);
 
-    if (entityType) {
-      const allSites = entityType.flatMap((entity) => entity.sites || []);
-      setEntityTypes(allSites);
+    const { data: entityType } = await GET(
+      `entity-service/document/?${TenantID}`
+    );
 
-      setTableData(entityType);
-    }
+    setDocuments(entityType);
+    const allApplicantTypes = entityType.flatMap(
+      (entity) => entity.applicantTypes || []
+    );
+
+    setApplicantTypes(allApplicantTypes);
+
+    // // console.log(entityType?.sites)
+    // if (entityType?.sites?.length !== 0) {
+    //   setSiteTypeId(entityType?.sites?.[0]?.siteType?.id);
+    //   setSelectedEntityType(entityType?.sites?.[0]?.siteType?.type);
+    //   setEntityTypes(entityType?.sites);
+    // }
+    console.log(applicantTypes);
   };
 
   const getDepartmentServiceMaster = async () => {
@@ -117,6 +160,12 @@ const StaffPrivileges = () => {
     );
     setDepartmentService(departmentService);
   };
+
+  useEffect(() => {
+    if (applicantTypes.length > 0) {
+      setSelectedApplicantType(applicantTypes[0]?.applicantType);
+    }
+  }, [applicantTypes]);
 
   useEffect(() => {
     let tempDepartmentService = departmentServiceMaster
@@ -159,16 +208,13 @@ const StaffPrivileges = () => {
     }
   }, [siteTypeId, entityDetails, searchKey]);
 
-  useEffect(() => {
-    if (entityTypes.length > 0) {
-      setSelectedApplicantType(entityTypes[0]?.name);
-    }
-  }, [entityTypes]);
-
   const handleSiteClick = (siteName) => {
     setSelectedApplicantType(siteName);
   };
-  console.log(tableData);
+
+  const handleOpenDialog = () => {
+    setIsDialogOpen(true);
+  };
 
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
@@ -181,30 +227,36 @@ const StaffPrivileges = () => {
         <div className={style.padding20}>
           <div>
             <LevelTwoHeader
-              heading={
-                "Staff Privileges for department & service areas by applicant types"
-              }
+              getAddEntityDialog={getAddEntityDialog}
+              heading={"Consent Forms by Industries"}
               updatedTime={`UPDATED ON ${lastUpdatedDate}`}
               path={"/Screens/ReferenceList/customerAdminDashboard"}
               callingFrom={"Customer Admin"}
               needHeader={false}
-              tileType={"StaffPrivileges"}
+              tileType={"Consent"}
+              documents={documents}
+              getEntityTypes={getEntityTypes}
+              getAddEntityTypes={getAddEntityTypes}
+              handleOpenDialog={handleOpenDialog}
+              handleClose={handleCloseDialog}
             />
           </div>
           <div
-            className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid
-              }`}
+            className={`${
+              isExpanded ? style.bigCardGrid : style.smallCardGrid
+            }`}
           >
             <ApplicantSideBar
-              applicantType={entityTypes?.map((item) => item.name) || []}
-              siteTitle={"Cambride Memorial Hospitals"}
+              applicantType={sites}
+              type={sites}
+              siteTitle={"All Applicant Type"}
               onSelectSite={handleSiteClick}
-              siteDropdown={true}
+              tileType={"Consent"}
             />
             <div className={style.applicantList}>
               <div className={`${style.Tabletitle} `}>
                 <Typography className={style.tableTitleContent}>
-                  Cambride Memorial Hospitals
+                  {`{${selectedApplicantType}}`}
                 </Typography>
                 <Typography
                   className={`${style.tableTitleContentArrow} ${style.tableTitleContent}`}
@@ -212,28 +264,33 @@ const StaffPrivileges = () => {
                   {">"}
                 </Typography>
                 <Typography className={style.tableTitleContent}>
-                  {`${selectedApplicantType}`}
-                </Typography>
-                <Typography
-                  className={`${style.tableTitleContentArrow} ${style.tableTitleContent}`}
-                >
-                  {">"}
-                </Typography>
-                <Typography className={style.tableTitleContent}>
-                  All Applicant Types
+                  All Consent Form
                 </Typography>
               </div>
-              {tableData && (
-                <ApplicantTable
-                  applicantTypes={
-                    tableData && tableData.length > 0 && tableData
-                  }
-                  tableDataKeys={tableDataKeys}
-                  tableHeadKeys={tableHeadKeys}
-                  tileType={"StaffPrivilege"}
-                  handleClose={handleCloseDialog}
-                />
-              )}
+              {/* <TableTwo
+                tableHeaderValues={tableHeadKeys}
+                tableDataValues={applicantType}
+                tableData={applicantType}
+                // gridStyle={gridStyle}
+                // actions={actions}
+                scrollStyle={style.contractScrollStyle}
+                // tableSortValues={tableSortValues}
+                heading={"There are no Record for you to manage"}
+                onClickFunction={() => {}}
+              /> */}
+              <ApplicantTable
+                applicantTypes={applicantType}
+                applicantNotice={
+                  "Applicant types are ordered as they will appear on forms. To change the order, click and drag "
+                }
+                tableDataKeys={tableDataKeys}
+                tableHeadKeys={tableHeadKeys}
+                groupFirstTwoColumn={true}
+                tileType={"Consent"}
+                documents={documents}
+                getAddEntityTypes={getAddEntityTypes}
+                handleClose={handleCloseDialog}
+              />
               <ReferenceListActionButton
                 button1={"Save In-Progress"}
                 button2={" Mark as Done"}
@@ -263,4 +320,4 @@ const StaffPrivileges = () => {
   );
 };
 
-export default StaffPrivileges;
+export default Consents;

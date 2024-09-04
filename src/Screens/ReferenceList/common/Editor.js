@@ -298,8 +298,11 @@ export default class Editor extends Component {
           ref={(el) => {
             this.quillRef = el;
           }}
-          value={this.state.editorHtml}
-          onChange={(content) => this.setState({ editorHtml: content })}
+          value={this.state.editorHtml || this.props.editorHtml}
+          onChange={(content) => {
+            this.setState({ editorHtml: content });
+            this.props.onChange(content);
+          }}
           placeholder={"Write something ...."}
           modules={Editor.modules}
           formats={Editor.formats}

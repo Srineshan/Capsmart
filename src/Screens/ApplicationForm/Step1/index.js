@@ -37,8 +37,9 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
             );
             let temp = form1?.schema;
             if (temp.properties.applicant.properties !== null) {
-                delete temp.properties.applicant.properties['letterOfInterest']
-                delete temp.properties.applicant.properties['curriculumVitae']
+                delete temp.properties.applicant.properties['email']
+                delete temp.properties.applicant.properties['applicantType']
+                delete temp.properties.applicant.properties['startDate']
             }
             setForm1(form1?.schema)
         }

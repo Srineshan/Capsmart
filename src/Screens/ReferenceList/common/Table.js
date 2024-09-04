@@ -7,6 +7,8 @@ import DragHandleIcon from "@mui/icons-material/DragHandle";
 import ProofOfDocumentDialog from "../proofOfDocument/proofOfDocumentDialog";
 import { POST, GET, PUT, TenantID, DELETE } from "./../../dataSaver";
 import StaffPrivilegeDialog from "../staffPrivileges/staffPrivilegeDialog";
+import ConsentsDialog from "../consents/consentsDialog";
+import AcknowledgmentDialog from "../acknowledgment/AcknowledgmentDialog";
 
 const ApplicantTable = ({
   applicantTypes,
@@ -39,6 +41,15 @@ const ApplicantTable = ({
         await DELETE(`entity-service/document/?${TenantID}&${id}`, {
           id: id, // Adding the 'id' header required by the server
         });
+
+        console.log("Document deleted successfully");
+      } catch (error) {
+        console.error("Error deleting document:", error);
+      }
+    }
+    if (tileType === "Acknowedgement") {
+      try {
+        await DELETE(`entity-service/acknowledgementForm/${id}`);
 
         console.log("Document deleted successfully");
       } catch (error) {
@@ -81,20 +92,26 @@ const ApplicantTable = ({
             applicantTypes.map((applicant, index) => (
               <React.Fragment key={applicant.id}>
                 <tr
-                  className={`${style.applicantItem} ${
-                    index % 2 === 0 ? "" : style.sideNonActiveBackground
-                  }`}
+                  className={`${style.applicantItem} ${index % 2 === 0 ? "" : style.sideNonActiveBackground
+                    }`}
                 >
                   {tableDataKeys.map((key, keyIndex) => (
                     <td
                       key={keyIndex}
-                      className={`${
-                        keyIndex === 0 ? style.leftAligned : style.rightAligned
-                      } ${keyIndex === 0 ? style.firstColumn : ""}`}
+                      className={`${keyIndex === 0 ? style.leftAligned : style.rightAligned
+                        } ${keyIndex === 0 ? style.firstColumn : ""}`}
                     >
-                      {key == "applicantType"
+                      {key === "applicantType"
                         ? applicant.applicantType[key]
-                        : applicant[key] || "N/A"}
+                        : key === "disclaimer"
+                          ? applicant[key]?.content != null
+                            ? "Yes"
+                            : "No"
+                          : key === "esignatureRequiredOnEachPage"
+                            ? applicant[key] === true
+                              ? "Required"
+                              : "NA"
+                            : applicant[key] || "N/A"}
                     </td>
                   ))}
                   <td className={style.actions}>
@@ -122,13 +139,12 @@ const ApplicantTable = ({
                       {tableDataKeys.map((key, keyIndex) => (
                         <td
                           key={keyIndex}
-                          className={`${
-                            keyIndex === 0
-                              ? style.leftAligned
-                              : style.rightAligned
-                          } ${keyIndex === 0 ? style.firstColumn : ""}`}
+                          className={`${keyIndex === 0
+                            ? style.leftAligned
+                            : style.rightAligned
+                            } ${keyIndex === 0 ? style.firstColumn : ""}`}
                         >
-                          {subApplicant[key]}
+                          {subApplicant.key}
                         </td>
                       ))}
                       <td className={style.actions}>
@@ -167,10 +183,29 @@ const ApplicantTable = ({
           onClose={handleCloseDialog}
           selectedApplicant={selectedApplicant}
           isEdit={true}
+          handleClose={handleClose}/>)}
+
+      {selectedApplicant && tileType == "Acknowedgement" && (
+        <AcknowledgmentDialog
+          open={openDialog}
+          onClose={handleCloseDialog}
+          selectedAcknowledgement={selectedApplicant}
+          documents={documents}
+          isEdit={true}
           handleClose={handleClose}
         />
       )}
 
+      {selectedApplicant && tileType == "Consent" && (
+        <ConsentsDialog
+          open={openDialog}
+          onClose={handleCloseDialog}
+          selectedApplicant={selectedApplicant}
+          documents={documents}
+          isEdit={true}
+          handleClose={handleClose}
+        />
+      )}
     </div>
   );
 };

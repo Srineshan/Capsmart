@@ -70,7 +70,11 @@ const Step3 = ({ basicForm, setBasicForm, applicationId }) => {
                         )}
                         <CommonDivider />
                         {formSchema !== undefined && 'contactAddress2' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.contactAddress2} gridStyle={style.businessMailingAddressGrid} baseKey={'contactAddress2'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[1].data`} setIsEdited={getIsEdited} />
+                            <ApplicationFieldCard object={formSchema?.properties?.contactAddress2} gridStyle={style.mailingAddressGrid} baseKey={'contactAddress2'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[1].data`} setIsEdited={getIsEdited} />
+                        )}
+                        <CommonDivider />
+                        {formSchema !== undefined && 'contactAddress3' in formSchema?.properties && (
+                            <ApplicationFieldCard object={formSchema?.properties?.contactAddress3} gridStyle={style.businessMailingAddressGrid} baseKey={'contactAddress3'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[1].data`} setIsEdited={getIsEdited} />
                         )}
                     </div>
                 </div>

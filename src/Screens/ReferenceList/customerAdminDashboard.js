@@ -623,7 +623,7 @@ const ClientAdminDashboard = () => {
                       </div>
                     </Link>
                     <Link
-                      to="/referenceList/contractTerminationReasonForCustomer"
+                      to="/referenceList/acknowledgementForms"
                       className={style.linkStyle}
                     >
                       <div className={style.dashboardCardStyle}>
@@ -1767,7 +1767,7 @@ const ClientAdminDashboard = () => {
                         )}
                       </div>
                     </Link>
-                    <Link
+                    {/* <Link
                       to="/referenceList/contractTerminationReasonForCustomer"
                       className={style.linkStyle}
                     >
@@ -1842,9 +1842,9 @@ const ClientAdminDashboard = () => {
                           <></>
                         )}
                       </div>
-                    </Link>
+                    </Link> */}
                     <Link
-                      to="/referenceList/contractTerminationReasonForCustomer"
+                      to="/referenceList/consents"
                       className={style.linkStyle}
                     >
                       <div className={style.dashboardCardStyle}>

@@ -5,7 +5,7 @@ import CommonSelectField from '../CommonFields/CommonSelectField';
 import CommonDateField from '../CommonFields/CommonDateField';
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 import { TextField } from '@mui/material';
-import { add, format, sub } from 'date-fns';
+import { add, format, isValid, parse, sub } from 'date-fns';
 import { FormatPhoneNumber } from '../../utils/formatting';
 import CommonRadio from '../CommonFields/CommonRadio';
 import CommonSwitch from '../CommonFields/CommonSwitch';
@@ -17,10 +17,14 @@ import { TextArea } from '@blueprintjs/core';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import CommonDivider from '../CommonFields/CommonDivider';
-import { POST } from '../../Screens/dataSaver';
+import { POST, GET } from '../../Screens/dataSaver';
+import DatalistInput, { useComboboxControls } from "react-datalist-input";
+import "react-datalist-input/dist/styles.css";
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { SuccessToaster, ErrorToaster } from '../../utils/toaster';
 import TableTwo from '../TableDesignTwo';
 import CommonDropZone from '../CommonFields/CommonDropZone';
+import CommonTextField from '../CommonFields/CommonTextField';
 
 const TEXTFIELDLEN50 = 50;
 
@@ -31,7 +35,8 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
     const basicpath = isBasicPath ? 'basicDetails' : stepPath;
     const [isTableEdit, setIsTableEdit] = useState(false);
     const [files, setFiles] = useState([]);
-
+    const { setValue, value } = useComboboxControls({ initialValue: "" });
+    const canadaData = JSON.parse(sessionStorage.getItem('canadaData'));
     useEffect(() => {
         renderObjectFields(object)
         console.log('entered')
@@ -225,7 +230,9 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
             if (node.then) {
                 // If `then` contains a `required` array, collect the strings
                 if (Array.isArray(node.then.required)) {
-                    result.push({ key: Object.keys(node.if.properties)?.[0], value: node.then.required.map(data => data)?.join(','), checkValue: node.if.properties[Object.keys(node.if.properties)]?.const });
+                    node.then.required?.map(data => {
+                        result.push({ key: Object.keys(node.if.properties)?.[0], value: data, checkValue: node.if.properties[Object.keys(node.if.properties)]?.const });
+                    })
                 }
             }
 
@@ -241,11 +248,27 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
         return result;
     };
 
+    const getItems = (data) => {
+        let temp = [];
+        data?.map(data => {
+            temp.push({ id: data, value: data })
+        })
+        return temp;
+    }
+
+    const isLableEmpty = (data) => {
+        if (data === '' || data === null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     // Usage:
     // const thenStrings = getAllThenStrings(object);
     // console.log(thenStrings, '246');
 
-    const renderField = (fieldKey, fieldData, baseKey, handleChange, getValueByPath, style, calendarStart, setCalendarStart) => {
+    const renderField = (fieldKey, fieldData, baseKey, handleChange, getValueByPath, style, calendarStart, setCalendarStart, parentData) => {
         // const checkAllOfConditions = (object, path = '', fieldKey) => {
         //     if (!object) return true;
 
@@ -269,7 +292,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
 
         // Usage:
         // const conditionMet = checkAllOfConditions(object, `${baseKey}`, fieldKey);
-        // console.log(fieldKey, getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey), object?.then?.required?.includes(fieldKey), '275')
+        console.log(fieldKey, fieldData, getAllThenStrings(object), getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey), object?.then?.required?.includes(fieldKey), '275', parentData)
 
         if (object?.then?.required?.includes(fieldKey) !== undefined ? (!object?.then?.required?.includes(fieldKey) || object?.if?.properties !== undefined && getValueByPath(basicForm, `${basicpath}.${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`) === Object.entries(object?.if?.properties)?.map(([key, data]) => data)[0]?.const) : getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) ? (getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) && (getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) && getValueByPath(basicForm, `${basicpath}.${baseKey}.${getAllThenStrings(object)?.filter(data => data?.value === fieldKey)[0]?.key}`) === getAllThenStrings(object)?.filter(data => data?.value === fieldKey)[0]?.checkValue)) : true && fieldData.fieldType) {
             switch (fieldData.fieldType) {
@@ -286,19 +309,46 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                             labelList={fieldData.enum}
                             disabledList={fieldData.enum.map(data => false)}
                             label={fieldData.label}
-                            required={fieldData.required?.includes(fieldKey)}
+                            required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || parentData.required?.includes(fieldKey))}
                         />
                     );
-                case 'textbox':
+                case 'datalist':
                     return (
-                        <CommonInputField
+                        <div>
+                            <div className={`${style.lableStyle}`}>{fieldData.label}{(object.required?.includes(fieldKey) || parentData.required?.includes(fieldKey)) && '*'}</div>
+                            <DatalistInput
+                                items={getItems(fieldData.enum) || []}
+                                onSelect={(item) => handleChange(fieldKey, item.value, baseKey)}
+                                className={`${style.fullWidth} ${style.marginTop10}`}
+                                maxLength={TEXTFIELDLEN50}
+                                onChange={(e) => handleChange(fieldKey, e.target.value, baseKey)}
+                                placeholder={fieldData.label !== null ? `Enter ${fieldData.label}` : null}
+                                value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || ''}
+                            />
+                        </div>
+                    );
+                case 'textbox':
+                    console.log(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`))
+                    return (
+                        // <CommonInputField
+                        //     value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || ''}
+                        //     className={style.fullWidth}
+                        //     onChange={(e) => handleChange(fieldKey, fieldData.type === "number" ? parseInt(e.target.value <= fieldData.maximum ? e.target.value : fieldData.maximum) : e.target.value, baseKey)}
+                        //     maxLength={TEXTFIELDLEN50}
+                        //     placeholder={fieldData.label !== null ? `Enter ${fieldData.label}` : null}
+                        //     label={fieldData.label}
+                        //     required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || parentData.required?.includes(fieldKey))}
+                        //     type={fieldData.type}
+                        //     min={fieldData.minimum}
+                        // />
+                        <CommonTextField
                             value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || ''}
                             className={style.fullWidth}
                             onChange={(e) => handleChange(fieldKey, fieldData.type === "number" ? parseInt(e.target.value <= fieldData.maximum ? e.target.value : fieldData.maximum) : e.target.value, baseKey)}
                             maxLength={TEXTFIELDLEN50}
                             placeholder={fieldData.label !== null ? `Enter ${fieldData.label}` : null}
                             label={fieldData.label}
-                            required={fieldData.required?.includes(fieldKey)}
+                            required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || parentData.required?.includes(fieldKey))}
                             type={fieldData.type}
                             min={fieldData.minimum}
                         />
@@ -306,7 +356,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                 case 'textArea':
                     return (
                         <div>
-                            <div className={`${style.lableStyle}`}>{fieldData.label}{fieldData.required?.includes(fieldKey) && '*'}</div>
+                            <div className={`${style.lableStyle}`}>{fieldData.label}{(isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || parentData.required?.includes(fieldKey))) && '*'}</div>
                             <TextArea
                                 value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
                                 className={`${style.fullWidth} ${style.marginTop10}`}
@@ -325,7 +375,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                             onChange={(e) => handleChange(fieldKey, FormatPhoneNumber(e.target.value), baseKey)}
                             placeholder={fieldData.label !== null ? `Enter ${fieldData.label}` : null}
                             label={fieldData.label}
-                            required={fieldData.required?.includes(fieldKey)}
+                            required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || parentData.required?.includes(fieldKey))}
                         />
                     );
                 case 'datepicker':
@@ -352,35 +402,38 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                                         ...params.inputProps,
                                         placeholder: fieldData.label !== null ? `Enter ${fieldData.label}` : null,
                                     }}
+                                    color={(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === undefined || getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === null || getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === '') ? (isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || parentData.required?.includes(fieldKey))) ? 'error' : 'warning' : ''}
                                     fullWidth
+                                    focused={(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === undefined || getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === null || getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === '') ? true : false}
                                 />
                             )}
                             label={fieldData.label}
-                            required={fieldData.required?.includes(fieldKey)}
+                            required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || parentData.required?.includes(fieldKey))}
                         />
                     );
                 case 'radiobutton':
                     return (
                         <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
-                            <div className={`${style.lableRadioStyle} ${fieldData.label !== null ? style.marginRight : ''}`}>{fieldData.label}{fieldData.required?.includes(fieldKey) && '*'}</div>
+                            <div className={`${style.lableRadioStyle} ${fieldData.label !== null ? style.marginRight : ''}`}>{fieldData.label}{(isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || parentData.required?.includes(fieldKey))) && '*'}</div>
                             <CommonRadio
                                 className={style.leftAlign}
                                 value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
                                 onChange={(e) => handleChange(fieldKey, e.target.value, baseKey)}
                                 radioValue={fieldData.enum}
                                 label={fieldData.enum}
+                                required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || parentData.required?.includes(fieldKey))}
                             />
                         </div>
                     );
                 case 'switchbutton':
                     return (
-                        <CommonSwitch label={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === true ? 'YES' : 'NO'} checked={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null} onChange={(e) => handleChange(fieldKey, e.target.checked, baseKey)} labelName={fieldData.label} />
+                        <CommonSwitch label={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === true ? 'YES' : 'NO'} checked={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null} onChange={(e) => handleChange(fieldKey, e.target.checked, baseKey)} labelName={fieldData.label} required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || parentData.required?.includes(fieldKey))} />
                     );
                 case 'checkbox':
                     return (
                         <CommonCheckBox
                             checked={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
-                            onChange={(e) => handleChange(fieldKey, e.target.checked, baseKey)} label={fieldData.label}
+                            onChange={(e) => handleChange(fieldKey, e.target.checked, baseKey)} label={`${fieldData.label}${(isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || parentData.required?.includes(fieldKey))) && '*'}`}
                         />
                     );
                 case 'sitecheckbox':
@@ -399,7 +452,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                 case 'addMoreFileupload':
                     console.log(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`))
                     return (
-                        <div className={style.addMoreUpload}>
+                        <div className={`${style.addMoreUpload}`}>
                             <div>
                                 <label for={`file-upload-dynamic-${fieldKey}`} className={`${style.displayInRow} ${style.cursorPointer} `}>
                                     {getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) !== undefined && (
@@ -447,17 +500,17 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                             if (innerData.type === 'object' && innerData.properties && innerData.fieldType === null) {
                                 console.log('entered', innerData)
                                 return Object.entries(innerData.properties).map(([innerKey2, innerData2]) => {
-                                    return renderField(innerKey2, innerData2, `${baseKey}.${key}.${innerKey}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
+                                    return renderField(innerKey2, innerData2, `${baseKey}.${key}.${innerKey}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart, innerData);
                                 });
                             } else if (innerData.type === 'array' && innerData.items?.properties && innerData.fieldType === null) {
                                 console.log('entered', innerData)
                                 return Object.entries(innerData.items.properties).map(([innerKey2, innerData2]) => {
-                                    return renderField(innerKey2, innerData2, `${baseKey}.${key}.${innerKey}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
+                                    return renderField(innerKey2, innerData2, `${baseKey}.${key}.${innerKey}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart, innerData);
                                 });
                             } else if (innerData.type === 'object' && innerData.properties && innerData.fieldType !== null) {
-                                return renderField(innerKey, innerData, `${baseKey}.${key}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
+                                return renderField(innerKey, innerData, `${baseKey}.${key}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart, data);
                             } else {
-                                return renderField(innerKey, innerData, `${baseKey}.${key}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
+                                return renderField(innerKey, innerData, `${baseKey}.${key}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart, data);
                             }
                         });
                     }
@@ -468,15 +521,15 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                             if (innerData.type === 'object' && innerData.properties && innerData.fieldType === null) {
                                 console.log('entered', innerData)
                                 return Object.entries(innerData.properties).map(([innerKey2, innerData2]) => {
-                                    return renderField(innerKey2, innerData2, `${baseKey}.${key}.${innerKey}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
+                                    return renderField(innerKey2, innerData2, `${baseKey}.${key}.${innerKey}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart, innerData);
                                 });
                             } else if (innerData.type === 'array' && innerData.items?.properties) {
                                 console.log('entered', innerData)
                                 return Object.entries(innerData.items.properties).map(([innerKey2, innerData2]) => {
-                                    return renderField(innerKey2, innerData2, `${baseKey}.${key}.${innerKey}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
+                                    return renderField(innerKey2, innerData2, `${baseKey}.${key}.${innerKey}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart, innerData);
                                 });
                             } else {
-                                return renderField(innerKey, innerData, `${baseKey}.${key}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
+                                return renderField(innerKey, innerData, `${baseKey}.${key}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart, data);
                             }
                         });
                     }
@@ -484,17 +537,17 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                         console.log(getValueByPath(basicForm, `${basicpath}.${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`), 'value if', Object.entries(object?.if?.properties)?.map(([key, data]) => data)[0]?.const, 'data', data, `${basicpath}.${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`, basicForm)
                         console.log('entered', data, 'if')
                         return Object.keys(data.properties)?.filter(data => data !== data?.then?.required).map(([innerKey, innerData]) => {
-                            return renderField(innerKey, innerData, `${baseKey}.${key}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
+                            return renderField(innerKey, innerData, `${baseKey}.${key}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart, data);
                         });
                     }
                 } else if (data.type === 'array' && data.items?.properties && data.fieldType === null) {
                     return Object.entries(data.items.properties).map(([innerKey, innerData]) => {
-                        return renderField(innerKey, innerData, `${baseKey}.${key}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
+                        return renderField(innerKey, innerData, `${baseKey}.${key}`, handleChange, getValueByPath, style, calendarStart, setCalendarStart, data);
                     });
                 } else if (data.type === 'object' && data.properties && data.fieldType !== null) {
-                    return renderField(key, data, baseKey, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
+                    return renderField(key, data, baseKey, handleChange, getValueByPath, style, calendarStart, setCalendarStart, object?.items);
                 } else {
-                    return renderField(key, data, baseKey, handleChange, getValueByPath, style, calendarStart, setCalendarStart);
+                    return renderField(key, data, baseKey, handleChange, getValueByPath, style, calendarStart, setCalendarStart, object?.items);
                 }
             });
         }
@@ -561,12 +614,40 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
         console.log(basicForm?.forms?.filter(data => data?.id === formId), basicForm[baseKey], 'addMore', index, basicForm, basicForm.baseKey)
     }
 
+    const isValidDateString = (dateString) => {
+        if (typeof dateString !== 'string') {
+            return false;
+        }
+
+        const formatString = 'yyyy-MM-dd';
+
+        // Check if the string matches the 'yyyy-MM-dd' format
+        const regex = /^\d{4}-\d{2}-\d{2}$/;
+        if (!regex.test(dateString)) {
+            return false;
+        }
+
+        // Parse the string into a Date object
+        const parsedDate = parse(dateString, formatString, new Date());
+
+        // Ensure the date is valid and matches the original components
+        return isValid(parsedDate) &&
+            format(parsedDate, formatString) === dateString;
+    }
+
     const getApplicantValues = (array) => {
+        console.log(array, canadaData)
         let temp = [];
         if (object?.tableHeaders !== null && basicForm?.forms?.filter(data => data?.id === formId)[0]?.data !== null) {
             Object.keys(object?.tableHeaders)?.map((data, index) => {
-                if (data !== "file") {
-                    temp.push({ "type": "text", "value": array?.map(innerData => innerData[data]) });
+                if (data === 'data') {
+                    temp.push({ "type": "icon", "icon": array?.map(innerData => <CheckCircleIcon style={{ fontSize: 25, color: '#25BF6A' }} onClick={() => { window.open(innerData?.file?.fileURL, '_blank'); }} />), 'isShowHoverText': false })
+                } else if (data === "pod") {
+                    temp.push({ "type": "icon", "icon": array?.map(innerData => <CheckCircleIcon style={{ fontSize: 25, color: '#25BF6A' }} onClick={() => { window.open(innerData?.file?.fileURL, '_blank'); }} />), 'isShowHoverText': false })
+                } else if (data !== "file") {
+                    temp.push({
+                        "type": "text", "value": array?.map(innerData => isValidDateString(innerData[data]) ? format(new Date(innerData[data]), canadaData?.dateFormat || 'MM/dd/yyyy') : innerData[data])
+                    });
                 } else {
                     temp.push({ "type": "icon", "icon": array?.map(innerData => <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.file?.fileURL, '_blank'); }} />), 'isShowHoverText': false });
                 }

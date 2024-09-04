@@ -61,7 +61,7 @@
 
 .licenseGrid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     gap: 20px;
 }
 
@@ -74,15 +74,23 @@
 }
 
 .licenseGrid> :nth-child(3) {
-    grid-column: 1 / -1;
+    grid-column: span 2;
 }
 
 .licenseGrid> :nth-child(4) {
-    grid-column: 1 / -1;
+    grid-column: span 2;
+}
+
+.licenseGrid> :nth-child(5) {
+    grid-column: span 2;
+}
+
+.licenseGrid> :nth-child(6) {
+    grid-column: span 6;
 }
 
 .licenseGrid> :nth-child(7) {
-    grid-column: 1 / -4;
+    grid-column: span 6;
 }
 
 .progressStyle {
@@ -169,6 +177,6 @@
 
 .tableGrid {
     display: grid;
-    grid-template-columns: 24% 10% 10% 10% 10% 10% 10% 3% 3%;
+    grid-template-columns: 3% 3% 25% 13% 10% 10% 13% 11% 3%;
     gap: 1%;
 }

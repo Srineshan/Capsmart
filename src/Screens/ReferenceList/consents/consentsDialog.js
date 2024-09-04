@@ -17,6 +17,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import { Switch, makeStyles } from "@material-ui/core";
 import WritingFile from "./../../../images/writing-file.svg";
 import Editor from "../common/Editor";
+import CommonInputField from "../../../Components/CommonFields/CommonInputField";
 
 const useStyles = makeStyles({
   switch: {
@@ -38,194 +39,40 @@ const ConsentsDialog = ({
   siteTypeId,
   handleClose,
   open,
+  selectedApplicant,
 }) => {
-  const [terminationId, setTerminationId] = useState(
-    selectedTermination?.id ? selectedTermination?.id : ""
-  );
-  const [terminationBy, setTerminationBy] = useState("CONTRACTOR");
-  const [primaryReason, setPrimaryReason] = useState("");
-  const [secondaryReason, setSecondaryReason] = useState("");
-  const [currentEntityType, setCurrentEntityType] = useState(
+  const [applicantTypes, setApplicantTypes] = useState([]);
+  const [consentTitle, setConsentTitle] = useState("");
+  const [consentConsents, setconsentConsents] = useState();
+  const [currentApplicantType, setCurrentApplicantType] = useState(
     selectedTermination?.entityId?.id ? selectedTermination?.entityId?.id : ""
   );
-  const [entityTypes, setEntityTypes] = useState([]);
-  const [createdDate, setCreatedDate] = useState("");
-  const [secondaryReasonList, setSecondaryReasonList] = useState([]);
-  const [addSubReasons, setAddSubReasons] = useState(false);
-  const [noticePeriod, setNoticePeriod] = useState("0");
-  const [curePeriod, setCurePeriod] = useState("0");
-  const [writtenNotice, setWrittenNotice] = useState(true);
+  const [alertNote, setAlertNote] = useState(true);
+  const [alertNotice, setAlertNotice] = useState("");
   const [signature, setSignature] = useState(false);
-
-  const [subReasonFields, setSubReasonFields] = useState([]);
   const classes = useStyles();
 
   useEffect(() => {
     getEntityData();
   }, []);
 
-  // console.log(selectedTermination);
-  useEffect(() => {
-    if (isEdit) {
-      setCurrentEntityType(siteTypeId);
-      setTerminationId(selectedTermination?.id);
-      setTerminationBy(selectedTermination?.terminationBy);
-      setPrimaryReason(selectedTermination?.primary_reason);
-      setCreatedDate(selectedTermination?.createdDate);
-      setNoticePeriod(selectedTermination?.noticePeriodInDays);
-      setCurePeriod(selectedTermination?.curePeriodInDays);
-      setWrittenNotice(selectedTermination?.writtenNoticeServed);
-      setSecondaryReasonList(selectedTermination?.secondary_reasons);
-      setAddSubReasons(
-        selectedTermination?.secondary_reasons?.length > 0 ? true : false
-      );
-      if (isSecondary) {
-        setSecondaryReason(selectedTermination?.secondary_reasons[0]);
-      }
-    }
-  }, [selectedTermination]);
-
-  useEffect(() => {
-    getSubReasons();
-  }, [secondaryReasonList]);
-
   const getEntityData = async () => {
-    const { data: types } = await GET("entity-service/entity/entityType");
-    setEntityTypes(types);
+    const { data: types } = await GET("entity-service/applicantType");
+    setApplicantTypes(types);
   };
 
-  const handleSubReasonValue = (i, value) => {
-    let temp = secondaryReasonList;
-    temp[i] = value;
-    setSecondaryReasonList(temp);
-    setSecondaryReason(value);
-    // getSubReasons();
-    // console.log(temp, value, secondaryReasonList);
+  const handleEditorChange = (content) => {
+    setconsentConsents(content);
   };
 
-  const getSubReasons = () => {
-    // console.log('entered', secondaryReasonList)
-    let temp = [];
-    for (let i = 0; i < secondaryReasonList?.length; i++) {
-      // console.log(i);
-      temp[i] = (
-        <div
-          className={`${style.editHealthCareGrid2}`}
-          key={`${i}${secondaryReasonList[i]}`}
-        >
-          <div className={style.entityLableStyle}>
-            Sub-Reason For Termination {i + 1}*
-          </div>
-          <div className={style.displayInRow}>
-            <InputGroup
-              defaultValue={secondaryReasonList[i]}
-              className={style.fullWidth}
-              onChange={(e) => handleSubReasonValue(i, e.target.value)}
-            />
-          </div>
-        </div>
-      );
-    }
-    setSubReasonFields(temp);
-  };
-
-  const SaveSubmitHandler = async (type) => {
-    // let SecondaryReasonData = [];
-    // if (selectedTermination?.secondary_reasons) {
-    //     SecondaryReasonData = [...selectedTermination.secondary_reasons];
-    // } else {
-    //     SecondaryReasonData = [];
-    // }
-    // if (secondaryReason !== "") {
-    //     SecondaryReasonData.push(secondaryReason);
-    // }
-
-    if (currentEntityType === "") {
-      ErrorToaster("Enter All Mandatory Data");
-      return;
-    }
-
-    const data = {
-      ...(isEdit && { id: terminationId }),
-      ...(isEdit && { createdDate: createdDate }),
-      ...(isEdit && { lastModifiedDate: new Date() }),
-      terminationBy: terminationBy,
-      primary_reason: primaryReason,
-      secondary_reasons:
-        secondaryReasonList[secondaryReasonList.length - 1] === ""
-          ? secondaryReasonList.splice(0, secondaryReasonList.length - 1)
-          : secondaryReasonList,
-      siteTypeId: {
-        id: currentEntityType,
-      },
-      entityId: {
-        id: TenantID,
-      },
-      noticePeriodInDays: noticePeriod,
-      curePeriodInDays: curePeriod,
-      customized: true,
-      writtenNoticeServed: writtenNotice,
-    };
-
-    // console.log(data);
-
-    if (!isEdit) {
-      await POST("entity-service/terminationReason", JSON.stringify([data]))
-        .then((response) => {
-          SuccessToaster("Termination Added Successfully");
-          getTerminationReasonData();
-          getAddEntityDialog(false);
-        })
-        .catch((error) => {
-          ErrorToaster(error);
-        });
-    } else {
-      await PUT(
-        `entity-service/terminationReason/${terminationId}`,
-        JSON.stringify(data)
-      )
-        .then((response) => {
-          SuccessToaster("Termination Updated Successfully");
-          getTerminationReasonData();
-          getAddEntityDialog(false);
-        })
-        .catch((error) => {
-          ErrorToaster(error);
-        });
-    }
-
-    // if (type !== "Add More") {
-    //   getAddEntityDialog(false);
-    // } else {
-    //   setPrimaryReason("");
-    //   setSecondaryReason("");
-    //   document.getElementById("primaryReasonEl").focus();
-    // }
-  };
-
-  const handleAddMore = () => {
-    let temp = secondaryReasonList;
-    temp.push("");
-    // console.log(temp);
-    setSecondaryReasonList(temp);
-    getSubReasons();
-  };
-
-  const arrowDown = () => {
-    return (
-      <img
-        src={ArrowDown}
-        className={`${style.colorFileStyle3} ${style.marginRight}`}
-        alt=""
-      />
-    );
-  };
-
-  const handleAddSubReasons = (checked) => {
-    setAddSubReasons(checked);
-    if (checked && secondaryReasonList?.length === 0) {
-      handleAddMore();
-    }
+  const SaveSubmitHandler = async () => {
+    console.log("Current Entity Type:", currentApplicantType);
+    console.log("Consent Title:", consentTitle);
+    console.log("Consent Contents:", consentConsents);
+    console.log("Alert Note Required:", alertNote);
+    console.log("Alert Notice:", alertNote);
+    console.log("Applicant e-Signature Required:", signature);
+    handleClose();
   };
 
   return (
@@ -265,18 +112,18 @@ const ConsentsDialog = ({
         <div className={style.ReferenceListEntityBorder}></div>
         <div className={`${style.addHealthCareBoxStyle}`}>
           <div>
-            <div className={style.entityLableStyle}>Entity Type*</div>
+            <div className={style.entityLableStyle}>APPLICANT TYPE*</div>
             <select
-              value={currentEntityType}
+              value={currentApplicantType}
               className={style.fullWidth}
               // rightElement={arrowDown()}
               onChange={(obj) => {
-                setCurrentEntityType(obj.target.value);
+                setCurrentApplicantType(obj.target.value);
               }}
             >
-              <option value="">Select Entity Type</option>
-              {entityTypes.map((type) => (
-                <option value={type.siteTypeId}>{type.siteTypeName}</option>
+              <option value="">Select Applicant Type</option>
+              {applicantTypes.map((type) => (
+                <option value={type.applicantType}>{type.applicantType}</option>
               ))}
             </select>
           </div>
@@ -285,23 +132,23 @@ const ConsentsDialog = ({
           ></div>
 
           <div className={style.marginTop20}>
-            <div className={style.entityLableStyle}>CONSENTS TILE*</div>
-            <select
-              value={terminationBy}
-              defaultValue={terminationBy}
+            <div className={style.entityLableStyle}>CONSENT TITLE*</div>
+            <CommonInputField
+              value={consentTitle}
+              defaultValue={consentTitle}
               className={style.fullWidth}
-              // rightElement={arrowDown()}
+              placeholder="Enter Consent Title Here"
               onChange={(obj) => {
-                setTerminationBy(obj.target.value);
+                setConsentTitle(obj.target.value);
               }}
-            >
-              <option value="CONTRACTOR">For Cause By Contractor</option>
-              <option value="ENTITY">For Cause By Entity</option>
-            </select>
+            />
           </div>
           <div className={style.marginTop20}>
-            <div className={style.entityLableStyle}>DISCLAIMER CONTENTS*</div>
-            <Editor />
+            <div className={style.entityLableStyle}>CONSENT CONTENTS*</div>
+            <Editor
+              editorHtml={consentConsents}
+              onChange={handleEditorChange}
+            />
           </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <div className={`${style.entityLableStyle} ${style.marginTop15}`}>
@@ -311,21 +158,23 @@ const ConsentsDialog = ({
               <FormControlLabel
                 control={
                   <Switch
-                    checked={writtenNotice}
-                    onChange={(e) => setWrittenNotice(e.target.checked)}
+                    checked={alertNote}
+                    onChange={(e) => setAlertNote(e.target.checked)}
                     className={classes.switch}
                   />
                 }
                 className={`${style.switchFontStyle}`}
-                label={writtenNotice ? "YES" : "NO"}
+                label={alertNote ? "YES" : "NO"}
               />
-              {writtenNotice && (
+              {alertNote && (
                 <div
                   className={`${style.displayInRow} ${style.inputBoxStyle} ${style.fullWidth}`}
                 >
                   <InputGroup
-                    value="Enter Alert Notice Here"
+                    onChange={(e) => setAlertNotice(e.target.value)}
+                    value={alertNotice}
                     className={style.fullWidth}
+                    placeholder="Enter Alert Notice Here"
                   ></InputGroup>
                 </div>
               )}
@@ -333,7 +182,7 @@ const ConsentsDialog = ({
           </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <div className={`${style.entityLableStyle} ${style.marginTop15}`}>
-              Applicant Signature Required
+              Applicant e-Signature Required
             </div>
             <div
               className={`${style.displayInRow} ${style.displayTerminationPeriod}`}
@@ -358,8 +207,9 @@ const ConsentsDialog = ({
               <button
                 className={style.outlinedButton}
                 onClick={() => {
-                  getAddEntityDialog(false);
-                  getTerminationReasonData();
+                  handleClose();
+                  // getAddEntityDialog(false);
+                  // getTerminationReasonData();
                 }}
               >
                 BULK UPLOAD
@@ -369,8 +219,8 @@ const ConsentsDialog = ({
               <button
                 className={style.outlinedButton}
                 onClick={() => {
-                  getAddEntityDialog(false);
-                  getTerminationReasonData();
+                  handleClose();
+                  // getTerminationReasonData();
                 }}
               >
                 CANCEL
