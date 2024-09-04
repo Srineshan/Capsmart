@@ -246,6 +246,7 @@ const AddCountryType = ({ getAddCountryDialog, getCountryList, isCountryEdit, se
                 onChange={(e) => setDateFormat(e.target.value)}
                 className={`${style.width34} ${style.selectDropdownInputBox}`}
               >
+                <option value="dd/MM/yyyy">DD/MM/YYYY</option>
                 <option value="MM/DD/YYYY">MM/DD/YYYY</option>
                 <option value="M/d/yyyy">M/d/yyyy</option>
                 <option value="yyyy-MM-dd">yyyy-MM-dd</option>

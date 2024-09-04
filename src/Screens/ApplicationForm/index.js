@@ -55,7 +55,13 @@ const ApplicationForm = () => {
     }
     useEffect(() => {
         getPreApplication()
+        getCountryList()
     }, [])
+
+    const getCountryList = async () => {
+        const { data: countryData } = await GET(`entity-service/countryMaster`);
+        sessionStorage.setItem('canadaData', JSON.stringify(countryData?.filter(data => data?.abbreviation === 'CN')[0]));
+    };
 
     const getPreApplication = async () => {
         const { data: basicForm } = await GET(

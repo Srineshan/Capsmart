@@ -12,7 +12,8 @@ import CheckboxChecked from './../../images/checkboxClicked.png';
 import Checkbox from './../../images/checkboxUnclicked.png';
 import Sort from './../../images/sort.png';
 import NoDataBox from '../ReusableSmallComponents/noDataBox';
-
+import PODIcon from '../../images/PODIcon.png'
+import DataFieldIcon from '../../images/DataFieldIcon.png'
 import style from './index.module.scss';
 
 const useStyles = makeStyles(theme => ({
@@ -165,6 +166,10 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
                         <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} key={index}>
                             {data === 'CHECKBOX' ? (
                                 <img src={Checkbox} alt="" className={`${style.CheckboxImgStyle} ${style.marginLeft30}`} />
+                            ) : data === 'POD Icon' ? (
+                                <img src={PODIcon} alt="" className={`${style.CheckboxImgStyle}`} />
+                            ) : data === 'Data Field Icon' ? (
+                                <img src={DataFieldIcon} alt="" className={`${style.CheckboxImgStyle}`} />
                             ) : (
                                 <div className={`${data === "" && style.marginLeft30} ${style.tableHeaderFontStyle}`}>{data}</div>
                             )}

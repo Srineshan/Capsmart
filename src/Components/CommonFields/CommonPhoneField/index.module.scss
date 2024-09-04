@@ -17,3 +17,21 @@
     opacity: 1;
     margin-top: 5px;
 }
+
+.helperText {
+    color: #fff;
+    font: normal normal normal 15px/17px proxima-nova;
+    padding: 5px 10px;
+    width: 160px;
+    float: right;
+    text-align: right;
+    margin-right: -10px;
+}
+
+.warningColor {
+    background: #f57c00 0% 0% no-repeat padding-box;
+}
+
+.errorColor {
+    background: #FF6562 0% 0% no-repeat padding-box;
+}
