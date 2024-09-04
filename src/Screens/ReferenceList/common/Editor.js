@@ -276,46 +276,85 @@
 //     }
 //   }
 
-//   handleOpacityChange(event) {
-//     const quill = this.quillRef.getEditor();
-//     const opacity = event.target.value;
-//     const range = quill.getSelection();
-//   }
-//   render() {
-//     return (
-//       <div className="text-editor">
-//         <CustomToolbar
-//           handleButtonClick={this.handleButtonClick}
-//           handleCheckBoxClick={this.handleCheckBoxClick}
-//           handleVariableInsert={this.handleVariableInsert}
-//           variableOptions={this.state.variableOptions}
-//           selectedVariable={this.state.selectedVariable}
-//           handleFontChange={this.handleFontChange}
-//           handleColorChange={this.handleColorChange}
-//           handleOpacityChange={this.handleOpacityChange}
-//         />
-//         <ReactQuill
-//           ref={(el) => {
-//             this.quillRef = el;
-//           }}
-//           value={this.state.editorHtml}
-//           onChange={(content) => this.setState({ editorHtml: content })}
-//           placeholder={"Write something ...."}
-//           modules={Editor.modules}
-//           formats={Editor.formats}
-//         />
-//         {/* <button onClick={this.handleSave} style={{ marginTop: "10px" }}>
-//           Save
-//         </button> */}
-//         <div
-//           className="saved-content"
-//           dangerouslySetInnerHTML={{ __html: this.state.savedHtml }}
-//           // style={{ all: "inherit" }}
-//         />
-//       </div>
-//     );
-//   }
-// }
+handleOpacityChange(event) {
+  const quill = this.quillRef.getEditor();
+  const opacity = event.target.value;
+  const range = quill.getSelection();
+}
+render() {
+  return (
+    <div className="text-editor">
+      <CustomToolbar
+        handleButtonClick={this.handleButtonClick}
+        handleCheckBoxClick={this.handleCheckBoxClick}
+        handleVariableInsert={this.handleVariableInsert}
+        variableOptions={this.state.variableOptions}
+        selectedVariable={this.state.selectedVariable}
+        handleFontChange={this.handleFontChange}
+        handleColorChange={this.handleColorChange}
+        handleOpacityChange={this.handleOpacityChange}
+      />
+      <ReactQuill
+        ref={(el) => {
+          this.quillRef = el;
+        }}
+        value={this.state.editorHtml}
+        onChange={(content) => {
+          this.setState({ editorHtml: content });
+          this.props.onChange(content);
+        }}
+        placeholder={"Write something ...."}
+        modules={Editor.modules}
+        formats={Editor.formats}
+      />
+      {/* <button onClick={this.handleSave} style={{ marginTop: "10px" }}>
+          Save
+        </button> */}
+      <div
+        className="saved-content"
+        dangerouslySetInnerHTML={{ __html: this.state.savedHtml }}
+      // style={{ all: "inherit" }}
+      />
+      {/* {this.state.showUrlModal && (
+          <div className="modal">
+            <div className="modal-content">
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "10px",
+                }}
+              >
+                <label>Enter Button URL:</label>
+                <input
+                  type="text"
+                  value={this.state.buttonUrl}
+                  onChange={(e) => this.setState({ buttonUrl: e.target.value })}
+                  style={{ width: "100%", padding: "5px" }}
+                />
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  gap: "10px",
+                  marginTop: "15px",
+                }}
+              >
+                <button onClick={this.handleUrlSubmit} className="urlButton">
+                  Insert Button
+                </button>
+                <button onClick={this.hideUrlModal} className="urlCancelButton">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )} */}
+    </div>
+  );
+}
+}
 
 // Editor.modules = {
 //   toolbar: {

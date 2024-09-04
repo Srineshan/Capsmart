@@ -1767,7 +1767,7 @@ const ClientAdminDashboard = () => {
                         )}
                       </div>
                     </Link>
-                    <Link
+                    {/* <Link
                       to="/referenceList/contractTerminationReasonForCustomer"
                       className={style.linkStyle}
                     >
@@ -1777,7 +1777,7 @@ const ClientAdminDashboard = () => {
                         </h5>
                         {lastUpdatedDate?.terminationReason?.standardList ===
                           true &&
-                          lastUpdatedDate?.terminationReason?.lastModified !==
+                        lastUpdatedDate?.terminationReason?.lastModified !==
                           null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol}`}
@@ -1803,7 +1803,7 @@ const ClientAdminDashboard = () => {
 
                         {lastUpdatedDate?.terminationReason?.standardList ===
                           false &&
-                          lastUpdatedDate?.terminationReason?.lastModified !==
+                        lastUpdatedDate?.terminationReason?.lastModified !==
                           null ? (
                           <div
                             className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
@@ -1830,7 +1830,7 @@ const ClientAdminDashboard = () => {
                         )}
 
                         {lastUpdatedDate?.terminationReason?.lastModified ===
-                          null ? (
+                        null ? (
                           <div
                             className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
                           >
@@ -1842,9 +1842,9 @@ const ClientAdminDashboard = () => {
                           <></>
                         )}
                       </div>
-                    </Link>
+                    </Link> */}
                     <Link
-                      to="/referenceList/contractTerminationReasonForCustomer"
+                      to="/referenceList/consents"
                       className={style.linkStyle}
                     >
                       <div className={style.dashboardCardStyle}>

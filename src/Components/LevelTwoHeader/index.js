@@ -342,9 +342,15 @@ const LevelTwoHeader = ({
           getEntityTypes={getEntityTypes}
         />
       )}
-      {/* {tileType == "ProofOfDocument" && (
+      {tileType == "Acknowedgement" && (
+        <AcknowledgmentDialog
+          open={isDialogOpen}
+          handleClose={handleCloseDialog}
+        />
+      )}
+      {tileType == "Consent" && (
         <ConsentsDialog open={isDialogOpen} handleClose={handleCloseDialog} />
-      )} */}
+      )}
     </div>
   );
 };
