@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import style from "./../index.module.scss";
 
 const ApplicantSideBar = ({
@@ -7,9 +7,15 @@ const ApplicantSideBar = ({
   siteTitle,
   onSelectSite,
   siteDropdown,
+  selectedTile,
   tileType,
+  sideBarList
 }) => {
   const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    selectedTile(sideBarList[activeIndex]?.id)
+  }, [activeIndex, sideBarList])
 
   const handleSiteClick = (index, site) => {
     console.log(site);
@@ -42,6 +48,7 @@ const ApplicantSideBar = ({
             }`}
           onClick={() => {
             handleSiteClick(index, site);
+            selectedTile(sideBarList[index]?.id)
           }}
         >
           <div className={style.siteDetails}>

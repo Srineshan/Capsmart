@@ -105,6 +105,7 @@ const AcknowledgmentDialog = ({
 
   useEffect(() => {
     if (isEdit) {
+      console.log(selectedAcknowledgement)
       let temp = [];
       selectedAcknowledgement?.applicantTypes?.map(data => {
         temp.push(data?.id)
