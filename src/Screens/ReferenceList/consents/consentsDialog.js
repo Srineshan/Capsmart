@@ -45,9 +45,10 @@ const ConsentsDialog = ({
   const [applicantTypes, setApplicantTypes] = useState([]);
   const [consentTitle, setConsentTitle] = useState("");
   const [consent, setConsent] = useState();
-  const [currentApplicantType, setCurrentApplicantType] = useState(
-    selectedTermination?.entityId?.id ? selectedTermination?.entityId?.id : ""
-  );
+  const [currentApplicantType, setCurrentApplicantType] = useState({
+    id: "",
+    applicantType: "",
+  });
   const [selectedApplicantType, setSelectedApplicantType] = useState([]);
   const [applicantType, setApplicantType] = useState([]);
   const [applicantTypeList, setApplicantTypeList] = useState([]);
@@ -242,10 +243,18 @@ const ConsentsDialog = ({
   // };
 
   const handleSaveConsentForm = async () => {
+    console.log(currentApplicantType);
+
+    // var temp = applicantTypeList
+    //   .filter((data) => {
+    //     data.id === currentApplicantType;
+    //   })
+    //   ?.map((data) => data)[0];
+
     const data = {
       applicantType: {
-        id: "string",
-        applicantType: currentApplicantType,
+        id: currentApplicantType.id,
+        applicantType: currentApplicantType.applicantType,
       },
       title: consentTitle,
       content: consent,
@@ -316,6 +325,19 @@ const ConsentsDialog = ({
   //   handleClose();
   // };
 
+  const handleChange = (event) => {
+    const selectedValue = event.target.value;
+    const selectedType = applicantTypeList.find(
+      (type) => type.id === selectedValue
+    );
+    if (selectedType) {
+      setCurrentApplicantType({
+        id: selectedType.id,
+        applicantType: selectedType.applicantType,
+      });
+    }
+  };
+
   return (
     <Dialog
       // isOpen={getAddEntityDialog}
@@ -355,16 +377,15 @@ const ConsentsDialog = ({
           <div>
             <div className={style.entityLableStyle}>APPLICANT TYPE*</div>
             <select
-              value={currentApplicantType}
+              value={currentApplicantType.id}
               className={style.fullWidth}
-              // rightElement={arrowDown()}
-              onChange={(obj) => {
-                setCurrentApplicantType(obj.target.value);
-              }}
+              onChange={handleChange}
             >
               <option value="">Select Applicant Type</option>
               {applicantTypeList.map((type) => (
-                <option value={type.applicantType}>{type.applicantType}</option>
+                <option key={type.id} value={type.id}>
+                  {type.applicantType}
+                </option>
               ))}
             </select>
           </div>

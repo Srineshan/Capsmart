@@ -49,6 +49,7 @@ const Consents = () => {
   const [selectedApplicantType, setSelectedApplicantType] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [consentForms, setConsentForms] = useState([]);
+  const [applicantId, setApplicantId] = useState("");
 
   const tableHeadKeys = [
     "CONSENT FORM",
@@ -71,9 +72,12 @@ const Consents = () => {
   }, [entityId]);
 
   useEffect(() => {
-    getConsent();
     getApplicantType();
   }, []);
+
+  // useEffect(() => {
+  //   getConsent(applicantId);
+  // }, [applicantId]);
 
   const getApplicantType = async () => {
     const { data: types } = await GET("entity-service/applicantType");
@@ -94,9 +98,14 @@ const Consents = () => {
     setEntityId(entity?.[0]?.id);
   };
 
-  const getConsent = async () => {
-    const { data: consentForm } = await GET(`entity-service/consentForm`);
-    setConsentForms(consentForm);
+  const getConsent = async (id) => {
+    if (id !== "") {
+      const { data: consentForm } = await GET(
+        `entity-service/consentForm?applicantTypeId=${id}`
+      );
+      setConsentForms(consentForm);
+      console.log(consentForm);
+    }
   };
 
   const getLastModifiedDate = async () => {
@@ -111,6 +120,11 @@ const Consents = () => {
         "MMM d, yyyy HH:mm"
       )} ${timeZoneAbbreviation()}`
     );
+  };
+
+  const getSelectedTile = (data) => {
+    setApplicantId(data);
+    getConsent(data);
   };
 
   const getAddEntityTypes = async (data) => {
@@ -247,6 +261,8 @@ const Consents = () => {
               siteTitle={"All Applicant Type"}
               onSelectSite={handleSiteClick}
               tileType={"Consent"}
+              selectedTile={getSelectedTile}
+              sideBarList={applicantTypeList}
             />
             <div className={style.applicantList}>
               <div className={`${style.Tabletitle} `}>
@@ -274,7 +290,7 @@ const Consents = () => {
                 documents={documents}
                 getAddEntityTypes={getAddEntityTypes}
                 handleClose={handleCloseDialog}
-                refetch={getConsent}
+                refetch={() => getConsent(applicantId)}
               />
               <ReferenceListActionButton
                 button1={"Save In-Progress"}
