@@ -45,6 +45,14 @@ const ApplicantTable = ({
       } catch (error) {
         console.error("Error deleting document:", error);
       }
+    } else if (tileType === "Consent") {
+      try {
+        await DELETE(`entity-service/consentForm/${id}`);
+
+        console.log("Document deleted successfully");
+      } catch (error) {
+        console.error("Error deleting document:", error);
+      }
     }
   };
 

@@ -274,6 +274,7 @@ const Consents = () => {
                 documents={documents}
                 getAddEntityTypes={getAddEntityTypes}
                 handleClose={handleCloseDialog}
+                refetch={getConsent}
               />
               <ReferenceListActionButton
                 button1={"Save In-Progress"}
