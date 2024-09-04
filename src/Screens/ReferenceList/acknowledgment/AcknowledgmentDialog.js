@@ -105,6 +105,7 @@ const AcknowledgmentDialog = ({
 
   useEffect(() => {
     if (isEdit) {
+      console.log(selectedAcknowledgement)
       let temp = [];
       selectedAcknowledgement?.applicantTypes?.map(data => {
         temp.push(data?.id)
@@ -292,7 +293,7 @@ const AcknowledgmentDialog = ({
         });
     } else {
       await PUT(
-        `entity-service/acknowledgementForm/${selectedAcknowledgement?.id}`,
+        `entity-service/acknowledgementForm?id=${selectedAcknowledgement?.id}`,
         JSON.stringify(data)
       )
         .then((response) => {

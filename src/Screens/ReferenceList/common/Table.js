@@ -46,6 +46,15 @@ const ApplicantTable = ({
         console.error("Error deleting document:", error);
       }
     }
+    if (tileType === "Acknowedgement") {
+      try {
+        await DELETE(`entity-service/acknowledgementForm?id=${id}`);
+
+        console.log("Document deleted successfully");
+      } catch (error) {
+        console.error("Error deleting document:", error);
+      }
+    }
   };
 
   return (
