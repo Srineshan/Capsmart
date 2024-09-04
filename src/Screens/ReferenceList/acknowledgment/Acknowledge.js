@@ -22,6 +22,7 @@ const Acknowledge = () => {
   const [isSelected, setIsSelected] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
   const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
+  const [applicantTypeList, setApplicantTypeList] = useState([]);
 
   const [entityDetails, setEntityDetails] = useState({});
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -47,7 +48,7 @@ const Acknowledge = () => {
   const [searchKey, setSearchKey] = useState("");
   const [selectedApplicantType, setSelectedApplicantType] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
+  const [acknowledgementForms, setAcknowledgementForms] = useState([]);
   const sites = ["SITE NAME", "SITE NAME"];
 
   const applicantType = [
@@ -83,13 +84,23 @@ const Acknowledge = () => {
     "SIGNATURE",
     "LAST UPDATED",
   ];
-  const tableDataKeys = ["name", "type", "requirment", "lastUpdated"];
+  const tableDataKeys = ["title", "esignatureRequiredOnEachPage", "esignatureRequiredOnEachPage", "lastModifiedDate"];
 
   useEffect(() => {
     if (entityId !== "" && entityId !== undefined) {
       getLastModifiedDate();
     }
   }, [entityId]);
+
+  useEffect(() => {
+    getAcknowledgement()
+    getApplicantType()
+  }, [])
+
+  const getApplicantType = async () => {
+    const { data: types } = await GET("entity-service/applicantType");
+    setApplicantTypeList(types);
+  };
 
   const getIsExpanded = (value) => {
     setIsExpanded(value);
@@ -103,6 +114,12 @@ const Acknowledge = () => {
     const { data: entity } = await GET(`entity-service/entity`);
     setEntityDetails(entity);
     setEntityId(entity?.[0]?.id);
+  };
+
+
+  const getAcknowledgement = async () => {
+    const { data: acknowledgementForm } = await GET(`entity-service/acknowledgementForm`);
+    setAcknowledgementForms(acknowledgementForm);
   };
 
   const getLastModifiedDate = async () => {
@@ -233,7 +250,7 @@ const Acknowledge = () => {
               callingFrom={"Customer Admin"}
               needHeader={false}
               tileType={"Acknowedgement"}
-              documents={documents}
+              documents={acknowledgementForms}
               getEntityTypes={getEntityTypes}
               getAddEntityTypes={getAddEntityTypes}
               handleOpenDialog={handleOpenDialog}
@@ -241,12 +258,12 @@ const Acknowledge = () => {
             />
           </div>
           <div
-            className={`${
-              isExpanded ? style.bigCardGrid : style.smallCardGrid
-            }`}
+            className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid
+              }`}
           >
             <ApplicantSideBar
-              applicantType={sites}
+              applicantType={applicantTypeList?.map(data => data?.applicantType)}
+              siteType={applicantTypeList?.map(data => data?.siteType)}
               siteTitle={"All Applicant Type"}
               onSelectSite={handleSiteClick}
               tileType={"Acknowedgement"}
@@ -266,7 +283,7 @@ const Acknowledge = () => {
                 </Typography>
               </div>
               <ApplicantTable
-                applicantTypes={applicantType}
+                applicantTypes={acknowledgementForms}
                 applicantNotice={
                   "Applicant types are ordered as they will appear on forms. To change the order, click and drag "
                 }
@@ -274,7 +291,7 @@ const Acknowledge = () => {
                 tableHeadKeys={tableHeadKeys}
                 groupFirstTwoColumn={true}
                 tileType={"Acknowedgement"}
-                documents={documents}
+                documents={acknowledgementForms}
                 getAddEntityTypes={getAddEntityTypes}
                 handleClose={handleCloseDialog}
               />

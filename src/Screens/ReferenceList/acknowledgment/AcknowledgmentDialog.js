@@ -269,12 +269,12 @@ const AcknowledgmentDialog = ({
       "applicantTypes": selectedApplicantType,
       "title": title,
       "content": {
-        "content": "string"
+        "content": content
       },
       "file": file,
       "contentType": "Text",
       "disclaimer": {
-        "content": "string"
+        "content": disclaimer
       },
       "einitialRequiredOnEachPage": eInitialRequired,
       "esignatureRequiredOnEachPage": signatureRequired
@@ -292,7 +292,7 @@ const AcknowledgmentDialog = ({
         });
     } else {
       await PUT(
-        `entity-service/acknowledgementForm/${terminationId}`,
+        `entity-service/acknowledgementForm/${selectedAcknowledgement?.id}`,
         JSON.stringify(data)
       )
         .then((response) => {
@@ -490,8 +490,9 @@ const AcknowledgmentDialog = ({
             <div className={style.entityLableStyle}>
               ACKNOWLEDGEMENT FORM CONTENT*
             </div>
-            {/* <Editor /> */}
-            <MarkdownEditor getValue={getContentValue} />
+            <Editor editorHtml={content}
+              onChange={getContentValue} />
+            {/* <MarkdownEditor getValue={getContentValue} /> */}
 
           </div>
 
@@ -526,7 +527,8 @@ const AcknowledgmentDialog = ({
             <div className={style.entityLableStyle}>DISCLAIMER CONTENTS*</div>
             {/* <Editor /> */}
             <div>
-              <MarkdownEditor getValue={getDisclaimerValue} />
+              <Editor editorHtml={disclaimer}
+                onChange={getDisclaimerValue} />
             </div>
           </div>
 
