@@ -690,8 +690,8 @@ body::-webkit-scrollbar {
 
 .applicantStaffGrid {
   display: grid;
-  grid-template-columns: 5% 10% 10% 9% 6% 5% 8% 5% 5% 8% 8% 6% 5%;
-  grid-gap: 10px;
+  grid-template-columns: 5% 12% 12% 10% 6% 5% 8% 5% 5% 8% 8% 6% 5%;
+  grid-gap: 1%;
 }
 
 .applicationStaffGrid {
@@ -3458,4 +3458,14 @@ input[type="number"] {
 
 .tabs input[type="radio"]:checked+label+.tab {
   display: block;
+}
+
+.alternativeBackgroundColor {
+  background-color: #ebe9fb !important;
+}
+
+.checkListGrid {
+  display: grid;
+  grid-template-columns: 3% 96%;
+  gap: 1%;
 }

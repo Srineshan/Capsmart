@@ -3057,16 +3057,18 @@
 
 .applicantHeader {
   background-color: #d2d0f5;
-  color: #52575d;
-  font: normal normal bold 10px/10px proxima-nova;
   text-align: left;
+  font: normal normal 600 17px/21px proxima-nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  text-transform: uppercase;
   height: 30px;
-  padding-left: 5px;
+  padding: 10px 20px;
 }
 
 .firstColumn {
   min-width: 400px;
-  padding: 10px;
+  padding: 10px 20px;
 }
 
 .twoColumn {
@@ -3091,7 +3093,10 @@
   margin-bottom: 10px;
   overflow: hidden;
   border: 1px solid;
-  color: #52575d;
+  font: normal normal normal 16px/30px proxima-nova;
+  text-align: left;
+  color: #52575D;
+  padding: 10px 20px;
 }
 
 .rightAligned {
@@ -3106,15 +3111,10 @@
   text-align: left;
 }
 
-.actions {
-  display: flex;
-  gap: 10px;
-}
-
 .actionIcon {
   cursor: pointer;
-  width: 20px;
-  height: 20px;
+  width: 25px;
+  height: 25px;
   color: #52575d;
 }
 
@@ -3140,6 +3140,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  padding: 15px 5px 0 0;
 }
 
 .subApplicantItem {
@@ -3705,3 +3706,11 @@ input:checked+.slider:before {
   z-index: 1;
   /* Ensures the text is above the line */
 }
+
+// .tableHeaderFontReferenceList {
+//   text-align: left;
+//   font: normal normal 600 17px/21px proxima-nova;
+//   letter-spacing: 0px;
+//   color: #52575D;
+//   text-transform: uppercase;
+// }

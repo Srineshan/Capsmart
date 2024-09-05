@@ -396,7 +396,7 @@ const AcknowledgmentDialog = ({
       // isOpen={getAddEntityDialog}
       // onClose={() => getAddEntityDialog(false)}
       isOpen={open}
-      onClose={handleClose}
+      onClose={() => handleClose(true)}
       className={`${style.healthCareDialogStyle} ${style.dialogPaddingBottom}`}
     >
       <div
@@ -422,7 +422,7 @@ const AcknowledgmentDialog = ({
                 //   getAddEntityDialog(false);
                 //   getTerminationReasonData();
                 // }}
-                onClick={handleClose}
+                onClick={() => handleClose(true)}
               />
             </div>
           </div>

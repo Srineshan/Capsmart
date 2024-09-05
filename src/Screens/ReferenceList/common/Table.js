@@ -70,13 +70,11 @@ const ApplicantTable = ({
       )} */}
       <table className={style.applicantTable}>
         <thead>
-          <tr className={style.applicantHeader}>
+          <tr className={`${style.applicantHeader} `}>
             {tableHeadKeys &&
               tableHeadKeys.map((head, index) => (
                 <th
-                  className={
-                    index === 0 ? style.firstColumn : style.rightAligned
-                  }
+                  className={`${index === 0 ? style.firstColumn : style.centerAligned} `}
                   key={index}
                 >
                   {head}
@@ -97,7 +95,7 @@ const ApplicantTable = ({
                   {tableDataKeys.map((key, keyIndex) => (
                     <td
                       key={keyIndex}
-                      className={`${keyIndex === 0 ? style.leftAligned : style.rightAligned
+                      className={`${keyIndex === 0 ? style.leftAligned : style.centerAligned
                         } ${keyIndex === 0 ? style.firstColumn : ""}`}
                     >
                       {key === "applicantType"
@@ -113,7 +111,7 @@ const ApplicantTable = ({
                             : applicant[key] || "N/A"}
                     </td>
                   ))}
-                  <td className={style.actions}>
+                  <td className={style.actions} height='100%'>
                     <img
                       src={EditHcFolder}
                       alt="Edit"

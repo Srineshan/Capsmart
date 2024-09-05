@@ -20,6 +20,7 @@ import ApplicationRejection from './applicationRejectionDialog';
 import { useNavigate } from 'react-router-dom';
 import { GET, PUT, POST, TenantID } from '../dataSaver';
 import ReactToPrint, { useReactToPrint } from 'react-to-print';
+import CheckListDialog from './checkListDialog';
 
 
 const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiveApplicationView }) => {
@@ -57,11 +58,16 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
   const [isPrintClicked, setIsPrintClicked] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
   const [showApplicationRejectionDialog, setShowApplicationRejectionDialog] = useState(false);
+  const [showCheckListDialog, setShowCheckListDialog] = useState(false);
 
 
   const getApplicationRejectionDialog = (value) => {
     setShowApplicationRejectionDialog(value);
     setRejectionTab("rejected")
+  }
+
+  const getCheckListDialog = (value) => {
+    setShowCheckListDialog(value);
   }
 
   const onClickViewAndVerifyFunction = (data) => {
@@ -375,8 +381,8 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
   ]
 
   const approvedActionsData = [
-    { 'data': 'Add as active staff', 'requiredValue': 'boolean', "onClick": '' },
-    { 'data': 'Send follow up disclosures', 'requiredValue': 'boolean', "onClick": '' },
+    { 'data': 'Add as active staff', 'requiredValue': 'boolean', "onClick": () => { setShowCheckListDialog(true) } },
+    { 'data': 'Send follow up disclosures', 'requiredValue': 'boolean', "onClick": () => { } },
   ]
 
   const getIsExpanded = (value) => {
@@ -536,7 +542,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
         </div>
         <div>
           <div className={`${style.displayInRow} ${style.spaceBetween} ${style.headingForStaffs} ${style.bottomTextStyle}`}>
-            CAP MANAGER > APPLICATIONS
+            {`CAP MANAGER > APPLICATIONS`}
           </div>
 
           <div className={`${style.spaceBetween} ${style.marginTop20} ${style.marginLeft30} `}>
@@ -591,6 +597,9 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
           <ApplicationRejection getApplicationRejectionDialog={getApplicationRejectionDialog} rejectionListData={rejectionListData} rejectedCount={applicationRejected.applicationsRejected} />
         )
       }
+      {showCheckListDialog && (
+        <CheckListDialog getCheckListDialog={getCheckListDialog} />
+      )}
     </div >
   )
 }
