@@ -48,6 +48,17 @@ const ApplicantTable = ({
         console.error("Error deleting document:", error);
       }
     }
+    if (tileType === "StaffPrivileges") {
+      console.log("id", id);
+      try {
+        await DELETE(`entity-service/staffprivileges/${id}`);
+
+        console.log("Document deleted successfully");
+      } catch (error) {
+        console.error("Error deleting document:", error);
+      }
+    }
+
     if (tileType === "Acknowedgement") {
       try {
         await DELETE(`entity-service/acknowledgementForm/${id}`);
@@ -93,26 +104,28 @@ const ApplicantTable = ({
             applicantTypes.map((applicant, index) => (
               <React.Fragment key={applicant.id}>
                 <tr
-                  className={`${style.applicantItem} ${index % 2 === 0 ? "" : style.sideNonActiveBackground
-                    }`}
+                  className={`${style.applicantItem} ${
+                    index % 2 === 0 ? "" : style.sideNonActiveBackground
+                  }`}
                 >
                   {tableDataKeys.map((key, keyIndex) => (
                     <td
                       key={keyIndex}
-                      className={`${keyIndex === 0 ? style.leftAligned : style.rightAligned
-                        } ${keyIndex === 0 ? style.firstColumn : ""}`}
+                      className={`${
+                        keyIndex === 0 ? style.leftAligned : style.rightAligned
+                      } ${keyIndex === 0 ? style.firstColumn : ""}`}
                     >
                       {key === "applicantType"
                         ? applicant.applicantType[key]
                         : key === "disclaimer"
-                          ? applicant[key]?.content != null
-                            ? "Yes"
-                            : "No"
-                          : key === "esignatureRequiredOnEachPage"
-                            ? applicant[key] === true
-                              ? "Required"
-                              : "NA"
-                            : applicant[key] || "N/A"}
+                        ? applicant[key]?.content != null
+                          ? "Yes"
+                          : "No"
+                        : key === "esignatureRequiredOnEachPage"
+                        ? applicant[key] === true
+                          ? "Required"
+                          : "NA"
+                        : applicant[key] || "N/A"}
                     </td>
                   ))}
                   <td className={style.actions}>
@@ -140,10 +153,11 @@ const ApplicantTable = ({
                       {tableDataKeys.map((key, keyIndex) => (
                         <td
                           key={keyIndex}
-                          className={`${keyIndex === 0
-                            ? style.leftAligned
-                            : style.rightAligned
-                            } ${keyIndex === 0 ? style.firstColumn : ""}`}
+                          className={`${
+                            keyIndex === 0
+                              ? style.leftAligned
+                              : style.rightAligned
+                          } ${keyIndex === 0 ? style.firstColumn : ""}`}
                         >
                           {subApplicant.key}
                         </td>
@@ -178,13 +192,15 @@ const ApplicantTable = ({
         />
       )}
 
-{selectedApplicant && tileType === "StaffPrivilege" && (
+      {selectedApplicant && tileType === "StaffPrivilege" && (
         <StaffPrivilegeDialog
           open={openDialog}
           onClose={handleCloseDialog}
           selectedApplicant={selectedApplicant}
           isEdit={true}
-          handleClose={handleClose}/>)}
+          handleClose={handleClose}
+        />
+      )}
 
       {selectedApplicant && tileType == "Acknowedgement" && (
         <AcknowledgmentDialog
@@ -196,7 +212,7 @@ const ApplicantTable = ({
           handleClose={handleClose}
         />
       )}
-            {selectedApplicant && tileType == "Disclosure Industries" && (
+      {selectedApplicant && tileType == "Disclosure Industries" && (
         <DisclosureByIndustriesDialog
           open={openDialog}
           onClose={handleCloseDialog}
@@ -206,7 +222,6 @@ const ApplicantTable = ({
           handleClose={handleClose}
         />
       )}
-
 
       {selectedApplicant && tileType == "Consent" && (
         <ConsentsDialog

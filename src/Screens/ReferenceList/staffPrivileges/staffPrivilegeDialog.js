@@ -16,6 +16,8 @@ const StaffPrivilegeDialog = ({
   isEdit,
   selectedTermination,
   selectedApplicant,
+  isSecondary,
+  siteTypeId,
 }) => {
   const [selectedType, setSelectedType] = useState("basic");
   const [proofRequired, setProofRequired] = useState(true);
@@ -35,10 +37,17 @@ const StaffPrivilegeDialog = ({
     currentSiteType: "",
     specificSites: [],
   });
+  const [currentEntityType, setCurrentEntityType] = useState(
+    selectedTermination?.entityId?.id ? selectedTermination?.entityId?.id : ""
+  );
 
   const [departmentNames, setDepartmentNames] = useState([]);
   const [selectedOption, setSelectedOption] = useState("");
   const [editDepartmentNames, setEditDepartmentNames] = useState([]);
+  const [terminationId, setTerminationId] = useState(
+    selectedTermination?.id ? selectedTermination?.id : ""
+  );
+  const [createdDate, setCreatedDate] = useState("");
 
   const handleChange = (event) => {
     setSelectedOption(event.target.value);
@@ -121,9 +130,15 @@ const StaffPrivilegeDialog = ({
       currentEntityType: e.target.value,
     }));
   };
+  useEffect(() => {
+    if (isEdit) {
+      setCurrentEntityType(siteTypeId);
+      setTerminationId(selectedTermination?.id);
+      setCreatedDate(selectedTermination?.createdDate);
+    }
+  }, [selectedTermination]);
 
   useEffect(() => {
-    console.log("selectedApplicantselectedApplicant", selectedApplicant);
     if (isEdit && selectedApplicant) {
       setSelectedType(selectedApplicant.selectedType || "basic");
       setProofRequired(selectedApplicant.proofRequired || false);
@@ -134,23 +149,23 @@ const StaffPrivilegeDialog = ({
   }, [isEdit, selectedApplicant]);
 
   const SaveSubmitHandler = async () => {
-    if (
-      !applicantState.applicantTypes ||
-      applicantState.applicantTypes.length === 0
-    ) {
-      ErrorToaster("Applicant Type is required.");
-      return;
-    }
+    // if (
+    //   !applicantState.applicantTypes ||
+    //   applicantState.applicantTypes.length === 0
+    // ) {
+    //   ErrorToaster("Applicant Type is required.");
+    //   return;
+    // }
 
-    if (!siteState.specificSites || siteState.specificSites.length === 0) {
-      ErrorToaster("Site is required.");
-      return;
-    }
+    // if (!siteState.specificSites || siteState.specificSites.length === 0) {
+    //   ErrorToaster("Site is required.");
+    //   return;
+    // }
 
-    if (!departmentNames || departmentNames.length === 0) {
-      ErrorToaster("Department Name is required.");
-      return;
-    }
+    // if (!departmentNames || departmentNames.length === 0) {
+    //   ErrorToaster("Department Name is required.");
+    //   return;
+    // }
 
     if (!selectedOption) {
       ErrorToaster("Privilege Specification Type is required.");
@@ -158,18 +173,20 @@ const StaffPrivilegeDialog = ({
     }
 
     const data = {
+      ...(isEdit && { id: terminationId }),
+      ...(isEdit && { createdDate: createdDate }),
+      ...(isEdit && { lastModifiedDate: new Date() }),
+
       tenant: {
-        id: TenantID, // Make sure TenantID is valid
+        id: TenantID,
       },
       applicantTypes: [
         {
-          id: applicantState.id, // Ensure this is the correct ID
-          applicantType: applicantState.applicantTypes, // This should be a string, not an ID
+          applicantType: currentEntityType,
         },
       ],
       sites: [
         {
-          id: "", // Add a valid ID if needed
           siteName: {
             siteName: siteState.specificSites,
           },
@@ -190,14 +207,15 @@ const StaffPrivilegeDialog = ({
 
     try {
       if (isEdit) {
+        console.log("terminationIdterminationId", terminationId);
         await PUT(
-          `entity-service/staffPrivilege/?${applicantState.id}?tenantId=${TenantID}`,
+          `entity-service/staffPrivilege/?${terminationId}`,
           JSON.stringify(data)
         );
         SuccessToaster("Document updated successfully");
       } else {
         await POST(
-          `entity-service/staffPrivilege/?${TenantID}`,
+          `entity-service/staffPrivilege/?${terminationId}`,
           JSON.stringify(data)
         );
         SuccessToaster("Document saved successfully");
@@ -290,11 +308,13 @@ const StaffPrivilegeDialog = ({
                   value={
                     isEdit && selectedApplicant
                       ? selectedApplicant.entityType
-                      : applicantState.currentEntityType
+                      : currentEntityType
                   }
                   className={`${style.fullWidth} ${style.customSelect}`}
                   rightElement={arrowDown()}
-                  onChange={handleSelectChange}
+                  onChange={(obj) => {
+                    setCurrentEntityType(obj.target.value);
+                  }}
                 >
                   {applicantState.applicantTypes.map((type) => (
                     <option key={type.id} value={type.id}>

@@ -45,6 +45,9 @@ const StaffPrivileges = () => {
   const [selectedApplicantType, setSelectedApplicantType] = useState("");
   const [sites, setSites] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [applicantTypeList, setApplicantTypeList] = useState([]);
+  const [applicantId, setApplicantId] = useState("");
+  const [staffPrivilegesForm, setStaffPrivilegesForm] = useState([]);
 
   const tableHeadKeys = [
     // "ID",
@@ -68,6 +71,10 @@ const StaffPrivileges = () => {
   const getAddEntityDialog = (value) => {
     setShowAddEntityDialog(value);
   };
+
+  useEffect(() => {
+    getStaffPrivileges(applicantId);
+  }, [applicantId]);
 
   const getEntity = async () => {
     const { data: entity } = await GET(`entity-service/entity`);
@@ -174,6 +181,29 @@ const StaffPrivileges = () => {
     setIsDialogOpen(false);
   };
 
+  const getStaffPrivileges = async (id) => {
+    if (id !== "") {
+      const { data: staffPrivilegesForm } = await GET(
+        `entity-service/staffPrivilege?applicantTypeId=${id}`
+      );
+      setStaffPrivilegesForm(staffPrivilegesForm);
+    }
+  };
+
+  const getSelectedTile = (data) => {
+    setApplicantId(data);
+    getStaffPrivileges(data);
+  };
+
+  const getApplicantType = async () => {
+    const { data: types } = await GET("entity-service/applicantType");
+    setApplicantTypeList(types);
+  };
+
+  useEffect(() => {
+    getApplicantType();
+  }, []);
+
   return (
     <Fragment>
       <Navbar />
@@ -192,19 +222,24 @@ const StaffPrivileges = () => {
             />
           </div>
           <div
-            className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid
-              }`}
+            className={`${
+              isExpanded ? style.bigCardGrid : style.smallCardGrid
+            }`}
           >
             <ApplicantSideBar
-              applicantType={entityTypes?.map((item) => item.name) || []}
-              siteTitle={"Cambride Memorial Hospitals"}
-              onSelectSite={handleSiteClick}
+              applicantType={applicantTypeList?.map(
+                (data) => data?.applicantType
+              )}
+              siteType={applicantTypeList?.map((data) => data?.siteType)}
+              selectedTile={getSelectedTile}
+              tileType={"StaffPrivileges"}
+              sideBarList={applicantTypeList}
               siteDropdown={true}
             />
             <div className={style.applicantList}>
               <div className={`${style.Tabletitle} `}>
                 <Typography className={style.tableTitleContent}>
-                  Cambride Memorial Hospitals
+                  {`{${selectedApplicantType}}`}
                 </Typography>
                 <Typography
                   className={`${style.tableTitleContentArrow} ${style.tableTitleContent}`}
@@ -220,17 +255,17 @@ const StaffPrivileges = () => {
                   {">"}
                 </Typography>
                 <Typography className={style.tableTitleContent}>
-                  All Applicant Types
+                  All StaffPrivileges Form
                 </Typography>
               </div>
               {tableData && (
                 <ApplicantTable
-                  applicantTypes={
-                    tableData && tableData.length > 0 && tableData
-                  }
+                  applicantTypes={staffPrivilegesForm}
                   tableDataKeys={tableDataKeys}
                   tableHeadKeys={tableHeadKeys}
-                  tileType={"StaffPrivilege"}
+                  tileType={"StaffPrivileges"}
+                  documents={staffPrivilegesForm}
+                  getAddEntityTypes={getAddEntityTypes}
                   handleClose={handleCloseDialog}
                 />
               )}

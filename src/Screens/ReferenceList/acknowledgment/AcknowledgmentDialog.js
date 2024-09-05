@@ -105,7 +105,6 @@ const AcknowledgmentDialog = ({
   };
 
   const getSubReasons = () => {
-    // console.log('entered', secondaryReasonList)
     let temp = [];
     for (let i = 0; i < secondaryReasonList?.length; i++) {
       // console.log(i);
