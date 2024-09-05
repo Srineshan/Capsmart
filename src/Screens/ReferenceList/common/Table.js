@@ -46,6 +46,14 @@ const ApplicantTable = ({
       } catch (error) {
         console.error("Error deleting document:", error);
       }
+    } else if (tileType === "Consent") {
+      try {
+        await DELETE(`entity-service/consentForm/${id}`);
+
+        console.log("Document deleted successfully");
+      } catch (error) {
+        console.error("Error deleting document:", error);
+      }
     }
     if (tileType === "StaffPrivileges") {
       console.log("id", id);
@@ -116,7 +124,8 @@ const ApplicantTable = ({
                           ? applicant[key]?.content != null
                             ? "Yes"
                             : "No"
-                          : key === "esignatureRequiredOnEachPage"
+                          : key === "esignatureRequiredOnEachPage" ||
+                            key == "esignatureRequired"
                             ? applicant[key] === true
                               ? "Required"
                               : "NA"
@@ -148,10 +157,18 @@ const ApplicantTable = ({
                       {tableDataKeys.map((key, keyIndex) => (
                         <td
                           key={keyIndex}
+<<<<<<< HEAD
                           className={`${keyIndex === 0
+                            ? style.leftAligned
+                            : style.rightAligned
+                            } ${keyIndex === 0 ? style.firstColumn : ""}`}
+=======
+                          className={`${
+                            keyIndex === 0
                               ? style.leftAligned
                               : style.rightAligned
-                            } ${keyIndex === 0 ? style.firstColumn : ""}`}
+                          } ${keyIndex === 0 ? style.firstColumn : ""}`}
+>>>>>>> c0874c27e09a988565c67487036eb29ec3bafa7e
                         >
                           {subApplicant.key}
                         </td>
@@ -221,7 +238,7 @@ const ApplicantTable = ({
         <ConsentsDialog
           open={openDialog}
           onClose={handleCloseDialog}
-          selectedApplicant={selectedApplicant}
+          selectedConsent={selectedApplicant}
           documents={documents}
           isEdit={true}
           handleClose={handleClose}

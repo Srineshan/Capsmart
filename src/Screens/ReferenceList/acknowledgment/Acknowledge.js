@@ -49,6 +49,7 @@ const Acknowledge = () => {
   const [selectedApplicantType, setSelectedApplicantType] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [acknowledgementForms, setAcknowledgementForms] = useState([]);
+  
   const sites = ["SITE NAME", "SITE NAME"];
 
   const applicantType = [
