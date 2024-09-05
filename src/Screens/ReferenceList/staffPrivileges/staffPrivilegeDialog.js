@@ -171,6 +171,10 @@ const StaffPrivilegeDialog = ({
       ErrorToaster("Privilege Specification Type is required.");
       return;
     }
+    const formattedOption =
+      selectedOption === "Descriptive Document"
+        ? "DescriptiveDocument"
+        : selectedOption;
 
     const data = {
       ...(isEdit && { id: terminationId }),
@@ -200,10 +204,8 @@ const StaffPrivilegeDialog = ({
         },
       ],
       advancedPrivilegesRequired: toggleState,
-      privilegeSpecificationType: selectedOption,
+      privilegeSpecificationType: formattedOption,
     };
-
-    console.log("datadata", data);
 
     try {
       if (isEdit) {
@@ -214,6 +216,7 @@ const StaffPrivilegeDialog = ({
         );
         SuccessToaster("Document updated successfully");
       } else {
+        console.log("staff post data", data);
         await POST(
           `entity-service/staffPrivilege/?${terminationId}`,
           JSON.stringify(data)

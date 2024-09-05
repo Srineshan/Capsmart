@@ -20,7 +20,6 @@ const ApplicantTable = ({
   handleClose,
   tileType,
 }) => {
-  console.log(applicantTypes);
 
   const [selectedApplicant, setSelectedApplicant] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);

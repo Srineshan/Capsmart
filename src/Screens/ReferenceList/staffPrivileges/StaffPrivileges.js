@@ -197,6 +197,7 @@ const StaffPrivileges = () => {
 
   const getApplicantType = async () => {
     const { data: types } = await GET("entity-service/applicantType");
+    console.log("applicantType", types);
     setApplicantTypeList(types);
   };
 
@@ -232,6 +233,7 @@ const StaffPrivileges = () => {
               )}
               siteType={applicantTypeList?.map((data) => data?.siteType)}
               selectedTile={getSelectedTile}
+              onSelectSite={handleSiteClick}
               tileType={"StaffPrivileges"}
               sideBarList={applicantTypeList}
               siteDropdown={true}
@@ -247,23 +249,19 @@ const StaffPrivileges = () => {
                   {">"}
                 </Typography>
                 <Typography className={style.tableTitleContent}>
-                  {`${selectedApplicantType}`}
-                </Typography>
-                <Typography
-                  className={`${style.tableTitleContentArrow} ${style.tableTitleContent}`}
-                >
-                  {">"}
-                </Typography>
-                <Typography className={style.tableTitleContent}>
                   All StaffPrivileges Form
                 </Typography>
               </div>
               {tableData && (
                 <ApplicantTable
                   applicantTypes={staffPrivilegesForm}
+                  applicantNotice={
+                    "Applicant types are ordered as they will appear on forms. To change the order, click and drag "
+                  }
                   tableDataKeys={tableDataKeys}
                   tableHeadKeys={tableHeadKeys}
                   tileType={"StaffPrivileges"}
+                  groupFirstTwoColumn={true}
                   documents={staffPrivilegesForm}
                   getAddEntityTypes={getAddEntityTypes}
                   handleClose={handleCloseDialog}
