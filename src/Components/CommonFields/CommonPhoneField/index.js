@@ -5,7 +5,7 @@ import style from './index.module.scss';
 import { TextField } from '@mui/material';
 
 const CommonPhoneField = ({ onChange, placeholder, maxLength, value, error, label, required }) => {
-    const warningCheck = (value === undefined || value === null || value === '');
+    const warningCheck = (value === '');
     return (
         <div>
             <div className={`${style.lableStyle}`}>{label}{required && '*'}</div>
@@ -27,7 +27,7 @@ const CommonPhoneField = ({ onChange, placeholder, maxLength, value, error, labe
                     placeholder={placeholder}
                     className={`${style.marginTop}`}
                     color={warningCheck ? required ? 'error' : 'warning' : ''}
-                    helperText={warningCheck ? (<div className={`${style.helperText} ${required ? style.errorColor : style.warningColor}`}>Could not find data</div>) : ''}
+                    // helperText={warningCheck ? (<div className={`${style.helperText} ${required ? style.errorColor : style.warningColor}`}>Could not find data</div>) : ''}
                     focused={warningCheck ? true : false}
                 />
             </div>

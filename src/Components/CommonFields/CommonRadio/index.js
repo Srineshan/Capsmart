@@ -9,7 +9,7 @@ import style from './index.module.scss';
 
 const CommonRadio = ({ onChange, className, value, radioValue, label, required }) => {
     const contractStatus = sessionStorage.getItem('Selected Contract Status');
-    const warningCheck = (value === undefined || value === null || value === '');
+    const warningCheck = (value === '');
     const theme = createTheme({
         palette: {
             error: {

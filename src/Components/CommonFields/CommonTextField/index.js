@@ -5,7 +5,7 @@ import style from './index.module.scss';
 
 const CommonTextField = ({ value, onChange, readOnly, className, type, maxLength, disabled, InputProps, key, defaultValue, min, placeholder, label, required }) => {
     const contractStatus = sessionStorage.getItem('Selected Contract Status');
-    const warningCheck = type === 'number' ? (value === undefined || value === null || value === 0 || (isNaN(value) && value !== undefined) || value === '') : (value === undefined || value === null || value === '');
+    const warningCheck = type === 'number' ? (value === 0 || (isNaN(value) && value !== undefined) || value === '') : (value === '');
     console.log(value, isNaN(value), warningCheck, type)
 
     return (
@@ -31,9 +31,9 @@ const CommonTextField = ({ value, onChange, readOnly, className, type, maxLength
                 key={key}
                 defaultValue={defaultValue}
                 onKeyDown={(type === 'number' || type === 'tel') ? preventNegativeValues : () => { }}
-                color={warningCheck ? required ? 'error' : 'warning' : ''}
-                helperText={warningCheck ? (<div className={`${style.helperText} ${required ? style.errorColor : style.warningColor}`}>Could not find data</div>) : ''}
-                focused={warningCheck ? true : false}
+            // color={warningCheck ? required ? 'error' : 'warning' : ''}
+            // helperText={warningCheck ? (<div className={`${style.helperText} ${required ? style.errorColor : style.warningColor}`}>Could not find data</div>) : ''}
+            // focused={warningCheck ? true : false}
             />
         </div>
     )

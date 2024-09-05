@@ -44,7 +44,7 @@ const CheckListDialog = ({ getCheckListDialog, rejectionListData, rejectedCount 
                         <div className={`${style.tableDataFontStyle1} ${style.verticalAlignCenter}`}>{data?.content}</div>
                     </div>
                 ))}
-                <button className={`${style.buttonStyle} ${style.sendNotificationsButtonWidth} ${style.marginLeft20} ${style.floatRight} ${style.cursorPointer} ${style.marginTop20}`}>CONTINUE</button>
+                <button className={`${style.buttonStyle} ${style.sendNotificationsButtonWidth} ${style.marginLeft20} ${style.floatRight} ${style.cursorPointer} ${style.marginTop20} ${style.disabled}`}>CONTINUE</button>
             </div>
         </Dialog>
     )

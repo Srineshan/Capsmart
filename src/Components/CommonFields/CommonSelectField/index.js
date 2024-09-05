@@ -7,7 +7,7 @@ import style from './index.module.scss';
 
 const CommonSelectField = ({ value, onChange, className, firstOptionLabel, firstOptionValue, valueList, labelList, disabledList, disabledSelect, defaultValue, widthValue, menuColor, error, label, required }) => {
     const contractStatus = sessionStorage.getItem('Selected Contract Status');
-    const warningCheck = (value === undefined || value === null || value === '');
+    const warningCheck = (value === '');
     const theme = createTheme({
         palette: {
             error: {
@@ -39,7 +39,7 @@ const CommonSelectField = ({ value, onChange, className, firstOptionLabel, first
                             className={className}
                             error={error}
                             color={warningCheck ? required ? 'error' : 'warning' : ''}
-                            helperText={warningCheck ? (<div className={`${style.helperText} ${required ? style.errorColor : style.warningColor}`}>Could not find data</div>) : ''}
+                            // helperText={warningCheck ? (<div className={`${style.helperText} ${required ? style.errorColor : style.warningColor}`}>Could not find data</div>) : ''}
                             focused={warningCheck ? true : false}
                             disabled={(contractStatus === "ACTIVE" && !window.location.pathname.includes('moveToDraft')) ? true : disabledSelect || false}
                         >
@@ -50,9 +50,9 @@ const CommonSelectField = ({ value, onChange, className, firstOptionLabel, first
                                 <MenuItem value={data} key={index} disabled={disabledList[index]} style={{ backgroundColor: menuColor ? menuColor[index] : '' }}>{labelList[index]}</MenuItem>
                             ))}
                         </Select>
-                        <div>
+                        {/* <div>
                             {warningCheck ? (<div className={`${style.helperText} ${required ? style.errorColor : style.warningColor}`}>Could not find data</div>) : ''}
-                        </div>
+                        </div> */}
                     </FormControl>
                 </ThemeProvider>
             </div>

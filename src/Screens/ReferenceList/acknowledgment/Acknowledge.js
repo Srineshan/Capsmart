@@ -49,7 +49,7 @@ const Acknowledge = () => {
   const [selectedApplicantType, setSelectedApplicantType] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [acknowledgementForms, setAcknowledgementForms] = useState([]);
-  
+
   const sites = ["SITE NAME", "SITE NAME"];
 
   const applicantType = [
@@ -190,10 +190,10 @@ const Acknowledge = () => {
   };
 
   useEffect(() => {
-    if (applicantTypes.length > 0) {
-      setSelectedApplicantType(applicantTypes[0]?.applicantType);
+    if (applicantTypeList.length > 0) {
+      setSelectedApplicantType(applicantTypeList?.filter(data => data?.id === applicantId)[0]?.applicantType);
     }
-  }, [applicantTypes]);
+  }, [applicantTypeList, applicantId]);
 
   useEffect(() => {
     let tempDepartmentService = departmentServiceMaster
@@ -292,7 +292,7 @@ const Acknowledge = () => {
             <div className={style.applicantList}>
               <div className={`${style.Tabletitle} `}>
                 <Typography className={style.tableTitleContent}>
-                  {`{${selectedApplicantType}}`}
+                  {`${selectedApplicantType}`}
                 </Typography>
                 <Typography
                   className={`${style.tableTitleContentArrow} ${style.tableTitleContent}`}

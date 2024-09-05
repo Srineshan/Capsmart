@@ -10,6 +10,7 @@ import StaffPrivilegeDialog from "../staffPrivileges/staffPrivilegeDialog";
 import ConsentsDialog from "../consents/consentsDialog";
 import AcknowledgmentDialog from "../acknowledgment/AcknowledgmentDialog";
 import DisclosureByIndustriesDialog from "../disclosureByIndustries/disclosureByIndustriesDialog";
+import { format } from "date-fns";
 
 const ApplicantTable = ({
   applicantTypes,
@@ -31,6 +32,7 @@ const ApplicantTable = ({
   };
 
   const handleCloseDialog = () => {
+    console.log(openDialog)
     setOpenDialog(false);
     setSelectedApplicant(null);
   };
@@ -77,6 +79,11 @@ const ApplicantTable = ({
     }
   };
 
+  const isDateStamp = (str) => {
+    const date = new Date(str);
+    return !isNaN(date.getTime()); // Check if it's a valid date
+  }
+
   return (
     <div className={style.applicantTableContainer}>
       {/* {applicantNotice && (
@@ -105,7 +112,7 @@ const ApplicantTable = ({
           </tr>
         </thead>
         <tbody>
-          {applicantTypes.length &&
+          {applicantTypes.length ?
             applicantTypes.map((applicant, index) => (
               <React.Fragment key={applicant.id}>
                 <tr
@@ -129,7 +136,8 @@ const ApplicantTable = ({
                             ? applicant[key] === true
                               ? "Required"
                               : "NA"
-                            : applicant[key] || "N/A"}
+                            : (key === "lastModifiedDate" || key === "lastModifiedData") ? format(new Date(applicant[key]), 'MMM dd, yyyy')
+                              : applicant[key] || "N/A"}
                     </td>
                   ))}
                   <td className={style.actions} height='100%'>
@@ -157,18 +165,10 @@ const ApplicantTable = ({
                       {tableDataKeys.map((key, keyIndex) => (
                         <td
                           key={keyIndex}
-<<<<<<< HEAD
                           className={`${keyIndex === 0
                             ? style.leftAligned
-                            : style.rightAligned
+                            : style.centerAligned
                             } ${keyIndex === 0 ? style.firstColumn : ""}`}
-=======
-                          className={`${
-                            keyIndex === 0
-                              ? style.leftAligned
-                              : style.rightAligned
-                          } ${keyIndex === 0 ? style.firstColumn : ""}`}
->>>>>>> c0874c27e09a988565c67487036eb29ec3bafa7e
                         >
                           {subApplicant.key}
                         </td>
@@ -189,59 +189,59 @@ const ApplicantTable = ({
                     </tr>
                   ))}
               </React.Fragment>
-            ))}
+            )) : ''}
         </tbody>
       </table>
-      {selectedApplicant && tileType === "ProofOfDocument" && (
+      {selectedApplicant && tileType === "ProofOfDocument" && openDialog && (
         <ProofOfDocumentDialog
           open={openDialog}
           onClose={handleCloseDialog}
           selectedApplicant={selectedApplicant}
           documents={documents}
           isEdit={true}
-          handleClose={handleClose}
+          handleClose={handleCloseDialog}
         />
       )}
 
-      {selectedApplicant && tileType === "StaffPrivilege" && (
+      {selectedApplicant && tileType === "StaffPrivilege" && openDialog && (
         <StaffPrivilegeDialog
           open={openDialog}
           onClose={handleCloseDialog}
           selectedApplicant={selectedApplicant}
           isEdit={true}
-          handleClose={handleClose}
+          handleClose={handleCloseDialog}
         />
       )}
 
-      {selectedApplicant && tileType == "Acknowedgement" && (
+      {selectedApplicant && tileType == "Acknowedgement" && openDialog && (
         <AcknowledgmentDialog
           open={openDialog}
           onClose={handleCloseDialog}
           selectedAcknowledgement={selectedApplicant}
           documents={documents}
           isEdit={true}
-          handleClose={handleClose}
+          handleClose={handleCloseDialog}
         />
       )}
-      {selectedApplicant && tileType == "Disclosure Industries" && (
+      {selectedApplicant && tileType == "Disclosure Industries" && openDialog && (
         <DisclosureByIndustriesDialog
           open={openDialog}
           onClose={handleCloseDialog}
           selectedDisclosure={selectedApplicant}
           documents={documents}
           isEdit={true}
-          handleClose={handleClose}
+          handleClose={handleCloseDialog}
         />
       )}
 
-      {selectedApplicant && tileType == "Consent" && (
+      {selectedApplicant && tileType == "Consent" && openDialog && (
         <ConsentsDialog
           open={openDialog}
           onClose={handleCloseDialog}
           selectedConsent={selectedApplicant}
           documents={documents}
           isEdit={true}
-          handleClose={handleClose}
+          handleClose={handleCloseDialog}
         />
       )}
     </div>

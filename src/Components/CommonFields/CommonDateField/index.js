@@ -12,7 +12,7 @@ import style from './index.module.scss'
 const CommonDateField = ({ onChange, value, InputProps, onOpen, onClose, open, renderInput, minDate, maxDate, label, required, className }) => {
     const contractStatus = sessionStorage.getItem('Selected Contract Status');
     const dateFnsFormat = "MM/dd/yyyy";
-    const warningCheck = (value === undefined || value === null || value === '');
+    const warningCheck = (value === '');
     const theme = createTheme({
         palette: {
             error: {
@@ -47,9 +47,9 @@ const CommonDateField = ({ onChange, value, InputProps, onOpen, onClose, open, r
                             />
                         </FormControl>
                     </ThemeProvider>
-                    <div>
+                    {/* <div>
                         {warningCheck ? (<div className={`${style.helperText} ${required ? style.errorColor : style.warningColor}`}>Could not find data</div>) : ''}
-                    </div>
+                    </div> */}
                 </LocalizationProvider>
             </div>
         </div>

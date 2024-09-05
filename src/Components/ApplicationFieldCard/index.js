@@ -402,9 +402,9 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                                         ...params.inputProps,
                                         placeholder: fieldData.label !== null ? `Enter ${fieldData.label}` : null,
                                     }}
-                                    color={(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === undefined || getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === null || getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === '') ? (isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || parentData.required?.includes(fieldKey))) ? 'error' : 'warning' : ''}
+                                    color={(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === null || getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === '') ? (isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || parentData.required?.includes(fieldKey))) ? 'error' : 'warning' : ''}
                                     fullWidth
-                                    focused={(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === undefined || getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === null || getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === '') ? true : false}
+                                    focused={(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === null || getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === '') ? true : false}
                                 />
                             )}
                             label={fieldData.label}
@@ -452,7 +452,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                 case 'addMoreFileupload':
                     console.log(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`))
                     return (
-                        <div className={`${style.addMoreUpload}`}>
+                        <div className={`${style.addMoreUpload} ${style.addMoreUploadMargin}`}>
                             <div>
                                 <label for={`file-upload-dynamic-${fieldKey}`} className={`${style.displayInRow} ${style.cursorPointer} `}>
                                     {getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) !== undefined && (

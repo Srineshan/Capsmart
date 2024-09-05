@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
-
+import './index.css';
 // Custom bold blot
 let Inline = Quill.import("blots/inline");
-class BoldBlot extends Inline {}
+class BoldBlot extends Inline { }
 BoldBlot.blotName = "bold";
 BoldBlot.tagName = "strong";
 Quill.register("formats/bold", BoldBlot);
@@ -144,7 +144,7 @@ const CustomToolbar = ({
         <option value="0.25">25%</option>
         <option value="0">0%</option>
       </select>
-      <select
+      {/* <select
         className="ql-insertCustomVariables"
         onChange={handleVariableInsert}
       >
@@ -154,7 +154,7 @@ const CustomToolbar = ({
         {variableOptions.map((item) => (
           <option>{item}</option>
         ))}
-      </select>
+      </select> */}
       {/* Custom Button for inserting a button element */}
       {/* <button onClick={handleButtonClick} className="custom-toolbar-button">
         Insert Button
@@ -303,7 +303,7 @@ export default class Editor extends Component {
             this.setState({ editorHtml: content });
             this.props.onChange(content);
           }}
-          placeholder={"Write something ...."}
+          placeholder={this.props.placeholder || "Write something ...."}
           modules={Editor.modules}
           formats={Editor.formats}
         />
@@ -313,7 +313,7 @@ export default class Editor extends Component {
         <div
           className="saved-content"
           dangerouslySetInnerHTML={{ __html: this.state.savedHtml }}
-          // style={{ all: "inherit" }}
+        // style={{ all: "inherit" }}
         />
         {/* {this.state.showUrlModal && (
           <div className="modal">
