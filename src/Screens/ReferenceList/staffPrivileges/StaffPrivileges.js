@@ -44,41 +44,10 @@ const StaffPrivileges = () => {
   const [searchKey, setSearchKey] = useState("");
   const [selectedApplicantType, setSelectedApplicantType] = useState("");
   const [sites, setSites] = useState([]);
-  const applicantTypes = [
-    {
-      id: "021",
-      title: "Bood Bank",
-      category: "Needle Puncture",
-      type: "No",
-      pod: "Yes",
-      lastUpdated: "Aug 16, 2024",
-    },
-    {
-      id: "021",
-      title: "Bood Bank",
-      category: "Needle Puncture",
-      type: "No",
-      pod: "Yes",
-
-      lastUpdated: "Aug 16, 2024",
-    },
-    {
-      id: "021",
-      title: "Bood Bank",
-      category: "Needle Puncture",
-      type: "No",
-      pod: "Yes",
-      lastUpdated: "Aug 16, 2024",
-    },
-    {
-      id: "021",
-      title: "Bood Bank",
-      category: "Needle Puncture",
-      type: "No",
-      pod: "Yes",
-      lastUpdated: "Aug 16, 2024",
-    },
-  ];
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [applicantTypeList, setApplicantTypeList] = useState([]);
+  const [applicantId, setApplicantId] = useState("");
+  const [staffPrivilegesForm, setStaffPrivilegesForm] = useState([]);
 
   const tableHeadKeys = [
     // "ID",
@@ -102,6 +71,10 @@ const StaffPrivileges = () => {
   const getAddEntityDialog = (value) => {
     setShowAddEntityDialog(value);
   };
+
+  useEffect(() => {
+    getStaffPrivileges(applicantId);
+  }, [applicantId]);
 
   const getEntity = async () => {
     const { data: entity } = await GET(`entity-service/entity`);
@@ -133,10 +106,10 @@ const StaffPrivileges = () => {
     if (entityType) {
       const allSites = entityType.flatMap((entity) => entity.sites || []);
       setEntityTypes(allSites);
+
       setTableData(entityType);
     }
   };
-  console.log(entityTypes);
 
   const getDepartmentServiceMaster = async () => {
     const { data: departmentServiceMaster } = await GET(
@@ -195,7 +168,7 @@ const StaffPrivileges = () => {
 
   useEffect(() => {
     if (entityTypes.length > 0) {
-      setSelectedApplicantType(entityTypes[0]?.siteName?.siteName);
+      setSelectedApplicantType(entityTypes[0]?.name);
     }
   }, [entityTypes]);
 
@@ -203,6 +176,34 @@ const StaffPrivileges = () => {
     setSelectedApplicantType(siteName);
   };
   console.log(tableData);
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+  };
+
+  const getStaffPrivileges = async (id) => {
+    if (id !== "") {
+      const { data: staffPrivilegesForm } = await GET(
+        `entity-service/staffPrivilege?applicantTypeId=${id}`
+      );
+      setStaffPrivilegesForm(staffPrivilegesForm);
+    }
+  };
+
+  const getSelectedTile = (data) => {
+    setApplicantId(data);
+    getStaffPrivileges(data);
+  };
+
+  const getApplicantType = async () => {
+    const { data: types } = await GET("entity-service/applicantType");
+    console.log("applicantType", types);
+    setApplicantTypeList(types);
+  };
+
+  useEffect(() => {
+    getApplicantType();
+  }, []);
 
   return (
     <Fragment>
@@ -222,21 +223,25 @@ const StaffPrivileges = () => {
             />
           </div>
           <div
-            className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid
-              }`}
+            className={`${
+              isExpanded ? style.bigCardGrid : style.smallCardGrid
+            }`}
           >
             <ApplicantSideBar
-              applicantType={
-                entityTypes?.map((item) => item.siteName.siteName) || []
-              }
-              siteTitle={"Cambride Memorial Hospitals"}
+              applicantType={applicantTypeList?.map(
+                (data) => data?.applicantType
+              )}
+              siteType={applicantTypeList?.map((data) => data?.siteType)}
+              selectedTile={getSelectedTile}
               onSelectSite={handleSiteClick}
+              tileType={"StaffPrivileges"}
+              sideBarList={applicantTypeList}
               siteDropdown={true}
             />
             <div className={style.applicantList}>
               <div className={`${style.Tabletitle} `}>
                 <Typography className={style.tableTitleContent}>
-                  Cambride Memorial Hospitals
+                  {`{${selectedApplicantType}}`}
                 </Typography>
                 <Typography
                   className={`${style.tableTitleContentArrow} ${style.tableTitleContent}`}
@@ -244,24 +249,22 @@ const StaffPrivileges = () => {
                   {">"}
                 </Typography>
                 <Typography className={style.tableTitleContent}>
-                  {`${selectedApplicantType}`}
-                </Typography>
-                <Typography
-                  className={`${style.tableTitleContentArrow} ${style.tableTitleContent}`}
-                >
-                  {">"}
-                </Typography>
-                <Typography className={style.tableTitleContent}>
-                  All Applicant Types
+                  All StaffPrivileges Form
                 </Typography>
               </div>
               {tableData && (
                 <ApplicantTable
-                  applicantTypes={
-                    tableData && tableData.length > 0 && tableData
+                  applicantTypes={staffPrivilegesForm}
+                  applicantNotice={
+                    "Applicant types are ordered as they will appear on forms. To change the order, click and drag "
                   }
                   tableDataKeys={tableDataKeys}
                   tableHeadKeys={tableHeadKeys}
+                  tileType={"StaffPrivileges"}
+                  groupFirstTwoColumn={true}
+                  documents={staffPrivilegesForm}
+                  getAddEntityTypes={getAddEntityTypes}
+                  handleClose={handleCloseDialog}
                 />
               )}
               <ReferenceListActionButton

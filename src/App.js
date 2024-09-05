@@ -117,6 +117,10 @@ const AcknowledgementForm = React.lazy(() =>
 const ContractedServiceProvidedByIndustries = React.lazy(() =>
   import("./Screens/ReferenceList/contractedServiceProvider")
 );
+const DisclosureIndustries = React.lazy(() =>
+  import("./Screens/ReferenceList/disclosureByIndustries/DisclosureIndustries")
+);
+
 const FunctionalTitles = React.lazy(() =>
   import("./Screens/ReferenceList/functionalTitles")
 );
@@ -731,6 +735,11 @@ const App = ({ props }) => {
                 path="/referenceList/contractByIndustries"
                 element={<ContractByIndustries />}
               />
+              <Route
+                path="/referenceList/disclosureByIndustries/disclosureIndustries"
+                element={<DisclosureIndustries />}
+              />
+
               <Route
                 path="/referenceList/contractedServiceProviderByIndustries"
                 element={<ContractedServiceProvidedByIndustries />}

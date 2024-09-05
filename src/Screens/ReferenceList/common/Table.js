@@ -6,8 +6,10 @@ import style from "./../index.module.scss";
 import DragHandleIcon from "@mui/icons-material/DragHandle";
 import ProofOfDocumentDialog from "../proofOfDocument/proofOfDocumentDialog";
 import { POST, GET, PUT, TenantID, DELETE } from "./../../dataSaver";
+import StaffPrivilegeDialog from "../staffPrivileges/staffPrivilegeDialog";
 import ConsentsDialog from "../consents/consentsDialog";
 import AcknowledgmentDialog from "../acknowledgment/AcknowledgmentDialog";
+import DisclosureByIndustriesDialog from "../disclosureByIndustries/disclosureByIndustriesDialog";
 
 const ApplicantTable = ({
   applicantTypes,
@@ -18,7 +20,6 @@ const ApplicantTable = ({
   handleClose,
   tileType,
 }) => {
-  console.log(applicantTypes);
 
   const [selectedApplicant, setSelectedApplicant] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
@@ -46,6 +47,17 @@ const ApplicantTable = ({
         console.error("Error deleting document:", error);
       }
     }
+    if (tileType === "StaffPrivileges") {
+      console.log("id", id);
+      try {
+        await DELETE(`entity-service/staffprivileges/${id}`);
+
+        console.log("Document deleted successfully");
+      } catch (error) {
+        console.error("Error deleting document:", error);
+      }
+    }
+
     if (tileType === "Acknowedgement") {
       try {
         await DELETE(`entity-service/acknowledgementForm/${id}`);
@@ -137,8 +149,8 @@ const ApplicantTable = ({
                         <td
                           key={keyIndex}
                           className={`${keyIndex === 0
-                            ? style.leftAligned
-                            : style.rightAligned
+                              ? style.leftAligned
+                              : style.rightAligned
                             } ${keyIndex === 0 ? style.firstColumn : ""}`}
                         >
                           {subApplicant.key}
@@ -163,7 +175,7 @@ const ApplicantTable = ({
             ))}
         </tbody>
       </table>
-      {selectedApplicant && tileType == "ProofOfDocument" && (
+      {selectedApplicant && tileType === "ProofOfDocument" && (
         <ProofOfDocumentDialog
           open={openDialog}
           onClose={handleCloseDialog}
@@ -174,11 +186,31 @@ const ApplicantTable = ({
         />
       )}
 
+      {selectedApplicant && tileType === "StaffPrivilege" && (
+        <StaffPrivilegeDialog
+          open={openDialog}
+          onClose={handleCloseDialog}
+          selectedApplicant={selectedApplicant}
+          isEdit={true}
+          handleClose={handleClose}
+        />
+      )}
+
       {selectedApplicant && tileType == "Acknowedgement" && (
         <AcknowledgmentDialog
           open={openDialog}
           onClose={handleCloseDialog}
           selectedAcknowledgement={selectedApplicant}
+          documents={documents}
+          isEdit={true}
+          handleClose={handleClose}
+        />
+      )}
+      {selectedApplicant && tileType == "Disclosure Industries" && (
+        <DisclosureByIndustriesDialog
+          open={openDialog}
+          onClose={handleCloseDialog}
+          selectedDisclosure={selectedApplicant}
           documents={documents}
           isEdit={true}
           handleClose={handleClose}

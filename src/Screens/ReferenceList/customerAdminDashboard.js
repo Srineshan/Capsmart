@@ -1692,7 +1692,7 @@ const ClientAdminDashboard = () => {
                       </div>
                     </Link>
                     <Link
-                      to="/referenceList/contractTerminationReasonForCustomer"
+                      to="/referenceList/disclosureByIndustries/disclosureIndustries"
                       className={style.linkStyle}
                     >
                       <div className={style.dashboardCardStyle}>

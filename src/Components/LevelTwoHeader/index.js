@@ -327,6 +327,13 @@ const LevelTwoHeader = ({
           handleClose={handleCloseDialog}
         />
       )}
+      {tileType == "Disclosure Industries" && (
+        <DisclosureByIndustriesDialog
+          open={isDialogOpen}
+          handleClose={handleCloseDialog}
+        />
+      )}
+
       {/* {tileType == "ProofOfDocument" && (
         <DisclosureByIndustriesDialog
           open={isDialogOpen}

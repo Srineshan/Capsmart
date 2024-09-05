@@ -14,13 +14,14 @@ import ApplicantSideBar from "../common/SideBar";
 import { ReferenceListActionButton } from "../common/ReferenceListActionButton";
 import Typography from "@mui/material/Typography";
 
-const ProofOfDocumentByIndustries = () => {
+const DisclosureIndustries = () => {
   const [isSelected, setIsSelected] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
   const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
 
   const [entityDetails, setEntityDetails] = useState({});
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [applicantId, setApplicantId] = useState("");
 
   const [siteTypeId, setSiteTypeId] = useState("");
   const [selectedEntityType, setSelectedEntityType] = useState("");
@@ -43,15 +44,19 @@ const ProofOfDocumentByIndustries = () => {
   const [searchKey, setSearchKey] = useState("");
   const [selectedApplicantType, setSelectedApplicantType] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [applicantTypeList, setApplicantTypeList] = useState([]);
+  const [disclosureForms, setDisclosureForms] = useState([]);
 
-
-
-  const tableHeadKeys = ["NAME", "", "TYPE", "REQUIRMENT", "LAST UPDATED"];
+  const tableHeadKeys = [
+    "DISCLOSURE CATEGORY",
+    "SUPPORTING DOCUMENTATION",
+    "VERIFICATION",
+    "LAST UPDATED",
+  ];
   const tableDataKeys = [
-    "documentName",
-    "",
-    "documentType",
-    "requirementLevel",
+    "category",
+    "supportingDocumentRequired",
+    "verificationRequired",
     "lastModifiedDate",
   ];
 
@@ -61,18 +66,35 @@ const ProofOfDocumentByIndustries = () => {
     }
   }, [entityId]);
 
-  const getIsExpanded = (value) => {
-    setIsExpanded(value);
-  };
-
   const getAddEntityDialog = (value) => {
     setShowAddEntityDialog(value);
   };
 
+  useEffect(() => {
+    getApplicantType();
+  }, []);
+
+  useEffect(() => {
+    getDisclosure(applicantId);
+  }, [applicantId]);
+
+  const getApplicantType = async () => {
+    const { data: types } = await GET("entity-service/applicantType");
+    setApplicantTypeList(types);
+  };
   const getEntity = async () => {
     const { data: entity } = await GET(`entity-service/entity`);
     setEntityDetails(entity);
     setEntityId(entity?.[0]?.id);
+  };
+
+  const getDisclosure = async (id) => {
+    if (id !== "") {
+      const { data: acknowledgementForm } = await GET(
+        `entity-service/acknowledgementForm?applicantTypeId=${id}`
+      );
+      setDisclosureForms(acknowledgementForm);
+    }
   };
 
   const getLastModifiedDate = async () => {
@@ -90,14 +112,14 @@ const ProofOfDocumentByIndustries = () => {
   };
 
   const getAddEntityTypes = async (data) => {
-    await POST(`entity-service/document/?${TenantID}`, data);
+    await POST(`entity-service/disclosure/?${TenantID}`, data);
   };
 
   const getEntityTypes = async () => {
     console.log("TenantID", TenantID);
 
     const { data: entityType } = await GET(
-      `entity-service/document/?${TenantID}`
+      `entity-service/disclosure/?${TenantID}`
     );
 
     setDocuments(entityType);
@@ -106,22 +128,17 @@ const ProofOfDocumentByIndustries = () => {
         entity.lastModifiedDate
       ).toLocaleDateString("en-US", {
         year: "numeric",
-        month: "short", // Full month name like "September"
+        month: "short",
         day: "numeric",
       });
       entity.lastModifiedDate = modifiedLastModifiedDate;
-      return entity; // Return the modified entity
+      entity.verificationRequired = entity.verificationRequired ? "YES" : "NO";
+      entity.supportingDocumentRequired = entity.supportingDocumentRequired
+        ? "YES"
+        : "NO";
+      return entity;
     });
-
     setApplicantTypes(allApplicantTypes);
-
-    // // console.log(entityType?.sites)
-    // if (entityType?.sites?.length !== 0) {
-    //   setSiteTypeId(entityType?.sites?.[0]?.siteType?.id);
-    //   setSelectedEntityType(entityType?.sites?.[0]?.siteType?.type);
-    //   setEntityTypes(entityType?.sites);
-    // }
-    console.log(applicantTypes);
   };
 
   const getDepartmentServiceMaster = async () => {
@@ -197,6 +214,11 @@ const ProofOfDocumentByIndustries = () => {
     setIsDialogOpen(false);
   };
 
+  const getSelectedTile = (data) => {
+    setApplicantId(data);
+    getDisclosure(data);
+  };
+
   return (
     <Fragment>
       <Navbar />
@@ -205,13 +227,13 @@ const ProofOfDocumentByIndustries = () => {
           <div>
             <LevelTwoHeader
               getAddEntityDialog={getAddEntityDialog}
-              heading={"Proof of Documentation By Industries"}
+              heading={"Disclosure"}
               updatedTime={`UPDATED ON ${lastUpdatedDate}`}
               path={"/Screens/ReferenceList/customerAdminDashboard"}
               callingFrom={"Customer Admin"}
               needHeader={false}
-              tileType={"ProofOfDocument"}
-              documents={documents}
+              tileType={"Disclosure Industries"}
+              documents={disclosureForms}
               getEntityTypes={getEntityTypes}
               getAddEntityTypes={getAddEntityTypes}
               handleOpenDialog={handleOpenDialog}
@@ -225,9 +247,12 @@ const ProofOfDocumentByIndustries = () => {
           >
             <ApplicantSideBar
               applicantType={applicantTypes.map((item) => item.applicantType)}
+              siteType={applicantTypeList?.map((data) => data?.siteType)}
               siteTitle={"All Applicant Type"}
               onSelectSite={handleSiteClick}
-              tileType={"ProofOfDocument"}
+              tileType={"Disclosure"}
+              selectedTile={getSelectedTile}
+              sideBarList={applicantTypeList}
             />
             <div className={style.applicantList}>
               <div className={`${style.Tabletitle} `}>
@@ -240,7 +265,7 @@ const ProofOfDocumentByIndustries = () => {
                   {">"}
                 </Typography>
                 <Typography className={style.tableTitleContent}>
-                  All Documents
+                  All Disclosure Forms
                 </Typography>
               </div>
               <ApplicantTable
@@ -251,8 +276,8 @@ const ProofOfDocumentByIndustries = () => {
                 tableDataKeys={tableDataKeys}
                 tableHeadKeys={tableHeadKeys}
                 groupFirstTwoColumn={true}
-                tileType={"ProofOfDocument"}
-                documents={documents}
+                tileType={"Disclosure"}
+                documents={disclosureForms}
                 getAddEntityTypes={getAddEntityTypes}
                 handleClose={handleCloseDialog}
               />
@@ -285,4 +310,4 @@ const ProofOfDocumentByIndustries = () => {
   );
 };
 
-export default ProofOfDocumentByIndustries;
+export default DisclosureIndustries;
