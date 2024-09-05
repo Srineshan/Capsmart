@@ -2932,7 +2932,7 @@
 
 .siteTitle {
   text-align: start;
-  font: normal normal bold 15px/20px proxima-nova;
+  font: normal normal bold 17px/20px proxima-nova;
   color: #52575d;
 }
 
@@ -2982,7 +2982,7 @@
 }
 
 .siteName {
-  font: normal normal bold 12px/20px proxima-nova;
+  font: normal normal bold 15px/20px proxima-nova;
   color: #52575d;
   text-align: left;
 }
@@ -2993,11 +2993,14 @@
 }
 
 .sideActiveBackground {
-  background-color: #d2d0f5;
+  background-color: #F2F1FD;
+  border: 1px solid #7165E3;
+  opacity: 1;
 }
 
 .sideNonActiveBackground {
-  background-color: #efeefc;
+  background-color: #EBEBEB;
+  opacity: 0.8;
 }
 
 .siteType,
@@ -3121,14 +3124,6 @@
 .dragHandle {
   cursor: move;
   text-align: center;
-}
-
-.sideActiveBackground {
-  background-color: #d3d0f6;
-}
-
-.sideNonActiveBackground {
-  background-color: #efeefc;
 }
 
 .dragIcon {

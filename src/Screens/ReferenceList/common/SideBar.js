@@ -14,7 +14,9 @@ const ApplicantSideBar = ({
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
-    selectedTile(sideBarList[activeIndex]?.id);
+    if (sideBarList) {
+      selectedTile(sideBarList[activeIndex]?.id);
+    }
   }, [activeIndex, sideBarList]);
 
   const handleSiteClick = (index, site) => {
@@ -42,14 +44,15 @@ const ApplicantSideBar = ({
       {applicantType.map((site, index) => (
         <div
           key={index}
-          className={`${style.sidebarContent} ${
-            index === activeIndex
-              ? style.sideActiveBackground
-              : style.sideNonActiveBackground
-          }`}
+          className={`${style.sidebarContent} ${index === activeIndex
+            ? style.sideActiveBackground
+            : style.sideNonActiveBackground
+            }`}
           onClick={() => {
             handleSiteClick(index, site);
-            selectedTile(sideBarList[index]?.id);
+            if (sideBarList) {
+              selectedTile(sideBarList[index]?.id);
+            }
           }}
         >
           <div className={style.siteDetails}>
