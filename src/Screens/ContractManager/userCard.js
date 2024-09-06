@@ -39,19 +39,21 @@ const UserCard = ({ getIsExpanded, updateProfileData }) => {
 
     return (
         <div className={`${style.cardStyle} ${style.bigCalendarLeftCardWidth}`}>
-            <div className={`${style.displayInRow} ${style.alignCenter}`}>
-                <Link to={'/profile'} className={style.noFontStyle}>
-                    <label for="file-upload">
-                        <img src={updateProfileData ? updateProfileData?.profilePic?.file?.fileURL : currentUserDetails?.profilePic?.file?.fileURL ? currentUserDetails?.profilePic?.file?.fileURL : DoctorAnime} className={`${style.userLogo} ${style.cursorPointer}`} />
-                    </label>
-                </Link>
-                <input id="file-upload" type="file" />
-                <div className={style.marginLeft20}>
-                    <div className={style.userNameStyle}>
-                        Hi, {updateProfileData ? `${updateProfileData?.name?.firstName} ${updateProfileData?.name?.lastName}` : `${currentUserDetails?.name?.firstName} ${currentUserDetails?.name?.lastName}`}
-                    </div>
-                    <div className={style.loginStatus}>
-                        Last Login {currentUserDetails && formatInTimeZone(new Date(currentUserDetails?.lastLogin) || new Date(), siteTimeZone(), 'MMM d, yy H:mm')} {timeZoneAbbreviation()}
+            <div className={`${style.displayInRow} ${style.spaceBetween} ${style.verticalAlignCenter}`}>
+                <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
+                    <Link to={'/profile'} className={style.noFontStyle}>
+                        <label for="file-upload">
+                            <img src={updateProfileData ? updateProfileData?.profilePic?.file?.fileURL : currentUserDetails?.profilePic?.file?.fileURL ? currentUserDetails?.profilePic?.file?.fileURL : DoctorAnime} className={`${style.userLogo} ${style.cursorPointer}`} />
+                        </label>
+                    </Link>
+                    <input id="file-upload" type="file" />
+                    <div className={style.marginLeft20}>
+                        <div className={style.userNameStyle}>
+                            Hi, {updateProfileData ? `${updateProfileData?.name?.firstName} ${updateProfileData?.name?.lastName}` : `${currentUserDetails?.name?.firstName} ${currentUserDetails?.name?.lastName}`}
+                        </div>
+                        <div className={style.loginStatus}>
+                            Last Login {currentUserDetails && formatInTimeZone(new Date(currentUserDetails?.lastLogin) || new Date(), siteTimeZone(), 'MMM d, yy H:mm')} {timeZoneAbbreviation()}
+                        </div>
                     </div>
                 </div>
                 <img src={ChevronRight} className={style.chevronRightStyle} onClick={() => getIsExpanded(false)} />

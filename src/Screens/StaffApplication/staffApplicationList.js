@@ -474,7 +474,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
             <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
               <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
                 <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
-                  Sent for Completion ({sentCompletion?.totalApplicationsSent || 0})
+                  Sent for Completion <span className={`${style.numberBackground} ${style.marginLeft} ${style.yellowSmallNumberSelected}`}>{sentCompletion?.totalApplicationsSent || 0}</span>
                 </div>
                 <div className={`${style.marginLeft10} `} >
                   {!showCardCompletion ? (
@@ -515,9 +515,9 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
             </div>
 
             <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
-              <div className={`${style.displayInRow}  ${style.marginLeftRight10}`}>
+              <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
                 <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
-                  Rejected/Declined ({applicationRejected.totalRejections})
+                  Rejected/Declined <span className={`${style.numberBackground} ${style.marginLeft} ${style.redSmallNumberSelected}`}>{applicationRejected.totalRejections}</span>
                 </div>
                 <div className={`${style.marginLeft10} `} >
                   {!showCardDetails ? (

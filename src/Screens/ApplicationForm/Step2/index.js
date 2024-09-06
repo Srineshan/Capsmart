@@ -242,55 +242,53 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
 
     return (
         <div>
-            <div className={style.applicationScreenGrid}>
-                <ProgressCard step={''} dataType={'Process Required Documents'} title={'Upload your Documents'} timeNumber={1} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
-                <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
-            </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
-                <div className={style.applicationCardStyle}>
-                    {/* <div className={style.titleText}>{formSchema?.description}</div>
+                <div>
+                    <ProgressCard step={''} dataType={'Process Required Documents'} title={'Upload your Documents'} timeNumber={1} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                    <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
+                        {/* <div className={style.titleText}>{formSchema?.description}</div>
                     <div className={`${style.descriptionText} ${style.marginTop10}`}>Ensure your documents are in the following formats: pdf, jpg, (add icons here) </div> */}
-                    {/* <div className={`${style.dragAndDropBox} ${style.marginTop}`}>
+                        {/* <div className={`${style.dragAndDropBox} ${style.marginTop}`}>
                         <div className={style.dragAndDropText}>Drag And Drop All Your File Here</div>
                         <div className={style.dragAndDropDescriptionText}>Let Charlie our AI Credentialing assistant Organize, classify and extract data for your application</div>
                     </div> */}
-                    {formSchema !== undefined && 'uploadTheDocument' in formSchema?.properties && (
-                        <ApplicationFieldCard object={formSchema?.properties?.uploadTheDocument} gridStyle={style.twoCol} baseKey={'uploadTheDocument'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[0].data`} />
-                    )}
-                    <div className={`${style.tableHeader} ${style.tableGrid}`}>
-                        {/* <div className={style.tableHeaderText}></div> */}
-                        <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Document Type</div>
-                        <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Requirements</div>
-                        <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}></div>
-                    </div>
-                    {basicForm?.documentsRequired?.map((data, index) => (
-                        <div>
-                            <div className={`${style.requiredDocumentCard} ${style.tableGrid} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''}  ${style.marginTop5}`}>
-                                {/* <div>
+                        {formSchema !== undefined && 'uploadTheDocument' in formSchema?.properties && (
+                            <ApplicationFieldCard object={formSchema?.properties?.uploadTheDocument} gridStyle={style.twoCol} baseKey={'uploadTheDocument'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[0].data`} />
+                        )}
+                        <div className={`${style.tableHeader} ${style.tableGrid}`}>
+                            {/* <div className={style.tableHeaderText}></div> */}
+                            <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Document Type</div>
+                            <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Requirements</div>
+                            <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}></div>
+                        </div>
+                        {basicForm?.documentsRequired?.map((data, index) => (
+                            <div>
+                                <div className={`${style.requiredDocumentCard} ${style.tableGrid} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''}  ${style.marginTop5}`}>
+                                    {/* <div>
                                     <label for={`file-upload-dynamic-${data?.document?.name}`}>
                                         <DescriptionOutlinedIcon sx={{ color: '#787f87' }} />
                                     </label>
                                     <input id={`file-upload-dynamic-${data?.document?.name}`} type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx" onChange={(e) => handleFileUpload(e, data?.document?.id)} />
                                 </div> */}
-                                <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
-                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.document?.name}</div>
-                                    <InfoOutlinedIcon sx={{ fontSize: 14, marginLeft: '10px' }} className={style.info} />
-                                </div>
-                                {/* <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}></div>
+                                    <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
+                                        <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.document?.name}</div>
+                                        <InfoOutlinedIcon sx={{ fontSize: 14, marginLeft: '10px' }} className={style.info} />
+                                    </div>
+                                    {/* <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}></div>
                                 <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}></div>
                                 <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}></div> */}
-                                <div className={style.documentTextStyle}>{data?.required ? 'Mandatory' : 'Optional'}</div>
-                                <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.instruction}</div>
-                                {/* <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}></div> */}
-                                {/* <div className={style.verticalAlignCenter}>
+                                    <div className={style.documentTextStyle}>{data?.required ? 'Mandatory' : 'Optional'}</div>
+                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.instruction}</div>
+                                    {/* <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}></div> */}
+                                    {/* <div className={style.verticalAlignCenter}>
                                     {openCategoryIndex === index ? (
                                         <RemoveIcon sx={{ color: '#6F7479' }} className={style.cursorPointer} onClick={() => setOpenCategoryIndex(-1)} />
                                     ) : (
                                         <AddIcon sx={{ color: '#6F7479' }} className={style.cursorPointer} onClick={() => setOpenCategoryIndex(index)} />
                                     )}
                                 </div> */}
-                            </div>
-                            {/* {openCategoryIndex === index && <div>{data?.mandatory}</div>}
+                                </div>
+                                {/* {openCategoryIndex === index && <div>{data?.mandatory}</div>}
                             {openCategoryIndex === index && data?.documents?.map(data =>
                                 <div className={`${style.requiredDocumentCard} ${style.tableGrid} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''}  ${style.marginTop5}`}>
                                     <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
@@ -306,40 +304,41 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
                                     </div>
                                 </div>
                             )} */}
+                            </div>
+                        ))}
+                        <div className={`${style.twoCol} ${style.marginTop}`}>
+                            <CommonDropZone title={'Upload Your Documents'} description={'Upload your files or drag & drop from your cabinet'} changeHandler={changeHandler} files={files} />
+                            <CommonDropZone title={'Upload A Photo'} description={'Click a picture with your Camera or upload from Gallery.'} changeHandler={changeHandler} files={files} accept="image/*" />
                         </div>
-                    ))}
-                    <div className={`${style.twoCol} ${style.marginTop}`}>
-                        <CommonDropZone title={'Upload Your Documents'} description={'Upload your files or drag & drop from your cabinet'} changeHandler={changeHandler} files={files} />
-                        <CommonDropZone title={'Upload A Photo'} description={'Click a picture with your Camera or upload from Gallery.'} changeHandler={changeHandler} files={files} accept="image/*" />
-                    </div>
-                    <div className={style.marginTop} onClick={() => setIsShowESignDialog(true)}>
-                        <div className={style.uploadBorderStyle}>
-                            <p className={style.uploadTextStyle}>
-                                {'Set Up Your Electronic Signature'}
-                            </p>
+                        <div className={style.marginTop} onClick={() => setIsShowESignDialog(true)}>
+                            <div className={style.uploadBorderStyle}>
+                                <p className={style.uploadTextStyle}>
+                                    {'Set Up Your Electronic Signature'}
+                                </p>
 
-                            <p className={style.uploadDescriptionText}>
-                                {'Our paperless automated application submission uses electronic signatures with digital fingerprinting. Set up your electronic signature.'}
-                            </p>
+                                <p className={style.uploadDescriptionText}>
+                                    {'Our paperless automated application submission uses electronic signatures with digital fingerprinting. Set up your electronic signature.'}
+                                </p>
+                            </div>
                         </div>
+                        <TableTwo
+                            tableHeaderValues={['', 'File Uploaded', 'Size', 'Document Type', 'Requirement', 'Verified', 'Valid', '']}
+                            tableDataValues={getApplicantValues(tempValue?.table)}
+                            tableData={tempValue?.table || []}
+                            gridStyle={style.gridStyle}
+                            actions={actions}
+                            // scrollStyle={style.contractScrollStyle}
+                            tableSortValues={[]}
+                            heading={'There are no Record for you to manage'}
+                            onClickFunction={() => { }}
+                        />
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleFileChange}
+                            style={{ display: 'none' }} // Hide the actual file input
+                        />
                     </div>
-                    <TableTwo
-                        tableHeaderValues={['', 'File Uploaded', 'Size', 'Document Type', 'Requirement', 'Verified', 'Valid', '']}
-                        tableDataValues={getApplicantValues(tempValue?.table)}
-                        tableData={tempValue?.table || []}
-                        gridStyle={style.gridStyle}
-                        actions={actions}
-                        // scrollStyle={style.contractScrollStyle}
-                        tableSortValues={[]}
-                        heading={'There are no Record for you to manage'}
-                        onClickFunction={() => { }}
-                    />
-                    <input
-                        type="file"
-                        ref={fileInputRef}
-                        onChange={handleFileChange}
-                        style={{ display: 'none' }} // Hide the actual file input
-                    />
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />

@@ -309,13 +309,13 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                             labelList={fieldData.enum}
                             disabledList={fieldData.enum.map(data => false)}
                             label={fieldData.label}
-                            required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || parentData.required?.includes(fieldKey))}
+                            required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))}
                         />
                     );
                 case 'datalist':
                     return (
                         <div>
-                            <div className={`${style.lableStyle}`}>{fieldData.label}{(object.required?.includes(fieldKey) || parentData.required?.includes(fieldKey)) && '*'}</div>
+                            <div className={`${style.lableStyle}`}>{fieldData.label}{(object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false)) && '*'}</div>
                             <DatalistInput
                                 items={getItems(fieldData.enum) || []}
                                 onSelect={(item) => handleChange(fieldKey, item.value, baseKey)}
@@ -328,7 +328,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                         </div>
                     );
                 case 'textbox':
-                    console.log(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`))
+                    console.log(fieldData, parentData, object)
                     return (
                         // <CommonInputField
                         //     value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || ''}
@@ -337,7 +337,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                         //     maxLength={TEXTFIELDLEN50}
                         //     placeholder={fieldData.label !== null ? `Enter ${fieldData.label}` : null}
                         //     label={fieldData.label}
-                        //     required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || parentData.required?.includes(fieldKey))}
+                        //     required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))}
                         //     type={fieldData.type}
                         //     min={fieldData.minimum}
                         // />
@@ -348,7 +348,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                             maxLength={TEXTFIELDLEN50}
                             placeholder={fieldData.label !== null ? `Enter ${fieldData.label}` : null}
                             label={fieldData.label}
-                            required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || parentData.required?.includes(fieldKey))}
+                            required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))}
                             type={fieldData.type}
                             min={fieldData.minimum}
                         />
@@ -356,7 +356,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                 case 'textArea':
                     return (
                         <div>
-                            <div className={`${style.lableStyle}`}>{fieldData.label}{(isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || parentData.required?.includes(fieldKey))) && '*'}</div>
+                            <div className={`${style.lableStyle}`}>{fieldData.label}{(isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) && '*'}</div>
                             <TextArea
                                 value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
                                 className={`${style.fullWidth} ${style.marginTop10}`}
@@ -368,6 +368,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                         </div>
                     );
                 case 'cellNumber':
+                    console.log(parentData, fieldData, '371')
                     return (
                         <CommonPhoneField
                             value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
@@ -375,7 +376,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                             onChange={(e) => handleChange(fieldKey, FormatPhoneNumber(e.target.value), baseKey)}
                             placeholder={fieldData.label !== null ? `Enter ${fieldData.label}` : null}
                             label={fieldData.label}
-                            required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || parentData.required?.includes(fieldKey))}
+                            required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))}
                         />
                     );
                 case 'datepicker':
@@ -402,38 +403,38 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                                         ...params.inputProps,
                                         placeholder: fieldData.label !== null ? `Enter ${fieldData.label}` : null,
                                     }}
-                                    color={(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === null || getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === '') ? (isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || parentData.required?.includes(fieldKey))) ? 'error' : 'warning' : ''}
+                                    color={(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === null || getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === '') ? (isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) ? 'error' : 'warning' : ''}
                                     fullWidth
                                     focused={(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === null || getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === '') ? true : false}
                                 />
                             )}
                             label={fieldData.label}
-                            required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || parentData.required?.includes(fieldKey))}
+                            required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))}
                         />
                     );
                 case 'radiobutton':
                     return (
                         <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
-                            <div className={`${style.lableRadioStyle} ${fieldData.label !== null ? style.marginRight : ''}`}>{fieldData.label}{(isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || parentData.required?.includes(fieldKey))) && '*'}</div>
+                            <div className={`${style.lableRadioStyle} ${fieldData.label !== null ? style.marginRight : ''}`}>{fieldData.label}{(isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) && '*'}</div>
                             <CommonRadio
                                 className={style.leftAlign}
                                 value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
                                 onChange={(e) => handleChange(fieldKey, e.target.value, baseKey)}
                                 radioValue={fieldData.enum}
                                 label={fieldData.enum}
-                                required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || parentData.required?.includes(fieldKey))}
+                                required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))}
                             />
                         </div>
                     );
                 case 'switchbutton':
                     return (
-                        <CommonSwitch label={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === true ? 'YES' : 'NO'} checked={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null} onChange={(e) => handleChange(fieldKey, e.target.checked, baseKey)} labelName={fieldData.label} required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || parentData.required?.includes(fieldKey))} />
+                        <CommonSwitch label={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === true ? 'YES' : 'NO'} checked={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null} onChange={(e) => handleChange(fieldKey, e.target.checked, baseKey)} labelName={fieldData.label} required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))} />
                     );
                 case 'checkbox':
                     return (
                         <CommonCheckBox
                             checked={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
-                            onChange={(e) => handleChange(fieldKey, e.target.checked, baseKey)} label={`${fieldData.label}${(isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || parentData.required?.includes(fieldKey))) && '*'}`}
+                            onChange={(e) => handleChange(fieldKey, e.target.checked, baseKey)} label={`${fieldData.label}${(isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) && '*'}`}
                         />
                     );
                 case 'sitecheckbox':
