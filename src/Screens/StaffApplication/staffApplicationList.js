@@ -45,15 +45,17 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
   const [tableData, setTableData] = useState([]);
   const [rejectionListData, setRejectionListData] = useState([]);
 
-  const applicantHeaderValues = ["", "Applicant Name", "Applicant Type", "Department", "Docs", "Data", "Disclosures", "CRs", "Notes", "Last Updated", "Last Updated By", ""];
-  const applicationHeaderValues = ["", "Applicant Name", "Applicant Type", "Department", "Commitee", "Board", "CEO", "Last Updated On", "Last Updated by", ""];
+  const applicantHeaderValues = ["", "Applicant Name", "Applicant Type", "Department", "Docs", "Data & Disclosures", "CRs", "Notes", "Last Updated", ""];
+  const applicationHeaderValues = ["", "Applicant Name", "Applicant Type", "Department", "Commitee", "Board", "CEO", "Last Updated On", ""];
   const clarificationHeaderValues = ["", "Applicant Name", "Type", "Clarification Title", "Raised By", "Created On", "Last Updated On", ""];
   const approvedHeaderValues = ["", "Applicant Name", "Type", "Notes", "Last Updated On", ""];
+  const reappointmentValues = ["", "Applicant Name", "Applicant Type", "Department", "Docs", "Data & Disclosures", "CRs", "Notes", "Last Updated", ""];
 
   const applicantColSortValues = [false, false, false, false, false, false, false, false, false];
   const applicationColSortValues = [false, false, false, false, false, false, false, false, false];
   const clarificationColSortValues = [false, false, false, false, false, false, false, false, false];
   const approvedColSortValues = [false, false, false, false, false, false, false, false, false];
+  const reappointmentColSortValues = [false, false, false, false, false, false, false, false, false];
 
   const [isPrintClicked, setIsPrintClicked] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
@@ -122,6 +124,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
     await GET('application-management-service/application/sentToApplicant/status')
       .then(response => {
         setSentCompletion(response?.data || null);
+        setShowCardCompletion(response?.data?.applicationsStatus?.length > 0 ? true : false)
         console.log("sentCompletion", response?.data);
       })
       .catch(error => {
@@ -156,6 +159,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
     await GET('application-management-service/application/rejected/meta')
       .then(response => {
         setApplicationRejected(response?.data);
+        setShowCardDetails((response?.data?.applicationsRejected > 0 || response?.data?.applicationsApprovedButDenied > 0) ? true : false)
       })
       .catch(error => {
         console.error('Error fetching rejection counts:', error);
@@ -201,7 +205,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
     docsHoverText = [];
     docsIcon = [];
     dataStatus = [];
-    disclosures = [];
+    // disclosures = [];
     crs = [];
     crsHoverText = [];
     notes = [];
@@ -213,7 +217,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
     action = [];
 
     tableData?.map(data => {
-      dot.push(data?.status === 'REVIEW_INPROGRESS' ? 'yellow' : data?.status === 'COMPLETED' ? 'green' : 'grey');
+      dot.push(data?.status === 'REVIEW_INPROGRESS' ? 'yellow' : data?.status === 'APPROVED' ? 'green' : 'grey');
       applicantName.push(`${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` || '');
       applicantId.push(data?.Id);
       applicantType.push(data?.providerType.serviceProviderType);
@@ -221,15 +225,15 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
       docs.push(data?.docs || '2/8');
       docsHoverText.push(["Immunization History Verification From PCP pending"])
       docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} />);
-      dataStatus.push(data?.dataStatus || 'yellow');
-      disclosures.push(data?.disclosures || '7/9');
+      dataStatus.push(data?.dataStatus || 'green');
+      // disclosures.push(data?.disclosures || '7/9');
       crs.push(data?.crs || '0');
       crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"])
       notes.push(data?.notes || '1');
       notesIcon.push(<NoteAltOutlinedIcon style={{ fontSize: 20, color: `#52575D` }} />);
       notesHoverText.push(["June 13 00:00, Nina Grealy", "Lorem ipsum dolor sit amet, consetetur sadipscing."])
       lastUpdated.push(format(new Date(data?.lastModifiedDate), 'MMM dd, yyyy'))
-      lastUpdatedBy.push('-')
+      lastUpdatedBy.push(['-'])
       // const lastUpdatedDate = new Date(data?.lastModifiedDate);
       // lastUpdated.push(isNaN(lastUpdatedDate.getTime()) ? 'Invalid Date' : format(lastUpdatedDate, 'MM-dd-yyyy'));
       // capManager.push(data?.interviewDetails?.interviewedBy || '- ');
@@ -243,11 +247,10 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
       { "type": "text", "value": department },
       { "type": "iconWithCount", "value": docs, "hoverText": docsHoverText, 'isShowHoverText': true, "icon": docsIcon },
       { "type": "dot", "value": dataStatus },
-      { "type": "iconWithCount", "value": disclosures, "hoverText": docsHoverText, 'isShowHoverText': true, "icon": docsIcon },
-      { "type": "countWithHover", "value": crs, "hoverText": crsHoverText },
+      // { "type": "iconWithCount", "value": disclosures, "hoverText": docsHoverText, 'isShowHoverText': true, "icon": docsIcon },
+      { "type": "countWithHover", "value": crs, "hoverText": crsHoverText, 'isShowHoverText': true },
       { "type": "iconWithCount", "value": notes, "hoverText": notesHoverText, 'isShowHoverText': true, "icon": notesIcon },
-      { "type": "text", "value": lastUpdated },
-      { "type": "text", "value": lastUpdatedBy },
+      { "type": "iconWithCount", "value": lastUpdated, "hoverText": lastUpdatedBy, 'isShowHoverText': true },
       { "type": "action", "value": action },
     ];
   }
@@ -272,7 +275,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
       boardStatus.push(data?.boardStatus || 'green');
       ceoStatus.push(data?.ceoStatus || 'grey');
       lastUpdatedOn.push(format(new Date(data?.lastModifiedDate), 'MMM dd, yyyy'))
-      lastUpdatedBy.push(data?.updatedBy || '-');
+      lastUpdatedBy.push([data?.updatedBy || '-']);
       action.push(true);
     })
 
@@ -284,8 +287,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
       { "type": "dot", "value": commiteeStatus },
       { "type": "dot", "value": boardStatus },
       { "type": "dot", "value": ceoStatus },
-      { "type": "text", "value": lastUpdatedOn },
-      { "type": "text", "value": lastUpdatedBy },
+      { "type": "iconWithCount", "value": lastUpdatedOn, "hoverText": lastUpdatedBy, 'isShowHoverText': true },
       { "type": "action", "value": action },
     ];
   }
@@ -353,7 +355,6 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
   const applicantActionsData = [
     { 'data': 'View & Verify', 'requiredValue': 'boolean', "onClick": onClickViewAndVerifyFunction },
     { 'data': 'Send for Committee Review', 'requiredValue': 'boolean', "onClick": '' },
-    { 'data': 'Send Reminder for Required Documents', 'requiredValue': 'boolean', "onClick": '' },
     { 'data': 'Request for Clarification', 'requiredValue': 'boolean', "onClick": '' },
     { 'data': 'From Applicant', 'requiredValue': 'boolean', "onClick": '' },
     { 'data': 'From Internal Approver', 'requiredValue': 'boolean', "onClick": '' },
@@ -363,7 +364,6 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
   const applicationActionsData = [
     { 'data': 'View & Verify', 'requiredValue': 'boolean', "onClick": '' },
     { 'data': 'Send for Committee Review', 'requiredValue': 'boolean', "onClick": '' },
-    { 'data': 'Send Reminder for Required Documents', 'requiredValue': 'boolean', "onClick": '' },
     { 'data': 'Request for Clarification', 'requiredValue': 'boolean', "onClick": '' },
     { 'data': 'From Applicant', 'requiredValue': 'boolean', "onClick": '' },
     { 'data': 'From Internal Approver', 'requiredValue': 'boolean', "onClick": '' },
@@ -373,7 +373,6 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
   const clarificationActionsData = [
     { 'data': 'View & Verify', 'requiredValue': 'boolean', "onClick": '' },
     { 'data': 'Send for Committee Review', 'requiredValue': 'boolean', "onClick": '' },
-    { 'data': 'Send Reminder for Required Documents', 'requiredValue': 'boolean', "onClick": '' },
     { 'data': 'Request for Clarification', 'requiredValue': 'boolean', "onClick": '' },
     { 'data': 'From Applicant', 'requiredValue': 'boolean', "onClick": '' },
     { 'data': 'From Internal Approver', 'requiredValue': 'boolean', "onClick": '' },
@@ -385,15 +384,17 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
     { 'data': 'Send follow up disclosures', 'requiredValue': 'boolean', "onClick": () => { } },
   ]
 
+  const reappointmentActionsData = []
+
   const getIsExpanded = (value) => {
     setIsExpanded(value);
   }
 
-  let tableHeaderValues = selectedTab === 'applicantsToProcess' ? applicantHeaderValues : selectedTab === "applicationsUnderReview" ? applicationHeaderValues : selectedTab === "clarificationsRequired" ? clarificationHeaderValues : approvedHeaderValues;
-  let tableSortValues = selectedTab === 'applicantsToProcess' ? applicantColSortValues : selectedTab === "applicationsUnderReview" ? applicationColSortValues : selectedTab === "clarificationsRequired" ? clarificationColSortValues : approvedColSortValues;
-  let tableDataValues = selectedTab === 'applicantsToProcess' ? getApplicantValues() : selectedTab === "applicationsUnderReview" ? getApplicationValues() : selectedTab === "clarificationsRequired" ? getClarificationValues() : getApprovedValues();
-  let actions = selectedTab === 'applicantsToProcess' ? applicantActionsData : selectedTab === "applicationsUnderReview" ? applicationActionsData : selectedTab === "clarificationsRequired" ? clarificationActionsData : approvedActionsData;
-  let gridStyle = selectedTab === 'applicantsToProcess' ? style.applicantStaffGrid : selectedTab === "applicationsUnderReview" ? style.applicationStaffGrid : selectedTab === "clarificationsRequired" ? style.clarificationStaffGrid : style.approvedStaffGrid;
+  let tableHeaderValues = selectedTab === 'applicantsToProcess' ? applicantHeaderValues : selectedTab === "applicationsUnderReview" ? applicationHeaderValues : selectedTab === "clarificationsRequired" ? clarificationHeaderValues : selectedTab === "staffReappointment" ? [] : approvedHeaderValues;
+  let tableSortValues = selectedTab === 'applicantsToProcess' ? applicantColSortValues : selectedTab === "applicationsUnderReview" ? applicationColSortValues : selectedTab === "clarificationsRequired" ? clarificationColSortValues : selectedTab === "staffReappointment" ? [] : approvedColSortValues;
+  let tableDataValues = selectedTab === 'applicantsToProcess' ? getApplicantValues() : selectedTab === "applicationsUnderReview" ? getApplicationValues() : selectedTab === "clarificationsRequired" ? getClarificationValues() : selectedTab === "staffReappointment" ? [] : getApprovedValues();
+  let actions = selectedTab === 'applicantsToProcess' ? applicantActionsData : selectedTab === "applicationsUnderReview" ? applicationActionsData : selectedTab === "clarificationsRequired" ? clarificationActionsData : selectedTab === "staffReappointment" ? [] : approvedActionsData;
+  let gridStyle = selectedTab === 'applicantsToProcess' ? style.applicantStaffGrid : selectedTab === "applicationsUnderReview" ? style.applicationStaffGrid : selectedTab === "clarificationsRequired" ? style.clarificationStaffGrid : selectedTab === "staffReappointment" ? '' : style.approvedStaffGrid;
 
   return (
     <div className={style.margin20}>
@@ -494,12 +495,16 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
                             <div className={style.statisticsProgress}>
                               <div className={`${style.greyDotStyle}`}></div>
                               <div className={style.marginLeft10}>{`${status.basicDetail.applicant.name.firstName} ${status.basicDetail.applicant.name.lastName}`}</div>
-                              <span className={style.textStyleProgress}> ({status.providerType.serviceProviderType}) </span>
+                              {/* <span className={style.textStyleProgress}> ({status.providerType.serviceProviderType}) </span> */}
                             </div>
-                            <p className={style.progressTopText}>{status.dueDays} Days Due</p>
+                            <p className={style.progressTopText}> Due in {status.dueDays} Days </p>
                           </div>
                           <ProgressBar completed={100 - status.remainingCompletionPercentage} isLabelVisible={false} height='5px' bgColor='#7165E3' baseBgColor="#E9E9F0" className={style.marginLeft20} />
-                          <div className={style.progressBottomText}>{status.remainingCompletionPercentage}% remaining</div>
+                          <div className={style.spaceBetween}>
+                            <span className={style.textStyleProgress}> ({status.providerType.category}) </span>
+                            <div className={style.progressBottomText}>{status.remainingCompletionPercentage}% remaining</div>
+                          </div>
+                          {/* <div className={style.progressBottomText}>{status.remainingCompletionPercentage}% remaining</div> */}
                         </div>
                       </div>
                     </div>
@@ -524,9 +529,9 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
               </div>
               {
                 showCardDetails && (<>
-                  <div className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}>
+                  {/* <div className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}>
                     Appointment Requests Denied ({applicationRejected.appointmentRequestsDenied})
-                  </div>
+                  </div> */}
                   <div className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`} onClick={() => { setShowApplicationRejectionDialog(true) }}>
                     Applications Rejected ({applicationRejected.applicationsRejected})
                   </div>

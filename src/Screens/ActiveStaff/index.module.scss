@@ -690,7 +690,13 @@ body::-webkit-scrollbar {
 
 .applicantStaffGrid {
   display: grid;
-  grid-template-columns: 5% 10% 10% 9% 6% 5% 8% 5% 5% 8% 8% 6% 5%;
+  grid-template-columns: 5% 11% 15% 15% 5% 12% 12% 12%;
+  grid-gap: 10px;
+}
+
+.locumStaffGrid {
+  display: grid;
+  grid-template-columns: 5% 11% 15% 15% 5% 12% 12% 12%;
   grid-gap: 10px;
 }
 

@@ -41,11 +41,13 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getActiveAppl
   const [tableData, setTableData] = useState([]);
   const [rejectionListData, setRejectionListData] = useState([]);
 
-  const applicantHeaderValues = ["", "Applicant Name", "Applicant Type", "Department", "Docs", "Data", "Disclosures", "CRs", "Notes", "Last Updated", "Last Updated By", "Manager", ""];
+  const applicantHeaderValues = ["", "Applicant Name", "Applicant Type", "Department", "Docs", "Data & Disclosures", "Last Updated", "Reappointment Date", ""];
   const approvedHeaderValues = ["", "Applicant Name", "Type", "Notes", "Last Updated On", ""];
+  const locumHeaderValues = ["", "Applicant Name", "Applicant Type", "Department", "Docs", "Data & Disclosures", "Last Updated", "Reappointment Date", ""];
 
-  const applicantColSortValues = [false, false, false, false, false, false, false, false, false];
+  const applicantColSortValues = [false, false, false, false, false, false];
   const approvedColSortValues = [false, false, false, false, false, false, false, false, false];
+  const locumColSortValues = [false, false, false, false, false, false];
 
   const [isPrintClicked, setIsPrintClicked] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
@@ -245,31 +247,40 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getActiveAppl
     { 'data': 'Send follow up disclosures', 'requiredValue': 'boolean', "onClick": '' },
   ]
 
+  const locumActionsData = [
+    { 'data': 'View & Verify', 'requiredValue': 'boolean', "onClick": onClickViewAndVerifyFunction },
+    { 'data': 'Send for Committee Review', 'requiredValue': 'boolean', "onClick": '' },
+    { 'data': 'Send Reminder for Required Documents', 'requiredValue': 'boolean', "onClick": '' },
+    { 'data': 'Request for Clarification', 'requiredValue': 'boolean', "onClick": '' },
+    { 'data': 'From Applicant', 'requiredValue': 'boolean', "onClick": '' },
+    { 'data': 'From Internal Approver', 'requiredValue': 'boolean', "onClick": '' },
+    { 'data': 'From Institution', 'requiredValue': 'boolean', "onClick": '' },
+  ]
   const getIsExpanded = (value) => {
     setIsExpanded(value);
   }
 
-  let tableHeaderValues = selectedTab === 'permanentStaff' ? applicantHeaderValues : approvedHeaderValues;
-  let tableSortValues = selectedTab === 'permanentStaff' ? applicantColSortValues : approvedColSortValues;
-  let tableDataValues = selectedTab === 'permanentStaff' ? getApplicantValues() : getApprovedValues();
-  let actions = selectedTab === 'permanentStaff' ? applicantActionsData : approvedActionsData;
-  let gridStyle = selectedTab === 'permanentStaff' ? style.applicantStaffGrid : style.approvedStaffGrid;
+  let tableHeaderValues = selectedTab === 'permanentStaff' ? applicantHeaderValues : selectedTab === 'locumStaff' ? locumHeaderValues : approvedHeaderValues;
+  let tableSortValues = selectedTab === 'permanentStaff' ? applicantColSortValues : selectedTab === 'locumStaff' ? locumColSortValues : approvedColSortValues;
+  let tableDataValues = selectedTab !== 'permanentStaff' ? getApprovedValues() : getApplicantValues();
+  let actions = selectedTab === 'permanentStaff' ? applicantActionsData : selectedTab === 'locumStaff' ? locumActionsData : approvedActionsData;
+  let gridStyle = selectedTab === 'permanentStaff' ? style.applicantStaffGrid : selectedTab === 'locumStaff' ? style.locumStaffGrid : style.approvedStaffGrid;
 
   return (
     <div className={style.margin20}>
       <div className={isExpanded ? style.bigCardGrid : style.smallCardGrid}>
         <div>
           <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
-            <div className={`${style.addStyle}  ${style.applicationButton} ${style.spaceBetween} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`} >
+            {/* <div className={`${style.addStyle}  ${style.applicationButton} ${style.spaceBetween} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`} >
               <div className={`${style.displayInRow} ${style.marginLeftRight10} `} onClick={() => navigate('/createStaffMemberApplication')}>
                 CREATE NEW APPLICATION
               </div>
               <div className={`${style.displayInRow} ${style.marginLeft20} `} >
                 <AddCircleOutlineIcon sx={{ fontSize: 20, color: 'white' }} />
               </div>
-            </div>
+            </div> */}
 
-            <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
+            {/* <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
               <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
                 <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
                   Requests For Appointment ({requestAppointment})
@@ -328,9 +339,9 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getActiveAppl
                   </div>
                 </div>
               </>)}
-            </div>
+            </div> */}
 
-            <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
+            {/* <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
               <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
                 <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
                   Sent for Completion ({sentCompletion})
@@ -387,9 +398,9 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getActiveAppl
                   </div>
                 </div>
               </>)}
-            </div>
+            </div> */}
 
-            <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
+            {/* <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
               <div className={`${style.displayInRow}  ${style.marginLeftRight10}`}>
                 <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
                   Rejected/Declined ({applicationRejected.totalRejections})
@@ -415,14 +426,14 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getActiveAppl
                   </div>
                 </>)
               }
-            </div>
+            </div> */}
 
 
           </SideBar>
         </div>
         <div>
           <div className={`${style.displayInRow} ${style.spaceBetween} ${style.headingForStaffs} ${style.bottomTextStyle}`}>
-            STAFF MANAGER APPLICATIONS
+            STAFF MANAGER > APPLICATIONS
           </div>
 
           <div className={`${style.spaceBetween} ${style.marginTop20} ${style.marginLeft30} `}>

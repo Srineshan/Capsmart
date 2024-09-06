@@ -9,6 +9,7 @@ const ActiveStaffTiles = ({ getSelectedTab, selectedTab }) => {
     <div className={`${style.tabs}`}>
       <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Permanent Staff" tileCount={1} currentTile="permanentStaff" />
       <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Provisional Staff" tileCount={1} currentTile="provisionalStaff" />
+      <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Locum Staff" tileCount={1} currentTile="locumStaff" />
     </div>
   )
 }

@@ -690,13 +690,19 @@ body::-webkit-scrollbar {
 
 .applicantStaffGrid {
   display: grid;
-  grid-template-columns: 5% 12% 12% 10% 6% 5% 8% 5% 5% 8% 8% 6% 5%;
+  grid-template-columns: 3% 14% 14% 15% 5% 9% 5% 5% 10% 10% 3%;
+  grid-gap: 1%;
+}
+
+.staffReappointmentGrid {
+  display: grid;
+  grid-template-columns: 3% 14% 14% 15% 5% 9% 5% 5% 10% 10% 3%;
   grid-gap: 1%;
 }
 
 .applicationStaffGrid {
   display: grid;
-  grid-template-columns: 2% 18% 15% 12% 8% 5% 5% 11% 11% 5%;
+  grid-template-columns: 2% 18% 15% 12% 8% 7% 7% 11% 11% 5%;
   grid-gap: 10px;
 }
 
