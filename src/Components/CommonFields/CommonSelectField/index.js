@@ -17,6 +17,15 @@ const CommonSelectField = ({ value, onChange, className, firstOptionLabel, first
                 main: '#f57c00', // Customize your error color here
             },
         },
+        components: {
+            MuiSelect: {
+                styleOverrides: {
+                    select: {
+                        textAlign: "left", // Ensure left alignment globally
+                    },
+                },
+            },
+        },
     });
     return (
         <div>
@@ -38,6 +47,7 @@ const CommonSelectField = ({ value, onChange, className, firstOptionLabel, first
                             SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                             className={className}
                             error={error}
+                            inputProps={{ style: { textAlign: "right" } }}
                             color={warningCheck ? required ? 'error' : 'warning' : ''}
                             // helperText={warningCheck ? (<div className={`${style.helperText} ${required ? style.errorColor : style.warningColor}`}>Could not find data</div>) : ''}
                             focused={warningCheck ? true : false}

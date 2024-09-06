@@ -473,7 +473,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
             <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
               <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
                 <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
-                  Applications Sent for Completion ({sentCompletion?.totalApplicationsSent || 0})
+                  Sent for Completion ({sentCompletion?.totalApplicationsSent || 0})
                 </div>
                 <div className={`${style.marginLeft10} `} >
                   {!showCardCompletion ? (
@@ -512,7 +512,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
             <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
               <div className={`${style.displayInRow}  ${style.marginLeftRight10}`}>
                 <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
-                  Applications Rejected/Declined ({applicationRejected.totalRejections})
+                  Rejected/Declined ({applicationRejected.totalRejections})
                 </div>
                 <div className={`${style.marginLeft10} `} >
                   {!showCardDetails ? (
@@ -542,7 +542,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
         </div>
         <div>
           <div className={`${style.displayInRow} ${style.spaceBetween} ${style.headingForStaffs} ${style.bottomTextStyle}`}>
-            {`CAP MANAGER > APPLICATIONS`}
+            {`STAFF MANAGER APPLICATIONS`}
           </div>
 
           <div className={`${style.spaceBetween} ${style.marginTop20} ${style.marginLeft30} `}>
@@ -586,10 +586,10 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
       </div >
       <div className={style.spaceBetween}>
         <div className={`${style.displayInRow}`}>
-          <p className={`${style.poweredBy} ${style.marginTop10}`}>Powered by -</p>
-          <img src={TimeSmartLogo} alt="footer" className={`${style.footerIconStyle} ${style.marginLeft10}`} />
+          <p className={`${style.poweredBy} ${style.marginTop10}`}>Powered by - CAPSmart</p>
+          {/* <img src={TimeSmartLogo} alt="footer" className={`${style.footerIconStyle} ${style.marginLeft10}`} /> */}
         </div>
-        <p className={style.poweredBy}>© {new Date().getFullYear()} TimeSmartAI.Inc</p>
+        <p className={style.poweredBy}>© {new Date().getFullYear()} CAPSmart</p>
       </div>
 
       {

@@ -636,7 +636,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
     }
 
     const getApplicantValues = (array) => {
-        console.log(array, canadaData)
+        console.log(array, object?.tableHeaders)
         let temp = [];
         if (object?.tableHeaders !== null && basicForm?.forms?.filter(data => data?.id === formId)[0]?.data !== null) {
             Object.keys(object?.tableHeaders)?.map((data, index) => {
@@ -646,7 +646,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                     temp.push({ "type": "icon", "icon": array?.map(innerData => <CheckCircleIcon style={{ fontSize: 25, color: '#25BF6A' }} onClick={() => { window.open(innerData?.file?.fileURL, '_blank'); }} />), 'isShowHoverText': false })
                 } else if (data !== "file") {
                     temp.push({
-                        "type": "text", "value": array?.map(innerData => isValidDateString(innerData[data]) ? format(new Date(innerData[data]), canadaData?.dateFormat || 'MM/dd/yyyy') : innerData[data])
+                        "type": "text", "value": array?.map(innerData => innerData !== null ? isValidDateString(innerData[data]) ? format(new Date(innerData[data]), canadaData?.dateFormat || 'MM/dd/yyyy') : innerData[data] : '')
                     });
                 } else {
                     temp.push({ "type": "icon", "icon": array?.map(innerData => <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.file?.fileURL, '_blank'); }} />), 'isShowHoverText': false });
@@ -694,7 +694,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
     //     getValueByPath(basicForm, `${'applicant'}.${"name"}.${'firstName'}`))
     console.log(basicForm, object)
     return (
-        <div className={`${window.location.pathname.includes('applicationForm') ? '' : style.backgroundCard} ${style.marginTop}`}>
+        <div className={`${(window.location.pathname.includes('applicationForm')) || (baseKey === 'departmentSpecialty' || baseKey === 'regionalCallResponsibilities') ? '' : style.backgroundCard} ${style.marginTop}`}>
             <div className={style.cardTitle}>{object?.label}</div>
             {object?.description !== null && (
                 <div className={`${style.addMoreDescriptionText} ${style.marginTop10}`}>{object?.description}</div>

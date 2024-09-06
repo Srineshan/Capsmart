@@ -121,7 +121,7 @@ const Login = (props) => {
           // incididunt ut labore et dolore magna aliqua
           // </div>
         }
-        <div className={style.timeSmartStyle}>© TimeSmartAI.Inc</div>
+        <div className={style.timeSmartStyle}>© CAPSmart</div>
         <div className={style.termsStyle}>Term of use. Privacy policy</div>
       </div>
       <div className={style.padding100}>

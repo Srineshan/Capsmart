@@ -359,7 +359,7 @@ const NewActiveApplication = ({
       </div>
       <div className={`${style.marginLeftRight50}`}>
         <div className={`${style.displayInRow} ${style.spaceBetween} ${style.topHeadingTextStyle} ${style.marginTop20}`}>
-        CAP MANAGER > APPLICATIONS >> {"{APPLICANT NAME}"}</div>
+        STAFF MANAGER APPLICATIONS >> {"{APPLICANT NAME}"}</div>
         <div className={style.grid2}>
           <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
             <div className={`${style.spaceBetween}`}>

@@ -767,10 +767,10 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
       </div>
       <div className={style.spaceBetween}>
         <div className={`${style.displayInRow}`}>
-          <p className={`${style.poweredBy} ${style.marginTop10}`}>Powered by -</p>
-          <img src={TimeSmartLogo} alt="footer" className={`${style.footerIconStyle} ${style.marginLeft10}`} />
+          <p className={`${style.poweredBy} ${style.marginTop10}`}>Powered by - CAPSmart</p>
+          {/* <img src={TimeSmartLogo} alt="footer" className={`${style.footerIconStyle} ${style.marginLeft10}`} /> */}
         </div>
-        <p className={style.poweredBy}>© {new Date().getFullYear()} TimeSmartAI.Inc</p>
+        <p className={style.poweredBy}>© {new Date().getFullYear()} CAPSmart</p>
       </div>
       <PreImplementationDataDialog showPreImplementationDialog={showPreImplementationDialog} getPreImplementationDialogBoolean={getPreImplementationDialogBoolean} contractId={selectedContractId} selectedContractPreImplementationData={selectedContractPreImplementationData} />
       <ReviewAndApprovalStatusSummary showReviewAndApprovalStatusSummaryDialog={showReviewAndApprovalStatusSummaryDialog} getReviewAndApprovalStatusSummaryDialogBoolean={getReviewAndApprovalStatusSummaryDialogBoolean} contractId={selectedContractId} />

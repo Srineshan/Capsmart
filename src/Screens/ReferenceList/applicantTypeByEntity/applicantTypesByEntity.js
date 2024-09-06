@@ -208,9 +208,8 @@ const ApplicantTypesByEntity = () => {
             />
           </div>
           <div
-            className={`${
-              isExpanded ? style.bigCardGrid : style.smallCardGrid
-            }`}
+            className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid
+              }`}
           >
             <ApplicantSideBar
               sites={sites}
@@ -258,8 +257,8 @@ const ApplicantTypesByEntity = () => {
           />
         )}
         <div className={style.spaceBetween}>
-          <p className={style.poweredBy}>Powered by - TimeSmartAI.Inc LLP</p>
-          <p className={style.poweredBy}>© TimeSmartAI.Inc</p>
+          <p className={style.poweredBy}>Powered by - CAPSmart</p>
+          <p className={style.poweredBy}>© CAPSmart</p>
         </div>
       </div>
     </Fragment>

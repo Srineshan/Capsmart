@@ -60,7 +60,7 @@ const ApplicationFormRequirement = () => {
 
     return (
         <div className={style.screenBackground}>
-            <ApplicationHeader title={'New Physician / Doctor Application For Jane DOE, MD'} />
+            <ApplicationHeader title={`New ${basicForm?.basicDetails?.applicant?.applicantType !== undefined ? basicForm?.basicDetails?.applicant?.applicantType : '{Applicant Type}'} Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'}`} />
             <div className={style.screenPadding}>
                 <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                     <div>
@@ -91,8 +91,8 @@ const ApplicationFormRequirement = () => {
                         </div>
                     </div>
                     <div>
-                        <ApplicationUserCard user={'Guest User'} applyingFor={'Contact'} />
-                        <div className={style.marginTop}>
+                        {/* <ApplicationUserCard user={'Guest User'} applyingFor={'Contact'} /> */}
+                        <div>
                             <DaysToComplete days={7} />
                         </div>
                         <div className={style.marginTop10}>

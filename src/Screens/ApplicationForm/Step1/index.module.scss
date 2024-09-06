@@ -127,3 +127,29 @@
 .credentialingGrid> :nth-child(3) {
     grid-column: span 2;
 }
+
+.applicantGrid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+}
+
+.applicantGrid> :nth-child(1) {
+    grid-column: span 2;
+}
+
+.applicantGrid> :nth-child(2) {
+    grid-column: span 2;
+}
+
+.applicantGrid> :nth-child(3) {
+    grid-column: span 2;
+}
+
+.applicantGrid> :nth-child(4) {
+    grid-column: span 2;
+}
+
+.applicantGrid> :nth-child(5) {
+    grid-column: span 2;
+}

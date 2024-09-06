@@ -241,9 +241,8 @@ const DisclosureIndustries = () => {
             />
           </div>
           <div
-            className={`${
-              isExpanded ? style.bigCardGrid : style.smallCardGrid
-            }`}
+            className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid
+              }`}
           >
             <ApplicantSideBar
               applicantType={applicantTypes.map((item) => item.applicantType)}
@@ -302,8 +301,8 @@ const DisclosureIndustries = () => {
           />
         )}
         <div className={style.spaceBetween}>
-          <p className={style.poweredBy}>Powered by - TimeSmartAI.Inc LLP</p>
-          <p className={style.poweredBy}>© TimeSmartAI.Inc</p>
+          <p className={style.poweredBy}>Powered by - CAPSmart</p>
+          <p className={style.poweredBy}>© CAPSmart</p>
         </div>
       </div>
     </Fragment>

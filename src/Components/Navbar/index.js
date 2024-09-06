@@ -336,7 +336,7 @@ const Navbar = () => {
             //     </Link>
             // )
           }
-          {
+          {/* {
             isContractManager && (
               <Link to={'/staffs'} className={style.noFontStyle}>
                 <div className={`${style.menuStyle} ${window.location.pathname.includes("/staffs") && style.activeMenuColor}`}>
@@ -344,7 +344,7 @@ const Navbar = () => {
                 </div>
               </Link>
             )
-          }
+          } */}
           {
             isContractManager && (
               <Link to={'/applications'} className={style.noFontStyle}>
