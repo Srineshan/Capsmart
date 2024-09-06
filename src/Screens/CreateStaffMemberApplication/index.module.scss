@@ -247,3 +247,56 @@
     border: 0.4000000059604645px solid #e5e6e6;
     padding: 10px 20px 20px 20px;
 }
+
+.cardTitle {
+    text-align: left;
+    font: normal normal bold 20px/26px proxima-nova;
+    letter-spacing: 0px;
+    color: #52575D;
+    // text-transform: capitalize;
+}
+
+.fileGrid {
+    display: grid;
+    grid-template-columns: 10% 89%;
+    gap: 1%;
+}
+
+.tableData {
+    background: #ebe9fb 0% 0% no-repeat padding-box;
+    min-height: 50px;
+    width: 100%;
+    margin-top: 3px;
+    border: 0.4000000059604645px solid #ebe9fb;
+    border-radius: 2px;
+    padding: 10px 20px;
+}
+
+
+.alternativeBackgroundColor {
+    background-color: #d8d4f7 !important;
+}
+
+.tableHeader {
+    padding: 10px 20px;
+}
+
+.tableHeaderFont {
+    text-align: left;
+    font: normal normal bold 18px/23px proxima-nova;
+    letter-spacing: 0.9px;
+    color: #6F7479;
+    text-transform: capitalize;
+}
+
+.centerAlign {
+    text-align: center;
+}
+
+.fileNameText {
+    text-align: left;
+    font: normal normal normal 18px/28px proxima-nova;
+    letter-spacing: 0.9px;
+    color: #6F7479;
+    text-transform: capitalize;
+}

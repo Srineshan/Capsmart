@@ -59,16 +59,16 @@ const Step6 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
                     <div className={style.applicationCardStyle}>
-                        {formSchema !== undefined && 'underGraduate' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.underGraduate} gridStyle={style.EducationGrid} baseKey={'underGraduate'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} formId={basicForm?.forms?.[4]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid}
+                        {formSchema !== undefined && 'graduation' in formSchema?.properties && (
+                            <ApplicationFieldCard object={formSchema?.properties?.graduation} gridStyle={style.EducationGrid} baseKey={'graduation'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} formId={basicForm?.forms?.[4]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid}
                                 heading={'Information Requirement Alert'}
                                 subHeading={'For this application you are required to provide information on all of the different undergraduate / graduate qualifications you have.'}
                                 subHeading2={'You will not be able to submit your application if this is not provided.'} />
                         )}
-                        <CommonDivider />
+                        {/* <CommonDivider />
                         {formSchema !== undefined && 'postGraduate' in formSchema?.properties && (
                             <ApplicationFieldCard object={formSchema?.properties?.postGraduate} gridStyle={style.EducationGrid} baseKey={'postGraduate'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} formId={basicForm?.forms?.[4]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} />
-                        )}
+                        )} */}
                     </div>
                 </div>
                 <div>

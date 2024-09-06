@@ -14,7 +14,8 @@ import { useNavigate } from 'react-router-dom';
 import { useSession } from '@descope/react-sdk';
 import LoginDialog from '../../../Components/LoginDialog';
 import RequiredDocumentCard from '../../../Components/RequiredDocumentCard';
-import { GET } from '../../dataSaver';
+import { GET, PUT } from '../../dataSaver';
+import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 
 const ApplicationFormRequirement = () => {
@@ -24,8 +25,8 @@ const ApplicationFormRequirement = () => {
     const [basicForm, setBasicForm] = useState({})
     const [applicantTypeForm, setApplicantTypeForm] = useState()
     const applicationId = '66d1cae19354e9022ad82027';
-    const requiredDocument = [{ title: 'Passport Size Photo' }, { title: 'Curriculum Vitae' }, { title: 'Professional Liability Insurance Coverage' }, { title: 'Education / College Diplomas, Degrees & Certificate' }, { title: 'Vulnerable Sector Police Check' }
-    ]
+
+    console.log(basicForm)
 
     useEffect(() => {
         getBasicForm()
@@ -56,7 +57,20 @@ const ApplicationFormRequirement = () => {
         }
     }
 
-    console.log(applicantTypeForm)
+    const handleSubmitApplicationReq = async (data) => {
+        await PUT(`application-management-service/application/${applicationId}`, basicForm)
+            .then(response => {
+                console.log(response)
+                navigate('/applicationForm/section1/step1')
+                SuccessToaster("Application Updated Successfully");
+            })
+            .catch((error) => {
+                console.log(error)
+                ErrorToaster("Unexpected Error Updating Application");
+            });
+    }
+
+    console.log(basicForm, '75')
 
     return (
         <div className={style.screenBackground}>
@@ -65,14 +79,14 @@ const ApplicationFormRequirement = () => {
                 <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                     <div>
                         <WelcomeCard title={''} description={''} >
-                            {applicantTypeForm !== undefined && 'privilegePortal' in applicantTypeForm?.properties && (
-                                <ApplicationFieldCard object={applicantTypeForm?.properties?.privilegePortal} gridStyle={style.twoCol} baseKey={'privilegePortal'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+                            {applicantTypeForm !== undefined && 'applicant' in applicantTypeForm?.properties && (
+                                <ApplicationFieldCard object={applicantTypeForm?.properties?.applicant} gridStyle={style.twoCol} baseKey={'applicant'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
                             )}
                         </WelcomeCard>
                         <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
                             <div className={style.titleTextStyle}>Recommended & Required List of Documents to have Readily Available for this Application</div>
                             <div className={style.marginTop}>
-                                <RequiredDocumentCard array={requiredDocument} />
+                                <RequiredDocumentCard array={basicForm?.documentsRequired?.map(data => ({ title: data?.document?.name }))} />
                             </div>
                         </div>
                         <div className={style.marginTop}>
@@ -99,7 +113,7 @@ const ApplicationFormRequirement = () => {
                             <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                         </div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`}>NOT READY TO START</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate('/applicationForm/section1/step1')}>READY TO START MY APPLICATION</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()}>READY TO START MY APPLICATION</div>
                     </div>
                 </div>
             </div>

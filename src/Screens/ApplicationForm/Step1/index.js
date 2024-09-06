@@ -62,34 +62,32 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
 
     return (
         <div>
-            <div className={style.applicationScreenGrid}>
-                <ProgressCard step={''} dataType={'Process Required Documents'} title={form1?.title} timeNumber={1} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
-                <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
-            </div>
-            <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
-                <div className={style.applicationCardStyle}>
-                    {/* <CommonMailingAddress label={'Business Mailing Address*'} onChangeAddressLine1={() => { }} placeholderAddressLine1={'123 Street'} maxLengthAddressLine1={25} valueAddressLine1={''}
+            <div className={`${style.applicationScreenGrid} `}>
+                <div>
+                    <ProgressCard step={''} dataType={'Process Required Documents'} title={form1?.title} timeNumber={1} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                    <div className={`${style.applicationCardStyle}  ${style.marginTop}`}>
+                        {/* <CommonMailingAddress label={'Business Mailing Address*'} onChangeAddressLine1={() => { }} placeholderAddressLine1={'123 Street'} maxLengthAddressLine1={25} valueAddressLine1={''}
                             onChangeAddressLine2={() => { }} placeholderAddressLine2={'Apartment 5'} maxLengthAddressLine2={25} valueAddressLine2={''} onChangeCity={() => { }} placeholderCity={'City'} maxLengthCity={25}
                             valueCity={''} onChangeState={() => { }} placeholderState={'Province'} maxLengthState={25} valueState={''} onChangeZipcode={() => { }} placeholderZipcode={'Zipcode'} maxLengthZipcode={15} valueZipcode={''} /> */}
-                    {form1 !== undefined && 'applicant' in form1?.properties && (
-                        <ApplicationFieldCard object={form1?.properties?.applicant} gridStyle={style.applicantGrid} baseKey={'applicant'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
-                    )}
-                    <CommonDivider />
-                    {form1 !== undefined && 'credentialingPrivilegeCategory' in form1?.properties && (
-                        <ApplicationFieldCard object={form1?.properties?.credentialingPrivilegeCategory} gridStyle={style.credentialingGrid} baseKey={'credentialingPrivilegeCategory'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
-                    )}
-                    <CommonDivider />
-                    {form1 !== undefined && 'departmentSpecialty' in form1?.properties && (
-                        <ApplicationFieldCard object={form1?.properties?.departmentSpecialty} gridStyle={style.twoCol} baseKey={'departmentSpecialty'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
-                    )}
-                    {form1 !== undefined && 'regionalCallResponsibilities' in form1?.properties && (
-                        <ApplicationFieldCard object={form1?.properties?.regionalCallResponsibilities} gridStyle={style.twoCol} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
-                    )}
-                    <CommonDivider />
-                    {form1 !== undefined && 'billingNumber' in form1?.properties && (
-                        <ApplicationFieldCard object={form1?.properties?.billingNumber} gridStyle={style.twoCol} baseKey={'billingNumber'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
-                    )}
-                    {/*<CommonDivider />
+                        {form1 !== undefined && 'applicant' in form1?.properties && (
+                            <ApplicationFieldCard object={form1?.properties?.applicant} gridStyle={style.applicantGrid} baseKey={'applicant'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+                        )}
+                        <CommonDivider />
+                        {form1 !== undefined && 'credentialingPrivilegeCategory' in form1?.properties && (
+                            <ApplicationFieldCard object={form1?.properties?.credentialingPrivilegeCategory} gridStyle={style.credentialingGrid} baseKey={'credentialingPrivilegeCategory'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+                        )}
+                        <CommonDivider />
+                        {form1 !== undefined && 'departmentSpecialty' in form1?.properties && (
+                            <ApplicationFieldCard object={form1?.properties?.departmentSpecialty} gridStyle={style.twoCol} baseKey={'departmentSpecialty'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+                        )}
+                        {form1 !== undefined && 'regionalCallResponsibilities' in form1?.properties && (
+                            <ApplicationFieldCard object={form1?.properties?.regionalCallResponsibilities} gridStyle={style.twoCol} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+                        )}
+                        <CommonDivider />
+                        {form1 !== undefined && 'billingNumber' in form1?.properties && (
+                            <ApplicationFieldCard object={form1?.properties?.billingNumber} gridStyle={style.twoCol} baseKey={'billingNumber'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+                        )}
+                        {/*<CommonDivider />
                      <div className={`${style.backgroundCard} ${style.marginTop}`}>
                         <div className={style.cardTitle}>Department / Speciality of Service</div>
                         <div className={style.fourCol}>
@@ -116,6 +114,7 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
                     <div className={style.marginTop}>
                         <CommonCheckBox checked={true} onChange={(e) => { }} label="I Have Verified the Information to be Correct, and would like to Proceed with my Application" />
                     </div> */}
+                    </div>
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />

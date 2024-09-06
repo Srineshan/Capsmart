@@ -77,6 +77,18 @@
     grid-column: span 2;
 }
 
+.EducationGrid> :nth-child(4) {
+    grid-column: span 2;
+}
+
+.EducationGrid> :nth-child(5) {
+    grid-column: span 2;
+}
+
+.EducationGrid> :nth-child(6) {
+    grid-column: span 2;
+}
+
 .progressStyle {
     height: 10px;
     width: 100%;
@@ -161,6 +173,6 @@
 
 .tableGrid {
     display: grid;
-    grid-template-columns: 3% 3% 21% 21% 21% 21% 3%;
+    grid-template-columns: 3% 3% 16% 21% 16% 15% 15% 3%;
     gap: 1%;
 }
