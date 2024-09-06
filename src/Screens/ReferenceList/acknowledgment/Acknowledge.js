@@ -337,8 +337,8 @@ const Acknowledge = () => {
           />
         )}
         <div className={style.spaceBetween}>
-          <p className={style.poweredBy}>Powered by - TimeSmartAI.Inc LLP</p>
-          <p className={style.poweredBy}>© TimeSmartAI.Inc</p>
+          <p className={style.poweredBy}>Powered by - CAPSmart</p>
+          <p className={style.poweredBy}>© CAPSmart</p>
         </div>
       </div>
     </Fragment>

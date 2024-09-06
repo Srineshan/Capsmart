@@ -37,7 +37,6 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
             );
             let temp = form1?.schema;
             if (temp.properties.applicant.properties !== null) {
-                delete temp.properties.applicant.properties['email']
                 delete temp.properties.applicant.properties['applicantType']
                 delete temp.properties.applicant.properties['startDate']
             }
@@ -64,7 +63,7 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={''} dataType={'Process Required Documents'} title={'Verify Your Information'} timeNumber={1} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                <ProgressCard step={''} dataType={'Process Required Documents'} title={form1?.title} timeNumber={1} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
@@ -73,7 +72,7 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
                             onChangeAddressLine2={() => { }} placeholderAddressLine2={'Apartment 5'} maxLengthAddressLine2={25} valueAddressLine2={''} onChangeCity={() => { }} placeholderCity={'City'} maxLengthCity={25}
                             valueCity={''} onChangeState={() => { }} placeholderState={'Province'} maxLengthState={25} valueState={''} onChangeZipcode={() => { }} placeholderZipcode={'Zipcode'} maxLengthZipcode={15} valueZipcode={''} /> */}
                     {form1 !== undefined && 'applicant' in form1?.properties && (
-                        <ApplicationFieldCard object={form1?.properties?.applicant} gridStyle={style.twoCol} baseKey={'applicant'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+                        <ApplicationFieldCard object={form1?.properties?.applicant} gridStyle={style.applicantGrid} baseKey={'applicant'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
                     )}
                     <CommonDivider />
                     {form1 !== undefined && 'credentialingPrivilegeCategory' in form1?.properties && (

@@ -16,7 +16,7 @@ import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import DeleteConfirmation from "../../Components/DeleteConfirmation";
-import {InputGroup} from "@blueprintjs/core";
+import { InputGroup } from "@blueprintjs/core";
 import style from "./index.module.scss";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
@@ -34,7 +34,7 @@ const MileageRateForCustomers = () => {
   const [lastUpdatedDate, setLastUpdatedDate] = useState("");
   const [mileageRateData, setMileageRateData] = useState([]);
 
-  
+
   const getAddMileageRateDialog = (value) => {
     setShowAddCompanyDialog(value);
   };
@@ -76,7 +76,7 @@ const MileageRateForCustomers = () => {
     );
     setMileageRateData(mileageRateData)
   };
-  
+
   const handleDeleteMileageRate = async (id) => {
     await DELETE(`entity-service/mileageRate/${id}`)
       .then((response) => {
@@ -89,7 +89,7 @@ const MileageRateForCustomers = () => {
       });
   };
 
-  
+
   const getShowDeleteConfirmation = (value) => {
     setShowDeleteConfirmation(value);
   };
@@ -130,7 +130,7 @@ const MileageRateForCustomers = () => {
                       <div></div>
                       <div>
                         <div className={style.customersAdminCardStyle3}>
-                          <div className={`${style.GeneralConfigHeaderInsideContainer} ${style.displayInRow}`}>       
+                          <div className={`${style.GeneralConfigHeaderInsideContainer} ${style.displayInRow}`}>
                             <p></p>
                             <p className={`${style.tableHeaderIndustriesFontStyle7} `}>
                               Year</p>
@@ -141,55 +141,55 @@ const MileageRateForCustomers = () => {
                             <p className={`${style.tableHeaderIndustriesFontStyle7} `}>
                               Delete </p>
                             <img
-                            src={AddNewEntity}
-                            alt=""
-                            className={`${style.colorFileStyle} `}
-                            onClick={() => {
-                              getAddMileageRateDialog(true);
-                              setIsEdit(false);
-                            }}
-                          />
+                              src={AddNewEntity}
+                              alt=""
+                              className={`${style.colorFileStyle} `}
+                              onClick={() => {
+                                getAddMileageRateDialog(true);
+                                setIsEdit(false);
+                              }}
+                            />
                           </div>
                           {
-                            mileageRateData?.map((data,index)=>{
+                            mileageRateData?.map((data, index) => {
                               return (
                                 <>
-                                <div>
-                                  <div
-                                    className={`${style.GeneralConfigHeaderInsideContainer} ${style.displayInRow}`} key={index}
-                                  >
-                                    <p></p>
-                                    <p
-                                      className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft10}`}
+                                  <div>
+                                    <div
+                                      className={`${style.GeneralConfigHeaderInsideContainer} ${style.displayInRow}`} key={index}
                                     >
-                                      {data?.year}
-                                    </p>
-                                    <p className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft10}`}>{data?.mileageRate?.value}</p>
-                                    <div className={style.displayInRow}>
-                                      
-                                      <img
-                                        src={EditHcRow}
-                                        alt=""
-                                        className={`${style.colorFileStyle}`}
-                                        onClick={() =>{
+                                      <p></p>
+                                      <p
+                                        className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft10}`}
+                                      >
+                                        {data?.year}
+                                      </p>
+                                      <p className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft10}`}>{data?.mileageRate?.value}</p>
+                                      <div className={style.displayInRow}>
+
+                                        <img
+                                          src={EditHcRow}
+                                          alt=""
+                                          className={`${style.colorFileStyle}`}
+                                          onClick={() => {
                                             setIsEdit(true);
                                             getAddMileageRateDialog(true);
                                             setSelectedMileageRate(data)
                                           }}
-                                      />
-                                    </div>
-                                    <div className={style.displayInRow}>
-                                      <img
-                                        src={DeleteHcRow}
-                                        alt=""
-                                        className={`${style.colorFileStyle}`}
-                                        onClick={() =>
-                                          handleDeleteMileageRate(data?.id)
-                                        }
-                                      />
+                                        />
+                                      </div>
+                                      <div className={style.displayInRow}>
+                                        <img
+                                          src={DeleteHcRow}
+                                          alt=""
+                                          className={`${style.colorFileStyle}`}
+                                          onClick={() =>
+                                            handleDeleteMileageRate(data?.id)
+                                          }
+                                        />
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
                                 </>
                               )
                             })
@@ -203,8 +203,8 @@ const MileageRateForCustomers = () => {
             </div>
           </div>
           <div className={style.spaceBetween}>
-            <p className={style.poweredBy}>Powered by - TimeSmartAI.Inc LLP</p>
-            <p className={style.poweredBy}>© TimeSmartAI.Inc</p>
+            <p className={style.poweredBy}>Powered by - CAPSmart</p>
+            <p className={style.poweredBy}>© CAPSmart</p>
           </div>
         </div>
       </div>

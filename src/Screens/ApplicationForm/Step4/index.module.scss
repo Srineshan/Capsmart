@@ -86,11 +86,11 @@
 }
 
 .licenseGrid> :nth-child(6) {
-    grid-column: span 6;
+    grid-column: span 3;
 }
 
 .licenseGrid> :nth-child(7) {
-    grid-column: span 6;
+    grid-column: 1/-1;
 }
 
 .progressStyle {

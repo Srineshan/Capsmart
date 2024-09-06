@@ -146,7 +146,7 @@ const CreateStaffMemberApplication = () => {
         <div className={style.screenBackground}>
             <ApplicationHeader title={'Create A New Staff Member Application'} />
             <div className={style.screenPadding}>
-                <div className={style.breadcrumbStyle}>{`CAP MANAGER > APPLICATIONS >> NEW APPLICATION`}</div>
+                <div className={style.breadcrumbStyle}>{`STAFF APPOINTMENT APPLICATION >> NEW APPLICATION`}</div>
                 {/* {!isNextpage ? ( */}
                 <>
                     {form !== undefined && 'applicant' in form?.properties && (
@@ -155,12 +155,14 @@ const CreateStaffMemberApplication = () => {
                     {form !== undefined && 'credentialingPrivilegeCategory' in form?.properties && (
                         <ApplicationFieldCard object={form?.properties?.credentialingPrivilegeCategory} gridStyle={style.credentialingGrid} baseKey={'credentialingPrivilegeCategory'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
                     )}
-                    {form !== undefined && 'departmentSpecialty' in form?.properties && (
-                        <ApplicationFieldCard object={form?.properties?.departmentSpecialty} gridStyle={style.appointmentGrid} baseKey={'departmentSpecialty'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
-                    )}
-                    {form !== undefined && 'regionalCallResponsibilities' in form?.properties && (
-                        <ApplicationFieldCard object={form?.properties?.regionalCallResponsibilities} gridStyle={style.regionalCallGrid} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
-                    )}
+                    <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
+                        {form !== undefined && 'departmentSpecialty' in form?.properties && (
+                            <ApplicationFieldCard object={form?.properties?.departmentSpecialty} gridStyle={style.appointmentGrid} baseKey={'departmentSpecialty'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+                        )}
+                        {form !== undefined && 'regionalCallResponsibilities' in form?.properties && (
+                            <ApplicationFieldCard object={form?.properties?.regionalCallResponsibilities} gridStyle={style.regionalCallGrid} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+                        )}
+                    </div>
                     <div className={style.spaceBetween}>
                         <div></div>
                         <div className={style.displayInRow}>

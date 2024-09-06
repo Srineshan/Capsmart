@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import ProgressCard from '../../../Components/ProgressCard';
 import ApplicationUserCard from '../../../Components/ApplicationUserCard';
 import ApplicationAssistanceCard from '../../../Components/ApplicationAssistanceCard';
@@ -6,7 +6,7 @@ import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import logo from "../../../images/cambridgeHospital.png";
 import { GET } from '../../dataSaver';
 import { useNavigate } from 'react-router-dom';
-
+import html2pdf from "html2pdf.js";
 import style from './index.module.scss';
 import CommonCheckBox from '../../../Components/CommonFields/CommonCheckBox';
 import ESign from '../../../Components/ESign';
@@ -14,6 +14,28 @@ import ESign from '../../../Components/ESign';
 const ApplicationAcknowledgementStep1 = () => {
     const [isChecked, setIsChecked] = useState(false);
     const navigate = useNavigate()
+    const targetRef = useRef();
+
+    const handleDownload = () => {
+        const element = targetRef.current;
+        const opt = {
+            margin: 0.5,
+            filename: "page.pdf",
+            image: { type: "jpeg", quality: 0.98 },
+            html2canvas: {
+                scale: 2, // Increase the scale for better image quality
+                useCORS: true, // Enable cross-origin images to be included
+                logging: true, // Enable logging for debugging
+            },
+            jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+            pagebreak: { mode: ["avoid-all", "css", "legacy"] },
+        };
+        const nestedElements = element.querySelectorAll('.applicationCardScrollStyle');
+        nestedElements.forEach((_element) => {
+            _element.classList.remove('applicationCardScrollStyle');
+        });
+        html2pdf().set(opt).from(element).save();
+    };
     return (
         <div>
             <div className={style.applicationScreenGrid}>
@@ -22,11 +44,11 @@ const ApplicationAcknowledgementStep1 = () => {
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
-                    <div className={style.applicationCardStyle}>
-                        <div className={style.marginTop}>
+                    <div className={`${style.applicationCardStyle} ${style.applicationCardScrollStyle}`} ref={targetRef}>
+                        <div className={`${style.marginTop} ${style.justifyCenter}`}>
                             <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
-                            <CommonDivider />
                         </div>
+                        <CommonDivider />
                         <div className={`${style.applicantNameGrid} ${style.marginTop}`}>
                             <div className={style.labelText}>Applicant Name:</div>
                             <div className={style.valueText}>{`{Applicant Name}`}</div>
@@ -108,7 +130,7 @@ const ApplicationAcknowledgementStep1 = () => {
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-                    <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
+                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={handleDownload}>SAVE IN PROGRESS</div>
                     <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate('/applicationForm/section1/acknowledgementStep2')} >CONTINUE</div>
                     {/* <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />

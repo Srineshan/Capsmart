@@ -315,7 +315,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
                     <div className={style.marginTop} onClick={() => setIsShowESignDialog(true)}>
                         <div className={style.uploadBorderStyle}>
                             <p className={style.uploadTextStyle}>
-                                {'Set Up Your eSignature'}
+                                {'Set Up Your Electronic Signature'}
                             </p>
 
                             <p className={style.uploadDescriptionText}>
