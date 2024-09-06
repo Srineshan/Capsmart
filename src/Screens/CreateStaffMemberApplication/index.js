@@ -12,7 +12,7 @@ import style from './index.module.scss';
 
 const CreateStaffMemberApplication = () => {
     const [form, setForm] = useState();
-    const [isNextpage, setIsNextPage] = useState(true);
+    const [isNextpage, setIsNextPage] = useState(false);
     const [applicationId, setApplicationId] = useState('');
     const [basicFormForDocuments, setBasicFormForDocuments] = useState()
     const [requiredDocumentList, setRequiredDocumentList] = useState();
