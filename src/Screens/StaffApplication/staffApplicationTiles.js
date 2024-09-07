@@ -28,11 +28,11 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
 
   return (
     <div className={`${style.tabs}`}>
-      <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Completed Application" tileCount={counts.applicantsToProcess} currentTile="applicantsToProcess" />
+      <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Completed Applications" tileCount={counts.applicantsToProcess} currentTile="applicantsToProcess" />
       <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Applications Under Review" tileCount={counts.applicationsUnderReview} currentTile="applicationsUnderReview" />
       <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Clarifications Required" tileCount={counts.clarificationsRequired} currentTile="clarificationsRequired" />
       <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Approved Applicants" tileCount={counts.approved} currentTile="approved" />
-      <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Staff Reappointment" tileCount={0} currentTile="staffReappointment" />
+      {/* <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Staff Reappointment" tileCount={0} currentTile="staffReappointment" /> */}
 
     </div>
   )

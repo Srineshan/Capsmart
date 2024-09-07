@@ -276,7 +276,7 @@ const Profile = () => {
                                     }} />
                             </div>
                         </div>
-                        <div className={`${style.personalInformationGrid} ${style.marginTop}`}>
+                        {/* <div className={`${style.personalInformationGrid} ${style.marginTop}`}>
                             <div>
                                 <div className={style.extentionLableStyle}>Username</div>
                                 <TextField size="small" className={style.fullWidth} value={profile?.username}
@@ -288,8 +288,6 @@ const Profile = () => {
                                         autoComplete: 'new-password'
                                     }} />
                             </div>
-                        </div>
-                        <div className={`${style.personalInformationGrid} ${style.marginTop}`}>
                             <div>
                                 <div className={style.extentionLableStyle}>Email</div>
                                 <TextField size="small" className={style.fullWidth} value={profile?.email}
@@ -300,22 +298,12 @@ const Profile = () => {
                                         },
                                     }} />
                             </div>
-                            <div className={style.marginLeft20}>
-                                <div className={style.extentionLableStyle}>Secondary Email</div>
-                                <TextField size="small" className={style.fullWidth} value={profile?.secondaryEmail} onChange={(e) => setProfile({ ...profile, secondaryEmail: e.target.value })}
-                                    inputProps={{
-                                        style: {
-                                            height: 15,
-                                        },
-                                        autoComplete: 'new-password'
-                                    }} />
-                            </div>
-                        </div>
-                        <div className={style.helpText}>In addition to Google log-in, you can also log in using email and password.</div>
-                        <div className={`${style.spaceBetween} ${style.marginTop50}`}>
+                        </div> */}
+                        {/* <div className={style.helpText}>In addition to Google log-in, you can also log in using email and password.</div> */}
+                        {/* <div className={`${style.spaceBetween} ${style.marginTop50}`}>
                             <div className={`${style.headingStyle}`}>Password</div>
                             <BorderColorOutlinedIcon style={{ color: '#7165E3', fontSize: 14 }} className={style.cursorPointer} />
-                        </div>
+                        </div> */}
                         {/* <div className={`${style.infoBox} ${style.marginTop}`}>
                             <div className={style.infoTextStyle}>
                                 Lorem Ipsum Dolor Sit Amet, (@ $ , ) Consetetur Sadipscing Elitr, Sed Diam Nonumy Eirmod Tempor Invidunt Ut Labore Et Dolore Magna Aliquyam Erat, Sed Diam Voluptua. At Vero Eos Et Accusam.                            </div>

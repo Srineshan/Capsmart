@@ -35,6 +35,7 @@ const UserCard = ({ getIsExpanded, updateProfileData }) => {
         setCurrentUserDetails(user);
         console.log('users', user)
     }
+
     console.log('currentUserDetails', currentUserDetails, currentUserDetails?.lastLogin);
 
     return (
@@ -45,16 +46,17 @@ const UserCard = ({ getIsExpanded, updateProfileData }) => {
                         <label for="file-upload">
                             <img src={updateProfileData ? updateProfileData?.profilePic?.file?.fileURL : currentUserDetails?.profilePic?.file?.fileURL ? currentUserDetails?.profilePic?.file?.fileURL : DoctorAnime} className={`${style.userLogo} ${style.cursorPointer}`} />
                         </label>
+
+                        <input id="file-upload" type="file" />
+                        <div className={style.marginLeft20}>
+                            <div className={style.userNameStyle}>
+                                Hi, {updateProfileData ? `${updateProfileData?.name?.firstName} ${updateProfileData?.name?.lastName}` : `${currentUserDetails?.name?.firstName} ${currentUserDetails?.name?.lastName}`}
+                            </div>
+                            <div className={style.loginStatus}>
+                                Last Login {currentUserDetails && formatInTimeZone(new Date(currentUserDetails?.lastLogin) || new Date(), siteTimeZone(), 'MMM d, yy H:mm')} {timeZoneAbbreviation()}
+                            </div>
+                        </div>
                     </Link>
-                    <input id="file-upload" type="file" />
-                    <div className={style.marginLeft20}>
-                        <div className={style.userNameStyle}>
-                            Hi, {updateProfileData ? `${updateProfileData?.name?.firstName} ${updateProfileData?.name?.lastName}` : `${currentUserDetails?.name?.firstName} ${currentUserDetails?.name?.lastName}`}
-                        </div>
-                        <div className={style.loginStatus}>
-                            Last Login {currentUserDetails && formatInTimeZone(new Date(currentUserDetails?.lastLogin) || new Date(), siteTimeZone(), 'MMM d, yy H:mm')} {timeZoneAbbreviation()}
-                        </div>
-                    </div>
                 </div>
                 <img src={ChevronRight} className={style.chevronRightStyle} onClick={() => getIsExpanded(false)} />
             </div>
