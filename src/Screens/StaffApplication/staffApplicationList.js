@@ -45,11 +45,11 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
   const [tableData, setTableData] = useState([]);
   const [rejectionListData, setRejectionListData] = useState([]);
 
-  const applicantHeaderValues = ["", "Applicant Name", "Applicant Type", "Department", "Docs", "Data & Disclosures", "CRs", "Notes", "Last Updated", ""];
-  const applicationHeaderValues = ["", "Applicant Name", "Applicant Type", "Department", "Commitee", "Board", "CEO", "Last Updated On", ""];
-  const clarificationHeaderValues = ["", "Applicant Name", "Type", "Clarification Title", "Raised By", "Created On", "Last Updated On", ""];
-  const approvedHeaderValues = ["", "Applicant Name", "Type", "Notes", "Last Updated On", ""];
-  const reappointmentValues = ["", "Applicant Name", "Applicant Type", "Department", "Docs", "Data & Disclosures", "CRs", "Notes", "Last Updated", ""];
+  const applicantHeaderValues = ["", "Applicant Name", "Applicant Type", "Department", "Docs", "Data & Disclosures", "CRs", "Notes", "Last Updated", "Actions"];
+  const applicationHeaderValues = ["", "Applicant Name", "Applicant Type", "Department", "Commitee", "Board", "CEO", "Last Updated On", "Actions"];
+  const clarificationHeaderValues = ["", "Applicant Name", "Type", "Clarification Title", "Raised By", "Created On", "Last Updated On", "Actions"];
+  const approvedHeaderValues = ["", "Applicant Name", "Type", "Notes", "Last Updated On", "Actions"];
+  const reappointmentValues = ["", "Applicant Name", "Applicant Type", "Department", "Docs", "Data & Disclosures", "CRs", "Notes", "Last Updated", "Actions"];
 
   const applicantColSortValues = [false, false, false, false, false, false, false, false, false];
   const applicationColSortValues = [false, false, false, false, false, false, false, false, false];
@@ -501,7 +501,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
                           </div>
                           <ProgressBar completed={100 - status.remainingCompletionPercentage} isLabelVisible={false} height='5px' bgColor='#7165E3' baseBgColor="#E9E9F0" className={style.marginLeft20} />
                           <div className={style.spaceBetween}>
-                            <span className={style.textStyleProgress}> ({status.providerType.category}) </span>
+                            <span className={style.textStyleProgress}> {status.providerType.category} </span>
                             <div className={style.progressBottomText}>{status.remainingCompletionPercentage}% remaining</div>
                           </div>
                           {/* <div className={style.progressBottomText}>{status.remainingCompletionPercentage}% remaining</div> */}
@@ -547,7 +547,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
         </div>
         <div>
           <div className={`${style.displayInRow} ${style.spaceBetween} ${style.headingForStaffs} ${style.bottomTextStyle}`}>
-            {`STAFF MANAGER APPLICATIONS`}
+            {`STAFF MANAGER >> APPLICATIONS`}
           </div>
 
           <div className={`${style.spaceBetween} ${style.marginTop20} ${style.marginLeft30} `}>
