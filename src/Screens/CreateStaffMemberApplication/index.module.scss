@@ -300,3 +300,8 @@
     color: #6F7479;
     text-transform: capitalize;
 }
+
+.displayInRowRev {
+    display: flex;
+    flex-direction: row-reverse;
+}

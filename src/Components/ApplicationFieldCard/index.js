@@ -36,7 +36,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
     const [isTableEdit, setIsTableEdit] = useState(false);
     const [files, setFiles] = useState([]);
     const { setValue, value } = useComboboxControls({ initialValue: "" });
-    const canadaData = JSON.parse(sessionStorage.getItem('canadaData'));
+    const canadaData = JSON.parse(sessionStorage.getItem('canadaData')) || {};
     useEffect(() => {
         renderObjectFields(object)
         console.log('entered')
@@ -293,8 +293,16 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
         // Usage:
         // const conditionMet = checkAllOfConditions(object, `${baseKey}`, fieldKey);
         console.log(fieldKey, fieldData, getAllThenStrings(object), getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey), object?.then?.required?.includes(fieldKey), '275', parentData)
-
-        if (object?.then?.required?.includes(fieldKey) !== undefined ? (!object?.then?.required?.includes(fieldKey) || object?.if?.properties !== undefined && getValueByPath(basicForm, `${basicpath}.${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`) === Object.entries(object?.if?.properties)?.map(([key, data]) => data)[0]?.const) : getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) ? (getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) && (getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) && getValueByPath(basicForm, `${basicpath}.${baseKey}.${getAllThenStrings(object)?.filter(data => data?.value === fieldKey)[0]?.key}`) === getAllThenStrings(object)?.filter(data => data?.value === fieldKey)[0]?.checkValue)) : true && fieldData.fieldType) {
+        // if (object?.then?.required?.includes(fieldKey) !== undefined ? (!object?.then?.required?.includes(fieldKey) || object?.if?.properties !== undefined && getValueByPath(basicForm, `${basicpath}.${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`) === Object.entries(object?.if?.properties)?.map(([key, data]) => data)[0]?.const) : getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) ? (getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) && (getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) && getValueByPath(basicForm, `${basicpath}.${baseKey}.${getAllThenStrings(object)?.filter(data => data?.value === fieldKey)[0]?.key}`) === getAllThenStrings(object)?.filter(data => data?.value === fieldKey)[0]?.checkValue)) : true && fieldData.fieldType) {
+        let firstObject;
+        let dynamicValue;
+        if (object?.if?.properties !== undefined) {
+            firstObject = Object.entries(object?.if?.properties)?.map(([key, data]) => data)[0]; // Get the first key dynamically
+            dynamicValue = Object.keys(firstObject)?.[0];
+            console.log(firstObject, firstObject[dynamicValue])
+        }
+        console.log(dynamicValue)
+        if (object?.then?.required?.includes(fieldKey) !== undefined ? (!object?.then?.required?.includes(fieldKey) || (object?.if?.properties !== undefined && Array.isArray(firstObject[dynamicValue]) ? firstObject[dynamicValue]?.includes(getValueByPath(basicForm, `${basicpath}.${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`)) : getValueByPath(basicForm, `${basicpath}.${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`) === dynamicValue)) : getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) ? (getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) && (getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) && getValueByPath(basicForm, `${basicpath}.${baseKey}.${getAllThenStrings(object)?.filter(data => data?.value === fieldKey)[0]?.key}`) === getAllThenStrings(object)?.filter(data => data?.value === fieldKey)[0]?.checkValue)) : true && fieldData.fieldType) {
             switch (fieldData.fieldType) {
                 case 'dropdown':
                     console.log(getValueByPath(basicForm, 'forms[1]'), `${basicpath}.${baseKey}.${fieldKey}`, 'dropdown', basicForm)
@@ -403,9 +411,9 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                                         ...params.inputProps,
                                         placeholder: fieldData.label !== null ? `Enter ${fieldData.label}` : null,
                                     }}
-                                    color={(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === null || getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === '') ? (isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) ? 'error' : 'warning' : ''}
+                                    // color={(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === null || getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === '') ? (isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) ? 'error' : 'warning' : ''}
                                     fullWidth
-                                    focused={(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === null || getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === '') ? true : false}
+                                // focused={(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === null || getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === '') ? true : false}
                                 />
                             )}
                             label={fieldData.label}
@@ -695,7 +703,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
     //     getValueByPath(basicForm, `${'applicant'}.${"name"}.${'firstName'}`))
     console.log(basicForm, object)
     return (
-        <div className={`${(window.location.pathname.includes('applicationForm')) || (baseKey === 'departmentSpecialty' || baseKey === 'regionalCallResponsibilities') ? '' : style.backgroundCard} ${style.marginTop}`}>
+        <div className={`${window.location.pathname.includes('applicationForm') ? '' : style.backgroundCard} ${style.marginTop}`}>
             <div className={style.cardTitle}>{object?.label}</div>
             {object?.description !== null && (
                 <div className={`${style.addMoreDescriptionText} ${style.marginTop10}`}>{object?.description}</div>
