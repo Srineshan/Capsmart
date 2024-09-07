@@ -48,7 +48,7 @@ import LoginDialog from '../../Components/LoginDialog';
 const ApplicationForm = () => {
     const { section, step } = useParams();
     const [basicForm, setBasicForm] = useState({})
-    const applicationId = '66d1cae19354e9022ad82027'
+    const applicationId = sessionStorage.getItem('applicationId')
     const [isOpen, setIsOpen] = useState(true);
     const getIsOpen = (value) => {
         setIsOpen(value);

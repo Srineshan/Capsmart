@@ -19,9 +19,9 @@ const ApplicationAssistanceCard = ({ user, designation, contactNumber, email }) 
                     <div className={`${style.aiAssistanceText}`}>OUR AI ASSISTANT</div>
                     <div className={`${style.chatWithStyle} ${style.marginTop}`}>Chat With Poppy</div>
                 </div>
-                <div className={`${style.phoneIconBackground} ${style.verticalAlignCenter} ${style.justifyCenter} ${style.marginTop}`}>
+                {/* <div className={`${style.phoneIconBackground} ${style.verticalAlignCenter} ${style.justifyCenter} ${style.marginTop}`}>
                     <PhoneInTalkOutlinedIcon sx={{ color: '#fff' }} />
-                </div>
+                </div> */}
             </div>
             <div className={`${style.chatBox} ${style.marginTop} ${style.verticalAlignCenter}`}>
                 <div className={style.fullWidth}>

@@ -6,7 +6,7 @@ import { GET } from '../../Screens/dataSaver';
 
 const ApplicationReferenceDocuments = () => {
     const [basicForm, setBasicForm] = useState({})
-    const applicationId = '66d1cae19354e9022ad82027'
+    const applicationId = sessionStorage.getItem('applicationId')
 
     useEffect(() => {
         getPreApplication()
