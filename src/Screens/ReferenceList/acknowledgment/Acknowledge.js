@@ -12,7 +12,7 @@ import CommonPurpleCheckBox from "../../../Components/CommonFields/CommonPurpleC
 import SearchBar from "../../../Components/SearchBar";
 import { formatInTimeZone } from "date-fns-tz";
 import { siteTimeZone, timeZoneAbbreviation } from "../../../utils/formatting";
-import ApplicantTable from "../common/Table";
+import ReferenceListCommonTable from "../common/Table";
 import ApplicantSideBar from "../common/SideBar";
 import { ReferenceListActionButton } from "../common/ReferenceListActionButton";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
@@ -191,7 +191,10 @@ const Acknowledge = () => {
 
   useEffect(() => {
     if (applicantTypeList.length > 0) {
-      setSelectedApplicantType(applicantTypeList?.filter(data => data?.id === applicantId)[0]?.applicantType);
+      setSelectedApplicantType(
+        applicantTypeList?.filter((data) => data?.id === applicantId)[0]
+          ?.applicantType
+      );
     }
   }, [applicantTypeList, applicantId]);
 
@@ -249,9 +252,9 @@ const Acknowledge = () => {
   };
 
   const getSelectedTile = (data) => {
-    setApplicantId(data)
-    getAcknowledgement(data)
-  }
+    setApplicantId(data);
+    getAcknowledgement(data);
+  };
 
   return (
     <Fragment>
@@ -275,8 +278,9 @@ const Acknowledge = () => {
             />
           </div>
           <div
-            className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid
-              }`}
+            className={`${
+              isExpanded ? style.bigCardGrid : style.smallCardGrid
+            }`}
           >
             <ApplicantSideBar
               applicantType={applicantTypeList?.map(
@@ -303,7 +307,7 @@ const Acknowledge = () => {
                   All Acknowledgement Forms
                 </Typography>
               </div>
-              <ApplicantTable
+              <ReferenceListCommonTable
                 applicantTypes={acknowledgementForms}
                 applicantNotice={
                   "Applicant types are ordered as they will appear on forms. To change the order, click and drag "

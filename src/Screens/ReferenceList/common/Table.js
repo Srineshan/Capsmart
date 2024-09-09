@@ -6,13 +6,12 @@ import style from "./../index.module.scss";
 import DragHandleIcon from "@mui/icons-material/DragHandle";
 import ProofOfDocumentDialog from "../proofOfDocument/proofOfDocumentDialog";
 import { POST, GET, PUT, TenantID, DELETE } from "./../../dataSaver";
-import StaffPrivilegeDialog from "../staffPrivileges/staffPrivilegeDialog";
 import ConsentsDialog from "../consents/consentsDialog";
 import AcknowledgmentDialog from "../acknowledgment/AcknowledgmentDialog";
 import DisclosureByIndustriesDialog from "../disclosureByIndustries/disclosureByIndustriesDialog";
 import { format } from "date-fns";
 
-const ApplicantTable = ({
+const ReferenceListCommonTable = ({
   applicantTypes,
   applicantNotice,
   tableDataKeys,
@@ -20,6 +19,7 @@ const ApplicantTable = ({
   documents,
   handleClose,
   tileType,
+  onEditClick,
 }) => {
   const [selectedApplicant, setSelectedApplicant] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
@@ -27,6 +27,9 @@ const ApplicantTable = ({
   const handleEditClick = (applicant) => {
     console.log(applicant);
     setSelectedApplicant(applicant);
+
+    if (onEditClick) onEditClick(applicant);
+
     setOpenDialog(true);
   };
 
@@ -59,7 +62,7 @@ const ApplicantTable = ({
     if (tileType === "StaffPrivileges") {
       console.log("id", id);
       try {
-        await DELETE(`entity-service/staffprivileges/${id}`);
+        await DELETE(`entity-service/staffPrivilege/${id}`);
 
         console.log("Document deleted successfully");
       } catch (error) {
@@ -228,16 +231,6 @@ const ApplicantTable = ({
         />
       )}
 
-      {selectedApplicant && tileType === "StaffPrivilege" && openDialog && (
-        <StaffPrivilegeDialog
-          open={openDialog}
-          onClose={handleCloseDialog}
-          selectedApplicant={selectedApplicant}
-          isEdit={true}
-          handleClose={handleCloseDialog}
-        />
-      )}
-
       {selectedApplicant && tileType == "Acknowedgement" && openDialog && (
         <AcknowledgmentDialog
           open={openDialog}
@@ -275,4 +268,4 @@ const ApplicantTable = ({
   );
 };
 
-export default ApplicantTable;
+export default ReferenceListCommonTable;

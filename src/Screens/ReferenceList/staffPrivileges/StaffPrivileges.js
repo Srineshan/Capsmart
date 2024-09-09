@@ -1,90 +1,64 @@
 import React, { Fragment, useState, useEffect } from "react";
 import Navbar from "../../../Components/Navbar";
-import { Checkbox, Icon, Intent } from "@blueprintjs/core";
 import style from "./../index.module.scss";
-import { GET, DELETE, POST, TenantID } from "../../dataSaver";
-import AddNewDepartments from "../addNewDepartments";
-import { SuccessToaster, ErrorToaster } from "../../../utils/toaster";
-import { format } from "date-fns";
+import { GET, POST, TenantID } from "../../dataSaver";
 import LevelTwoHeader from "../../../Components/LevelTwoHeader";
-import CommonCheckBox from "../../../Components/CommonFields/CommonCheckBox";
-import CommonPurpleCheckBox from "../../../Components/CommonFields/CommonPurpleCheckBox";
-import SearchBar from "../../../Components/SearchBar";
 import { formatInTimeZone } from "date-fns-tz";
 import { siteTimeZone, timeZoneAbbreviation } from "../../../utils/formatting";
-import ApplicantTable from "../common/Table";
+import ReferenceListCommonTable from "../common/Table";
 import ApplicantSideBar from "../common/SideBar";
 import { ReferenceListActionButton } from "../common/ReferenceListActionButton";
 import { Typography } from "@material-ui/core";
-const [isDialogOpen, setIsDialogOpen] = useState(false);
+import StaffPrivilegeDialog from "./staffPrivilegeDialog";
 
 const StaffPrivileges = () => {
-  const [isSelected, setIsSelected] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(true);
-  const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
-  const [tableData, setTableData] = useState();
-  const [entityDetails, setEntityDetails] = useState({});
-  const [selectedIndex, setSelectedIndex] = useState(0);
-
-  const [siteTypeId, setSiteTypeId] = useState("");
-  const [selectedEntityType, setSelectedEntityType] = useState("");
-  const [entityTypes, setEntityTypes] = useState([]);
-  const [departmentServiceMaster, setDepartmentServiceMaster] = useState([]);
-  const [departmentService, setDepartmentService] = useState([]);
-  const [selectedDepartmentServiceArea, setSelectedDepartmentServiceArea] =
-    useState([]);
-  const [selectedDepartmentService, setSelectedDepartmentService] = useState(
-    {}
-  );
   const [isEdit, setIsEdit] = useState(false);
   const [entityId, setEntityId] = useState("");
   const [lastUpdatedDate, setLastUpdatedDate] = useState("");
-
-  const [selectAllList, setSelectAllList] = useState([]);
-  const [checkedAll, setCheckedAll] = useState(false);
-  const [searchKey, setSearchKey] = useState("");
   const [selectedApplicantType, setSelectedApplicantType] = useState("");
-  const [sites, setSites] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [applicantTypeList, setApplicantTypeList] = useState([]);
   const [applicantId, setApplicantId] = useState("");
   const [staffPrivilegesForm, setStaffPrivilegesForm] = useState([]);
+  const [editData, setEditData] = useState();
+  const [isRefetch, setIsRefetch] = useState(false);
 
-  const tableHeadKeys = [
-    // "ID",
-    // "TITLE",
-    "CATEGORY",
-    // "TYPE",
-    // "POD",
-    "LAST UPDATED",
-  ];
+  const tableHeadKeys = ["CATEGORY", "LAST UPDATED"];
   const tableDataKeys = ["applicantType", "lastModifiedDate"];
+
+  useEffect(() => {
+    getApplicantType();
+    getEntity();
+  }, []);
+
+  useEffect(() => {
+    if (applicantTypeList && applicantTypeList.length > 0) {
+      setSelectedApplicantType(applicantTypeList[0]?.applicantType || "");
+      setApplicantId(applicantTypeList[0]?.id);
+    }
+  }, [applicantTypeList]);
+
   useEffect(() => {
     if (entityId !== "" && entityId !== undefined) {
       getLastModifiedDate();
     }
   }, [entityId]);
 
-  const getIsExpanded = (value) => {
-    setIsExpanded(value);
-  };
+  useEffect(() => {
+    console.log(applicantId);
 
-  const getAddEntityDialog = (value) => {
-    setShowAddEntityDialog(value);
-  };
+    if (applicantId && applicantId != "") getStaffPrivileges(applicantId);
+  }, [applicantId]);
 
   useEffect(() => {
-    getStaffPrivileges(applicantId);
-  }, [applicantId]);
+    if (isRefetch) {
+      getStaffPrivileges(applicantId);
+    }
+  }, [isRefetch]);
 
   const getEntity = async () => {
     const { data: entity } = await GET(`entity-service/entity`);
-    setEntityDetails(entity);
     setEntityId(entity?.[0]?.id);
-  };
-
-  const getAddEntityTypes = async (data) => {
-    await POST(`entity-service/document/?${TenantID}`, data);
   };
 
   const getLastModifiedDate = async () => {
@@ -101,116 +75,36 @@ const StaffPrivileges = () => {
     );
   };
 
-  const getEntityTypes = async () => {
-    const { data: entityType } = await GET(`entity-service/staffPrivilege`);
-
-    if (entityType) {
-      const allSites = entityType.flatMap((entity) => entity.sites || []);
-      setEntityTypes(allSites);
-
-      setTableData(entityType);
-    }
-  };
-
-  const getDepartmentServiceMaster = async () => {
-    const { data: departmentServiceMaster } = await GET(
-      `entity-service/departmentMaster/refListView?siteTypeId=${siteTypeId}`
-    );
-    setDepartmentServiceMaster(departmentServiceMaster);
-  };
-
-  const getDepartmentService = async () => {
-    const { data: departmentService } = await GET(
-      `entity-service/department/refListView?X-tenantID=${TenantID}&siteTypeId=${siteTypeId}&searchText=${searchKey}`
-    );
-    setDepartmentService(departmentService);
-  };
-
-  useEffect(() => {
-    let tempDepartmentService = departmentServiceMaster
-      ?.filter(
-        (data) =>
-          !departmentService.some(
-            (customerData) =>
-              customerData?.departmentGroupBy.name ===
-              data?.departmentGroupBy.name
-          )
-      )
-      ?.map((data) => {
-        return { ...data };
-      });
-
-    setSelectAllList(tempDepartmentService);
-
-    let allChecked = true;
-
-    if (tempDepartmentService.length > selectedDepartmentServiceArea.length) {
-      allChecked = false;
-    }
-
-    if (allChecked) {
-      setCheckedAll(true);
-    } else {
-      setCheckedAll(false);
-    }
-  }, [selectedDepartmentServiceArea]);
-
-  useEffect(() => {
-    getEntity();
-    getEntityTypes();
-  }, []);
-
-  useEffect(() => {
-    if (siteTypeId !== "" && siteTypeId !== undefined) {
-      getDepartmentServiceMaster();
-      getDepartmentService();
-    }
-  }, [siteTypeId, entityDetails, searchKey]);
-
-  useEffect(() => {
-    if (entityTypes.length > 0) {
-      setSelectedApplicantType(entityTypes[0]?.name);
-    }
-  }, [entityTypes]);
-
-  const handleSiteClick = (siteName) => {
-    setSelectedApplicantType(siteName);
-  };
-  console.log(tableData);
-
-  const handleCloseDialog = () => {
-    setIsDialogOpen(false);
-  };
-
-  useEffect(() => {
-    if (applicantTypeList && applicantTypeList.length > 0) {
-      setSelectedApplicantType(applicantTypeList[0]?.applicantType || "");
-    }
-  }, [applicantTypeList]);
-
   const getStaffPrivileges = async (id) => {
     if (id !== "") {
       const { data: staffPrivilegesForm } = await GET(
         `entity-service/staffPrivilege?applicantTypeId=${id}`
       );
+      setIsRefetch(false);
       setStaffPrivilegesForm(staffPrivilegesForm);
     }
   };
 
-  const getSelectedTile = (data) => {
-    setApplicantId(data);
-    getStaffPrivileges(data);
+  const getSelectedTile = (applicantId) => {
+    if (applicantId && applicantId != "") {
+      setApplicantId(applicantId);
+      getStaffPrivileges(applicantId);
+    }
   };
 
   const getApplicantType = async () => {
     const { data: types } = await GET("entity-service/applicantType");
-    console.log("applicantType", types);
     setApplicantTypeList(types);
   };
 
-  useEffect(() => {
-    getApplicantType();
-  }, []);
+  const handleSiteClick = (siteName) => {
+    setSelectedApplicantType(siteName);
+  };
+
+  const handleCloseDialog = (needRefetch = false) => {
+    setIsDialogOpen(false);
+    setIsRefetch(needRefetch);
+  };
 
   return (
     <Fragment>
@@ -227,12 +121,11 @@ const StaffPrivileges = () => {
               callingFrom={"Customer Admin"}
               needHeader={false}
               tileType={"StaffPrivileges"}
+              onAddClick={() => setIsDialogOpen(true)}
+              onCloseLevel2={() => setIsDialogOpen(false)}
             />
           </div>
-          <div
-            className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid
-              }`}
-          >
+          <div className={style.bigCardGrid}>
             <ApplicantSideBar
               applicantType={applicantTypeList?.map(
                 (data) => data?.applicantType
@@ -258,8 +151,8 @@ const StaffPrivileges = () => {
                   All StaffPrivileges Form
                 </Typography>
               </div>
-              {tableData && (
-                <ApplicantTable
+              {staffPrivilegesForm && (
+                <ReferenceListCommonTable
                   applicantTypes={staffPrivilegesForm}
                   applicantNotice={
                     "Applicant types are ordered as they will appear on forms. To change the order, click and drag "
@@ -268,9 +161,12 @@ const StaffPrivileges = () => {
                   tableHeadKeys={tableHeadKeys}
                   tileType={"StaffPrivileges"}
                   groupFirstTwoColumn={true}
-                  documents={staffPrivilegesForm}
-                  getAddEntityTypes={getAddEntityTypes}
-                  handleClose={handleCloseDialog}
+                  onEditClick={(data) => {
+                    console.log(data);
+                    setIsEdit(true);
+                    setIsDialogOpen(true);
+                    setEditData(data);
+                  }}
                 />
               )}
               <ReferenceListActionButton
@@ -280,24 +176,15 @@ const StaffPrivileges = () => {
             </div>
           </div>
         </div>
-
-        {showAddEntityDialog && (
-          <AddNewDepartments
-            getAddEntityDialog={getAddEntityDialog}
-            callingFrom={"Customer Admin"}
-            isEdit={isEdit}
-            getEntityData={getDepartmentService}
-            selectedDepart={selectedDepartmentService}
-            selectedTitle={selectedEntityType}
-            siteTypeId={siteTypeId}
-            departmentList={departmentService}
-          />
-        )}
-        <div className={style.spaceBetween}>
-          <p className={style.poweredBy}>Powered by - CAPSmart</p>
-          <p className={style.poweredBy}>© CAPSmart</p>
-        </div>
       </div>
+      {isDialogOpen && (
+        <StaffPrivilegeDialog
+          open={isDialogOpen}
+          handleClose={handleCloseDialog}
+          selectedApplicant={editData}
+          isEdit={isEdit}
+        />
+      )}
     </Fragment>
   );
 };

@@ -50,6 +50,7 @@ const LevelTwoHeader = ({
   documents,
   getAddEntityTypes,
   getEntityTypes,
+  onAddClick,
 }) => {
   const [timeFrame, setTimeFrame] = useState("This Week");
   const [showCustomRangeSelection, setShowCustomRangeSelection] =
@@ -105,7 +106,7 @@ const LevelTwoHeader = ({
 
   const handleOpenDialog = () => {
     console.log(tileType);
-
+    if (onAddClick) onAddClick();
     setIsDialogOpen(true);
   };
 
@@ -321,12 +322,12 @@ const LevelTwoHeader = ({
           </>
         )}
       </div>
-      {tileType == "StaffPrivileges" && (
+      {/* {tileType == "StaffPrivileges" && (
         <StaffPrivilegeDialog
           open={isDialogOpen}
           handleClose={handleCloseDialog}
         />
-      )}
+      )} */}
       {tileType == "Disclosure Industries" && (
         <DisclosureByIndustriesDialog
           open={isDialogOpen}

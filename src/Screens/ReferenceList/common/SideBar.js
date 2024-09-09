@@ -20,12 +20,9 @@ const ApplicantSideBar = ({
   }, [activeIndex, sideBarList]);
 
   const handleSiteClick = (index, site) => {
-    console.log(site);
-
     setActiveIndex(index);
     onSelectSite(site);
   };
-  console.log(applicantType);
 
   return (
     <div className={style.sideBar}>
@@ -44,10 +41,11 @@ const ApplicantSideBar = ({
       {applicantType.map((site, index) => (
         <div
           key={index}
-          className={`${style.sidebarContent} ${index === activeIndex
-            ? style.sideActiveBackground
-            : style.sideNonActiveBackground
-            }`}
+          className={`${style.sidebarContent} ${
+            index === activeIndex
+              ? style.sideActiveBackground
+              : style.sideNonActiveBackground
+          }`}
           onClick={() => {
             handleSiteClick(index, site);
             if (sideBarList) {
