@@ -226,6 +226,12 @@ const SuperAdminDashboard = React.lazy(() =>
 const ClientAdminDashboard = React.lazy(() =>
   import("./Screens/ReferenceList/customerAdminDashboard")
 );
+const ApplicationSummary = React.lazy(() =>
+  import("./Screens/ApplicationForm/ApplicationSummary"));
+const ApplicationAcknowledgement = React.lazy(() =>
+  import("./Screens/ApplicationForm/ApplicationAcknowledgement"));
+const PODCheck = React.lazy(() =>
+  import("./Screens/ApplicationForm/PODCheck"));
 // const ApplicantTypesByEntity = React.lazy(() =>
 //   import("./Screens/ReferenceList//referenceList/contractServiceProviderBySiteType")
 // );
@@ -336,53 +342,53 @@ const App = ({ props }) => {
       browserName === "Chrome"
         ? "CHROME"
         : browserName === "Firefox"
-        ? "FIREFOX"
-        : browserName === "Safari"
-        ? "SAFARI"
-        : browserName === "Opera"
-        ? "OPERA"
-        : browserName === "Edge"
-        ? "EDGE"
-        : browserName === "Internet Explorer"
-        ? "INTERNETEXPLORER"
-        : browserName === "Chromium"
-        ? "CHROMIUM"
-        : browserName === "Yandex"
-        ? "YANDEX"
-        : browserName === "IE"
-        ? "IE"
-        : browserName === "Mobile Safari"
-        ? "MOBILESAFARI"
-        : browserName === "Edge Chromium"
-        ? "EDGECHROMIUM"
-        : browserName === "MIUI Browser"
-        ? "MIUIBROWSER"
-        : browserName === "Samsung Browser"
-        ? "SAMSUNGBROWSER"
-        : "";
+          ? "FIREFOX"
+          : browserName === "Safari"
+            ? "SAFARI"
+            : browserName === "Opera"
+              ? "OPERA"
+              : browserName === "Edge"
+                ? "EDGE"
+                : browserName === "Internet Explorer"
+                  ? "INTERNETEXPLORER"
+                  : browserName === "Chromium"
+                    ? "CHROMIUM"
+                    : browserName === "Yandex"
+                      ? "YANDEX"
+                      : browserName === "IE"
+                        ? "IE"
+                        : browserName === "Mobile Safari"
+                          ? "MOBILESAFARI"
+                          : browserName === "Edge Chromium"
+                            ? "EDGECHROMIUM"
+                            : browserName === "MIUI Browser"
+                              ? "MIUIBROWSER"
+                              : browserName === "Samsung Browser"
+                                ? "SAMSUNGBROWSER"
+                                : "";
 
     let os =
       osName === "Windows"
         ? "WINDOWS"
         : osName === "Linux"
-        ? "LINUX"
-        : osName === "Mac OS"
-        ? "MAC"
-        : osName === "iOS"
-        ? "IOS"
-        : osName === "Android"
-        ? "ANDROID"
-        : osName === "Windows Phone"
-        ? "WINDOWSPHONE"
-        : "";
+          ? "LINUX"
+          : osName === "Mac OS"
+            ? "MAC"
+            : osName === "iOS"
+              ? "IOS"
+              : osName === "Android"
+                ? "ANDROID"
+                : osName === "Windows Phone"
+                  ? "WINDOWSPHONE"
+                  : "";
 
     let deviceType = isDesktop
       ? "DESKTOP"
       : isMobile
-      ? "MOBILE"
-      : isTablet
-      ? "TABLET"
-      : "";
+        ? "MOBILE"
+        : isTablet
+          ? "TABLET"
+          : "";
     let interceptorsInfo = sessionStorage.getItem("interceptorsInfo");
 
     let data = {
@@ -659,6 +665,18 @@ const App = ({ props }) => {
               <Route
                 path="/setPassword"
                 element={<SetPasswordWithoutEmail />}
+              />
+              <Route
+                path="/applicationForm/applicationSummary"
+                element={<ApplicationSummary />}
+              />
+              <Route
+                path="/applicationForm/applicationAcknowledgement"
+                element={<ApplicationAcknowledgement />}
+              />
+              <Route
+                path="/applicationForm/podcheck"
+                element={<PODCheck />}
               />
               <Route path="/welcome" element={<Welcome />} />
               <Route path="/entitySetup/:id/:page" element={<EntitySetup />} />
