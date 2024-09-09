@@ -43,15 +43,9 @@ const StaffPrivilegeDialog = ({
     privilegeTitle: "",
     privilegeDescrition: "",
   });
-  const [applicantState, setApplicantState] = useState({
-    currentEntityType: "",
-    applicantTypes: [],
-  });
-  const [siteState, setSiteState] = useState({
-    currentSiteType: "",
-    specificSites: [],
-  });
-  const [departmentName, setDepartmentState] = useState([]);
+  const [applicantTypes, setApplicantTypesState] = useState([]);
+  const [sites, setSitesState] = useState([]);
+  const [departments, setDepartmentsState] = useState([]);
 
   const [currentEntityType, setCurrentEntityType] = useState(
     selectedTermination?.entityId?.id ? selectedTermination?.entityId?.id : ""
@@ -62,6 +56,8 @@ const StaffPrivilegeDialog = ({
     selectedTermination?.id ? selectedTermination?.id : ""
   );
   const [createdDate, setCreatedDate] = useState("");
+
+  const [saveData, setSaveData] = useState({});
 
   const classes = useStyles();
 
@@ -86,7 +82,7 @@ const StaffPrivilegeDialog = ({
   useEffect(() => {
     fetchApplicantTypes();
     fetchSpecificSites();
-    fetchDepartmentTypes();
+    fetchDepartments();
   }, []);
 
   const fetchApplicantTypes = async () => {
@@ -96,27 +92,25 @@ const StaffPrivilegeDialog = ({
         id: item.id,
         type: item.applicantType,
       }));
-      setApplicantState((prevState) => ({
-        ...prevState,
-        applicantTypes: applicantTypes,
-      }));
+
+      if (applicantTypes && applicantTypes.length > 0) {
+        setApplicantTypesState(applicantTypes);
+      }
     } catch (error) {
       console.error("Error fetching applicant types:", error);
     }
   };
 
-  const fetchDepartmentTypes = async () => {
+  const fetchDepartments = async () => {
     try {
       const response = await GET("entity-service/department");
-      const departmentTypes = response.data.map((item) => ({
+      const departmentNames = response.data.map((item) => ({
         id: item.id,
         name: item.departmentName.name,
       }));
-      setDepartmentState((prevState) => ({
-        ...prevState,
-        departmentTypes: departmentTypes,
-      }));
-
+      if (departmentNames && departmentNames.length) {
+        setDepartmentsState(departmentNames);
+      }
     } catch (error) {
       console.error("Error fetching applicant types:", error);
     }
@@ -129,45 +123,16 @@ const StaffPrivilegeDialog = ({
       if (Array.isArray(response.data)) {
         const specificSites = response.data.map((site) => ({
           id: site.id,
-          type: site.siteName ? site.siteName.siteName : "Unknown", // Safely access nested properties
+          name: site.siteName ? site.siteName.siteName : "Unknown", // Safely access nested properties
         }));
 
-        setSiteState((prevState) => ({
-          ...prevState,
-          specificSites: specificSites,
-        }));
+        setSitesState(specificSites);
       } else {
         console.error("Unexpected response format:", response.data);
       }
     } catch (error) {
       console.error("Error fetching specific sites:", error);
     }
-  };
-
-  // const fetchSpecificDepartment = async () => {
-  //   try {
-  //     const response = await GET("entity-service/department");
-  //     if (Array.isArray(response)) {
-  //       const names = response.map((department) => department.name);
-  //       setDepartmentNames(names);
-  //     } else {
-  //       console.error("Unexpected response format:", response);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching specific departments:", error);
-  //   }
-  // };
-  const handleSelectSiteChange = (e) => {
-    setSiteState((prevState) => ({
-      ...prevState,
-      currentSiteType: e.target.value,
-    }));
-  };
-  const handleDepartmentChange = (e) => {
-    setDepartmentState((prevState) => ({
-      ...prevState,
-      departmentTypes: e.target.value,
-    }));
   };
 
   useEffect(() => {
@@ -187,83 +152,47 @@ const StaffPrivilegeDialog = ({
     }
   }, [isEdit, selectedApplicant]);
 
-  const SaveSubmitHandler = async () => {
-    // if (
-    //   !applicantState.applicantTypes ||
-    //   applicantState.applicantTypes.length === 0
-    // ) {
-    //   ErrorToaster("Applicant Type is required.");
-    //   return;
-    // }
-
-    // if (!siteState.specificSites || siteState.specificSites.length === 0) {
-    //   ErrorToaster("Site is required.");
-    //   return;
-    // }
-
-    // if (!departmentNames || departmentNames.length === 0) {
-    //   ErrorToaster("Department Name is required.");
-    //   return;
-    // }
-
-    if (!selectedOption) {
-      ErrorToaster("Privilege Specification Type is required.");
-      return;
-    }
-    const formattedOption =
-      selectedOption === "Descriptive Document"
-        ? "DescriptiveDocument"
-        : selectedOption;
-
-    const data = {
-      ...(isEdit && { id: terminationId }),
-      ...(isEdit && { createdDate: createdDate }),
-      ...(isEdit && { lastModifiedDate: new Date() }),
-
-      tenant: {
-        id: TenantID,
+  const handleDepartmentChange = (e) => {
+    var departmentData = {
+      id: e.target.value,
+      departmentName: {
+        name: departments.find((item) => item.id == e.target.value).name,
       },
-      applicantTypes: [
-        {
-          applicantType: currentEntityType,
-        },
-      ],
-      sites: [
-        {
-          siteName: {
-            siteName: siteState.specificSites,
-          },
-        },
-      ],
-      departments: [
-        {
-          departmentName: {
-            name: departmentName,
-          },
-        },
-      ],
-      advancedPrivilegesRequired: isPrivilagesRequired,
-      privilegeSpecificationType: formattedOption,
     };
+    setSaveData((prev) => ({
+      ...prev,
+      department: departmentData,
+    }));
+  };
 
-    try {
-      if (isEdit) {
-        await PUT(
-          `entity-service/staffPrivilege/?${terminationId}`,
-          JSON.stringify(data)
-        );
-        SuccessToaster("Document updated successfully");
-      } else {
-        await POST(
-          `entity-service/staffPrivilege/?${terminationId}`,
-          JSON.stringify(data)
-        );
-        SuccessToaster("Document saved successfully");
-      }
-      handleClose();
-    } catch (error) {
-      ErrorToaster(error.message);
+  const handleApplicantTypeChange = (e) => {
+    var applicantData = {
+      id: e.target.value,
+      applicantType: applicantTypes.find((item) => item.id == e.target.value)
+        .type,
+    };
+    setSaveData((prev) => ({
+      ...prev,
+      applicantType: applicantData,
+    }));
+  };
+
+  const handleSelectSiteChange = (e) => {
+    var selectedIds = e.target.value;
+    if (selectedIds) {
+      setSaveData((prev) => ({
+        ...prev,
+        sites: selectedIds.map((item) => {
+          return {
+            id: item,
+          };
+        }),
+      }));
     }
+  };
+
+  const SaveSubmitHandler = async () => {
+    console.log(saveData);
   };
 
   return (
@@ -299,21 +228,25 @@ const StaffPrivilegeDialog = ({
         <div className={style.ReferenceListEntityBorder}></div>
         <div className={`${style.addHealthCareBoxStyle}`}>
           <Box display={"flex"} gap={3}>
-            <Box width={"100%"}>
+            <Box width={"50%"}>
               <div className={style.entityLableStyle}>DEPARTMENT/SERVICE *</div>
               <FormControl fullWidth size="small">
                 <Select
                   labelId="department-service-select"
                   id="department-service-select"
                   value={
-                    isEdit ? selectedApplicant.departmentName : departmentName
+                    isEdit
+                      ? selectedApplicant.departmentName
+                      : saveData.department
+                      ? saveData.department.id
+                      : ""
                   }
                   onChange={handleDepartmentChange}
                   SelectDisplayProps={{
                     style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 },
                   }}
                 >
-                  {departmentName.departmentTypes?.map((data, index) => (
+                  {departments.map((data, index) => (
                     <MenuItem value={data?.id} key={index}>
                       {data?.name}
                     </MenuItem>
@@ -321,7 +254,7 @@ const StaffPrivilegeDialog = ({
                 </Select>
               </FormControl>
             </Box>
-            <Box width={"100%"}>
+            <Box width={"50%"}>
               <div className={style.entityLableStyle}>SPECIFIC SITE*</div>
               <FormControl fullWidth size="small">
                 <Select
@@ -330,22 +263,25 @@ const StaffPrivilegeDialog = ({
                   value={
                     isEdit && selectedApplicant
                       ? selectedApplicant.siteType
-                      : siteState.currentSiteType
+                      : saveData.sites
+                      ? saveData.sites.map((item) => item.id)
+                      : []
                   }
+                  multiple
                   onChange={handleSelectSiteChange}
                   SelectDisplayProps={{
                     style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 },
                   }}
                 >
-                  {siteState.specificSites?.map((data, index) => (
-                    <MenuItem value={data?.type} key={index}>
-                      {data?.type}
+                  {sites.map((data, index) => (
+                    <MenuItem value={data?.id} key={index}>
+                      {data?.name}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
             </Box>
-            <Box width={"100%"}>
+            <Box width={"50%"}>
               <div className={style.entityLableStyle}>APPLICATION TYPE*</div>
               <FormControl fullWidth size="small">
                 <Select
@@ -354,16 +290,16 @@ const StaffPrivilegeDialog = ({
                   value={
                     isEdit && selectedApplicant
                       ? selectedApplicant.entityType
-                      : currentEntityType
+                      : saveData.applicantType
+                      ? saveData.applicantType.id
+                      : ""
                   }
-                  onChange={(obj) => {
-                    setCurrentEntityType(obj.target.value);
-                  }}
+                  onChange={handleApplicantTypeChange}
                   SelectDisplayProps={{
                     style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 },
                   }}
                 >
-                  {applicantState.applicantTypes?.map((data, index) => (
+                  {applicantTypes?.map((data, index) => (
                     <MenuItem value={data?.id} key={index}>
                       {data?.type}
                     </MenuItem>
