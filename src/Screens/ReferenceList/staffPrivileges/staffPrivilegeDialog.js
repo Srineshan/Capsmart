@@ -221,7 +221,10 @@ const StaffPrivilegeDialog = ({
               size={30}
               intent={Intent.DANGER}
               className={style.dialogCrossStyle}
-              onClick={handleClose}
+              onClick={() => {
+                setSaveData({});
+                handleClose();
+              }}
             />
           </div>
         </div>
