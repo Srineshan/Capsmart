@@ -3,22 +3,27 @@ import ESignImg from "./../../images/eSign.png";
 import ESignEmptyImg from "./../../images/eSignEmpty.png";
 import style from './index.module.scss'
 
-const ESign = () => {
+const ESign = ({ userName, encData, showData = true, showDatais = true }) => {
     const [isClicked, setIsClicked] = useState(false);
     return (
-        <div className={style.marginTop}>
-            <img src={isClicked ? ESignImg : ESignEmptyImg} alt="" className={style.esign} onClick={() => setIsClicked(!isClicked)} />
-        </div>
-        // <div className={style.signatureContainer}>
-        //     <div className={style.signatureBorder}>
-        //         <div className={style.signatureDetails}>
-        //             <p className={style.signedBy}>Electronically Signed by</p>
-        //             <p className={style.signatureName}>B. Martins</p>
-        //             <p className={style.signatureId}>03778#873709gch5439009vsdj</p>
-        //         </div>
-        //     </div>
-        //     <div className={style.signatureDate}>01-04-2023</div>
+        // <div className={style.marginTop}>
+        //     <img src={isClicked ? ESignImg : ESignEmptyImg} alt="" className={style.esign} onClick={() => setIsClicked(!isClicked)} />
         // </div>
+        <div className={style.eSignBox}>
+            <div className={`${style.boxContainer} ${showDatais ? style.boxBorder : ''}`}>
+                <div className={style.userName} style={{ fontFamily: "'Shadows Into Light', cursive", fontSize: "22px", color: "black" }}>
+                    {showData ? userName : ""}
+                </div>
+            </div>
+
+            <div className={style.signedBy}>
+                <span>Electronically Signed By</span>
+            </div>
+
+            <div className={style.encData}>
+                {!showData ? "" : (encData && encData.length > 0 ? `${encData.substring(0, 35)}.....` : "")}
+            </div>
+        </div>
     )
 }
 

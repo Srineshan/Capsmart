@@ -153,3 +153,7 @@
     display: grid;
     grid-template-columns: 30px 1fr;
 }
+
+.disabled {
+    cursor: not-allowed;
+}

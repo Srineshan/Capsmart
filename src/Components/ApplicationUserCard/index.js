@@ -28,7 +28,7 @@ const ApplicationUserCard = ({ user, applyingFor }) => {
             // className={style.verticalSpaceBetween}
             >
                 <div className={`${style.nameStyle}`}>{`${basicForm?.applicant?.name?.firstName} ${basicForm?.applicant?.name?.lastName}`}</div>
-                <div className={`${style.applyingFor} ${style.marginTop10}`}>{applyingFor}</div>
+                <div className={`${style.applyingFor} ${style.marginTop10}`}>{`${basicForm?.basicDetailReferences?.applicantType?.category} Applying As ${basicForm?.basicDetailReferences?.applicantType?.serviceProviderType}`}</div>
                 {/* <div className={`${style.connectToLinkedIn} ${style.marginTop10}`}>Connect To LinkedIn</div> */}
             </div>
         </div>
