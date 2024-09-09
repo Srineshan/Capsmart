@@ -105,7 +105,9 @@ const LevelTwoHeader = ({
   };
 
   const handleOpenDialog = () => {
-    onAddClick();
+    console.log(tileType);
+    if (onAddClick) onAddClick();
+    setIsDialogOpen(true);
   };
 
   const handleCloseDialog = () => {

@@ -6,7 +6,6 @@ import style from "./../index.module.scss";
 import DragHandleIcon from "@mui/icons-material/DragHandle";
 import ProofOfDocumentDialog from "../proofOfDocument/proofOfDocumentDialog";
 import { POST, GET, PUT, TenantID, DELETE } from "./../../dataSaver";
-import StaffPrivilegeDialog from "../staffPrivileges/staffPrivilegeDialog";
 import ConsentsDialog from "../consents/consentsDialog";
 import AcknowledgmentDialog from "../acknowledgment/AcknowledgmentDialog";
 import DisclosureByIndustriesDialog from "../disclosureByIndustries/disclosureByIndustriesDialog";
@@ -20,6 +19,7 @@ const ReferenceListCommonTable = ({
   documents,
   handleClose,
   tileType,
+  onEditClick,
 }) => {
   const [selectedApplicant, setSelectedApplicant] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
@@ -27,6 +27,9 @@ const ReferenceListCommonTable = ({
   const handleEditClick = (applicant) => {
     console.log(applicant);
     setSelectedApplicant(applicant);
+
+    if (onEditClick) onEditClick(applicant);
+
     setOpenDialog(true);
   };
 
@@ -208,16 +211,6 @@ const ReferenceListCommonTable = ({
           onClose={handleCloseDialog}
           selectedApplicant={selectedApplicant}
           documents={documents}
-          isEdit={true}
-          handleClose={handleCloseDialog}
-        />
-      )}
-
-      {selectedApplicant && tileType === "StaffPrivilege" && openDialog && (
-        <StaffPrivilegeDialog
-          open={openDialog}
-          onClose={handleCloseDialog}
-          selectedApplicant={selectedApplicant}
           isEdit={true}
           handleClose={handleCloseDialog}
         />
