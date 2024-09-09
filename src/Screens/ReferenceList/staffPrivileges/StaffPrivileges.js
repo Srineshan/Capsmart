@@ -58,6 +58,13 @@ const StaffPrivileges = () => {
     "LAST UPDATED",
   ];
   const tableDataKeys = ["applicantType", "lastModifiedDate"];
+
+  useEffect(() => {
+    if (applicantTypeList && applicantTypeList.length > 0) {
+      setSelectedApplicantType(applicantTypeList[0]?.applicantType || "");
+    }
+  }, [applicantTypeList]);
+
   useEffect(() => {
     if (entityId !== "" && entityId !== undefined) {
       getLastModifiedDate();
@@ -223,8 +230,9 @@ const StaffPrivileges = () => {
             />
           </div>
           <div
-            className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid
-              }`}
+            className={`${
+              isExpanded ? style.bigCardGrid : style.smallCardGrid
+            }`}
           >
             <ApplicantSideBar
               applicantType={applicantTypeList?.map(

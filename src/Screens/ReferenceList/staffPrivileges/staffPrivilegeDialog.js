@@ -12,6 +12,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
+import MarkdownEditor from "../../../Components/MarkdownEditor";
 
 const useStyles = makeStyles({
   switch: {
@@ -28,51 +29,47 @@ const StaffPrivilegeDialog = ({
   open,
   handleClose,
   isEdit,
-  selectedTermination,
+  tenantID,
   selectedApplicant,
   isSecondary,
   siteTypeId,
 }) => {
-  const [selectedType, setSelectedType] = useState("basic");
-  const [proofRequired, setProofRequired] = useState(true);
   const [isPrivilagesRequired, setPrivilagesRequired] = useState(false);
-  const [industryTypes, setIndustryType] = useState("");
-  const [instructionText, setInstructionText] = useState("");
-  const [privileges, setPrivileges] = useState({
-    privilegeId: "Surgical Services",
-    privilegeTitle: "",
-    privilegeDescrition: "",
-  });
   const [applicantTypes, setApplicantTypesState] = useState([]);
   const [sites, setSitesState] = useState([]);
   const [departments, setDepartmentsState] = useState([]);
-
-  const [currentEntityType, setCurrentEntityType] = useState(
-    selectedTermination?.entityId?.id ? selectedTermination?.entityId?.id : ""
-  );
-
-  const [selectedOption, setSelectedOption] = useState("");
-  const [terminationId, setTerminationId] = useState(
-    selectedTermination?.id ? selectedTermination?.id : ""
-  );
-  const [createdDate, setCreatedDate] = useState("");
-
+  const [generalInstructionContent, setGeneralInstructionContent] = useState();
+  const [advancePrivilegeContent, setAdvancePrivilegeContent] = useState();
+  const [privilegeSpecificationType, setPrivilegeSpecificationType] =
+    useState("");
+  const [terminationId, setTerminationId] = useState(tenantID ? tenantID : "");
   const [saveData, setSaveData] = useState({});
+  const [isProofOfDocumentRequired, setIsProofOfDocumentRequired] =
+    useState(false);
+
+  const PrivilegeSpecificationType1 = "Descriptive Document";
+  const PrivilegeSpecificationType2 = "Discreet Item List";
+
+  const privilegeSpecifications = [
+    {
+      id: "Descriptive Document",
+      label: PrivilegeSpecificationType2,
+    },
+    {
+      id: "Discreet_Item_List",
+      label: PrivilegeSpecificationType1,
+    },
+  ];
 
   const classes = useStyles();
 
-  const handleChange = (event) => {
-    setSelectedOption(event.target.value);
+  const updateSaveData = (property, data) => {
+    setSaveData((prev) => ({ ...prev, [property]: data }));
   };
 
-  const arrowDown = () => {
-    return (
-      <img
-        src={ArrowDown}
-        className={`${style.colorFileStyle3} ${style.marginRight}`}
-        alt=""
-      />
-    );
+  const handlePrivilegeSpecificationChange = (event) => {
+    setPrivilegeSpecificationType(event.target.value);
+    setIsProofOfDocumentRequired(false);
   };
 
   useEffect(() => {
@@ -137,20 +134,9 @@ const StaffPrivilegeDialog = ({
 
   useEffect(() => {
     if (isEdit) {
-      setCurrentEntityType(siteTypeId);
-      setTerminationId(selectedTermination?.id);
-      setCreatedDate(selectedTermination?.createdDate);
+      setTerminationId(tenantID);
     }
-  }, [selectedTermination]);
-
-  useEffect(() => {
-    if (isEdit && selectedApplicant) {
-      setSelectedType(selectedApplicant.selectedType || "basic");
-      setProofRequired(selectedApplicant.proofRequired || false);
-      setPrivilagesRequired(selectedApplicant.toggleState || false);
-      setInstructionText(selectedApplicant.instructionText || "");
-    }
-  }, [isEdit, selectedApplicant]);
+  }, [tenantID]);
 
   const handleDepartmentChange = (e) => {
     var departmentData = {
@@ -192,7 +178,14 @@ const StaffPrivilegeDialog = ({
   };
 
   const SaveSubmitHandler = async () => {
-    console.log(saveData);
+    var newStaffPrivileges = {
+      ...saveData,
+      proofOfDocumentationRequired: isProofOfDocumentRequired,
+      advancedPrivilegesRequired: isPrivilagesRequired,
+      privilegeSpecificationType: privilegeSpecificationType,
+    };
+    console.log(newStaffPrivileges);
+    console.log(terminationId);
   };
 
   return (
@@ -315,47 +308,57 @@ const StaffPrivilegeDialog = ({
             <div className={style.entityLableStyle}>
               PRIVELEGE SPECIFICATION TYPE REQUIRED*
             </div>
-            <div className={`${style.marginLeft40} ${style.validation}`}>
-              <FormControlLabel
-                control={
-                  <Radio
-                    checked={selectedOption === "Discreet Item List"}
-                    onChange={handleChange}
-                    value="Discreet Item List"
-                    sx={{
-                      "& .MuiSvgIcon-root": {
-                        borderRadius: "50%",
-                        color: "blue",
-                      },
-                    }}
-                  />
-                }
-              />
-              <label>Discreet Item List</label>
-            </div>
-            <div className={`${style.marginLeft40} ${style.validation}`}>
-              <FormControlLabel
-                control={
-                  <Radio
-                    checked={selectedOption === "Descriptive Document"}
-                    onChange={handleChange}
-                    value="Descriptive Document"
-                    sx={{ "& .MuiSvgIcon-root": { borderRadius: "50%" } }}
-                  />
-                }
-              />
-              <label>Descriptive Document</label>
-            </div>
+            {privilegeSpecifications.map((item) => (
+              <div className={`${style.marginLeft40} ${style.validation}`}>
+                <FormControlLabel
+                  control={
+                    <Radio
+                      id={item.id}
+                      checked={item.label == privilegeSpecificationType}
+                      onChange={handlePrivilegeSpecificationChange}
+                      value={item.label}
+                    />
+                  }
+                />
+                <label>{item.label}</label>
+              </div>
+            ))}
           </div>
 
-          <div
-            className={`${style.ReferenceListEntityBorder} ${style.marginTop20}`}
-          ></div>
+          {privilegeSpecificationType == PrivilegeSpecificationType1 && (
+            <div className={`${style.validation} ${style.marginTop20}`}>
+              <div className={style.entityLableStyle}>
+                PROOF OF DOCUMENTATION REQUIRED?
+              </div>
+              <div>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={isProofOfDocumentRequired}
+                      onChange={(e) => {
+                        setIsProofOfDocumentRequired(e.target.checked);
+                      }}
+                      className={classes.switch}
+                    />
+                  }
+                  className={`${style.switchFontStyle}`}
+                  label={isProofOfDocumentRequired ? "Yes" : "No"}
+                  labelPlacement="start"
+                />
+              </div>
+            </div>
+          )}
           <div className={style.marginTop20}>
             <div className={style.entityLableStyle}>
               GENERAL INSTRUCTION TEXT
             </div>
-            <Editor />
+            <MarkdownEditor
+              editorHtml={generalInstructionContent}
+              onChange={(data) =>
+                updateSaveData("generalInstructionText", data)
+              }
+              placeholder={"Enter GENERAL INSTRUCTION Here"}
+            />
           </div>
           <div className={`${style.marginTop20} ${style.verticalAlignCenter}`}>
             <div className={style.entityLableStyle}>
@@ -366,7 +369,9 @@ const StaffPrivilegeDialog = ({
                 control={
                   <Switch
                     checked={isPrivilagesRequired}
-                    onChange={(e) => setPrivilagesRequired(e.target.checked)}
+                    onChange={(e) => {
+                      setPrivilagesRequired(e.target.checked);
+                    }}
                     className={classes.switch}
                   />
                 }
@@ -382,7 +387,15 @@ const StaffPrivilegeDialog = ({
               <div className={style.entityLableStyle}>
                 ADVANCED PRIVILEGES SECTION INSTRUCTION TEXT
               </div>
-              <Editor />
+              <Editor
+                editorHtml={advancePrivilegeContent}
+                onChange={(data) =>
+                  updateSaveData("advancedInstructionText", data)
+                }
+                placeholder={
+                  "Enter ADVANCED PRIVILEGES SECTION INSTRUCTION Here"
+                }
+              />
             </div>
           )}
         </div>
