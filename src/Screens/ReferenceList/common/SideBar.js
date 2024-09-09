@@ -30,7 +30,7 @@ const ApplicantSideBar = ({
   return (
     <div className={style.sideBar}>
       <div>
-        {siteDropdown ? (
+        {/* {siteDropdown ? (
           <select
             className={style.dropdown}
             onChange={(e) => onSelectSite(e.target.value)}
@@ -39,7 +39,7 @@ const ApplicantSideBar = ({
           </select>
         ) : (
           <p className={style.siteTitle}>{siteTitle}</p>
-        )}
+        )} */}
       </div>
       {applicantType.map((site, index) => (
         <div

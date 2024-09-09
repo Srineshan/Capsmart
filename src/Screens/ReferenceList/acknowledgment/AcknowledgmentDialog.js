@@ -14,9 +14,9 @@ import style from "./../index.module.scss";
 import { ErrorToaster, SuccessToaster } from "./../../../utils/toaster";
 import { POST, GET, PUT, TenantID } from "./../../dataSaver";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
 import { Switch, makeStyles } from "@material-ui/core";
 import WritingFile from "./../../../images/writing-file.svg";
 import CommonDropZone from "../../../Components/CommonFields/CommonDropZone";
@@ -68,10 +68,10 @@ const AcknowledgmentDialog = ({
   const [applicantTypeList, setApplicantTypeList] = useState([]);
   const [applicantType, setApplicantType] = useState([]);
   const [selectedApplicantType, setSelectedApplicantType] = useState([]);
-  const [title, setTitle] = useState('');
+  const [title, setTitle] = useState("");
   const [content, setContent] = useState();
   const [file, setFile] = useState();
-  const [contentType, setContentType] = useState('');
+  const [contentType, setContentType] = useState("");
   const [disclaimer, setDisclaimer] = useState();
 
   const [subReasonFields, setSubReasonFields] = useState([]);
@@ -105,11 +105,11 @@ const AcknowledgmentDialog = ({
 
   useEffect(() => {
     if (isEdit) {
-      console.log(selectedAcknowledgement)
+      console.log(selectedAcknowledgement);
       let temp = [];
-      selectedAcknowledgement?.applicantTypes?.map(data => {
-        temp.push(data?.id)
-      })
+      selectedAcknowledgement?.applicantTypes?.map((data) => {
+        temp.push(data?.id);
+      });
       setApplicantType(temp);
       setSelectedApplicantType(selectedAcknowledgement?.applicantTypes);
       setTitle(selectedAcknowledgement?.title);
@@ -117,19 +117,25 @@ const AcknowledgmentDialog = ({
       setContent(selectedAcknowledgement?.content?.content);
       setDisclaimer(selectedAcknowledgement?.disclaimer?.content);
       setEInitialRequired(selectedAcknowledgement?.einitialRequiredOnEachPage);
-      setSignatureRequired(selectedAcknowledgement?.esignatureRequiredOnEachPage);
+      setSignatureRequired(
+        selectedAcknowledgement?.esignatureRequiredOnEachPage
+      );
     }
   }, [selectedAcknowledgement]);
 
-  console.log(applicantType, selectedApplicantType, selectedAcknowledgement)
+  console.log(applicantType, selectedApplicantType, selectedAcknowledgement);
 
   useEffect(() => {
     if (applicantType?.length !== 0) {
       let temp = [];
-      applicantType?.map(data => {
-        temp.push(applicantTypeList?.filter(applicantData => applicantData?.id === data)?.map(innerData => innerData)?.[0])
-      })
-      console.log(temp)
+      applicantType?.map((data) => {
+        temp.push(
+          applicantTypeList
+            ?.filter((applicantData) => applicantData?.id === data)
+            ?.map((innerData) => innerData)?.[0]
+        );
+      });
+      console.log(temp);
       setSelectedApplicantType(temp);
     }
   }, [applicantType, applicantTypeList]);
@@ -149,14 +155,14 @@ const AcknowledgmentDialog = ({
   };
 
   const getDisclaimerValue = (data) => {
-    setDisclaimer(data)
-    console.log(data)
-  }
+    setDisclaimer(data);
+    console.log(data);
+  };
 
   const getContentValue = (data) => {
-    setContent(data)
-    console.log(data)
-  }
+    setContent(data);
+    console.log(data);
+  };
 
   const handleSubReasonValue = (i, value) => {
     let temp = secondaryReasonList;
@@ -268,23 +274,22 @@ const AcknowledgmentDialog = ({
   };
 
   const handleSaveAcknowledgementForm = async () => {
-
     const data = {
-      "applicantTypes": selectedApplicantType,
-      "title": title,
-      "content": {
-        "content": content
+      applicantTypes: selectedApplicantType,
+      title: title,
+      content: {
+        content: content,
       },
-      "file": file,
-      "contentType": "Text",
-      "disclaimer": {
-        "content": disclaimer
+      file: file,
+      contentType: "Text",
+      disclaimer: {
+        content: disclaimer,
       },
-      "einitialRequiredOnEachPage": eInitialRequired,
-      "esignatureRequiredOnEachPage": signatureRequired
+      einitialRequiredOnEachPage: eInitialRequired,
+      esignatureRequiredOnEachPage: signatureRequired,
     };
 
-    console.log(data)
+    console.log(data);
     if (!isEdit) {
       await POST("entity-service/acknowledgementForm", JSON.stringify(data))
         .then((response) => {
@@ -335,12 +340,12 @@ const AcknowledgmentDialog = ({
   };
 
   const handleApplicantTypeChange = (value) => {
-    setApplicantType(typeof value === 'string' ? value.split(',') : value,)
-  }
+    setApplicantType(typeof value === "string" ? value.split(",") : value);
+  };
 
   const changeHandler = async (event) => {
-    console.log(event)
-    console.log(event, 'Test');
+    console.log(event);
+    console.log(event, "Test");
     setFile(event);
 
     // const formData = new FormData();
@@ -371,28 +376,32 @@ const AcknowledgmentDialog = ({
     // }
 
     let fileName = {
-      "fileName": event[0]?.name
+      fileName: event[0]?.name,
     };
     const formData = new FormData();
 
     if (event[0] !== null) {
-
-      formData.append('fileDTO', new Blob([JSON.stringify(fileName)], {
-        type: "application/json"
-      }));
-      formData.append('file', event[0]);
+      formData.append(
+        "fileDTO",
+        new Blob([JSON.stringify(fileName)], {
+          type: "application/json",
+        })
+      );
+      formData.append("file", event[0]);
       try {
-        const response = await POST(`entity-service/acknowledgementForm/file`, formData);
-        SuccessToaster('File Uploaded Successfully');
+        const response = await POST(
+          `entity-service/acknowledgementForm/file`,
+          formData
+        );
+        SuccessToaster("File Uploaded Successfully");
         console.log(response?.data);
-        setFile(response?.data)
+        setFile(response?.data);
       } catch (error) {
-        ErrorToaster('File Upload Failed');
+        ErrorToaster("File Upload Failed");
         console.error(error);
       }
     }
   };
-
 
   return (
     <Dialog
@@ -434,19 +443,6 @@ const AcknowledgmentDialog = ({
         <div className={`${style.addHealthCareBoxStyle}`}>
           <div>
             <div className={style.entityLableStyle}>APPLICANT TYPE*</div>
-            {/* <select
-              value={currentEntityType}
-              className={style.fullWidth}
-              // rightElement={arrowDown()}
-              onChange={(obj) => {
-                setCurrentEntityType(obj.target.value);
-              }}
-            >
-              <option value="">Select Applicant Type</option>
-              {entityTypes.map((type) => (
-                <option value={type.siteTypeId}>{type.siteTypeName}</option>
-              ))}
-            </select> */}
             <FormControl className={style.fullWidth} size="small">
               <Select
                 labelId="demo-multiple-checkbox-label"
@@ -454,11 +450,15 @@ const AcknowledgmentDialog = ({
                 multiple
                 value={applicantType}
                 onChange={(e) => handleApplicantTypeChange(e.target.value)}
-                SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                SelectDisplayProps={{
+                  style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 },
+                }}
               >
-                {applicantTypeList?.map((data, index) =>
-                  <MenuItem value={data?.id} key={index}>{data?.applicantType}</MenuItem>
-                )}
+                {applicantTypeList?.map((data, index) => (
+                  <MenuItem value={data?.id} key={index}>
+                    {data?.applicantType}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           </div>
@@ -467,7 +467,9 @@ const AcknowledgmentDialog = ({
           ></div>
 
           <div className={style.marginTop20}>
-            <div className={style.entityLableStyle}>ACKNOWLEDGEMENT FORM TITLE*</div>
+            <div className={style.entityLableStyle}>
+              ACKNOWLEDGEMENT FORM TITLE*
+            </div>
             {/* <select
               value={terminationBy}
               defaultValue={terminationBy}
@@ -485,8 +487,8 @@ const AcknowledgmentDialog = ({
               className={style.fullWidth}
               onChange={(e) => setTitle(e.target.value)}
               maxLength={TEXTFIELDLEN50}
-              placeholder={'Enter ACKNOWLEDGEMENT FORM TITLE'}
-              label={'ACKNOWLEDGEMENT FORM TITLE'}
+              placeholder={"Enter ACKNOWLEDGEMENT FORM TITLE"}
+              label={"ACKNOWLEDGEMENT FORM TITLE"}
               required={true}
             />
           </div>
@@ -494,10 +496,12 @@ const AcknowledgmentDialog = ({
             <div className={style.entityLableStyle}>
               ACKNOWLEDGEMENT FORM CONTENT*
             </div>
-            <Editor editorHtml={content}
-              onChange={getContentValue} placeholder={'Enter Acknowledgement form Content Here'} />
+            <Editor
+              editorHtml={content}
+              onChange={getContentValue}
+              placeholder={"Enter Acknowledgement form Content Here"}
+            />
             {/* <MarkdownEditor getValue={getContentValue} /> */}
-
           </div>
 
           <div className={style.acknowledgementListContainer}>
@@ -523,16 +527,30 @@ const AcknowledgmentDialog = ({
 
           </div> */}
           <div className={`${style.twoCol} ${style.marginTop}`}>
-            <CommonDropZone title={'Upload Your Documents'} description={'Upload your files or drag & drop from your cabinet'} changeHandler={changeHandler} />
-            <CommonDropZone title={'Upload A Photo'} description={'Click a picture with your Camera or upload from Gallery.'} changeHandler={changeHandler} accept="image/*" />
+            <CommonDropZone
+              title={"Upload Your Documents"}
+              description={"Upload your files or drag & drop from your cabinet"}
+              changeHandler={changeHandler}
+            />
+            <CommonDropZone
+              title={"Upload A Photo"}
+              description={
+                "Click a picture with your Camera or upload from Gallery."
+              }
+              changeHandler={changeHandler}
+              accept="image/*"
+            />
           </div>
 
           <div className={style.marginTop20}>
             <div className={style.entityLableStyle}>DISCLAIMER CONTENTS*</div>
             {/* <Editor /> */}
             <div>
-              <MarkdownEditor editorHtml={disclaimer}
-                onChange={getDisclaimerValue} placeholder={'Enter Disclaimer Here'} />
+              <MarkdownEditor
+                editorHtml={disclaimer}
+                onChange={getDisclaimerValue}
+                placeholder={"Enter Disclaimer Here"}
+              />
             </div>
           </div>
 
@@ -542,9 +560,6 @@ const AcknowledgmentDialog = ({
             </div>
             <div>
               <div style={{ display: "flex", alignItems: "flex-end" }}>
-                <p style={{ marginRight: "10px" }}>
-                  {eInitialRequired ? "YES" : "NO"}
-                </p>
                 <FormControlLabel
                   control={
                     <Switch
@@ -554,6 +569,8 @@ const AcknowledgmentDialog = ({
                     />
                   }
                   className={`${style.switchFontStyle}`}
+                  label={eInitialRequired ? "Yes" : "No"}
+                  labelPlacement="start"
                 />
               </div>
             </div>
@@ -565,9 +582,6 @@ const AcknowledgmentDialog = ({
             </div>
             <div>
               <div style={{ display: "flex", alignItems: "flex-end" }}>
-                <p style={{ marginRight: "10px" }}>
-                  {signatureRequired ? "YES" : "NO"}
-                </p>
                 <FormControlLabel
                   control={
                     <Switch
@@ -577,6 +591,8 @@ const AcknowledgmentDialog = ({
                     />
                   }
                   className={`${style.switchFontStyle}`}
+                  label={signatureRequired ? "Yes" : "No"}
+                  labelPlacement="start"
                 />
               </div>
             </div>
@@ -587,10 +603,10 @@ const AcknowledgmentDialog = ({
             <div className={style.floatLeft}>
               <button
                 className={style.outlinedButton}
-              // onClick={() => {
-              //   getAddEntityDialog(false);
-              //   getTerminationReasonData();
-              // }}
+                // onClick={() => {
+                //   getAddEntityDialog(false);
+                //   getTerminationReasonData();
+                // }}
               >
                 BULK UPLOAD
               </button>

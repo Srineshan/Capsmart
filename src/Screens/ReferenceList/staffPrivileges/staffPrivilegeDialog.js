@@ -2,13 +2,27 @@ import React, { useState, useEffect } from "react";
 import { Dialog, Classes, Icon, Intent, InputGroup } from "@blueprintjs/core";
 import ArrowDown from "./../../../images/arrowDown.png";
 import style from "./../index.module.scss";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import { Radio, Switch } from "@material-ui/core";
+import { Radio, Switch, makeStyles } from "@material-ui/core";
 import WritingFile from "./../../../images/writing-file.svg";
 import { Box } from "@mui/material";
 import { POST, GET, PUT, TenantID } from "./../../dataSaver";
 import { ErrorToaster, SuccessToaster } from "../../../utils/toaster";
 import Editor from "../common/Editor";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+
+const useStyles = makeStyles({
+  switch: {
+    "& .Mui-checked": {
+      color: "#7165e3",
+    },
+    "& .MuiSwitch-track": {
+      backgroundColor: "#7165e3 !important",
+    },
+  },
+});
 
 const StaffPrivilegeDialog = ({
   open,
@@ -21,7 +35,7 @@ const StaffPrivilegeDialog = ({
 }) => {
   const [selectedType, setSelectedType] = useState("basic");
   const [proofRequired, setProofRequired] = useState(true);
-  const [toggleState, setToggleState] = useState(false);
+  const [isPrivilagesRequired, setPrivilagesRequired] = useState(false);
   const [industryTypes, setIndustryType] = useState("");
   const [instructionText, setInstructionText] = useState("");
   const [privileges, setPrivileges] = useState({
@@ -48,6 +62,8 @@ const StaffPrivilegeDialog = ({
     selectedTermination?.id ? selectedTermination?.id : ""
   );
   const [createdDate, setCreatedDate] = useState("");
+
+  const classes = useStyles();
 
   const handleChange = (event) => {
     setSelectedOption(event.target.value);
@@ -127,7 +143,7 @@ const StaffPrivilegeDialog = ({
   const handleSelectChange = (e) => {
     setApplicantState((prevState) => ({
       ...prevState,
-      currentEntityType: e.target.value,
+      currentSiteType: e.target.value,
     }));
   };
   useEffect(() => {
@@ -142,7 +158,7 @@ const StaffPrivilegeDialog = ({
     if (isEdit && selectedApplicant) {
       setSelectedType(selectedApplicant.selectedType || "basic");
       setProofRequired(selectedApplicant.proofRequired || false);
-      setToggleState(selectedApplicant.toggleState || false);
+      setPrivilagesRequired(selectedApplicant.toggleState || false);
       setInstructionText(selectedApplicant.instructionText || "");
       setEditDepartmentNames(selectedApplicant.departmentNames || []);
     }
@@ -203,7 +219,7 @@ const StaffPrivilegeDialog = ({
           },
         },
       ],
-      advancedPrivilegesRequired: toggleState,
+      advancedPrivilegesRequired: isPrivilagesRequired,
       privilegeSpecificationType: formattedOption,
     };
 
@@ -265,72 +281,83 @@ const StaffPrivilegeDialog = ({
         </div>
         <div className={style.ReferenceListEntityBorder}></div>
         <div className={`${style.addHealthCareBoxStyle}`}>
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <div>
+          <Box display={"flex"} gap={3}>
+            <Box width={"100%"}>
               <div className={style.entityLableStyle}>DEPARTMENT/SERVICE *</div>
-              <div className={style.displayInRow}>
-                <select
+              <FormControl fullWidth size="small">
+                <Select
+                  labelId="department-service-select"
+                  id="department-service-select"
                   value={
                     isEdit ? selectedApplicant.departmentName : departmentNames
                   }
-                  className={`${style.fullWidth} ${style.customSelect}`}
-                  rightElement={arrowDown()}
                   onChange={handleDepartmentChange}
+                  SelectDisplayProps={{
+                    style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 },
+                  }}
                 >
-                  {departmentNames.map((name) => (
-                    <option>{name}</option>
+                  {departmentNames?.map((data, index) => (
+                    <MenuItem value={data?.id} key={index}>
+                      {data?.name}
+                    </MenuItem>
                   ))}
-                </select>
-              </div>
-            </div>
-            <div style={{ marginLeft: "30px" }}>
+                </Select>
+              </FormControl>
+            </Box>
+            <Box width={"100%"}>
               <div className={style.entityLableStyle}>SPECIFIC SITE*</div>
-              <div className={style.displayInRow}>
-                <select
+              <FormControl fullWidth size="small">
+                <Select
+                  labelId="specific-site-checkbox"
+                  id="specific-site-checkbox"
                   value={
                     isEdit && selectedApplicant
                       ? selectedApplicant.siteType
                       : siteState.currentSiteType
                   }
-                  className={`${style.fullWidth} ${style.customSelect}`}
-                  rightElement={arrowDown()}
                   onChange={handleSelectChange}
+                  SelectDisplayProps={{
+                    style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 },
+                  }}
                 >
-                  {siteState.specificSites.map((site) => (
-                    <option key={site.id} value={site.id}>
-                      {site.type}
-                    </option>
+                  {siteState.specificSites?.map((data, index) => (
+                    <MenuItem value={data?.type} key={index}>
+                      {data?.type}
+                    </MenuItem>
                   ))}
-                </select>
-              </div>
-            </div>
-            <div style={{ marginLeft: "30px" }}>
+                </Select>
+              </FormControl>
+            </Box>
+            <Box width={"100%"}>
               <div className={style.entityLableStyle}>APPLICATION TYPE*</div>
-              <div className={style.displayInRow}>
-                <select
+              <FormControl fullWidth size="small">
+                <Select
+                  labelId="application-type-checkbox"
+                  id="application-type-checkbox"
                   value={
                     isEdit && selectedApplicant
                       ? selectedApplicant.entityType
                       : currentEntityType
                   }
-                  className={`${style.fullWidth} ${style.customSelect}`}
-                  rightElement={arrowDown()}
                   onChange={(obj) => {
                     setCurrentEntityType(obj.target.value);
                   }}
+                  SelectDisplayProps={{
+                    style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 },
+                  }}
                 >
-                  {applicantState.applicantTypes.map((type) => (
-                    <option key={type.id} value={type.id}>
-                      {type.type}
-                    </option>
+                  {applicantState.applicantTypes?.map((data, index) => (
+                    <MenuItem value={data?.id} key={index}>
+                      {data?.type}
+                    </MenuItem>
                   ))}
-                </select>
-              </div>
-            </div>
-          </div>
-          <div className={`${style.marginTop20}${style.validation}`}>
+                </Select>
+              </FormControl>
+            </Box>
+          </Box>
+          <div className={`${style.marginTop20} ${style.validation}`}>
             <div className={style.entityLableStyle}>
-              PRIVELEGE SPECIFICATION TYPE REQUIRED
+              PRIVELEGE SPECIFICATION TYPE REQUIRED*
             </div>
             <div className={`${style.marginLeft40} ${style.validation}`}>
               <FormControlLabel
@@ -339,7 +366,12 @@ const StaffPrivilegeDialog = ({
                     checked={selectedOption === "Discreet Item List"}
                     onChange={handleChange}
                     value="Discreet Item List"
-                    sx={{ "& .MuiSvgIcon-root": { borderRadius: "50%" } }}
+                    sx={{
+                      "& .MuiSvgIcon-root": {
+                        borderRadius: "50%",
+                        color: "blue",
+                      },
+                    }}
                   />
                 }
               />
@@ -365,31 +397,38 @@ const StaffPrivilegeDialog = ({
           ></div>
           <div className={style.marginTop20}>
             <div className={style.entityLableStyle}>
-              GENERAL INSTRUCTION TEXT*
+              GENERAL INSTRUCTION TEXT
             </div>
             <Editor />
           </div>
-          <div
-            className={`${style.marginTop20}`}
-            style={{ display: "flex", alignItems: "center" }}
-          >
+          <div className={`${style.marginTop20} ${style.verticalAlignCenter}`}>
             <div className={style.entityLableStyle}>
               ADVANCED PRIVILEGES REQUIRED?
             </div>
-            <div style={{ marginLeft: "10px" }}>
+            <div className={style.marginLeft10}>
               <FormControlLabel
                 control={
                   <Switch
-                    checked={toggleState}
-                    onChange={(e) => setToggleState(e.target.checked)}
+                    checked={isPrivilagesRequired}
+                    onChange={(e) => setPrivilagesRequired(e.target.checked)}
+                    className={classes.switch}
                   />
                 }
                 className={`${style.switchFontStyle}`}
-                label={toggleState ? "YES" : "NO"}
+                label={isPrivilagesRequired ? "Yes" : "No"}
+                labelPlacement="start"
               />
             </div>
             <div></div>
           </div>
+          {isPrivilagesRequired && (
+            <div className={style.marginTop20}>
+              <div className={style.entityLableStyle}>
+                ADVANCED PRIVILEGES SECTION INSTRUCTION TEXT
+              </div>
+              <Editor />
+            </div>
+          )}
         </div>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <div className={`${style.marginTop20} `} style={{ float: "left" }}>
