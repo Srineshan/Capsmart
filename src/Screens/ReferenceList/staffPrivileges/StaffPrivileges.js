@@ -151,6 +151,7 @@ const StaffPrivileges = () => {
                   onEditClick={(data) => {
                     console.log(data);
                     setIsEdit(true);
+                    setIsDialogOpen(true);
                     setEditData(data);
                   }}
                 />
@@ -167,7 +168,7 @@ const StaffPrivileges = () => {
         <StaffPrivilegeDialog
           open={isDialogOpen}
           handleClose={handleCloseDialog}
-          editData={editData}
+          selectedApplicant={editData}
           isEdit={isEdit}
         />
       )}

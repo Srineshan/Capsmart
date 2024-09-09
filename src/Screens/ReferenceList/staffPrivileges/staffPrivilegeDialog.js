@@ -73,8 +73,19 @@ const StaffPrivilegeDialog = ({
   };
 
   useEffect(() => {
-    console.log("staffPrivilegeApplicant", selectedApplicant);
-  }, []);
+    if (selectedApplicant) {
+      setSaveData({ ...selectedApplicant });
+      setPrivilegeSpecificationType(
+        selectedApplicant.privilegeSpecificationType
+      );
+      setIsProofOfDocumentRequired(
+        selectedApplicant.proofOfDocumentationRequired
+      );
+      setPrivilagesRequired(selectedApplicant.advancedPrivilegesRequired);
+      setGeneralInstructionContent(selectedApplicant.generalInstructionText);
+      setAdvancePrivilegeContent(selectedApplicant.advancedInstructionText);
+    }
+  }, [selectedApplicant]);
 
   useEffect(() => {
     fetchApplicantTypes();
@@ -247,13 +258,7 @@ const StaffPrivilegeDialog = ({
                 <Select
                   labelId="department-service-select"
                   id="department-service-select"
-                  value={
-                    isEdit
-                      ? selectedApplicant.departmentName
-                      : saveData.department
-                      ? saveData.department.id
-                      : ""
-                  }
+                  value={saveData.department ? saveData.department.id : ""}
                   onChange={handleDepartmentChange}
                   SelectDisplayProps={{
                     style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 },
@@ -274,11 +279,7 @@ const StaffPrivilegeDialog = ({
                   labelId="specific-site-checkbox"
                   id="specific-site-checkbox"
                   value={
-                    isEdit && selectedApplicant
-                      ? selectedApplicant.siteType
-                      : saveData.sites
-                      ? saveData.sites.map((item) => item.id)
-                      : []
+                    saveData.sites ? saveData.sites.map((item) => item.id) : []
                   }
                   multiple
                   onChange={handleSelectSiteChange}
@@ -301,11 +302,7 @@ const StaffPrivilegeDialog = ({
                   labelId="application-type-checkbox"
                   id="application-type-checkbox"
                   value={
-                    isEdit && selectedApplicant
-                      ? selectedApplicant.entityType
-                      : saveData.applicantType
-                      ? saveData.applicantType.id
-                      : ""
+                    saveData.applicantType ? saveData.applicantType.id : ""
                   }
                   onChange={handleApplicantTypeChange}
                   SelectDisplayProps={{
