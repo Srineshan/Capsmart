@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Dialog, Classes, Icon, Intent, InputGroup } from "@blueprintjs/core";
-import ArrowDown from "./../../../images/arrowDown.png";
+import { Dialog, Classes, Icon, Intent } from "@blueprintjs/core";
 import style from "./../index.module.scss";
 import { Radio, Switch, makeStyles } from "@material-ui/core";
 import WritingFile from "./../../../images/writing-file.svg";
 import { Box } from "@mui/material";
-import { POST, GET, PUT, TenantID } from "./../../dataSaver";
+import { POST, GET, PUT } from "./../../dataSaver";
 import { ErrorToaster, SuccessToaster } from "../../../utils/toaster";
 import Editor from "../common/Editor";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -30,8 +29,6 @@ const StaffPrivilegeDialog = ({
   handleClose,
   isEdit,
   selectedApplicant,
-  isSecondary,
-  siteTypeId,
 }) => {
   const [isPrivilagesRequired, setPrivilagesRequired] = useState(false);
   const [applicantTypes, setApplicantTypesState] = useState([]);
@@ -182,8 +179,8 @@ const StaffPrivilegeDialog = ({
     }
   };
 
-  const SaveSubmitHandler = async () => {
-    var newStaffPrivileges = {
+  const SaveSubmitHandler = async (isSaveAndExit) => {
+    var staffPrivileges = {
       ...saveData,
       proofOfDocumentationRequired: isProofOfDocumentRequired,
       advancedPrivilegesRequired: isPrivilagesRequired,
@@ -193,22 +190,27 @@ const StaffPrivilegeDialog = ({
     if (!isEdit) {
       await POST(
         "entity-service/staffPrivilege",
-        JSON.stringify(newStaffPrivileges)
+        JSON.stringify(staffPrivileges)
       )
         .then((response) => {
           SuccessToaster("Staff Privilege Added Successfully");
+          resetDialogFields();
+          if (isSaveAndExit) {
+            handleClose();
+          }
         })
         .catch((error) => {
           ErrorToaster(error);
         });
     } else {
-      var id = "";
+      var id = selectedApplicant.id;
       await PUT(
         `entity-service/staffPrivilege/${id}`,
-        JSON.stringify(newStaffPrivileges)
+        JSON.stringify(staffPrivileges)
       )
         .then((response) => {
           SuccessToaster("Staff Privilege Updated Successfully");
+          resetDialogFields();
         })
         .catch((error) => {
           ErrorToaster(error);
@@ -216,10 +218,22 @@ const StaffPrivilegeDialog = ({
     }
   };
 
+  const resetDialogFields = () => {
+    setSaveData({});
+    setPrivilegeSpecificationType("");
+    setIsProofOfDocumentRequired(false);
+    setPrivilagesRequired(false);
+    setGeneralInstructionContent("");
+    setAdvancePrivilegeContent("");
+  };
+
   return (
     <Dialog
       isOpen={open}
-      onClose={handleClose}
+      onClose={() => {
+        handleClose();
+        resetDialogFields();
+      }}
       className={`${style.healthCareDialogStyle} ${style.dialogPaddingBottom}`}
     >
       <div
@@ -425,12 +439,12 @@ const StaffPrivilegeDialog = ({
           <div className={`${style.floatRight} ${style.marginTop20}`}>
             <button
               className={`${style.outlinedButton} ${style.borderRadius10}`}
-              onClick={SaveSubmitHandler}
+              onClick={() => SaveSubmitHandler(true)}
             >
               SAVE & EXIT
             </button>
             <button
-              onClick={SaveSubmitHandler}
+              onClick={() => SaveSubmitHandler(false)}
               className={`${style.buttonStyle} ${style.marginLeft20} ${style.borderRadius10}`}
             >
               SAVE & ADD MORE
