@@ -29,7 +29,6 @@ const StaffPrivilegeDialog = ({
   open,
   handleClose,
   isEdit,
-  tenantID,
   selectedApplicant,
   isSecondary,
   siteTypeId,
@@ -42,22 +41,23 @@ const StaffPrivilegeDialog = ({
   const [advancePrivilegeContent, setAdvancePrivilegeContent] = useState();
   const [privilegeSpecificationType, setPrivilegeSpecificationType] =
     useState("");
-  const [terminationId, setTerminationId] = useState(tenantID ? tenantID : "");
   const [saveData, setSaveData] = useState({});
   const [isProofOfDocumentRequired, setIsProofOfDocumentRequired] =
     useState(false);
 
-  const PrivilegeSpecificationType1 = "Descriptive Document";
-  const PrivilegeSpecificationType2 = "Discreet Item List";
+  const PrivilegeSpecificationType1 = "DescriptiveDocument";
+  const PrivilegeSpecificationType2 = "DiscreteItemList";
 
   const privilegeSpecifications = [
     {
-      id: "Descriptive Document",
-      label: PrivilegeSpecificationType2,
+      id: "Descriptive_Document",
+      value: PrivilegeSpecificationType1,
+      label: "Descriptive Document",
     },
     {
       id: "Discreet_Item_List",
-      label: PrivilegeSpecificationType1,
+      value: PrivilegeSpecificationType2,
+      label: "Discreet Item List",
     },
   ];
 
@@ -132,12 +132,6 @@ const StaffPrivilegeDialog = ({
     }
   };
 
-  useEffect(() => {
-    if (isEdit) {
-      setTerminationId(tenantID);
-    }
-  }, [tenantID]);
-
   const handleDepartmentChange = (e) => {
     var departmentData = {
       id: e.target.value,
@@ -184,8 +178,31 @@ const StaffPrivilegeDialog = ({
       advancedPrivilegesRequired: isPrivilagesRequired,
       privilegeSpecificationType: privilegeSpecificationType,
     };
-    console.log(newStaffPrivileges);
-    console.log(terminationId);
+
+    if (!isEdit) {
+      await POST(
+        "entity-service/staffPrivilege",
+        JSON.stringify(newStaffPrivileges)
+      )
+        .then((response) => {
+          SuccessToaster("Staff Privilege Added Successfully");
+        })
+        .catch((error) => {
+          ErrorToaster(error);
+        });
+    } else {
+      var id = "";
+      await PUT(
+        `entity-service/staffPrivilege/${id}`,
+        JSON.stringify(newStaffPrivileges)
+      )
+        .then((response) => {
+          SuccessToaster("Staff Privilege Updated Successfully");
+        })
+        .catch((error) => {
+          ErrorToaster(error);
+        });
+    }
   };
 
   return (
@@ -224,7 +241,7 @@ const StaffPrivilegeDialog = ({
         <div className={style.ReferenceListEntityBorder}></div>
         <div className={`${style.addHealthCareBoxStyle}`}>
           <Box display={"flex"} gap={3}>
-            <Box width={"50%"}>
+            <Box width={"50%"} key={"department-service"}>
               <div className={style.entityLableStyle}>DEPARTMENT/SERVICE *</div>
               <FormControl fullWidth size="small">
                 <Select
@@ -314,9 +331,9 @@ const StaffPrivilegeDialog = ({
                   control={
                     <Radio
                       id={item.id}
-                      checked={item.label == privilegeSpecificationType}
+                      checked={item.value == privilegeSpecificationType}
                       onChange={handlePrivilegeSpecificationChange}
-                      value={item.label}
+                      value={item.value}
                     />
                   }
                 />

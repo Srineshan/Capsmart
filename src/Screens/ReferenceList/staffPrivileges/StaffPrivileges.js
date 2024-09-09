@@ -1,21 +1,15 @@
 import React, { Fragment, useState, useEffect } from "react";
 import Navbar from "../../../Components/Navbar";
-import { Checkbox, Icon, Intent } from "@blueprintjs/core";
 import style from "./../index.module.scss";
-import { GET, DELETE, POST, TenantID } from "../../dataSaver";
-import AddNewDepartments from "../addNewDepartments";
-import { SuccessToaster, ErrorToaster } from "../../../utils/toaster";
-import { format } from "date-fns";
+import { GET, POST, TenantID } from "../../dataSaver";
 import LevelTwoHeader from "../../../Components/LevelTwoHeader";
-import CommonCheckBox from "../../../Components/CommonFields/CommonCheckBox";
-import CommonPurpleCheckBox from "../../../Components/CommonFields/CommonPurpleCheckBox";
-import SearchBar from "../../../Components/SearchBar";
 import { formatInTimeZone } from "date-fns-tz";
 import { siteTimeZone, timeZoneAbbreviation } from "../../../utils/formatting";
-import ApplicantTable from "../common/Table";
+import ReferenceListCommonTable from "../common/Table";
 import ApplicantSideBar from "../common/SideBar";
 import { ReferenceListActionButton } from "../common/ReferenceListActionButton";
 import { Typography } from "@material-ui/core";
+import StaffPrivilegeDialog from "./staffPrivilegeDialog";
 
 const StaffPrivileges = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -227,6 +221,8 @@ const StaffPrivileges = () => {
               callingFrom={"Customer Admin"}
               needHeader={false}
               tileType={"StaffPrivileges"}
+              onAddClick={() => setIsDialogOpen(true)}
+              onCloseLevel2={() => setIsDialogOpen(false)}
             />
           </div>
           <div
@@ -260,7 +256,7 @@ const StaffPrivileges = () => {
                 </Typography>
               </div>
               {tableData && (
-                <ApplicantTable
+                <ReferenceListCommonTable
                   applicantTypes={staffPrivilegesForm}
                   applicantNotice={
                     "Applicant types are ordered as they will appear on forms. To change the order, click and drag "
@@ -271,7 +267,7 @@ const StaffPrivileges = () => {
                   groupFirstTwoColumn={true}
                   documents={staffPrivilegesForm}
                   getAddEntityTypes={getAddEntityTypes}
-                  handleClose={handleCloseDialog}
+                  //handleClose={handleCloseDialog}
                 />
               )}
               <ReferenceListActionButton
@@ -281,24 +277,13 @@ const StaffPrivileges = () => {
             </div>
           </div>
         </div>
-
-        {showAddEntityDialog && (
-          <AddNewDepartments
-            getAddEntityDialog={getAddEntityDialog}
-            callingFrom={"Customer Admin"}
-            isEdit={isEdit}
-            getEntityData={getDepartmentService}
-            selectedDepart={selectedDepartmentService}
-            selectedTitle={selectedEntityType}
-            siteTypeId={siteTypeId}
-            departmentList={departmentService}
-          />
-        )}
-        <div className={style.spaceBetween}>
-          <p className={style.poweredBy}>Powered by - CAPSmart</p>
-          <p className={style.poweredBy}>© CAPSmart</p>
-        </div>
       </div>
+      {isDialogOpen && (
+        <StaffPrivilegeDialog
+          open={isDialogOpen}
+          handleClose={handleCloseDialog}
+        />
+      )}
     </Fragment>
   );
 };

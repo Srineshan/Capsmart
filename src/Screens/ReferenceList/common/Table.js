@@ -12,7 +12,7 @@ import AcknowledgmentDialog from "../acknowledgment/AcknowledgmentDialog";
 import DisclosureByIndustriesDialog from "../disclosureByIndustries/disclosureByIndustriesDialog";
 import { format } from "date-fns";
 
-const ApplicantTable = ({
+const ReferenceListCommonTable = ({
   applicantTypes,
   applicantNotice,
   tableDataKeys,
@@ -59,7 +59,7 @@ const ApplicantTable = ({
     if (tileType === "StaffPrivileges") {
       console.log("id", id);
       try {
-        await DELETE(`entity-service/staffprivileges/${id}`);
+        await DELETE(`entity-service/staffPrivilege/${id}`);
 
         console.log("Document deleted successfully");
       } catch (error) {
@@ -260,4 +260,4 @@ const ApplicantTable = ({
   );
 };
 
-export default ApplicantTable;
+export default ReferenceListCommonTable;
