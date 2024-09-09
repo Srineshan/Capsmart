@@ -26,7 +26,7 @@ const useStyles = makeStyles({
 
 const StaffPrivilegeDialog = ({
   open,
-  handleClose,
+  handleClose, //with needRefetch param as optional
   isEdit,
   selectedApplicant,
 }) => {
@@ -196,7 +196,7 @@ const StaffPrivilegeDialog = ({
           SuccessToaster("Staff Privilege Added Successfully");
           resetDialogFields();
           if (isSaveAndExit) {
-            handleClose();
+            handleClose(true);
           }
         })
         .catch((error) => {
@@ -211,6 +211,9 @@ const StaffPrivilegeDialog = ({
         .then((response) => {
           SuccessToaster("Staff Privilege Updated Successfully");
           resetDialogFields();
+          if (isSaveAndExit) {
+            handleClose(true);
+          }
         })
         .catch((error) => {
           ErrorToaster(error);
@@ -230,10 +233,6 @@ const StaffPrivilegeDialog = ({
   return (
     <Dialog
       isOpen={open}
-      onClose={() => {
-        handleClose();
-        resetDialogFields();
-      }}
       className={`${style.healthCareDialogStyle} ${style.dialogPaddingBottom}`}
     >
       <div
@@ -257,7 +256,7 @@ const StaffPrivilegeDialog = ({
               intent={Intent.DANGER}
               className={style.dialogCrossStyle}
               onClick={() => {
-                setSaveData({});
+                resetDialogFields();
                 handleClose();
               }}
             />

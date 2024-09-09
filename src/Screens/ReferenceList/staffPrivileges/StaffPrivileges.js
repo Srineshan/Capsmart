@@ -21,6 +21,7 @@ const StaffPrivileges = () => {
   const [applicantId, setApplicantId] = useState("");
   const [staffPrivilegesForm, setStaffPrivilegesForm] = useState([]);
   const [editData, setEditData] = useState();
+  const [isRefetch, setIsRefetch] = useState(false);
 
   const tableHeadKeys = ["CATEGORY", "LAST UPDATED"];
   const tableDataKeys = ["applicantType", "lastModifiedDate"];
@@ -44,8 +45,16 @@ const StaffPrivileges = () => {
   }, [entityId]);
 
   useEffect(() => {
-    getStaffPrivileges(applicantId);
+    console.log(applicantId);
+
+    if (applicantId && applicantId != "") getStaffPrivileges(applicantId);
   }, [applicantId]);
+
+  useEffect(() => {
+    if (isRefetch) {
+      getStaffPrivileges(applicantId);
+    }
+  }, [isRefetch]);
 
   const getEntity = async () => {
     const { data: entity } = await GET(`entity-service/entity`);
@@ -71,13 +80,16 @@ const StaffPrivileges = () => {
       const { data: staffPrivilegesForm } = await GET(
         `entity-service/staffPrivilege?applicantTypeId=${id}`
       );
+      setIsRefetch(false);
       setStaffPrivilegesForm(staffPrivilegesForm);
     }
   };
 
   const getSelectedTile = (applicantId) => {
-    setApplicantId(applicantId);
-    getStaffPrivileges(applicantId);
+    if (applicantId && applicantId != "") {
+      setApplicantId(applicantId);
+      getStaffPrivileges(applicantId);
+    }
   };
 
   const getApplicantType = async () => {
@@ -89,8 +101,9 @@ const StaffPrivileges = () => {
     setSelectedApplicantType(siteName);
   };
 
-  const handleCloseDialog = () => {
+  const handleCloseDialog = (needRefetch = false) => {
     setIsDialogOpen(false);
+    setIsRefetch(needRefetch);
   };
 
   return (
