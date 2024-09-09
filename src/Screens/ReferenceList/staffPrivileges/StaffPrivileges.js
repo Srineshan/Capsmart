@@ -16,6 +16,7 @@ import ApplicantTable from "../common/Table";
 import ApplicantSideBar from "../common/SideBar";
 import { ReferenceListActionButton } from "../common/ReferenceListActionButton";
 import { Typography } from "@material-ui/core";
+const [isDialogOpen, setIsDialogOpen] = useState(false);
 
 const StaffPrivileges = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -180,6 +181,12 @@ const StaffPrivileges = () => {
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
   };
+
+  useEffect(() => {
+    if (applicantTypeList && applicantTypeList.length > 0) {
+      setSelectedApplicantType(applicantTypeList[0]?.applicantType || "");
+    }
+  }, [applicantTypeList]);
 
   const getStaffPrivileges = async (id) => {
     if (id !== "") {

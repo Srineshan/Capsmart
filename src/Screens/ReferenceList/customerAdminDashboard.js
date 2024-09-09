@@ -91,7 +91,7 @@ const ClientAdminDashboard = () => {
                 <div className={style.margin20}>
                   <div className={style.grid4}>
                     <Link
-                      to={"/referenceList/applicantTypesByEntity"}
+                      to={"/referenceList/applicantTypesByEntity/applicantTypesByEntity"}
                       className={style.linkStyle}
                     >
                       <div className={style.dashboardCardStyle}>
@@ -165,7 +165,7 @@ const ClientAdminDashboard = () => {
                       </div>
                     </Link>
                     <Link
-                      to={"/referenceList/departmentsForCustomers"}
+                      to={"/referenceList/department/department"}
                       className={style.linkStyle}
                     >
                       <div className={style.dashboardCardStyle}>

@@ -66,6 +66,15 @@ const ApplicantTable = ({
         console.error("Error deleting document:", error);
       }
     }
+    if (tileType === "Departments") {
+      try {
+        await DELETE(`entity-service/department/${id}`);
+
+        console.log("Document deleted successfully");
+      } catch (error) {
+        console.error("Error deleting document:", error);
+      }
+    }
 
     if (tileType === "Acknowedgement") {
       try {
@@ -142,9 +151,15 @@ const ApplicantTable = ({
                           ? applicant[key] === true
                             ? "Required"
                             : "NA"
+                          : key === "createdDate" || key === "createdDate"
+                          ? format(new Date(applicant[key]), "MMM dd, yyyy")
                           : key === "lastModifiedDate" ||
                             key === "lastModifiedData"
                           ? format(new Date(applicant[key]), "MMM dd, yyyy")
+                          : key === "departmentName"
+                          ? applicant.departmentName
+                            ? applicant.departmentName.name
+                            : "N/A"
                           : applicant[key] || "N/A"}
                       </td>
                     ))}

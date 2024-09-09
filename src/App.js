@@ -22,6 +22,8 @@ import jwt from "jwt-decode";
 import MileageRateForCustomers from "./Screens/ReferenceList/mileageRateForCustomers";
 import GeneralConfigurationForCustomers from "./Screens/ReferenceList/generalConfigurationForCustomers";
 import LoginDialog from "./Components/LoginDialog";
+import Departments from "./Screens/ReferenceList/department/Department";
+import ApplicantTypesByEntity from "./Screens/ReferenceList/applicantTypeByEntity/applicantTypesByEntity";
 
 const ReportType = React.lazy(() => import("./Screens/Reports/reportType"));
 const ReportTypeOverview = React.lazy(() =>
@@ -230,9 +232,9 @@ const ClientAdminDashboard = React.lazy(() =>
 //   import("./Screens/ReferenceList//referenceList/contractServiceProviderBySiteType")
 // );
 
-const ApplicantTypesByEntity = React.lazy(() =>
-  import("./Screens/ReferenceList/contractServiceProviderBySiteType")
-);
+// const ApplicantTypesByEntity = React.lazy(() =>
+//   import("./Screens/ReferenceList/contractServiceProviderBySiteType")
+// );
 
 const Thankyou = React.lazy(() =>
   import("./Screens/SuperAdminDashboard/thankyou")
@@ -336,53 +338,53 @@ const App = ({ props }) => {
       browserName === "Chrome"
         ? "CHROME"
         : browserName === "Firefox"
-          ? "FIREFOX"
-          : browserName === "Safari"
-            ? "SAFARI"
-            : browserName === "Opera"
-              ? "OPERA"
-              : browserName === "Edge"
-                ? "EDGE"
-                : browserName === "Internet Explorer"
-                  ? "INTERNETEXPLORER"
-                  : browserName === "Chromium"
-                    ? "CHROMIUM"
-                    : browserName === "Yandex"
-                      ? "YANDEX"
-                      : browserName === "IE"
-                        ? "IE"
-                        : browserName === "Mobile Safari"
-                          ? "MOBILESAFARI"
-                          : browserName === "Edge Chromium"
-                            ? "EDGECHROMIUM"
-                            : browserName === "MIUI Browser"
-                              ? "MIUIBROWSER"
-                              : browserName === "Samsung Browser"
-                                ? "SAMSUNGBROWSER"
-                                : "";
+        ? "FIREFOX"
+        : browserName === "Safari"
+        ? "SAFARI"
+        : browserName === "Opera"
+        ? "OPERA"
+        : browserName === "Edge"
+        ? "EDGE"
+        : browserName === "Internet Explorer"
+        ? "INTERNETEXPLORER"
+        : browserName === "Chromium"
+        ? "CHROMIUM"
+        : browserName === "Yandex"
+        ? "YANDEX"
+        : browserName === "IE"
+        ? "IE"
+        : browserName === "Mobile Safari"
+        ? "MOBILESAFARI"
+        : browserName === "Edge Chromium"
+        ? "EDGECHROMIUM"
+        : browserName === "MIUI Browser"
+        ? "MIUIBROWSER"
+        : browserName === "Samsung Browser"
+        ? "SAMSUNGBROWSER"
+        : "";
 
     let os =
       osName === "Windows"
         ? "WINDOWS"
         : osName === "Linux"
-          ? "LINUX"
-          : osName === "Mac OS"
-            ? "MAC"
-            : osName === "iOS"
-              ? "IOS"
-              : osName === "Android"
-                ? "ANDROID"
-                : osName === "Windows Phone"
-                  ? "WINDOWSPHONE"
-                  : "";
+        ? "LINUX"
+        : osName === "Mac OS"
+        ? "MAC"
+        : osName === "iOS"
+        ? "IOS"
+        : osName === "Android"
+        ? "ANDROID"
+        : osName === "Windows Phone"
+        ? "WINDOWSPHONE"
+        : "";
 
     let deviceType = isDesktop
       ? "DESKTOP"
       : isMobile
-        ? "MOBILE"
-        : isTablet
-          ? "TABLET"
-          : "";
+      ? "MOBILE"
+      : isTablet
+      ? "TABLET"
+      : "";
     let interceptorsInfo = sessionStorage.getItem("interceptorsInfo");
 
     let data = {
@@ -773,7 +775,7 @@ const App = ({ props }) => {
                 element={<CountryWithStatesEntity />}
               /> */}
               <Route
-                path="/referenceList/applicantTypesByEntity"
+                path="/referenceList/applicantTypesByEntity/applicantTypesByEntity"
                 element={<ApplicantTypesByEntity />}
               />
               {/* <Route
@@ -837,6 +839,11 @@ const App = ({ props }) => {
                 path="/referenceList/departmentsForCustomers"
                 element={<DepartmentsForCustomers />}
               />
+              <Route
+                path="/referenceList/department/department"
+                element={<Departments />}
+              />
+
               <Route
                 path="/referenceList/staffPrivilegesByDepartment"
                 element={<StaffPrivilegesByDepartment />}

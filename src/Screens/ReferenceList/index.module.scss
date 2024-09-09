@@ -3030,6 +3030,8 @@
 
 .applicantTableContainer {
   width: 100%;
+  max-height: 500px; /* Set your desired max-height */
+  overflow-y: auto;
 }
 
 .headerNotice {

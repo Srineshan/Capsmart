@@ -58,6 +58,7 @@ const StaffPrivilegeDialog = ({
   const [createdDate, setCreatedDate] = useState("");
 
   const [saveData, setSaveData] = useState({});
+  const [proofOfDocument, setProofOfDocument] = useState(false);
 
   const classes = useStyles();
 
@@ -344,7 +345,27 @@ const StaffPrivilegeDialog = ({
               <label>Descriptive Document</label>
             </div>
           </div>
-
+          {selectedOption === "Descriptive Document" && (
+            <div className={`${style.validation}`}>
+              <div className={style.entityLableStyle}>
+                PROOF OF DOCUMENTATION REQUIRED?
+              </div>
+              <div className={style.marginLeft10}>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={proofOfDocument}
+                      onChange={(e) => setProofOfDocument(e.target.checked)}
+                      className={classes.switch}
+                    />
+                  }
+                  className={`${style.switchFontStyle}`}
+                  label={proofOfDocument ? "Yes" : "No"}
+                  labelPlacement="start"
+                />
+              </div>
+            </div>
+          )}
           <div
             className={`${style.ReferenceListEntityBorder} ${style.marginTop20}`}
           ></div>
