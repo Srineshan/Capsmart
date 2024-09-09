@@ -51,13 +51,13 @@ const StaffPrivilegeDialog = ({
     currentSiteType: "",
     specificSites: [],
   });
+  const [departmentName, setDepartmentState] = useState([]);
+
   const [currentEntityType, setCurrentEntityType] = useState(
     selectedTermination?.entityId?.id ? selectedTermination?.entityId?.id : ""
   );
 
-  const [departmentNames, setDepartmentNames] = useState([]);
   const [selectedOption, setSelectedOption] = useState("");
-  const [editDepartmentNames, setEditDepartmentNames] = useState([]);
   const [terminationId, setTerminationId] = useState(
     selectedTermination?.id ? selectedTermination?.id : ""
   );
@@ -86,7 +86,7 @@ const StaffPrivilegeDialog = ({
   useEffect(() => {
     fetchApplicantTypes();
     fetchSpecificSites();
-    // fetchSpecificDepartment();
+    fetchDepartmentTypes();
   }, []);
 
   const fetchApplicantTypes = async () => {
@@ -100,6 +100,23 @@ const StaffPrivilegeDialog = ({
         ...prevState,
         applicantTypes: applicantTypes,
       }));
+    } catch (error) {
+      console.error("Error fetching applicant types:", error);
+    }
+  };
+
+  const fetchDepartmentTypes = async () => {
+    try {
+      const response = await GET("entity-service/department");
+      const departmentTypes = response.data.map((item) => ({
+        id: item.id,
+        name: item.departmentName.name,
+      }));
+      setDepartmentState((prevState) => ({
+        ...prevState,
+        departmentTypes: departmentTypes,
+      }));
+
     } catch (error) {
       console.error("Error fetching applicant types:", error);
     }
@@ -140,12 +157,19 @@ const StaffPrivilegeDialog = ({
   //     console.error("Error fetching specific departments:", error);
   //   }
   // };
-  const handleSelectChange = (e) => {
-    setApplicantState((prevState) => ({
+  const handleSelectSiteChange = (e) => {
+    setSiteState((prevState) => ({
       ...prevState,
       currentSiteType: e.target.value,
     }));
   };
+  const handleDepartmentChange = (e) => {
+    setDepartmentState((prevState) => ({
+      ...prevState,
+      departmentTypes: e.target.value,
+    }));
+  };
+
   useEffect(() => {
     if (isEdit) {
       setCurrentEntityType(siteTypeId);
@@ -160,7 +184,6 @@ const StaffPrivilegeDialog = ({
       setProofRequired(selectedApplicant.proofRequired || false);
       setPrivilagesRequired(selectedApplicant.toggleState || false);
       setInstructionText(selectedApplicant.instructionText || "");
-      setEditDepartmentNames(selectedApplicant.departmentNames || []);
     }
   }, [isEdit, selectedApplicant]);
 
@@ -215,7 +238,7 @@ const StaffPrivilegeDialog = ({
       departments: [
         {
           departmentName: {
-            name: departmentNames,
+            name: departmentName,
           },
         },
       ],
@@ -225,14 +248,12 @@ const StaffPrivilegeDialog = ({
 
     try {
       if (isEdit) {
-        console.log("terminationIdterminationId", terminationId);
         await PUT(
           `entity-service/staffPrivilege/?${terminationId}`,
           JSON.stringify(data)
         );
         SuccessToaster("Document updated successfully");
       } else {
-        console.log("staff post data", data);
         await POST(
           `entity-service/staffPrivilege/?${terminationId}`,
           JSON.stringify(data)
@@ -243,10 +264,6 @@ const StaffPrivilegeDialog = ({
     } catch (error) {
       ErrorToaster(error.message);
     }
-  };
-
-  const handleDepartmentChange = (event) => {
-    setDepartmentNames(event.target.value);
   };
 
   return (
@@ -289,14 +306,14 @@ const StaffPrivilegeDialog = ({
                   labelId="department-service-select"
                   id="department-service-select"
                   value={
-                    isEdit ? selectedApplicant.departmentName : departmentNames
+                    isEdit ? selectedApplicant.departmentName : departmentName
                   }
                   onChange={handleDepartmentChange}
                   SelectDisplayProps={{
                     style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 },
                   }}
                 >
-                  {departmentNames?.map((data, index) => (
+                  {departmentName.departmentTypes?.map((data, index) => (
                     <MenuItem value={data?.id} key={index}>
                       {data?.name}
                     </MenuItem>
@@ -315,7 +332,7 @@ const StaffPrivilegeDialog = ({
                       ? selectedApplicant.siteType
                       : siteState.currentSiteType
                   }
-                  onChange={handleSelectChange}
+                  onChange={handleSelectSiteChange}
                   SelectDisplayProps={{
                     style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 },
                   }}
