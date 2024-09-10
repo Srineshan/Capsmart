@@ -48,6 +48,9 @@ const UserCard = ({ getIsExpanded, updateProfileData }) => {
                         </label>
 
                         <input id="file-upload" type="file" />
+                    </Link>
+                    <Link to={'/profile'} className={style.noFontStyle}>
+
                         <div className={style.marginLeft20}>
                             <div className={style.userNameStyle}>
                                 Hi, {updateProfileData ? `${updateProfileData?.name?.firstName} ${updateProfileData?.name?.lastName}` : `${currentUserDetails?.name?.firstName} ${currentUserDetails?.name?.lastName}`}
@@ -57,6 +60,7 @@ const UserCard = ({ getIsExpanded, updateProfileData }) => {
                             </div>
                         </div>
                     </Link>
+
                 </div>
                 <img src={ChevronRight} className={style.chevronRightStyle} onClick={() => getIsExpanded(false)} />
             </div>

@@ -50,6 +50,8 @@ const ApplicationForm = () => {
     const [basicForm, setBasicForm] = useState({})
     const applicationId = sessionStorage.getItem('applicationId')
     const [isOpen, setIsOpen] = useState(true);
+    const [acknowledgementForms, setAcknowledgementForms] = useState([]);
+    const canadaData = JSON.parse(sessionStorage.getItem('canadaData')) || {};
     const getIsOpen = (value) => {
         setIsOpen(value);
     }
@@ -57,6 +59,21 @@ const ApplicationForm = () => {
         getPreApplication()
         getCountryList()
     }, [])
+
+    useEffect(() => {
+        if (basicForm) {
+            getAcknowledgement(basicForm?.providerType?.id)
+        }
+    }, [basicForm])
+
+    const getAcknowledgement = async (id) => {
+        if (id !== "") {
+            const { data: acknowledgementForm } = await GET(
+                `entity-service/acknowledgementForm?applicantTypeId=${id}`
+            );
+            setAcknowledgementForms(acknowledgementForm);
+        }
+    };
 
     const getCountryList = async () => {
         const { data: countryData } = await GET(`entity-service/countryMaster`);
@@ -103,7 +120,7 @@ const ApplicationForm = () => {
             case 'step15':
                 return <Step15 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'acknowledgementStep1':
-                return <ApplicationAcknowledgementStep1 />;
+                return <ApplicationAcknowledgementStep1 acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'MM/dd/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} />;
             case 'acknowledgementStep2':
                 return <ApplicationAcknowledgementStep2 />;
             case 'acknowledgementStep3':

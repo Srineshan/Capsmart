@@ -11,8 +11,6 @@ import { ReferenceListActionButton } from "../common/ReferenceListActionButton";
 import { Typography } from "@material-ui/core";
 import SpecialityDialog from "./SpecialityDialog";
 
-
-
 const Speciality = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [entityId, setEntityId] = useState("");
@@ -49,7 +47,7 @@ const Speciality = () => {
   useEffect(() => {
     console.log(applicantId);
 
-    if (applicantId && applicantId != "")  getSpeciality(applicantId);
+    if (applicantId && applicantId != "") getSpeciality(applicantId);
   }, [applicantId]);
 
   useEffect(() => {
@@ -77,12 +75,13 @@ const Speciality = () => {
     );
   };
 
-  const getSpeciality= async (id) => {
+  const getSpeciality = async (id) => {
     if (id !== "") {
       const { data: specialityForm } = await GET(
         `entity-service/departmentspeciality?applicantTypeId=${id}`
       );
       setIsRefetch(false);
+      console.log("specialityFormspecialityForm", specialityForm);
       setspecialityForm(specialityForm);
     }
   };
@@ -90,7 +89,7 @@ const Speciality = () => {
   const getSelectedTile = (applicantId) => {
     if (applicantId && applicantId != "") {
       setApplicantId(applicantId);
-     getSpeciality(applicantId);
+      getSpeciality(applicantId);
     }
   };
 

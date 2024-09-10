@@ -76,7 +76,7 @@ const StaffPrivileges = () => {
   };
 
   const getStaffPrivileges = async (id) => {
-    if (id !== "") {
+    if (id) {
       const { data: staffPrivilegesForm } = await GET(
         `entity-service/staffPrivilege?applicantTypeId=${id}`
       );

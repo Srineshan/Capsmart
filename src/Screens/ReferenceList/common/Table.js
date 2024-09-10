@@ -32,7 +32,6 @@ const ReferenceListCommonTable = ({
 
     setOpenDialog(true);
   };
-
   const handleCloseDialog = () => {
     console.log(openDialog);
     setOpenDialog(false);
@@ -40,6 +39,7 @@ const ReferenceListCommonTable = ({
   };
 
   const handleDelete = async (id) => {
+    console.log("idid", id);
     if (tileType === "ProofOfDocument") {
       try {
         await DELETE(`entity-service/document/?${TenantID}&${id}`, {
@@ -86,10 +86,9 @@ const ReferenceListCommonTable = ({
         console.error("Error deleting document:", error);
       }
     }
-    if (tileType === "Departments") {
-      console.log("DepartmentsId", id);
+    if (tileType === "Speciality") {
       try {
-        await DELETE(`entity-service/department/${id}`);
+        await DELETE(`entity-service/departmentspeciality?id=${id}`);
 
         console.log("Document deleted successfully");
       } catch (error) {
@@ -160,18 +159,34 @@ const ReferenceListCommonTable = ({
                             : style.centerAligned
                         } ${keyIndex === 0 ? style.firstColumn : ""}`}
                       >
-                        {key === "applicantType"
-                          ? applicant.applicantType
+                        {tileType === "ApplicantType"
+                          ? key === "category"
+                            ? applicant.category
+                              ? applicant.category.category
+                              : "N/A"
+                            : key === "applicantType"
+                            ? applicant.applicantType
+                              ? applicant.applicantType
+                              : "N/A"
+                            : key === "lastUpdated" ||
+                              key === "lastModifiedDate"
+                            ? applicant[key]
+                              ? format(new Date(applicant[key]), "MMM dd, yyyy")
+                              : "N/A"
+                            : "N/A" // Handle other cases or provide a default value
+                          : key === "applicantType"
+                          ? applicant.applicantType &&
+                            applicant.applicantType[key]
                           : key === "disclaimer"
                           ? applicant[key]?.content != null
                             ? "Yes"
                             : "No"
                           : key === "esignatureRequiredOnEachPage" ||
-                            key == "esignatureRequired"
+                            key === "esignatureRequired"
                           ? applicant[key] === true
                             ? "Required"
                             : "NA"
-                          : key === "createdDate" || key === "createdDate"
+                          : key === "createdDate"
                           ? format(new Date(applicant[key]), "MMM dd, yyyy")
                           : key === "lastModifiedDate" ||
                             key === "lastModifiedData"
@@ -181,10 +196,6 @@ const ReferenceListCommonTable = ({
                           : key === "departmentName"
                           ? applicant.departmentName
                             ? applicant.departmentName.name
-                            : "N/A"
-                          : key === "category"
-                          ? applicant.category
-                            ? applicant.category.category
                             : "N/A"
                           : applicant[key] || "N/A"}
                       </td>

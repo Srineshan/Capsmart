@@ -186,11 +186,12 @@ const SpecialityDialog = ({
       advancedPrivilegesRequired: isSpecialityRequired,
       SpecialitySpecificationType: specialitySpecificationType,
     };
+    const dataToSend = [speciality];
 
     if (!isEdit) {
       await POST(
         "entity-service/departmentspeciality",
-        JSON.stringify(speciality)
+        JSON.stringify(dataToSend)
       )
         .then((response) => {
           SuccessToaster("Speciality Added Successfully");
@@ -206,7 +207,7 @@ const SpecialityDialog = ({
       var id = selectedApplicant.id;
       await PUT(
         `entity-service/departmentspeciality/${id}`,
-        JSON.stringify(speciality)
+        JSON.stringify(dataToSend)
       )
         .then((response) => {
           SuccessToaster("Speciality Updated Successfully");
