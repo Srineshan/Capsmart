@@ -23,7 +23,7 @@ const AIAssistantDialog = ({ getIsOpen }) => {
                         />
                     </div>
                     <div className={`${style.featureTextStyle} ${style.marginTop}`}>Our Smart features and <span className={style.featureTextHighlight}> AI assistant</span> shortens your time to complete,</div>
-                    <div className={`${style.featureGrid} ${style.marginTop40}`}>
+                    {/* <div className={`${style.featureGrid} ${style.marginTop40}`}>
                         <div className={style.alignCenter}>
                             <div>
                                 <div className={`${style.withOrWithoutText} ${style.withoutOpacity}`}>Without Smart AI</div>
@@ -36,7 +36,7 @@ const AIAssistantDialog = ({ getIsOpen }) => {
                                 <div className={`${style.featureTextStyle} ${style.featureTextHighlight} ${style.valueFont}`}>30 Mins</div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                     <div className={`${style.threeCol} ${style.marginTop40}`}>
                         <div className={style.advantagesCard}>
                             <img src={Timer} alt='' className={style.advantagesImageStyle} />

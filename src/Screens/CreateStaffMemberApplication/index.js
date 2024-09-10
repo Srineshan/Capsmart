@@ -8,11 +8,13 @@ import Switch from '@mui/material/Switch';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import style from './index.module.scss';
+import SendEmailFromStaffManagerConfirmationDialog from '../../Components/sendEmailFromStaffManagerConfirmation';
 
 
 const CreateStaffMemberApplication = () => {
     const [form, setForm] = useState();
-    const [isNextpage, setIsNextPage] = useState(true);
+    const [isNextpage, setIsNextPage] = useState(false);
+    const [isShowMailSendDialog, setIsShowMailSendDialog] = useState(false);
     const [applicationId, setApplicationId] = useState('');
     const [basicFormForDocuments, setBasicFormForDocuments] = useState()
     const [requiredDocumentList, setRequiredDocumentList] = useState();
@@ -89,12 +91,29 @@ const CreateStaffMemberApplication = () => {
 
     useEffect(() => {
         getBasicForm()
-        getPreApplication()
     }, [])
+
+    useEffect(() => {
+        getPreApplication()
+    }, [applicationId])
 
     useEffect(() => {
         setRequiredDocumentList(basicFormForDocuments?.documentsRequired)
     }, [basicFormForDocuments])
+
+    const getShowMailSendDialog = (value) => {
+        setIsShowMailSendDialog(value)
+    }
+
+    const handleSendMail = async () => {
+        await POST(`application-management-service/application/${basicForm?.id}/sendEmail`)
+            .then(response => {
+                console.log(response)
+            })
+            .catch((error) => {
+                console.log(error)
+            });
+    }
 
     const handleSwitchChange = (value, id) => {
         // let temp = requiredDocumentList;
@@ -114,7 +133,7 @@ const CreateStaffMemberApplication = () => {
 
     const getPreApplication = async () => {
         const { data: basicForm } = await GET(
-            `application-management-service/application/66d1cae19354e9022ad82027`
+            `application-management-service/application/${applicationId}`
         );
         setBasicFormForDocuments(basicForm)
     }
@@ -189,9 +208,11 @@ const CreateStaffMemberApplication = () => {
     const handleRequiredFileSubmit = async () => {
         let data = basicFormForDocuments;
         data.documentsRequired = requiredDocumentList;
-        await PUT(`application-management-service/application/66d1cae19354e9022ad82027`, data)
+        await PUT(`application-management-service/application/${applicationId}`, data)
             .then(response => {
+                handleSendMail()
                 getPreApplication()
+                setIsShowMailSendDialog(true)
                 SuccessToaster("Staff Member Application Updated Successfully");
             })
             .catch((error) => {
@@ -203,7 +224,10 @@ const CreateStaffMemberApplication = () => {
         <div className={style.screenBackground}>
             <ApplicationHeader title={'Create A New Staff Member Application'} />
             <div className={style.screenPadding}>
-                <div className={style.breadcrumbStyle}>{`STAFF APPOINTMENT APPLICATION >> NEW APPLICATION`}</div>
+                <div className={style.displayInRowRev}>
+                    {/* <div className={style.breadcrumbStyle}>{`STAFF APPOINTMENT APPLICATION >> NEW APPLICATION`}</div> */}
+                    <div className={style.cardTitle}>{`* - Required`}</div>
+                </div>
                 {!isNextpage ? (
                     <>
                         {form !== undefined && 'applicant' in form?.properties && (
@@ -212,14 +236,12 @@ const CreateStaffMemberApplication = () => {
                         {form !== undefined && 'credentialingPrivilegeCategory' in form?.properties && (
                             <ApplicationFieldCard object={form?.properties?.credentialingPrivilegeCategory} gridStyle={style.credentialingGrid} baseKey={'credentialingPrivilegeCategory'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
                         )}
-                        <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
-                            {form !== undefined && 'departmentSpecialty' in form?.properties && (
-                                <ApplicationFieldCard object={form?.properties?.departmentSpecialty} gridStyle={style.appointmentGrid} baseKey={'departmentSpecialty'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
-                            )}
-                            {form !== undefined && 'regionalCallResponsibilities' in form?.properties && (
+                        {form !== undefined && 'departmentSpecialty' in form?.properties && (
+                            <ApplicationFieldCard object={form?.properties?.departmentSpecialty} gridStyle={style.appointmentGrid} baseKey={'departmentSpecialty'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+                        )}
+                        {/* {form !== undefined && 'regionalCallResponsibilities' in form?.properties && (
                                 <ApplicationFieldCard object={form?.properties?.regionalCallResponsibilities} gridStyle={style.regionalCallGrid} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
-                            )}
-                        </div>
+                            )} */}
                         <div className={style.spaceBetween}>
                             <div></div>
                             <div className={style.displayInRow}>
@@ -347,6 +369,9 @@ const CreateStaffMemberApplication = () => {
                     </>
                 } */}
             </div>
+            {isShowMailSendDialog && (
+                <SendEmailFromStaffManagerConfirmationDialog getIsOpen={getShowMailSendDialog} basicForm={basicForm} />
+            )}
         </div>
     )
 }

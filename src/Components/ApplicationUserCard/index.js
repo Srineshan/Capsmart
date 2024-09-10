@@ -8,7 +8,7 @@ const ApplicationUserCard = ({ user, applyingFor }) => {
     const userDetails = useUser();
     console.log(userDetails)
     const [basicForm, setBasicForm] = useState({})
-    const applicationId = '66d1cae19354e9022ad82027'
+    const applicationId = sessionStorage.getItem('applicationId')
     useEffect(() => {
         getPreApplication()
     }, [])
@@ -28,7 +28,7 @@ const ApplicationUserCard = ({ user, applyingFor }) => {
             // className={style.verticalSpaceBetween}
             >
                 <div className={`${style.nameStyle}`}>{`${basicForm?.applicant?.name?.firstName} ${basicForm?.applicant?.name?.lastName}`}</div>
-                <div className={`${style.applyingFor} ${style.marginTop10}`}>{applyingFor}</div>
+                <div className={`${style.applyingFor} ${style.marginTop10}`}>{`${basicForm?.basicDetailReferences?.applicantType?.category} Applying As ${basicForm?.basicDetailReferences?.applicantType?.serviceProviderType}`}</div>
                 {/* <div className={`${style.connectToLinkedIn} ${style.marginTop10}`}>Connect To LinkedIn</div> */}
             </div>
         </div>

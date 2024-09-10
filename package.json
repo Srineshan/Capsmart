@@ -26,6 +26,7 @@
     "awesome-react-calculator": "^1.1.0",
     "axios": "^0.27.2",
     "city-timezones": "^1.2.1",
+    "crypto-js": "^4.2.0",
     "d3": "^7.6.1",
     "date-fns": "^2.29.1",
     "date-fns-tz": "^2.0.0",

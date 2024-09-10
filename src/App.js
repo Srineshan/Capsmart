@@ -888,7 +888,7 @@ const App = ({ props }) => {
                 element={<ApplicationForm />}
               />
               <Route
-                path="/applicationForm"
+                path="/applicationForm/:applicationId"
                 element={<ApplicationFormRequirement />}
               />
               <Route

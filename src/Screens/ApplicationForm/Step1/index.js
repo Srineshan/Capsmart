@@ -12,19 +12,24 @@ import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 
 import style from './index.module.scss';
 import AIAssistantDialog from '../../../Components/AIAssistantDialog';
+import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 
 const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
     const [form1, setForm1] = useState();
     const [form2, setForm2] = useState();
     const navigate = useNavigate()
     const [isOpen, setIsOpen] = useState(true);
-
+    const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
     useEffect(() => {
         getBasicForm()
     }, [])
 
     const getIsOpen = (value) => {
         setIsOpen(value);
+    }
+
+    const getIsSaveInProgressOpen = (value) => {
+        setIsSaveInProgressOpen(value);
     }
 
     const getBasicForm = async () => {
@@ -118,7 +123,7 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-                    <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
+                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                     <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()}>CONTINUE</div>
                     {/* <div className={style.marginTop}>
                             <ApplicationReferenceDocuments />
@@ -127,6 +132,9 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
             </div>
             {isOpen && (
                 <AIAssistantDialog getIsOpen={getIsOpen} />
+            )}
+            {isSaveInProgressOpen && (
+                <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
             )}
         </div>
     )

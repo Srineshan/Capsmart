@@ -1,6 +1,6 @@
 import React from 'react';
 import { InputGroup, Intent } from '@blueprintjs/core';
-
+import InputAdornment from '@mui/material/InputAdornment';
 import style from './index.module.scss';
 import { TextField } from '@mui/material';
 
@@ -9,8 +9,8 @@ const CommonPhoneField = ({ onChange, placeholder, maxLength, value, error, labe
     return (
         <div>
             <div className={`${style.lableStyle}`}>{label}{required && '*'}</div>
-            <div className={`${style.phoneGrid} ${style.marginTop}`}>
-                <div className={`${style.lableStyle}`}>+1</div>
+            <div className={`${style.marginTop}`}>
+                {/* <div className={`${style.lableStyle}`}>+1</div> */}
                 {/* <InputGroup value={value} onChange={onChange}
                     placeholder={placeholder} maxLength={maxLength} type={'text'}
                     intent={error ? Intent.DANGER : Intent.NONE} /> */}
@@ -24,6 +24,10 @@ const CommonPhoneField = ({ onChange, placeholder, maxLength, value, error, labe
                             height: 15,
                         },
                     }}
+                    InputProps={{
+                        startAdornment: <InputAdornment position="start">+1</InputAdornment>,
+                    }}
+                    fullWidth
                     placeholder={placeholder}
                     className={`${style.marginTop}`}
                     color={warningCheck ? required ? 'error' : 'warning' : ''}

@@ -10,7 +10,7 @@ import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import WelcomeCard from '../../../Components/WelcomeCard';
 import DaysToComplete from '../../../Components/DaysToCompleteCard';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useSession } from '@descope/react-sdk';
 import LoginDialog from '../../../Components/LoginDialog';
 import RequiredDocumentCard from '../../../Components/RequiredDocumentCard';
@@ -19,12 +19,14 @@ import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 
 const ApplicationFormRequirement = () => {
+    const { applicationId } = useParams();
     const { isAuthenticated, isSessionLoading } = useSession();
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(true);
     const [basicForm, setBasicForm] = useState({})
     const [applicantTypeForm, setApplicantTypeForm] = useState()
-    const applicationId = '66d1cae19354e9022ad82027';
+    // const applicationId = '66d1cae19354e9022ad82027';
+    sessionStorage.setItem('applicationId', applicationId)
 
     console.log(basicForm)
 
@@ -70,6 +72,15 @@ const ApplicationFormRequirement = () => {
             });
     }
 
+    const calculateRemainingDays = (createdDate, totalDays) => {
+        const currentDate = new Date();
+        const startDate = new Date(createdDate);
+        const timeDiff = currentDate - startDate;
+        const daysPassed = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+        const remainingDays = totalDays - daysPassed;
+        return remainingDays > 0 ? remainingDays : 0;
+    }
+
     console.log(basicForm, '75')
 
     return (
@@ -107,7 +118,7 @@ const ApplicationFormRequirement = () => {
                     <div>
                         {/* <ApplicationUserCard user={'Guest User'} applyingFor={'Contact'} /> */}
                         <div>
-                            <DaysToComplete days={7} />
+                            <DaysToComplete days={calculateRemainingDays(basicForm?.createdDate, 15)} />
                         </div>
                         <div className={style.marginTop10}>
                             <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
