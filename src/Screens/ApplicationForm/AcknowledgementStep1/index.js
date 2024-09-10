@@ -13,6 +13,7 @@ import CommonCheckBox from '../../../Components/CommonFields/CommonCheckBox';
 import ESign from '../../../Components/ESign';
 import { format } from 'date-fns';
 import { SuccessToaster, ErrorToaster } from '../../../utils/toaster';
+import ESignature from '../../../Components/ESignature';
 
 const ApplicationAcknowledgementStep1 = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApplication }) => {
     const [isChecked, setIsChecked] = useState(false);
@@ -222,9 +223,9 @@ const ApplicationAcknowledgementStep1 = ({ acknowledgementForm, dateFormat, name
                         </div>
                         {acknowledgementForm?.esignatureRequiredOnEachPage && (
                             <div onClick={isChecked ? () => { setIsSigned(!isSigned); setIsEdited(true) } : () => { }} className={!isChecked ? style.disabled : ''}>
-                                <ESign
+                                <ESignature
                                     userName={isSigned ? name + " " + currentDate : ""}
-                                    encData={encryptedText}
+                                    encData={isSigned ? encryptedText : ''}
                                     showData={true}
                                     showDatais={true}
                                 />
