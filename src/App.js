@@ -24,6 +24,9 @@ import GeneralConfigurationForCustomers from "./Screens/ReferenceList/generalCon
 import LoginDialog from "./Components/LoginDialog";
 import Departments from "./Screens/ReferenceList/department/Department";
 import ApplicantTypesByEntity from "./Screens/ReferenceList/applicantTypeByEntity/applicantTypesByEntity";
+import Speciality from "./Screens/ReferenceList/speciality/Speciality";
+
+
 
 const ReportType = React.lazy(() => import("./Screens/Reports/reportType"));
 const ReportTypeOverview = React.lazy(() =>
@@ -181,6 +184,9 @@ const DepartmentsForCustomers = React.lazy(() =>
 const StaffPrivilegesByDepartment = React.lazy(() =>
   import("./Screens/ReferenceList/staffPrivileges/StaffPrivileges")
 );
+
+
+
 
 const Consent = React.lazy(() =>
   import("./Screens/ReferenceList/consents/Consents")
@@ -847,6 +853,10 @@ const App = ({ props }) => {
               <Route
                 path="/referenceList/staffPrivilegesByDepartment"
                 element={<StaffPrivilegesByDepartment />}
+              />
+              <Route
+                path="/referenceList/speciality/Speciality"
+                element={<Speciality/>}
               />
               <Route
                 path="/referenceList/acknowledgementForms"
