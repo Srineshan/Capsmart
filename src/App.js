@@ -234,6 +234,12 @@ const SuperAdminDashboard = React.lazy(() =>
 const ClientAdminDashboard = React.lazy(() =>
   import("./Screens/ReferenceList/customerAdminDashboard")
 );
+const ApplicationSummary = React.lazy(() =>
+  import("./Screens/ApplicationForm/ApplicationSummary"));
+const ApplicationAcknowledgement = React.lazy(() =>
+  import("./Screens/ApplicationForm/ApplicationAcknowledgement"));
+const PODCheck = React.lazy(() =>
+  import("./Screens/ApplicationForm/PODCheck"));
 // const ApplicantTypesByEntity = React.lazy(() =>
 //   import("./Screens/ReferenceList//referenceList/contractServiceProviderBySiteType")
 // );
@@ -667,6 +673,18 @@ const App = ({ props }) => {
               <Route
                 path="/setPassword"
                 element={<SetPasswordWithoutEmail />}
+              />
+              <Route
+                path="/applicationForm/applicationSummary"
+                element={<ApplicationSummary />}
+              />
+              <Route
+                path="/applicationForm/applicationAcknowledgement"
+                element={<ApplicationAcknowledgement />}
+              />
+              <Route
+                path="/applicationForm/podcheck"
+                element={<PODCheck />}
               />
               <Route path="/welcome" element={<Welcome />} />
               <Route path="/entitySetup/:id/:page" element={<EntitySetup />} />
