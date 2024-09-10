@@ -24,36 +24,36 @@ const useStyles = makeStyles({
   },
 });
 
-const StaffPrivilegeDialog = ({
+const SpecialityDialog = ({
   open,
   handleClose, //with needRefetch param as optional
   isEdit,
   selectedApplicant,
 }) => {
-  const [isPrivilagesRequired, setPrivilagesRequired] = useState(false);
+  const [isSpecialityRequired, setSpecialityRequired] = useState(false);
   const [applicantTypes, setApplicantTypesState] = useState([]);
   const [sites, setSitesState] = useState([]);
   const [departments, setDepartmentsState] = useState([]);
   const [generalInstructionContent, setGeneralInstructionContent] = useState();
-  const [advancePrivilegeContent, setAdvancePrivilegeContent] = useState();
-  const [privilegeSpecificationType, setPrivilegeSpecificationType] =
+  const [advanceSpecialityContent, setAdvanceSpecialityContent] = useState();
+  const [specialitySpecificationType, setSpecialitySpecificationType] =
     useState("");
   const [saveData, setSaveData] = useState({});
   const [isProofOfDocumentRequired, setIsProofOfDocumentRequired] =
     useState(false);
 
-  const PrivilegeSpecificationType1 = "DescriptiveDocument";
-  const PrivilegeSpecificationType2 = "DiscreteItemList";
+  const SpecialitySpecificationType1 = "DescriptiveDocument";
+  const SpecialitySpecificationType2 = "DiscreteItemList";
 
   const privilegeSpecifications = [
     {
       id: "Descriptive_Document",
-      value: PrivilegeSpecificationType1,
+      value: SpecialitySpecificationType1,
       label: "Descriptive Document",
     },
     {
       id: "Discreet_Item_List",
-      value: PrivilegeSpecificationType2,
+      value: SpecialitySpecificationType2,
       label: "Discreet Item List",
     },
   ];
@@ -65,22 +65,22 @@ const StaffPrivilegeDialog = ({
   };
 
   const handlePrivilegeSpecificationChange = (event) => {
-    setPrivilegeSpecificationType(event.target.value);
+    setSpecialitySpecificationType(event.target.value);
     setIsProofOfDocumentRequired(false);
   };
 
   useEffect(() => {
     if (selectedApplicant) {
       setSaveData({ ...selectedApplicant });
-      setPrivilegeSpecificationType(
-        selectedApplicant.privilegeSpecificationType
+      setSpecialitySpecificationType(
+        selectedApplicant.SpecialitySpecificationType
       );
       setIsProofOfDocumentRequired(
         selectedApplicant.proofOfDocumentationRequired
       );
-      setPrivilagesRequired(selectedApplicant.advancedPrivilegesRequired);
+      setSpecialityRequired(selectedApplicant.advancedPrivilegesRequired);
       setGeneralInstructionContent(selectedApplicant.generalInstructionText);
-      setAdvancePrivilegeContent(selectedApplicant.advancedInstructionText);
+      setAdvanceSpecialityContent(selectedApplicant.advancedInstructionText);
     }
   }, [selectedApplicant]);
 
@@ -180,20 +180,21 @@ const StaffPrivilegeDialog = ({
   };
 
   const SaveSubmitHandler = async (isSaveAndExit) => {
-    var staffPrivileges = {
+    var speciality = {
       ...saveData,
       proofOfDocumentationRequired: isProofOfDocumentRequired,
-      advancedPrivilegesRequired: isPrivilagesRequired,
-      privilegeSpecificationType: privilegeSpecificationType,
+      advancedPrivilegesRequired: isSpecialityRequired,
+      SpecialitySpecificationType: specialitySpecificationType,
     };
+    const dataToSend = [speciality];
 
     if (!isEdit) {
       await POST(
-        "entity-service/staffPrivilege",
-        JSON.stringify(staffPrivileges)
+        "entity-service/departmentspeciality",
+        JSON.stringify(dataToSend)
       )
         .then((response) => {
-          SuccessToaster("Staff Privilege Added Successfully");
+          SuccessToaster("Speciality Added Successfully");
           resetDialogFields();
           if (isSaveAndExit) {
             handleClose(true);
@@ -205,11 +206,11 @@ const StaffPrivilegeDialog = ({
     } else {
       var id = selectedApplicant.id;
       await PUT(
-        `entity-service/staffPrivilege/${id}`,
-        JSON.stringify(staffPrivileges)
+        `entity-service/departmentspeciality/${id}`,
+        JSON.stringify(dataToSend)
       )
         .then((response) => {
-          SuccessToaster("Staff Privilege Updated Successfully");
+          SuccessToaster("Speciality Updated Successfully");
           resetDialogFields();
           if (isSaveAndExit) {
             handleClose(true);
@@ -223,11 +224,11 @@ const StaffPrivilegeDialog = ({
 
   const resetDialogFields = () => {
     setSaveData({});
-    setPrivilegeSpecificationType("");
+    setSpecialitySpecificationType("");
     setIsProofOfDocumentRequired(false);
-    setPrivilagesRequired(false);
+    setSpecialityRequired(false);
     setGeneralInstructionContent("");
-    setAdvancePrivilegeContent("");
+    setAdvanceSpecialityContent("");
   };
 
   return (
@@ -240,7 +241,7 @@ const StaffPrivilegeDialog = ({
       >
         <div className={style.spaceBetween}>
           <p className={style.extensionStyle}>
-            Setup and maintain your Staff Privileges
+            Setup and maintain your Speciality
           </p>
           <div className={`${style.displayInRow}`}>
             <div style={{ marginRight: "40px" }}>
@@ -333,7 +334,7 @@ const StaffPrivilegeDialog = ({
           </Box>
           <div className={`${style.marginTop20} ${style.validation}`}>
             <div className={style.entityLableStyle}>
-              PRIVELEGE SPECIFICATION TYPE REQUIRED*
+              SPECIALITY SPECIFICATION TYPE REQUIRED*
             </div>
             {privilegeSpecifications.map((item) => (
               <div className={`${style.marginLeft40} ${style.validation}`}>
@@ -341,7 +342,7 @@ const StaffPrivilegeDialog = ({
                   control={
                     <Radio
                       id={item.id}
-                      checked={item.value == privilegeSpecificationType}
+                      checked={item.value == specialitySpecificationType}
                       onChange={handlePrivilegeSpecificationChange}
                       value={item.value}
                     />
@@ -352,7 +353,7 @@ const StaffPrivilegeDialog = ({
             ))}
           </div>
 
-          {privilegeSpecificationType == PrivilegeSpecificationType1 && (
+          {specialitySpecificationType == SpecialitySpecificationType1 && (
             <div className={`${style.validation} ${style.marginTop20}`}>
               <div className={style.entityLableStyle}>
                 PROOF OF DOCUMENTATION REQUIRED?
@@ -387,44 +388,6 @@ const StaffPrivilegeDialog = ({
               placeholder={"Enter GENERAL INSTRUCTION Here"}
             />
           </div>
-          <div className={`${style.marginTop20} ${style.verticalAlignCenter}`}>
-            <div className={style.entityLableStyle}>
-              ADVANCED PRIVILEGES REQUIRED?
-            </div>
-            <div className={style.marginLeft10}>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={isPrivilagesRequired}
-                    onChange={(e) => {
-                      setPrivilagesRequired(e.target.checked);
-                    }}
-                    className={classes.switch}
-                  />
-                }
-                className={`${style.switchFontStyle}`}
-                label={isPrivilagesRequired ? "Yes" : "No"}
-                labelPlacement="start"
-              />
-            </div>
-            <div></div>
-          </div>
-          {isPrivilagesRequired && (
-            <div className={style.marginTop20}>
-              <div className={style.entityLableStyle}>
-                ADVANCED PRIVILEGES SECTION INSTRUCTION TEXT
-              </div>
-              <Editor
-                editorHtml={advancePrivilegeContent}
-                onChange={(data) =>
-                  updateSaveData("advancedInstructionText", data)
-                }
-                placeholder={
-                  "Enter ADVANCED PRIVILEGES SECTION INSTRUCTION Here"
-                }
-              />
-            </div>
-          )}
         </div>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <div className={`${style.marginTop20} `} style={{ float: "left" }}>
@@ -454,4 +417,4 @@ const StaffPrivilegeDialog = ({
     </Dialog>
   );
 };
-export default StaffPrivilegeDialog;
+export default SpecialityDialog;

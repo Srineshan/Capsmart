@@ -1,25 +1,17 @@
 import React, { Fragment, useState, useEffect } from "react";
 import Navbar from "../../../Components/Navbar";
-import { Checkbox, Icon, Intent } from "@blueprintjs/core";
 import style from "./../index.module.scss";
-import { GET, DELETE, POST, TenantID } from "../../dataSaver";
-import AddNewDepartments from "../addNewDepartments";
-import { SuccessToaster, ErrorToaster } from "../../../utils/toaster";
-import { format } from "date-fns";
+import { GET, POST, TenantID } from "../../dataSaver";
 import LevelTwoHeader from "../../../Components/LevelTwoHeader";
-import CommonCheckBox from "../../../Components/CommonFields/CommonCheckBox";
-import CommonPurpleCheckBox from "../../../Components/CommonFields/CommonPurpleCheckBox";
-import SearchBar from "../../../Components/SearchBar";
 import { formatInTimeZone } from "date-fns-tz";
 import { siteTimeZone, timeZoneAbbreviation } from "../../../utils/formatting";
-import ApplicantTable from "../common/Table";
+import ReferenceListCommonTable from "../common/Table";
 import ApplicantSideBar from "../common/SideBar";
 import { ReferenceListActionButton } from "../common/ReferenceListActionButton";
-import Breadcrumbs from "@mui/material/Breadcrumbs";
-import Typography from "@mui/material/Typography";
-import ApplicantTypeDialog from "./ApplicantTypeDialog";
+import { Typography } from "@material-ui/core";
+import SpecialityDialog from "./SpecialityDialog";
 
-const ApplicantTypesByEntity = () => {
+const Speciality = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [entityId, setEntityId] = useState("");
   const [lastUpdatedDate, setLastUpdatedDate] = useState("");
@@ -27,12 +19,12 @@ const ApplicantTypesByEntity = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [applicantTypeList, setApplicantTypeList] = useState([]);
   const [applicantId, setApplicantId] = useState("");
-  const [applicantTypeEntityForm, setApplicantTypeEntityForm] = useState([]);
+  const [specialityForm, setspecialityForm] = useState([]);
   const [editData, setEditData] = useState();
   const [isRefetch, setIsRefetch] = useState(false);
 
-  const tableHeadKeys = ["APPLICANT TYPES", "CATEGORY", "LAST UPDATED"];
-  const tableDataKeys = ["applicantType", "category", "lastModifiedDate"];
+  const tableHeadKeys = ["CATEGORY", "LAST UPDATED"];
+  const tableDataKeys = ["applicantType", "lastModifiedDate"];
 
   useEffect(() => {
     getApplicantType();
@@ -55,12 +47,12 @@ const ApplicantTypesByEntity = () => {
   useEffect(() => {
     console.log(applicantId);
 
-    if (applicantId && applicantId != "") getStaffPrivileges(applicantId);
+    if (applicantId && applicantId != "") getSpeciality(applicantId);
   }, [applicantId]);
 
   useEffect(() => {
     if (isRefetch) {
-      getStaffPrivileges(applicantId);
+      getSpeciality(applicantId);
     }
   }, [isRefetch]);
 
@@ -83,20 +75,21 @@ const ApplicantTypesByEntity = () => {
     );
   };
 
-  const getStaffPrivileges = async (id) => {
+  const getSpeciality = async (id) => {
     if (id !== "") {
-      const { data: applicantTypeForm } = await GET(
-        `entity-service/applicantType?applicantTypeId=${id}`
+      const { data: specialityForm } = await GET(
+        `entity-service/departmentspeciality?applicantTypeId=${id}`
       );
       setIsRefetch(false);
-      setApplicantTypeEntityForm(applicantTypeForm);
+      console.log("specialityFormspecialityForm", specialityForm);
+      setspecialityForm(specialityForm);
     }
   };
 
   const getSelectedTile = (applicantId) => {
     if (applicantId && applicantId != "") {
       setApplicantId(applicantId);
-      getStaffPrivileges(applicantId);
+      getSpeciality(applicantId);
     }
   };
 
@@ -121,12 +114,14 @@ const ApplicantTypesByEntity = () => {
         <div className={style.padding20}>
           <div>
             <LevelTwoHeader
-              heading={"Applicant Types by Entity Types"}
+              heading={
+                "Speciality for department & service areas by applicant types"
+              }
               updatedTime={`UPDATED ON ${lastUpdatedDate}`}
               path={"/Screens/ReferenceList/customerAdminDashboard"}
               callingFrom={"Customer Admin"}
               needHeader={false}
-              tileType={"Applicant"}
+              tileType={"Speciality"}
               onAddClick={() => setIsDialogOpen(true)}
               onCloseLevel2={() => setIsDialogOpen(false)}
             />
@@ -139,7 +134,7 @@ const ApplicantTypesByEntity = () => {
               siteType={applicantTypeList?.map((data) => data?.siteType)}
               selectedTile={getSelectedTile}
               onSelectSite={handleSiteClick}
-              tileType={"ApplicantType"}
+              tileType={"Speciality"}
               sideBarList={applicantTypeList}
               siteDropdown={true}
             />
@@ -154,25 +149,27 @@ const ApplicantTypesByEntity = () => {
                   {">"}
                 </Typography>
                 <Typography className={style.tableTitleContent}>
-                  All Applicant Form
+                  All Speciality Form
                 </Typography>
               </div>
-              <ApplicantTable
-                applicantTypes={applicantTypeEntityForm}
-                applicantNotice={
-                  "Applicant types are ordered as they will appear on forms. To change the order, click and drag "
-                }
-                tableDataKeys={tableDataKeys}
-                tableHeadKeys={tableHeadKeys}
-                tileType={"ApplicantType"}
-                groupFirstTwoColumn={true}
-                onEditClick={(data) => {
-                  setIsEdit(true);
-                  setIsDialogOpen(true);
-                  setEditData(data);
-                }}
-              />
-
+              {specialityForm && (
+                <ReferenceListCommonTable
+                  applicantTypes={specialityForm}
+                  applicantNotice={
+                    "Applicant types are ordered as they will appear on forms. To change the order, click and drag "
+                  }
+                  tableDataKeys={tableDataKeys}
+                  tableHeadKeys={tableHeadKeys}
+                  tileType={"Speciality"}
+                  groupFirstTwoColumn={true}
+                  onEditClick={(data) => {
+                    console.log(data);
+                    setIsEdit(true);
+                    setIsDialogOpen(true);
+                    setEditData(data);
+                  }}
+                />
+              )}
               <ReferenceListActionButton
                 button1={"Save In-Progress"}
                 button2={" Mark as Done"}
@@ -182,7 +179,7 @@ const ApplicantTypesByEntity = () => {
         </div>
       </div>
       {isDialogOpen && (
-        <ApplicantTypeDialog
+        <SpecialityDialog
           open={isDialogOpen}
           handleClose={handleCloseDialog}
           selectedApplicant={editData}
@@ -193,4 +190,4 @@ const ApplicantTypesByEntity = () => {
   );
 };
 
-export default ApplicantTypesByEntity;
+export default Speciality;

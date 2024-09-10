@@ -20,17 +20,14 @@ const ApplicantSideBar = ({
   }, [activeIndex, sideBarList]);
 
   const handleSiteClick = (index, site) => {
-    console.log(site);
-
     setActiveIndex(index);
     onSelectSite(site);
   };
-  console.log(applicantType);
 
   return (
     <div className={style.sideBar}>
       <div>
-        {siteDropdown ? (
+        {/* {siteDropdown ? (
           <select
             className={style.dropdown}
             onChange={(e) => onSelectSite(e.target.value)}
@@ -39,15 +36,16 @@ const ApplicantSideBar = ({
           </select>
         ) : (
           <p className={style.siteTitle}>{siteTitle}</p>
-        )}
+        )} */}
       </div>
       {applicantType.map((site, index) => (
         <div
           key={index}
-          className={`${style.sidebarContent} ${index === activeIndex
-            ? style.sideActiveBackground
-            : style.sideNonActiveBackground
-            }`}
+          className={`${style.sidebarContent} ${
+            index === activeIndex
+              ? style.sideActiveBackground
+              : style.sideNonActiveBackground
+          }`}
           onClick={() => {
             handleSiteClick(index, site);
             if (sideBarList) {
@@ -59,7 +57,7 @@ const ApplicantSideBar = ({
             <p className={style.siteName}>{site}</p>
             {/* <div className={style.siteCount}>{site?.length}</div> */}
           </div>
-          {siteType && <p className={style.siteType}>{siteType[index]}</p>}
+          {/* {siteType && <p className={style.siteType}>{siteType[index]}</p>} */}
           {/* {site.description && (
             <p className={style.siteDescription}>{site.description}</p>
           )} */}

@@ -6,13 +6,12 @@ import style from "./../index.module.scss";
 import DragHandleIcon from "@mui/icons-material/DragHandle";
 import ProofOfDocumentDialog from "../proofOfDocument/proofOfDocumentDialog";
 import { POST, GET, PUT, TenantID, DELETE } from "./../../dataSaver";
-import StaffPrivilegeDialog from "../staffPrivileges/staffPrivilegeDialog";
 import ConsentsDialog from "../consents/consentsDialog";
 import AcknowledgmentDialog from "../acknowledgment/AcknowledgmentDialog";
 import DisclosureByIndustriesDialog from "../disclosureByIndustries/disclosureByIndustriesDialog";
 import { format } from "date-fns";
 
-const ApplicantTable = ({
+const ReferenceListCommonTable = ({
   applicantTypes,
   applicantNotice,
   tableDataKeys,
@@ -20,28 +19,31 @@ const ApplicantTable = ({
   documents,
   handleClose,
   tileType,
+  onEditClick,
 }) => {
-
   const [selectedApplicant, setSelectedApplicant] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
 
   const handleEditClick = (applicant) => {
     console.log(applicant);
     setSelectedApplicant(applicant);
+
+    if (onEditClick) onEditClick(applicant);
+
     setOpenDialog(true);
   };
-
   const handleCloseDialog = () => {
-    console.log(openDialog)
+    console.log(openDialog);
     setOpenDialog(false);
     setSelectedApplicant(null);
   };
 
   const handleDelete = async (id) => {
+    console.log("idid", id);
     if (tileType === "ProofOfDocument") {
       try {
         await DELETE(`entity-service/document/?${TenantID}&${id}`, {
-          id: id, // Adding the 'id' header required by the server
+          id: id,
         });
 
         console.log("Document deleted successfully");
@@ -58,9 +60,35 @@ const ApplicantTable = ({
       }
     }
     if (tileType === "StaffPrivileges") {
-      console.log("id", id);
       try {
-        await DELETE(`entity-service/staffprivileges/${id}`);
+        await DELETE(`entity-service/staffPrivilege/${id}`);
+
+        console.log("Document deleted successfully");
+      } catch (error) {
+        console.error("Error deleting document:", error);
+      }
+    }
+    if (tileType === "ApplicantType") {
+      try {
+        await DELETE(`entity-service/applicantType/${id}`);
+
+        console.log("Document deleted successfully");
+      } catch (error) {
+        console.error("Error deleting document:", error);
+      }
+    }
+    if (tileType === "Departments") {
+      try {
+        await DELETE(`entity-service/department/${id}`);
+
+        console.log("Document deleted successfully");
+      } catch (error) {
+        console.error("Error deleting document:", error);
+      }
+    }
+    if (tileType === "Speciality") {
+      try {
+        await DELETE(`entity-service/departmentspeciality?id=${id}`);
 
         console.log("Document deleted successfully");
       } catch (error) {
@@ -81,8 +109,8 @@ const ApplicantTable = ({
 
   const isDateStamp = (str) => {
     const date = new Date(str);
-    return !isNaN(date.getTime()); // Check if it's a valid date
-  }
+    return !isNaN(date.getTime());
+  };
 
   return (
     <div className={style.applicantTableContainer}>
@@ -101,7 +129,8 @@ const ApplicantTable = ({
             {tableHeadKeys &&
               tableHeadKeys.map((head, index) => (
                 <th
-                  className={`${index === 0 ? style.firstColumn : style.centerAligned} `}
+                  className={`${index === 0 ? style.firstColumn : style.centerAligned
+                    } `}
                   key={index}
                 >
                   {head}
@@ -112,35 +141,63 @@ const ApplicantTable = ({
           </tr>
         </thead>
         <tbody>
-          {applicantTypes?.length ?
-            applicantTypes?.map((applicant, index) => (
+          {applicantTypes.length
+            ? applicantTypes.map((applicant, index) => (
               <React.Fragment key={applicant.id}>
                 <tr
                   className={`${style.applicantItem} ${index % 2 === 0 ? "" : style.sideNonActiveBackground
                     }`}
                 >
-                  {tableDataKeys?.map((key, keyIndex) => (
+                  {tableDataKeys.map((key, keyIndex) => (
                     <td
                       key={keyIndex}
-                      className={`${keyIndex === 0 ? style.leftAligned : style.centerAligned
+                      className={`${keyIndex === 0
+                        ? style.leftAligned
+                        : style.centerAligned
                         } ${keyIndex === 0 ? style.firstColumn : ""}`}
                     >
-                      {key === "applicantType"
-                        ? applicant.applicantType[key]
-                        : key === "disclaimer"
-                          ? applicant[key]?.content != null
-                            ? "Yes"
-                            : "No"
-                          : key === "esignatureRequiredOnEachPage" ||
-                            key == "esignatureRequired"
-                            ? applicant[key] === true
-                              ? "Required"
-                              : "NA"
-                            : (key === "lastModifiedDate" || key === "lastModifiedData") ? format(new Date(applicant[key]), 'MMM dd, yyyy')
-                              : applicant[key] || "N/A"}
+                      {tileType === "ApplicantType"
+                        ? key === "category"
+                          ? applicant.category
+                            ? applicant.category.category
+                            : "N/A"
+                          : key === "applicantType"
+                            ? applicant.applicantType
+                              ? applicant.applicantType
+                              : "N/A"
+                            : key === "lastUpdated" ||
+                              key === "lastModifiedDate"
+                              ? applicant[key]
+                                ? format(new Date(applicant[key]), "MMM dd, yyyy")
+                                : "N/A"
+                              : "N/A" // Handle other cases or provide a default value
+                        : key === "applicantType"
+                          ? applicant.applicantType &&
+                          applicant.applicantType[key]
+                          : key === "disclaimer"
+                            ? applicant[key]?.content != null
+                              ? "Yes"
+                              : "No"
+                            : key === "esignatureRequiredOnEachPage" ||
+                              key === "esignatureRequired"
+                              ? applicant[key] === true
+                                ? "Required"
+                                : "NA"
+                              : key === "createdDate"
+                                ? format(new Date(applicant[key]), "MMM dd, yyyy")
+                                : key === "lastModifiedDate" ||
+                                  key === "lastModifiedData"
+                                  ? applicant[key]
+                                    ? format(new Date(applicant[key]), "MMM dd, yyyy")
+                                    : "N/A"
+                                  : key === "departmentName"
+                                    ? applicant.departmentName
+                                      ? applicant.departmentName.name
+                                      : "N/A"
+                                    : applicant[key] || "N/A"}
                     </td>
                   ))}
-                  <td className={style.actions} height='100%'>
+                  <td className={style.actions} height="100%">
                     <img
                       src={EditHcFolder}
                       alt="Edit"
@@ -189,7 +246,8 @@ const ApplicantTable = ({
                     </tr>
                   ))}
               </React.Fragment>
-            )) : ''}
+            ))
+            : ""}
         </tbody>
       </table>
       {selectedApplicant && tileType === "ProofOfDocument" && openDialog && (
@@ -198,16 +256,6 @@ const ApplicantTable = ({
           onClose={handleCloseDialog}
           selectedApplicant={selectedApplicant}
           documents={documents}
-          isEdit={true}
-          handleClose={handleCloseDialog}
-        />
-      )}
-
-      {selectedApplicant && tileType === "StaffPrivilege" && openDialog && (
-        <StaffPrivilegeDialog
-          open={openDialog}
-          onClose={handleCloseDialog}
-          selectedApplicant={selectedApplicant}
           isEdit={true}
           handleClose={handleCloseDialog}
         />
@@ -223,16 +271,18 @@ const ApplicantTable = ({
           handleClose={handleCloseDialog}
         />
       )}
-      {selectedApplicant && tileType == "Disclosure Industries" && openDialog && (
-        <DisclosureByIndustriesDialog
-          open={openDialog}
-          onClose={handleCloseDialog}
-          selectedDisclosure={selectedApplicant}
-          documents={documents}
-          isEdit={true}
-          handleClose={handleCloseDialog}
-        />
-      )}
+      {selectedApplicant &&
+        tileType == "Disclosure Industries" &&
+        openDialog && (
+          <DisclosureByIndustriesDialog
+            open={openDialog}
+            onClose={handleCloseDialog}
+            selectedDisclosure={selectedApplicant}
+            documents={documents}
+            isEdit={true}
+            handleClose={handleCloseDialog}
+          />
+        )}
 
       {selectedApplicant && tileType == "Consent" && openDialog && (
         <ConsentsDialog
@@ -248,4 +298,4 @@ const ApplicantTable = ({
   );
 };
 
-export default ApplicantTable;
+export default ReferenceListCommonTable;

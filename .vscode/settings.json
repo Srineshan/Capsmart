@@ -1,7 +1,7 @@
 {
-    "files.autoSave": "afterDelay",
-    "emmet.includeLanguages": {
-        "javascript": "javascriptreact"
-    },
-    "editor.formatOnSave": true
+  "files.autoSave": "off",
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact"
+  },
+  "editor.formatOnSave": true
 }

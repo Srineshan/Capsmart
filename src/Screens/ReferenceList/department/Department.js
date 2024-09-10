@@ -12,28 +12,25 @@ import CommonPurpleCheckBox from "../../../Components/CommonFields/CommonPurpleC
 import SearchBar from "../../../Components/SearchBar";
 import { formatInTimeZone } from "date-fns-tz";
 import { siteTimeZone, timeZoneAbbreviation } from "../../../utils/formatting";
-import ReferenceListCommonTable from "../common/Table";
+import ApplicantTable from "../common/Table";
 import ApplicantSideBar from "../common/SideBar";
 import { ReferenceListActionButton } from "../common/ReferenceListActionButton";
-import Breadcrumbs from "@mui/material/Breadcrumbs";
-import Typography from "@mui/material/Typography";
+import { Typography } from "@material-ui/core";
+import DepartmentDialog from "./DepartmentDialog";
 
-const Acknowledge = () => {
+const Departments = () => {
   const [isSelected, setIsSelected] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
   const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
-  const [applicantTypeList, setApplicantTypeList] = useState([]);
-
+  const [tableData, setTableData] = useState();
   const [entityDetails, setEntityDetails] = useState({});
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const [siteTypeId, setSiteTypeId] = useState("");
   const [selectedEntityType, setSelectedEntityType] = useState("");
   const [entityTypes, setEntityTypes] = useState([]);
-  const [applicantTypes, setApplicantTypes] = useState([]);
   const [departmentServiceMaster, setDepartmentServiceMaster] = useState([]);
   const [departmentService, setDepartmentService] = useState([]);
-  const [documents, setDocuments] = useState([]);
   const [selectedDepartmentServiceArea, setSelectedDepartmentServiceArea] =
     useState([]);
   const [selectedDepartmentService, setSelectedDepartmentService] = useState(
@@ -42,74 +39,33 @@ const Acknowledge = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [entityId, setEntityId] = useState("");
   const [lastUpdatedDate, setLastUpdatedDate] = useState("");
-  const [applicantId, setApplicantId] = useState("");
+
   const [selectAllList, setSelectAllList] = useState([]);
   const [checkedAll, setCheckedAll] = useState(false);
   const [searchKey, setSearchKey] = useState("");
   const [selectedApplicantType, setSelectedApplicantType] = useState("");
+  const [sites, setSites] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [acknowledgementForms, setAcknowledgementForms] = useState([]);
-
-  const sites = ["SITE NAME", "SITE NAME"];
-
-  const applicantType = [
-    {
-      name: "Acknowledge Title",
-      type: "Yes",
-      requirment: "Required",
-      lastUpdated: "Aug 16, 2024",
-    },
-    {
-      name: "Acknowledge Title",
-      type: "No",
-      requirment: "NA",
-      lastUpdated: "Aug 16, 2024",
-    },
-    {
-      name: "Acknowledge Title",
-      type: "Yes",
-      requirment: "Required",
-      lastUpdated: "Aug 16, 2024",
-    },
-    {
-      name: "Acknowledge Title",
-      type: "No",
-      requirment: "NA",
-      lastUpdated: "Aug 16, 2024",
-    },
-  ];
+  const [applicantTypeList, setApplicantTypeList] = useState([]);
+  const [applicantId, setApplicantId] = useState("");
+  const [departmentForms, setDepartmentForms] = useState([]);
+  const [editData, setEditData] = useState();
 
   const tableHeadKeys = [
-    "ACKNOWLEDGE TITLE",
-    "DISCLAIMAR",
-    "SIGNATURE",
+    // "ID",
+    // "TITLE",
+    "DEPARTMENT",
+    // "TYPE",
+    // "POD",
+    "CREATED DATE",
     "LAST UPDATED",
   ];
-  const tableDataKeys = [
-    "title",
-    "disclaimer",
-    "esignatureRequiredOnEachPage",
-    "lastModifiedDate",
-  ];
-
+  const tableDataKeys = ["departmentName", "createdDate", "lastModifiedDate"];
   useEffect(() => {
     if (entityId !== "" && entityId !== undefined) {
       getLastModifiedDate();
     }
   }, [entityId]);
-
-  useEffect(() => {
-    getApplicantType();
-  }, []);
-
-  useEffect(() => {
-    getAcknowledgement(applicantId);
-  }, [applicantId]);
-
-  const getApplicantType = async () => {
-    const { data: types } = await GET("entity-service/applicantType");
-    setApplicantTypeList(types);
-  };
 
   const getIsExpanded = (value) => {
     setIsExpanded(value);
@@ -119,19 +75,18 @@ const Acknowledge = () => {
     setShowAddEntityDialog(value);
   };
 
+  useEffect(() => {
+    getStaffPrivileges(applicantId);
+  }, [applicantId]);
+
   const getEntity = async () => {
     const { data: entity } = await GET(`entity-service/entity`);
     setEntityDetails(entity);
     setEntityId(entity?.[0]?.id);
   };
 
-  const getAcknowledgement = async (id) => {
-    if (id !== "") {
-      const { data: acknowledgementForm } = await GET(
-        `entity-service/acknowledgementForm?applicantTypeId=${id}`
-      );
-      setAcknowledgementForms(acknowledgementForm);
-    }
+  const getAddEntityTypes = async (data) => {
+    await POST(`entity-service/document/?${TenantID}`, data);
   };
 
   const getLastModifiedDate = async () => {
@@ -148,31 +103,15 @@ const Acknowledge = () => {
     );
   };
 
-  const getAddEntityTypes = async (data) => {
-    await POST(`entity-service/document/?${TenantID}`, data);
-  };
-
   const getEntityTypes = async () => {
-    console.log("TenantID", TenantID);
+    const { data: entityType } = await GET(`entity-service/department`);
 
-    const { data: entityType } = await GET(
-      `entity-service/document/?${TenantID}`
-    );
+    if (entityType) {
+      const allSites = entityType.flatMap((entity) => entity.sites || []);
+      setEntityTypes(allSites);
 
-    setDocuments(entityType);
-    const allApplicantTypes = entityType.flatMap(
-      (entity) => entity.applicantTypes || []
-    );
-
-    setApplicantTypes(allApplicantTypes);
-
-    // // console.log(entityType?.sites)
-    // if (entityType?.sites?.length !== 0) {
-    //   setSiteTypeId(entityType?.sites?.[0]?.siteType?.id);
-    //   setSelectedEntityType(entityType?.sites?.[0]?.siteType?.type);
-    //   setEntityTypes(entityType?.sites);
-    // }
-    console.log(applicantTypes);
+      setTableData(entityType);
+    }
   };
 
   const getDepartmentServiceMaster = async () => {
@@ -188,15 +127,6 @@ const Acknowledge = () => {
     );
     setDepartmentService(departmentService);
   };
-
-  useEffect(() => {
-    if (applicantTypeList.length > 0) {
-      setSelectedApplicantType(
-        applicantTypeList?.filter((data) => data?.id === applicantId)[0]
-          ?.applicantType
-      );
-    }
-  }, [applicantTypeList, applicantId]);
 
   useEffect(() => {
     let tempDepartmentService = departmentServiceMaster
@@ -239,22 +169,50 @@ const Acknowledge = () => {
     }
   }, [siteTypeId, entityDetails, searchKey]);
 
+  useEffect(() => {
+    if (entityTypes.length > 0) {
+      setSelectedApplicantType(entityTypes[0]?.name);
+    }
+  }, [entityTypes]);
+
   const handleSiteClick = (siteName) => {
     setSelectedApplicantType(siteName);
   };
-
-  const handleOpenDialog = () => {
-    setIsDialogOpen(true);
-  };
+  console.log(tableData);
 
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
   };
 
+  useEffect(() => {
+    if (applicantTypeList && applicantTypeList.length > 0) {
+      setSelectedApplicantType(applicantTypeList[0]?.applicantType || "");
+    }
+  }, [applicantTypeList]);
+
+  const getStaffPrivileges = async (id) => {
+    if (id !== "") {
+      const { data: staffPrivilegesForm } = await GET(
+        `entity-service/department?applicantTypeId=${id}`
+      );
+      setDepartmentForms(staffPrivilegesForm);
+    }
+  };
+
   const getSelectedTile = (data) => {
     setApplicantId(data);
-    getAcknowledgement(data);
+    getStaffPrivileges(data);
   };
+
+  const getApplicantType = async () => {
+    const { data: types } = await GET("entity-service/applicantType");
+    console.log("applicantType", types);
+    setApplicantTypeList(types);
+  };
+
+  useEffect(() => {
+    getApplicantType();
+  }, []);
 
   return (
     <Fragment>
@@ -263,18 +221,14 @@ const Acknowledge = () => {
         <div className={style.padding20}>
           <div>
             <LevelTwoHeader
-              getAddEntityDialog={getAddEntityDialog}
-              heading={"Acknowledgement Forms by Industries"}
+              heading={"Department & service areas by applicant types"}
               updatedTime={`UPDATED ON ${lastUpdatedDate}`}
-              path={"/Screens/ReferenceList/customerAdminDashboard"}
+              path={"/Screens/ReferenceList/department/department"}
               callingFrom={"Customer Admin"}
               needHeader={false}
-              tileType={"Acknowedgement"}
-              documents={acknowledgementForms}
-              getEntityTypes={getEntityTypes}
-              getAddEntityTypes={getAddEntityTypes}
-              handleOpenDialog={handleOpenDialog}
-              handleClose={handleCloseDialog}
+              tileType={"Departments"}
+              onAddClick={() => setIsDialogOpen(true)}
+              onCloseLevel2={() => setIsDialogOpen(false)}
             />
           </div>
           <div
@@ -287,16 +241,16 @@ const Acknowledge = () => {
                 (data) => data?.applicantType
               )}
               siteType={applicantTypeList?.map((data) => data?.siteType)}
-              siteTitle={"All Applicant Type"}
-              onSelectSite={handleSiteClick}
-              tileType={"Acknowedgement"}
               selectedTile={getSelectedTile}
+              onSelectSite={handleSiteClick}
+              tileType={"Departments"}
               sideBarList={applicantTypeList}
+              siteDropdown={true}
             />
             <div className={style.applicantList}>
               <div className={`${style.Tabletitle} `}>
                 <Typography className={style.tableTitleContent}>
-                  {`${selectedApplicantType}`}
+                  {`{${selectedApplicantType}}`}
                 </Typography>
                 <Typography
                   className={`${style.tableTitleContentArrow} ${style.tableTitleContent}`}
@@ -304,22 +258,28 @@ const Acknowledge = () => {
                   {">"}
                 </Typography>
                 <Typography className={style.tableTitleContent}>
-                  All Acknowledgement Forms
+                  All DEPARTMENT FORM
                 </Typography>
               </div>
-              <ReferenceListCommonTable
-                applicantTypes={acknowledgementForms}
-                applicantNotice={
-                  "Applicant types are ordered as they will appear on forms. To change the order, click and drag "
-                }
-                tableDataKeys={tableDataKeys}
-                tableHeadKeys={tableHeadKeys}
-                groupFirstTwoColumn={true}
-                tileType={"Acknowedgement"}
-                documents={acknowledgementForms}
-                getAddEntityTypes={getAddEntityTypes}
-                handleClose={handleCloseDialog}
-              />
+              {tableData && (
+                <ApplicantTable
+                  applicantTypes={departmentForms}
+                  applicantNotice={
+                    "Applicant types are ordered as they will appear on forms. To change the order, click and drag "
+                  }
+                  tableDataKeys={tableDataKeys}
+                  tableHeadKeys={tableHeadKeys}
+                  tileType={"Departments"}
+                  groupFirstTwoColumn={true}
+                  documents={departmentForms}
+                  onEditClick={(data) => {
+                    console.log(data);
+                    setIsEdit(true);
+                    setIsDialogOpen(true);
+                    setEditData(data);
+                  }}
+                />
+              )}
               <ReferenceListActionButton
                 button1={"Save In-Progress"}
                 button2={" Mark as Done"}
@@ -327,26 +287,18 @@ const Acknowledge = () => {
             </div>
           </div>
         </div>
-
-        {showAddEntityDialog && (
-          <AddNewDepartments
-            getAddEntityDialog={getAddEntityDialog}
-            callingFrom={"Customer Admin"}
-            isEdit={isEdit}
-            getEntityData={getDepartmentService}
-            selectedDepart={selectedDepartmentService}
-            selectedTitle={selectedEntityType}
-            siteTypeId={siteTypeId}
-            departmentList={departmentService}
-          />
-        )}
-        <div className={style.spaceBetween}>
-          <p className={style.poweredBy}>Powered by - CAPSmart</p>
-          <p className={style.poweredBy}>© CAPSmart</p>
-        </div>
       </div>
+
+      {isDialogOpen && (
+        <DepartmentDialog
+          open={isDialogOpen}
+          handleClose={handleCloseDialog}
+          selectedApplicant={editData}
+          isEdit={isEdit}
+        />
+      )}
     </Fragment>
   );
 };
 
-export default Acknowledge;
+export default Departments;
