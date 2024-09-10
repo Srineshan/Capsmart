@@ -39,14 +39,17 @@ const Step13 = ({ basicForm, setBasicForm, applicationId }) => {
                     console.log(response)
                     setBasicForm(response?.data)
                     SuccessToaster("Application Updated Successfully");
-                    navigate('/applicationForm/section1/acknowledgementStep1')
+                    // navigate('/applicationForm/section1/acknowledgementStep1')
+                    navigate('/applicationForm/podcheck')
+
                 })
                 .catch((error) => {
                     console.log(error)
                     ErrorToaster("Unexpected Error Updating Application");
                 });
         } else {
-            navigate('/applicationForm/section1/acknowledgementStep1')
+            // navigate('/applicationForm/section1/acknowledgementStep1')
+            navigate('/applicationForm/podcheck')
         }
     }
 

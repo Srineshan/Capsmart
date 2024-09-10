@@ -14,6 +14,7 @@ import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import WelcomeCard from '../../../Components/WelcomeCard';
 import style from './index.module.scss';
 import AIAssistantDialog from '../../../Components/AIAssistantDialog';
+import ApplicationHeader from '../../../Components/ApplicationHeader';
 
 const Acknowledgement = ({ basicForm, setBasicForm, applicationId }) => {
     const [form, setForm] = useState();
@@ -77,6 +78,8 @@ const Acknowledgement = ({ basicForm, setBasicForm, applicationId }) => {
 
     return (
         <div className={style.screenBackground}>
+            <ApplicationHeader title={`New ${form?.basicDetails?.applicant?.applicantType !== undefined ? form?.basicDetails?.applicant?.applicantType : '{Applicant Type}'} Application For ${form?.basicDetails?.applicant?.name?.firstName !== undefined ? form?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${form?.basicDetails?.applicant?.name?.lastName !== undefined ? form?.basicDetails?.applicant?.name?.lastName : '{Last Name}'}`} />
+
             <div className={style.screenPadding}>
 
                 <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>

@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import Pencil from "../../../images/pencil.png";
 import EditIcon from '@mui/icons-material/Edit';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
-
+import ApplicationHeader from '../../../Components/ApplicationHeader';
 import style from './index.module.scss';
 import AIAssistantDialog from '../../../Components/AIAssistantDialog';
 
@@ -42,10 +42,16 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
         setForm(basicForm)
     }
 
+    const handleContinue = () => {
+        navigate('/applicationForm/section1/acknowledgementStep1');
+    }
+
     console.log('form', form)
 
     return (
         <div className={style.screenBackground}>
+            <ApplicationHeader title={`New ${form?.basicDetails?.applicant?.applicantType !== undefined ? form?.basicDetails?.applicant?.applicantType : '{Applicant Type}'} Application For ${form?.basicDetails?.applicant?.name?.firstName !== undefined ? form?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${form?.basicDetails?.applicant?.name?.lastName !== undefined ? form?.basicDetails?.applicant?.name?.lastName : '{Last Name}'}`} />
+
             <div className={style.screenPadding}>
                 <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                     <div className={`${style.applicationCardStyle}  ${style.marginTop}`}>
@@ -92,7 +98,7 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
                                     </div>
                                     <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                                         <div className={`${style.tableDataFontStyle1}`}>{data?.description}</div>
-                                        <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter}`} />
+                                        <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter}`} onClick={() => { navigate(`/applicationForm/section1/${data?.title?.toLowerCase()?.replace(' ', '')}`) }} />
                                     </div>
                                     <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                                         <div className={`${style.greenDotStyle} `}></div>
@@ -115,7 +121,7 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
                             <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                         </div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
-                        <div className={`${style.continue} ${style.marginTop10}`}>CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
                         {/* <div className={style.marginTop}>
                             <ApplicationReferenceDocuments />
                         </div> */}
