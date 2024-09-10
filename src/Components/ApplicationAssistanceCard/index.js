@@ -13,15 +13,15 @@ const ApplicationAssistanceCard = ({ user, designation, contactNumber, email }) 
             <div className={`${style.displayInRow} ${style.marginTop}`}><span className={style.nameStyle}>{user}</span> <span className={`${style.designationStyle} ${style.marginLeft10}`}>{designation}</span></div>
             <div className={style.displayInRow}><img src={PhoneIcon} alt="" className={style.iconStyle} /><span className={`${style.designationStyle} ${style.marginLeft10}`}>{contactNumber}</span></div>
             <div className={style.displayInRow}><img src={MailIcon} alt="" className={style.iconStyle} /><span className={`${style.designationStyle} ${style.marginLeft10}`}>{email}</span></div>
-            <div className={`${style.divider} ${style.marginTop}`}></div>
+            {/* <div className={`${style.divider} ${style.marginTop}`}></div>
             <div className={`${style.spaceBetween} ${style.marginTop}`}>
                 <div>
                     <div className={`${style.aiAssistanceText}`}>OUR AI ASSISTANT</div>
                     <div className={`${style.chatWithStyle} ${style.marginTop}`}>Chat With Poppy</div>
                 </div>
-                {/* <div className={`${style.phoneIconBackground} ${style.verticalAlignCenter} ${style.justifyCenter} ${style.marginTop}`}>
+                <div className={`${style.phoneIconBackground} ${style.verticalAlignCenter} ${style.justifyCenter} ${style.marginTop}`}>
                     <PhoneInTalkOutlinedIcon sx={{ color: '#fff' }} />
-                </div> */}
+                </div>
             </div>
             <div className={`${style.chatBox} ${style.marginTop} ${style.verticalAlignCenter}`}>
                 <div className={style.fullWidth}>
@@ -30,7 +30,7 @@ const ApplicationAssistanceCard = ({ user, designation, contactNumber, email }) 
                         <ChatBubbleOutlineOutlinedIcon sx={{ color: '#7165E3', float: 'right' }} />
                     </div>
                 </div>
-            </div>
+            </div> */}
         </div>
     )
 }

@@ -229,3 +229,91 @@
 .physicianPaymentOrderGrid> :nth-child(24) {
     grid-column: span 3;
 }
+
+.fullWidth {
+    width: 100%;
+}
+
+.cardTitle {
+    text-align: left;
+    font: normal normal bold 20px/26px proxima-nova;
+    letter-spacing: 0px;
+    color: #52575D;
+    // text-transform: capitalize;
+}
+
+.address1Grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+}
+
+.address1Grid> :nth-child(1) {
+    grid-column: span 6;
+}
+
+.address1Grid> :nth-child(2) {
+    grid-column: span 6;
+}
+
+.address1Grid> :nth-child(3) {
+    grid-column: span 2;
+}
+
+.address1Grid> :nth-child(4) {
+    grid-column: span 2;
+}
+
+.address1Grid> :nth-child(5) {
+    grid-column: span 2;
+}
+
+.address1Grid> :nth-child(6) {
+    grid-column: span 2;
+}
+
+.address1Grid> :nth-child(7) {
+    grid-column: span 2;
+}
+
+.address1Grid> :nth-child(8) {
+    grid-column: span 2;
+}
+
+.address2Grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+}
+
+.address2Grid> :nth-child(1) {
+    grid-column: span 6;
+}
+
+.address2Grid> :nth-child(2) {
+    grid-column: span 2;
+}
+
+.address2Grid> :nth-child(3) {
+    grid-column: span 2;
+}
+
+.address2Grid> :nth-child(4) {
+    grid-column: span 2;
+}
+
+.address2Grid> :nth-child(5) {
+    grid-column: span 2;
+}
+
+.address2Grid> :nth-child(6) {
+    grid-column: span 2;
+}
+
+.address2Grid> :nth-child(7) {
+    grid-column: span 2;
+}
+
+.address2Grid> :nth-child(8) {
+    grid-column: span 2;
+}

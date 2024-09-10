@@ -12,17 +12,26 @@ import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import style from './index.module.scss';
 import CommonCheckBox from '../../../Components/CommonFields/CommonCheckBox';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
+import CommonTextField from '../../../Components/CommonFields/CommonTextField';
+import CommonPhoneField from '../../../Components/CommonFields/CommonPhoneField';
+import { FormatPhoneNumber } from '../../../utils/formatting';
 
 const ApplicationAcknowledgementStep10 = ({ basicForm, setBasicForm, applicationId }) => {
     const [isChecked, setIsChecked] = useState(false);
     const navigate = useNavigate()
     const [isEdited, setIsEdited] = useState(false);
     const [formSchema, setFormSchema] = useState();
+    const [applicantProfile, setApplicantProfile] = useState();
+    const TEXTFIELDLEN50 = 50;
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
         }
     }, [basicForm])
+
+    useEffect(() => {
+        getApplicantProfile()
+    }, [applicationId])
 
     const getIsEdited = (value) => {
         setIsEdited(value)
@@ -33,6 +42,17 @@ const ApplicationAcknowledgementStep10 = ({ basicForm, setBasicForm, application
             `application-management-service/formSchema/${basicForm?.formSchemas?.[13]?.id}`
         );
         setFormSchema(form?.schema)
+    }
+
+    const handleChange = () => {
+
+    }
+
+    const getApplicantProfile = async () => {
+        const { data: profile } = await GET(
+            `application-management-service/application/${applicationId}/profile`
+        );
+        setApplicantProfile(profile)
     }
 
     const handleSubmitApplicationReq = async () => {
@@ -67,9 +87,90 @@ const ApplicationAcknowledgementStep10 = ({ basicForm, setBasicForm, application
                     <div className={style.applicationCardStyle}>
                         <div className={`${style.labelText} ${style.marginTop}`}>My making of this application and signature below indicate my understanding of and consent to the following (please note that references to Public Hospitals Act are not applicable to Homewood):</div>
                         <CommonDivider />
-                        {formSchema !== undefined && 'pharmacySignatureTemplate' in formSchema?.properties && (
+                        {/* {formSchema !== undefined && 'pharmacySignatureTemplate' in formSchema?.properties && (
                             <ApplicationFieldCard object={formSchema?.properties?.pharmacySignatureTemplate?.properties?.pharmacySignatureTemplate} gridStyle={style.pharmacySignatureAddressGrid} baseKey={'pharmacySignatureTemplate'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[13].data`} setIsEdited={getIsEdited} />
-                        )}
+                        )} */}
+                        <div className={`${style.cardTitle} ${style.marginTop}`}>{'Pharmacy Signature Template'}</div>
+                        <div className={`${style.pharmacySignatureAddressGrid2} ${style.marginTop}`}>
+                            <CommonTextField
+                                value={`${applicantProfile?.name?.lastName}, ${applicantProfile?.name.firstName}`}
+                                className={style.fullWidth}
+                                onChange={(e) => { }}
+                                maxLength={TEXTFIELDLEN50}
+                                placeholder={''}
+                                label={'Surname'}
+                                required={true}
+                                type={'text'}
+                            />
+                            <CommonTextField
+                                value={''}
+                                className={style.fullWidth}
+                                onChange={(e) => handleChange('initials', e.target.value)}
+                                maxLength={TEXTFIELDLEN50}
+                                placeholder={''}
+                                label={'Initials'}
+                                required={true}
+                                type={'text'}
+                            />
+                            <CommonTextField
+                                value={applicantProfile?.contactAddress3?.business?.businessAddress?.streetName}
+                                className={style.fullWidth}
+                                onChange={(e) => { }}
+                                maxLength={TEXTFIELDLEN50}
+                                placeholder={''}
+                                label={'Office Address'}
+                                required={true}
+                                type={'text'}
+                            />
+                            <CommonTextField
+                                value={applicantProfile?.contactAddress3?.business?.businessAddress?.city}
+                                className={style.fullWidth}
+                                onChange={(e) => { }}
+                                maxLength={TEXTFIELDLEN50}
+                                placeholder={'Enter City'}
+                                label={''}
+                                required={false}
+                                type={'text'}
+                            />
+                            <CommonTextField
+                                value={applicantProfile?.contactAddress3?.business?.businessAddress?.province}
+                                className={style.fullWidth}
+                                onChange={(e) => { }}
+                                maxLength={TEXTFIELDLEN50}
+                                placeholder={'Enter Province'}
+                                label={''}
+                                required={false}
+                                type={'text'}
+                            />
+                            <CommonTextField
+                                value={applicantProfile?.contactAddress3?.business?.businessAddress?.pinCode}
+                                className={style.fullWidth}
+                                onChange={(e) => { }}
+                                maxLength={TEXTFIELDLEN50}
+                                placeholder={'Enter Zipcode'}
+                                label={''}
+                                required={false}
+                                type={'text'}
+                            />
+                            <CommonPhoneField
+                                value={applicantProfile?.mobileNumber}
+                                className={style.fullWidth}
+                                onChange={(e) => handleChange('cellphone', FormatPhoneNumber(e.target.value))}
+                                placeholder={''}
+                                label={'Cell Phone'}
+                                required={false}
+                            />
+                            <CommonTextField
+                                value={''}
+                                className={style.fullWidth}
+                                onChange={(e) => handleChange('signature', e.target.value)}
+                                maxLength={TEXTFIELDLEN50}
+                                placeholder={'Enter Signature'}
+                                label={''}
+                                required={false}
+                                type={'text'}
+                            />
+                        </div>
                         <div className={style.displayInRowRev}>
                             <div className={`${style.continue} ${style.marginTop10} ${style.createButtonStyle}`} >CREATE</div>
                         </div>

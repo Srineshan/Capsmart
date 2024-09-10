@@ -13,13 +13,23 @@ import style from './index.module.scss';
 
 const Step3 = ({ basicForm, setBasicForm, applicationId }) => {
     const [formSchema, setFormSchema] = useState();
+    const [applicantProfile, setApplicantProfile] = useState();
     const navigate = useNavigate()
     const [isEdited, setIsEdited] = useState(false);
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
         }
+        getApplicantProfile()
     }, [basicForm])
+
+    const getApplicantProfile = async () => {
+        const { data: profile } = await GET(
+            `application-management-service/application/${applicationId}/profile`
+        );
+        console.log(profile, 'profile')
+        setApplicantProfile(profile)
+    }
 
     const getFormSchema = async () => {
         const { data: form } = await GET(
@@ -43,6 +53,16 @@ const Step3 = ({ basicForm, setBasicForm, applicationId }) => {
                 .catch((error) => {
                     console.log(error)
                     ErrorToaster("Unexpected Error Updating Application");
+                });
+            let addressData = applicantProfile;
+            addressData.contactAddress2 = basicForm?.forms?.[1]?.data.contactAddress2 !== undefined ? basicForm?.forms?.[1]?.data.contactAddress2 : null
+            addressData.contactAddress3 = basicForm?.forms?.[1]?.data.contactAddress3 !== undefined ? basicForm?.forms?.[1]?.data.contactAddress3 : null
+            await PUT(`application-management-service/application/${applicationId}/profile`, addressData)
+                .then(response => {
+                    console.log(response)
+                })
+                .catch((error) => {
+                    console.log(error)
                 });
         } else {
             navigate('/applicationForm/section1/step4')

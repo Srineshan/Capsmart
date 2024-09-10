@@ -12,17 +12,35 @@ import style from './index.module.scss';
 import CommonCheckBox from '../../../Components/CommonFields/CommonCheckBox';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import ESign from '../../../Components/ESign';
+import CommonTextField from '../../../Components/CommonFields/CommonTextField';
+import CommonPhoneField from '../../../Components/CommonFields/CommonPhoneField';
+import { FormatPhoneNumber } from '../../../utils/formatting';
 
 const ApplicationAcknowledgementStep9 = ({ basicForm, setBasicForm, applicationId }) => {
     const [isChecked, setIsChecked] = useState(false);
     const navigate = useNavigate()
     const [isEdited, setIsEdited] = useState(false);
     const [formSchema, setFormSchema] = useState();
+    const [applicantProfile, setApplicantProfile] = useState();
+    const [jobTitle, setJobTitle] = useState();
+    const [managerName, setManagerName] = useState();
+    // const [applicantProfile, setApplicantProfile] = useState();
+    // const [applicantProfile, setApplicantProfile] = useState();
+    const TEXTFIELDLEN50 = 50;
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
         }
     }, [basicForm])
+
+    useEffect(() => {
+        getApplicantProfile()
+    }, [applicationId])
+
+    useEffect(() => {
+        setJobTitle(applicantProfile?.jobTitle);
+        setManagerName(applicantProfile?.managerName)
+    }, [applicantProfile])
 
     const getIsEdited = (value) => {
         setIsEdited(value)
@@ -35,26 +53,51 @@ const ApplicationAcknowledgementStep9 = ({ basicForm, setBasicForm, applicationI
         setFormSchema(form?.schema)
     }
 
+    const getApplicantProfile = async () => {
+        const { data: profile } = await GET(
+            `application-management-service/application/${applicationId}/profile`
+        );
+        console.log(profile, 'profile')
+        setApplicantProfile(profile)
+    }
+
+    const handleChange = () => {
+
+    }
+
     const handleSubmitApplicationReq = async () => {
-        if (isEdited) {
-            let temp = {
-                schemaId: basicForm?.forms?.[12]?.schemaId,
-                data: basicForm?.forms?.[12]?.data
-            }
-            await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[12]?.id}`, temp)
-                .then(response => {
-                    console.log(response)
-                    setBasicForm(response?.data)
-                    SuccessToaster("Application Updated Successfully");
-                    navigate('/applicationForm/section1/acknowledgementStep10')
-                })
-                .catch((error) => {
-                    console.log(error)
-                    ErrorToaster("Unexpected Error Updating Application");
-                });
-        } else {
-            navigate('/applicationForm/section1/acknowledgementStep10')
-        }
+        // if (isEdited) {
+        //     let temp = {
+        //         schemaId: basicForm?.forms?.[12]?.schemaId,
+        //         data: basicForm?.forms?.[12]?.data
+        //     }
+        //     await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[12]?.id}`, temp)
+        //         .then(response => {
+        //             console.log(response)
+        //             setBasicForm(response?.data)
+        //             SuccessToaster("Application Updated Successfully");
+        //             navigate('/applicationForm/section1/acknowledgementStep10')
+        //         })
+        //         .catch((error) => {
+        //             console.log(error)
+        //             ErrorToaster("Unexpected Error Updating Application");
+        //         });
+        // } else {
+        //     navigate('/applicationForm/section1/acknowledgementStep10')
+        // }
+        let addressData = applicantProfile;
+        addressData.jobTitle = jobTitle
+        addressData.managerName = managerName
+        await PUT(`application-management-service/application/${applicationId}/profile`, addressData)
+            .then(response => {
+                console.log(response)
+                SuccessToaster("Application Updated Successfully");
+                navigate('/applicationForm/section1/acknowledgementStep10')
+            })
+            .catch((error) => {
+                console.log(error)
+                ErrorToaster("Unexpected Error Updating Application");
+            });
     }
     return (
         <div>
@@ -67,9 +110,82 @@ const ApplicationAcknowledgementStep9 = ({ basicForm, setBasicForm, applicationI
                     <div className={style.applicationCardStyle}>
                         <div className={`${style.labelText} ${style.marginTop}`}>My making of this application and signature below indicate my understanding of and consent to the following (please note that references to Public Hospitals Act are not applicable to Homewood):</div>
                         <CommonDivider />
-                        {formSchema !== undefined && 'accessAgreementFormPACSRequest' in formSchema?.properties && (
+                        {/* {formSchema !== undefined && 'accessAgreementFormPACSRequest' in formSchema?.properties && (
                             <ApplicationFieldCard object={formSchema?.properties?.accessAgreementFormPACSRequest?.properties?.accessAgreementFormPACSRequest} gridStyle={style.pacsRequestGrid} baseKey={'accessAgreementFormPACSRequest'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[12].data`} setIsEdited={getIsEdited} />
-                        )}
+                        )} */}
+                        <div className={`${style.cardTitle} ${style.marginTop}`}>{'PACS Request - Access Agreement Form'}</div>
+
+                        <div className={`${style.twoCol} ${style.marginTop}`}>
+                            <CommonTextField
+                                value={applicantProfile?.name?.firstName}
+                                className={style.fullWidth}
+                                onChange={(e) => { }}
+                                maxLength={TEXTFIELDLEN50}
+                                placeholder={''}
+                                label={'First Name'}
+                                required={true}
+                                type={'text'}
+                                readOnly={true}
+                            />
+                            <CommonTextField
+                                value={applicantProfile?.name?.lastName}
+                                className={style.fullWidth}
+                                onChange={(e) => { }}
+                                maxLength={TEXTFIELDLEN50}
+                                placeholder={''}
+                                label={'Last Name'}
+                                required={true}
+                                type={'text'}
+                            />
+                            <CommonTextField
+                                value={applicantProfile?.department}
+                                className={style.fullWidth}
+                                onChange={(e) => { }}
+                                maxLength={TEXTFIELDLEN50}
+                                placeholder={''}
+                                label={'Department / Nursing Unit'}
+                                required={true}
+                                type={'text'}
+                            />
+                            <CommonTextField
+                                value={jobTitle}
+                                className={style.fullWidth}
+                                onChange={(e) => setJobTitle(e.target.value)}
+                                maxLength={TEXTFIELDLEN50}
+                                placeholder={''}
+                                label={'Job Title'}
+                                required={false}
+                                type={'text'}
+                            />
+                            <CommonTextField
+                                value={managerName}
+                                className={style.fullWidth}
+                                onChange={(e) => setManagerName(e.target.value)}
+                                maxLength={TEXTFIELDLEN50}
+                                placeholder={''}
+                                label={'Manager Name'}
+                                required={false}
+                                type={'text'}
+                            />
+                            <CommonTextField
+                                value={applicantProfile?.email.officialEmail}
+                                className={style.fullWidth}
+                                onChange={(e) => { }}
+                                maxLength={TEXTFIELDLEN50}
+                                placeholder={''}
+                                label={'Email Address'}
+                                required={true}
+                                type={'text'}
+                            />
+                            <CommonPhoneField
+                                value={applicantProfile?.mobileNumber}
+                                className={style.fullWidth}
+                                onChange={(e) => { }}
+                                placeholder={''}
+                                label={'Cell Phone'}
+                                required={false}
+                            />
+                        </div>
                         {formSchema !== undefined && 'agreeToComplyWithHospitalPolicy' in formSchema?.properties && (
                             <ApplicationFieldCard object={formSchema?.properties?.agreeToComplyWithHospitalPolicy?.properties?.agreeToComplyWithHospitalPolicy} gridStyle={style.pacsRequestGrid} baseKey={'agreeToComplyWithHospitalPolicy'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[12].data`} setIsEdited={getIsEdited} />
                         )}

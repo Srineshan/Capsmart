@@ -112,14 +112,14 @@ const ApplicantTable = ({
           </tr>
         </thead>
         <tbody>
-          {applicantTypes.length ?
-            applicantTypes.map((applicant, index) => (
+          {applicantTypes?.length ?
+            applicantTypes?.map((applicant, index) => (
               <React.Fragment key={applicant.id}>
                 <tr
                   className={`${style.applicantItem} ${index % 2 === 0 ? "" : style.sideNonActiveBackground
                     }`}
                 >
-                  {tableDataKeys.map((key, keyIndex) => (
+                  {tableDataKeys?.map((key, keyIndex) => (
                     <td
                       key={keyIndex}
                       className={`${keyIndex === 0 ? style.leftAligned : style.centerAligned
