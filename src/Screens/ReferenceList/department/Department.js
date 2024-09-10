@@ -16,6 +16,7 @@ import ApplicantTable from "../common/Table";
 import ApplicantSideBar from "../common/SideBar";
 import { ReferenceListActionButton } from "../common/ReferenceListActionButton";
 import { Typography } from "@material-ui/core";
+import DepartmentDialog from "./DepartmentDialog";
 
 const Departments = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -48,6 +49,7 @@ const Departments = () => {
   const [applicantTypeList, setApplicantTypeList] = useState([]);
   const [applicantId, setApplicantId] = useState("");
   const [departmentForms, setDepartmentForms] = useState([]);
+  const [editData, setEditData] = useState();
 
   const tableHeadKeys = [
     // "ID",
@@ -225,6 +227,8 @@ const Departments = () => {
               callingFrom={"Customer Admin"}
               needHeader={false}
               tileType={"Departments"}
+              onAddClick={() => setIsDialogOpen(true)}
+              onCloseLevel2={() => setIsDialogOpen(false)}
             />
           </div>
           <div
@@ -268,8 +272,12 @@ const Departments = () => {
                   tileType={"Departments"}
                   groupFirstTwoColumn={true}
                   documents={departmentForms}
-                  getAddEntityTypes={getAddEntityTypes}
-                  handleClose={handleCloseDialog}
+                  onEditClick={(data) => {
+                    console.log(data);
+                    setIsEdit(true);
+                    setIsDialogOpen(true);
+                    setEditData(data);
+                  }}
                 />
               )}
               <ReferenceListActionButton
@@ -279,24 +287,16 @@ const Departments = () => {
             </div>
           </div>
         </div>
-
-        {showAddEntityDialog && (
-          <AddNewDepartments
-            getAddEntityDialog={getAddEntityDialog}
-            callingFrom={"Customer Admin"}
-            isEdit={isEdit}
-            getEntityData={getDepartmentService}
-            selectedDepart={selectedDepartmentService}
-            selectedTitle={selectedEntityType}
-            siteTypeId={siteTypeId}
-            departmentList={departmentService}
-          />
-        )}
-        <div className={style.spaceBetween}>
-          <p className={style.poweredBy}>Powered by - CAPSmart</p>
-          <p className={style.poweredBy}>© CAPSmart</p>
-        </div>
       </div>
+
+      {isDialogOpen && (
+        <DepartmentDialog
+          open={isDialogOpen}
+          handleClose={handleCloseDialog}
+          selectedApplicant={editData}
+          isEdit={isEdit}
+        />
+      )}
     </Fragment>
   );
 };

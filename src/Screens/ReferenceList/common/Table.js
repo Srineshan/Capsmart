@@ -60,7 +60,6 @@ const ReferenceListCommonTable = ({
       }
     }
     if (tileType === "StaffPrivileges") {
-      console.log("id", id);
       try {
         await DELETE(`entity-service/staffPrivilege/${id}`);
 
@@ -69,7 +68,26 @@ const ReferenceListCommonTable = ({
         console.error("Error deleting document:", error);
       }
     }
+    if (tileType === "ApplicantType") {
+      try {
+        await DELETE(`entity-service/applicantType/${id}`);
+
+        console.log("Document deleted successfully");
+      } catch (error) {
+        console.error("Error deleting document:", error);
+      }
+    }
     if (tileType === "Departments") {
+      try {
+        await DELETE(`entity-service/department/${id}`);
+
+        console.log("Document deleted successfully");
+      } catch (error) {
+        console.error("Error deleting document:", error);
+      }
+    }
+    if (tileType === "Departments") {
+      console.log("DepartmentsId", id);
       try {
         await DELETE(`entity-service/department/${id}`);
 
@@ -92,7 +110,7 @@ const ReferenceListCommonTable = ({
 
   const isDateStamp = (str) => {
     const date = new Date(str);
-    return !isNaN(date.getTime()); // Check if it's a valid date
+    return !isNaN(date.getTime());
   };
 
   return (
@@ -143,8 +161,7 @@ const ReferenceListCommonTable = ({
                         } ${keyIndex === 0 ? style.firstColumn : ""}`}
                       >
                         {key === "applicantType"
-                          ? applicant.applicantType &&
-                            applicant.applicantType[key]
+                          ? applicant.applicantType
                           : key === "disclaimer"
                           ? applicant[key]?.content != null
                             ? "Yes"
@@ -158,10 +175,16 @@ const ReferenceListCommonTable = ({
                           ? format(new Date(applicant[key]), "MMM dd, yyyy")
                           : key === "lastModifiedDate" ||
                             key === "lastModifiedData"
-                          ? format(new Date(applicant[key]), "MMM dd, yyyy")
+                          ? applicant[key]
+                            ? format(new Date(applicant[key]), "MMM dd, yyyy")
+                            : "N/A"
                           : key === "departmentName"
                           ? applicant.departmentName
                             ? applicant.departmentName.name
+                            : "N/A"
+                          : key === "category"
+                          ? applicant.category
+                            ? applicant.category.category
                             : "N/A"
                           : applicant[key] || "N/A"}
                       </td>

@@ -57,7 +57,7 @@ const ApplicantSideBar = ({
             <p className={style.siteName}>{site}</p>
             {/* <div className={style.siteCount}>{site?.length}</div> */}
           </div>
-          {siteType && <p className={style.siteType}>{siteType[index]}</p>}
+          {/* {siteType && <p className={style.siteType}>{siteType[index]}</p>} */}
           {/* {site.description && (
             <p className={style.siteDescription}>{site.description}</p>
           )} */}
