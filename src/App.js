@@ -39,6 +39,7 @@ const FunctionalTitleForCustomer = React.lazy(() =>
 );
 const ActiveContracts = React.lazy(() => import("./Screens/ContractManager"));
 const StaffManager = React.lazy(() => import("./Screens/StaffManager"));
+const Applicant = React.lazy(() => import("./Screens/Applicant"));
 const StaffApplication = React.lazy(() => import("./Screens/StaffApplication"));
 const ActiveStaff = React.lazy(() => import("./Screens/ActiveStaff"));
 const Welcome = React.lazy(() =>
@@ -350,53 +351,53 @@ const App = ({ props }) => {
       browserName === "Chrome"
         ? "CHROME"
         : browserName === "Firefox"
-        ? "FIREFOX"
-        : browserName === "Safari"
-        ? "SAFARI"
-        : browserName === "Opera"
-        ? "OPERA"
-        : browserName === "Edge"
-        ? "EDGE"
-        : browserName === "Internet Explorer"
-        ? "INTERNETEXPLORER"
-        : browserName === "Chromium"
-        ? "CHROMIUM"
-        : browserName === "Yandex"
-        ? "YANDEX"
-        : browserName === "IE"
-        ? "IE"
-        : browserName === "Mobile Safari"
-        ? "MOBILESAFARI"
-        : browserName === "Edge Chromium"
-        ? "EDGECHROMIUM"
-        : browserName === "MIUI Browser"
-        ? "MIUIBROWSER"
-        : browserName === "Samsung Browser"
-        ? "SAMSUNGBROWSER"
-        : "";
+          ? "FIREFOX"
+          : browserName === "Safari"
+            ? "SAFARI"
+            : browserName === "Opera"
+              ? "OPERA"
+              : browserName === "Edge"
+                ? "EDGE"
+                : browserName === "Internet Explorer"
+                  ? "INTERNETEXPLORER"
+                  : browserName === "Chromium"
+                    ? "CHROMIUM"
+                    : browserName === "Yandex"
+                      ? "YANDEX"
+                      : browserName === "IE"
+                        ? "IE"
+                        : browserName === "Mobile Safari"
+                          ? "MOBILESAFARI"
+                          : browserName === "Edge Chromium"
+                            ? "EDGECHROMIUM"
+                            : browserName === "MIUI Browser"
+                              ? "MIUIBROWSER"
+                              : browserName === "Samsung Browser"
+                                ? "SAMSUNGBROWSER"
+                                : "";
 
     let os =
       osName === "Windows"
         ? "WINDOWS"
         : osName === "Linux"
-        ? "LINUX"
-        : osName === "Mac OS"
-        ? "MAC"
-        : osName === "iOS"
-        ? "IOS"
-        : osName === "Android"
-        ? "ANDROID"
-        : osName === "Windows Phone"
-        ? "WINDOWSPHONE"
-        : "";
+          ? "LINUX"
+          : osName === "Mac OS"
+            ? "MAC"
+            : osName === "iOS"
+              ? "IOS"
+              : osName === "Android"
+                ? "ANDROID"
+                : osName === "Windows Phone"
+                  ? "WINDOWSPHONE"
+                  : "";
 
     let deviceType = isDesktop
       ? "DESKTOP"
       : isMobile
-      ? "MOBILE"
-      : isTablet
-      ? "TABLET"
-      : "";
+        ? "MOBILE"
+        : isTablet
+          ? "TABLET"
+          : "";
     let interceptorsInfo = sessionStorage.getItem("interceptorsInfo");
 
     let data = {
@@ -614,10 +615,14 @@ const App = ({ props }) => {
       roles.includes("Entity Sys Admin") ||
       roles.includes("Entity Sys User") ||
       roles.includes("Distributor Admin");
+    let isStaffManager = roles.includes("Staff Manager");
+    let isApplicant = roles.includes("Applicant");
+
     if (isAppUser) {
       window.location.href = "/";
       return <Login />;
     } else if (isContractManager) {
+
       window.location.pathname = "/app/contracts";
       // navigate("/contracts");
       // window.location.reload();
@@ -627,6 +632,10 @@ const App = ({ props }) => {
       // navigate("/entitySitePortal");
       // window.location.reload();
       return <Home />;
+    } else if (isStaffManager) {
+      window.location.pathname = "/app/staffs"
+    } else if (isApplicant) {
+      window.location.pathname = "/app/applicant"
     } else {
       window.location.pathname = "/app/entitySitePortal";
       // navigate("/entitySitePortal");
@@ -652,6 +661,7 @@ const App = ({ props }) => {
               <Route path="/activeStaff" element={<ActiveStaff />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/notifyUser" element={<Notify />} />
+              <Route path="/applicant" element={<Applicant />} />
               <Route
                 path="/trackContracts/:trackType"
                 element={<TrackYourContracts />}
@@ -874,7 +884,7 @@ const App = ({ props }) => {
               />
               <Route
                 path="/referenceList/speciality/Speciality"
-                element={<Speciality/>}
+                element={<Speciality />}
               />
               <Route
                 path="/referenceList/acknowledgementForms"
