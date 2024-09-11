@@ -42,6 +42,11 @@ const ApplicationAcknowledgementStep11 = ({ basicForm, setBasicForm, application
         }
     }, [basicForm])
 
+    useEffect(() => {
+        setSex(applicantProfile?.sex);
+        setDateOfBirth(applicantProfile?.dateOfBirth)
+    }, [applicantProfile])
+
     const getIsEdited = (value) => {
         setIsEdited(value)
     }
@@ -105,7 +110,7 @@ const ApplicationAcknowledgementStep11 = ({ basicForm, setBasicForm, application
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 11'} dataType={'Disclosure'} title={'Physician Payment Order'} timeNumber={41} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                <ProgressCard step={'STEP 11'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={41} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>

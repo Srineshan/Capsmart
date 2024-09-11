@@ -107,7 +107,7 @@ const ApplicationAcknowledgementStep1 = ({ acknowledgementForm, dateFormat, name
                 schemaId: basicForm?.forms?.[18]?.schemaId,
                 data: !isEdited ? basicForm?.forms?.[18]?.data : { esignDate: isChecked ? name + " " + currentDate : '' },
                 acknowledged: isChecked,
-                esign: { esign: isChecked ? name + " " + currentDate : '' }
+                esign: { esign: isChecked ? encryptedText : '', name: isChecked ? name : '', signedDate: isChecked ? currentDate : '' }
             }
             await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[18]?.id}`, temp)
                 .then(response => {
@@ -128,7 +128,7 @@ const ApplicationAcknowledgementStep1 = ({ acknowledgementForm, dateFormat, name
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 1'} dataType={'Forms'} title={'Applicant Ackowledgement'} timeNumber={32} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                <ProgressCard step={'STEP 1'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={32} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
@@ -203,7 +203,7 @@ const ApplicationAcknowledgementStep1 = ({ acknowledgementForm, dateFormat, name
                             (iv) to provide the Hospital with three months’ prior written notice of my intention to resign or otherwise limit my exercise of privileges. A failure to provide the required notice will result in the Chief of Staff notifying the College that I have failed to comply with the Hospital’s By-laws and a notation of the breach of the By-laws in my file
                         </div> */}
                         <div
-                            className={`${style.leftAlign} ${style.marginTop}`}
+                            className={`${style.leftAlign} ${style.marginTop} ${style.descriptionStyle}`}
                             dangerouslySetInnerHTML={{ __html: formContent?.content?.content }}
                         // style={{ all: "inherit" }}
                         />

@@ -16,6 +16,7 @@ import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import style from './index.module.scss';
 import CommonCheckBox from '../../../Components/CommonFields/CommonCheckBox';
 import ESign from '../../../Components/ESign';
+import PdfViewer from '../pdfViewer';
 
 const ApplicationAcknowledgementStep4 = () => {
     const [isChecked, setIsChecked] = useState(false);
@@ -45,6 +46,7 @@ const ApplicationAcknowledgementStep4 = () => {
                         <ESign />
                         <img src={pdf7} alt="" className={style.pdfStyle} />
                         <ESign />
+                        {/* <PdfViewer pdfurl={"https://dev-application-management-service.s3.amazonaws.com/64246d491b70b07241d37aa1/66dede8fdf5e683573132ec1/Pixl_Chatbot_Flyer.pdf"} /> */}
                     </div>
                 </div>
                 <div>
@@ -55,6 +57,7 @@ const ApplicationAcknowledgementStep4 = () => {
                     {/* <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
                     </div> */}
+
                 </div>
             </div>
         </div>

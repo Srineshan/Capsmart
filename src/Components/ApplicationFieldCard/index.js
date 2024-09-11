@@ -37,6 +37,8 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
     const [files, setFiles] = useState([]);
     const { setValue, value } = useComboboxControls({ initialValue: "" });
     const canadaData = JSON.parse(sessionStorage.getItem('canadaData')) || {};
+    let user = JSON.parse(sessionStorage.getItem('user'))
+    console.log(user)
     useEffect(() => {
         renderObjectFields(object)
         console.log('entered')
@@ -330,7 +332,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                                 className={`${style.fullWidth} ${style.marginTop10}`}
                                 maxLength={TEXTFIELDLEN50}
                                 onChange={(e) => handleChange(fieldKey, e.target.value, baseKey)}
-                                placeholder={fieldData.label !== null ? `Enter ${fieldData.label}` : null}
+                                placeholder={fieldData.placeHolder !== null ? fieldData.placeHolder : fieldData.label !== null ? `Enter ${fieldData.label}` : null}
                                 value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || ''}
                             />
                         </div>
@@ -354,11 +356,14 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                             className={style.fullWidth}
                             onChange={(e) => handleChange(fieldKey, fieldData.type === "number" ? parseInt(e.target.value <= fieldData.maximum ? e.target.value : fieldData.maximum) : e.target.value, baseKey)}
                             maxLength={TEXTFIELDLEN50}
-                            placeholder={fieldData.label !== null ? `Enter ${fieldData.label}` : null}
+                            placeholder={fieldData.placeHolder !== null ? fieldData.placeHolder : fieldData.label !== null ? `Enter ${fieldData.label}` : null}
                             label={fieldData.label}
                             required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))}
                             type={fieldData.type}
                             min={fieldData.minimum}
+                            InputProps={{
+                                readOnly: (user?.roles?.filter(data => data?.roleName === "Staff Manager")?.length === 0 && fieldKey === 'officialEmail') ? true : false,
+                            }}
                         />
                     );
                 case 'textArea':
@@ -370,7 +375,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                                 className={`${style.fullWidth} ${style.marginTop10}`}
                                 onChange={(e) => handleChange(fieldKey, e.target.value, baseKey)}
                                 maxLength={TEXTFIELDLEN50}
-                                placeholder={fieldData.label !== null ? `Enter ${fieldData.label}` : null}
+                                placeholder={fieldData.placeHolder !== null ? fieldData.placeHolder : fieldData.label !== null ? `Enter ${fieldData.label}` : null}
                                 rows={4}
                             />
                         </div>
@@ -382,7 +387,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                             value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
                             className={style.fullWidth}
                             onChange={(e) => handleChange(fieldKey, FormatPhoneNumber(e.target.value), baseKey)}
-                            placeholder={fieldData.label !== null ? `Enter ${fieldData.label}` : null}
+                            placeholder={fieldData.placeHolder !== null ? fieldData.placeHolder : fieldData.label !== null ? `Enter ${fieldData.label}` : null}
                             label={fieldData.label}
                             required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))}
                         />
@@ -409,7 +414,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                                     {...params}
                                     inputProps={{
                                         ...params.inputProps,
-                                        placeholder: fieldData.label !== null ? `Enter ${fieldData.label}` : null,
+                                        placeholder: fieldData.placeHolder !== null ? fieldData.placeHolder : fieldData.label !== null ? `Enter ${fieldData.label}` : null,
                                     }}
                                     // color={(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === null || getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === '') ? (isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) ? 'error' : 'warning' : ''}
                                     fullWidth
@@ -713,7 +718,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                     <div className={`${style.addMoreBorder} ${style.marginTop}`}>
                         {isAddMore ? (
                             <div className={style.padding20}>
-                                <div className={style.addMoreText}>{object?.items?.label}</div>
+                                <div className={style.addMoreText} dangerouslySetInnerHTML={{ __html: object?.items?.label }} />
                                 <div className={`${gridStyle} ${style.marginTop}`}>
                                     {object?.type === "object" ? renderObjectFields(object, object?.properties) : object?.type === "array" ? renderObjectFields(object, object?.items?.properties) : renderObjectFields(object, object?.properties)}
                                 </div>
@@ -728,7 +733,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                             </div>
                         ) : (
                             <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.padding10}`}>
-                                <div className={style.addMoreText}>{object?.items?.label}</div>
+                                <div className={style.addMoreText} dangerouslySetInnerHTML={{ __html: object?.items?.label }} />
                                 <div className={`${style.addMoreButton} ${style.marginLeft}`} onClick={() => setIsAddMore(true)}>ADD</div>
                             </div>
                         )}

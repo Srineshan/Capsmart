@@ -102,6 +102,31 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
                 console.log(error)
                 ErrorToaster("Unexpected Error Updating Application");
             });
+        let tempDocumentData = [];
+        tableData?.map(data =>
+            tempDocumentData.push({
+                file: {
+                    fileURL: data?.fileURL,
+                    fileName: data?.fileUploaded
+                },
+                // size: data?.fileSize,
+                documentType: data?.documentType,
+                required: data?.requirement === 'Mandatory' ? 'Required' : 'ToBeDecided',
+                verified: data?.verified !== "" ? data?.verified : false,
+                valid: data?.valid !== "" ? data?.valid : false
+            })
+        )
+
+        let documentData = {
+            uploadedDocuments: tempDocumentData
+        }
+        await PUT(`application-management-service/application/${applicationId}/addUploadedDocuments`, documentData)
+            .then(response => {
+                console.log(response)
+            })
+            .catch((error) => {
+                console.log(error)
+            });
     }
     console.log(formSchema, basicForm, tempValue)
 
@@ -127,7 +152,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
             SuccessToaster('File Uploaded Successfully');
             console.log(response?.data);
             event.map((data, index) => {
-                table.push({ documentType: '', fileSize: `${(data?.size / (1024 * 1024)).toFixed(2)} Mb`, fileURL: response?.data[index]?.fileURL, fileUploaded: data?.name, requirement: 'To Be Decided', valid: '', verified: '' })
+                table.push({ documentType: '', fileSize: `${(data?.size / (1024 * 1024)).toFixed(2)} Mb`, fileURL: response?.data[index]?.fileURL, fileUploaded: data?.name, requirement: '', valid: '', verified: '' })
             })
             handleSubmitApplicationReq(table)
             return response?.data;
@@ -143,7 +168,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
         let temp = tempValue?.table;
         temp[index].documentType = value;
         if (value !== null || value !== "") {
-            temp[index].requirement = !basicForm?.documentsRequired?.filter(data => data?.document?.name === value)?.[0]?.required ? 'Mandatory' : 'Optional';
+            temp[index].requirement = !basicForm?.documentsRequired?.filter(data => data?.document?.name === value)?.[0]?.required ? 'Mandatory' : 'Recommended';
         }
         console.log(temp)
         handleSubmitApplicationReq(temp)
@@ -244,7 +269,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
         <div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
-                    <ProgressCard step={''} dataType={'Process Required Documents'} title={'Upload your Documents'} timeNumber={1} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                    <ProgressCard step={''} dataType={formSchema?.description} title={formSchema?.title} timeNumber={1} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
                     <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
                         {/* <div className={style.titleText}>{formSchema?.description}</div>
                     <div className={`${style.descriptionText} ${style.marginTop10}`}>Ensure your documents are in the following formats: pdf, jpg, (add icons here) </div> */}
@@ -277,7 +302,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
                                     {/* <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}></div>
                                 <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}></div>
                                 <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}></div> */}
-                                    <div className={style.documentTextStyle}>{data?.required ? 'Mandatory' : 'Optional'}</div>
+                                    <div className={style.documentTextStyle}>{data?.required ? 'Mandatory' : 'Recommended'}</div>
                                     <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.instruction}</div>
                                     {/* <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}></div> */}
                                     {/* <div className={style.verticalAlignCenter}>
@@ -297,7 +322,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
                                     <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.fileName}</div>
                                     <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{format(new Date(data?.dateUploaded), 'MM-dd-yyyy HH:mm')}</div>
                                     <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}></div>
-                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.mandatory ? 'Mandatory' : 'Optional'}</div>
+                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.mandatory ? 'Mandatory' : 'Recommended'}</div>
                                     <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}></div>
                                     <div className={style.verticalAlignCenter}>
                                         <MoreHorizIcon sx={{ color: '#6F7479' }} className={style.cursorPointer} />
@@ -307,19 +332,8 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
                             </div>
                         ))}
                         <div className={`${style.twoCol} ${style.marginTop}`}>
-                            <CommonDropZone title={'Upload Your Documents'} description={'Upload your files or drag & drop from your cabinet'} changeHandler={changeHandler} files={files} />
-                            <CommonDropZone title={'Upload A Photo'} description={'Click a picture with your Camera or upload from Gallery.'} changeHandler={changeHandler} files={files} accept="image/*" />
-                        </div>
-                        <div className={style.marginTop} onClick={() => setIsShowESignDialog(true)}>
-                            <div className={style.uploadBorderStyle}>
-                                <p className={style.uploadTextStyle}>
-                                    {'Set Up Your Electronic Signature'}
-                                </p>
-
-                                <p className={style.uploadDescriptionText}>
-                                    {'Our paperless automated application submission uses electronic signatures with digital fingerprinting. Set up your electronic signature.'}
-                                </p>
-                            </div>
+                            <CommonDropZone title={'Upload Your Documents'} description={'Upload your files or drag & drop from your computer file cabinet (Computer / Online Drive)'} changeHandler={changeHandler} files={files} />
+                            <CommonDropZone title={'Upload A Photo'} description={'Click a picture of the document with your camera and Upload or Upload from your photo gallery.'} changeHandler={changeHandler} files={files} accept="image/*" />
                         </div>
                         <TableTwo
                             tableHeaderValues={['', 'File Uploaded', 'Size', 'Document Type', 'Requirement', 'Verified', 'Valid', '']}
@@ -338,6 +352,17 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
                             onChange={handleFileChange}
                             style={{ display: 'none' }} // Hide the actual file input
                         />
+                        <div className={style.marginTop} onClick={() => setIsShowESignDialog(true)}>
+                            <div className={style.uploadBorderStyle}>
+                                <p className={style.uploadTextStyle}>
+                                    {'Set Up Your Electronic Signature'}
+                                </p>
+
+                                <p className={style.uploadDescriptionText}>
+                                    {'Our paperless automated application submission uses electronic signatures with digital fingerprinting. Click here to setup your electronic signature for use.'}
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div>
