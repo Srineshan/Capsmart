@@ -9,10 +9,13 @@ import style from './index.module.scss'
 const ApplicationAssistanceCard = ({ user, designation, contactNumber, email }) => {
     return (
         <div className={style.applicationAssistanceCard}>
-            <div className={style.forAssistance}>For Assistance</div>
-            <div className={`${style.displayInRow} ${style.marginTop}`}><span className={style.nameStyle}>{user}</span> <span className={`${style.designationStyle} ${style.marginLeft10}`}>{designation}</span></div>
-            <div className={style.displayInRow}><img src={PhoneIcon} alt="" className={style.iconStyle} /><span className={`${style.designationStyle} ${style.marginLeft10}`}>{contactNumber}</span></div>
-            <div className={style.displayInRow}><img src={MailIcon} alt="" className={style.iconStyle} /><span className={`${style.designationStyle} ${style.marginLeft10}`}>{email}</span></div>
+            <div className={style.forAssistance}>For Assistance Contact:</div>
+            <div className={`${style.displayInRow} ${style.marginTop}`}><span className={style.nameStyle}> Nina Grealy</span></div>
+            <div className={`${style.displayInRow} ${style.marginTop}`}><span className={style.contactStyle}> Administrative Assistant, Medical Affairs and</span> </div>
+            <div className={`${style.displayInRow}`}><span className={style.contactStyle}> Chief of Staff Office</span> </div>
+            <div className={`${style.displayInRow} ${style.marginTop}`}><img src={PhoneIcon} alt="" className={style.iconStyle} /><span className={`${style.contactStyle} ${style.marginLeft}`}> 519-621-2333 ext 2305</span> </div>
+            <div className={`${style.displayInRow} ${style.marginTop}`}><img src={MailIcon} alt="" className={style.iconStyle} /><span className={`${style.contactStyle} ${style.marginLeft}`}> ngrealy@cmh.org</span> </div>
+
             {/* <div className={`${style.divider} ${style.marginTop}`}></div>
             <div className={`${style.spaceBetween} ${style.marginTop}`}>
                 <div>
@@ -30,6 +33,11 @@ const ApplicationAssistanceCard = ({ user, designation, contactNumber, email }) 
                         <ChatBubbleOutlineOutlinedIcon sx={{ color: '#7165E3', float: 'right' }} />
                     </div>
                 </div>
+
+                Nina Grealy
+Administrative Assistant, Medical Affairs and Chief of Staff Office
+Telephone: 519-621-2333 ext 2305
+ngrealy@cmh.org
             </div> */}
         </div>
     )

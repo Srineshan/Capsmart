@@ -69,7 +69,7 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
         <div>
             <div className={`${style.applicationScreenGrid} `}>
                 <div>
-                    <ProgressCard step={''} dataType={'Process Required Documents'} title={form1?.title} timeNumber={1} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                    <ProgressCard step={''} dataType={form1?.description} title={form1?.title} timeNumber={1} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
                     <div className={`${style.applicationCardStyle}  ${style.marginTop}`}>
                         {/* <CommonMailingAddress label={'Business Mailing Address*'} onChangeAddressLine1={() => { }} placeholderAddressLine1={'123 Street'} maxLengthAddressLine1={25} valueAddressLine1={''}
                             onChangeAddressLine2={() => { }} placeholderAddressLine2={'Apartment 5'} maxLengthAddressLine2={25} valueAddressLine2={''} onChangeCity={() => { }} placeholderCity={'City'} maxLengthCity={25}
@@ -86,7 +86,7 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
                             <ApplicationFieldCard object={form1?.properties?.departmentSpecialty} gridStyle={style.twoCol} baseKey={'departmentSpecialty'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
                         )}
                         {form1 !== undefined && 'regionalCallResponsibilities' in form1?.properties && (
-                            <ApplicationFieldCard object={form1?.properties?.regionalCallResponsibilities} gridStyle={style.twoCol} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+                            <ApplicationFieldCard object={form1?.properties?.regionalCallResponsibilities} gridStyle={''} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
                         )}
                         <CommonDivider />
                         {form1 !== undefined && 'billingNumber' in form1?.properties && (

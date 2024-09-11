@@ -25,7 +25,7 @@ const CommonPhoneField = ({ onChange, placeholder, maxLength, value, error, labe
                         },
                     }}
                     InputProps={{
-                        startAdornment: <InputAdornment position="start">+1</InputAdornment>,
+                        startAdornment: <InputAdornment position="start" className={style.fontColor}>+1</InputAdornment>,
                     }}
                     fullWidth
                     placeholder={placeholder}
