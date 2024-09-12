@@ -92,7 +92,13 @@ const ApplicationAcknowledgementStep9 = ({ basicForm, setBasicForm, applicationI
             .then(response => {
                 console.log(response)
                 SuccessToaster("Application Updated Successfully");
-                navigate('/applicationForm/section1/acknowledgementStep10')
+                const handleContinue = () => {
+                    if (sessionStorage.getItem('fromSummary') === 'true') {
+                        navigate(-1);
+                    } else {
+                        navigate('/applicationForm/section1/acknowledgementStep10')
+                    }
+                }
             })
             .catch((error) => {
                 console.log(error)

@@ -2,32 +2,46 @@ import React, { useEffect, useState, useRef } from 'react';
 import { GET, PUT } from '../dataSaver';
 import { KeyboardReturnRounded } from '@material-ui/icons';
 import { useNavigate } from 'react-router-dom';
-import Cookie from 'universal-cookie';
+import { Auth, GetEntityDetails, GetRoles } from "./../../utils/auth";
+import axios from "axios";
+import { useCookies } from 'react-cookie';
 import style from './index.module.scss';
 import jwt from 'jwt-decode';
 import CircularProgress from "@mui/material/CircularProgress";
+const accessToken = Auth();
 
 const Applicant = () => {
-    const navigate = useNavigate()
-    let cookie = new Cookie();
-    let userDetails = cookie.get('user');
+    const navigate = useNavigate();
+    const [cookie, setCookie, removeCookie] = useCookies([]);
+    let userDetails = cookie.user;
     const user = jwt(userDetails);
     const [userId, setUserId] = useState(user?.id);
 
     const [applicationForms, setApplicationForms] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+
     useEffect(() => {
         getApplications();
     }, [])
 
     const getApplications = async () => {
         setIsLoading(true);
-        const { data: applications } = await GET(
-            `application-management-service/application?applicantId=${userId}`
-        );
+
+        const applications = await axios(`http://ec2-52-204-199-180.compute-1.amazonaws.com/application-management-service/application?applicantId=${userId}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "X-Authorization": `Bearer ${accessToken}`,
+            },
+        });
+        // const { data: applications } = await GET(
+        //     `application-management-service/application?applicantId=${userId}`
+        // );
         if (applications) {
             navigate(`applicationForm/${applications?.[0]?.id}`)
             setIsLoading(false);
+            removeCookie('entityId', { path: '/' })
+            setCookie('entityId', applications?.[0]?.tenant?.id, { path: '/' });
         }
         // setApplicationForms(applications)
         setIsLoading(false);
@@ -43,7 +57,6 @@ const Applicant = () => {
                 )
             }
         </div>
-
     )
 
 

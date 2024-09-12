@@ -22,8 +22,9 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
     const [form2, setForm2] = useState();
     const navigate = useNavigate()
     const [isOpen, setIsOpen] = useState(true);
-
+    const id = sessionStorage.getItem('applicationId');
     useEffect(() => {
+        sessionStorage.setItem('fromSummary', false);
         getPreApplication();
     }, [])
 
@@ -37,7 +38,7 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
 
     const getPreApplication = async () => {
         const { data: basicForm } = await GET(
-            `application-management-service/application/66dede8fdf5e683573132ec1`
+            `application-management-service/application/${id}`
         );
         setForm(basicForm)
     }
@@ -90,28 +91,49 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
                                 <div className={`${style.tableHeaderTextStyle}`}>Items To Address</div>
                             </div>
                         </div>
-                        {
-                            form?.formSchemas?.map((data, index) => (
-                                <div className={`${style.tableDataStyle} ${style.marginTop5} ${style.tableValueGridStyle} `}>
-                                    <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                        <div className={`${style.marginLeft5} ${style.tableDataFontDisabledStyle1}}`}>{data?.title || ''}</div>
+                        <div className={`${style.tableDataStyle} ${style.marginTop5} ${style.tableValueGridStyle} `}>
+                            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                                <div className={`${style.marginLeft5} ${style.tableDataFontDisabledStyle1}}`}>Step 1</div>
+                            </div>
+                            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                                <div className={`${style.tableDataFontStyle1}`}> Applicant Profile Information</div>
+                                <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/section1/step1`); }} />
+                            </div>
+                            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                                <div className={`${style.greenDotStyle} `}></div>
+                            </div>
+                            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                                <div className={`${style.greenDotStyle} `}></div>
+                            </div>
+                            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                                {/* <div className={`${style.greenDotStyle} `}></div> */}
+                            </div>
+                        </div>
+                        <div>
+
+                            {
+                                form?.formSchemas?.filter(data => data?.formCategory === 'Form')?.map((data, index) => (
+                                    <div className={`${style.tableDataStyle} ${style.marginTop5} ${style.tableValueGridStyle} `}>
+                                        <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                                            <div className={`${style.marginLeft5} ${style.tableDataFontDisabledStyle1}}`}>{data?.title || ''}</div>
+                                        </div>
+                                        <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                                            <div className={`${style.tableDataFontStyle1}`}>{data?.description}</div>
+                                            <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/section1/${data?.title?.toLowerCase()?.replace(' ', '')}`) }} />
+                                        </div>
+                                        <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                                            <div className={`${style.greenDotStyle} `}></div>
+                                        </div>
+                                        <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                                            <div className={`${style.greenDotStyle} `}></div>
+                                        </div>
+                                        <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                                            {/* <div className={`${style.greenDotStyle} `}></div> */}
+                                        </div>
                                     </div>
-                                    <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                        <div className={`${style.tableDataFontStyle1}`}>{data?.description}</div>
-                                        <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter}`} onClick={() => { navigate(`/applicationForm/section1/${data?.title?.toLowerCase()?.replace(' ', '')}`) }} />
-                                    </div>
-                                    <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                        <div className={`${style.greenDotStyle} `}></div>
-                                    </div>
-                                    <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                        <div className={`${style.greenDotStyle} `}></div>
-                                    </div>
-                                    <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                        {/* <div className={`${style.greenDotStyle} `}></div> */}
-                                    </div>
-                                </div>
-                            ))
-                        }
+                                ))
+                            }
+                        </div>
 
 
                     </div>

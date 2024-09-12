@@ -22,8 +22,11 @@ const Acknowledgement = ({ basicForm, setBasicForm, applicationId }) => {
     const navigate = useNavigate()
     const [isOpen, setIsOpen] = useState(true);
 
+    const id = sessionStorage.getItem('applicationId');
+
     useEffect(() => {
         getPreApplication();
+        sessionStorage.setItem('fromSummary', false)
     }, [])
 
     // useEffect(() => {
@@ -36,7 +39,7 @@ const Acknowledgement = ({ basicForm, setBasicForm, applicationId }) => {
 
     const getPreApplication = async () => {
         const { data: basicForm } = await GET(
-            `application-management-service/application/66dede8fdf5e683573132ec1`
+            `application-management-service/application/${id}`
         );
         setForm(basicForm)
     }
@@ -109,14 +112,14 @@ const Acknowledgement = ({ basicForm, setBasicForm, applicationId }) => {
                                 </div>
                             </div>
                             {
-                                form?.formSchemas?.map((data, index) => (
+                                form?.formSchemas?.filter(data => data?.formCategory !== 'Form')?.map((data, index) => (
                                     <div className={`${index % 2 !== 0 ? style.tableDataStyle : style.tableDataStyle1} ${style.marginTop5} ${style.tableValueGridStyle} `}>
                                         <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                                             <div className={`${style.marginLeft40} ${style.tableDataFontStyle1}}`}>{index + 1}</div>
                                         </div>
                                         <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                                             <div className={`${style.tableDataFontStyle1}`}>{data?.description}</div>
-                                            <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter}`} />
+                                            <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/section1/acknowledgementStep${index + 1}`) }} />
                                         </div>
                                         <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                                             <div className={`${style.greenDotStyle} `}></div>
