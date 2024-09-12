@@ -54,7 +54,7 @@ const ApplicationAcknowledgementStep1 = ({ acknowledgementForm, dateFormat, name
 
     const getRenderedContent = async () => {
         const { data: content } = await GET(
-            `application-management-service/application/${basicForm?.id}/forms/${basicForm?.forms?.[18]?.id}/render`
+            `application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[18]?.id}/render`
         );
         setFormContent(content)
     }
@@ -236,7 +236,10 @@ const ApplicationAcknowledgementStep1 = ({ acknowledgementForm, dateFormat, name
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={handleDownload}>SAVE IN PROGRESS</div>
-                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()} >CONTINUE</div>
+                    <div className={style.twoColForButton}>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()} >CONTINUE</div>
+                    </div>
                     {/* <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
                     </div> */}

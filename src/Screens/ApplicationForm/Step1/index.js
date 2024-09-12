@@ -65,6 +65,14 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
             });
     }
 
+    const getValueByPath = (obj, path) => {
+        const keys = path.split(/[\.\[\]]+/).filter(Boolean);
+        console.log(path, keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm), basicForm, 'if')
+        return keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm);
+    };
+
+    console.log(getValueByPath(basicForm, 'basicDetails.departmentSpecialty.department'),)
+
     return (
         <div>
             <div className={`${style.applicationScreenGrid} `}>
@@ -85,8 +93,10 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
                         {form1 !== undefined && 'departmentSpecialty' in form1?.properties && (
                             <ApplicationFieldCard object={form1?.properties?.departmentSpecialty} gridStyle={style.twoCol} baseKey={'departmentSpecialty'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
                         )}
-                        {form1 !== undefined && 'regionalCallResponsibilities' in form1?.properties && (
-                            <ApplicationFieldCard object={form1?.properties?.regionalCallResponsibilities} gridStyle={''} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+                        {form1 !== undefined && (getValueByPath(basicForm, 'basicDetails.departmentSpecialty.department') === form1.if.properties.departmentSpecialty.properties.department.const && form1.if.properties.departmentSpecialty.properties.specialty.enum?.includes(getValueByPath(basicForm, 'basicDetails.departmentSpecialty.specialty'))) && (
+                            form1 !== undefined && 'regionalCallResponsibilities' in form1?.properties && (
+                                <ApplicationFieldCard object={form1?.properties?.regionalCallResponsibilities} gridStyle={''} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+                            )
                         )}
                         <CommonDivider />
                         {form1 !== undefined && 'billingNumber' in form1?.properties && (
@@ -124,19 +134,26 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()}>CONTINUE</div>
+                    <div className={style.twoColForButton}>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()}>CONTINUE</div>
+                    </div>
                     {/* <div className={style.marginTop}>
                             <ApplicationReferenceDocuments />
                         </div> */}
                 </div>
             </div>
-            {isOpen && (
-                <AIAssistantDialog getIsOpen={getIsOpen} />
-            )}
-            {isSaveInProgressOpen && (
-                <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
-            )}
-        </div>
+            {
+                isOpen && (
+                    <AIAssistantDialog getIsOpen={getIsOpen} />
+                )
+            }
+            {
+                isSaveInProgressOpen && (
+                    <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
+                )
+            }
+        </div >
     )
 }
 

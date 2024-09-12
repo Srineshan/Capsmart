@@ -53,6 +53,12 @@
     gap: 20px;
 }
 
+.twoColForButton {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
 .fourCol {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -172,11 +178,11 @@
 }
 
 .businessMailingAddressGrid> :nth-child(1) {
-    grid-column: span 3;
+    grid-column: span 2;
 }
 
 .businessMailingAddressGrid> :nth-child(2) {
-    grid-column: span 3;
+    grid-column: span 4;
 }
 
 .businessMailingAddressGrid> :nth-child(3) {

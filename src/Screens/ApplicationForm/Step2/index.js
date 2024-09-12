@@ -102,31 +102,6 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
                 console.log(error)
                 ErrorToaster("Unexpected Error Updating Application");
             });
-        let tempDocumentData = [];
-        tableData?.map(data =>
-            tempDocumentData.push({
-                file: {
-                    fileURL: data?.fileURL,
-                    fileName: data?.fileUploaded
-                },
-                // size: data?.fileSize,
-                documentType: data?.documentType,
-                required: data?.requirement === 'Mandatory' ? 'Required' : 'ToBeDecided',
-                verified: data?.verified !== "" ? data?.verified : false,
-                valid: data?.valid !== "" ? data?.valid : false
-            })
-        )
-
-        let documentData = {
-            uploadedDocuments: tempDocumentData
-        }
-        await PUT(`application-management-service/application/${applicationId}/addUploadedDocuments`, documentData)
-            .then(response => {
-                console.log(response)
-            })
-            .catch((error) => {
-                console.log(error)
-            });
     }
     console.log(formSchema, basicForm, tempValue)
 
@@ -163,9 +138,34 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
         }
     };
 
-    const handleChange = (value, index) => {
+    const handleChange = async (value, index) => {
         console.log(tempValue?.table, value, index)
         let temp = tempValue?.table;
+        let tempDocumentData = {
+            file: {
+                fileURL: temp[index]?.fileURL,
+                fileName: temp[index]?.fileUploaded
+            },
+            // size: data?.fileSize,
+            documentType: temp[index]?.documentType,
+            required: temp[index]?.requirement === 'Mandatory' ? 'Required' : 'ToBeDecided',
+            verified: temp[index]?.verified !== "" ? temp[index]?.verified : false,
+            valid: temp[index]?.valid !== "" ? temp[index]?.valid : false
+        };
+
+        let documentData = {
+            uploadedDocument: tempDocumentData
+        }
+        await PUT(`application-management-service/application/${applicationId}/addUploadedDocuments`, documentData)
+            .then(response => {
+                console.log(response)
+                temp[index].verified = response?.data?.verified;
+                temp[index].valid = response?.data?.valid;
+            })
+            .catch((error) => {
+                console.log(error)
+            });
+
         temp[index].documentType = value;
         if (value !== null || value !== "") {
             temp[index].requirement = !basicForm?.documentsRequired?.filter(data => data?.document?.name === value)?.[0]?.required ? 'Mandatory' : 'Recommended';
@@ -176,25 +176,6 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
 
     const getApplicantValues = (array) => {
         let temp = [];
-        // temp.push({ "type": "icon", "icon": array?.map(innerData => <TextSnippetOutlinedIcon style={{ fontSize: 20, }} onClick={() => { window.open(innerData?.file?.fileURL, '_blank'); }} />), 'isShowHoverText': false });
-        // temp.push({ "type": "text", "value": array?.map(innerData => innerData?.name) });
-        // temp.push({ "type": "text", "value": array?.map(innerData => `${(innerData?.size / (1024 * 1024)).toFixed(2)} Mb`) });
-        // temp.push({
-        //     "type": "field", "field": array?.map(innerData => <CommonSelectField
-        //         // value={''}
-        //         onChange={(e) => handleChange(e.target.value)}
-        //         className={style.fullWidth}
-        //         // firstOptionLabel={fieldData.label}
-        //         // firstOptionValue={fieldData.label}
-        //         valueList={basicForm?.documentsRequired?.map(data => data?.document?.name) || []}
-        //         labelList={basicForm?.documentsRequired?.map(data => data?.document?.name) || []}
-        //         disabledList={basicForm?.documentsRequired?.map(data => false)}
-        //     />)
-        // });
-        // temp.push({ "type": "text", "value": array?.map(innerData => 'Required') });
-        // temp.push({ "type": "icon", "icon": array?.map(innerData => <TextSnippetOutlinedIcon style={{ fontSize: 20, }} />), 'isShowHoverText': false });
-        // temp.push({ "type": "icon", "icon": array?.map(innerData => <TextSnippetOutlinedIcon style={{ fontSize: 20, }} />), 'isShowHoverText': false });
-        // temp.push({ "type": "action", "value": array?.map(innerData => actions) })
         Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.map((data, index) => {
             if (data === "file") {
                 temp.push({ "type": "icon", "icon": array?.map(innerData => <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />), 'isShowHoverText': false });
@@ -285,7 +266,6 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
                             <ApplicationFieldCard object={formSchema?.properties?.uploadTheDocument} gridStyle={style.twoCol} baseKey={'uploadTheDocument'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[0].data`} />
                         )}
                         <div className={`${style.tableHeader} ${style.tableGrid}`}>
-                            {/* <div className={style.tableHeaderText}></div> */}
                             <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Document Type</div>
                             <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Requirements</div>
                             <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}></div>
@@ -293,46 +273,13 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
                         {basicForm?.documentsRequired?.map((data, index) => (
                             <div>
                                 <div className={`${style.requiredDocumentCard} ${style.tableGrid} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''}  ${style.marginTop5}`}>
-                                    {/* <div>
-                                    <label for={`file-upload-dynamic-${data?.document?.name}`}>
-                                        <DescriptionOutlinedIcon sx={{ color: '#787f87' }} />
-                                    </label>
-                                    <input id={`file-upload-dynamic-${data?.document?.name}`} type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx" onChange={(e) => handleFileUpload(e, data?.document?.id)} />
-                                </div> */}
                                     <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                                         <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.document?.name}</div>
                                         <InfoOutlinedIcon sx={{ fontSize: 14, marginLeft: '10px' }} className={style.info} />
                                     </div>
-                                    {/* <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}></div>
-                                <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}></div>
-                                <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}></div> */}
                                     <div className={style.documentTextStyle}>{data?.required ? 'Mandatory' : 'Recommended'}</div>
                                     <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.instruction}</div>
-                                    {/* <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}></div> */}
-                                    {/* <div className={style.verticalAlignCenter}>
-                                    {openCategoryIndex === index ? (
-                                        <RemoveIcon sx={{ color: '#6F7479' }} className={style.cursorPointer} onClick={() => setOpenCategoryIndex(-1)} />
-                                    ) : (
-                                        <AddIcon sx={{ color: '#6F7479' }} className={style.cursorPointer} onClick={() => setOpenCategoryIndex(index)} />
-                                    )}
-                                </div> */}
                                 </div>
-                                {/* {openCategoryIndex === index && <div>{data?.mandatory}</div>}
-                            {openCategoryIndex === index && data?.documents?.map(data =>
-                                <div className={`${style.requiredDocumentCard} ${style.tableGrid} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''}  ${style.marginTop5}`}>
-                                    <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
-                                        <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.documentName}</div>
-                                    </div>
-                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.fileName}</div>
-                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{format(new Date(data?.dateUploaded), 'MM-dd-yyyy HH:mm')}</div>
-                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}></div>
-                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.mandatory ? 'Mandatory' : 'Recommended'}</div>
-                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}></div>
-                                    <div className={style.verticalAlignCenter}>
-                                        <MoreHorizIcon sx={{ color: '#6F7479' }} className={style.cursorPointer} />
-                                    </div>
-                                </div>
-                            )} */}
                             </div>
                         ))}
                         <div className={`${style.twoCol} ${style.marginTop}`}>
@@ -372,7 +319,10 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
-                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate('/applicationForm/section1/step3')}>CONTINUE</div>
+                    <div className={style.twoColForButton}>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate('/applicationForm/section1/step3')}>CONTINUE</div>
+                    </div>
                     {/* <div className={style.marginTop}>
                             <ApplicationReferenceDocuments />
                         </div> */}

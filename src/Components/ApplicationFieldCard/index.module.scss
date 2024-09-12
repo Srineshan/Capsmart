@@ -198,7 +198,7 @@
     text-align: left;
     font: normal normal 500 15px/17px proxima-nova;
     letter-spacing: 0px;
-    color: #94979A;
+    color: #52575D;
     text-transform: capitalize;
     opacity: 1;
     margin-top: 5px;
@@ -209,9 +209,20 @@
     text-align: left;
     font: normal normal 500 15px/20px proxima-nova;
     letter-spacing: 0px;
-    color: #60656c;
+    color: #52575D;
     // text-transform: capitalize;
     opacity: 1;
     margin-top: 5px;
+    max-width: 85%;
+}
+
+.lableReadOnlyStyle {
+    text-align: left;
+    font: normal normal 500 17px/20px proxima-nova;
+    letter-spacing: 0px;
+    color: #52575D;
+    // text-transform: capitalize;
+    opacity: 1;
+    margin-top: 10px;
     max-width: 85%;
 }

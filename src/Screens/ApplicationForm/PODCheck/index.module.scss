@@ -103,6 +103,12 @@
     gap: 20px;
 }
 
+.twoColForButton {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
 .fourCol {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -3223,7 +3229,7 @@ input[type="number"] {
     font: normal normal normal 16px/20px proxima-nova;
     letter-spacing: 0px;
     color: #52575d;
-    text-transform: capitalize;
+    // text-transform: capitalize;
     text-align: left;
 }
 

@@ -7,6 +7,8 @@
     "@blueprintjs/core": "^4.3.0",
     "@blueprintjs/datetime": "^4.2.0",
     "@blueprintjs/datetime2": "^0.9.16",
+    "@ckeditor/ckeditor5-build-classic": "^43.1.0",
+    "@ckeditor/ckeditor5-react": "^9.1.0",
     "@descope/react-sdk": "^2.0.68",
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",

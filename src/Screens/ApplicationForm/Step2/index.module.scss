@@ -164,6 +164,12 @@
     gap: 20px;
 }
 
+.twoColForButton {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
 .uploadTextStyle {
     text-align: center;
     font: normal normal 600 20px/28px proxima-nova;
