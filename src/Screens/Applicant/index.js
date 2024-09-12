@@ -17,7 +17,7 @@ const Applicant = () => {
     // let userDetails = cookies.get('user');
     // const user = jwt(userDetails);
     console.log('currentUserData', currentUserData);
-    const [userId, setUserId] = useState(user?.id);
+    // const [userId, setUserId] = useState(user?.id);
 
     const [applicationForms, setApplicationForms] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
