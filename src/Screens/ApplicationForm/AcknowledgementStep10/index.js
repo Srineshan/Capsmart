@@ -66,14 +66,26 @@ const ApplicationAcknowledgementStep10 = ({ basicForm, setBasicForm, application
                     console.log(response)
                     setBasicForm(response?.data)
                     SuccessToaster("Application Updated Successfully");
-                    navigate('/applicationForm/section1/acknowledgementStep11')
+                    const handleContinue = () => {
+                        if (sessionStorage.getItem('fromSummary') === 'true') {
+                            navigate(-1);
+                        } else {
+                            navigate('/applicationForm/section1/acknowledgementStep11')
+                        }
+                    }
                 })
                 .catch((error) => {
                     console.log(error)
                     ErrorToaster("Unexpected Error Updating Application");
                 });
         } else {
-            navigate('/applicationForm/section1/acknowledgementStep11')
+            const handleContinue = () => {
+                if (sessionStorage.getItem('fromSummary') === 'true') {
+                    navigate(-1);
+                } else {
+                    navigate('/applicationForm/section1/acknowledgementStep11')
+                }
+            }
         }
     }
     return (

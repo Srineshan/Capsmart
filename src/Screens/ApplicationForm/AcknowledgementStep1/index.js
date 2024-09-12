@@ -115,14 +115,22 @@ const ApplicationAcknowledgementStep1 = ({ acknowledgementForm, dateFormat, name
                     getPreApplication()
                     SuccessToaster("Application Updated Successfully");
                     getFormSchema();
-                    navigate('/applicationForm/section1/acknowledgementStep2')
+                    if (sessionStorage.getItem('fromSummary') === 'true') {
+                        navigate(-1);
+                    } else {
+                        navigate('/applicationForm/section1/acknowledgementStep2')
+                    }
                 })
                 .catch((error) => {
                     console.log(error)
                     ErrorToaster("Unexpected Error Updating Application");
                 });
         } else {
-            navigate('/applicationForm/section1/acknowledgementStep2')
+            if (sessionStorage.getItem('fromSummary') === 'true') {
+                navigate(-1);
+            } else {
+                navigate('/applicationForm/section1/acknowledgementStep2')
+            }
         }
     }
     return (

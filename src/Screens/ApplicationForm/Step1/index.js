@@ -57,7 +57,11 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
                 console.log(response)
                 setBasicForm(response?.data)
                 SuccessToaster("Staff Member Application Updated Successfully");
-                navigate('/applicationForm/section1/step2')
+                if (sessionStorage.getItem('fromSummary') === "true") {
+                    navigate(-1);
+                } else {
+                    navigate('/applicationForm/section1/step2')
+                }
             })
             .catch((error) => {
                 console.log(error)

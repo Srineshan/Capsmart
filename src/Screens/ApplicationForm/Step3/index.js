@@ -48,7 +48,13 @@ const Step3 = ({ basicForm, setBasicForm, applicationId }) => {
                     console.log(response)
                     setBasicForm(response?.data)
                     SuccessToaster("Application Updated Successfully");
-                    navigate('/applicationForm/section1/step4')
+                    if (sessionStorage.getItem('fromSummary') === "true") {
+                        navigate(-1);
+                    }
+                    else {
+                        navigate('/applicationForm/section1/step4')
+
+                    }
                 })
                 .catch((error) => {
                     console.log(error)
@@ -65,7 +71,13 @@ const Step3 = ({ basicForm, setBasicForm, applicationId }) => {
                     console.log(error)
                 });
         } else {
-            navigate('/applicationForm/section1/step4')
+            if (sessionStorage.getItem('fromSummary') === "true") {
+                navigate(-1);
+            }
+            else {
+                navigate('/applicationForm/section1/step4')
+
+            }
         }
     }
 

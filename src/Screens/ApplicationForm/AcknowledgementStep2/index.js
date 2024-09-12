@@ -14,6 +14,15 @@ import ESign from '../../../Components/ESign';
 const ApplicationAcknowledgementStep2 = () => {
     const [isChecked, setIsChecked] = useState(false);
     const navigate = useNavigate()
+
+    const handleContinue = () => {
+        if (sessionStorage.getItem('fromSummary') === 'true') {
+            navigate(-1);
+        } else {
+            navigate('/applicationForm/section1/acknowledgementStep3')
+        }
+    }
+
     return (
         <div>
             <div className={style.applicationScreenGrid}>
@@ -39,7 +48,7 @@ const ApplicationAcknowledgementStep2 = () => {
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
-                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate('/applicationForm/section1/acknowledgementStep3')} >CONTINUE</div>
+                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()} >CONTINUE</div>
 
                     {/* <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />

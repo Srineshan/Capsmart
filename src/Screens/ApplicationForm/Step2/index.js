@@ -265,6 +265,12 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
         setIsEdited(value)
     }
 
+    const handleContinue = () => {
+        if (sessionStorage.getItem('fromSummary') === "true") {
+            navigate(-1);
+        } else { navigate('/applicationForm/section1/step3') }
+    }
+
     return (
         <div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
@@ -368,20 +374,22 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
-                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate('/applicationForm/section1/step3')}>CONTINUE</div>
+                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
                     {/* <div className={style.marginTop}>
                             <ApplicationReferenceDocuments />
                         </div> */}
                 </div>
             </div>
-            {isShowESignDialog && (
-                <ESignDialog getIsOpen={getIsOpen} tempValue={tempValue} baseKey={'setUpYourSignature'} applicationId={applicationId} basicForm={basicForm} setBasicForm={setBasicForm}>
-                    {formSchema !== undefined && 'setUpYourSignature' in formSchema?.properties && (
-                        <ApplicationFieldCard object={formSchema?.properties?.setUpYourSignature} gridStyle={style.twoCol} baseKey={'setUpYourSignature'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[0].data`} setIsEdited={getIsEdited} />
-                    )}
-                </ESignDialog>
-            )}
-        </div>
+            {
+                isShowESignDialog && (
+                    <ESignDialog getIsOpen={getIsOpen} tempValue={tempValue} baseKey={'setUpYourSignature'} applicationId={applicationId} basicForm={basicForm} setBasicForm={setBasicForm}>
+                        {formSchema !== undefined && 'setUpYourSignature' in formSchema?.properties && (
+                            <ApplicationFieldCard object={formSchema?.properties?.setUpYourSignature} gridStyle={style.twoCol} baseKey={'setUpYourSignature'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[0].data`} setIsEdited={getIsEdited} />
+                        )}
+                    </ESignDialog>
+                )
+            }
+        </div >
     )
 }
 

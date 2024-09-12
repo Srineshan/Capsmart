@@ -284,7 +284,7 @@ const App = ({ props }) => {
 
   // useEffect(() => {
   //   getEntityId();
-  // }, [cookie.get("user")])
+  // }, [])
 
   // useEffect(() => {
   //   if(!cookie.get("user")){
@@ -512,28 +512,30 @@ const App = ({ props }) => {
   };
 
   const getEntityId = async () => {
+    let hostname = window.location.hostname;
     await axios(
       `http://ec2-52-204-199-180.compute-1.amazonaws.com/entity-service/entityID`,
       {
         method: "GET",
-        // headers: { "X-subdomain": "hopkins" },
+        headers: { "X-subdomain": hostname.includes('acme-hospital') ? "acme-hospital" : null },
       }
     )
       .then((response) => {
         cookie.set("entityId", response?.data?.id);
         setEntityId(response?.data?.id);
+        // login(response?.data?.id);
       })
       .catch((error) => {
         console.log("error", error);
       });
   };
 
-  const login = () => {
+  const login = (id) => {
     const requestOptions = {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "X-tenantID": entityId,
+        "X-tenantID": id,
       },
     };
     fetch(
