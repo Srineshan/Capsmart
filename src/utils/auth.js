@@ -11,6 +11,19 @@ export const Auth = () => {
   }
 }
 
+export const baseUrl = () => {
+  let response = ''
+  let hostname = window.location.hostname;
+  if (hostname?.split('.')?.length === 3) {
+    response = 'https://acme-hospital.doxonify.ca';
+  } else if (hostname === 'localhost') {
+    response = 'http://ec2-52-204-199-180.compute-1.amazonaws.com';
+  } else {
+    response = 'https://doxonify.ca';
+  }
+  return response;
+}
+
 export const GetEntityDetails = () => {
   let cookie = new Cookie();
   let entityId = cookie.get('entityId');

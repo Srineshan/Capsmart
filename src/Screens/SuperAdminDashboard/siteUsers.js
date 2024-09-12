@@ -31,7 +31,7 @@ import HourglassImg from "./../../images/hourglassImg.png";
 import UploadedImg from "./../../images/uploadedImage.png";
 import Download from "./../../images/download.png";
 import Dropzone from "react-dropzone";
-import { Auth } from "./../../utils/auth";
+import { Auth, baseUrl } from "./../../utils/auth";
 import { CSVLink } from "react-csv";
 import Papa from "papaparse";
 import axios from "axios";
@@ -144,7 +144,7 @@ const SiteUsers = ({ getActiveStep }) => {
   };
 
   const getContracts = async () => {
-    await axios(`http://ec2-52-204-199-180.compute-1.amazonaws.com/contract-managment-service/contracts`, {
+    await axios(`${baseUrl()}/contract-managment-service/contracts`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -159,7 +159,7 @@ const SiteUsers = ({ getActiveStep }) => {
   }
 
   const getUserData = async () => {
-    await axios(`http://ec2-52-204-199-180.compute-1.amazonaws.com/user-management-service/user`, {
+    await axios(`${baseUrl()}/user-management-service/user`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

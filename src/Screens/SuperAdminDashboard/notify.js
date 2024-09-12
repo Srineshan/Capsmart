@@ -10,7 +10,7 @@ const Notify = () => {
   const [userId, setUserId] = useState('');
 
   const notifyFunction = async () => {
-    await axios(`http://ec2-52-204-199-180.compute-1.amazonaws.com/user-management-service/user/${userId}/notify`, {
+    await axios(`https://acme-hospital.doxonify.ca/user-management-service/user/${userId}/notify`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
