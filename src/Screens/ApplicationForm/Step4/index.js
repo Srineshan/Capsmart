@@ -49,24 +49,26 @@ const Step4 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                     console.log(response)
                     SuccessToaster("Application Updated Successfully");
                     getPreApplication();
-                    navigate('/applicationForm/section1/step5')
+                    if (sessionStorage.getItem('fromSummary') === "true") {
+                        navigate(-1);
+                    }
+                    else {
+                        navigate('/applicationForm/section1/step5')
+
+                    }
                 })
                 .catch((error) => {
                     console.log(error)
                     ErrorToaster("Unexpected Error Updating Application");
                 });
         } else {
-            navigate('/applicationForm/section1/step5')
-        }
-    }
+            if (sessionStorage.getItem('fromSummary') === "true") {
+                navigate(-1);
+            }
+            else {
+                navigate('/applicationForm/section1/step5')
 
-    const handleContinue = () => {
-        if (sessionStorage.getItem('fromSummary') === "true") {
-            navigate(-1);
-        }
-        else {
-            navigate('/applicationForm/section1/step5')
-
+            }
         }
     }
 
@@ -92,14 +94,10 @@ const Step4 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
-<<<<<<< HEAD
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()} >CONTINUE</div>
                     </div>
-=======
-                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()} >CONTINUE</div>
->>>>>>> 495c676186e99742f043cb1dcec57fd052cfa1b1
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
                     </div>
