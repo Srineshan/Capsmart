@@ -513,12 +513,13 @@ const App = ({ props }) => {
 
   const getEntityId = async () => {
     let hostname = window.location.hostname;
+    let requestHeader = hostname.includes('acme-hospital') ? {
+      method: "GET",
+      headers: { "X-subdomain": "acme-hospital" },
+    } : { method: 'GET' }
     await axios(
       `http://ec2-52-204-199-180.compute-1.amazonaws.com/entity-service/entityID`,
-      {
-        method: "GET",
-        headers: { "X-subdomain": hostname.includes('acme-hospital') ? "acme-hospital" : null },
-      }
+      requestHeader
     )
       .then((response) => {
         cookie.set("entityId", response?.data?.id);
