@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { GET, PUT } from '../dataSaver';
 import { KeyboardReturnRounded } from '@material-ui/icons';
 import { useNavigate } from 'react-router-dom';
-import { Auth, GetEntityDetails, GetRoles } from "./../../utils/auth";
+import { Auth, GetEntityDetails, GetRoles, baseUrl } from "./../../utils/auth";
 import axios from "axios";
 import { CookiesProvider, Cookies } from 'react-cookie';
 import style from './index.module.scss';
@@ -27,7 +27,7 @@ const Applicant = () => {
     const getApplications = async () => {
         setIsLoading(true);
 
-        const applications = await axios(`http://ec2-52-204-199-180.compute-1.amazonaws.com/application-management-service/application?applicantId=${userId}`, {
+        const applications = await axios(`${baseUrl}/application-management-service/application?applicantId=${userId}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",

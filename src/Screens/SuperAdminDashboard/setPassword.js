@@ -137,7 +137,7 @@ const SetPassword = () => {
   }, [tenantId]);
 
   const getEntityId = async () => {
-    await axios(`http://ec2-52-204-199-180.compute-1.amazonaws.com/entity-service/entityID`, {
+    await axios(`https://acme-hospital.doxonify.ca/entity-service/entityID`, {
       method: 'GET',
       // headers: { "X-subdomain": "smmc-trial" },
     }).then(response => {
@@ -167,7 +167,7 @@ const SetPassword = () => {
   };
 
   const getUser = async () => {
-    await axios(`http://ec2-52-204-199-180.compute-1.amazonaws.com/user-management-service/user`, {
+    await axios(`https://acme-hospital.doxonify.ca/user-management-service/user`, {
       method: 'GET',
       headers: headers,
     }).then(response => {
@@ -197,7 +197,7 @@ const SetPassword = () => {
           "password": password,
         }
       }
-      axios(`http://ec2-52-204-199-180.compute-1.amazonaws.com/user-management-service/user/updatepassword`, {
+      axios(`https://acme-hospital.doxonify.ca/user-management-service/user/updatepassword`, {
         method: 'POST',
         headers: headers,
         data: JSON.stringify(data),

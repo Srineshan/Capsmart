@@ -139,18 +139,17 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
     };
 
     const handleChange = async (value, index) => {
-        console.log(tempValue?.table, value, index)
+        console.log(tempValue?.table, value, index, '142')
         let temp = tempValue?.table;
         let tempDocumentData = {
             file: {
                 fileURL: temp[index]?.fileURL,
                 fileName: temp[index]?.fileUploaded
             },
-            // size: data?.fileSize,
-            documentType: temp[index]?.documentType,
-            required: temp[index]?.requirement === 'Mandatory' ? 'Required' : 'ToBeDecided',
             verified: temp[index]?.verified !== "" ? temp[index]?.verified : false,
-            valid: temp[index]?.valid !== "" ? temp[index]?.valid : false
+            valid: temp[index]?.valid !== "" ? temp[index]?.valid : false,
+            documentType: value,
+            required: temp[index]?.requirement === 'Mandatory' ? 'Required' : 'ToBeDecided',
         };
 
         let documentData = {
@@ -165,7 +164,6 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
             .catch((error) => {
                 console.log(error)
             });
-
         temp[index].documentType = value;
         if (value !== null || value !== "") {
             temp[index].requirement = !basicForm?.documentsRequired?.filter(data => data?.document?.name === value)?.[0]?.required ? 'Mandatory' : 'Recommended';

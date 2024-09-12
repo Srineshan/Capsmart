@@ -5,7 +5,7 @@ import history from "./routes/history";
 import Loader from "./Components/LoadingScreen";
 import IdleTimer from "./Components/IdleTimer";
 import Cookie from "universal-cookie";
-import { Auth, GetEntityDetails, currentUser } from "./utils/auth";
+import { Auth, GetEntityDetails, currentUser, baseUrl } from "./utils/auth";
 import { TenantID, GET, POST } from "./Screens/dataSaver";
 import {
   browserName,
@@ -518,13 +518,13 @@ const App = ({ props }) => {
       headers: { "X-subdomain": "acme-hospital" },
     } : { method: 'GET' }
     await axios(
-      `http://ec2-52-204-199-180.compute-1.amazonaws.com/entity-service/entityID`,
+      `${baseUrl()}/entity-service/entityID`,
       requestHeader
     )
       .then((response) => {
         cookie.set("entityId", response?.data?.id);
         setEntityId(response?.data?.id);
-        // login(response?.data?.id);
+        login(response?.data?.id);
       })
       .catch((error) => {
         console.log("error", error);
@@ -540,7 +540,7 @@ const App = ({ props }) => {
       },
     };
     fetch(
-      `http://ec2-52-204-199-180.compute-1.amazonaws.com/user-management-service/auth/login`,
+      `${baseUrl()}/user-management-service/auth/login`,
       requestOptions
     )
       .then((response) => response.json())
