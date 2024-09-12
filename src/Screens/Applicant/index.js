@@ -4,7 +4,7 @@ import { KeyboardReturnRounded } from '@material-ui/icons';
 import { useNavigate } from 'react-router-dom';
 import { Auth, GetEntityDetails, GetRoles } from "./../../utils/auth";
 import axios from "axios";
-import { useCookies } from 'react-cookie';
+import { CookiesProvider, Cookies } from 'react-cookie';
 import style from './index.module.scss';
 import jwt from 'jwt-decode';
 import CircularProgress from "@mui/material/CircularProgress";
@@ -12,8 +12,8 @@ const accessToken = Auth();
 
 const Applicant = () => {
     const navigate = useNavigate();
-    const [cookie, setCookie, removeCookie] = useCookies([]);
-    let userDetails = cookie.user;
+    const cookies = new Cookies();
+    let userDetails = cookies.get('user');
     const user = jwt(userDetails);
     const [userId, setUserId] = useState(user?.id);
 
@@ -40,8 +40,8 @@ const Applicant = () => {
         if (applications) {
             navigate(`applicationForm/${applications?.[0]?.id}`)
             setIsLoading(false);
-            removeCookie('entityId', { path: '/' })
-            setCookie('entityId', applications?.[0]?.tenant?.id, { path: '/' });
+            cookies.remove('entityId', { path: '/' })
+            cookies.set('entityId', applications?.[0]?.tenant?.id, { path: '/' });
         }
         // setApplicationForms(applications)
         setIsLoading(false);
@@ -58,8 +58,6 @@ const Applicant = () => {
             }
         </div>
     )
-
-
 }
 
 export default Applicant
