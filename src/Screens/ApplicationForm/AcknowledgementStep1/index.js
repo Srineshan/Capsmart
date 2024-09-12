@@ -33,13 +33,13 @@ const ApplicationAcknowledgementStep1 = ({ acknowledgementForm, dateFormat, name
         if (basicForm && !formSchema) {
             getFormSchema()
         }
-        setIsChecked(basicForm?.forms?.[18]?.acknowledged);
-        // setEncryptedText(basicForm?.forms?.[18]?.esign?.esign)
-        setSignText(basicForm?.forms?.[18]?.acknowledged ? basicForm?.forms?.[18]?.esign?.esign : '');
-        setIsSigned((basicForm?.forms?.[18]?.esign?.esign !== undefined && basicForm?.forms?.[18]?.acknowledged) ? true : false);
-        // setDecryptedText(CryptoJS.AES.decrypt(basicForm?.forms?.[18]?.esign?.esign, publicKey).toString(CryptoJS.enc.Utf8))
+        setIsChecked(basicForm?.forms?.[12]?.acknowledged);
+        // setEncryptedText(basicForm?.forms?.[12]?.esign?.esign)
+        setSignText(basicForm?.forms?.[12]?.acknowledged ? basicForm?.forms?.[12]?.esign?.esign : '');
+        setIsSigned((basicForm?.forms?.[12]?.esign?.esign !== undefined && basicForm?.forms?.[12]?.acknowledged) ? true : false);
+        // setDecryptedText(CryptoJS.AES.decrypt(basicForm?.forms?.[12]?.esign?.esign, publicKey).toString(CryptoJS.enc.Utf8))
     }, [basicForm])
-    console.log(basicForm?.forms?.[18]?.esign?.esign, encryptedText, basicForm?.forms?.[18]?.acknowledged)
+    console.log(basicForm?.forms?.[12]?.esign?.esign, encryptedText, basicForm?.forms?.[12]?.acknowledged)
 
     useEffect(() => {
         getRenderedContent()
@@ -47,14 +47,14 @@ const ApplicationAcknowledgementStep1 = ({ acknowledgementForm, dateFormat, name
 
     const getFormSchema = async () => {
         const { data: form } = await GET(
-            `application-management-service/formSchema/${basicForm?.formSchemas?.[18]?.id}`
+            `application-management-service/formSchema/${basicForm?.formSchemas?.[12]?.id}`
         );
         setFormSchema(form)
     }
 
     const getRenderedContent = async () => {
         const { data: content } = await GET(
-            `application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[18]?.id}/render`
+            `application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[12]?.id}/render`
         );
         setFormContent(content)
     }
@@ -104,12 +104,12 @@ const ApplicationAcknowledgementStep1 = ({ acknowledgementForm, dateFormat, name
     const handleSubmitApplicationReq = async () => {
         if (isEdited) {
             let temp = {
-                schemaId: basicForm?.forms?.[18]?.schemaId,
-                data: !isEdited ? basicForm?.forms?.[18]?.data : { esignDate: isChecked ? name + " " + currentDate : '' },
+                schemaId: basicForm?.forms?.[12]?.schemaId,
+                data: !isEdited ? basicForm?.forms?.[12]?.data : { esignDate: isChecked ? name + " " + currentDate : '' },
                 acknowledged: isChecked,
                 esign: { esign: isChecked ? encryptedText : '', name: isChecked ? name : '', signedDate: isChecked ? currentDate : '' }
             }
-            await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[18]?.id}`, temp)
+            await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[12]?.id}`, temp)
                 .then(response => {
                     console.log(response)
                     getPreApplication()

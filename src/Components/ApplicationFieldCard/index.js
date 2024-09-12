@@ -387,14 +387,20 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                     return (
                         <div>
                             <div className={`${style.lableStyle}`}>{fieldData.label}{(isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) && '*'}</div>
-                            {/* <TextArea
+                            <TextArea
                                 value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
                                 className={`${style.fullWidth} ${style.marginTop10}`}
                                 onChange={(e) => handleChange(fieldKey, e.target.value, baseKey)}
                                 maxLength={TEXTFIELDLEN50}
                                 placeholder={fieldData.placeHolder !== null ? fieldData.placeHolder : fieldData.label !== null ? `Enter ${fieldData.label}` : null}
                                 rows={4}
-                            /> */}
+                            />
+                        </div>
+                    );
+                case 'ckeditor':
+                    return (
+                        <div>
+                            <div className={`${style.lableStyle}`}>{fieldData.label}{(isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) && '*'}</div>
                             <div className={style.marginTop10}>
                                 <CKEditor
                                     editor={ClassicEditor}
