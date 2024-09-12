@@ -118,7 +118,7 @@ const ApplicationAcknowledgementStep1 = ({ acknowledgementForm, dateFormat, name
                     if (sessionStorage.getItem('fromSummary') === 'true') {
                         navigate(-1);
                     } else {
-                        navigate('/applicationForm/section1/acknowledgementStep2')
+                        navigate('/applicationForm/section1/acknowledgementStep3')
                     }
                 })
                 .catch((error) => {
@@ -129,7 +129,7 @@ const ApplicationAcknowledgementStep1 = ({ acknowledgementForm, dateFormat, name
             if (sessionStorage.getItem('fromSummary') === 'true') {
                 navigate(-1);
             } else {
-                navigate('/applicationForm/section1/acknowledgementStep2')
+                navigate('/applicationForm/section1/acknowledgementStep3')
             }
         }
     }

@@ -516,11 +516,15 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                 case 'fileupload':
                     return (
                         <div>
-                            <div className={`${style.uploadButton} ${style.uploadGrid} ${style.verticalAlignCenter}`}>
-                                <DescriptionOutlinedIcon sx={{ color: '#787f87' }} />
-                                <label for={`file-upload-dynamic-${fieldKey}`} className={`${style.uploadText} ${style.cursorPointer}`}>
-                                    {fieldData.label}
-                                </label>
+                            <div className={`${style.uploadButton}`}>
+                                <div className={style.uploadGrid}>
+                                    <DescriptionOutlinedIcon sx={{ color: '#787f87' }} />
+                                    <label for={`file-upload-dynamic-${fieldKey}`} className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>
+                                        {fieldData.label}
+                                    </label>
+                                    <div className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>Click to upload</div>
+                                    <div className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>{(isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) ? 'Required' : 'Recommended'}</div>
+                                </div>
                             </div>
                             <input id={`file-upload-dynamic-${fieldKey}`} type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx" onChange={(e) => { handleChange(fieldKey, e.target.files[0], baseKey) }} />
                         </div>

@@ -19,30 +19,34 @@ const ApplicationUserCard = ({ user, applyingFor }) => {
             `application-management-service/application/${applicationId}`
         );
         setBasicForm(basicForm)
-        let profilePicData = basicForm?.forms[0]?.data !== null ? basicForm?.forms[0]?.data?.table?.filter(fileData => fileData?.documentType === "Passport Size Photo")?.map(data => data) : [];
+        let profilePicData = (basicForm?.forms[0]?.data !== null && basicForm !== undefined) ? basicForm?.forms[0]?.data?.table?.filter(fileData => fileData?.documentType === "Passport Size Photo")?.map(data => data) : [];
         setProfilePic(profilePicData?.length !== 0 ? profilePicData[0]?.fileURL : '')
         console.log(profilePicData, 'pic')
     }
     return (
         <div className={`${style.applicationUserCard} ${style.profileGrid}`}>
-            {profilePic !== '' ? (
-                <div>
-                    <img src={profilePic} alt="Profile Pic" className={style.profilePic} />
-                </div>
-            ) : (
-                <div className={style.profileImage}>
-                    <div className={`${style.photoText} ${style.verticalAlignCenter}`}>Photo</div>
-                </div>
+            {basicForm?.applicant?.name?.firstName !== undefined && (
+                <>
+                    {profilePic !== '' ? (
+                        <div>
+                            <img src={profilePic} alt="Profile Pic" className={style.profilePic} />
+                        </div>
+                    ) : (
+                        <div className={style.profileImage}>
+                            <div className={`${style.photoText} ${style.verticalAlignCenter}`}>Photo</div>
+                        </div>
+                    )}
+                    <div
+                    // className={style.verticalSpaceBetween}
+                    >
+                        <div className={`${style.nameStyle}`}>{`${basicForm?.applicant?.name?.firstName} ${basicForm?.applicant?.name?.lastName}`}</div>
+                        <div className={`${style.applyingFor}`}>{`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} Applying As ${basicForm?.basicDetailReferences?.applicantType?.serviceProviderType}`}</div>
+                        <div className={`${style.applyingFor} `}>{`${basicForm?.basicDetails?.applicant?.email?.officialEmail}`}</div>
+                        <div className={`${style.applyingFor}`}>{`${basicForm?.basicDetails?.applicant?.cellPhone}`}</div>
+                        {/* <div className={`${style.connectToLinkedIn} ${style.marginTop10}`}>Connect To LinkedIn</div> */}
+                    </div>
+                </>
             )}
-            <div
-            // className={style.verticalSpaceBetween}
-            >
-                <div className={`${style.nameStyle}`}>{`${basicForm?.applicant?.name?.firstName} ${basicForm?.applicant?.name?.lastName}`}</div>
-                <div className={`${style.applyingFor} ${style.marginTop10}`}>{`${basicForm?.applicant?.name?.firstName} ${basicForm?.applicant?.name?.lastName} Applying As ${basicForm?.basicDetailReferences?.applicantType?.serviceProviderType}`}</div>
-                <div className={`${style.applyingFor} ${style.marginTop10}`}>{`${basicForm?.applicant?.email?.officialEmail}`}</div>
-                {/* <div className={`${style.applyingFor} ${style.marginTop10}`}>{`${basicForm?.applicant?.cellPhone}`}</div> */}
-                {/* <div className={`${style.connectToLinkedIn} ${style.marginTop10}`}>Connect To LinkedIn</div> */}
-            </div>
         </div>
     )
 }
