@@ -22,7 +22,7 @@ const Step9 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
 
     const getFormSchema = async () => {
         const { data: form } = await GET(
-            `application-management-service/formSchema/${basicForm?.formSchemas?.[15]?.id}`
+            `application-management-service/formSchema/${basicForm?.formSchemas?.[7]?.id}`
         );
         setFormSchema(form?.schema)
     }
@@ -38,7 +38,7 @@ const Step9 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
             schemaId: data?.forms?.[15]?.schemaId,
             data: data?.forms?.[15]?.data
         }
-        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[15]?.id}`, temp)
+        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[7]?.id}`, temp)
             .then(response => {
                 console.log(response)
                 SuccessToaster("Application Updated Successfully");
@@ -69,7 +69,7 @@ const Step9 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'detailsOfRequestForSpecialititesRecognizedByProfessionalBodies' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.detailsOfRequestForSpecialititesRecognizedByProfessionalBodies} gridStyle={style.trainingGrid} baseKey={'detailsOfRequestForSpecialititesRecognizedByProfessionalBodies'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} addMoreOpenBydefault={true} formId={basicForm?.forms?.[16]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} />
+                            <ApplicationFieldCard object={formSchema?.properties?.detailsOfRequestForSpecialititesRecognizedByProfessionalBodies} gridStyle={style.trainingGrid} baseKey={'detailsOfRequestForSpecialititesRecognizedByProfessionalBodies'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} addMoreOpenBydefault={true} formId={basicForm?.forms?.[7]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} />
                         )}
                     </div>
                 </div>

@@ -89,7 +89,7 @@
 
 .uploadGrid {
     display: grid;
-    grid-template-columns: 5% 94%;
+    grid-template-columns: 3% 74% 10% 10%;
     gap: 1%;
 }
 
@@ -213,7 +213,7 @@
     // text-transform: capitalize;
     opacity: 1;
     margin-top: 5px;
-    max-width: 85%;
+    max-width: 80%;
 }
 
 .lableReadOnlyStyle {

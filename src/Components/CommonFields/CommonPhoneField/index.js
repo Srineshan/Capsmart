@@ -29,7 +29,7 @@ const CommonPhoneField = ({ onChange, placeholder, maxLength, value, error, labe
                     }}
                     fullWidth
                     placeholder={placeholder}
-                    className={`${style.marginTop}`}
+                // className={`${style.marginTop}`}
                 // color={warningCheck ? required ? 'error' : 'warning' : ''}
                 // helperText={warningCheck ? (<div className={`${style.helperText} ${required ? style.errorColor : style.warningColor}`}>Could not find data</div>) : ''}
                 // focused={warningCheck ? true : false}
