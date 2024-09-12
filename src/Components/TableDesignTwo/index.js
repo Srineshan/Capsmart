@@ -511,7 +511,23 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
                                                 </Popover>
                                             )}
                                         </div>
-                                    ) : ''
+                                    )
+                                        //  : tableData?.type === "delete" ? (
+                                        //     <div className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.alignCenter}`} onClick={(actions[0]?.conditionToShow !== undefined && actions?.length === 1) ? eval(actions[0]?.conditionToShow) ? () => { setShowOptions(true); setSelectedMenuIndex(index) } : () => { } : () => { setShowOptions(true); setSelectedMenuIndex(index) }}>
+                                        //         {(actions[0]?.conditionToShow !== undefined && actions?.length === 1) ? eval(actions[0]?.conditionToShow) && (<MoreHorizIcon className={style.cursorPointer} onClick={() => { actionsData?.onClick(data); handleClose() }} aria-describedby={id} />)
+                                        //             : (<MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />)}
+                                        //         {/* {showOptions && index === selectedMenuIndex && (
+                                        //             <div className={style.actionsCard} ref={menuRef}>
+                                        //                 {actions?.map((actionsData, actionsIndex) => actionsData?.conditionToShow !== undefined ? eval(actionsData?.conditionToShow) &&
+                                        //                     (<div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { actionsData?.onClick(data); handleClose() }} key={actionsIndex}>{actionsData?.data}</div>)
+                                        //                     :
+                                        //                     (<div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { actionsData?.onClick(data); handleClose() }} key={actionsIndex}>{actionsData?.data}</div>)
+                                        //                 )}
+                                        //             </div>
+                                        //         )} */}
+                                        //     </div>
+                                        // ) 
+                                        : ''
                                 ))}
                             </div >
                         </>

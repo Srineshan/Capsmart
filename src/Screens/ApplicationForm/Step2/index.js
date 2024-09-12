@@ -212,6 +212,10 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
                             disabledList={basicForm?.documentsRequired?.map(data => false)}
                         />)
                     });
+                } else if (data === "valid") {
+                    temp.push({ "type": "dot", "value": array?.map(innerData => 'grey') });
+                } else if (data === "verified") {
+                    temp.push({ "type": "dot", "value": array?.map(innerData => 'grey') });
                 } else {
                     temp.push({ "type": "text", "value": array?.map(innerData => innerData[data]) });
                 }
@@ -332,7 +336,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
                             </div>
                         ))}
                         <div className={`${style.twoCol} ${style.marginTop}`}>
-                            <CommonDropZone title={'Upload Your Documents'} description={'Upload your files or drag & drop from your computer file cabinet (Computer / Online Drive)'} changeHandler={changeHandler} files={files} />
+                            <CommonDropZone title={'Upload Your Documents'} description={'Upload your files or drag & drop from your file cabinet (Computer / Online Drive)'} changeHandler={changeHandler} files={files} />
                             <CommonDropZone title={'Upload A Photo'} description={'Click a picture of the document with your camera and Upload or Upload from your photo gallery.'} changeHandler={changeHandler} files={files} accept="image/*" />
                         </div>
                         <TableTwo

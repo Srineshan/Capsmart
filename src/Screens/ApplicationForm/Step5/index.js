@@ -13,6 +13,7 @@ import NoDataBox from '../../../Components/ReusableSmallComponents/noDataBox';
 
 const Step5 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
+    const [isEdited, setIsEdited] = useState(false);
     const navigate = useNavigate()
     useEffect(() => {
         if (basicForm && !formSchema) {
@@ -33,21 +34,30 @@ const Step5 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
         }
     }
 
+    const getIsEdited = (value) => {
+        setIsEdited(value)
+    }
+
     const handleSubmitApplicationReq = async (data) => {
-        let temp = {
-            schemaId: data?.forms?.[3]?.schemaId,
-            data: data?.forms?.[3]?.data
+        if (isEdited) {
+            let temp = {
+                schemaId: basicForm?.forms?.[3]?.schemaId,
+                data: basicForm?.forms?.[3]?.data
+            }
+            await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[3]?.id}`, temp)
+                .then(response => {
+                    console.log(response)
+                    SuccessToaster("Application Updated Successfully");
+                    getPreApplication();
+                    navigate('/applicationForm/section1/step6')
+                })
+                .catch((error) => {
+                    console.log(error)
+                    ErrorToaster("Unexpected Error Updating Application");
+                });
+        } else {
+            navigate('/applicationForm/section1/step6')
         }
-        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[3]?.id}`, temp)
-            .then(response => {
-                console.log(response)
-                SuccessToaster("Application Updated Successfully");
-                getPreApplication();
-            })
-            .catch((error) => {
-                console.log(error)
-                ErrorToaster("Unexpected Error Updating Application");
-            });
     }
     return (
         <div>
@@ -59,10 +69,11 @@ const Step5 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'insuranceCarrierInformation' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.insuranceCarrierInformation} gridStyle={style.insuranceGrid} baseKey={'insuranceCarrierInformation'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} formId={basicForm?.forms?.[3]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid}
-                                heading={'Information Requirement Alert'}
-                                subHeading={'For this application you are required to provide information on all of the different insurance coverages you have.'}
-                                subHeading2={'You will not be able to submit your application if this is not provided.'}
+                            <ApplicationFieldCard object={formSchema?.properties?.insuranceCarrierInformation} gridStyle={style.insuranceGrid} baseKey={'insuranceCarrierInformation'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[3].data`} setIsEdited={getIsEdited}
+                            // addMoreType={true} formId={basicForm?.forms?.[3]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid}
+                            //     heading={'Information Requirement Alert'}
+                            //     subHeading={'For this application you are required to provide information on all of the different insurance coverages you have.'}
+                            //     subHeading2={'You will not be able to submit your application if this is not provided.'}
                             />
                         )}
                     </div>
@@ -70,7 +81,7 @@ const Step5 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
-                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate('/applicationForm/section1/step6')} >CONTINUE</div>
+                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()} >CONTINUE</div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
                     </div>

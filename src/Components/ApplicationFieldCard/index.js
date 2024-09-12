@@ -361,9 +361,9 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                             required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))}
                             type={fieldData.type}
                             min={fieldData.minimum}
-                            InputProps={{
-                                readOnly: (user?.roles?.filter(data => data?.roleName === "Staff Manager")?.length === 0 && fieldKey === 'officialEmail') ? true : false,
-                            }}
+                        // InputProps={{
+                        //     readOnly: (user?.roles?.filter(data => data?.roleName === "Staff Manager")?.length === 0 && fieldKey === 'officialEmail') ? true : false,
+                        // }}
                         />
                     );
                 case 'textArea':

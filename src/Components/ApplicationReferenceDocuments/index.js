@@ -27,7 +27,7 @@ const ApplicationReferenceDocuments = () => {
                         <div className={style.spaceBetween}>
                             <div className={style.displayInRow}>
                                 <FilePresentRoundedIcon sx={{ fontSize: 16, color: '#52575D' }} onClick={() => window.open(data?.fileURL, '_blank')} />
-                                <div className={style.documentNameStyle}>{data?.fileUploaded}</div>
+                                <div className={style.documentNameStyle}>{data?.documentType}</div>
                             </div>
                             <div className={`${style.checkBackground} ${style.verticalAlignCenter} ${style.justifyCenter}`}>
                                 <CheckIcon sx={{ fontSize: 14, color: '#fff' }} />

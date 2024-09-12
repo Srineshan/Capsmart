@@ -7,7 +7,8 @@ import { GET } from '../../Screens/dataSaver';
 const ApplicationUserCard = ({ user, applyingFor }) => {
     const userDetails = useUser();
     console.log(userDetails)
-    const [basicForm, setBasicForm] = useState({})
+    const [basicForm, setBasicForm] = useState({});
+    const [profilePic, setProfilePic] = useState('');
     const applicationId = sessionStorage.getItem('applicationId')
     useEffect(() => {
         getPreApplication()
@@ -18,17 +19,28 @@ const ApplicationUserCard = ({ user, applyingFor }) => {
             `application-management-service/application/${applicationId}`
         );
         setBasicForm(basicForm)
+        let profilePicData = basicForm?.forms[0]?.data?.table?.filter(fileData => fileData?.documentType === "Passport Size Photo")?.map(data => data);
+        setProfilePic(profilePicData?.length !== 0 ? profilePicData[0]?.fileURL : '')
+        console.log(profilePicData, 'pic')
     }
     return (
         <div className={`${style.applicationUserCard} ${style.profileGrid}`}>
-            <div className={style.profileImage}>
-                <div className={`${style.photoText} ${style.verticalAlignCenter}`}>Photo</div>
-            </div>
+            {profilePic !== '' ? (
+                <div>
+                    <img src={profilePic} alt="Profile Pic" className={style.profilePic} />
+                </div>
+            ) : (
+                <div className={style.profileImage}>
+                    <div className={`${style.photoText} ${style.verticalAlignCenter}`}>Photo</div>
+                </div>
+            )}
             <div
             // className={style.verticalSpaceBetween}
             >
                 <div className={`${style.nameStyle}`}>{`${basicForm?.applicant?.name?.firstName} ${basicForm?.applicant?.name?.lastName}`}</div>
-                <div className={`${style.applyingFor} ${style.marginTop10}`}>{`${basicForm?.basicDetailReferences?.applicantType?.category} Applying As ${basicForm?.basicDetailReferences?.applicantType?.serviceProviderType}`}</div>
+                <div className={`${style.applyingFor} ${style.marginTop10}`}>{`${basicForm?.applicant?.name?.firstName} ${basicForm?.applicant?.name?.lastName} Applying As ${basicForm?.basicDetailReferences?.applicantType?.serviceProviderType}`}</div>
+                <div className={`${style.applyingFor} ${style.marginTop10}`}>{`${basicForm?.applicant?.email?.officialEmail}`}</div>
+                {/* <div className={`${style.applyingFor} ${style.marginTop10}`}>{`${basicForm?.applicant?.cellPhone}`}</div> */}
                 {/* <div className={`${style.connectToLinkedIn} ${style.marginTop10}`}>Connect To LinkedIn</div> */}
             </div>
         </div>
