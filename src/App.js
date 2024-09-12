@@ -522,7 +522,7 @@ const App = ({ props }) => {
       requestHeader
     )
       .then((response) => {
-        cookie.set("entityId", response?.data?.id);
+        cookie.set("entityId", response?.data?.id, { path: '/' });
         setEntityId(response?.data?.id);
         login(response?.data?.id);
       })
@@ -545,7 +545,7 @@ const App = ({ props }) => {
     )
       .then((response) => response.json())
       .then((data) => {
-        cookie.set("user", data?.accessToken);
+        cookie.set("user", data?.accessToken, { path: '/' });
       });
     return true;
   };

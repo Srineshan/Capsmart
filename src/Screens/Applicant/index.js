@@ -27,22 +27,24 @@ const Applicant = () => {
     const getApplications = async () => {
         setIsLoading(true);
 
-        const applications = await axios(`${baseUrl}/application-management-service/application?applicantId=${userId}`, {
+        await axios(`${baseUrl}/application-management-service/application?applicantId=${user?.id}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
                 "X-Authorization": `Bearer ${accessToken}`,
             },
-        });
+        }).then(response => {
+            navigate(`/applicationForm/${response?.[0]?.id}`)
+            setIsLoading(false);
+            cookies.remove('entityId', { path: '/' })
+            cookies.set('entityId', response?.[0]?.tenant?.id, { path: '/' });
+
+        }).catch(err => { console.log('error', err) })
+
         // const { data: applications } = await GET(
         //     `application-management-service/application?applicantId=${userId}`
         // );
-        if (applications) {
-            navigate(`applicationForm/${applications?.[0]?.id}`)
-            setIsLoading(false);
-            cookies.remove('entityId', { path: '/' })
-            cookies.set('entityId', applications?.[0]?.tenant?.id, { path: '/' });
-        }
+
         // setApplicationForms(applications)
         setIsLoading(false);
     }

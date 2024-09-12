@@ -101,7 +101,7 @@ const ActivateAccess = () => {
       // headers: { "X-subdomain": "smmc-trial" },
     }).then(response => {
       var cookie = new Cookie();
-      cookie.set('entityId', response?.data?.id);
+      cookie.set('entityId', response?.data?.id, { path: '/' });
       settenantId(response?.data?.id);
     }).catch(error => {
       console.log('error', error);
