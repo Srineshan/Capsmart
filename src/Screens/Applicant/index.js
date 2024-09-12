@@ -28,7 +28,7 @@ const Applicant = () => {
 
     const getApplications = async () => {
         setIsLoading(true);
-
+        console.log('user id', currentUserData?.id);
         const { data: application } = await GET(
             `application-management-service/application?applicantId=${currentUserData?.id}`
         );
