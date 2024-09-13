@@ -341,7 +341,7 @@ const LevelTwoHeader = ({
           handleClose={handleCloseDialog}
         />
       )} */}
-      {tileType == "ProofOfDocument" && (
+      {/* {tileType == "ProofOfDocument" && (
         <ProofOfDocumentDialog
           open={isDialogOpen}
           handleClose={handleCloseDialog}
@@ -349,7 +349,7 @@ const LevelTwoHeader = ({
           getAddEntityTypes={getAddEntityTypes}
           getEntityTypes={getEntityTypes}
         />
-      )}
+      )} */}
       {tileType == "Acknowedgement" && (
         <AcknowledgmentDialog
           open={isDialogOpen}

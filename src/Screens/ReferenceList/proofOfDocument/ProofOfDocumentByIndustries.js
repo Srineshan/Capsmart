@@ -13,6 +13,7 @@ import ApplicantTable from "../common/Table";
 import ApplicantSideBar from "../common/SideBar";
 import { ReferenceListActionButton } from "../common/ReferenceListActionButton";
 import Typography from "@mui/material/Typography";
+import ProofOfDocumentDialog from "./proofOfDocumentDialog";
 
 const ProofOfDocumentByIndustries = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -27,13 +28,8 @@ const ProofOfDocumentByIndustries = () => {
   const [entityTypes, setEntityTypes] = useState([]);
   const [applicantTypes, setApplicantTypes] = useState([]);
   const [departmentServiceMaster, setDepartmentServiceMaster] = useState([]);
-  const [departmentService, setDepartmentService] = useState([]);
-  const [documents, setDocuments] = useState([]);
   const [selectedDepartmentServiceArea, setSelectedDepartmentServiceArea] =
     useState([]);
-  const [selectedDepartmentService, setSelectedDepartmentService] = useState(
-    {}
-  );
   const [isEdit, setIsEdit] = useState(false);
   const [entityId, setEntityId] = useState("");
   const [lastUpdatedDate, setLastUpdatedDate] = useState("");
@@ -44,6 +40,9 @@ const ProofOfDocumentByIndustries = () => {
   const [selectedApplicantType, setSelectedApplicantType] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isRefetch, setIsRefetch] = useState(false);
+  const [applicantId, setApplicantId] = useState("");
+  const [applicantTypeList, setApplicantTypeList] = useState([]);
+  const [editData, setEditData] = useState();
 
   const tableHeadKeys = ["NAME", "", "TYPE", "REQUIRMENT", "LAST UPDATED"];
   const tableDataKeys = [
@@ -55,14 +54,35 @@ const ProofOfDocumentByIndustries = () => {
   ];
 
   useEffect(() => {
+    getApplicantType();
+    getEntity();
+  }, []);
+
+  useEffect(() => {
+    if (applicantTypeList && applicantTypeList.length > 0) {
+      setSelectedApplicantType(applicantTypeList[0]?.applicantType || "");
+      setApplicantId(applicantTypeList[0]?.id);
+    }
+  }, [applicantTypeList]);
+
+  useEffect(() => {
     if (entityId !== "" && entityId !== undefined) {
       getLastModifiedDate();
     }
   }, [entityId]);
 
-  const getIsExpanded = (value) => {
-    setIsExpanded(value);
-  };
+  useEffect(() => {
+    console.log(applicantId);
+
+    if (applicantId && applicantId != "")
+      getDepartmentServiceMaster(applicantId);
+  }, [applicantId]);
+
+  useEffect(() => {
+    if (isRefetch) {
+      getDepartmentServiceMaster(applicantId);
+    }
+  }, [isRefetch]);
 
   const getAddEntityDialog = (value) => {
     setShowAddEntityDialog(value);
@@ -88,107 +108,31 @@ const ProofOfDocumentByIndustries = () => {
     );
   };
 
-  const getAddEntityTypes = async (data) => {
-    await POST(`entity-service/document/?${TenantID}`, data);
+  const getDepartmentServiceMaster = async (id) => {
+    if (id) {
+      console.log("idididdi", id);
+      const { data: departmentServiceMaster } = await GET(
+        `entity-service/document?siteTypeId=${siteTypeId}`
+      );
+      setIsRefetch(false);
+      setDepartmentServiceMaster(departmentServiceMaster);
+    }
+  };
+  const getSelectedTile = (applicantId) => {
+    if (applicantId && applicantId != "") {
+      setApplicantId(applicantId);
+      getDepartmentServiceMaster(applicantId);
+    }
   };
 
-  const getEntityTypes = async () => {
-    console.log("TenantID", TenantID);
-
-    const { data: entityType } = await GET(
-      `entity-service/document/?${TenantID}`
-    );
-
-    setDocuments(entityType);
-    const allApplicantTypes = entityType.flatMap((entity) => {
-      const modifiedLastModifiedDate = new Date(
-        entity.lastModifiedDate
-      ).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short", // Full month name like "September"
-        day: "numeric",
-      });
-      entity.lastModifiedDate = modifiedLastModifiedDate;
-      return entity; // Return the modified entity
-    });
-
-    setApplicantTypes(allApplicantTypes);
-
-    console.log(applicantTypes);
+  const getApplicantType = async () => {
+    const { data: types } = await GET("entity-service/applicantType");
+    setApplicantTypeList(types);
   };
-
-  const getDepartmentServiceMaster = async () => {
-    const { data: departmentServiceMaster } = await GET(
-      `entity-service/departmentMaster/refListView?siteTypeId=${siteTypeId}`
-    );
-    setDepartmentServiceMaster(departmentServiceMaster);
-  };
-  useEffect(() => {
-    if (isRefetch) {
-      getDepartmentService(applicantId);
-    }
-  }, [isRefetch]);
-
-  const getDepartmentService = async () => {
-    const { data: departmentService } = await GET(
-      `entity-service/department/refListView?X-tenantID=${TenantID}&siteTypeId=${siteTypeId}&searchText=${searchKey}`
-    );
-    setDepartmentService(departmentService);
-  };
-
-  useEffect(() => {
-    if (applicantTypes.length > 0) {
-      setSelectedApplicantType(applicantTypes[0]?.applicantType);
-    }
-  }, [applicantTypes]);
-
-  useEffect(() => {
-    let tempDepartmentService = departmentServiceMaster
-      ?.filter(
-        (data) =>
-          !departmentService.some(
-            (customerData) =>
-              customerData?.departmentGroupBy.name ===
-              data?.departmentGroupBy.name
-          )
-      )
-      ?.map((data) => {
-        return { ...data };
-      });
-
-    setSelectAllList(tempDepartmentService);
-
-    let allChecked = true;
-
-    if (tempDepartmentService.length > selectedDepartmentServiceArea.length) {
-      allChecked = false;
-    }
-
-    if (allChecked) {
-      setCheckedAll(true);
-    } else {
-      setCheckedAll(false);
-    }
-  }, [selectedDepartmentServiceArea]);
-
-  useEffect(() => {
-    getEntity();
-    getEntityTypes();
-  }, []);
-
-  useEffect(() => {
-    if (siteTypeId !== "" && siteTypeId !== undefined) {
-      getDepartmentServiceMaster();
-      getDepartmentService();
-    }
-  }, [siteTypeId, entityDetails, searchKey]);
 
   const handleSiteClick = (siteName) => {
+    console.log("siteName", siteName);
     setSelectedApplicantType(siteName);
-  };
-
-  const handleOpenDialog = () => {
-    setIsDialogOpen(true);
   };
 
   const handleCloseDialog = (needRefetch = false) => {
@@ -203,30 +147,27 @@ const ProofOfDocumentByIndustries = () => {
         <div className={style.padding20}>
           <div>
             <LevelTwoHeader
-              getAddEntityDialog={getAddEntityDialog}
               heading={"Proof of Documentation By Industries"}
               updatedTime={`UPDATED ON ${lastUpdatedDate}`}
               path={"/Screens/ReferenceList/customerAdminDashboard"}
               callingFrom={"Customer Admin"}
               needHeader={false}
               tileType={"ProofOfDocument"}
-              documents={documents}
-              getEntityTypes={getEntityTypes}
-              getAddEntityTypes={getAddEntityTypes}
-              handleOpenDialog={handleOpenDialog}
-              handleClose={handleCloseDialog}
+              onAddClick={() => setIsDialogOpen(true)}
+              onCloseLevel2={() => setIsDialogOpen(false)}
             />
           </div>
-          <div
-            className={`${
-              isExpanded ? style.bigCardGrid : style.smallCardGrid
-            }`}
-          >
+          <div className={style.bigCardGrid}>
             <ApplicantSideBar
-              applicantType={applicantTypes.map((item) => item.applicantType)}
-              siteTitle={"All Applicant Type"}
+              applicantType={applicantTypeList?.map(
+                (data) => data?.applicantType
+              )}
+              siteType={applicantTypeList?.map((data) => data?.siteType)}
+              selectedTile={getSelectedTile}
               onSelectSite={handleSiteClick}
               tileType={"ProofOfDocument"}
+              sideBarList={applicantTypeList}
+              siteDropdown={true}
             />
             <div className={style.applicantList}>
               <div className={`${style.Tabletitle} `}>
@@ -243,7 +184,7 @@ const ProofOfDocumentByIndustries = () => {
                 </Typography>
               </div>
               <ApplicantTable
-                applicantTypes={documents}
+                applicantTypes={departmentServiceMaster}
                 applicantNotice={
                   "Applicant types are ordered as they will appear on forms. To change the order, click and drag "
                 }
@@ -251,10 +192,14 @@ const ProofOfDocumentByIndustries = () => {
                 tableHeadKeys={tableHeadKeys}
                 groupFirstTwoColumn={true}
                 tileType={"ProofOfDocument"}
-                documents={documents}
-                getAddEntityTypes={getAddEntityTypes}
-                handleClose={handleCloseDialog}
+                onEditClick={(data) => {
+                  console.log(data);
+                  setIsEdit(true);
+                  setIsDialogOpen(true);
+                  setEditData(data);
+                }}
               />
+
               <ReferenceListActionButton
                 button1={"Save In-Progress"}
                 button2={" Mark as Done"}
@@ -262,24 +207,15 @@ const ProofOfDocumentByIndustries = () => {
             </div>
           </div>
         </div>
-
-        {showAddEntityDialog && (
-          <AddNewDepartments
-            getAddEntityDialog={getAddEntityDialog}
-            callingFrom={"Customer Admin"}
-            isEdit={isEdit}
-            getEntityData={getDepartmentService}
-            selectedDepart={selectedDepartmentService}
-            selectedTitle={selectedEntityType}
-            siteTypeId={siteTypeId}
-            departmentList={departmentService}
-          />
-        )}
-        <div className={style.spaceBetween}>
-          <p className={style.poweredBy}>Powered by - CAPSmart</p>
-          <p className={style.poweredBy}>© CAPSmart</p>
-        </div>
       </div>
+      {isDialogOpen && (
+        <ProofOfDocumentDialog
+          open={isDialogOpen}
+          handleClose={handleCloseDialog}
+          selectedApplicant={editData}
+          isEdit={isEdit}
+        />
+      )}
     </Fragment>
   );
 };

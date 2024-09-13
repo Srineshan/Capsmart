@@ -26,8 +26,6 @@ import Departments from "./Screens/ReferenceList/department/Department";
 import ApplicantTypesByEntity from "./Screens/ReferenceList/applicantTypeByEntity/applicantTypesByEntity";
 import Speciality from "./Screens/ReferenceList/speciality/Speciality";
 
-
-
 const ReportType = React.lazy(() => import("./Screens/Reports/reportType"));
 const ReportTypeOverview = React.lazy(() =>
   import("./Screens/Reports/reportTypeOverview")
@@ -184,9 +182,6 @@ const DepartmentsForCustomers = React.lazy(() =>
 const StaffPrivilegesByDepartment = React.lazy(() =>
   import("./Screens/ReferenceList/staffPrivileges/StaffPrivileges")
 );
-
-
-
 
 const Consent = React.lazy(() =>
   import("./Screens/ReferenceList/consents/Consents")
@@ -856,7 +851,7 @@ const App = ({ props }) => {
               />
               <Route
                 path="/referenceList/speciality/Speciality"
-                element={<Speciality/>}
+                element={<Speciality />}
               />
               <Route
                 path="/referenceList/acknowledgementForms"

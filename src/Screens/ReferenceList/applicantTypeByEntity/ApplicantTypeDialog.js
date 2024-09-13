@@ -35,6 +35,7 @@ const ApplicantTypeDialog = ({
     fetchApplicantCategory();
     fetchSpecificSites();
   }, []);
+
   const fetchApplicantCategory = async () => {
     try {
       const response = await GET("entity-service/applicantTypeCategory");
@@ -52,11 +53,13 @@ const ApplicantTypeDialog = ({
   };
   const fetchSpecificSites = async () => {
     try {
-      const response = await GET("entity-service/entityTypeMaster");
+      const response = await GET("entity-service/sites");
+      console.log("responseddd", response.data);
       const specificSites = response.data.map((site) => ({
         id: site.id,
-        name: site.type,
+        name: site.siteName.siteName,
       }));
+      console.log("specificSites", specificSites);
       setSitesState(specificSites);
     } catch (error) {
       console.error("Error fetching specific sites:", error);
