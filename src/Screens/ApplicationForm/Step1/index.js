@@ -135,6 +135,12 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
     //     return errors;
     // };
 
+    const getSkipClicked = (value) => {
+        if (value) {
+            handleSubmitApplicationReq()
+        }
+    }
+
     const getMissingFields = () => {
         let missingKeys = [];
         let keyValuePair = [];
@@ -148,6 +154,8 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
         })
         if (missingKeys?.length !== 0) {
             setShowValidationDialog(true)
+        } else {
+            handleSubmitApplicationReq()
         }
         setWarningFields(missingKeys)
         console.log(keyValuePair, 'Metadata', missingKeys)
@@ -156,24 +164,23 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
     const handleSubmitApplicationReq = async () => {
         // const errors = validateSchema(form1, basicForm?.basicDetails);
         // console.log(errors)
-        getMissingFields();
-        // let data = basicForm;
-        // console.log(data)
-        // await PUT(`application-management-service/application/${applicationId}`, data)
-        //     .then(response => {
-        //         console.log(response)
-        //         setBasicForm(response?.data)
-        //         SuccessToaster("Staff Member Application Updated Successfully");
-        //         if (sessionStorage.getItem('fromSummary') === "true") {
-        //             navigate(-1);
-        //         } else {
-        //             navigate('/applicationForm/section1/step2')
-        //         }
-        //     })
-        //     .catch((error) => {
-        //         console.log(error)
-        //         ErrorToaster("Unexpected Error Updating Staff Member Application");
-        //     });
+        let data = basicForm;
+        console.log(data)
+        await PUT(`application-management-service/application/${applicationId}`, data)
+            .then(response => {
+                console.log(response)
+                setBasicForm(response?.data)
+                SuccessToaster("Staff Member Application Updated Successfully");
+                if (sessionStorage.getItem('fromSummary') === "true") {
+                    navigate(-1);
+                } else {
+                    navigate('/applicationForm/section1/step2')
+                }
+            })
+            .catch((error) => {
+                console.log(error)
+                ErrorToaster("Unexpected Error Updating Staff Member Application");
+            });
     }
 
     const addPath = (newPath) => {
@@ -255,7 +262,7 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
                     <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()}>CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
                     </div>
                     {/* <div className={style.marginTop}>
                             <ApplicationReferenceDocuments />
@@ -273,7 +280,7 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
                 )
             }
             {showValidationDialog && (
-                <ValidationDialog getIsOpen={getIsValidationDialogOpen} labelList={warningFields} />
+                <ValidationDialog getIsOpen={getIsValidationDialogOpen} labelList={warningFields} getSkipClicked={getSkipClicked} />
             )}
         </div >
     )

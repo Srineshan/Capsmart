@@ -35,8 +35,8 @@ const Step9 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
 
     const handleSubmitApplicationReq = async (data) => {
         let temp = {
-            schemaId: data?.forms?.[15]?.schemaId,
-            data: data?.forms?.[15]?.data
+            schemaId: data?.forms?.[7]?.schemaId,
+            data: data?.forms?.[7]?.data
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[7]?.id}`, temp)
             .then(response => {

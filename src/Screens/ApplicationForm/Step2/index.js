@@ -292,17 +292,19 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
                             <CommonDropZone title={'Upload Your Documents'} description={'Upload your files or drag & drop from your file cabinet (Computer / Online Drive)'} changeHandler={changeHandler} files={files} />
                             <CommonDropZone title={'Upload A Photo'} description={'Click a picture of the document with your camera and Upload or Upload from your photo gallery.'} changeHandler={changeHandler} files={files} accept="image/*" />
                         </div>
-                        <TableTwo
-                            tableHeaderValues={['', 'File Uploaded', 'Size', 'Document Type', 'Requirement', 'Verified', 'Valid', '']}
-                            tableDataValues={getApplicantValues(tempValue?.table)}
-                            tableData={tempValue?.table || []}
-                            gridStyle={style.gridStyle}
-                            actions={actions}
-                            // scrollStyle={style.contractScrollStyle}
-                            tableSortValues={[]}
-                            heading={'There are no Record for you to manage'}
-                            onClickFunction={() => { }}
-                        />
+                        {tempValue?.table?.length !== 0 && (
+                            <TableTwo
+                                tableHeaderValues={['', 'File Uploaded', 'Size', 'Document Type', 'Requirement', 'Verified', 'Valid', '']}
+                                tableDataValues={getApplicantValues(tempValue?.table)}
+                                tableData={tempValue?.table || []}
+                                gridStyle={style.gridStyle}
+                                actions={actions}
+                                // scrollStyle={style.contractScrollStyle}
+                                tableSortValues={[]}
+                                heading={'There are no Record for you to manage'}
+                                onClickFunction={() => { }}
+                            />
+                        )}
                         <input
                             type="file"
                             ref={fileInputRef}
