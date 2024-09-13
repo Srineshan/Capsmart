@@ -41,12 +41,10 @@ const ProofOfDocumentDialog = ({
 }) => {
   const [documentName, setDocumentName] = useState("");
   const [selectedOption, setSelectedOption] = useState("mandatory");
-  const [allowedFormat, setAllowedFormat] = useState("PNG/jpeg");
+  const [allowedFormat, setAllowedFormat] = useState("PNG");
   const [maxSizeAllowed, setMaxSizeAllowed] = useState("5 MB");
   const [days, setDays] = useState(3);
   const [timePeriod, setTimePeriod] = useState("Month");
-  const [applicantTypeID, setApplicantTypeID] = useState("1");
-  const [applicantType, setApplicantType] = useState("Doctor Physician");
 
   const [terminationId, setTerminationId] = useState(
     selectedTermination?.id ? selectedTermination?.id : ""
@@ -94,7 +92,6 @@ const ProofOfDocumentDialog = ({
     getEntityData();
   }, []);
 
-  // console.log(selectedTermination);
   useEffect(() => {
     if (isEdit) {
       setCurrentEntityType(selectedApplicant.applicantTypes);
@@ -140,8 +137,6 @@ const ProofOfDocumentDialog = ({
     temp[i] = value;
     setSecondaryReasonList(temp);
     setSecondaryReason(value);
-    // getSubReasons();
-    // console.log(temp, value, secondaryReasonList);
   };
 
   const getSubReasons = () => {
@@ -170,29 +165,7 @@ const ProofOfDocumentDialog = ({
     setSubReasonFields(temp);
   };
 
-  const SaveSubmitHandler = async () => {
-    // Ensure TenantID is a valid string
-    if (!TenantID || typeof TenantID !== "string") {
-      ErrorToaster("Invalid Tenant ID");
-      return;
-    }
-
-    // Ensure currentEntityType is correctly set and valid
-    if (
-      !newApplicantType ||
-      typeof newApplicantType.id !== "string" ||
-      typeof newApplicantType.applicantType !== "string"
-    ) {
-      console.log(typeof newApplicantType.id, newApplicantType.id);
-      console.log(
-        typeof newApplicantType.applicantType,
-        newApplicantType.applicantType
-      );
-
-      ErrorToaster("Invalid Entity Type");
-      return;
-    }
-
+  const SaveSubmitHandler = async (isSaveAndExit) => {
     const sizeValue = parseInt(maxSizeAllowed);
     if (isNaN(sizeValue)) {
       ErrorToaster("Invalid Max Size Allowed");
@@ -207,13 +180,13 @@ const ProofOfDocumentDialog = ({
       },
       applicantTypes: [
         {
-          id: newApplicantType.id, // Ensure this is the correct ID
-          applicantType: newApplicantType.applicantType, // This should be a string, not an ID
+          id: newApplicantType.id,
+          applicantType: newApplicantType.applicantType,
         },
       ],
-      documentName: documentName || "Document Name", // Ensure this has a value
-      documentType: terminationBy || "Document Type", // Ensure this has a value
-      helpText: helpText || "", // Help text should be a string
+      documentName: documentName || "Document Name",
+      documentType: terminationBy || "Document Type",
+      helpText: helpText || "",
       requirementLevel: selectedOption.toUpperCase(),
       documentValidator: {
         documentFormatCheck: checks.documentFormat,
@@ -234,16 +207,32 @@ const ProofOfDocumentDialog = ({
       },
     };
 
-    console.log("data", data);
-
-    try {
-      await POST(`entity-service/document/?${TenantID}`, JSON.stringify(data));
-      SuccessToaster("Document saved successfully");
-      // Close the dialog
-    } catch (error) {
-      ErrorToaster(error.message);
+    if (!isEdit) {
+      await POST("entity-service/document", JSON.stringify(data))
+        .then((response) => {
+          SuccessToaster("document Added Successfully");
+          handleClose();
+          if (isSaveAndExit) {
+            handleClose(true);
+          }
+        })
+        .catch((error) => {
+          ErrorToaster(error);
+        });
+    } else {
+      var id = selectedApplicant.id;
+      await PUT(`entity-service/document/${id}`, JSON.stringify(data))
+        .then((response) => {
+          SuccessToaster("document Updated Successfully");
+          handleClose();
+          if (isSaveAndExit) {
+            handleClose(true);
+          }
+        })
+        .catch((error) => {
+          ErrorToaster(error);
+        });
     }
-    handleClose();
   };
 
   const handleAddMore = () => {
@@ -262,16 +251,6 @@ const ProofOfDocumentDialog = ({
         alt=""
       />
     );
-  };
-
-  const handleSelectChange = (e) => {
-    console.log("Select change triggered");
-    const selectedOption = e.target.selectedOptions[0]; // Get the selected option
-    const id = selectedOption.getAttribute("data-id"); // Retrieve the 'id' using 'data-id' attribute
-    const applicantType = selectedOption.value; // The 'value' of the selected option
-    console.log(id, applicantType);
-
-    setNewApplicantType({ id, applicantType });
   };
 
   const handleAddSubReasons = (checked) => {
@@ -341,9 +320,7 @@ const ProofOfDocumentDialog = ({
               value={newApplicantType.applicantType}
               className={style.fullWidth}
               onChange={(e) => {
-                console.log("changes");
-
-                const selectedOption = e.target.selectedOptions[0];
+                const selectedOption = e.target.options[e.target.selectedIndex];
                 if (selectedOption) {
                   const id = selectedOption.getAttribute("data-id");
                   const applicantType = selectedOption.value;
@@ -557,7 +534,7 @@ const ProofOfDocumentDialog = ({
                 onChange={(e) => setAllowedFormat(e.target.value)}
                 style={{ borderRadius: "0", width: "250px" }}
               >
-                <option value="PNG/jpeg">PNG/jpeg</option>
+                <option value="PNG">PNG</option>
               </select>
             </div>
             <div className={style.marginLeft10}>
@@ -594,13 +571,13 @@ const ProofOfDocumentDialog = ({
           <div className={`${style.floatRight} ${style.marginTop20}`}>
             <button
               className={`${style.dialogOutlinedButton} ${style.borderRadius10}`}
-              onClick={SaveSubmitHandler}
+              onClick={SaveSubmitHandler(true)}
             >
               SAVE & EXIT
             </button>
 
             <button
-              onClick={SaveSubmitHandler}
+              onClick={SaveSubmitHandler(false)}
               className={`${style.dialogButtonStyle} ${style.marginLeft20}  ${style.borderRadius10}`}
             >
               SAVE & ADD MORE

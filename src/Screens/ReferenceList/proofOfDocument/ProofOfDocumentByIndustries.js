@@ -43,8 +43,7 @@ const ProofOfDocumentByIndustries = () => {
   const [searchKey, setSearchKey] = useState("");
   const [selectedApplicantType, setSelectedApplicantType] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-
+  const [isRefetch, setIsRefetch] = useState(false);
 
   const tableHeadKeys = ["NAME", "", "TYPE", "REQUIRMENT", "LAST UPDATED"];
   const tableDataKeys = [
@@ -115,12 +114,6 @@ const ProofOfDocumentByIndustries = () => {
 
     setApplicantTypes(allApplicantTypes);
 
-    // // console.log(entityType?.sites)
-    // if (entityType?.sites?.length !== 0) {
-    //   setSiteTypeId(entityType?.sites?.[0]?.siteType?.id);
-    //   setSelectedEntityType(entityType?.sites?.[0]?.siteType?.type);
-    //   setEntityTypes(entityType?.sites);
-    // }
     console.log(applicantTypes);
   };
 
@@ -130,6 +123,11 @@ const ProofOfDocumentByIndustries = () => {
     );
     setDepartmentServiceMaster(departmentServiceMaster);
   };
+  useEffect(() => {
+    if (isRefetch) {
+      getDepartmentService(applicantId);
+    }
+  }, [isRefetch]);
 
   const getDepartmentService = async () => {
     const { data: departmentService } = await GET(
@@ -193,8 +191,9 @@ const ProofOfDocumentByIndustries = () => {
     setIsDialogOpen(true);
   };
 
-  const handleCloseDialog = () => {
+  const handleCloseDialog = (needRefetch = false) => {
     setIsDialogOpen(false);
+    setIsRefetch(needRefetch);
   };
 
   return (
@@ -219,8 +218,9 @@ const ProofOfDocumentByIndustries = () => {
             />
           </div>
           <div
-            className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid
-              }`}
+            className={`${
+              isExpanded ? style.bigCardGrid : style.smallCardGrid
+            }`}
           >
             <ApplicantSideBar
               applicantType={applicantTypes.map((item) => item.applicantType)}
