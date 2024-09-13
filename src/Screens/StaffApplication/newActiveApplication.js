@@ -17,7 +17,7 @@ import DataStatusIcon from './../../images/dqStatus.png';
 import DocumentIcon from '../../images/document.png';
 import EditBlue from "../../images/editBlue.png";
 import OutGoing from "../../images/Outgoing.png";
-
+import { format } from 'date-fns';
 import Popover from '@mui/material/Popover';
 import style from "./index.module.scss";
 import ApplicationDecline from "./applicationDeclineDialog";
@@ -261,13 +261,14 @@ const NewActiveApplication = ({
   };
 
   const handleVerify = async (formId) => {
-    await PUT(`application-management-service/application/${applicationId}/form/${formId}/APPROVED`)
+    await PUT(`application-management-service/application/${applicationId}/APPROVED`)
       .then(response => {
         console.log('success')
       })
       .catch((error) => {
         console.log(error)
       });
+    getPreApplication();
   }
 
   const getContractId = (value) => {
@@ -439,17 +440,17 @@ const NewActiveApplication = ({
                 </div>
                 <div className={`${style.displayInRow} ${style.marginRight20}`}>
                   <div className={`${style.displayInCol} `}>
-                    <div className={`${style.marginTop15} `}>
+                    {/* <div className={`${style.marginTop15} `}>
                       <span className={`${style.rightAlignTextStyle}`}>Proposed Start Date:</span>
-                      <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>DD/MM/YYYY</span>
-                    </div>
+                      <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>{}</span>
+                    </div> 
                     <div className={`${style.marginTop15}`}>
                       <span className={`${style.rightAlignTextStyle}`}>Application Created On:</span>
-                      <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>DD/MM/YYYY</span>
-                    </div>
+                      <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>{format(new Date(form?.createdDate, 'dd/mm/YYYY'))}</span>
+                    </div>*/}
                     <div className={`${style.marginTop15}`}>
-                      <span className={`${style.rightAlignTextStyle}`}>Application Submitted:</span>
-                      <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>DD/MM/YYYY</span>
+                      <span className={`${style.rightAlignTextStyle}`}>Days To Complete:</span>
+                      <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>15</span>
                     </div>
                   </div>
                 </div>
@@ -580,22 +581,23 @@ const NewActiveApplication = ({
                 <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === 0) ? style.tableDataStyle1 : style.tableDataStyle}`}>
                   <div className={` ${style.tableHeaderGridStyle}`}>
                     <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                      <div className={`${style.marginLeft10} ${style.justifySpaceAround} ${style.greyDotStyle}`}></div>
+                      <div className={`${style.marginLeft10} ${style.justifySpaceAround} ${form?.basicInformationStatus ? style.greenDotStyle : style.greyDotStyle}`}></div>
                     </div>
                     <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                       <div className={`${(expand?.status && expand?.index === 0) ? style.tableHeaderTextStyle : style.tableDataFontStyle1}`}>Applicant Profile Information</div>
                     </div>
-                    <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                    {form?.basicInformationStatus ? <div className={`${style.greenButton}  `}> <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Verified</div>
+                    </div> : <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                       <div className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}></div>
-                    </div>
-                    {(expand?.status && expand?.index === 0) ? <div className={`${style.purpleButton}  `}> <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleVerify()}>Verify</div>
+                    </div>}
+                    {!form?.basicInformationStatus ? (expand?.status && expand?.index === 0) ? <div className={`${style.purpleButton}  `}> <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleVerify()}>Verify</div>
                     </div> :
                       (<div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                         <div className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}></div>
-                      </div>)
+                      </div>) : ''
                     }
 
-                    {(expand?.status && expand?.index === 0) ?
+                    {!form?.basicInformationStatus ? (expand?.status && expand?.index === 0) ?
                       <div className={`${style.whiteButton}`}>
                         <div className={`${style.buttonTextStyle} ${style.alignCenter}`}>RFC</div>
                       </div>
@@ -603,7 +605,7 @@ const NewActiveApplication = ({
                       <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                         <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>0</div>
                       </div>
-
+                      : ''
                     }
 
                     <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
@@ -683,58 +685,19 @@ const NewActiveApplication = ({
                     <div className={`${style.tableHeaderTextStyle}`}>Requested Form Completeness Check</div>
                   </div>
                 </div>
-                <div className={`${style.tableDataStyle} ${style.marginTop5} ${style.tableHeaderGridStyle1}`}>
+                {form?.formSchemas?.filter(data => data?.formCategory !== 'Form')?.map((data, index) => (<div className={`${style.tableDataStyle} ${style.marginTop5} ${style.tableHeaderGridStyle1}`}>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                    <div className={`${style.marginLeft10} ${style.justifySpaceAround} ${style.greenDotStyle}`}></div>
+                    <div className={`${style.marginLeft10} ${style.justifySpaceAround} ${style.greyDotStyle}`}></div>
                   </div>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                    <div className={`${style.tableDataFontStyle1}`}>Applicant Ackowledgement</div>
+                    <div className={`${style.tableDataFontStyle1}`}>{data?.description}</div>
                   </div>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                     <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
                       <AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} />
                     </div>
                   </div>
-                </div>
-                <div className={`${style.tableDataStyle} ${style.marginTop5} ${style.tableHeaderGridStyle1}`}>
-                  <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                    <div className={`${style.marginLeft10} ${style.justifySpaceAround} ${style.greenDotStyle}`}></div>
-                  </div>
-                  <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                    <div className={`${style.tableDataFontStyle1}`}>Authorization And Consent To The Release Of Information From Treating Physician</div>
-                  </div>
-                  <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                    <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
-                      <AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} />
-                    </div>
-                  </div>
-                </div>
-                <div className={`${style.tableDataStyle} ${style.marginTop5} ${style.tableHeaderGridStyle1}`}>
-                  <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                    <div className={`${style.marginLeft10} ${style.justifySpaceAround} ${style.greenDotStyle}`}></div>
-                  </div>
-                  <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                    <div className={`${style.tableDataFontStyle1}`}>Authorization For The Release Of Information</div>
-                  </div>
-                  <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                    <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
-                      <AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} />
-                    </div>
-                  </div>
-                </div>
-                <div className={`${style.tableDataStyle} ${style.marginTop5} ${style.tableHeaderGridStyle1}`}>
-                  <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                    <div className={`${style.marginLeft10} ${style.justifySpaceAround} ${style.greenDotStyle}`}></div>
-                  </div>
-                  <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                    <div className={`${style.tableDataFontStyle1}`}>Code Of Conduct</div>
-                  </div>
-                  <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                    <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
-                      <AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} />
-                    </div>
-                  </div>
-                </div>
+                </div>))}
               </div>
               <div className={style.marginBottom20}></div>
             </div>

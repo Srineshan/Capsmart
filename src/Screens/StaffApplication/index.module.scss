@@ -123,6 +123,18 @@ body::-webkit-scrollbar {
   opacity: 1;
 }
 
+.greenButton {
+
+  width: 108px;
+  height: 35px;
+  background: #14B15A 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border: 0.5px solid #14B15A;
+  border-radius: 8px;
+  opacity: 1;
+
+}
+
 .purpleButton {
 
   width: 108px;
@@ -134,6 +146,7 @@ body::-webkit-scrollbar {
   opacity: 1;
 
 }
+
 
 .whiteButton {
 

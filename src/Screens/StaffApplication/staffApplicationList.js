@@ -74,7 +74,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
 
   const onClickViewAndVerifyFunction = (data) => {
     getActiveApplicationView(true);
-    sessionStorage.setItem('applicationId', '66e2cdb11a77ab40276c65a2')
+    sessionStorage.setItem('applicationId', data?.id)
   }
 
   useEffect(() => {
