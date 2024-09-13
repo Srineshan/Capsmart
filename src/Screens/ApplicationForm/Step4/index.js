@@ -40,9 +40,10 @@ const Step4 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
 
     const handleSubmitApplicationReq = async () => {
         if (isEdited) {
+            console.log(basicForm?.forms?.[2]?.data)
             let temp = {
-                schemaId: basicForm?.forms?.[1]?.schemaId,
-                data: basicForm?.forms?.[1]?.data
+                schemaId: basicForm?.forms?.[2]?.schemaId,
+                data: basicForm?.forms?.[2]?.data
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[2]?.id}`, temp)
                 .then(response => {

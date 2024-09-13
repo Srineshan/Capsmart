@@ -13,6 +13,7 @@ import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import style from './index.module.scss';
 import AIAssistantDialog from '../../../Components/AIAssistantDialog';
 import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
+import ValidationDialog from '../../../Components/validationDialog';
 
 const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
     const [form1, setForm1] = useState();
@@ -22,12 +23,19 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
     const [fieldPaths, setFieldPaths] = useState([]);
     const [metadata, setMetadata] = useState([]);
+    const [labels, setLabels] = useState([]);
+    const [warningFields, setWarningFields] = useState([]);
+    const [showValidationDialog, setShowValidationDialog] = useState(false);
     useEffect(() => {
         getBasicForm()
     }, [])
 
     const getIsOpen = (value) => {
         setIsOpen(value);
+    }
+
+    const getIsValidationDialogOpen = (value) => {
+        setShowValidationDialog(value);
     }
 
     const getAllPath = (data) => {
@@ -37,6 +45,15 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
             temp.push(data);
         }
         setMetadata(temp);
+    }
+
+    const getAllLabels = (data) => {
+        let tempLabels = labels;
+        if (!tempLabels?.includes(data)) {
+            console.log(tempLabels, data, 'Metadata')
+            tempLabels.push(data);
+        }
+        setLabels(tempLabels);
     }
 
     const getIsSaveInProgressOpen = (value) => {
@@ -118,19 +135,35 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
     //     return errors;
     // };
 
+    const getSkipClicked = (value) => {
+        if (value) {
+            handleSubmitApplicationReq()
+        }
+    }
+
     const getMissingFields = () => {
         let missingKeys = [];
         let keyValuePair = [];
-        metadata?.map(data => {
-            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data) })
+        metadata?.map((data, index) => {
+            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index] })
         })
-        console.log(keyValuePair, 'Metadata')
+        keyValuePair?.map(data => {
+            if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
+                missingKeys.push(data)
+            }
+        })
+        if (missingKeys?.length !== 0) {
+            setShowValidationDialog(true)
+        } else {
+            handleSubmitApplicationReq()
+        }
+        setWarningFields(missingKeys)
+        console.log(keyValuePair, 'Metadata', missingKeys)
     }
 
     const handleSubmitApplicationReq = async () => {
         // const errors = validateSchema(form1, basicForm?.basicDetails);
         // console.log(errors)
-        // getMissingFields();
         let data = basicForm;
         console.log(data)
         await PUT(`application-management-service/application/${applicationId}`, data)
@@ -176,24 +209,24 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
                             onChangeAddressLine2={() => { }} placeholderAddressLine2={'Apartment 5'} maxLengthAddressLine2={25} valueAddressLine2={''} onChangeCity={() => { }} placeholderCity={'City'} maxLengthCity={25}
                             valueCity={''} onChangeState={() => { }} placeholderState={'Province'} maxLengthState={25} valueState={''} onChangeZipcode={() => { }} placeholderZipcode={'Zipcode'} maxLengthZipcode={15} valueZipcode={''} /> */}
                         {form1 !== undefined && 'applicant' in form1?.properties && (
-                            <ApplicationFieldCard object={form1?.properties?.applicant} gridStyle={style.applicantGrid} baseKey={'applicant'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} getAllPath={getAllPath} />
+                            <ApplicationFieldCard object={form1?.properties?.applicant} gridStyle={style.applicantGrid} baseKey={'applicant'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} getAllPath={getAllPath} getAllLabels={getAllLabels} warningFields={warningFields} />
                         )}
                         <CommonDivider />
                         {form1 !== undefined && 'credentialingPrivilegeCategory' in form1?.properties && (
-                            <ApplicationFieldCard object={form1?.properties?.credentialingPrivilegeCategory} gridStyle={style.credentialingGrid} baseKey={'credentialingPrivilegeCategory'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} getAllPath={getAllPath} />
+                            <ApplicationFieldCard object={form1?.properties?.credentialingPrivilegeCategory} gridStyle={style.credentialingGrid} baseKey={'credentialingPrivilegeCategory'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} getAllPath={getAllPath} getAllLabels={getAllLabels} warningFields={warningFields} />
                         )}
                         <CommonDivider />
                         {form1 !== undefined && 'departmentSpecialty' in form1?.properties && (
-                            <ApplicationFieldCard object={form1?.properties?.departmentSpecialty} gridStyle={style.twoCol} baseKey={'departmentSpecialty'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} getAllPath={getAllPath} />
+                            <ApplicationFieldCard object={form1?.properties?.departmentSpecialty} gridStyle={style.twoCol} baseKey={'departmentSpecialty'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} getAllPath={getAllPath} getAllLabels={getAllLabels} warningFields={warningFields} />
                         )}
                         {form1 !== undefined && (getValueByPath(basicForm, 'basicDetails.departmentSpecialty.department') === form1.if.properties.departmentSpecialty.properties.department.const && form1.if.properties.departmentSpecialty.properties.specialty.enum?.includes(getValueByPath(basicForm, 'basicDetails.departmentSpecialty.specialty'))) && (
                             form1 !== undefined && 'regionalCallResponsibilities' in form1?.properties && (
-                                <ApplicationFieldCard object={form1?.properties?.regionalCallResponsibilities} gridStyle={''} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} getAllPath={getAllPath} />
+                                <ApplicationFieldCard object={form1?.properties?.regionalCallResponsibilities} gridStyle={''} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} getAllPath={getAllPath} getAllLabels={getAllLabels} warningFields={warningFields} />
                             )
                         )}
                         <CommonDivider />
                         {form1 !== undefined && 'billingNumber' in form1?.properties && (
-                            <ApplicationFieldCard object={form1?.properties?.billingNumber} gridStyle={style.twoCol} baseKey={'billingNumber'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} getAllPath={getAllPath} />
+                            <ApplicationFieldCard object={form1?.properties?.billingNumber} gridStyle={style.twoCol} baseKey={'billingNumber'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} getAllPath={getAllPath} getAllLabels={getAllLabels} warningFields={warningFields} />
                         )}
                         {/*<CommonDivider />
                      <div className={`${style.backgroundCard} ${style.marginTop}`}>
@@ -229,7 +262,7 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
                     <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()}>CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
                     </div>
                     {/* <div className={style.marginTop}>
                             <ApplicationReferenceDocuments />
@@ -246,6 +279,9 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
                     <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
                 )
             }
+            {showValidationDialog && (
+                <ValidationDialog getIsOpen={getIsValidationDialogOpen} labelList={warningFields} getSkipClicked={getSkipClicked} />
+            )}
         </div >
     )
 }

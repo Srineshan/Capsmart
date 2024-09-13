@@ -23,7 +23,7 @@ const Step13 = ({ basicForm, setBasicForm, applicationId }) => {
 
     const getFormSchema = async () => {
         const { data: form } = await GET(
-            `application-management-service/formSchema/${basicForm?.formSchemas?.[11]?.id}`
+            `application-management-service/formSchema/${basicForm?.formSchemas?.[9]?.id}`
         );
         setFormSchema(form?.schema)
     }
@@ -31,10 +31,10 @@ const Step13 = ({ basicForm, setBasicForm, applicationId }) => {
     const handleSubmitApplicationReq = async () => {
         if (isEdited) {
             let temp = {
-                schemaId: basicForm?.forms?.[11]?.schemaId,
-                data: basicForm?.forms?.[11]?.data
+                schemaId: basicForm?.forms?.[9]?.schemaId,
+                data: basicForm?.forms?.[9]?.data
             }
-            await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[11]?.id}`, temp)
+            await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[9]?.id}`, temp)
                 .then(response => {
                     console.log(response)
                     setBasicForm(response?.data)
@@ -78,13 +78,13 @@ const Step13 = ({ basicForm, setBasicForm, applicationId }) => {
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'impactingPractice' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.impactingPractice} gridStyle={style.criminalHistoryGrid} baseKey={'impactingPractice'} basicForm={basicForm} setBasicForm={setBasicForm} collapsableQuestionCard={true} stepPath={`forms[11].data`} setIsEdited={getIsEdited} />
+                            <ApplicationFieldCard object={formSchema?.properties?.impactingPractice} gridStyle={style.criminalHistoryGrid} baseKey={'impactingPractice'} basicForm={basicForm} setBasicForm={setBasicForm} collapsableQuestionCard={true} stepPath={`forms[9].data`} setIsEdited={getIsEdited} />
                         )}
                     </div>
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleSubmitApplication()}>SAVE IN PROGRESS</div>
+                    <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => { handleSubmitApplicationReq() }}>CONTINUE</div>
