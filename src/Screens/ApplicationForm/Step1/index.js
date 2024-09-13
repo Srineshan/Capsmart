@@ -20,12 +20,23 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
     const navigate = useNavigate()
     const [isOpen, setIsOpen] = useState(true);
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
+    const [fieldPaths, setFieldPaths] = useState([]);
+    const [metadata, setMetadata] = useState([]);
     useEffect(() => {
         getBasicForm()
     }, [])
 
     const getIsOpen = (value) => {
         setIsOpen(value);
+    }
+
+    const getAllPath = (data) => {
+        let temp = metadata;
+        if (!temp?.includes(data)) {
+            console.log(temp, data, 'Metadata')
+            temp.push(data);
+        }
+        setMetadata(temp);
     }
 
     const getIsSaveInProgressOpen = (value) => {
@@ -49,7 +60,77 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
         }
     }
 
+    // const validateSchema = (schema, formData) => {
+    //     let errors = {};
+
+    //     // Function to validate individual fields based on schema
+    //     const validateField = (key, fieldSchema, value) => {
+    //         // Check if field is required
+    //         console.log(key, fieldSchema, value, 'validationCheck')
+    //         if (schema.required && schema.required.includes(key) && !value) {
+    //             errors[key] = `${key} is required.`;
+    //         }
+
+    //         // Validate field type
+    //         if (fieldSchema.type && typeof value !== fieldSchema.type) {
+    //             errors[key] = `${key} must be of type ${fieldSchema.type}.`;
+    //         }
+
+    //         // Validate minimum and maximum values (for numeric fields)
+    //         if (fieldSchema.minimum && value < fieldSchema.minimum) {
+    //             errors[key] = `${key} must be greater than or equal to ${fieldSchema.minimum}.`;
+    //         }
+    //         if (fieldSchema.maximum && value > fieldSchema.maximum) {
+    //             errors[key] = `${key} must be less than or equal to ${fieldSchema.maximum}.`;
+    //         }
+
+    //         // Validate enum (if the value must match one from a list)
+    //         if (fieldSchema.enum && !fieldSchema.enum.includes(value)) {
+    //             errors[key] = `${key} must be one of ${fieldSchema.enum.join(', ')}.`;
+    //         }
+
+    //         // Validate format (e.g., email)
+    //         if (fieldSchema.format === 'email' && !/^\S+@\S+\.\S+$/.test(value)) {
+    //             errors[key] = `${key} must be a valid email address.`;
+    //         }
+    //     };
+
+    //     // Recursive function to traverse the schema
+    //     const traverseSchema = (schema, data, parentKey = "") => {
+    //         console.log(schema, data, parentKey = "", 'validationCheck')
+    //         for (let key in schema.properties) {
+    //             console.log(key, 'validationCheck')
+    //             const fieldSchema = schema.properties[key];
+    //             const fieldPath = parentKey ? `${parentKey}.${key}` : key;
+    //             const value = data[fieldPath];
+    //             console.log(fieldPath, 'validationCheck')
+    //             if (fieldSchema.type === "object" && fieldSchema.properties) {
+    //                 traverseSchema(fieldSchema, value || {}, fieldPath);
+    //             } else {
+    //                 validateField(fieldPath, fieldSchema, value);
+    //             }
+    //         }
+    //     };
+
+    //     // Start traversing the schema
+    //     traverseSchema(schema, formData);
+
+    //     return errors;
+    // };
+
+    const getMissingFields = () => {
+        let missingKeys = [];
+        let keyValuePair = [];
+        metadata?.map(data => {
+            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data) })
+        })
+        console.log(keyValuePair, 'Metadata')
+    }
+
     const handleSubmitApplicationReq = async () => {
+        // const errors = validateSchema(form1, basicForm?.basicDetails);
+        // console.log(errors)
+        // getMissingFields();
         let data = basicForm;
         console.log(data)
         await PUT(`application-management-service/application/${applicationId}`, data)
@@ -69,14 +150,22 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
             });
     }
 
+    const addPath = (newPath) => {
+        setFieldPaths((prevPaths) => {
+            // Use spread operator to append new paths to existing array
+            const updatedPaths = new Set([...prevPaths, ...newPath]);
+            return Array.from(updatedPaths);
+        });
+    };
+
     const getValueByPath = (obj, path) => {
         const keys = path.split(/[\.\[\]]+/).filter(Boolean);
         console.log(path, keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm), basicForm, 'if')
         return keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm);
     };
 
-    console.log(getValueByPath(basicForm, 'basicDetails.departmentSpecialty.department'),)
-
+    console.log(getValueByPath(basicForm, 'basicDetails.departmentSpecialty.department'), fieldPaths)
+    console.log('Metadata', metadata);
     return (
         <div>
             <div className={`${style.applicationScreenGrid} `}>
@@ -87,24 +176,24 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
                             onChangeAddressLine2={() => { }} placeholderAddressLine2={'Apartment 5'} maxLengthAddressLine2={25} valueAddressLine2={''} onChangeCity={() => { }} placeholderCity={'City'} maxLengthCity={25}
                             valueCity={''} onChangeState={() => { }} placeholderState={'Province'} maxLengthState={25} valueState={''} onChangeZipcode={() => { }} placeholderZipcode={'Zipcode'} maxLengthZipcode={15} valueZipcode={''} /> */}
                         {form1 !== undefined && 'applicant' in form1?.properties && (
-                            <ApplicationFieldCard object={form1?.properties?.applicant} gridStyle={style.applicantGrid} baseKey={'applicant'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+                            <ApplicationFieldCard object={form1?.properties?.applicant} gridStyle={style.applicantGrid} baseKey={'applicant'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} getAllPath={getAllPath} />
                         )}
                         <CommonDivider />
                         {form1 !== undefined && 'credentialingPrivilegeCategory' in form1?.properties && (
-                            <ApplicationFieldCard object={form1?.properties?.credentialingPrivilegeCategory} gridStyle={style.credentialingGrid} baseKey={'credentialingPrivilegeCategory'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+                            <ApplicationFieldCard object={form1?.properties?.credentialingPrivilegeCategory} gridStyle={style.credentialingGrid} baseKey={'credentialingPrivilegeCategory'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} getAllPath={getAllPath} />
                         )}
                         <CommonDivider />
                         {form1 !== undefined && 'departmentSpecialty' in form1?.properties && (
-                            <ApplicationFieldCard object={form1?.properties?.departmentSpecialty} gridStyle={style.twoCol} baseKey={'departmentSpecialty'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+                            <ApplicationFieldCard object={form1?.properties?.departmentSpecialty} gridStyle={style.twoCol} baseKey={'departmentSpecialty'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} getAllPath={getAllPath} />
                         )}
                         {form1 !== undefined && (getValueByPath(basicForm, 'basicDetails.departmentSpecialty.department') === form1.if.properties.departmentSpecialty.properties.department.const && form1.if.properties.departmentSpecialty.properties.specialty.enum?.includes(getValueByPath(basicForm, 'basicDetails.departmentSpecialty.specialty'))) && (
                             form1 !== undefined && 'regionalCallResponsibilities' in form1?.properties && (
-                                <ApplicationFieldCard object={form1?.properties?.regionalCallResponsibilities} gridStyle={''} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+                                <ApplicationFieldCard object={form1?.properties?.regionalCallResponsibilities} gridStyle={''} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} getAllPath={getAllPath} />
                             )
                         )}
                         <CommonDivider />
                         {form1 !== undefined && 'billingNumber' in form1?.properties && (
-                            <ApplicationFieldCard object={form1?.properties?.billingNumber} gridStyle={style.twoCol} baseKey={'billingNumber'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+                            <ApplicationFieldCard object={form1?.properties?.billingNumber} gridStyle={style.twoCol} baseKey={'billingNumber'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} getAllPath={getAllPath} />
                         )}
                         {/*<CommonDivider />
                      <div className={`${style.backgroundCard} ${style.marginTop}`}>

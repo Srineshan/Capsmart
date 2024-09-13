@@ -31,7 +31,7 @@ import CommonLabel from '../CommonFields/CommonLabel';
 
 const TEXTFIELDLEN50 = 50;
 
-const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicForm, showAdd, addMoreType, addMoreOpenBydefault, collapsableQuestionCard, isBasicPath, stepPath, formId, getIsSubmitClicked, applicationId, tableGrid, setIsEdited, heading, subHeading, subHeading2 }) => {
+const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicForm, showAdd, addMoreType, addMoreOpenBydefault, collapsableQuestionCard, isBasicPath, stepPath, formId, getIsSubmitClicked, applicationId, tableGrid, setIsEdited, heading, subHeading, subHeading2, getAllPath }) => {
     const [calendarStart, setCalendarStart] = useState(false);
     const [isAddMore, setIsAddMore] = useState(addMoreOpenBydefault ? true : false);
     const [isCollapsableCard, setIsCollapsableCard] = useState(true);
@@ -40,12 +40,13 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
     const [files, setFiles] = useState([]);
     const { setValue, value } = useComboboxControls({ initialValue: "" });
     const canadaData = JSON.parse(sessionStorage.getItem('canadaData')) || {};
-    let user = JSON.parse(sessionStorage.getItem('user'))
+    let user = JSON.parse(sessionStorage.getItem('user'));
     console.log(user)
     useEffect(() => {
         renderObjectFields(object)
         console.log('entered')
     }, [basicForm]);
+    let temp = [];
 
     // const setNestedValue = (obj, path, value) => {
     //     console.log(obj, path, value, 'Test')
@@ -308,6 +309,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
         }
         console.log(dynamicValue)
         if (object?.then?.required?.includes(fieldKey) !== undefined ? (!object?.then?.required?.includes(fieldKey) || (object?.if?.properties !== undefined && Array.isArray(firstObject[dynamicValue]) ? firstObject[dynamicValue]?.includes(getValueByPath(basicForm, `${basicpath}.${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`)) : getValueByPath(basicForm, `${basicpath}.${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`) === firstObject[dynamicValue])) : getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) ? (getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) && (getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) && getValueByPath(basicForm, `${basicpath}.${baseKey}.${getAllThenStrings(object)?.filter(data => data?.value === fieldKey)[0]?.key}`) === getAllThenStrings(object)?.filter(data => data?.value === fieldKey)[0]?.checkValue)) : true && fieldData.fieldType) {
+            // getAllPath(`${basicpath}.${baseKey}.${fieldKey}`)
             switch (fieldData.fieldType) {
                 case 'dropdown':
                     console.log(getValueByPath(basicForm, 'forms[1]'), `${basicpath}.${baseKey}.${fieldKey}`, 'dropdown', basicForm)

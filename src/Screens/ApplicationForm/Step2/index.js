@@ -3,6 +3,8 @@ import ProgressCard from '../../../Components/ProgressCard';
 import ApplicationUserCard from '../../../Components/ApplicationUserCard';
 import ApplicationAssistanceCard from '../../../Components/ApplicationAssistanceCard';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded';
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -192,9 +194,9 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
                         />)
                     });
                 } else if (data === "valid") {
-                    temp.push({ "type": "dot", "value": array?.map(innerData => 'grey') });
+                    temp.push({ "type": "icon", "icon": array?.map(innerData => innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562` }} />), 'isShowHoverText': false });
                 } else if (data === "verified") {
-                    temp.push({ "type": "dot", "value": array?.map(innerData => 'grey') });
+                    temp.push({ "type": "icon", "icon": array?.map(innerData => innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562` }} />), 'isShowHoverText': false });
                 } else {
                     temp.push({ "type": "text", "value": array?.map(innerData => innerData[data]) });
                 }

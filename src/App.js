@@ -282,9 +282,9 @@ const App = ({ props }) => {
 
   // const navigate = useNavigate();
 
-  useEffect(() => {
-    getEntityId();
-  }, [])
+  // useEffect(() => {
+  //   getEntityId();
+  // }, [])
 
   // useEffect(() => {
   //   if(!cookie.get("user")){
