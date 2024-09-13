@@ -59,7 +59,7 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
                         <div className={`${style.displayInRow}${style.marginTop20}`}>
                             <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}>
                                 <span className={`${style.tableHeaderHeadingTextStyle}`}>Overall Status Of Data & Documents Required For This Application</span>
-                                <div className={`${style.greenDotStyle}`}></div>
+                                <div className={`${style.greyDotStyle}`}></div>
                             </div>
                         </div>
                         <div className={`${style.tableHeaderStyle} ${style.marginTop10} ${style.tableHeaderGridStyle} `}>
@@ -122,10 +122,10 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
                                             <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/section1/${data?.title?.toLowerCase()?.replace(' ', '')}`) }} />
                                         </div>
                                         <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                            <div className={`${style.greenDotStyle} `}></div>
+                                            <div className={`${style.greyDotStyle} `}></div>
                                         </div>
                                         <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                            <div className={`${style.greenDotStyle} `}></div>
+                                            <div className={`${style.greyDotStyle} `}></div>
                                         </div>
                                         <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                                             {/* <div className={`${style.greenDotStyle} `}></div> */}
