@@ -17,8 +17,10 @@ import RequiredDocumentCard from '../../../Components/RequiredDocumentCard';
 import { GET, PUT } from '../../dataSaver';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
+import Cookie from "universal-cookie";
 
 const ApplicationFormRequirement = () => {
+    let cookie = new Cookie();
     const { applicationId } = useParams();
     const { isAuthenticated, isSessionLoading } = useSession();
     const navigate = useNavigate();
@@ -31,10 +33,14 @@ const ApplicationFormRequirement = () => {
     console.log(basicForm)
 
     useEffect(() => {
-        getBasicForm()
+        // getBasicForm();
         getPreApplication()
         console.log('entered')
     }, [])
+
+    useEffect(() => {
+        getBasicForm();
+    }, [cookie.get('entityId')])
 
     const getIsOpen = (value) => {
         setIsOpen(value);

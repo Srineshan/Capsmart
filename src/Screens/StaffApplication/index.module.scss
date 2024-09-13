@@ -19,6 +19,11 @@ body::-webkit-scrollbar {
   margin: 20px;
 }
 
+.displayInCol {
+  display: flex;
+  flex-direction: column;
+}
+
 .marginAuto {
   margin: auto;
 }
@@ -118,6 +123,43 @@ body::-webkit-scrollbar {
   opacity: 1;
 }
 
+.greenButton {
+
+  width: 108px;
+  height: 35px;
+  background: #14B15A 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border: 0.5px solid #14B15A;
+  border-radius: 8px;
+  opacity: 1;
+
+}
+
+.purpleButton {
+
+  width: 108px;
+  height: 35px;
+  background: #7165E3 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border: 0.5px solid #7165E3;
+  border-radius: 8px;
+  opacity: 1;
+
+}
+
+
+.whiteButton {
+
+  width: 108px;
+  height: 35px;
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border: 0.5px solid #7165E3;
+  border-radius: 8px;
+  opacity: 1;
+
+}
+
 .buttonCardGreyStyle {
   width: 200px;
   height: 40px;
@@ -166,11 +208,40 @@ body::-webkit-scrollbar {
   user-select: none;
 }
 
+.screenPadding {
+  padding: 10px 20px;
+  height: calc(100vh - 90px);
+  overflow: scroll;
+}
+
 /* Hide the browser's default radio button */
 .container input {
   position: absolute;
   opacity: 0;
   cursor: pointer;
+}
+
+.applicantGrid {
+  display: grid;
+  grid-template-rows: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.applicationCardStyle {
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 5px 20px #52575D4D;
+  border-radius: 20px;
+  border: 0.4000000059604645px solid #e5e6e6;
+  padding: 10px 20px 20px 20px;
+}
+
+.flex {
+  display: flex;
+}
+
+.block {
+  display: block;
 }
 
 /* Create a custom radio button */
@@ -300,6 +371,16 @@ body::-webkit-scrollbar {
   border-radius: 50%;
   background-color: #94979A;
   color: #94979A;
+}
+
+.greyBigDotStyle {
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  background-color: #94979A;
+  border: 6px solid #f3f5f74d;
+  color: #94979A;
+  opacity: 1;
 }
 
 .colorFileStyle {
@@ -1161,6 +1242,7 @@ body::-webkit-scrollbar {
 }
 
 .justifyCenter {
+  display: flex;
   justify-content: center !important;
 }
 
@@ -1179,6 +1261,22 @@ body::-webkit-scrollbar {
   letter-spacing: 0px;
   color: #52575D;
   text-transform: capitalize;
+  opacity: 1;
+}
+
+.greyDotTextStyle {
+  text-align: left;
+  font: normal normal normal 13px/20px proxima-nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  opacity: 1;
+}
+
+.emailTextBoldStyle {
+  text-align: left;
+  font: normal normal bold 17px/20px proxima-nova;
+  letter-spacing: 0px;
+  color: #52575D;
   opacity: 1;
 }
 
@@ -1438,7 +1536,7 @@ select {
 .bigButtonStyle {
   height: 50px;
   /* UI Properties */
-  background: #7165E3 0% 0% no-repeat padding-box;
+  background: #94979A 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
   border-radius: 8px;
   opacity: 1;
@@ -2085,6 +2183,12 @@ select {
   grid-gap: 20px;
 }
 
+.grid5and1 {
+  display: grid;
+  grid-template-columns: 7fr 1fr;
+  grid-gap: 5px;
+}
+
 .twoCol {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2472,6 +2576,11 @@ input[type="file"] {
 
 .marginLeftRight10 {
   margin: 10px 10px;
+}
+
+.statusCardHeight {
+  height: calc(100% - 20px);
+  padding: 20px;
 }
 
 .photoCardStyle {
@@ -2968,6 +3077,14 @@ input[type="number"] {
 
 .tableDataFontStyle {
   font: normal normal normal 13px/17px proxima-nova;
+  letter-spacing: 0px;
+  color: #52575d;
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.tableDataFontBoldStyle {
+  font: normal normal bold 13px/17px proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   text-transform: uppercase;

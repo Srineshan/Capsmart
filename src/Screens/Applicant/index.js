@@ -28,10 +28,10 @@ const Applicant = () => {
 
     useEffect(() => {
         if (applicationForm?.length > 0) {
-            console.log('Inside UseEffect', applicationForm)
-            navigate(`/applicationForm/${applicationForm?.[0]?.id}`);
+            console.log('Inside UseEffect', applicationForm);
             cookies.remove('entityId', { path: '/' })
             cookies.set('entityId', applicationForm?.[0]?.tenant?.id, { path: '/' });
+            navigate(`/applicationForm/${applicationForm?.[0]?.id}`);
         }
     }, [applicationForm, applicationForm?.length])
 
