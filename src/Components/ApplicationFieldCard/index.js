@@ -31,7 +31,7 @@ import CommonLabel from '../CommonFields/CommonLabel';
 
 const TEXTFIELDLEN50 = 50;
 
-const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicForm, showAdd, addMoreType, addMoreOpenBydefault, collapsableQuestionCard, isBasicPath, stepPath, formId, getIsSubmitClicked, applicationId, tableGrid, setIsEdited, heading, subHeading, subHeading2, getAllPath }) => {
+const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicForm, showAdd, addMoreType, addMoreOpenBydefault, collapsableQuestionCard, isBasicPath, stepPath, formId, getIsSubmitClicked, applicationId, tableGrid, setIsEdited, heading, subHeading, subHeading2, getAllPath, getAllLabels, warningFields }) => {
     const [calendarStart, setCalendarStart] = useState(false);
     const [isAddMore, setIsAddMore] = useState(addMoreOpenBydefault ? true : false);
     const [isCollapsableCard, setIsCollapsableCard] = useState(true);
@@ -309,7 +309,10 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
         }
         console.log(dynamicValue)
         if (object?.then?.required?.includes(fieldKey) !== undefined ? (!object?.then?.required?.includes(fieldKey) || (object?.if?.properties !== undefined && Array.isArray(firstObject[dynamicValue]) ? firstObject[dynamicValue]?.includes(getValueByPath(basicForm, `${basicpath}.${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`)) : getValueByPath(basicForm, `${basicpath}.${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`) === firstObject[dynamicValue])) : getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) ? (getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) && (getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) && getValueByPath(basicForm, `${basicpath}.${baseKey}.${getAllThenStrings(object)?.filter(data => data?.value === fieldKey)[0]?.key}`) === getAllThenStrings(object)?.filter(data => data?.value === fieldKey)[0]?.checkValue)) : true && fieldData.fieldType) {
-            // getAllPath(`${basicpath}.${baseKey}.${fieldKey}`)
+            if (isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) {
+                getAllPath(`${basicpath}.${baseKey}.${fieldKey}`)
+                getAllLabels(fieldData.label)
+            }
             switch (fieldData.fieldType) {
                 case 'dropdown':
                     console.log(getValueByPath(basicForm, 'forms[1]'), `${basicpath}.${baseKey}.${fieldKey}`, 'dropdown', basicForm)
@@ -325,6 +328,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                             disabledList={fieldData.enum.map(data => false)}
                             label={fieldData.label}
                             required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))}
+                            warning={warningFields?.map(data => data?.key)?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
                         />
                     );
                 case 'datalist':
@@ -334,7 +338,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                             <DatalistInput
                                 items={getItems(fieldData.enum) || []}
                                 onSelect={(item) => handleChange(fieldKey, item.value, baseKey)}
-                                className={`${style.fullWidth} ${style.marginTop10}`}
+                                className={`${style.fullWidth} ${style.marginTop10} ${style.leftAlign}`}
                                 maxLength={TEXTFIELDLEN50}
                                 onChange={(e) => handleChange(fieldKey, e.target.value, baseKey)}
                                 placeholder={fieldData.placeHolder !== null ? fieldData.placeHolder : fieldData.label !== null ? `Enter ${fieldData.label}` : null}
@@ -379,6 +383,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                                 required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))}
                                 type={fieldData.type}
                                 min={fieldData.minimum}
+                                warning={warningFields?.map(data => data?.key)?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
                             // InputProps={{
                             //     readOnly: (user?.roles?.filter(data => data?.roleName === "Staff Manager")?.length === 0 && fieldKey === 'officialEmail') ? true : false,
                             // }}
@@ -425,6 +430,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                             placeholder={fieldData.placeHolder !== null ? fieldData.placeHolder : fieldData.label !== null ? `Enter ${fieldData.label}` : null}
                             label={fieldData.label}
                             required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))}
+                            warning={warningFields?.map(data => data?.key)?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
                         />
                     );
                 case 'datepicker':
