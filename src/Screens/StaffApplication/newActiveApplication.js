@@ -21,6 +21,7 @@ import OutGoing from "../../images/Outgoing.png";
 import Popover from '@mui/material/Popover';
 import style from "./index.module.scss";
 import ApplicationDecline from "./applicationDeclineDialog";
+import ApplicationHeader from '../../Components/ApplicationHeader';
 
 const NewActiveApplication = ({
   contracts,
@@ -35,7 +36,8 @@ const NewActiveApplication = ({
   getActiveApplicationView
 }) => {
   console.log('contract Type', contractType)
-
+  const [applicationId, setApplicationId] = useState(sessionStorage.getItem('applicationId'));
+  const [form, setForm] = useState();
   const contractStatus = sessionStorage.getItem("Selected Contract Status");
   const [selectContractInfo, setSelectContractInfo] = useState(contractType?.value);
   const [deleteExecutedContractDialog, setDeleteExecutedContractDialog] =
@@ -77,11 +79,22 @@ const NewActiveApplication = ({
       ?.map((data) => data)[0]
   );
 
+  useEffect(() => {
+    getPreApplication();
+  }, [])
+
   const [providerDetails, setProviderDetails] = useState();
   const [prevContractData, setPrevContractData] = useState();
   const [showApplicationDeclineDialog, setShowApplicationDeclineDialog] = useState(false);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const getPreApplication = async () => {
+    const { data: basicForm } = await GET(
+      `application-management-service/application/${applicationId}`
+    );
+    setForm(basicForm)
+  }
 
   const handlePopoverOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -335,8 +348,9 @@ const NewActiveApplication = ({
 
   return (
     <>
-      <div className={`${style.welcomePadding} ${style.headerHeading} ${style.addContractBody}`}>
-        <div className={style.spaceBetween}>
+      <div className={style.screenBackground}></div>
+      {/* <div className={`${style.welcomePadding} ${style.headerHeading} ${style.addContractBody}`}> */}
+      {/* <div className={style.spaceBetween}>
           <p className={style.welcomeStyle}>New {"{Doctor}"} {"{Full Time}"} Application For {"{First Last Name}"}
             <strong className={style.darkText}></strong>
           </p>
@@ -354,49 +368,57 @@ const NewActiveApplication = ({
               onClick={() => onClose()}
             />
           </div>
-        </div>
-        <div className={style.welcomeBorder}></div>
-      </div>
+        </div> */}
+      <ApplicationHeader title={`New ${form?.basicDetails?.applicant?.applicantType !== undefined ? form?.basicDetails?.applicant?.applicantType : '{Applicant Type}'} Application For ${form?.basicDetails?.applicant?.name?.firstName !== undefined ? form?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${form?.basicDetails?.applicant?.name?.lastName !== undefined ? form?.basicDetails?.applicant?.name?.lastName : '{Last Name}'}`} />
+
+      <div className={style.welcomeBorder}></div>
+      {/* </div > */}
       <div className={`${style.marginLeftRight50}`}>
         <div className={`${style.displayInRow} ${style.spaceBetween} ${style.topHeadingTextStyle} ${style.marginTop20}`}>
-        STAFF MANAGER APPLICATIONS >> {"{APPLICANT NAME}"}</div>
+        CAP MANAGER > APPLICATIONS >> {form?.basicDetails?.applicant?.name?.firstName || ''} {form?.basicDetails?.applicant?.name?.lastName || ''}</div>
         <div className={style.grid2}>
-          <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
-            <div className={`${style.spaceBetween}`}>
-              <div className={`${style.displayInRow}`} >
-                <div className={`${style.photoBorderStyle} ${style.marginLeftRight10}`}>
-                  <div className={`${style.photoCardStyle}`}>
-                    <span>Photo</span>
+          <div className={style.grid5and1}>
+            <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
+              <div className={`${style.spaceBetween}`}>
+                <div className={`${style.displayInRow}`} >
+                  <div className={`${style.photoBorderStyle} ${style.marginLeftRight10}`}>
+                    <div className={`${style.photoCardStyle}`}>
+                      <span>Photo</span>
+                    </div>
+                  </div>
+                  <div className={`${style.displayInCol} ${style.textAlignLeft}`}>
+                    <div className={`${style.marginTop10}`}>
+                      <span className={`${style.cardTextBoldStyle} ${style.marginTop10}`}>First Mi Last</span>
+                      <span className={`${style.cardTextNormalStyle} ${style.marginTop10} ${style.marginLeft10}`}>Application ID</span>
+                    </div>
+                    <div className={`${style.cardTextNormalStyle} ${style.marginTop10} `}>{"{Full Time}"}{" {Doctor}"} Applying As {"{Associate}"}</div>
+                    <div className={`${style.spaceBetween}`}>
+                      <span className={`${style.cardTextBoldStyle} ${style.marginTop30}`}>+1 (123) 456 - 7890</span>
+                      <span className={`${style.cardTextBoldStyle} ${style.marginTop30} ${style.marginLeft20}`}>name@email.com</span>
+                    </div>
                   </div>
                 </div>
-                <div className={`${style.displayInCol} ${style.textAlignLeft}`}>
-                  <div className={`${style.marginTop10}`}>
-                    <span className={`${style.cardTextBoldStyle} ${style.marginTop10}`}>First Mi Last</span>
-                    <span className={`${style.cardTextNormalStyle} ${style.marginTop10} ${style.marginLeft10}`}>Application ID</span>
-                  </div>
-                  <div className={`${style.cardTextNormalStyle} ${style.marginTop10} `}>{"{Full Time}"}{" {Doctor}"} Applying As {"{Associate}"}</div>
-                  <div className={`${style.spaceBetween}`}>
-                    <span className={`${style.cardTextBoldStyle} ${style.marginTop30}`}>+1 (123) 456 - 7890</span>
-                    <span className={`${style.cardTextBoldStyle} ${style.marginTop30} ${style.marginLeft20}`}>name@email.com</span>
+                <div className={`${style.displayInRow} ${style.marginRight20}`}>
+                  <div className={`${style.displayInCol} `}>
+                    <div className={`${style.marginTop15} `}>
+                      <span className={`${style.rightAlignTextStyle}`}>Proposed Start Date:</span>
+                      <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>DD/MM/YYYY</span>
+                    </div>
+                    <div className={`${style.marginTop15}`}>
+                      <span className={`${style.rightAlignTextStyle}`}>Application Created On:</span>
+                      <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>DD/MM/YYYY</span>
+                    </div>
+                    <div className={`${style.marginTop15}`}>
+                      <span className={`${style.rightAlignTextStyle}`}>Application Submitted:</span>
+                      <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>DD/MM/YYYY</span>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div className={`${style.displayInRow} ${style.marginRight20}`}>
-                <div className={`${style.displayInCol} `}>
-                  <div className={`${style.marginTop15} `}>
-                    <span className={`${style.rightAlignTextStyle}`}>Proposed Start Date:</span>
-                    <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>DD/MM/YYYY</span>
-                  </div>
-                  <div className={`${style.marginTop15}`}>
-                    <span className={`${style.rightAlignTextStyle}`}>Application Created On:</span>
-                    <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>DD/MM/YYYY</span>
-                  </div>
-                  <div className={`${style.marginTop15}`}>
-                    <span className={`${style.rightAlignTextStyle}`}>Application Submitted:</span>
-                    <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>DD/MM/YYYY</span>
-                  </div>
-                </div>
-              </div>
+            </div>
+            <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}  ${style.marginTop20} ${style.alignCenter} ${style.statusCardHeight}`}>
+              <div className={`${style.greyBigDotStyle} `}></div>
+              <div className={`${style.cardTextBoldStyle}`}>Overall Verification & Acceptance Status</div>
             </div>
           </div>
 

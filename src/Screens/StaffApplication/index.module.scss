@@ -173,6 +173,10 @@ body::-webkit-scrollbar {
   cursor: pointer;
 }
 
+.block {
+  display: block;
+}
+
 /* Create a custom radio button */
 .checkmark {
   position: absolute;
@@ -300,6 +304,16 @@ body::-webkit-scrollbar {
   border-radius: 50%;
   background-color: #94979A;
   color: #94979A;
+}
+
+.greyBigDotStyle {
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  background-color: #94979A;
+  border: 6px solid #f3f5f74d;
+  color: #94979A;
+  opacity: 1;
 }
 
 .colorFileStyle {
@@ -2085,6 +2099,12 @@ select {
   grid-gap: 20px;
 }
 
+.grid5and1 {
+  display: grid;
+  grid-template-columns: 5fr 1fr;
+  grid-gap: 5px;
+}
+
 .twoCol {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2472,6 +2492,10 @@ input[type="file"] {
 
 .marginLeftRight10 {
   margin: 10px 10px;
+}
+
+.statusCardHeight {
+  height: 130px;
 }
 
 .photoCardStyle {
