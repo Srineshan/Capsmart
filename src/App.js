@@ -283,7 +283,9 @@ const App = ({ props }) => {
   // const navigate = useNavigate();
 
   useEffect(() => {
-    getEntityId();
+    if (cookie.get('entityId') === undefined || cookie.get('entityId') === null) {
+      getEntityId();
+    }
   }, [])
 
   // useEffect(() => {
@@ -524,7 +526,9 @@ const App = ({ props }) => {
       .then((response) => {
         cookie.set("entityId", response?.data?.id, { path: '/' });
         setEntityId(response?.data?.id);
-        login(response?.data?.id);
+        if (cookie.get('user') === undefined || cookie.get('user') === null) {
+          login(response?.data?.id);
+        }
       })
       .catch((error) => {
         console.log("error", error);
