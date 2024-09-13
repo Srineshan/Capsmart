@@ -16,43 +16,48 @@ const Applicant = () => {
     const cookies = new Cookies();
     // let userDetails = cookies.get('user');
     // const user = jwt(userDetails);
-    console.log('currentUserData', currentUserData);
+    // console.log('currentUserData', currentUserData);
     // const [userId, setUserId] = useState(user?.id);
 
-    const [applicationForms, setApplicationForms] = useState([]);
+    const [applicationForm, setApplicationForms] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         getApplications();
     }, [])
 
+    useEffect(() => {
+        if (applicationForm?.length > 0) {
+            console.log('Inside UseEffect', applicationForm)
+            navigate(`/applicationForm/${applicationForm?.[0]?.id}`);
+            cookies.remove('entityId', { path: '/' })
+            cookies.set('entityId', applicationForm?.[0]?.tenant?.id, { path: '/' });
+        }
+    }, [applicationForm, applicationForm?.length])
+
+    console.log('Application Data', applicationForm)
+
     const getApplications = async () => {
         setIsLoading(true);
-        console.log('user id', currentUserData?.id);
-        const { data: application } = await GET(
-            `application-management-service/application?applicantId=${currentUserData?.id}`
-        );
+        try {
+            // Perform the API request and wait for the response
+            const { data: application } = await GET(
+                `application-management-service/application?applicantId=${currentUserData?.id}`
+            );
+            console.log('applications', application)
+            // if (application && application.length > 0 && application[0]?.id) {
+            setApplicationForms(application?.applications);
+            // navigate(`/applicationForm/${application?.[0]?.id}`);
+            // cookies.remove('entityId', { path: '/' })
+            // cookies.set('entityId', application?.[0]?.tenant?.id, { path: '/' });
+            // setIsLoading(false);
 
-        // await axios(`${baseUrl}/application-management-service/application?applicantId=${user?.id}`, {
-        //     method: "GET",
-        //     headers: {
-        //         "Content-Type": "application/json",
-        //         "X-Authorization": `Bearer ${accessToken}`,
-        //     },
-        // }).then(response => {
-        navigate(`/applicationForm/${application?.[0]?.id}`)
+            // }
+        } catch (error) {
+            console.error("Error fetching application data:", error);
+        }
         setIsLoading(false);
-        cookies.remove('entityId', { path: '/' })
-        cookies.set('entityId', application?.[0]?.tenant?.id, { path: '/' });
 
-        // }).catch(err => { console.log('error', err) })
-
-        // const { data: applications } = await GET(
-        //     `application-management-service/application?applicantId=${userId}`
-        // );
-
-        // setApplicationForms(applications)
-        setIsLoading(false);
     }
 
     return (
