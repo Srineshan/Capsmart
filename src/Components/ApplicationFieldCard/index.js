@@ -31,7 +31,7 @@ import CommonLabel from '../CommonFields/CommonLabel';
 
 const TEXTFIELDLEN50 = 50;
 
-const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicForm, showAdd, addMoreType, addMoreOpenBydefault, collapsableQuestionCard, isBasicPath, stepPath, formId, getIsSubmitClicked, applicationId, tableGrid, setIsEdited, heading, subHeading, subHeading2, getAllPath }) => {
+const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicForm, showAdd, addMoreType, addMoreOpenBydefault, collapsableQuestionCard, isBasicPath, stepPath, formId, getIsSubmitClicked, applicationId, tableGrid, setIsEdited, heading, subHeading, subHeading2, getAllPath, isPOD }) => {
     const [calendarStart, setCalendarStart] = useState(false);
     const [isAddMore, setIsAddMore] = useState(addMoreOpenBydefault ? true : false);
     const [isCollapsableCard, setIsCollapsableCard] = useState(true);
@@ -747,8 +747,8 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
     //     getValueByPath(basicForm, `${'applicant'}.${"name"}.${'firstName'}`))
     console.log(basicForm, object)
     return (
-        <div className={`${window.location.pathname.includes('applicationForm') ? '' : style.backgroundCard} ${style.marginTop}`}>
-            <div className={style.cardTitle}>{object?.label}</div>
+        <div className={`${(window.location.pathname.includes('applicationForm') || isPOD) ? '' : style.backgroundCard} ${style.marginTop}`}>
+            <div className={isPOD ? style.podCardTitle : style.cardTitle}>{object?.label}</div>
             {object?.description !== null && (
                 <div className={`${style.addMoreDescriptionText} ${style.marginTop10}`}>{object?.description}</div>
             )}

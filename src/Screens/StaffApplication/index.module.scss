@@ -118,6 +118,30 @@ body::-webkit-scrollbar {
   opacity: 1;
 }
 
+.purpleButton {
+
+  width: 108px;
+  height: 35px;
+  background: #7165E3 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border: 0.5px solid #7165E3;
+  border-radius: 8px;
+  opacity: 1;
+
+}
+
+.whiteButton {
+
+  width: 108px;
+  height: 35px;
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border: 0.5px solid #7165E3;
+  border-radius: 8px;
+  opacity: 1;
+
+}
+
 .buttonCardGreyStyle {
   width: 200px;
   height: 40px;
@@ -166,11 +190,36 @@ body::-webkit-scrollbar {
   user-select: none;
 }
 
+.screenPadding {
+  padding: 10px 20px;
+  height: calc(100vh - 90px);
+  overflow: scroll;
+}
+
 /* Hide the browser's default radio button */
 .container input {
   position: absolute;
   opacity: 0;
   cursor: pointer;
+}
+
+.applicantGrid {
+  display: grid;
+  grid-template-rows: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.applicationCardStyle {
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 5px 20px #52575D4D;
+  border-radius: 20px;
+  border: 0.4000000059604645px solid #e5e6e6;
+  padding: 10px 20px 20px 20px;
+}
+
+.flex {
+  display: flex;
 }
 
 .block {
@@ -1196,6 +1245,14 @@ body::-webkit-scrollbar {
   opacity: 1;
 }
 
+.emailTextBoldStyle {
+  text-align: left;
+  font: normal normal bold 17px/20px proxima-nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  opacity: 1;
+}
+
 .cardTextNormalStyle {
   text-align: left;
   font: normal normal medium 16px/23px proxima-nova;
@@ -1452,7 +1509,7 @@ select {
 .bigButtonStyle {
   height: 50px;
   /* UI Properties */
-  background: #7165E3 0% 0% no-repeat padding-box;
+  background: #94979A 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
   border-radius: 8px;
   opacity: 1;
@@ -2101,7 +2158,7 @@ select {
 
 .grid5and1 {
   display: grid;
-  grid-template-columns: 5fr 1fr;
+  grid-template-columns: 7fr 1fr;
   grid-gap: 5px;
 }
 
@@ -2992,6 +3049,14 @@ input[type="number"] {
 
 .tableDataFontStyle {
   font: normal normal normal 13px/17px proxima-nova;
+  letter-spacing: 0px;
+  color: #52575d;
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.tableDataFontBoldStyle {
+  font: normal normal bold 13px/17px proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   text-transform: uppercase;
