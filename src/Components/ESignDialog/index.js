@@ -17,10 +17,17 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
     const [eSignType, setESignType] = useState('');
     const [isShowType, setIsShowType] = useState(false);
     const sigCanvas = useRef({});
+    const contentRef = useRef(null);
     const [match, setMatch] = useState([]);
     const clearSignature = () => {
         sigCanvas.current.clear();
     };
+
+    useEffect(() => {
+        if (contentRef.current && contentRef.current.innerHTML !== eSignType) {
+            contentRef.current.innerHTML = eSignType;
+        }
+    }, [eSignType]);
 
     // useEffect(() => {
     //     console.log(tempValue)
@@ -37,6 +44,13 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
 
     const getImgBlob = async (dataURL) => {
         return base64ToUint8Array(dataURL.replace(/^data:image\/\w+;base64,/, ''));
+    };
+
+    const handleContentChange = () => {
+        console.log(contentRef.current.innerHTML)
+        if (contentRef.current) {
+            setESignType(contentRef.current.innerHTML);
+        }
     };
 
     const saveSignature = async () => {
@@ -103,8 +117,8 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                     <div className={style.spaceBetween}>
                         <div className={style.heading}>Adopt Your Electronic Signature</div>
                         <div className={style.displayInRow}>
-                            <p className={`${style.dateAndTimeTextStyle} ${style.marginLeft}`}>Mm/Dd/Yyyy</p>
-                            <p className={`${style.dateAndTimeTextStyle} ${style.marginLeft}`}>00:00</p>
+                            {/* <p className={`${style.dateAndTimeTextStyle} ${style.marginLeft}`}>Mm/Dd/Yyyy</p>
+                            <p className={`${style.dateAndTimeTextStyle} ${style.marginLeft}`}>00:00</p> */}
                             <img
                                 src={CrossPink}
                                 alt="cross"
@@ -114,7 +128,7 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                         </div>
                     </div>
 
-                    <p className={`${style.description} ${style.marginTop}`}>Cap Smart uses Electronic Signatures to for you to sign off on your required forms. Draw or type your signature below.</p>
+                    <p className={`${style.description} ${style.marginTop}`}>CAPSmart uses Electronic Signatures for you to sign off on the required forms and documents that are part of this application. Draw or type your signature below to set it up for use:</p>
                     <div className={`${style.displayInRow} ${style.marginTop}`}>
                         <div>
                             <div className={`${style.drawOrTypeTextStyle}`} onClick={() => { setSelectedESignFormat('DRAW') }}> DRAW</div>
@@ -158,8 +172,29 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                                 </div>
                             ) : ( */}
                             <div>
-                                <div className={`${style.justifyCenter} ${style.verticalAlignCenter} ${style.editableTextHeight}`}>
-                                    <EditableText value={eSignType} placeholder='I' className={`${style.typeInputStyle} ${style.typeTextStyle}`} style={{ fontFamily: `${selectedESignTypeStyle}` }} onChange={(e) => setESignType(e)} />
+                                {/* <div className={`${style.justifyCenter} ${style.verticalAlignCenter} ${style.editableTextHeight}`}>
+                                    <EditableText value={eSignType} placeholder='I' className={`${style.typeInputStyle} ${style.typeTextStyle}`}
+                                        style={{
+                                            fontFamily: selectedESignTypeStyle,
+                                            padding: "20px",
+                                            marginTop: "10px",
+                                            fontSize: "44px",
+                                            textAlign: 'center'
+                                        }} onChange={(e) => setESignType(e)} />
+                                </div> */}
+                                <div
+                                    contentEditable
+                                    onInput={handleContentChange}
+                                    // placeholder='Enter Here'
+                                    ref={contentRef}
+                                    style={{
+                                        fontFamily: selectedESignTypeStyle,
+                                        padding: "20px",
+                                        marginTop: "10px",
+                                        fontSize: "44px",
+                                        textAlign: 'center'
+                                    }}
+                                >
                                 </div>
                                 <div className={style.typeFieldStyle}>
                                     <CommonSelectField

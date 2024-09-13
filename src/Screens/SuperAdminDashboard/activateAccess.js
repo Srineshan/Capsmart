@@ -96,12 +96,12 @@ const ActivateAccess = () => {
   }, [tenantId])
 
   const getEntityId = async () => {
-    await axios(`http://ec2-52-204-199-180.compute-1.amazonaws.com/entity-service/entityID`, {
+    await axios(`https://acme-hospital.doxonify.ca/entity-service/entityID`, {
       method: 'GET',
       // headers: { "X-subdomain": "smmc-trial" },
     }).then(response => {
       var cookie = new Cookie();
-      cookie.set('entityId', response?.data?.id);
+      cookie.set('entityId', response?.data?.id, { path: '/' });
       settenantId(response?.data?.id);
     }).catch(error => {
       console.log('error', error);
@@ -124,7 +124,7 @@ const ActivateAccess = () => {
   }
 
   const getUser = async () => {
-    await axios(`http://ec2-52-204-199-180.compute-1.amazonaws.com/user-management-service/user`, {
+    await axios(`https://acme-hospital.doxonify.ca/user-management-service/user`, {
       method: 'GET',
       headers: headers,
     }).then(response => {
@@ -156,7 +156,7 @@ const ActivateAccess = () => {
     //             "password": password,
     //         }
     //     }
-    //     axios(`http://ec2-52-204-199-180.compute-1.amazonaws.com/user-management-service/user/updatepassword`, {
+    //     axios(`https://acme-hospital.doxonify.ca/user-management-service/user/updatepassword`, {
     //         method: 'POST',
     //         headers: headers,
     //         data: JSON.stringify(data),

@@ -53,6 +53,12 @@
     gap: 20px;
 }
 
+.twoColForButton {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
 .fourCol {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -82,7 +88,7 @@
 }
 
 .healthCareGrid> :nth-child(7) {
-    grid-column: 1 / -3;
+    grid-column: span 2;
 }
 
 .trainingGrid {
@@ -104,6 +110,10 @@
 }
 
 .trainingGrid> :nth-child(4) {
+    grid-column: span 2;
+}
+
+.trainingGrid> :nth-child(5) {
     grid-column: span 2;
 }
 

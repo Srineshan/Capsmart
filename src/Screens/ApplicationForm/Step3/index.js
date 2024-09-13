@@ -13,13 +13,23 @@ import style from './index.module.scss';
 
 const Step3 = ({ basicForm, setBasicForm, applicationId }) => {
     const [formSchema, setFormSchema] = useState();
+    const [applicantProfile, setApplicantProfile] = useState();
     const navigate = useNavigate()
     const [isEdited, setIsEdited] = useState(false);
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
         }
+        getApplicantProfile()
     }, [basicForm])
+
+    const getApplicantProfile = async () => {
+        const { data: profile } = await GET(
+            `application-management-service/application/${applicationId}/profile`
+        );
+        console.log(profile, 'profile')
+        setApplicantProfile(profile)
+    }
 
     const getFormSchema = async () => {
         const { data: form } = await GET(
@@ -38,14 +48,36 @@ const Step3 = ({ basicForm, setBasicForm, applicationId }) => {
                     console.log(response)
                     setBasicForm(response?.data)
                     SuccessToaster("Application Updated Successfully");
-                    navigate('/applicationForm/section1/step4')
+                    if (sessionStorage.getItem('fromSummary') === "true") {
+                        navigate(-1);
+                    }
+                    else {
+                        navigate('/applicationForm/section1/step4')
+
+                    }
                 })
                 .catch((error) => {
                     console.log(error)
                     ErrorToaster("Unexpected Error Updating Application");
                 });
+            let addressData = applicantProfile;
+            addressData.contactAddress2 = basicForm?.forms?.[1]?.data.contactAddress2 !== undefined ? basicForm?.forms?.[1]?.data.contactAddress2 : null
+            addressData.contactAddress3 = basicForm?.forms?.[1]?.data.contactAddress3 !== undefined ? basicForm?.forms?.[1]?.data.contactAddress3 : null
+            await PUT(`application-management-service/application/${applicationId}/profile`, addressData)
+                .then(response => {
+                    console.log(response)
+                })
+                .catch((error) => {
+                    console.log(error)
+                });
         } else {
-            navigate('/applicationForm/section1/step4')
+            if (sessionStorage.getItem('fromSummary') === "true") {
+                navigate(-1);
+            }
+            else {
+                navigate('/applicationForm/section1/step4')
+
+            }
         }
     }
 
@@ -56,7 +88,7 @@ const Step3 = ({ basicForm, setBasicForm, applicationId }) => {
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 1'} dataType={''} title={'Your Contact Address(es)'} timeNumber={1} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                <ProgressCard step={'STEP 1'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={1} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
@@ -81,9 +113,10 @@ const Step3 = ({ basicForm, setBasicForm, applicationId }) => {
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
-                    <div className={`${style.continue} ${style.marginTop10}`}
-                        onClick={() => { handleSubmitApplicationReq() }}
-                    >CONTINUE</div>
+                    <div className={style.twoColForButton}>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => { handleSubmitApplicationReq() }}>CONTINUE</div>
+                    </div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
                     </div>

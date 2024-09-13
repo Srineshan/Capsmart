@@ -13,6 +13,12 @@
     opacity: 0.1;
 }
 
+.profilePic {
+    height: 100px;
+    width: auto;
+    object-fit: contain;
+}
+
 .profileGrid {
     display: grid;
     grid-template-columns: 30% 68%;
@@ -43,11 +49,9 @@
 
 .applyingFor {
     text-align: left;
-    font: normal normal medium 16px/23px proxima-nova;
+    font: normal normal normal 13px/20px proxima-nova;
     letter-spacing: 0px;
     color: #52575D;
-    text-transform: capitalize;
-    opacity: 0.6;
 }
 
 .connectToLinkedIn {

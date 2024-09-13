@@ -96,9 +96,26 @@ const ApplicationFormRequirement = () => {
                         </WelcomeCard>
                         <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
                             <div className={style.titleTextStyle}>Recommended & Required List of Documents to have Readily Available for this Application</div>
-                            <div className={style.marginTop}>
+                            {/* <div className={style.marginTop}>
                                 <RequiredDocumentCard array={basicForm?.documentsRequired?.map(data => ({ title: data?.document?.name }))} />
+                            </div> */}
+                            <div className={`${style.tableHeader} ${style.tableGrid} ${style.marginTop}`}>
+                                <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Document Type</div>
+                                <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Requirements</div>
+                                <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}></div>
                             </div>
+                            {basicForm?.documentsRequired?.map((data, index) => (
+                                <div>
+                                    <div className={`${style.requiredDocumentCard} ${style.tableGrid} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''}  ${style.marginTop5}`}>
+                                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
+                                            <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.document?.name}</div>
+                                            <InfoOutlinedIcon sx={{ fontSize: 14, marginLeft: '10px' }} className={style.info} />
+                                        </div>
+                                        <div className={style.documentTextStyle}>{data?.required ? 'Mandatory' : 'Recommended'}</div>
+                                        <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.instruction}</div>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                         <div className={style.marginTop}>
                             <WelcomeCard title={''} description={''} >
@@ -118,7 +135,7 @@ const ApplicationFormRequirement = () => {
                     <div>
                         {/* <ApplicationUserCard user={'Guest User'} applyingFor={'Contact'} /> */}
                         <div>
-                            <DaysToComplete days={calculateRemainingDays(basicForm?.createdDate, 15)} />
+                            <DaysToComplete days={calculateRemainingDays(basicForm?.createdDate, 30)} />
                         </div>
                         <div className={style.marginTop10}>
                             <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
@@ -129,7 +146,7 @@ const ApplicationFormRequirement = () => {
                 </div>
             </div>
             {!isAuthenticated && !isSessionLoading && (
-                <LoginDialog getIsOpen={getIsOpen} />
+                <LoginDialog getIsOpen={getIsOpen} days={calculateRemainingDays(basicForm?.createdDate, 30)} />
             )}
         </div>
     )

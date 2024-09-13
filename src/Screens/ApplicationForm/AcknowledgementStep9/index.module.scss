@@ -55,6 +55,12 @@
     gap: 20px;
 }
 
+.twoColForButton {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
 .fourCol {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -195,4 +201,16 @@
     font: normal normal bold 14px/22px proxima-nova;
     letter-spacing: 0px;
     color: #52575D;
+}
+
+.fullWidth {
+    width: 100%;
+}
+
+.cardTitle {
+    text-align: left;
+    font: normal normal bold 20px/26px proxima-nova;
+    letter-spacing: 0px;
+    color: #52575D;
+    // text-transform: capitalize;
 }

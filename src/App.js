@@ -5,7 +5,7 @@ import history from "./routes/history";
 import Loader from "./Components/LoadingScreen";
 import IdleTimer from "./Components/IdleTimer";
 import Cookie from "universal-cookie";
-import { Auth, GetEntityDetails, currentUser } from "./utils/auth";
+import { Auth, GetEntityDetails, currentUser, baseUrl } from "./utils/auth";
 import { TenantID, GET, POST } from "./Screens/dataSaver";
 import {
   browserName,
@@ -37,6 +37,7 @@ const FunctionalTitleForCustomer = React.lazy(() =>
 );
 const ActiveContracts = React.lazy(() => import("./Screens/ContractManager"));
 const StaffManager = React.lazy(() => import("./Screens/StaffManager"));
+const Applicant = React.lazy(() => import("./Screens/Applicant"));
 const StaffApplication = React.lazy(() => import("./Screens/StaffApplication"));
 const ActiveStaff = React.lazy(() => import("./Screens/ActiveStaff"));
 const Welcome = React.lazy(() =>
@@ -229,6 +230,12 @@ const SuperAdminDashboard = React.lazy(() =>
 const ClientAdminDashboard = React.lazy(() =>
   import("./Screens/ReferenceList/customerAdminDashboard")
 );
+const ApplicationSummary = React.lazy(() =>
+  import("./Screens/ApplicationForm/ApplicationSummary"));
+const ApplicationAcknowledgement = React.lazy(() =>
+  import("./Screens/ApplicationForm/ApplicationAcknowledgement"));
+const PODCheck = React.lazy(() =>
+  import("./Screens/ApplicationForm/PODCheck"));
 // const ApplicantTypesByEntity = React.lazy(() =>
 //   import("./Screens/ReferenceList//referenceList/contractServiceProviderBySiteType")
 // );
@@ -270,9 +277,11 @@ const App = ({ props }) => {
 
   // const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   getEntityId();
-  // }, [cookie.get("user")])
+  useEffect(() => {
+    if (cookie.get('entityId') === undefined || cookie.get('entityId') === null) {
+      getEntityId();
+    }
+  }, [])
 
   // useEffect(() => {
   //   if(!cookie.get("user")){
@@ -339,53 +348,53 @@ const App = ({ props }) => {
       browserName === "Chrome"
         ? "CHROME"
         : browserName === "Firefox"
-        ? "FIREFOX"
-        : browserName === "Safari"
-        ? "SAFARI"
-        : browserName === "Opera"
-        ? "OPERA"
-        : browserName === "Edge"
-        ? "EDGE"
-        : browserName === "Internet Explorer"
-        ? "INTERNETEXPLORER"
-        : browserName === "Chromium"
-        ? "CHROMIUM"
-        : browserName === "Yandex"
-        ? "YANDEX"
-        : browserName === "IE"
-        ? "IE"
-        : browserName === "Mobile Safari"
-        ? "MOBILESAFARI"
-        : browserName === "Edge Chromium"
-        ? "EDGECHROMIUM"
-        : browserName === "MIUI Browser"
-        ? "MIUIBROWSER"
-        : browserName === "Samsung Browser"
-        ? "SAMSUNGBROWSER"
-        : "";
+          ? "FIREFOX"
+          : browserName === "Safari"
+            ? "SAFARI"
+            : browserName === "Opera"
+              ? "OPERA"
+              : browserName === "Edge"
+                ? "EDGE"
+                : browserName === "Internet Explorer"
+                  ? "INTERNETEXPLORER"
+                  : browserName === "Chromium"
+                    ? "CHROMIUM"
+                    : browserName === "Yandex"
+                      ? "YANDEX"
+                      : browserName === "IE"
+                        ? "IE"
+                        : browserName === "Mobile Safari"
+                          ? "MOBILESAFARI"
+                          : browserName === "Edge Chromium"
+                            ? "EDGECHROMIUM"
+                            : browserName === "MIUI Browser"
+                              ? "MIUIBROWSER"
+                              : browserName === "Samsung Browser"
+                                ? "SAMSUNGBROWSER"
+                                : "";
 
     let os =
       osName === "Windows"
         ? "WINDOWS"
         : osName === "Linux"
-        ? "LINUX"
-        : osName === "Mac OS"
-        ? "MAC"
-        : osName === "iOS"
-        ? "IOS"
-        : osName === "Android"
-        ? "ANDROID"
-        : osName === "Windows Phone"
-        ? "WINDOWSPHONE"
-        : "";
+          ? "LINUX"
+          : osName === "Mac OS"
+            ? "MAC"
+            : osName === "iOS"
+              ? "IOS"
+              : osName === "Android"
+                ? "ANDROID"
+                : osName === "Windows Phone"
+                  ? "WINDOWSPHONE"
+                  : "";
 
     let deviceType = isDesktop
       ? "DESKTOP"
       : isMobile
-      ? "MOBILE"
-      : isTablet
-      ? "TABLET"
-      : "";
+        ? "MOBILE"
+        : isTablet
+          ? "TABLET"
+          : "";
     let interceptorsInfo = sessionStorage.getItem("interceptorsInfo");
 
     let data = {
@@ -500,37 +509,42 @@ const App = ({ props }) => {
   };
 
   const getEntityId = async () => {
+    let hostname = window.location.hostname;
+    let requestHeader = hostname.includes('acme-hospital') ? {
+      method: "GET",
+      headers: { "X-subdomain": "acme-hospital" },
+    } : { method: 'GET' }
     await axios(
-      `http://ec2-52-204-199-180.compute-1.amazonaws.com/entity-service/entityID`,
-      {
-        method: "GET",
-        // headers: { "X-subdomain": "hopkins" },
-      }
+      `${baseUrl()}/entity-service/entityID`,
+      requestHeader
     )
       .then((response) => {
-        cookie.set("entityId", response?.data?.id);
+        cookie.set("entityId", response?.data?.id, { path: '/' });
         setEntityId(response?.data?.id);
+        if (cookie.get('user') === undefined || cookie.get('user') === null) {
+          login(response?.data?.id);
+        }
       })
       .catch((error) => {
         console.log("error", error);
       });
   };
 
-  const login = () => {
+  const login = (id) => {
     const requestOptions = {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "X-tenantID": entityId,
+        "X-tenantID": id,
       },
     };
     fetch(
-      `http://ec2-52-204-199-180.compute-1.amazonaws.com/user-management-service/auth/login`,
+      `${baseUrl()}/user-management-service/auth/login`,
       requestOptions
     )
       .then((response) => response.json())
       .then((data) => {
-        cookie.set("user", data?.accessToken);
+        cookie.set("user", data?.accessToken, { path: '/' });
       });
     return true;
   };
@@ -603,10 +617,14 @@ const App = ({ props }) => {
       roles.includes("Entity Sys Admin") ||
       roles.includes("Entity Sys User") ||
       roles.includes("Distributor Admin");
+    let isStaffManager = roles.includes("Staff Manager");
+    let isApplicant = roles.includes("Applicant");
+
     if (isAppUser) {
       window.location.href = "/";
       return <Login />;
     } else if (isContractManager) {
+
       window.location.pathname = "/app/contracts";
       // navigate("/contracts");
       // window.location.reload();
@@ -616,6 +634,10 @@ const App = ({ props }) => {
       // navigate("/entitySitePortal");
       // window.location.reload();
       return <Home />;
+    } else if (isStaffManager) {
+      window.location.pathname = "/app/staffs"
+    } else if (isApplicant) {
+      window.location.pathname = "/app/applicant"
     } else {
       window.location.pathname = "/app/entitySitePortal";
       // navigate("/entitySitePortal");
@@ -641,6 +663,7 @@ const App = ({ props }) => {
               <Route path="/activeStaff" element={<ActiveStaff />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/notifyUser" element={<Notify />} />
+              <Route path="/applicant" element={<Applicant />} />
               <Route
                 path="/trackContracts/:trackType"
                 element={<TrackYourContracts />}
@@ -662,6 +685,18 @@ const App = ({ props }) => {
               <Route
                 path="/setPassword"
                 element={<SetPasswordWithoutEmail />}
+              />
+              <Route
+                path="/applicationForm/applicationSummary"
+                element={<ApplicationSummary />}
+              />
+              <Route
+                path="/applicationForm/applicationAcknowledgement"
+                element={<ApplicationAcknowledgement />}
+              />
+              <Route
+                path="/applicationForm/podcheck"
+                element={<PODCheck />}
               />
               <Route path="/welcome" element={<Welcome />} />
               <Route path="/entitySetup/:id/:page" element={<EntitySetup />} />

@@ -10,7 +10,8 @@ import { GET } from '../dataSaver';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ApplicationFieldCard from '../../Components/ApplicationFieldCard';
 import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
-
+import Cookie from 'universal-cookie';
+import jwt from 'jwt-decode';
 import style from './index.module.scss'
 import Step1 from './Step1';
 import { useParams } from 'react-router-dom';
@@ -46,12 +47,17 @@ import LoginDialog from '../../Components/LoginDialog';
 
 
 const ApplicationForm = () => {
+    let cookie = new Cookie();
+    let userDetails = cookie.get('user');
+    const user = jwt(userDetails);
+    const [currentUserDetails, setCurrentUserDetails] = useState();
+    const [userId, setUserId] = useState(user?.id);
     const { section, step } = useParams();
     const [basicForm, setBasicForm] = useState({})
     const applicationId = sessionStorage.getItem('applicationId')
     const [isOpen, setIsOpen] = useState(true);
     const [acknowledgementForms, setAcknowledgementForms] = useState([]);
-    const canadaData = JSON.parse(sessionStorage.getItem('canadaData')) || {};
+    const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
     const getIsOpen = (value) => {
         setIsOpen(value);
     }
@@ -65,6 +71,16 @@ const ApplicationForm = () => {
             getAcknowledgement(basicForm?.providerType?.id)
         }
     }, [basicForm])
+
+    useEffect(() => {
+        setUserDetails();
+    }, [userId])
+
+    const setUserDetails = async () => {
+        const { data: user } = await GET(`user-management-service/user/${userId}`);
+        setCurrentUserDetails(user);
+        sessionStorage.setItem('user', JSON.stringify(user))
+    }
 
     const getAcknowledgement = async (id) => {
         if (id !== "") {
@@ -164,7 +180,7 @@ const ApplicationForm = () => {
 
     return (
         <div className={style.screenBackground}>
-            <ApplicationHeader title={`New ${basicForm?.basicDetails?.applicant?.applicantType !== undefined ? basicForm?.basicDetails?.applicant?.applicantType : '{Applicant Type}'} Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'}`} />
+            <ApplicationHeader title={`New ${basicForm?.basicDetails?.applicant?.applicantType !== undefined ? basicForm?.basicDetails?.applicant?.applicantType : '{Applicant Type}'} Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'} ${(basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory !== null && basicForm?.basicDetails?.credentialingPrivilegeCategory !== null) ? basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory : ''}`} />
             <div className={style.screenPadding}>
                 {/* <div className={style.applicationScreenGrid}> */}
                 {StepDisplay()}

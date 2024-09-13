@@ -3,6 +3,8 @@ import ProgressCard from '../../../Components/ProgressCard';
 import ApplicationUserCard from '../../../Components/ApplicationUserCard';
 import ApplicationAssistanceCard from '../../../Components/ApplicationAssistanceCard';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded';
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -127,7 +129,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
             SuccessToaster('File Uploaded Successfully');
             console.log(response?.data);
             event.map((data, index) => {
-                table.push({ documentType: '', fileSize: `${(data?.size / (1024 * 1024)).toFixed(2)} Mb`, fileURL: response?.data[index]?.fileURL, fileUploaded: data?.name, requirement: 'To Be Decided', valid: '', verified: '' })
+                table.push({ documentType: '', fileSize: `${(data?.size / (1024 * 1024)).toFixed(2)} Mb`, fileURL: response?.data[index]?.fileURL, fileUploaded: data?.name, requirement: '', valid: '', verified: '' })
             })
             handleSubmitApplicationReq(table)
             return response?.data;
@@ -138,12 +140,35 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
         }
     };
 
-    const handleChange = (value, index) => {
-        console.log(tempValue?.table, value, index)
+    const handleChange = async (value, index) => {
+        console.log(tempValue?.table, value, index, '142')
         let temp = tempValue?.table;
+        let tempDocumentData = {
+            file: {
+                fileURL: temp[index]?.fileURL,
+                fileName: temp[index]?.fileUploaded
+            },
+            verified: temp[index]?.verified !== "" ? temp[index]?.verified : false,
+            valid: temp[index]?.valid !== "" ? temp[index]?.valid : false,
+            documentType: value,
+            required: temp[index]?.requirement === 'Mandatory' ? 'Required' : 'ToBeDecided',
+        };
+
+        let documentData = {
+            uploadedDocument: tempDocumentData
+        }
+        await PUT(`application-management-service/application/${applicationId}/addUploadedDocuments`, documentData)
+            .then(response => {
+                console.log(response)
+                temp[index].verified = response?.data?.verified;
+                temp[index].valid = response?.data?.valid;
+            })
+            .catch((error) => {
+                console.log(error)
+            });
         temp[index].documentType = value;
         if (value !== null || value !== "") {
-            temp[index].requirement = !basicForm?.documentsRequired?.filter(data => data?.document?.name === value)?.[0]?.required ? 'Mandatory' : 'Optional';
+            temp[index].requirement = !basicForm?.documentsRequired?.filter(data => data?.document?.name === value)?.[0]?.required ? 'Mandatory' : 'Recommended';
         }
         console.log(temp)
         handleSubmitApplicationReq(temp)
@@ -151,25 +176,6 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
 
     const getApplicantValues = (array) => {
         let temp = [];
-        // temp.push({ "type": "icon", "icon": array?.map(innerData => <TextSnippetOutlinedIcon style={{ fontSize: 20, }} onClick={() => { window.open(innerData?.file?.fileURL, '_blank'); }} />), 'isShowHoverText': false });
-        // temp.push({ "type": "text", "value": array?.map(innerData => innerData?.name) });
-        // temp.push({ "type": "text", "value": array?.map(innerData => `${(innerData?.size / (1024 * 1024)).toFixed(2)} Mb`) });
-        // temp.push({
-        //     "type": "field", "field": array?.map(innerData => <CommonSelectField
-        //         // value={''}
-        //         onChange={(e) => handleChange(e.target.value)}
-        //         className={style.fullWidth}
-        //         // firstOptionLabel={fieldData.label}
-        //         // firstOptionValue={fieldData.label}
-        //         valueList={basicForm?.documentsRequired?.map(data => data?.document?.name) || []}
-        //         labelList={basicForm?.documentsRequired?.map(data => data?.document?.name) || []}
-        //         disabledList={basicForm?.documentsRequired?.map(data => false)}
-        //     />)
-        // });
-        // temp.push({ "type": "text", "value": array?.map(innerData => 'Required') });
-        // temp.push({ "type": "icon", "icon": array?.map(innerData => <TextSnippetOutlinedIcon style={{ fontSize: 20, }} />), 'isShowHoverText': false });
-        // temp.push({ "type": "icon", "icon": array?.map(innerData => <TextSnippetOutlinedIcon style={{ fontSize: 20, }} />), 'isShowHoverText': false });
-        // temp.push({ "type": "action", "value": array?.map(innerData => actions) })
         Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.map((data, index) => {
             if (data === "file") {
                 temp.push({ "type": "icon", "icon": array?.map(innerData => <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />), 'isShowHoverText': false });
@@ -187,6 +193,10 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
                             disabledList={basicForm?.documentsRequired?.map(data => false)}
                         />)
                     });
+                } else if (data === "valid") {
+                    temp.push({ "type": "icon", "icon": array?.map(innerData => innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562` }} />), 'isShowHoverText': false });
+                } else if (data === "verified") {
+                    temp.push({ "type": "icon", "icon": array?.map(innerData => innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562` }} />), 'isShowHoverText': false });
                 } else {
                     temp.push({ "type": "text", "value": array?.map(innerData => innerData[data]) });
                 }
@@ -240,11 +250,17 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
         setIsEdited(value)
     }
 
+    const handleContinue = () => {
+        if (sessionStorage.getItem('fromSummary') === "true") {
+            navigate(-1);
+        } else { navigate('/applicationForm/section1/step3') }
+    }
+
     return (
         <div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
-                    <ProgressCard step={''} dataType={'Process Required Documents'} title={'Upload your Documents'} timeNumber={1} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                    <ProgressCard step={''} dataType={formSchema?.description} title={formSchema?.title} timeNumber={1} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
                     <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
                         {/* <div className={style.titleText}>{formSchema?.description}</div>
                     <div className={`${style.descriptionText} ${style.marginTop10}`}>Ensure your documents are in the following formats: pdf, jpg, (add icons here) </div> */}
@@ -256,7 +272,6 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
                             <ApplicationFieldCard object={formSchema?.properties?.uploadTheDocument} gridStyle={style.twoCol} baseKey={'uploadTheDocument'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[0].data`} />
                         )}
                         <div className={`${style.tableHeader} ${style.tableGrid}`}>
-                            {/* <div className={style.tableHeaderText}></div> */}
                             <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Document Type</div>
                             <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Requirements</div>
                             <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}></div>
@@ -264,62 +279,18 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
                         {basicForm?.documentsRequired?.map((data, index) => (
                             <div>
                                 <div className={`${style.requiredDocumentCard} ${style.tableGrid} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''}  ${style.marginTop5}`}>
-                                    {/* <div>
-                                    <label for={`file-upload-dynamic-${data?.document?.name}`}>
-                                        <DescriptionOutlinedIcon sx={{ color: '#787f87' }} />
-                                    </label>
-                                    <input id={`file-upload-dynamic-${data?.document?.name}`} type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx" onChange={(e) => handleFileUpload(e, data?.document?.id)} />
-                                </div> */}
                                     <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                                         <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.document?.name}</div>
                                         <InfoOutlinedIcon sx={{ fontSize: 14, marginLeft: '10px' }} className={style.info} />
                                     </div>
-                                    {/* <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}></div>
-                                <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}></div>
-                                <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}></div> */}
-                                    <div className={style.documentTextStyle}>{data?.required ? 'Mandatory' : 'Optional'}</div>
+                                    <div className={style.documentTextStyle}>{data?.required ? 'Mandatory' : 'Recommended'}</div>
                                     <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.instruction}</div>
-                                    {/* <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}></div> */}
-                                    {/* <div className={style.verticalAlignCenter}>
-                                    {openCategoryIndex === index ? (
-                                        <RemoveIcon sx={{ color: '#6F7479' }} className={style.cursorPointer} onClick={() => setOpenCategoryIndex(-1)} />
-                                    ) : (
-                                        <AddIcon sx={{ color: '#6F7479' }} className={style.cursorPointer} onClick={() => setOpenCategoryIndex(index)} />
-                                    )}
-                                </div> */}
                                 </div>
-                                {/* {openCategoryIndex === index && <div>{data?.mandatory}</div>}
-                            {openCategoryIndex === index && data?.documents?.map(data =>
-                                <div className={`${style.requiredDocumentCard} ${style.tableGrid} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''}  ${style.marginTop5}`}>
-                                    <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
-                                        <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.documentName}</div>
-                                    </div>
-                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.fileName}</div>
-                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{format(new Date(data?.dateUploaded), 'MM-dd-yyyy HH:mm')}</div>
-                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}></div>
-                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.mandatory ? 'Mandatory' : 'Optional'}</div>
-                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}></div>
-                                    <div className={style.verticalAlignCenter}>
-                                        <MoreHorizIcon sx={{ color: '#6F7479' }} className={style.cursorPointer} />
-                                    </div>
-                                </div>
-                            )} */}
                             </div>
                         ))}
                         <div className={`${style.twoCol} ${style.marginTop}`}>
-                            <CommonDropZone title={'Upload Your Documents'} description={'Upload your files or drag & drop from your cabinet'} changeHandler={changeHandler} files={files} />
-                            <CommonDropZone title={'Upload A Photo'} description={'Click a picture with your Camera or upload from Gallery.'} changeHandler={changeHandler} files={files} accept="image/*" />
-                        </div>
-                        <div className={style.marginTop} onClick={() => setIsShowESignDialog(true)}>
-                            <div className={style.uploadBorderStyle}>
-                                <p className={style.uploadTextStyle}>
-                                    {'Set Up Your Electronic Signature'}
-                                </p>
-
-                                <p className={style.uploadDescriptionText}>
-                                    {'Our paperless automated application submission uses electronic signatures with digital fingerprinting. Set up your electronic signature.'}
-                                </p>
-                            </div>
+                            <CommonDropZone title={'Upload Your Documents'} description={'Upload your files or drag & drop from your file cabinet (Computer / Online Drive)'} changeHandler={changeHandler} files={files} />
+                            <CommonDropZone title={'Upload A Photo'} description={'Click a picture of the document with your camera and Upload or Upload from your photo gallery.'} changeHandler={changeHandler} files={files} accept="image/*" />
                         </div>
                         <TableTwo
                             tableHeaderValues={['', 'File Uploaded', 'Size', 'Document Type', 'Requirement', 'Verified', 'Valid', '']}
@@ -338,25 +309,41 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
                             onChange={handleFileChange}
                             style={{ display: 'none' }} // Hide the actual file input
                         />
+                        <div className={style.marginTop} onClick={() => setIsShowESignDialog(true)}>
+                            <div className={style.uploadBorderStyle}>
+                                <p className={style.uploadTextStyle}>
+                                    {'Set Up Your Electronic Signature'}
+                                </p>
+
+                                <p className={style.uploadDescriptionText}>
+                                    {'Our paperless automated application submission uses electronic signatures with digital fingerprinting. Click here to setup your electronic signature for use.'}
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
-                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate('/applicationForm/section1/step3')}>CONTINUE</div>
+                    <div className={style.twoColForButton}>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
+                    </div>
                     {/* <div className={style.marginTop}>
                             <ApplicationReferenceDocuments />
                         </div> */}
                 </div>
             </div>
-            {isShowESignDialog && (
-                <ESignDialog getIsOpen={getIsOpen} tempValue={tempValue} baseKey={'setUpYourSignature'} applicationId={applicationId} basicForm={basicForm} setBasicForm={setBasicForm}>
-                    {formSchema !== undefined && 'setUpYourSignature' in formSchema?.properties && (
-                        <ApplicationFieldCard object={formSchema?.properties?.setUpYourSignature} gridStyle={style.twoCol} baseKey={'setUpYourSignature'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[0].data`} setIsEdited={getIsEdited} />
-                    )}
-                </ESignDialog>
-            )}
-        </div>
+            {
+                isShowESignDialog && (
+                    <ESignDialog getIsOpen={getIsOpen} tempValue={tempValue} baseKey={'setUpYourSignature'} applicationId={applicationId} basicForm={basicForm} setBasicForm={setBasicForm}>
+                        {formSchema !== undefined && 'setUpYourSignature' in formSchema?.properties && (
+                            <ApplicationFieldCard object={formSchema?.properties?.setUpYourSignature} gridStyle={style.twoCol} baseKey={'setUpYourSignature'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[0].data`} setIsEdited={getIsEdited} />
+                        )}
+                    </ESignDialog>
+                )
+            }
+        </div >
     )
 }
 

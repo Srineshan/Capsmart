@@ -22,7 +22,7 @@ const Step9 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
 
     const getFormSchema = async () => {
         const { data: form } = await GET(
-            `application-management-service/formSchema/${basicForm?.formSchemas?.[15]?.id}`
+            `application-management-service/formSchema/${basicForm?.formSchemas?.[7]?.id}`
         );
         setFormSchema(form?.schema)
     }
@@ -38,7 +38,7 @@ const Step9 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
             schemaId: data?.forms?.[15]?.schemaId,
             data: data?.forms?.[15]?.data
         }
-        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[15]?.id}`, temp)
+        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[7]?.id}`, temp)
             .then(response => {
                 console.log(response)
                 SuccessToaster("Application Updated Successfully");
@@ -49,24 +49,37 @@ const Step9 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                 ErrorToaster("Unexpected Error Updating Application");
             });
     }
+    const handleContinue = () => {
+        if (sessionStorage.getItem('fromSummary') === "true") {
+            navigate(-1);
+        }
+        else {
+            navigate('/applicationForm/section1/step10')
+
+        }
+    }
+
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 7'} dataType={''} title={formSchema?.title} timeNumber={20} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                <ProgressCard step={'STEP 7'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={20} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'detailsOfRequestForSpecialititesRecognizedByProfessionalBodies' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.detailsOfRequestForSpecialititesRecognizedByProfessionalBodies} gridStyle={style.trainingGrid} baseKey={'detailsOfRequestForSpecialititesRecognizedByProfessionalBodies'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} addMoreOpenBydefault={true} formId={basicForm?.forms?.[16]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} />
+                            <ApplicationFieldCard object={formSchema?.properties?.detailsOfRequestForSpecialititesRecognizedByProfessionalBodies} gridStyle={style.trainingGrid} baseKey={'detailsOfRequestForSpecialititesRecognizedByProfessionalBodies'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} addMoreOpenBydefault={true} formId={basicForm?.forms?.[7]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} />
                         )}
                     </div>
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
-                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate('/applicationForm/section1/step14')}>CONTINUE</div>
+                    <div className={style.twoColForButton}>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
+                    </div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
                     </div>

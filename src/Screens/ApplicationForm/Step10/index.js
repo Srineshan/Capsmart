@@ -49,28 +49,41 @@ const Step10 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =
                 ErrorToaster("Unexpected Error Updating Application");
             });
     }
+
+    const handleContinue = () => {
+        if (sessionStorage.getItem('fromSummary') === "true") {
+            navigate(-1);
+        }
+        else {
+            navigate('/applicationForm/section1/step11')
+        }
+    }
+
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 10'} dataType={''} title={formSchema?.title} timeNumber={20} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                <ProgressCard step={'STEP 10'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={20} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'references' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.references} gridStyle={style.referenceGrid} baseKey={'references'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} formId={basicForm?.forms?.[8]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} />
+                            <ApplicationFieldCard object={formSchema?.properties?.references} gridStyle={style.twoCol} baseKey={'references'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} formId={basicForm?.forms?.[8]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} />
                         )}
                         <CommonDivider />
                         {formSchema !== undefined && 'privilegeReferences' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.privilegeReferences} gridStyle={style.referenceGrid} baseKey={'privilegeReferences'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} formId={basicForm?.forms?.[8]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} />
+                            <ApplicationFieldCard object={formSchema?.properties?.privilegeReferences} gridStyle={style.twoCol} baseKey={'privilegeReferences'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} formId={basicForm?.forms?.[8]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} />
                         )}
                     </div>
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
-                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate('/applicationForm/section1/step11')}>CONTINUE</div>
+                    <div className={style.twoColForButton}>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
+                    </div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
                     </div>

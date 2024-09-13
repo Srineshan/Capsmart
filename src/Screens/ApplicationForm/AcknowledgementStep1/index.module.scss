@@ -58,6 +58,12 @@
     gap: 20px;
 }
 
+.twoColForButton {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
 .fourCol {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -140,7 +146,7 @@
 
 .descriptionStyle {
     text-align: left;
-    font: normal normal bold 15px/23px proxima-nova;
+    font: normal normal normal 15px/23px proxima-nova;
     letter-spacing: 0px;
     color: #52575D;
 }

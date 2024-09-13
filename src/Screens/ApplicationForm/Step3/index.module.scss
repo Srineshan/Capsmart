@@ -53,6 +53,12 @@
     gap: 20px;
 }
 
+.twoColForButton {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
 .fourCol {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -120,15 +126,15 @@
 }
 
 .homeMailingAddressGrid> :nth-child(4) {
-    grid-column: span 2;
+    grid-column: span 3;
 }
 
 .homeMailingAddressGrid> :nth-child(5) {
-    grid-column: span 2;
+    grid-column: span 3;
 }
 
 .homeMailingAddressGrid> :nth-child(6) {
-    grid-column: span 2;
+    grid-column: span 3;
 }
 
 .mailingAddressGrid {
@@ -154,15 +160,15 @@
 }
 
 .mailingAddressGrid> :nth-child(5) {
-    grid-column: span 2;
+    grid-column: span 3;
 }
 
 .mailingAddressGrid> :nth-child(6) {
-    grid-column: span 2;
+    grid-column: span 3;
 }
 
 .mailingAddressGrid> :nth-child(7) {
-    grid-column: span 2;
+    grid-column: span 3;
 }
 
 .businessMailingAddressGrid {
@@ -176,15 +182,15 @@
 }
 
 .businessMailingAddressGrid> :nth-child(2) {
-    grid-column: span 2;
+    grid-column: span 4;
 }
 
 .businessMailingAddressGrid> :nth-child(3) {
-    grid-column: span 2;
+    grid-column: span 6;
 }
 
 .businessMailingAddressGrid> :nth-child(4) {
-    grid-column: span 6;
+    grid-column: span 3;
 }
 
 .businessMailingAddressGrid> :nth-child(5) {
@@ -196,21 +202,21 @@
 }
 
 .businessMailingAddressGrid> :nth-child(7) {
-    grid-column: span 2;
+    grid-column: span 3;
 }
 
 .businessMailingAddressGrid> :nth-child(8) {
-    grid-column: span 2;
+    grid-column: span 3;
 }
 
 .businessMailingAddressGrid> :nth-child(9) {
-    grid-column: span 2;
+    grid-column: span 3;
 }
 
 .businessMailingAddressGrid> :nth-child(10) {
-    grid-column: span 2;
+    grid-column: span 3;
 }
 
 .businessMailingAddressGrid> :nth-child(11) {
-    grid-column: span 2;
+    grid-column: span 3;
 }

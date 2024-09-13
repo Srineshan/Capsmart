@@ -36,7 +36,9 @@ const CommonSelectField = ({ value, onChange, className, firstOptionLabel, first
                         '& .MuiFormControlLabel-root': {
                             color: warningCheck ? !required ? theme.palette.error.main : theme.palette.warning.main : '',
                         },
-                    }}`} error={warningCheck}>
+                    }}`}
+                    // error={warningCheck}
+                    >
                         <Select
                             labelId="demo-simple-select-error-label"
                             id="demo-simple-select-error"
@@ -48,10 +50,10 @@ const CommonSelectField = ({ value, onChange, className, firstOptionLabel, first
                             className={className}
                             error={error}
                             inputProps={{ style: { textAlign: "right" } }}
-                            color={warningCheck ? required ? 'error' : 'warning' : ''}
-                            // helperText={warningCheck ? (<div className={`${style.helperText} ${required ? style.errorColor : style.warningColor}`}>Could not find data</div>) : ''}
-                            focused={warningCheck ? true : false}
-                            disabled={(contractStatus === "ACTIVE" && !window.location.pathname.includes('moveToDraft')) ? true : disabledSelect || false}
+                        // color={warningCheck ? required ? 'error' : 'warning' : ''}
+                        // helperText={warningCheck ? (<div className={`${style.helperText} ${required ? style.errorColor : style.warningColor}`}>Could not find data</div>) : ''}
+                        // focused={warningCheck ? true : false}
+                        // disabled={(contractStatus === "ACTIVE" && !window.location.pathname.includes('moveToDraft')) ? true : disabledSelect || false}
                         >
                             {/* {firstOptionLabel !== '' && (
                             <MenuItem value={firstOptionValue}>{firstOptionLabel}</MenuItem>

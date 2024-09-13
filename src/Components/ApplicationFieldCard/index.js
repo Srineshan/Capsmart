@@ -4,11 +4,13 @@ import CommonInputField from '../CommonFields/CommonInputField';
 import CommonSelectField from '../CommonFields/CommonSelectField';
 import CommonDateField from '../CommonFields/CommonDateField';
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
-import { TextField } from '@mui/material';
+import { TextField, Tooltip } from '@mui/material';
 import { add, format, isValid, parse, sub } from 'date-fns';
 import { FormatPhoneNumber } from '../../utils/formatting';
 import CommonRadio from '../CommonFields/CommonRadio';
 import CommonSwitch from '../CommonFields/CommonSwitch';
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import CheckIcon from '@mui/icons-material/Check';
 import style from './index.module.scss';
@@ -25,10 +27,11 @@ import { SuccessToaster, ErrorToaster } from '../../utils/toaster';
 import TableTwo from '../TableDesignTwo';
 import CommonDropZone from '../CommonFields/CommonDropZone';
 import CommonTextField from '../CommonFields/CommonTextField';
+import CommonLabel from '../CommonFields/CommonLabel';
 
 const TEXTFIELDLEN50 = 50;
 
-const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicForm, showAdd, addMoreType, addMoreOpenBydefault, collapsableQuestionCard, isBasicPath, stepPath, formId, getIsSubmitClicked, applicationId, tableGrid, setIsEdited, heading, subHeading, subHeading2 }) => {
+const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicForm, showAdd, addMoreType, addMoreOpenBydefault, collapsableQuestionCard, isBasicPath, stepPath, formId, getIsSubmitClicked, applicationId, tableGrid, setIsEdited, heading, subHeading, subHeading2, getAllPath }) => {
     const [calendarStart, setCalendarStart] = useState(false);
     const [isAddMore, setIsAddMore] = useState(addMoreOpenBydefault ? true : false);
     const [isCollapsableCard, setIsCollapsableCard] = useState(true);
@@ -37,10 +40,13 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
     const [files, setFiles] = useState([]);
     const { setValue, value } = useComboboxControls({ initialValue: "" });
     const canadaData = JSON.parse(sessionStorage.getItem('canadaData')) || {};
+    let user = JSON.parse(sessionStorage.getItem('user'));
+    console.log(user)
     useEffect(() => {
         renderObjectFields(object)
         console.log('entered')
     }, [basicForm]);
+    let temp = [];
 
     // const setNestedValue = (obj, path, value) => {
     //     console.log(obj, path, value, 'Test')
@@ -292,17 +298,18 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
 
         // Usage:
         // const conditionMet = checkAllOfConditions(object, `${baseKey}`, fieldKey);
-        console.log(fieldKey, fieldData, getAllThenStrings(object), getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey), object?.then?.required?.includes(fieldKey), '275', parentData)
+        console.log(fieldKey, fieldData, `${basicpath}.${baseKey}.${fieldKey}`, object?.then?.required, getAllThenStrings(object), getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey), object?.then?.required?.includes(fieldKey), '275', parentData)
         // if (object?.then?.required?.includes(fieldKey) !== undefined ? (!object?.then?.required?.includes(fieldKey) || object?.if?.properties !== undefined && getValueByPath(basicForm, `${basicpath}.${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`) === Object.entries(object?.if?.properties)?.map(([key, data]) => data)[0]?.const) : getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) ? (getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) && (getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) && getValueByPath(basicForm, `${basicpath}.${baseKey}.${getAllThenStrings(object)?.filter(data => data?.value === fieldKey)[0]?.key}`) === getAllThenStrings(object)?.filter(data => data?.value === fieldKey)[0]?.checkValue)) : true && fieldData.fieldType) {
         let firstObject;
         let dynamicValue;
         if (object?.if?.properties !== undefined) {
             firstObject = Object.entries(object?.if?.properties)?.map(([key, data]) => data)[0]; // Get the first key dynamically
             dynamicValue = Object.keys(firstObject)?.[0];
-            console.log(firstObject, firstObject[dynamicValue])
+            console.log(firstObject, firstObject[dynamicValue], '275', getValueByPath(basicForm, `${basicpath}.${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`), dynamicValue)
         }
         console.log(dynamicValue)
-        if (object?.then?.required?.includes(fieldKey) !== undefined ? (!object?.then?.required?.includes(fieldKey) || (object?.if?.properties !== undefined && Array.isArray(firstObject[dynamicValue]) ? firstObject[dynamicValue]?.includes(getValueByPath(basicForm, `${basicpath}.${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`)) : getValueByPath(basicForm, `${basicpath}.${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`) === dynamicValue)) : getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) ? (getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) && (getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) && getValueByPath(basicForm, `${basicpath}.${baseKey}.${getAllThenStrings(object)?.filter(data => data?.value === fieldKey)[0]?.key}`) === getAllThenStrings(object)?.filter(data => data?.value === fieldKey)[0]?.checkValue)) : true && fieldData.fieldType) {
+        if (object?.then?.required?.includes(fieldKey) !== undefined ? (!object?.then?.required?.includes(fieldKey) || (object?.if?.properties !== undefined && Array.isArray(firstObject[dynamicValue]) ? firstObject[dynamicValue]?.includes(getValueByPath(basicForm, `${basicpath}.${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`)) : getValueByPath(basicForm, `${basicpath}.${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`) === firstObject[dynamicValue])) : getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) ? (getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) && (getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) && getValueByPath(basicForm, `${basicpath}.${baseKey}.${getAllThenStrings(object)?.filter(data => data?.value === fieldKey)[0]?.key}`) === getAllThenStrings(object)?.filter(data => data?.value === fieldKey)[0]?.checkValue)) : true && fieldData.fieldType) {
+            // getAllPath(`${basicpath}.${baseKey}.${fieldKey}`)
             switch (fieldData.fieldType) {
                 case 'dropdown':
                     console.log(getValueByPath(basicForm, 'forms[1]'), `${basicpath}.${baseKey}.${fieldKey}`, 'dropdown', basicForm)
@@ -330,7 +337,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                                 className={`${style.fullWidth} ${style.marginTop10}`}
                                 maxLength={TEXTFIELDLEN50}
                                 onChange={(e) => handleChange(fieldKey, e.target.value, baseKey)}
-                                placeholder={fieldData.label !== null ? `Enter ${fieldData.label}` : null}
+                                placeholder={fieldData.placeHolder !== null ? fieldData.placeHolder : fieldData.label !== null ? `Enter ${fieldData.label}` : null}
                                 value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || ''}
                             />
                         </div>
@@ -349,17 +356,34 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                         //     type={fieldData.type}
                         //     min={fieldData.minimum}
                         // />
-                        <CommonTextField
-                            value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || ''}
-                            className={style.fullWidth}
-                            onChange={(e) => handleChange(fieldKey, fieldData.type === "number" ? parseInt(e.target.value <= fieldData.maximum ? e.target.value : fieldData.maximum) : e.target.value, baseKey)}
-                            maxLength={TEXTFIELDLEN50}
-                            placeholder={fieldData.label !== null ? `Enter ${fieldData.label}` : null}
-                            label={fieldData.label}
-                            required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))}
-                            type={fieldData.type}
-                            min={fieldData.minimum}
-                        />
+                        (user?.roles?.filter(data => data?.roleName === "Staff Manager")?.length === 0 && (fieldKey === 'officialEmail' || fieldKey === 'applicantType')) ? (
+                            // <CommonLabel label={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || ''} />\
+                            <div>
+                                <div className={`${style.lableStyle}`}>{fieldData.label}{isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false)) && '*'}</div>
+                                {fieldKey === 'applicantType' ? (
+                                    <Tooltip title={`To change applicant type contact ${basicForm?.createdBy?.name?.firstName} ${basicForm?.createdBy?.name?.lastName !== null ? basicForm?.createdBy?.name?.lastName : ''}`} placement="bottom-start" followCursor>
+                                        <div className={style.lableReadOnlyStyle}>{getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || ''}</div>
+                                    </Tooltip>
+                                ) : (
+                                    <div className={style.lableReadOnlyStyle}>{getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || ''}</div>
+                                )}
+                            </div>
+                        ) : (
+                            <CommonTextField
+                                value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || ''}
+                                className={style.fullWidth}
+                                onChange={(e) => handleChange(fieldKey, fieldData.type === "number" ? parseInt(e.target.value <= fieldData.maximum ? e.target.value : fieldData.maximum) : e.target.value, baseKey)}
+                                maxLength={TEXTFIELDLEN50}
+                                placeholder={fieldData.placeHolder !== null ? fieldData.placeHolder : fieldData.label !== null ? `Enter ${fieldData.label}` : null}
+                                label={fieldData.label}
+                                required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))}
+                                type={fieldData.type}
+                                min={fieldData.minimum}
+                            // InputProps={{
+                            //     readOnly: (user?.roles?.filter(data => data?.roleName === "Staff Manager")?.length === 0 && fieldKey === 'officialEmail') ? true : false,
+                            // }}
+                            />
+                        )
                     );
                 case 'textArea':
                     return (
@@ -370,9 +394,25 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                                 className={`${style.fullWidth} ${style.marginTop10}`}
                                 onChange={(e) => handleChange(fieldKey, e.target.value, baseKey)}
                                 maxLength={TEXTFIELDLEN50}
-                                placeholder={fieldData.label !== null ? `Enter ${fieldData.label}` : null}
+                                placeholder={fieldData.placeHolder !== null ? fieldData.placeHolder : fieldData.label !== null ? `Enter ${fieldData.label}` : null}
                                 rows={4}
                             />
+                        </div>
+                    );
+                case 'ckeditor':
+                    return (
+                        <div>
+                            <div className={`${style.lableStyle}`}>{fieldData.label}{(isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) && '*'}</div>
+                            <div className={style.marginTop10}>
+                                <CKEditor
+                                    editor={ClassicEditor}
+                                    data={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
+                                    onChange={(event, editor) => {
+                                        const data = editor.getData();
+                                        handleChange(fieldKey, data, baseKey);
+                                    }}
+                                />
+                            </div>
                         </div>
                     );
                 case 'cellNumber':
@@ -382,7 +422,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                             value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
                             className={style.fullWidth}
                             onChange={(e) => handleChange(fieldKey, FormatPhoneNumber(e.target.value), baseKey)}
-                            placeholder={fieldData.label !== null ? `Enter ${fieldData.label}` : null}
+                            placeholder={fieldData.placeHolder !== null ? fieldData.placeHolder : fieldData.label !== null ? `Enter ${fieldData.label}` : null}
                             label={fieldData.label}
                             required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))}
                         />
@@ -409,7 +449,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                                     {...params}
                                     inputProps={{
                                         ...params.inputProps,
-                                        placeholder: fieldData.label !== null ? `Enter ${fieldData.label}` : null,
+                                        placeholder: fieldData.placeHolder !== null ? fieldData.placeHolder : fieldData.label !== null ? `Enter ${fieldData.label}` : null,
                                     }}
                                     // color={(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === null || getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === '') ? (isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) ? 'error' : 'warning' : ''}
                                     fullWidth
@@ -478,11 +518,15 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                 case 'fileupload':
                     return (
                         <div>
-                            <div className={`${style.uploadButton} ${style.uploadGrid} ${style.verticalAlignCenter}`}>
-                                <DescriptionOutlinedIcon sx={{ color: '#787f87' }} />
-                                <label for={`file-upload-dynamic-${fieldKey}`} className={`${style.uploadText} ${style.cursorPointer}`}>
-                                    {fieldData.label}
-                                </label>
+                            <div className={`${style.uploadButton}`}>
+                                <div className={style.uploadGrid}>
+                                    <DescriptionOutlinedIcon sx={{ color: '#787f87' }} />
+                                    <label for={`file-upload-dynamic-${fieldKey}`} className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>
+                                        {fieldData.label}
+                                    </label>
+                                    <div className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>Click to upload</div>
+                                    <div className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>{(isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) ? 'Required' : 'Recommended'}</div>
+                                </div>
                             </div>
                             <input id={`file-upload-dynamic-${fieldKey}`} type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx" onChange={(e) => { handleChange(fieldKey, e.target.files[0], baseKey) }} />
                         </div>
@@ -713,7 +757,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                     <div className={`${style.addMoreBorder} ${style.marginTop}`}>
                         {isAddMore ? (
                             <div className={style.padding20}>
-                                <div className={style.addMoreText}>{object?.items?.label}</div>
+                                <div className={style.addMoreText} dangerouslySetInnerHTML={{ __html: object?.items?.label }} />
                                 <div className={`${gridStyle} ${style.marginTop}`}>
                                     {object?.type === "object" ? renderObjectFields(object, object?.properties) : object?.type === "array" ? renderObjectFields(object, object?.items?.properties) : renderObjectFields(object, object?.properties)}
                                 </div>
@@ -728,7 +772,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                             </div>
                         ) : (
                             <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.padding10}`}>
-                                <div className={style.addMoreText}>{object?.items?.label}</div>
+                                <div className={style.addMoreText} dangerouslySetInnerHTML={{ __html: object?.items?.label }} />
                                 <div className={`${style.addMoreButton} ${style.marginLeft}`} onClick={() => setIsAddMore(true)}>ADD</div>
                             </div>
                         )}
