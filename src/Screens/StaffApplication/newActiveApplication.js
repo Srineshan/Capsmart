@@ -455,9 +455,9 @@ const NewActiveApplication = ({
                 </div>
               </div>
             </div>
-            <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}  ${style.marginTop20} ${style.alignCenter} ${style.statusCardHeight} ${style.flex}`}>
-              <div className={`${style.greyBigDotStyle} `}></div>
-              <div className={`${style.cardTextBoldStyle}`}>Overall Verification & Acceptance Status</div>
+            <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}  ${style.marginTop20} ${style.statusCardHeight} ${style.displayInCol}`}>
+              <div className={style.justifyCenter}><div className={`${style.greyBigDotStyle} `}></div></div>
+              <div className={`${style.greyDotTextStyle}`}>Overall Verification & Acceptance Status</div>
             </div>
           </div>
 
