@@ -34,6 +34,7 @@ const TEXTFIELDLEN50 = 50;
 
 const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicForm, showAdd, addMoreType, addMoreOpenBydefault, collapsableQuestionCard, isBasicPath, stepPath, formId, getIsSubmitClicked, applicationId, tableGrid, setIsEdited, heading, subHeading, subHeading2, getAllPath, isPOD, getAllLabels, warningFields }) => {
     const [calendarStart, setCalendarStart] = useState(false);
+    const { section, step } = useParams();
     const [isAddMore, setIsAddMore] = useState(addMoreOpenBydefault ? true : false);
     const [isCollapsableCard, setIsCollapsableCard] = useState(true);
     const basicpath = isBasicPath ? 'basicDetails' : stepPath;
