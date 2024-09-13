@@ -5,7 +5,7 @@ import ApplicationAssistanceCard from '../../../Components/ApplicationAssistance
 import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
-import { GET, PUT } from '../../dataSaver';
+import { GET, POST, PUT } from '../../dataSaver';
 import { useNavigate } from 'react-router-dom';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 
@@ -53,6 +53,18 @@ const Step13 = ({ basicForm, setBasicForm, applicationId }) => {
         }
     }
 
+    const handleSubmitApplication = async () => {
+        await POST(`application-management-service/application/${applicationId}/submit`)
+            .then(response => {
+                console.log(response)
+                SuccessToaster("Application Submitted Successfully");
+            })
+            .catch((error) => {
+                console.log(error)
+                ErrorToaster("Unexpected Error Submitting Application");
+            });
+    }
+
     const getIsEdited = (value) => {
         setIsEdited(value)
     }
@@ -72,7 +84,7 @@ const Step13 = ({ basicForm, setBasicForm, applicationId }) => {
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-                    <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
+                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleSubmitApplication()}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => { handleSubmitApplicationReq() }}>CONTINUE</div>
