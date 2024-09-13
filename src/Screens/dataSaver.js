@@ -14,7 +14,7 @@ let cookie = new Cookie();
 let tenantId = cookie.get("entityId");
 const headers = {
     "Content-Type": "application/json",
-    "X-tenantID": TenantID,
+    "X-tenantID": tenantId,
     "X-Authorization": `Bearer ${accessToken}`,
 };
 
