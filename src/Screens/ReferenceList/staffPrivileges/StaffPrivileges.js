@@ -161,7 +161,6 @@ const StaffPrivileges = () => {
                   tableHeadKeys={tableHeadKeys}
                   tileType={"StaffPrivileges"}
                   groupFirstTwoColumn={true}
-                  onDelete={handleDelete}
                   onEditClick={(data) => {
                     console.log(data);
                     setIsEdit(true);
