@@ -586,7 +586,7 @@ const NewActiveApplication = ({
                     <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                       <div className={`${(expand?.status && expand?.index === 0) ? style.tableHeaderTextStyle : style.tableDataFontStyle1}`}>Applicant Profile Information</div>
                     </div>
-                    {form?.basicInformationStatus ? <div className={`${style.greenButton}  `}> <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Verified</div>
+                    {(expand?.status && expand?.index === 0) ? <div className={`${style.greenButton}  `}> <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Verified</div>
                     </div> : <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                       <div className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}></div>
                     </div>}

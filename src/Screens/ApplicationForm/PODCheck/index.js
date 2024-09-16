@@ -93,7 +93,7 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
                         </div>
                         <div className={`${style.tableDataStyle} ${style.marginTop5} ${style.tableValueGridStyle} `}>
                             <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                <div className={`${style.marginLeft5} ${style.tableDataFontDisabledStyle1}}`}>Step 1</div>
+                                <div className={`${style.marginLeft5} ${style.tableDataFontDisabledStyle1}}`}></div>
                             </div>
                             <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                                 <div className={`${style.tableDataFontStyle1}`}> Applicant Profile Information</div>
