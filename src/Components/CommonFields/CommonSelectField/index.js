@@ -5,9 +5,9 @@ import { FormControl } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import style from './index.module.scss';
 
-const CommonSelectField = ({ value, onChange, className, firstOptionLabel, firstOptionValue, valueList, labelList, disabledList, disabledSelect, defaultValue, widthValue, menuColor, error, label, required }) => {
+const CommonSelectField = ({ value, onChange, className, firstOptionLabel, firstOptionValue, valueList, labelList, disabledList, disabledSelect, defaultValue, widthValue, menuColor, error, label, required, warning }) => {
     const contractStatus = sessionStorage.getItem('Selected Contract Status');
-    const warningCheck = (value === '');
+    const warningCheck = (value === '' || value === undefined || value === null);
     const theme = createTheme({
         palette: {
             error: {
@@ -37,7 +37,7 @@ const CommonSelectField = ({ value, onChange, className, firstOptionLabel, first
                             color: warningCheck ? !required ? theme.palette.error.main : theme.palette.warning.main : '',
                         },
                     }}`}
-                    // error={warningCheck}
+                        error={warningCheck && warning}
                     >
                         <Select
                             labelId="demo-simple-select-error-label"
@@ -50,9 +50,9 @@ const CommonSelectField = ({ value, onChange, className, firstOptionLabel, first
                             className={className}
                             error={error}
                             inputProps={{ style: { textAlign: "right" } }}
-                        // color={warningCheck ? required ? 'error' : 'warning' : ''}
-                        // helperText={warningCheck ? (<div className={`${style.helperText} ${required ? style.errorColor : style.warningColor}`}>Could not find data</div>) : ''}
-                        // focused={warningCheck ? true : false}
+                            color={(warningCheck && warning) ? 'error' : ''}
+                            // helperText={warningCheck ? (<div className={`${style.helperText} ${required ? style.errorColor : style.warningColor}`}>Could not find data</div>) : ''}
+                            focused={(warningCheck && warning) ? true : false}
                         // disabled={(contractStatus === "ACTIVE" && !window.location.pathname.includes('moveToDraft')) ? true : disabledSelect || false}
                         >
                             {/* {firstOptionLabel !== '' && (

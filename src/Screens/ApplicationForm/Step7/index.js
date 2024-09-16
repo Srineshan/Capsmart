@@ -55,7 +55,7 @@ const Step7 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
             navigate(-1);
         }
         else {
-            navigate('/applicationForm/section1/step8')
+            navigate('/applicationForm/section1/step10')
 
         }
     }

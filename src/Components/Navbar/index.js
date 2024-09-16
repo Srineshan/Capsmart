@@ -317,7 +317,7 @@ const Navbar = () => {
           {
             // <img src={SanmateoLogo} alt="Hospital Logo" className={style.logo} />
           }
-          <img src={logo} alt="Hospital Logo" className={style.sanmateoLogo} />
+          <img src={'https://dev-application-management-service.s3.amazonaws.com/CMH/cmh_logo.jpg'} alt="Hospital Logo" className={style.sanmateoLogo} />
           {/* <div
             className={`${style.menuStyle} ${window.location.pathname.includes(homeLink) && !window.location.pathname.includes('contractsWithABusinessEntity') &&
               style.activeMenuColor
@@ -345,33 +345,21 @@ const Navbar = () => {
               </Link>
             )
           } */}
-          {
-            isContractManager && (
-              <Link to={'/applications'} className={style.noFontStyle}>
-                <div className={`${style.menuStyle} ${window.location.pathname.includes("/applications") && style.activeMenuColor}`}>
-                  <p>STAFF APPLICATIONS</p>
-                </div>
-              </Link>
-            )
-          }
-          {
-            isContractManager && (
-              <Link to={'/activeStaff'} className={style.noFontStyle}>
-                <div className={`${style.menuStyle} ${window.location.pathname.includes("/activeStaff") && style.activeMenuColor}`}>
-                  <p>ACTIVE STAFF</p>
-                </div>
-              </Link>
-            )
-          }
-          {
-            isContractManager && (
-              // <Link to={'/'} className={style.noFontStyle}>
-              <div className={`${style.menuStyle} ${window.location.pathname.includes("/inactiveStaff") && style.activeMenuColor}`}>
-                <p>INACTIVE STAFF</p>
-              </div>
-              // </Link>
-            )
-          }
+          <Link to={'/applications'} className={style.noFontStyle}>
+            <div className={`${style.menuStyle} ${window.location.pathname.includes("/applications") && style.activeMenuColor}`}>
+              <p>STAFF APPLICATIONS</p>
+            </div>
+          </Link>
+          <Link to={'/activeStaff'} className={style.noFontStyle}>
+            <div className={`${style.menuStyle} ${window.location.pathname.includes("/activeStaff") && style.activeMenuColor}`}>
+              <p>ACTIVE STAFF</p>
+            </div>
+          </Link>
+
+          <div className={`${style.menuStyle} ${window.location.pathname.includes("/inactiveStaff") && style.activeMenuColor}`}>
+            <p>INACTIVE STAFF</p>
+          </div>
+
           {/* {
             isContractManager && (
               <div>

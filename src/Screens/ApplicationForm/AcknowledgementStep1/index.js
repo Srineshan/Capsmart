@@ -4,7 +4,7 @@ import ApplicationUserCard from '../../../Components/ApplicationUserCard';
 import ApplicationAssistanceCard from '../../../Components/ApplicationAssistanceCard';
 import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import logo from "../../../images/cambridgeHospital.png";
-import { GET, PUT } from '../../dataSaver';
+import { GET, PUT, POST } from '../../dataSaver';
 import { useNavigate } from 'react-router-dom';
 import html2pdf from "html2pdf.js";
 import CryptoJS from 'crypto-js';
@@ -15,7 +15,7 @@ import { format } from 'date-fns';
 import { SuccessToaster, ErrorToaster } from '../../../utils/toaster';
 import ESignature from '../../../Components/ESignature';
 
-const ApplicationAcknowledgementStep1 = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApplication }) => {
+const ApplicationAcknowledgementStep1 = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApplication, applicationId }) => {
     const [isChecked, setIsChecked] = useState(false);
     const navigate = useNavigate()
     const targetRef = useRef();
@@ -29,17 +29,18 @@ const ApplicationAcknowledgementStep1 = ({ acknowledgementForm, dateFormat, name
     const [formSchema, setFormSchema] = useState();
     const [formContent, setFormContent] = useState();
     const [signText, setSignText] = useState(name + " " + currentDate);
+    const [blobFormat, setBlobFormat] = useState();
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
         }
-        setIsChecked(basicForm?.forms?.[12]?.acknowledged);
-        // setEncryptedText(basicForm?.forms?.[12]?.esign?.esign)
-        setSignText(basicForm?.forms?.[12]?.acknowledged ? basicForm?.forms?.[12]?.esign?.esign : '');
-        setIsSigned((basicForm?.forms?.[12]?.esign?.esign !== undefined && basicForm?.forms?.[12]?.acknowledged) ? true : false);
-        // setDecryptedText(CryptoJS.AES.decrypt(basicForm?.forms?.[12]?.esign?.esign, publicKey).toString(CryptoJS.enc.Utf8))
+        setIsChecked(basicForm?.forms?.[10]?.acknowledged);
+        // setEncryptedText(basicForm?.forms?.[10]?.esign?.esign)
+        setSignText(basicForm?.forms?.[10]?.acknowledged ? basicForm?.forms?.[10]?.esign?.esign : '');
+        setIsSigned((basicForm?.forms?.[10]?.esign?.esign !== undefined && basicForm?.forms?.[10]?.acknowledged) ? true : false);
+        // setDecryptedText(CryptoJS.AES.decrypt(basicForm?.forms?.[10]?.esign?.esign, publicKey).toString(CryptoJS.enc.Utf8))
     }, [basicForm])
-    console.log(basicForm?.forms?.[12]?.esign?.esign, encryptedText, basicForm?.forms?.[12]?.acknowledged)
+    console.log(basicForm?.forms?.[10]?.esign?.esign, encryptedText, basicForm?.forms?.[10]?.acknowledged)
 
     useEffect(() => {
         getRenderedContent()
@@ -47,21 +48,75 @@ const ApplicationAcknowledgementStep1 = ({ acknowledgementForm, dateFormat, name
 
     const getFormSchema = async () => {
         const { data: form } = await GET(
-            `application-management-service/formSchema/${basicForm?.formSchemas?.[12]?.id}`
+            `application-management-service/formSchema/${basicForm?.formSchemas?.[10]?.id}`
         );
         setFormSchema(form)
     }
 
     const getRenderedContent = async () => {
         const { data: content } = await GET(
-            `application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[12]?.id}/render`
+            `application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[10]?.id}/render`
         );
         setFormContent(content)
     }
 
+    const base64ToUint8Array = (base64) => {
+        var binaryString = atob(base64);
+        var bytes = new Uint8Array(binaryString.length);
+        for (var i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+        }
+        return bytes;
+    }
 
+    const getImgBlob = async (base64) => {
+        return base64ToUint8Array(base64.replace(/^data:image\/\w+;base64,/, ''))
+    };
 
     console.log(formSchema)
+
+    const addNewDocument = async (file) => {
+        console.log(file, file?.name, 'Test')
+        let fileName = {
+            "fileName": 'acknowledgement'
+        };
+        const formData = new FormData();
+
+        if (file !== null) {
+            // const blob = new Blob([blobFormat], { type: `application/pdf` });
+            // formData.append('files', new Blob([JSON.stringify(fileName)], {
+            //     type: "application/json"
+            // }));
+            // formData.append('files', 'acknowledgement');
+            // formData.append('documents', file);
+            formData.append('file', file);
+
+            // await POST(`application-management-service/application/${applicationId}/files`, formData)
+            //     .then(response => {
+            //         SuccessToaster('File Uploaded Successfully');
+            //         console.log(response?.data)
+            //         return response?.data;
+            //     })
+            //     .catch(error => {
+            //         ErrorToaster('File Upload Failed');
+            //     })
+            try {
+                const response = await POST(`application-management-service/application/${applicationId}/files`, formData);
+                console.log(response?.data);
+                try {
+                    const response = await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[10]?.id}/addFileToForm`, response?.data);
+                    console.log(response?.data);
+                    return response?.data;
+                } catch (error) {
+                    console.error(error);
+                    return null;
+                }
+            } catch (error) {
+                console.error(error);
+                return null;
+            }
+        }
+    }
 
     const handleDownload = () => {
         const element = targetRef.current;
@@ -81,15 +136,11 @@ const ApplicationAcknowledgementStep1 = ({ acknowledgementForm, dateFormat, name
         nestedElements.forEach((_element) => {
             _element.classList.remove('applicationCardScrollStyle');
         });
-        // html2pdf().set(opt).from(element).outputPdf('datauristring').then((pdfBase64) => {
-        //     console.log(pdfBase64);
-        //     const newWindow = window.open();
-        //     if (newWindow) {
-        //         newWindow.document.write('<iframe width="100%" height="100%" src="' + pdfBase64 + '"></iframe>');
-        //     } else {
-        //         console.log("Popup blocked or failed to open");
-        //     }
-        // });
+        html2pdf().set(opt).from(element).outputPdf('datauristring').then((pdfBase64) => {
+            console.log(pdfBase64);
+            // let temp = getImgBlob(pdfBase64);
+            // addNewDocument(pdfBase64);
+        });
         html2pdf().set(opt).from(element).save();
     };
 
@@ -101,37 +152,53 @@ const ApplicationAcknowledgementStep1 = ({ acknowledgementForm, dateFormat, name
         }
     }
 
+    const handleSubmitApplication = async () => {
+        await POST(`application-management-service/application/${applicationId}/submit`)
+            .then(response => {
+                console.log(response)
+                SuccessToaster("Application Submitted Successfully");
+            })
+            .catch((error) => {
+                console.log(error)
+                ErrorToaster("Unexpected Error Submitting Application");
+            });
+    }
+
     const handleSubmitApplicationReq = async () => {
-        if (isEdited) {
+        if (isSigned) {
             let temp = {
-                schemaId: basicForm?.forms?.[12]?.schemaId,
-                data: !isEdited ? basicForm?.forms?.[12]?.data : { esignDate: isChecked ? name + " " + currentDate : '' },
+                schemaId: basicForm?.forms?.[10]?.schemaId,
+                data: !isEdited ? basicForm?.forms?.[10]?.data : { esignDate: isChecked ? name + " " + currentDate : '' },
                 acknowledged: isChecked,
                 esign: { esign: isChecked ? encryptedText : '', name: isChecked ? name : '', signedDate: isChecked ? currentDate : '' }
             }
-            await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[12]?.id}`, temp)
+            await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[10]?.id}`, temp)
                 .then(response => {
                     console.log(response)
                     getPreApplication()
                     SuccessToaster("Application Updated Successfully");
+                    handleDownload();
                     getFormSchema();
+                    handleSubmitApplication()
                     if (sessionStorage.getItem('fromSummary') === 'true') {
                         navigate(-1);
-                    } else {
-                        navigate('/applicationForm/section1/acknowledgementStep3')
                     }
+                    // else {
+                    //     navigate('/applicationForm/section1/acknowledgementStep3')
+                    // }
                 })
                 .catch((error) => {
                     console.log(error)
                     ErrorToaster("Unexpected Error Updating Application");
                 });
-        } else {
-            if (sessionStorage.getItem('fromSummary') === 'true') {
-                navigate(-1);
-            } else {
-                navigate('/applicationForm/section1/acknowledgementStep3')
-            }
         }
+        // else {
+        //     if (sessionStorage.getItem('fromSummary') === 'true') {
+        //         navigate(-1);
+        //     } else {
+        //         navigate('/applicationForm/section1/acknowledgementStep3')
+        //     }
+        // }
     }
     return (
         <div>
@@ -230,20 +297,28 @@ const ApplicationAcknowledgementStep1 = ({ acknowledgementForm, dateFormat, name
                             />
                         </div>
                         {acknowledgementForm?.esignatureRequiredOnEachPage && (
-                            <div onClick={isChecked ? () => { setIsSigned(!isSigned); setIsEdited(true) } : () => { }} className={!isChecked ? style.disabled : ''}>
-                                <ESignature
-                                    userName={isSigned ? name + " " + currentDate : ""}
-                                    encData={isSigned ? encryptedText : ''}
-                                    showData={true}
-                                    showDatais={true}
-                                />
+                            <div className={style.twoCol}>
+                                <div onClick={isChecked ? () => { setIsSigned(!isSigned); setIsEdited(true) } : () => { }} className={!isChecked ? style.disabled : ''}>
+                                    <ESignature
+                                        userName={isSigned ? name : ""}
+                                        encData={isSigned ? encryptedText : ''}
+                                        showData={true}
+                                        showDatais={true}
+                                    />
+                                </div>
+                                <div className={style.verticalAlignCenter}>
+                                    <div className={style.displayInRow}>
+                                        <div className={style.dateTitle}>Date: </div>
+                                        <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? currentDate : ""}</div>
+                                    </div>
+                                </div>
                             </div>
                         )}
                     </div>
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={handleDownload}>SAVE IN PROGRESS</div>
+                    <div className={`${style.saveInProgress} ${style.marginTop}`} >SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()} >CONTINUE</div>

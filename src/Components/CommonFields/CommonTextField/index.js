@@ -3,9 +3,9 @@ import TextField from '@mui/material/TextField';
 import { preventNegativeValues } from '../../../utils/formatting';
 import style from './index.module.scss';
 
-const CommonTextField = ({ value, onChange, readOnly, className, type, maxLength, disabled, InputProps, key, defaultValue, min, placeholder, label, required }) => {
+const CommonTextField = ({ value, onChange, readOnly, className, type, maxLength, disabled, InputProps, key, defaultValue, min, placeholder, label, required, warning }) => {
     const contractStatus = sessionStorage.getItem('Selected Contract Status');
-    const warningCheck = type === 'number' ? (value === 0 || (isNaN(value) && value !== undefined) || value === '') : (value === '');
+    const warningCheck = type === 'number' ? (value === 0 || (isNaN(value) && value !== undefined) || value === '') : (value === '' || value === null || value === undefined);
     console.log(value, isNaN(value), warningCheck, type)
 
     return (
@@ -31,9 +31,9 @@ const CommonTextField = ({ value, onChange, readOnly, className, type, maxLength
                 key={key}
                 defaultValue={defaultValue}
                 onKeyDown={(type === 'number' || type === 'tel') ? preventNegativeValues : () => { }}
-            // color={warningCheck ? required ? 'error' : 'warning' : ''}
-            // helperText={warningCheck ? (<div className={`${style.helperText} ${required ? style.errorColor : style.warningColor}`}>Could not find data</div>) : ''}
-            // focused={warningCheck ? true : false}
+                color={(warning && warningCheck) ? 'error' : ''}
+                // helperText={warningCheck ? (<div className={`${style.helperText} ${required ? style.errorColor : style.warningColor}`}>Could not find data</div>) : ''}
+                focused={(warning && warningCheck) ? true : false}
             />
         </div>
     )
