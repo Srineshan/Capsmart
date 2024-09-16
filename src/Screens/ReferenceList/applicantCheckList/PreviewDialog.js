@@ -47,7 +47,9 @@ const PreviewDialog = ({ open, handleClose }) => {
         className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}
       >
         <div className={style.spaceBetween}>
-          <p className={style.extensionStyle}>{`Add New Applicant Type For`}</p>
+          <p
+            className={style.extensionStyle}
+          >{`Applicant Processing Status For:`}</p>
           <div className={`${style.floatRight} ${style.imageSpaceAlignment}`}>
             <PrintOutlinedIcon
               className={`${style.headerPrintIcon} ${style.cursorPointer}`}

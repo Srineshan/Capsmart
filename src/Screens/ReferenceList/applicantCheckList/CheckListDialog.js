@@ -9,6 +9,7 @@ import {
   Button,
   RadioGroup,
   Radio,
+  Checkbox,
 } from "@blueprintjs/core";
 import style from "./../index.module.scss";
 import { GET, POST, PUT, TenantID } from "../../dataSaver";
@@ -122,7 +123,9 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
         className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}
       >
         <div className={style.spaceBetween}>
-          <p className={style.extensionStyle}>{`Add New Applicant Type For`}</p>
+          <p
+            className={style.extensionStyle}
+          >{`Application Processing Task/Activity`}</p>
           <div className={`${style.floatRight} ${style.imageSpaceAlignment}`}>
             <img
               src={WritingFile}
@@ -279,8 +282,17 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                 </Box>
               </Box>
               <div className={style.marginTop20}>
-                <div className={style.entityLableStyle}>
+                <div
+                  className={`${style.entityLableStyle} ${style.spaceBetween}`}
+                >
                   SELECT EMAIL ADDRESSES TO SEND TO*
+                  <Checkbox
+                    // value="ADD SUB-REASONS"
+                    // checked={addSubReasons}
+                    // onChange={(e) => handleAddSubReasons(e.target.checked)}
+                    className={` ${style.marginLeft20} ${style.marginTop}`}
+                    label="INCLUDE APPLICANT EMAIL ADDRESS"
+                  />
                 </div>
                 <CommonInputField
                   value={""}
@@ -291,8 +303,17 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                 />
               </div>
               <div className={style.marginTop20}>
-                <div className={style.entityLableStyle}>
+                <div
+                  className={`${style.entityLableStyle} ${style.spaceBetween}`}
+                >
                   SELECT EMAIL ADDRESSES TO SEND CC*
+                  <Checkbox
+                    // value="ADD SUB-REASONS"
+                    // checked={addSubReasons}
+                    // onChange={(e) => handleAddSubReasons(e.target.checked)}
+                    className={` ${style.marginLeft20} ${style.marginTop}`}
+                    label="INCLUDE APPLICANT EMAIL ADDRESS"
+                  />
                 </div>
                 <CommonInputField
                   value={""}
@@ -440,6 +461,11 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
               onClick={() => setPreviewOpen(true)}
             >
               PREVIEW
+            </button>
+            <button
+              className={`${style.outlinedButton} ${style.borderRadius10}`}
+            >
+              BULK UPOAD
             </button>
           </div>
           <div className={`${style.floatRight} ${style.marginTop20}`}>
