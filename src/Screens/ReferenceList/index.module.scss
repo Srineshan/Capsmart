@@ -1506,6 +1506,20 @@
   color: #52575d;
   margin-top: 5px;
 }
+.entityLableStyle2 {
+  text-align: left;
+  font: normal normal normal 14px/20px proxima-nova;
+  letter-spacing: 0px;
+  color: #52575d;
+  margin-top: 5px;
+}
+.entityLableStyle3 {
+  text-align: left;
+  font: normal normal normal 13px/8px proxima-nova;
+  letter-spacing: 0px;
+  color: #52575d;
+  margin-top: 5px;
+}
 
 .entityLableStyle1 {
   text-align: left;
@@ -2866,13 +2880,14 @@
   color: #7165e3;
 }
 
-.inputGroupText>input {
+.inputGroupText > input {
   text-align: center;
 }
 
 .selectDropdownInputBox {
   border-radius: 4px;
-  background: transparent url("../../images/arrowDown.png") 0% 0% no-repeat padding-box;
+  background: transparent url("../../images/arrowDown.png") 0% 0% no-repeat
+    padding-box;
   border: 1px solid #e9e9f0;
   background-position: right center;
   background-repeat: no-repeat;
@@ -2993,13 +3008,13 @@
 }
 
 .sideActiveBackground {
-  background-color: #F2F1FD;
-  border: 1px solid #7165E3;
+  background-color: #f2f1fd;
+  border: 1px solid #7165e3;
   opacity: 1;
 }
 
 .sideNonActiveBackground {
-  background-color: #EBEBEB;
+  background-color: #ebebeb;
   opacity: 0.8;
 }
 
@@ -3065,7 +3080,7 @@
   text-align: left;
   font: normal normal 600 17px/21px proxima-nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #52575d;
   text-transform: uppercase;
   height: 30px;
   padding: 10px 20px;
@@ -3081,12 +3096,12 @@
   padding: 10px;
 }
 
-.applicantItem>td {
+.applicantItem > td {
   vertical-align: middle;
   height: 30px;
 }
 
-.applicantItem>tr {
+.applicantItem > tr {
   vertical-align: middle;
   height: 30px;
 }
@@ -3100,7 +3115,7 @@
   border: 1px solid;
   font: normal normal normal 16px/30px proxima-nova;
   text-align: left;
-  color: #52575D;
+  color: #52575d;
   padding: 10px 20px;
 }
 
@@ -3383,11 +3398,11 @@
   border-radius: 50%;
 }
 
-.switch input:checked+.slider {
+.switch input:checked + .slider {
   background-color: #2196f3;
 }
 
-.switch input:checked+.slider:before {
+.switch input:checked + .slider:before {
   transform: translateX(20px);
 }
 
@@ -3480,11 +3495,11 @@
   border-radius: 50%;
 }
 
-input:checked+.slider {
+input:checked + .slider {
   background-color: #4caf50;
 }
 
-input:checked+.slider:before {
+input:checked + .slider:before {
   transform: translateX(14px);
 }
 
@@ -3650,6 +3665,15 @@ input:checked+.slider:before {
   margin: 0 auto;
   /* Center the container horizontally */
   position: relative;
+}
+
+.flexContainer {
+  display: flex;
+  justify-content: space-between;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); // Adjust shadow as needed
+  padding: 10px 20px; // Top and bottom padding, right and left padding
+  border-radius: 8px; // Adjust the radius as needed
+  background-color: #fff; // Optional: Add a background color if needed
 }
 
 .fileUploadLabel {

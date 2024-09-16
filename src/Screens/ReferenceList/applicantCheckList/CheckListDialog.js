@@ -22,6 +22,9 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import { Switch, makeStyles } from "@material-ui/core";
 import { Box } from "@mui/material";
 import Chip from "@mui/material/Chip";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import PreviewDialog from "./PreviewDialog";
 
 const useStyles = makeStyles({
   switch: {
@@ -45,7 +48,8 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
     useState(false);
   const [isCompletionDependant, setIsCompletionDependant] = useState(false);
 
-  const [selectedValue, setSelectedValue] = useState(""); // Default value
+  const [selectedValue, setSelectedValue] = useState("");
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   const sites = [
     { id: 1, name: "Send notification email" },
@@ -313,6 +317,10 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                   <p>FOR[APPLICANT NAME]</p>
                 </Box>
               </div>
+              <div className={style.marginTop20}>
+                <div className={style.entityLableStyle}>EMAIL CONTENTENTS*</div>
+                <CKEditor editor={ClassicEditor} />
+              </div>
               <div className={`${style.marginTop20} ${style.validation}`}>
                 <div className={style.entityLableStyle}>SEND AS*</div>
                 {sendAs.map((item) => (
@@ -429,6 +437,7 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
           <div className={`${style.marginTop20} `} style={{ float: "left" }}>
             <button
               className={`${style.outlinedButton} ${style.borderRadius10}`}
+              onClick={() => setPreviewOpen(true)}
             >
               PREVIEW
             </button>
@@ -447,6 +456,10 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
           </div>
         </div>
       </div>
+      <PreviewDialog
+        open={previewOpen}
+        handleClose={() => setPreviewOpen(false)}
+      />
     </Dialog>
   );
 };
