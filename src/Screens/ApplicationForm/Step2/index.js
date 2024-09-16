@@ -8,18 +8,23 @@ import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { GET, PUT, POST } from '../../dataSaver';
 import { useNavigate } from 'react-router-dom';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 import style from './index.module.scss';
+import DoneIcon from '@mui/icons-material/Done';
 import { format } from 'date-fns';
 import CommonDropZone from '../../../Components/CommonFields/CommonDropZone';
 import ESignDialog from '../../../Components/ESignDialog';
 import TableTwo from '../../../Components/TableDesignTwo';
 import CommonSelectField from '../../../Components/CommonFields/CommonSelectField';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
+import CommonDivider from '../../../Components/CommonFields/CommonDivider';
+import { getValueByPath } from '../../../utils/formatting';
 
 const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
     const [formSchema, setFormSchema] = useState();
@@ -28,7 +33,11 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
     const [openCategoryIndex, setOpenCategoryIndex] = useState(-1);
     const [isShowESignDialog, setIsShowESignDialog] = useState(false);
     const [files, setFiles] = useState([]);
+    const [isCollapsableCard, setIsCollapsableCard] = useState(true);
     const [replaceFileIndex, setReplaceFileIndex] = useState(-1)
+    let eSignTitle = getValueByPath(basicForm, 'forms[0].data.setUpYourSignature.title');
+    let eSignInitial = getValueByPath(basicForm, 'forms[0].data.setUpYourSignature.initial')
+    let showRedBorderForESign = ((eSignTitle === '' || eSignTitle === undefined) || (eSignInitial === '' || eSignInitial === undefined))
     let tempValue = basicForm?.forms?.[0]?.data === null ? { setUpYourSignature: {}, table: [] } : basicForm?.forms?.[0]?.data;
     const navigate = useNavigate()
     useEffect(() => {
@@ -168,11 +177,31 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
             });
         temp[index].documentType = value;
         if (value !== null || value !== "") {
-            temp[index].requirement = !basicForm?.documentsRequired?.filter(data => data?.document?.name === value)?.[0]?.required ? 'Mandatory' : 'Recommended';
+            temp[index].requirement = !basicForm?.documentsRequired?.filter(data => data?.document?.name === value)?.[0]?.required ? 'Required' : 'Recommended';
         }
         console.log(temp)
         handleSubmitApplicationReq(temp)
     }
+
+    const getDropDownValues = (type) => {
+        let value = [];
+        basicForm?.documentsRequired?.map(data => {
+            if (data?.multiFile) {
+                console.log(data?.document?.name)
+                value.push(data?.document?.name)
+            } else if (type === data?.document?.name) {
+                value.push(data?.document?.name)
+            } else {
+                if (tempValue?.table?.filter(singleFileData => singleFileData?.documentType === data?.document?.name)?.length === 0) {
+                    value.push(data?.document?.name)
+                    console.log(data?.document?.name, tempValue?.table, data)
+                }
+            }
+        })
+        console.log(tempValue?.table?.filter(singleFileData => singleFileData?.documentType === 'Current Curriculam Vitae'))
+        return value;
+    }
+
 
     const getApplicantValues = (array) => {
         let temp = [];
@@ -188,9 +217,9 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
                             className={style.fullWidth}
                             // firstOptionLabel={fieldData.label}
                             // firstOptionValue={fieldData.label}
-                            valueList={basicForm?.documentsRequired?.map(data => data?.document?.name) || []}
-                            labelList={basicForm?.documentsRequired?.map(data => data?.document?.name) || []}
-                            disabledList={basicForm?.documentsRequired?.map(data => false)}
+                            valueList={getDropDownValues(innerData[data]) || []}
+                            labelList={getDropDownValues(innerData[data]) || []}
+                            disabledList={getDropDownValues(innerData[data])?.map(data => false)}
                         />)
                     });
                 } else if (data === "valid") {
@@ -250,6 +279,8 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
         setIsEdited(value)
     }
 
+    console.log(showRedBorderForESign, eSignInitial, eSignTitle)
+
     const handleContinue = () => {
         if (sessionStorage.getItem('fromSummary') === "true") {
             navigate(-1);
@@ -271,23 +302,44 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
                         {formSchema !== undefined && 'uploadTheDocument' in formSchema?.properties && (
                             <ApplicationFieldCard object={formSchema?.properties?.uploadTheDocument} gridStyle={style.twoCol} baseKey={'uploadTheDocument'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[0].data`} />
                         )}
-                        <div className={`${style.tableHeader} ${style.tableGrid}`}>
-                            <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Document Type</div>
-                            <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Requirements</div>
-                            <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}></div>
-                        </div>
-                        {basicForm?.documentsRequired?.map((data, index) => (
-                            <div>
-                                <div className={`${style.requiredDocumentCard} ${style.tableGrid} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''}  ${style.marginTop5}`}>
-                                    <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
-                                        <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.document?.name}</div>
-                                        <InfoOutlinedIcon sx={{ fontSize: 14, marginLeft: '10px' }} className={style.info} />
-                                    </div>
-                                    <div className={style.documentTextStyle}>{data?.required ? 'Mandatory' : 'Recommended'}</div>
-                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.instruction}</div>
+                        <div className={`${style.addMoreBorder} ${style.marginTop}`}>
+                            <div className={style.padding20}>
+                                <div className={style.spaceBetween}>
+                                    <div className={style.collapsableCardText}>Required and Recommended documents & forms for this Application</div>
+                                    {isCollapsableCard ? (
+                                        <div onClick={() => setIsCollapsableCard(false)}>
+                                            <KeyboardArrowUpIcon sx={{ color: '#c4bef3' }} />
+                                        </div>
+                                    ) : (
+                                        <div onClick={() => setIsCollapsableCard(true)}>
+                                            <KeyboardArrowDownIcon sx={{ color: '#c4bef3' }} />
+                                        </div>
+                                    )}
                                 </div>
+                                {isCollapsableCard && (
+                                    <>
+                                        <CommonDivider />
+                                        <div className={`${style.tableHeader} ${style.tableGrid} ${style.marginTop}`}>
+                                            <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Document Type</div>
+                                            <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Requirements</div>
+                                            <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}></div>
+                                        </div>
+                                        {basicForm?.documentsRequired?.map((data, index) => (
+                                            <div>
+                                                <div className={`${style.requiredDocumentCard} ${style.tableGrid} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''}  ${style.marginTop5}`}>
+                                                    <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
+                                                        <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.document?.name}</div>
+                                                        <InfoOutlinedIcon sx={{ fontSize: 14, marginLeft: '10px' }} className={style.info} />
+                                                    </div>
+                                                    <div className={style.documentTextStyle}>{data?.required ? 'Required' : 'Recommended'}</div>
+                                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.instruction}</div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </>
+                                )}
                             </div>
-                        ))}
+                        </div>
                         <div className={`${style.twoCol} ${style.marginTop}`}>
                             <CommonDropZone title={'Upload Your Documents'} description={'Upload your files or drag & drop from your file cabinet (Computer / Online Drive)'} changeHandler={changeHandler} files={files} />
                             <CommonDropZone title={'Upload A Photo'} description={'Click a picture of the document with your camera and Upload or Upload from your photo gallery.'} changeHandler={changeHandler} files={files} accept="image/*" />
@@ -311,17 +363,28 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
                             onChange={handleFileChange}
                             style={{ display: 'none' }} // Hide the actual file input
                         />
-                        <div className={style.marginTop} onClick={() => setIsShowESignDialog(true)}>
-                            <div className={style.uploadBorderStyle}>
-                                <p className={style.uploadTextStyle}>
-                                    {'Set Up Your Electronic Signature'}
-                                </p>
-
-                                <p className={style.uploadDescriptionText}>
-                                    {'Our paperless automated application submission uses electronic signatures with digital fingerprinting. Click here to setup your electronic signature for use.'}
-                                </p>
+                        {(basicForm?.forms?.[0]?.data !== null && !showRedBorderForESign) ? (
+                            <div className={`${style.setupCompleteCard} ${style.setupCompleteGrid} ${style.cursorPointer} ${style.marginTop}`} onClick={() => setIsShowESignDialog(true)}>
+                                <div></div>
+                                <div className={`${style.displayInRow} ${style.justifyCenter}`}>
+                                    <DoneIcon sx={{ color: '#7165E3', fontSize: 25 }} />
+                                    <div className={`${style.setupCompletedText} ${style.marginLeft10}`}>eSignature Set Up Complete</div>
+                                </div>
+                                <div className={style.editOrUpdateESign}>Edit / Update</div>
                             </div>
-                        </div>
+                        ) : (
+                            <div className={style.marginTop} onClick={() => setIsShowESignDialog(true)}>
+                                <div className={`${style.uploadBorderStyle} ${(basicForm?.forms?.[0]?.data !== null && showRedBorderForESign) ? style.redBorder : ''}`}>
+                                    <p className={style.uploadTextStyle}>
+                                        {'Set Up Your Electronic Signature'}
+                                    </p>
+
+                                    <p className={style.uploadDescriptionText}>
+                                        {'Our paperless automated application submission uses electronic signatures with digital fingerprinting. Click here to setup your electronic signature for use.'}
+                                    </p>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
                 <div>

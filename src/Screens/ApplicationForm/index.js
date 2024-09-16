@@ -50,8 +50,6 @@ const ApplicationForm = () => {
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const user = jwt(userDetails);
-    const [currentUserDetails, setCurrentUserDetails] = useState();
-    const [userId, setUserId] = useState(user?.id);
     const { section, step } = useParams();
     const [basicForm, setBasicForm] = useState({})
     const applicationId = sessionStorage.getItem('applicationId')
@@ -74,12 +72,12 @@ const ApplicationForm = () => {
 
     useEffect(() => {
         setUserDetails();
-    }, [userId])
+    }, [user?.id])
 
     const setUserDetails = async () => {
-        const { data: user } = await GET(`user-management-service/user/${userId}`);
-        setCurrentUserDetails(user);
-        sessionStorage.setItem('user', JSON.stringify(user))
+        const { data: userData } = await GET(`user-management-service/user/${user?.id}`);
+        console.log(userData)
+        sessionStorage.setItem('user', JSON.stringify(userData))
     }
 
     const getAcknowledgement = async (id) => {

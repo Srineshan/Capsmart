@@ -572,7 +572,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
                 <CircularProgress sx={{ color: "#7165E3" }} />
               </div> :
               <div ref={componentRef}>
-                <div className={`${style.reduceMarginTop10} staffApplicationList`} ref={PDFRef}>
+                <div className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`} ref={PDFRef}>
                   <TableTwo
                     tableHeaderValues={tableHeaderValues}
                     tableDataValues={tableDataValues}

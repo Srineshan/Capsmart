@@ -5,26 +5,31 @@ import Pencil from "../../images/pencil.png";
 import SignatureCanvas from 'react-signature-canvas';
 import { POST, PUT } from '../../Screens/dataSaver';
 import { ErrorToaster, SuccessToaster } from '../../utils/toaster';
-
 import style from './index.module.scss'
 import CommonSelectField from '../CommonFields/CommonSelectField';
+import { getValueByPath } from '../../utils/formatting';
 
 const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, basicForm, setBasicForm }) => {
     const [isContinue, setIsContinue] = useState(false);
     const [selectedESignFormat, setSelectedESignFormat] = useState('DRAW');
-    const [selectedESignTypeStyle, setSelectedESignTypeStyle] = useState('calgary-script-ot');
     const [isShowDrawCanvas, setIsShowDrawCanvas] = useState(false);
-    const [eSignType, setESignType] = useState('');
     const [isShowType, setIsShowType] = useState(false);
     const sigCanvas = useRef({});
     const contentRef = useRef(null);
-    const [match, setMatch] = useState([]);
+    let eSignImg = getValueByPath(basicForm, 'forms[0].data.setUpYourSignature.file');
+    let eSignTypeContent = getValueByPath(basicForm, 'forms[0].data.setUpYourSignature.type.text');
+    let eSignTypeContentStyle = getValueByPath(basicForm, 'forms[0].data.setUpYourSignature.type.style');
+    const [selectedESignTypeStyle, setSelectedESignTypeStyle] = useState(eSignTypeContentStyle !== undefined ? eSignTypeContentStyle : 'calgary-script-ot');
+    const [eSignType, setESignType] = useState(eSignTypeContent !== undefined ? eSignTypeContent : '');
+    console.log(eSignTypeContent, eSignType)
     const clearSignature = () => {
-        sigCanvas.current.clear();
+        if (isShowDrawCanvas) {
+            sigCanvas.current.clear();
+        }
     };
 
     useEffect(() => {
-        if (contentRef.current && contentRef.current.innerHTML !== eSignType) {
+        if (contentRef.current && eSignType !== null) {
             contentRef.current.innerHTML = eSignType;
         }
     }, [eSignType]);
@@ -33,18 +38,17 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
     //     console.log(tempValue)
     // }, tempValue)
 
-    const base64ToUint8Array = (base64) => {
-        var binaryString = atob(base64);
-        var bytes = new Uint8Array(binaryString.length);
-        for (var i = 0; i < binaryString.length; i++) {
-            bytes[i] = binaryString.charCodeAt(i);
+    const dataURLToBlob = (dataURL) => {
+        const [header, data] = dataURL.split(',');
+        const mime = header.split(':')[1].split(';')[0];
+        const binary = atob(data);
+        const array = [];
+        for (let i = 0; i < binary.length; i++) {
+            array.push(binary.charCodeAt(i));
         }
-        return bytes;
+        return new Blob([new Uint8Array(array)], { type: mime });
     }
 
-    const getImgBlob = async (dataURL) => {
-        return base64ToUint8Array(dataURL.replace(/^data:image\/\w+;base64,/, ''));
-    };
 
     const handleContentChange = () => {
         console.log(contentRef.current.innerHTML)
@@ -54,15 +58,13 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
     };
 
     const saveSignature = async () => {
-        if (selectedESignFormat === 'DRAW') {
+        if (selectedESignFormat === 'DRAW' && isShowDrawCanvas) {
             const dataURL = sigCanvas.current.getTrimmedCanvas().toDataURL('image/png');
-            console.log(dataURL, dataURL.match(/^data:image\/(\w+);base64,/));
-            setMatch(dataURL.match(/^data:image\/(\w+);base64,/))
-            let blobFormat = getImgBlob(dataURL);
+            let blobFormat = dataURLToBlob(dataURL)
             let fileName = {
-                "fileName": `signature.${match[1]}`
+                "fileName": `signature.png`
             };
-            const blob = new Blob([blobFormat], { type: `image/${match[1]}` });
+            const blob = new Blob([blobFormat], { type: `image/png` });
             const formData = new FormData();
 
             formData.append('files', new Blob([JSON.stringify(fileName)], {
@@ -141,7 +143,11 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                     </div>
                     {selectedESignFormat === 'DRAW' ? (
                         <div className={`${style.eSignBox} ${style.marginTop} ${style.cursorPointer}`} onClick={!isShowDrawCanvas ? () => setIsShowDrawCanvas(true) : () => { }}>
-                            {!isShowDrawCanvas ? (
+                            {(eSignImg !== undefined && !isShowDrawCanvas) ? (
+                                <div>
+                                    <img src={eSignImg?.fileURL} alt="ESign" className={style.eSignImg} />
+                                </div>
+                            ) : !isShowDrawCanvas ? (
                                 <div className={style.verticalAlignCenter}>
                                     <div>
                                         <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter}`} />
@@ -216,7 +222,7 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                     )}
                     <div className={style.marginTop}>{children}</div>
                     <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
-                        <div className={`${style.saveInProgress}`} onClick={() => { setIsContinue(true); clearSignature() }}>CANCEL</div>
+                        <div className={`${style.saveInProgress}`} onClick={() => { setIsContinue(true); getIsOpen(false) }}>CANCEL</div>
                         <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { setIsContinue(true); saveSignature() }}>ADOPT FOR e-SIGN</div>
                     </div>
                 </div>

@@ -1,6 +1,6 @@
 .heading {
     text-align: left;
-    font: normal normal bold 20px/28px proxima-nova;
+    font: normal normal bold 24px/28px proxima-nova;
     color: #7165E3;
     text-transform: capitalize;
 }
@@ -33,6 +33,13 @@
     height: 75%;
     width: 40% !important;
 }
+
+.eSignDialogBackground {
+    background: #ffffff 0% 0% no-repeat padding-box;
+    padding: 20px 40px 0px 40px;
+    border-radius: 20px !important;
+}
+
 
 .continue {
     background: #7165E3 0% 0% no-repeat padding-box;
@@ -80,7 +87,7 @@
 }
 
 .mailEnvelopeStyle {
-    height: 40px;
+    height: 30px;
 }
 
 .cursorPointer {

@@ -15,12 +15,15 @@ import { useSession } from '@descope/react-sdk';
 import LoginDialog from '../../../Components/LoginDialog';
 import RequiredDocumentCard from '../../../Components/RequiredDocumentCard';
 import { GET, PUT } from '../../dataSaver';
+import jwt from 'jwt-decode';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import Cookie from "universal-cookie";
 
 const ApplicationFormRequirement = () => {
     let cookie = new Cookie();
+    let userDetails = cookie.get('user');
+    const user = jwt(userDetails);
     const { applicationId } = useParams();
     const { isAuthenticated, isSessionLoading } = useSession();
     const navigate = useNavigate();
@@ -44,6 +47,16 @@ const ApplicationFormRequirement = () => {
 
     const getIsOpen = (value) => {
         setIsOpen(value);
+    }
+
+    useEffect(() => {
+        setUserDetails();
+    }, [user?.id])
+
+    const setUserDetails = async () => {
+        const { data: userDetails } = await GET(`user-management-service/user/${user?.id}`);
+        console.log(userDetails)
+        sessionStorage.setItem('user', JSON.stringify(userDetails))
     }
 
     const getPreApplication = async () => {
@@ -117,7 +130,7 @@ const ApplicationFormRequirement = () => {
                                             <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.document?.name}</div>
                                             <InfoOutlinedIcon sx={{ fontSize: 14, marginLeft: '10px' }} className={style.info} />
                                         </div>
-                                        <div className={style.documentTextStyle}>{data?.required ? 'Mandatory' : 'Recommended'}</div>
+                                        <div className={style.documentTextStyle}>{data?.required ? 'Required' : 'Recommended'}</div>
                                         <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.instruction}</div>
                                     </div>
                                 </div>

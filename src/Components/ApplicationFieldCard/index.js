@@ -201,6 +201,11 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
         });
     }
 
+    const getSpecialityValues = (obj) => {
+        let temp = obj?.dependencies?.department?.oneOf?.filter(data => data?.properties?.department?.enum[0] === getValueByPath(basicForm, 'basicDetails.departmentSpecialty.department'))[0];
+        return temp?.properties?.specialty?.enum;
+    }
+
     // const handleChange = (path, value, basePath, basePath2, basePath3) => {
     //     console.log(basePath, basePath2, basePath3, path, value)
     //     setBasicForm((prevData) => {
@@ -300,7 +305,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
 
         // Usage:
         // const conditionMet = checkAllOfConditions(object, `${baseKey}`, fieldKey);
-        console.log(fieldKey, fieldData, `${basicpath}.${baseKey}.${fieldKey}`, object?.then?.required, getAllThenStrings(object), getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey), object?.then?.required?.includes(fieldKey), '275', parentData)
+        console.log(fieldKey, fieldData, `${basicpath}.${baseKey}.${fieldKey}`, object?.then?.required, getAllThenStrings(object), getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey), object?.then?.required?.includes(fieldKey), '275', parentData, object?.dependencies)
         // if (object?.then?.required?.includes(fieldKey) !== undefined ? (!object?.then?.required?.includes(fieldKey) || object?.if?.properties !== undefined && getValueByPath(basicForm, `${basicpath}.${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`) === Object.entries(object?.if?.properties)?.map(([key, data]) => data)[0]?.const) : getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) ? (getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) && (getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) && getValueByPath(basicForm, `${basicpath}.${baseKey}.${getAllThenStrings(object)?.filter(data => data?.value === fieldKey)[0]?.key}`) === getAllThenStrings(object)?.filter(data => data?.value === fieldKey)[0]?.checkValue)) : true && fieldData.fieldType) {
         let firstObject;
         let dynamicValue;
@@ -311,13 +316,12 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
         }
         console.log(dynamicValue)
         if (object?.then?.required?.includes(fieldKey) !== undefined ? (!object?.then?.required?.includes(fieldKey) || (object?.if?.properties !== undefined && Array.isArray(firstObject[dynamicValue]) ? firstObject[dynamicValue]?.includes(getValueByPath(basicForm, `${basicpath}.${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`)) : getValueByPath(basicForm, `${basicpath}.${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`) === firstObject[dynamicValue])) : getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) ? (getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) && (getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) && getValueByPath(basicForm, `${basicpath}.${baseKey}.${getAllThenStrings(object)?.filter(data => data?.value === fieldKey)[0]?.key}`) === getAllThenStrings(object)?.filter(data => data?.value === fieldKey)[0]?.checkValue)) : true && fieldData.fieldType) {
-            if ((isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) && step === "step1") {
+            if ((isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) && getAllPath && getAllLabels) {
                 getAllPath(`${basicpath}.${baseKey}.${fieldKey}`)
                 getAllLabels(fieldData.label)
             }
             switch (fieldData.fieldType) {
                 case 'dropdown':
-                    console.log(getValueByPath(basicForm, 'forms[1]'), `${basicpath}.${baseKey}.${fieldKey}`, 'dropdown', basicForm)
                     return (
                         <CommonSelectField
                             value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
@@ -325,9 +329,9 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                             className={style.fullWidth}
                             // firstOptionLabel={fieldData.label}
                             // firstOptionValue={fieldData.label}
-                            valueList={fieldData.enum}
-                            labelList={fieldData.enum}
-                            disabledList={fieldData.enum.map(data => false)}
+                            valueList={fieldKey !== 'specialty' ? fieldData.enum : getSpecialityValues(object)}
+                            labelList={fieldKey !== 'specialty' ? fieldData.enum : getSpecialityValues(object)}
+                            disabledList={fieldKey !== 'specialty' ? fieldData.enum.map(data => false) : getSpecialityValues(object)?.map(data => false)}
                             label={fieldData.label}
                             required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))}
                             warning={warningFields?.map(data => data?.key)?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
@@ -362,7 +366,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                         //     type={fieldData.type}
                         //     min={fieldData.minimum}
                         // />
-                        (user?.roles?.filter(data => data?.roleName === "Staff Manager")?.length === 0 && (fieldKey === 'officialEmail' || fieldKey === 'applicantType')) ? (
+                        ((user === null || user?.roles?.filter(data => data?.roleName === "Staff Manager")?.length === 0) && (fieldKey === 'officialEmail' || fieldKey === 'applicantType')) ? (
                             // <CommonLabel label={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || ''} />\
                             <div>
                                 <div className={`${style.lableStyle}`}>{fieldData.label}{isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false)) && '*'}</div>

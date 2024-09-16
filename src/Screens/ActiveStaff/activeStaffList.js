@@ -433,7 +433,7 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getActiveAppl
         </div>
         <div>
           <div className={`${style.displayInRow} ${style.spaceBetween} ${style.headingForStaffs} ${style.bottomTextStyle}`}>
-            STAFF MANAGER > APPLICATIONS
+            {`STAFF MANAGER > APPLICATIONS`}
           </div>
 
           <div className={`${style.spaceBetween} ${style.marginTop20} ${style.marginLeft30} `}>
@@ -456,7 +456,7 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getActiveAppl
                 <CircularProgress sx={{ color: "#7165E3" }} />
               </div> :
               <div ref={componentRef}>
-                <div className={`${style.reduceMarginTop10} staffApplicationList`} ref={PDFRef}>
+                <div className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`} ref={PDFRef}>
                   <TableTwo
                     tableHeaderValues={tableHeaderValues}
                     tableDataValues={tableDataValues}

@@ -60,36 +60,35 @@ const ApplicationAcknowledgementStep1 = ({ acknowledgementForm, dateFormat, name
         setFormContent(content)
     }
 
-    const base64ToUint8Array = (base64) => {
-        var binaryString = atob(base64);
-        var bytes = new Uint8Array(binaryString.length);
-        for (var i = 0; i < binaryString.length; i++) {
-            bytes[i] = binaryString.charCodeAt(i);
+    const base64ToObjectURL = (base64String) => {
+        const byteString = atob(base64String.split(',')[1]);
+        const byteArray = new Uint8Array(byteString.length);
+        for (let i = 0; i < byteString.length; i++) {
+            byteArray[i] = byteString.charCodeAt(i);
         }
-        return bytes;
+        const mimeString = base64String.split(',')[0].split(':')[1].split(';')[0];
+        const blob = new Blob([byteArray], { type: mimeString });
+        const objectURL = URL.createObjectURL(blob);
+        return objectURL;
     }
-
-    const getImgBlob = async (base64) => {
-        return base64ToUint8Array(base64.replace(/^data:image\/\w+;base64,/, ''))
-    };
 
     console.log(formSchema)
 
     const addNewDocument = async (file) => {
         console.log(file, file?.name, 'Test')
         let fileName = {
-            "fileName": 'acknowledgement'
+            "fileName": 'acknowledgement.pdf'
         };
         const formData = new FormData();
 
         if (file !== null) {
-            // const blob = new Blob([blobFormat], { type: `application/pdf` });
-            // formData.append('files', new Blob([JSON.stringify(fileName)], {
-            //     type: "application/json"
-            // }));
+            const blob = new Blob([file], { type: `application/pdf` });
+            formData.append('files', new Blob([JSON.stringify(fileName)], {
+                type: "application/json"
+            }));
             // formData.append('files', 'acknowledgement');
-            // formData.append('documents', file);
-            formData.append('file', file);
+            formData.append('documents', blob, fileName?.fileName);
+            // formData.append('file', file);
 
             // await POST(`application-management-service/application/${applicationId}/files`, formData)
             //     .then(response => {
@@ -100,17 +99,20 @@ const ApplicationAcknowledgementStep1 = ({ acknowledgementForm, dateFormat, name
             //     .catch(error => {
             //         ErrorToaster('File Upload Failed');
             //     })
+            let uploadedFile = {};
             try {
                 const response = await POST(`application-management-service/application/${applicationId}/files`, formData);
                 console.log(response?.data);
-                try {
-                    const response = await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[10]?.id}/addFileToForm`, response?.data);
-                    console.log(response?.data);
-                    return response?.data;
-                } catch (error) {
-                    console.error(error);
-                    return null;
-                }
+                uploadedFile = response?.data;
+            } catch (error) {
+                console.error(error);
+                return null;
+            }
+
+            try {
+                const response = await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[10]?.id}/addFileToForm`, uploadedFile);
+                console.log(response?.data);
+                return response?.data;
             } catch (error) {
                 console.error(error);
                 return null;
@@ -136,12 +138,16 @@ const ApplicationAcknowledgementStep1 = ({ acknowledgementForm, dateFormat, name
         nestedElements.forEach((_element) => {
             _element.classList.remove('applicationCardScrollStyle');
         });
-        html2pdf().set(opt).from(element).outputPdf('datauristring').then((pdfBase64) => {
-            console.log(pdfBase64);
-            // let temp = getImgBlob(pdfBase64);
-            // addNewDocument(pdfBase64);
+        html2pdf().set(opt).from(element).outputPdf("blob").then((pdfBlob) => {
+            // const reader = new FileReader();
+            // reader.readAsDataURL(pdfBlob);
+            // reader.onloadend = function () {
+            //     const objectURL = base64ToObjectURL(reader.result);
+            //     console.log(objectURL);
+            // }
+            addNewDocument(pdfBlob);
         });
-        html2pdf().set(opt).from(element).save();
+        // html2pdf().set(opt).from(element).save();
     };
 
     const handleIsChecked = (value) => {
@@ -318,7 +324,7 @@ const ApplicationAcknowledgementStep1 = ({ acknowledgementForm, dateFormat, name
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-                    <div className={`${style.saveInProgress} ${style.marginTop}`} >SAVE IN PROGRESS</div>
+                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleDownload()}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()} >CONTINUE</div>

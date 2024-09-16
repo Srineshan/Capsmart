@@ -284,10 +284,10 @@ const CreateStaffMemberApplication = () => {
                         )} */}
                         <div className={style.applicationCardStyle}>
                             <div className={style.marginTop}>
-                                <div className={style.cardTitle}>Recommended documents & forms for this Application</div>
+                                <div className={style.cardTitle}>Required and Recommended documents & forms for this Application</div>
                             </div>
                             <div className={`${style.fileGrid} ${style.marginTop} ${style.tableHeader}`}>
-                                <div className={`${style.tableHeaderFont} ${style.centerAlign}`}>Mandatory?</div>
+                                <div className={`${style.tableHeaderFont} ${style.centerAlign}`}>Required?</div>
                                 <div className={style.tableHeaderFont}>Document / Form</div>
                             </div>
                             {requiredDocumentList?.map((data, index) => (
