@@ -3711,3 +3711,55 @@ input:checked+.slider:before {
 //   color: #52575D;
 //   text-transform: uppercase;
 // }
+
+
+.marginTop60 {
+  margin-top: 60px;
+}
+.placeholderGap {
+  
+  min-height: 190px;
+
+  margin-top: 90px;
+}
+.Borderthick {
+  border-top: 2px solid rgb(117, 94, 247);
+  
+  width: 100%;
+ 
+  height: 20px;
+  
+}
+
+  
+  .displayIn {
+      display: flex;
+
+     gap:20px;
+      width: 100%;
+     
+    }
+  
+    .columnLayout {
+      display: flex;
+      flex-direction: column;
+      flex: 2;
+      width: 100%;
+      
+    }
+  
+    .entityLabelStyle {
+      font-size: 14px;
+      margin-bottom: 8px;
+    
+    }
+  
+    .marginLeft20 {
+      margin-left: 20px;
+    
+    }
+  
+    .inputField {
+      width: 100% !important;
+      
+    }
