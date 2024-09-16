@@ -25,6 +25,7 @@ import LoginDialog from "./Components/LoginDialog";
 import Departments from "./Screens/ReferenceList/department/Department";
 import ApplicantTypesByEntity from "./Screens/ReferenceList/applicantTypeByEntity/applicantTypesByEntity";
 import Speciality from "./Screens/ReferenceList/speciality/Speciality";
+import ApplicantProcessingCheckList from "./Screens/ReferenceList/applicantCheckList/ApplicantProcessingCheckList";
 
 const ReportType = React.lazy(() => import("./Screens/Reports/reportType"));
 const ReportTypeOverview = React.lazy(() =>
@@ -231,11 +232,12 @@ const ClientAdminDashboard = React.lazy(() =>
   import("./Screens/ReferenceList/customerAdminDashboard")
 );
 const ApplicationSummary = React.lazy(() =>
-  import("./Screens/ApplicationForm/ApplicationSummary"));
+  import("./Screens/ApplicationForm/ApplicationSummary")
+);
 const ApplicationAcknowledgement = React.lazy(() =>
-  import("./Screens/ApplicationForm/ApplicationAcknowledgement"));
-const PODCheck = React.lazy(() =>
-  import("./Screens/ApplicationForm/PODCheck"));
+  import("./Screens/ApplicationForm/ApplicationAcknowledgement")
+);
+const PODCheck = React.lazy(() => import("./Screens/ApplicationForm/PODCheck"));
 // const ApplicantTypesByEntity = React.lazy(() =>
 //   import("./Screens/ReferenceList//referenceList/contractServiceProviderBySiteType")
 // );
@@ -278,10 +280,13 @@ const App = ({ props }) => {
   // const navigate = useNavigate();
 
   useEffect(() => {
-    if (cookie.get('entityId') === undefined || cookie.get('entityId') === null) {
+    if (
+      cookie.get("entityId") === undefined ||
+      cookie.get("entityId") === null
+    ) {
       getEntityId();
     }
-  }, [])
+  }, []);
 
   // useEffect(() => {
   //   if(!cookie.get("user")){
@@ -348,53 +353,53 @@ const App = ({ props }) => {
       browserName === "Chrome"
         ? "CHROME"
         : browserName === "Firefox"
-          ? "FIREFOX"
-          : browserName === "Safari"
-            ? "SAFARI"
-            : browserName === "Opera"
-              ? "OPERA"
-              : browserName === "Edge"
-                ? "EDGE"
-                : browserName === "Internet Explorer"
-                  ? "INTERNETEXPLORER"
-                  : browserName === "Chromium"
-                    ? "CHROMIUM"
-                    : browserName === "Yandex"
-                      ? "YANDEX"
-                      : browserName === "IE"
-                        ? "IE"
-                        : browserName === "Mobile Safari"
-                          ? "MOBILESAFARI"
-                          : browserName === "Edge Chromium"
-                            ? "EDGECHROMIUM"
-                            : browserName === "MIUI Browser"
-                              ? "MIUIBROWSER"
-                              : browserName === "Samsung Browser"
-                                ? "SAMSUNGBROWSER"
-                                : "";
+        ? "FIREFOX"
+        : browserName === "Safari"
+        ? "SAFARI"
+        : browserName === "Opera"
+        ? "OPERA"
+        : browserName === "Edge"
+        ? "EDGE"
+        : browserName === "Internet Explorer"
+        ? "INTERNETEXPLORER"
+        : browserName === "Chromium"
+        ? "CHROMIUM"
+        : browserName === "Yandex"
+        ? "YANDEX"
+        : browserName === "IE"
+        ? "IE"
+        : browserName === "Mobile Safari"
+        ? "MOBILESAFARI"
+        : browserName === "Edge Chromium"
+        ? "EDGECHROMIUM"
+        : browserName === "MIUI Browser"
+        ? "MIUIBROWSER"
+        : browserName === "Samsung Browser"
+        ? "SAMSUNGBROWSER"
+        : "";
 
     let os =
       osName === "Windows"
         ? "WINDOWS"
         : osName === "Linux"
-          ? "LINUX"
-          : osName === "Mac OS"
-            ? "MAC"
-            : osName === "iOS"
-              ? "IOS"
-              : osName === "Android"
-                ? "ANDROID"
-                : osName === "Windows Phone"
-                  ? "WINDOWSPHONE"
-                  : "";
+        ? "LINUX"
+        : osName === "Mac OS"
+        ? "MAC"
+        : osName === "iOS"
+        ? "IOS"
+        : osName === "Android"
+        ? "ANDROID"
+        : osName === "Windows Phone"
+        ? "WINDOWSPHONE"
+        : "";
 
     let deviceType = isDesktop
       ? "DESKTOP"
       : isMobile
-        ? "MOBILE"
-        : isTablet
-          ? "TABLET"
-          : "";
+      ? "MOBILE"
+      : isTablet
+      ? "TABLET"
+      : "";
     let interceptorsInfo = sessionStorage.getItem("interceptorsInfo");
 
     let data = {
@@ -510,18 +515,17 @@ const App = ({ props }) => {
 
   const getEntityId = async () => {
     let hostname = window.location.hostname;
-    let requestHeader = hostname.includes('acme-hospital') ? {
-      method: "GET",
-      headers: { "X-subdomain": "acme-hospital" },
-    } : { method: 'GET' }
-    await axios(
-      `${baseUrl()}/entity-service/entityID`,
-      requestHeader
-    )
+    let requestHeader = hostname.includes("acme-hospital")
+      ? {
+          method: "GET",
+          headers: { "X-subdomain": "acme-hospital" },
+        }
+      : { method: "GET" };
+    await axios(`${baseUrl()}/entity-service/entityID`, requestHeader)
       .then((response) => {
-        cookie.set("entityId", response?.data?.id, { path: '/' });
+        cookie.set("entityId", response?.data?.id, { path: "/" });
         setEntityId(response?.data?.id);
-        if (cookie.get('user') === undefined || cookie.get('user') === null) {
+        if (cookie.get("user") === undefined || cookie.get("user") === null) {
           login(response?.data?.id);
         }
       })
@@ -538,13 +542,10 @@ const App = ({ props }) => {
         "X-tenantID": id,
       },
     };
-    fetch(
-      `${baseUrl()}/user-management-service/auth/login`,
-      requestOptions
-    )
+    fetch(`${baseUrl()}/user-management-service/auth/login`, requestOptions)
       .then((response) => response.json())
       .then((data) => {
-        cookie.set("user", data?.accessToken, { path: '/' });
+        cookie.set("user", data?.accessToken, { path: "/" });
       });
     return true;
   };
@@ -624,7 +625,6 @@ const App = ({ props }) => {
       window.location.href = "/";
       return <Login />;
     } else if (isContractManager) {
-
       window.location.pathname = "/app/contracts";
       // navigate("/contracts");
       // window.location.reload();
@@ -635,9 +635,9 @@ const App = ({ props }) => {
       // window.location.reload();
       return <Home />;
     } else if (isStaffManager) {
-      window.location.pathname = "/app/staffs"
+      window.location.pathname = "/app/staffs";
     } else if (isApplicant) {
-      window.location.pathname = "/app/applicant"
+      window.location.pathname = "/app/applicant";
     } else {
       window.location.pathname = "/app/entitySitePortal";
       // navigate("/entitySitePortal");
@@ -694,10 +694,7 @@ const App = ({ props }) => {
                 path="/applicationForm/applicationAcknowledgement"
                 element={<ApplicationAcknowledgement />}
               />
-              <Route
-                path="/applicationForm/podcheck"
-                element={<PODCheck />}
-              />
+              <Route path="/applicationForm/podcheck" element={<PODCheck />} />
               <Route path="/welcome" element={<Welcome />} />
               <Route path="/entitySetup/:id/:page" element={<EntitySetup />} />
               <Route
@@ -884,6 +881,11 @@ const App = ({ props }) => {
                 path="/referenceList/staffPrivilegesByDepartment"
                 element={<StaffPrivilegesByDepartment />}
               />
+              <Route
+                path="/referenceList/applicantCheckList/applicantProcessingCheckList"
+                element={<ApplicantProcessingCheckList />}
+              />
+
               <Route
                 path="/referenceList/speciality/Speciality"
                 element={<Speciality />}
