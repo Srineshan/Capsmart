@@ -70,7 +70,7 @@ const Navbar = () => {
   const [isSystemAdministrationAvailable, setIsSystemAdministrationAvailable] =
     useState(false);
   const [isSupportAvailable, setIsSupportAvailable] = useState(false);
-  let selectedWorkingMode = sessionStorage.getItem('SelectedWorkingMode');
+  let selectedWorkingMode = sessionStorage.getItem("SelectedWorkingMode");
 
   useEffect(() => {
     if (currentUserRoles?.includes("Activity Logger")) {
@@ -181,7 +181,7 @@ const Navbar = () => {
 
   const logoutURL = () => {
     window.location.href = `https://acme-hospital.doxonify.ca/logout`;
-  }
+  };
 
   const logout = async () => {
     const cookies = new Cookies();
@@ -284,22 +284,22 @@ const Navbar = () => {
   let homeLink = currentUserRoles?.includes("Contract Manager")
     ? "/contracts"
     : isFlutterRoles?.length !== 0
-      ? `/home/#/dashboardRoute`
-      : currentUserRoles?.includes("Super Sys Admin")
-        ? "/partnerPortal"
-        : currentUserRoles?.includes("Entity Sys Admin")
-          ? "/entitySitePortal"
-          : "/entitySitePortal";
+    ? `/home/#/dashboardRoute`
+    : currentUserRoles?.includes("Super Sys Admin")
+    ? "/partnerPortal"
+    : currentUserRoles?.includes("Entity Sys Admin")
+    ? "/entitySitePortal"
+    : "/entitySitePortal";
   const homeRoute = () => {
     let homeLink = currentUserRoles?.includes("Contract Manager")
       ? "/contracts"
       : isFlutterRoles?.length !== 0
-        ? `/`
-        : currentUserRoles?.includes("Super Sys Admin")
-          ? "/partnerPortal"
-          : currentUserRoles?.includes("Entity Sys Admin")
-            ? "/entitySitePortal"
-            : "/entitySitePortal";
+      ? `/`
+      : currentUserRoles?.includes("Super Sys Admin")
+      ? "/partnerPortal"
+      : currentUserRoles?.includes("Entity Sys Admin")
+      ? "/entitySitePortal"
+      : "/entitySitePortal";
     console.log(homeLink);
     if (homeLink === "/") {
       window.location.href = "/home/#/dashboardRoute";
@@ -308,7 +308,7 @@ const Navbar = () => {
     }
   };
 
-  console.log(selectedWorkingMode)
+  console.log(selectedWorkingMode);
 
   return (
     <div className={style.navbarStyle}>
@@ -317,7 +317,13 @@ const Navbar = () => {
           {
             // <img src={SanmateoLogo} alt="Hospital Logo" className={style.logo} />
           }
-          <img src={'https://dev-application-management-service.s3.amazonaws.com/CMH/cmh_logo.jpg'} alt="Hospital Logo" className={style.sanmateoLogo} />
+          <img
+            src={
+              "https://dev-application-management-service.s3.amazonaws.com/CMH/cmh_logo.jpg"
+            }
+            alt="Hospital Logo"
+            className={style.sanmateoLogo}
+          />
           {/* <div
             className={`${style.menuStyle} ${window.location.pathname.includes(homeLink) && !window.location.pathname.includes('contractsWithABusinessEntity') &&
               style.activeMenuColor
@@ -345,18 +351,33 @@ const Navbar = () => {
               </Link>
             )
           } */}
-          <Link to={'/applications'} className={style.noFontStyle}>
-            <div className={`${style.menuStyle} ${window.location.pathname.includes("/applications") && style.activeMenuColor}`}>
+          <Link to={"/applications"} className={style.noFontStyle}>
+            <div
+              className={`${style.menuStyle} ${
+                window.location.pathname.includes("/applications") &&
+                style.activeMenuColor
+              }`}
+            >
               <p>STAFF APPLICATIONS</p>
             </div>
           </Link>
-          <Link to={'/activeStaff'} className={style.noFontStyle}>
-            <div className={`${style.menuStyle} ${window.location.pathname.includes("/activeStaff") && style.activeMenuColor}`}>
+          <Link to={"/activeStaff"} className={style.noFontStyle}>
+            <div
+              className={`${style.menuStyle} ${
+                window.location.pathname.includes("/activeStaff") &&
+                style.activeMenuColor
+              }`}
+            >
               <p>ACTIVE STAFF</p>
             </div>
           </Link>
 
-          <div className={`${style.menuStyle} ${window.location.pathname.includes("/inactiveStaff") && style.activeMenuColor}`}>
+          <div
+            className={`${style.menuStyle} ${
+              window.location.pathname.includes("/inactiveStaff") &&
+              style.activeMenuColor
+            }`}
+          >
             <p>INACTIVE STAFF</p>
           </div>
 
@@ -426,14 +447,19 @@ const Navbar = () => {
               </div>
             )
           } */}
-          {(isActivityServiceLogAvailable || isTimesheetsAvailable || isPaymentsAvailable || isContractManagementAvailable || isContractComplianceAvailable) && (
+          {(isActivityServiceLogAvailable ||
+            isTimesheetsAvailable ||
+            isPaymentsAvailable ||
+            isContractManagementAvailable ||
+            isContractComplianceAvailable) && (
             <div>
               <div
-                className={`${style.menuStyle} ${(window.location.pathname.includes("/reports") ||
-                  window.location.pathname.includes("/reportTypeOverview") ||
-                  window.location.pathname.includes("/myReport")) &&
+                className={`${style.menuStyle} ${
+                  (window.location.pathname.includes("/reports") ||
+                    window.location.pathname.includes("/reportTypeOverview") ||
+                    window.location.pathname.includes("/myReport")) &&
                   style.activeMenuColor
-                  }`}
+                }`}
                 ref={popoverAnchor}
                 onMouseEnter={(e) => handleClick(e)}
                 onMouseLeave={() => handleClose()}
@@ -526,11 +552,12 @@ const Navbar = () => {
           {isEntityLevelAdmin && (
             <div>
               <div
-                className={`${style.menuStyle} ${(window.location.pathname === "/user" ||
-                  window.location.pathname === "/welcome" ||
-                  window.location.pathname === "/partnerPortal") &&
+                className={`${style.menuStyle} ${
+                  (window.location.pathname === "/user" ||
+                    window.location.pathname === "/welcome" ||
+                    window.location.pathname === "/partnerPortal") &&
                   style.activeMenuColor
-                  }`}
+                }`}
                 ref={popoverAnchorTools}
                 onMouseEnter={(e) => handleClickTools(e)}
                 onMouseLeave={() => handleCloseTools()}
@@ -619,7 +646,18 @@ const Navbar = () => {
               </Popover>
             </div>
           </div> */}
+          <Link to={"/privilegeListManager"} className={style.noFontStyle}>
+            <div
+              className={`${style.menuStyle} ${
+                window.location.pathname.includes("/privilegeListManager") &&
+                style.activeMenuColor
+              }`}
+            >
+              <p>Privileges List Manager</p>
+            </div>
+          </Link>
         </div>
+
         <div className={style.displayInRow}>
           {/* {!window.location.pathname.includes('reportTypeOverview') && (
                     <>
