@@ -53,10 +53,32 @@
     gap: 20px;
 }
 
+.disabled {
+    cursor: not-allowed;
+}
+
 .twoColForButton {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
+}
+
+.displayInRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.verticalAlignCenter {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.alignCenter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
 }
 
 .fourCol {
@@ -191,6 +213,47 @@
     // text-transform: capitalize;
 }
 
+.twoColGrid {
+    display: grid;
+    grid-template-columns: 1fr 7fr;
+    gap: 10px;
+}
+
+.itemLeft {
+    padding: 10px;
+    /* Inner padding for each line */
+    text-align: left;
+}
+
+.cardDescription {
+    text-align: left;
+    font: normal normal normal 18px/20px proxima-nova;
+    letter-spacing: 0px;
+    color: #52575D;
+    // text-transform: capitalize;
+}
+
 .padding {
     padding: 20px;
+}
+
+.bigButtonTextStyle {
+    text-align: center;
+    font: normal normal bold 18px/30px proxima-nova;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    opacity: 1;
+}
+
+
+.bigButtonStyle {
+    background-color: #7165e3;
+    color: white;
+    border: 1px solid #7165e3;
+    height: 40px;
+    width: 500px;
+    border-radius: 10px;
+    margin-bottom: -20px;
+    box-shadow: 0px 3px 11px #7165e3;
 }
