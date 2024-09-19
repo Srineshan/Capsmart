@@ -23,19 +23,21 @@ const Step12 = ({ basicForm, setBasicForm, applicationId }) => {
     }, [basicForm])
 
     const getFormSchema = async () => {
-        const { data: form } = await GET(
-            `application-management-service/formSchema/${basicForm?.formSchemas?.[8]?.id}`
-        );
-        setFormSchema(form?.schema)
+        if (basicForm?.formSchemas?.[9]?.id !== undefined) {
+            const { data: form } = await GET(
+                `application-management-service/formSchema/${basicForm?.formSchemas?.[9]?.id}`
+            );
+            setFormSchema(form?.schema)
+        }
     }
 
     const handleSubmitApplicationReq = async () => {
         if (isEdited) {
             let temp = {
-                schemaId: basicForm?.forms?.[8]?.schemaId,
-                data: basicForm?.forms?.[8]?.data
+                schemaId: basicForm?.forms?.[9]?.schemaId,
+                data: basicForm?.forms?.[9]?.data
             }
-            await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[8]?.id}`, temp)
+            await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[9]?.id}`, temp)
                 .then(response => {
                     console.log(response)
                     setBasicForm(response?.data)
@@ -76,10 +78,10 @@ const Step12 = ({ basicForm, setBasicForm, applicationId }) => {
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'criminalData1' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.criminalData1} gridStyle={style.criminalHistoryGrid} baseKey={'criminalData1'} basicForm={basicForm} setBasicForm={setBasicForm} collapsableQuestionCard={true} stepPath={`forms[8].data`} applicationId={applicationId} setIsEdited={getIsEdited} />
+                            <ApplicationFieldCard object={formSchema?.properties?.criminalData1} gridStyle={style.criminalHistoryGrid} baseKey={'criminalData1'} basicForm={basicForm} setBasicForm={setBasicForm} collapsableQuestionCard={true} stepPath={`forms[9].data`} applicationId={applicationId} setIsEdited={getIsEdited} />
                         )}
                         {formSchema !== undefined && 'criminalData2' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.criminalData2} gridStyle={style.criminalHistoryGrid} baseKey={'criminalData2'} basicForm={basicForm} setBasicForm={setBasicForm} collapsableQuestionCard={true} stepPath={`forms[8].data`} applicationId={applicationId} setIsEdited={getIsEdited} />
+                            <ApplicationFieldCard object={formSchema?.properties?.criminalData2} gridStyle={style.criminalHistoryGrid} baseKey={'criminalData2'} basicForm={basicForm} setBasicForm={setBasicForm} collapsableQuestionCard={true} stepPath={`forms[9].data`} applicationId={applicationId} setIsEdited={getIsEdited} />
                         )}
                         {/* <NoDataBox
                             heading={'Information Requirement Alert'}

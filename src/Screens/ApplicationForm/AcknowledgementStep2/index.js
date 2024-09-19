@@ -39,11 +39,11 @@ const ApplicationAcknowledgementStep2 = ({ acknowledgementForm, dateFormat, name
         if (basicForm && !formSchema) {
             getFormSchema()
         }
-        setIsChecked(basicForm?.forms?.[11]?.acknowledged);
-        // setEncryptedText(basicForm?.forms?.[11]?.esign?.esign)
-        setSignText(basicForm?.forms?.[11]?.acknowledged ? basicForm?.forms?.[11]?.esign?.esign : '');
-        setIsSigned((basicForm?.forms?.[11]?.esign?.esign !== undefined && basicForm?.forms?.[11]?.acknowledged) ? true : false);
-        // setDecryptedText(CryptoJS.AES.decrypt(basicForm?.forms?.[11]?.esign?.esign, publicKey).toString(CryptoJS.enc.Utf8))
+        setIsChecked(basicForm?.forms?.[12]?.acknowledged);
+        // setEncryptedText(basicForm?.forms?.[12]?.esign?.esign)
+        setSignText(basicForm?.forms?.[12]?.acknowledged ? basicForm?.forms?.[12]?.esign?.esign : '');
+        setIsSigned((basicForm?.forms?.[12]?.esign?.esign !== undefined && basicForm?.forms?.[12]?.acknowledged) ? true : false);
+        // setDecryptedText(CryptoJS.AES.decrypt(basicForm?.forms?.[12]?.esign?.esign, publicKey).toString(CryptoJS.enc.Utf8))
     }, [basicForm])
 
     useEffect(() => {
@@ -51,15 +51,17 @@ const ApplicationAcknowledgementStep2 = ({ acknowledgementForm, dateFormat, name
     }, [formSchema])
 
     const getFormSchema = async () => {
-        const { data: form } = await GET(
-            `application-management-service/formSchema/${basicForm?.formSchemas?.[11]?.id}`
-        );
-        setFormSchema(form)
+        if (basicForm?.formSchemas?.[12]?.id !== undefined) {
+            const { data: form } = await GET(
+                `application-management-service/formSchema/${basicForm?.formSchemas?.[12]?.id}`
+            );
+            setFormSchema(form)
+        }
     }
 
     const getRenderedContent = async () => {
         const { data: content } = await GET(
-            `application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[11]?.id}/render`
+            `application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[12]?.id}/render`
         );
         setFormContent(content)
     }
@@ -89,7 +91,7 @@ const ApplicationAcknowledgementStep2 = ({ acknowledgementForm, dateFormat, name
             }
 
             try {
-                const response = await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[11]?.id}/addFileToForm`, uploadedFile);
+                const response = await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[12]?.id}/addFileToForm`, uploadedFile);
                 console.log(response?.data);
                 return response?.data;
             } catch (error) {
@@ -130,34 +132,21 @@ const ApplicationAcknowledgementStep2 = ({ acknowledgementForm, dateFormat, name
         }
     }
 
-    const handleSubmitApplication = async () => {
-        await POST(`application-management-service/application/${applicationId}/submit`)
-            .then(response => {
-                console.log(response)
-                SuccessToaster("Application Submitted Successfully");
-            })
-            .catch((error) => {
-                console.log(error)
-                ErrorToaster("Unexpected Error Submitting Application");
-            });
-    }
-
     const handleSubmitApplicationReq = async () => {
         if (isSigned) {
             let temp = {
-                schemaId: basicForm?.forms?.[11]?.schemaId,
-                data: !isEdited ? basicForm?.forms?.[11]?.data : { esignDate: isChecked ? name + " " + currentDate : '' },
+                schemaId: basicForm?.forms?.[12]?.schemaId,
+                data: !isEdited ? basicForm?.forms?.[12]?.data : { esignDate: isChecked ? name + " " + currentDate : '' },
                 acknowledged: isChecked,
                 esign: { esign: isChecked ? encryptedText : '', name: isChecked ? name : '', signedDate: isChecked ? currentDate : '' }
             }
-            await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[11]?.id}`, temp)
+            await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[12]?.id}`, temp)
                 .then(response => {
                     console.log(response)
                     getPreApplication()
                     SuccessToaster("Application Updated Successfully");
                     handleDownload();
                     getFormSchema();
-                    handleSubmitApplication()
                     if (sessionStorage.getItem('fromSummary') === 'true') {
                         navigate(-1);
                     }
@@ -170,13 +159,13 @@ const ApplicationAcknowledgementStep2 = ({ acknowledgementForm, dateFormat, name
                     ErrorToaster("Unexpected Error Updating Application");
                 });
         }
-        // else {
-        //     if (sessionStorage.getItem('fromSummary') === 'true') {
-        //         navigate(-1);
-        //     } else {
-        //         navigate('/applicationForm/section1/acknowledgementStep3')
-        //     }
-        // }
+        else {
+            if (sessionStorage.getItem('fromSummary') === 'true') {
+                navigate(-1);
+            } else {
+                navigate('/applicationForm/section1/acknowledgementStep3')
+            }
+        }
     }
 
     const handleContinue = () => {
@@ -213,7 +202,7 @@ const ApplicationAcknowledgementStep2 = ({ acknowledgementForm, dateFormat, name
                                 dangerouslySetInnerHTML={{ __html: formContent?.disclaimer?.content }}
                             />
                         </div>
-                        {acknowledgementForm?.esignatureRequiredOnEachPage && (
+                        {formSchema?.esignatureRequired && (
                             <div className={style.twoCol}>
                                 <div onClick={isChecked ? () => { setIsSigned(!isSigned); setIsEdited(true) } : () => { }} className={!isChecked ? style.disabled : ''}>
                                     <ESignature

@@ -903,6 +903,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
     const handleAddMore = () => {
         let index = basicForm?.forms?.findIndex(data => data?.id === formId);
         let temp = basicForm;
+        console.log(basicForm[baseKey], 'check')
         if (!isTableEdit) {
             if (temp.forms[index].data === null) {
                 temp.forms[index].data = {};
