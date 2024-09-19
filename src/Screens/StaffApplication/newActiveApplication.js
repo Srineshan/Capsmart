@@ -680,6 +680,17 @@ const NewActiveApplication = ({
             )}
           </>
         );
+      case 'PrivilegeSelection':
+        return (
+          <>
+            <div className={style.marginLeft50}>
+              <div className={style.cardTextBoldStyle}>Selected Previleges</div>
+              {form?.privileges?.map((data, index) => (
+                <div className={`${style.documentTextStyle} ${style.marginLeft} ${style.marginTop10}`} key={index}>{data?.privilegeSetTitle}</div>
+              ))}
+            </div>
+          </>
+        );
       default:
         return <></>;
     }
@@ -757,7 +768,7 @@ const NewActiveApplication = ({
               </div>
             </div>
             <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}  ${style.marginTop20} ${style.statusCardHeight} ${style.displayInCol}`}>
-              <div className={style.justifyCenter}><div className={`${style.greyBigDotStyle} `}></div></div>
+              <div className={`${style.greyBigDotStyle} ${style.marginCenter} `}></div>
               <div className={`${style.greyDotTextStyle}`}>Overall Verification & Acceptance Status</div>
             </div>
           </div>
@@ -974,7 +985,7 @@ const NewActiveApplication = ({
                   form?.formSchemas?.filter(data => (data?.formCategory === 'Form' || data?.formCategory === 'Disclosure') && data?.schemaCategory !== "UploadYourDoc")?.map((data, index) => (
 
                     <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === index + 1) ? style.tableDataStyle1 : style.tableDataStyle}`}>
-                      <div className={` ${style.tableHeaderGridStyle} ${style.marginTop10}`}>
+                      <div className={` ${expand?.index === index + 1 ? style.tableHeaderGridStyleForm : style.tableHeaderGridStyle} ${style.marginTop10}`}>
                         <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                           <div className={`${style.marginLeft10} ${style.justifySpaceAround} ${form?.forms[index]?.status !== "APPROVED" ? style.greyDotStyle : style.greenDotStyle}`}></div>
                         </div>
@@ -992,7 +1003,6 @@ const NewActiveApplication = ({
                                 <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Verified</div>
                               </div>
                             )}
-                            <div></div>
                           </>
                         ) : (
                           <>
@@ -1035,7 +1045,7 @@ const NewActiveApplication = ({
                     <div className={`${style.tableHeaderTextStyle}`}>Requested Form Completeness Check</div>
                   </div>
                 </div>
-                {form?.formSchemas?.filter(data => data?.formCategory !== 'Form')?.map((data, index) => (<div className={`${style.tableDataStyle} ${style.marginTop5} ${style.tableHeaderGridStyle1}`}>
+                {form?.formSchemas?.filter(data => data?.formCategory === 'Acknowledgement')?.map((data, index) => (<div className={`${style.tableDataStyle} ${style.marginTop5} ${style.tableHeaderGridStyle1}`}>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                     <div className={`${style.marginLeft10} ${style.justifySpaceAround} ${style.greyDotStyle}`}></div>
                   </div>

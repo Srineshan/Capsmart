@@ -789,6 +789,13 @@ body::-webkit-scrollbar {
   grid-gap: 10px;
 }
 
+.tableHeaderGridStyleForm {
+  display: grid;
+  grid-template-columns: 6% 77% 10% 4%;
+  grid-gap: 1%;
+}
+
+
 .tableHeaderOpenGridStyle {
   display: grid;
   grid-template-columns: 6% 78% 8% 4%;
@@ -2224,7 +2231,7 @@ select {
 
 .grid5and1 {
   display: grid;
-  grid-template-columns: 7fr 1fr;
+  grid-template-columns: 7fr 2fr;
   grid-gap: 5px;
 }
 
@@ -3919,4 +3926,13 @@ input[type="number"] {
   font: normal normal bold 20px/28px proxima-nova;
   color: #7165E3;
   text-transform: capitalize;
+}
+
+.marginCenter {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.marginLeft50 {
+  margin-left: 50px;
 }
