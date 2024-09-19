@@ -7,7 +7,7 @@ import { Icon } from '@blueprintjs/core';
 
 import style from './index.module.scss'
 
-const SaveInProgressDialog = ({ getIsOpen }) => {
+const SaveInProgressDialog = ({ getIsOpen, primaryPrivilege }) => {
     const [isContinue, setIsContinue] = useState(false);
     const [staffPrivilege, setStaffPrivilege] = useState([]);
     const [selectedPrivilege, setSelectedPrivilege] = useState('');
@@ -68,8 +68,8 @@ const SaveInProgressDialog = ({ getIsOpen }) => {
                         // value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
                         onChange={(e) => handleChange(e.target.value)}
                         className={style.fullWidth}
-                        valueList={staffPrivilege?.map(data => data?.id) || []}
-                        labelList={staffPrivilege?.map(data => data?.privilegeSetTitle) || []}
+                        valueList={staffPrivilege?.filter(data => data?.id !== primaryPrivilege)?.map(data => data?.id) || []}
+                        labelList={staffPrivilege?.filter(data => data?.id !== primaryPrivilege)?.map(data => data?.privilegeSetTitle) || []}
                         disabledList={[].map(data => false)}
                         label={'Privilege Category'}
                     // required={false}

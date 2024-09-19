@@ -16,7 +16,7 @@ import style from './index.module.scss';
 import CommonSelectField from '../../../Components/CommonFields/CommonSelectField';
 import ESignature from '../../../Components/ESignature';
 
-const Step8 = ({ basicForm, setBasicForm }) => {
+const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
     const [isSigned, setIsSigned] = useState(false);
     const [formSchema, setFormSchema] = useState();
     const [staffPrivilege, setStaffPrivilege] = useState([]);
@@ -29,12 +29,14 @@ const Step8 = ({ basicForm, setBasicForm }) => {
     const [collapsibleIndexes, setCollapsibleIndexes] = useState([]);
     const [encryptedText, setEncryptedText] = useState(CryptoJS.AES.encrypt(name + dateTime, publicKey).toString());
     const [currentDate, setCurrentDate] = useState(format(new Date(), 'dd-MM-yyyy'));
+    const [applicationData, setApplicationData] = useState();
 
     // const [collapse]
     const navigate = useNavigate()
 
     useEffect(() => {
         getStaffPrivilege();
+        getApplication();
     }, [])
 
     useEffect(() => {
@@ -58,7 +60,14 @@ const Step8 = ({ basicForm, setBasicForm }) => {
 
     }
 
-    console.log('staffPrivilege', staffPrivilege)
+    const getApplication = async () => {
+        const { data: form } = await GET(
+            `application-management-service/application/${applicationId}`
+        );
+        setApplicationData(form);
+    }
+
+    console.log('application data', applicationData)
 
     const handleContinue = () => {
         if (sessionStorage.getItem('fromSummary') === "true") {
@@ -245,7 +254,7 @@ const Step8 = ({ basicForm, setBasicForm }) => {
 
 
                 </div>
-                {isOpen && <SaveInProgressDialog getIsOpen={getIsOpen} staffPrivilege={staffPrivilege} />}
+                {isOpen && <SaveInProgressDialog getIsOpen={getIsOpen} primaryPrivilege={selectedPrivilege} />}
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
