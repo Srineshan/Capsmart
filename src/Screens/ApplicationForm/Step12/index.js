@@ -76,10 +76,10 @@ const Step12 = ({ basicForm, setBasicForm, applicationId }) => {
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'criminalData1' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.criminalData1} gridStyle={style.criminalHistoryGrid} baseKey={'criminalData1'} basicForm={basicForm} setBasicForm={setBasicForm} collapsableQuestionCard={true} stepPath={`forms[8].data`} setIsEdited={getIsEdited} />
+                            <ApplicationFieldCard object={formSchema?.properties?.criminalData1} gridStyle={style.criminalHistoryGrid} baseKey={'criminalData1'} basicForm={basicForm} setBasicForm={setBasicForm} collapsableQuestionCard={true} stepPath={`forms[8].data`} applicationId={applicationId} setIsEdited={getIsEdited} />
                         )}
                         {formSchema !== undefined && 'criminalData2' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.criminalData2} gridStyle={style.criminalHistoryGrid} baseKey={'criminalData2'} basicForm={basicForm} setBasicForm={setBasicForm} collapsableQuestionCard={true} stepPath={`forms[8].data`} setIsEdited={getIsEdited} />
+                            <ApplicationFieldCard object={formSchema?.properties?.criminalData2} gridStyle={style.criminalHistoryGrid} baseKey={'criminalData2'} basicForm={basicForm} setBasicForm={setBasicForm} collapsableQuestionCard={true} stepPath={`forms[8].data`} applicationId={applicationId} setIsEdited={getIsEdited} />
                         )}
                         {/* <NoDataBox
                             heading={'Information Requirement Alert'}
