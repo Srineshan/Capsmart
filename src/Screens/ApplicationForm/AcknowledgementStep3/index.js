@@ -41,29 +41,31 @@ const ApplicationAcknowledgementStep3 = ({ acknowledgementForm, dateFormat, name
         if (basicForm && !formSchema) {
             getFormSchema()
         }
-        setIsChecked(basicForm?.forms?.[12]?.acknowledged);
-        // setEncryptedText(basicForm?.forms?.[12]?.esign?.esign)
-        setSignText(basicForm?.forms?.[12]?.acknowledged ? basicForm?.forms?.[12]?.esign?.esign : '');
-        setIsSigned((basicForm?.forms?.[12]?.esign?.esign !== undefined && basicForm?.forms?.[12]?.acknowledged) ? true : false);
-        // setDecryptedText(CryptoJS.AES.decrypt(basicForm?.forms?.[12]?.esign?.esign, publicKey).toString(CryptoJS.enc.Utf8))
+        setIsChecked(basicForm?.forms?.[13]?.acknowledged);
+        // setEncryptedText(basicForm?.forms?.[13]?.esign?.esign)
+        setSignText(basicForm?.forms?.[13]?.acknowledged ? basicForm?.forms?.[13]?.esign?.esign : '');
+        setIsSigned((basicForm?.forms?.[13]?.esign?.esign !== undefined && basicForm?.forms?.[13]?.acknowledged) ? true : false);
+        // setDecryptedText(CryptoJS.AES.decrypt(basicForm?.forms?.[13]?.esign?.esign, publicKey).toString(CryptoJS.enc.Utf8))
     }, [basicForm])
 
     useEffect(() => {
-        if (basicForm?.forms?.[12]?.id !== undefined) {
+        if (basicForm?.forms?.[13]?.id !== undefined) {
             getRenderedContent()
         }
-    }, [basicForm?.forms?.[12]?.id])
+    }, [basicForm?.forms?.[13]?.id])
 
     const getFormSchema = async () => {
-        const { data: form } = await GET(
-            `application-management-service/formSchema/${basicForm?.formSchemas?.[12]?.id}`
-        );
-        setFormSchema(form)
+        if (basicForm?.formSchemas?.[13]?.id !== undefined) {
+            const { data: form } = await GET(
+                `application-management-service/formSchema/${basicForm?.formSchemas?.[13]?.id}`
+            );
+            setFormSchema(form)
+        }
     }
 
     const getRenderedContent = async () => {
         const { data: content } = await GET(
-            `application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[12]?.id}/render`
+            `application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[13]?.id}/render`
         );
         setFormContent(content)
     }
@@ -93,7 +95,7 @@ const ApplicationAcknowledgementStep3 = ({ acknowledgementForm, dateFormat, name
             }
 
             try {
-                const response = await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[12]?.id}/addFileToForm`, uploadedFile);
+                const response = await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[13]?.id}/addFileToForm`, uploadedFile);
                 console.log(response?.data);
                 return response?.data;
             } catch (error) {
@@ -149,19 +151,18 @@ const ApplicationAcknowledgementStep3 = ({ acknowledgementForm, dateFormat, name
     const handleSubmitApplicationReq = async () => {
         if (isSigned) {
             let temp = {
-                schemaId: basicForm?.forms?.[12]?.schemaId,
-                data: !isEdited ? basicForm?.forms?.[12]?.data : { esignDate: isChecked ? name + " " + currentDate : '' },
+                schemaId: basicForm?.forms?.[13]?.schemaId,
+                data: !isEdited ? basicForm?.forms?.[13]?.data : { esignDate: isChecked ? name + " " + currentDate : '' },
                 acknowledged: isChecked,
                 esign: { esign: isChecked ? encryptedText : '', name: isChecked ? name : '', signedDate: isChecked ? currentDate : '' }
             }
-            await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[12]?.id}`, temp)
+            await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[13]?.id}`, temp)
                 .then(response => {
                     console.log(response)
                     getPreApplication()
                     SuccessToaster("Application Updated Successfully");
                     handleDownload();
                     getFormSchema();
-                    handleSubmitApplication()
                     if (sessionStorage.getItem('fromSummary') === 'true') {
                         navigate(-1);
                     }
@@ -216,7 +217,7 @@ const ApplicationAcknowledgementStep3 = ({ acknowledgementForm, dateFormat, name
                                 dangerouslySetInnerHTML={{ __html: formContent?.disclaimer?.content }}
                             />
                         </div>
-                        {acknowledgementForm?.esignatureRequiredOnEachPage && (
+                        {formSchema?.esignatureRequired && (
                             <div className={style.twoCol}>
                                 <div onClick={isChecked ? () => { setIsSigned(!isSigned); setIsEdited(true) } : () => { }} className={!isChecked ? style.disabled : ''}>
                                     <ESignature
@@ -243,6 +244,7 @@ const ApplicationAcknowledgementStep3 = ({ acknowledgementForm, dateFormat, name
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()} >CONTINUE</div>
                     </div>
+                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplication()} >SUBMIT APPLICATION</div>
                 </div>
             </div>
         </div>

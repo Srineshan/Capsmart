@@ -22,19 +22,21 @@ const Step13 = ({ basicForm, setBasicForm, applicationId }) => {
     }, [basicForm])
 
     const getFormSchema = async () => {
-        const { data: form } = await GET(
-            `application-management-service/formSchema/${basicForm?.formSchemas?.[9]?.id}`
-        );
-        setFormSchema(form?.schema)
+        if (basicForm?.formSchemas?.[10]?.id !== undefined) {
+            const { data: form } = await GET(
+                `application-management-service/formSchema/${basicForm?.formSchemas?.[10]?.id}`
+            );
+            setFormSchema(form?.schema)
+        }
     }
 
     const handleSubmitApplicationReq = async () => {
         if (isEdited) {
             let temp = {
-                schemaId: basicForm?.forms?.[9]?.schemaId,
-                data: basicForm?.forms?.[9]?.data
+                schemaId: basicForm?.forms?.[10]?.schemaId,
+                data: basicForm?.forms?.[10]?.data
             }
-            await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[9]?.id}`, temp)
+            await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[10]?.id}`, temp)
                 .then(response => {
                     console.log(response)
                     setBasicForm(response?.data)
@@ -78,7 +80,7 @@ const Step13 = ({ basicForm, setBasicForm, applicationId }) => {
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'impactingPractice' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.impactingPractice} gridStyle={style.criminalHistoryGrid} baseKey={'impactingPractice'} basicForm={basicForm} setBasicForm={setBasicForm} collapsableQuestionCard={true} stepPath={`forms[9].data`} applicationId={applicationId} setIsEdited={getIsEdited} />
+                            <ApplicationFieldCard object={formSchema?.properties?.impactingPractice} gridStyle={style.criminalHistoryGrid} baseKey={'impactingPractice'} basicForm={basicForm} setBasicForm={setBasicForm} collapsableQuestionCard={true} stepPath={`forms[10].data`} applicationId={applicationId} setIsEdited={getIsEdited} />
                         )}
                     </div>
                 </div>

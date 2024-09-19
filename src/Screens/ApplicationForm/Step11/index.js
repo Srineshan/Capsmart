@@ -22,19 +22,21 @@ const Step11 = ({ basicForm, setBasicForm, applicationId }) => {
     }, [basicForm])
 
     const getFormSchema = async () => {
-        const { data: form } = await GET(
-            `application-management-service/formSchema/${basicForm?.formSchemas?.[7]?.id}`
-        );
-        setFormSchema(form?.schema)
+        if (basicForm?.formSchemas?.[8]?.id !== undefined) {
+            const { data: form } = await GET(
+                `application-management-service/formSchema/${basicForm?.formSchemas?.[8]?.id}`
+            );
+            setFormSchema(form?.schema)
+        }
     }
 
     const handleSubmitApplicationReq = async () => {
         if (isEdited) {
             let temp = {
-                schemaId: basicForm?.forms?.[7]?.schemaId,
-                data: basicForm?.forms?.[7]?.data
+                schemaId: basicForm?.forms?.[8]?.schemaId,
+                data: basicForm?.forms?.[8]?.data
             }
-            await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[7]?.id}`, temp)
+            await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[8]?.id}`, temp)
                 .then(response => {
                     console.log(response)
                     setBasicForm(response?.data)
@@ -75,10 +77,10 @@ const Step11 = ({ basicForm, setBasicForm, applicationId }) => {
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'conductDisclosure1' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.conductDisclosure1} gridStyle={style.conductGrid} baseKey={'conductDisclosure1'} basicForm={basicForm} setBasicForm={setBasicForm} collapsableQuestionCard={true} stepPath={`forms[7].data`} applicationId={applicationId} setIsEdited={getIsEdited} />
+                            <ApplicationFieldCard object={formSchema?.properties?.conductDisclosure1} gridStyle={style.conductGrid} baseKey={'conductDisclosure1'} basicForm={basicForm} setBasicForm={setBasicForm} collapsableQuestionCard={true} stepPath={`forms[8].data`} applicationId={applicationId} setIsEdited={getIsEdited} />
                         )}
                         {formSchema !== undefined && 'conductDisclosure2' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.conductDisclosure2} gridStyle={style.conductGrid} baseKey={'conductDisclosure2'} basicForm={basicForm} setBasicForm={setBasicForm} collapsableQuestionCard={true} stepPath={`forms[7].data`} applicationId={applicationId} setIsEdited={getIsEdited} />
+                            <ApplicationFieldCard object={formSchema?.properties?.conductDisclosure2} gridStyle={style.conductGrid} baseKey={'conductDisclosure2'} basicForm={basicForm} setBasicForm={setBasicForm} collapsableQuestionCard={true} stepPath={`forms[8].data`} applicationId={applicationId} setIsEdited={getIsEdited} />
                         )}
                     </div>
                 </div>
