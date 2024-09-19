@@ -182,3 +182,15 @@
 .businessMailingAddressGrid> :nth-child(4) {
     grid-column: 1 / -1;
 }
+
+.cardTitle {
+    text-align: left;
+    font: normal normal bold 20px/26px proxima-nova;
+    letter-spacing: 0px;
+    color: #52575D;
+    // text-transform: capitalize;
+}
+
+.padding {
+    padding: 20px;
+}

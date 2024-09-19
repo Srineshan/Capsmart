@@ -12,6 +12,9 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { GET, PUT, POST } from '../../dataSaver';
 import { useNavigate } from 'react-router-dom';
+import PdfDoc from './../../../images/pdfDoc.png';
+import WordDoc from './../../../images/wordDoc.png';
+import ImgDoc from './../../../images/imgDoc.png';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
@@ -25,6 +28,7 @@ import CommonSelectField from '../../../Components/CommonFields/CommonSelectFiel
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import { getValueByPath } from '../../../utils/formatting';
+import FileDisplayDialog from '../../../Components/fileDisplayDialog';
 
 const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
     const [formSchema, setFormSchema] = useState();
@@ -34,7 +38,9 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
     const [isShowESignDialog, setIsShowESignDialog] = useState(false);
     const [files, setFiles] = useState([]);
     const [isCollapsableCard, setIsCollapsableCard] = useState(true);
-    const [replaceFileIndex, setReplaceFileIndex] = useState(-1)
+    const [replaceFileIndex, setReplaceFileIndex] = useState(-1);
+    const [showFileDisplayDialog, setShowFileDisplayDialog] = useState(false);
+    const [selectedFile, setselectedFile] = useState(false);
     let eSignTitle = getValueByPath(basicForm, 'forms[0].data.setUpYourSignature.title');
     let eSignInitial = getValueByPath(basicForm, 'forms[0].data.setUpYourSignature.initial')
     let showRedBorderForESign = ((eSignTitle === '' || eSignTitle === undefined) || (eSignInitial === '' || eSignInitial === undefined))
@@ -55,6 +61,10 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
 
     const getIsOpen = (value) => {
         setIsShowESignDialog(value);
+    }
+
+    const getIsShowFileDialog = (value) => {
+        setShowFileDisplayDialog(value);
     }
 
     const handleFileUpload = async (e, id) => {
@@ -99,6 +109,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
 
     const handleSubmitApplicationReq = async (tableData) => {
         tempValue.table = tableData;
+        console.log(tableData)
         let temp = {
             schemaId: basicForm?.forms?.[0]?.schemaId,
             data: tempValue
@@ -138,7 +149,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
             SuccessToaster('File Uploaded Successfully');
             console.log(response?.data);
             event.map((data, index) => {
-                table.push({ documentType: '', fileSize: `${(data?.size / (1024 * 1024)).toFixed(2)} Mb`, fileURL: response?.data[index]?.fileURL, fileUploaded: data?.name, requirement: '', valid: '', verified: '' })
+                table.push({ documentType: '', fileSize: `${(data?.size / (1024 * 1024)).toFixed(2)} Mb`, fileURL: response?.data[index]?.fileURL, fileType: response?.data[index]?.fileType, fileUploaded: data?.name, requirement: '', valid: '', verified: '' })
             })
             handleSubmitApplicationReq(table)
             return response?.data;
@@ -177,7 +188,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
             });
         temp[index].documentType = value;
         if (value !== null || value !== "") {
-            temp[index].requirement = !basicForm?.documentsRequired?.filter(data => data?.document?.name === value)?.[0]?.required ? 'Required' : 'Recommended';
+            temp[index].requirement = basicForm?.documentsRequired?.filter(data => data?.document?.name === value)?.[0]?.required ? 'Required' : 'Recommended';
         }
         console.log(temp)
         handleSubmitApplicationReq(temp)
@@ -205,9 +216,15 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
 
     const getApplicantValues = (array) => {
         let temp = [];
+        console.log(array, 'array')
         Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.map((data, index) => {
             if (data === "file") {
-                temp.push({ "type": "icon", "icon": array?.map(innerData => <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />), 'isShowHoverText': false });
+                temp.push({
+                    "type": "icon", "icon": array?.map(innerData => innerData?.fileType === 'application/pdf' ?
+                        <img src={PdfDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} />
+                        : innerData?.fileType?.startsWith("image/") ?
+                            <img src={ImgDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} /> : <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />), 'isShowHoverText': false
+                });
             } else {
                 if (data === "documentType") {
                     temp.push({
@@ -326,12 +343,12 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
                                         </div>
                                         {basicForm?.documentsRequired?.map((data, index) => (
                                             <div>
-                                                <div className={`${style.requiredDocumentCard} ${style.tableGrid} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''}  ${style.marginTop5}`}>
+                                                <div className={`${style.requiredDocumentCard} ${style.tableGrid} ${(basicForm?.forms?.[0]?.data !== null && tempValue?.table?.filter(tableData => tableData?.documentType === data?.document?.name)?.length === 0 && data?.required) ? style.redBorder : ''} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''}  ${style.marginTop5}`}>
                                                     <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                                                         <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.document?.name}</div>
                                                         <InfoOutlinedIcon sx={{ fontSize: 14, marginLeft: '10px' }} className={style.info} />
                                                     </div>
-                                                    <div className={style.documentTextStyle}>{data?.required ? 'Required' : 'Recommended'}</div>
+                                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.required ? 'Required' : 'Recommended'}</div>
                                                     <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.instruction}</div>
                                                 </div>
                                             </div>
@@ -408,6 +425,9 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
                     </ESignDialog>
                 )
             }
+            {showFileDisplayDialog && (
+                <FileDisplayDialog getIsOpen={getIsShowFileDialog} file={selectedFile} />
+            )}
         </div >
     )
 }

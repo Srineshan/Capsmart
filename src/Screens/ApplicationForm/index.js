@@ -65,7 +65,7 @@ const ApplicationForm = () => {
     }, [])
 
     useEffect(() => {
-        if (basicForm) {
+        if (basicForm && acknowledgementForms?.length === 0) {
             getAcknowledgement(basicForm?.providerType?.id)
         }
     }, [basicForm])
@@ -134,13 +134,13 @@ const ApplicationForm = () => {
             case 'step15':
                 return <Step15 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'acknowledgementStep1':
-                return <ApplicationAcknowledgementStep1 acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'MM/dd/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
+                return <ApplicationAcknowledgementStep1 acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
             case 'acknowledgementStep2':
-                return <ApplicationAcknowledgementStep2 />;
+                return <ApplicationAcknowledgementStep2 acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
             case 'acknowledgementStep3':
-                return <ApplicationAcknowledgementStep3 />;
+                return <ApplicationAcknowledgementStep3 acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
             case 'acknowledgementStep4':
-                return <ApplicationAcknowledgementStep4 />;
+                return <ApplicationAcknowledgementStep4 acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
             case 'acknowledgementStep5':
                 return <ApplicationAcknowledgementStep5 />;
             case 'acknowledgementStep6':

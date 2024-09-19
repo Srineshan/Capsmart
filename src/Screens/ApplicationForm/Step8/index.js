@@ -9,6 +9,7 @@ import { GET } from '../../dataSaver';
 import { useNavigate } from 'react-router-dom';
 
 import style from './index.module.scss';
+import CommonSelectField from '../../../Components/CommonFields/CommonSelectField';
 
 const Step8 = ({ basicForm, setBasicForm }) => {
     const [formSchema, setFormSchema] = useState();
@@ -35,6 +36,10 @@ const Step8 = ({ basicForm, setBasicForm }) => {
 
         }
     }
+
+    const handleChange = () => {
+
+    }
     return (
         <div>
             <div className={style.applicationScreenGrid}>
@@ -44,12 +49,28 @@ const Step8 = ({ basicForm, setBasicForm }) => {
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
                     <div className={style.applicationCardStyle}>
-                        {formSchema !== undefined && 'privilegeCategories' in formSchema?.properties && (
+                        <div className={style.padding}>
+                            <div className={style.cardTitle}>{'Indicate the Privileges you are seeking as a(n) {Associate} for the {department anesthesiology / speciality}'}</div>
+                        </div>
+                        {/* <CommonSelectField
+                            // value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
+                            onChange={(e) => handleChange(fieldKey, e.target.value, baseKey)}
+                            className={style.fullWidth}
+                            // firstOptionLabel={fieldData.label}
+                            // firstOptionValue={fieldData.label}
+                            valueList={[]}
+                            labelList={[]}
+                            disabledList={[].map(data => false)}
+                            label={'Privilege Category'}
+                            required={false}
+                            warning={warningFields?.map(data => data?.key)?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
+                        /> */}
+                        {/* {formSchema !== undefined && 'privilegeCategories' in formSchema?.properties && (
                             <ApplicationFieldCard object={formSchema?.properties?.privilegeCategories} gridStyle={style.privilegeGrid} baseKey={'privilegeCategories'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} />
                         )}
                         {formSchema !== undefined && 'additionalInformationAndSupportingDocuments' in formSchema?.properties && (
                             <ApplicationFieldCard object={formSchema?.properties?.additionalInformationAndSupportingDocuments} gridStyle={style.privilegeGrid} baseKey={'additionalInformationAndSupportingDocuments'} basicForm={basicForm} setBasicForm={setBasicForm} />
-                        )}
+                        )} */}
                     </div>
                 </div>
                 <div>

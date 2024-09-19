@@ -121,7 +121,7 @@
 }
 
 
-.border::before {
+.border:before {
     content: "";
     position: absolute;
     left: 0;
@@ -133,7 +133,7 @@
     top: -10px;
 }
 
-.border::after {
+.border:after {
     content: "";
     position: absolute;
     height: 57px;

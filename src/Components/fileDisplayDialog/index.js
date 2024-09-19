@@ -4,7 +4,7 @@ import CrossPink from "../../images/crossPink.png";
 
 import style from './index.module.scss'
 
-const SubmittedDialog = ({ getIsOpen }) => {
+const FileDisplayDialog = ({ getIsOpen, file }) => {
     const [isContinue, setIsContinue] = useState(false);
 
     return (
@@ -12,7 +12,7 @@ const SubmittedDialog = ({ getIsOpen }) => {
             <div>
                 <div className={Classes.DIALOG_BODY}>
                     <div className={style.spaceBetween}>
-                        <div className={style.heading}>Application Submitted Successfully</div>
+                        <div className={style.heading}>{`${file?.documentType} (${file?.fileUploaded})`}</div>
                         <div className={style.displayInRow}>
                             <img
                                 src={CrossPink}
@@ -22,10 +22,15 @@ const SubmittedDialog = ({ getIsOpen }) => {
                             />
                         </div>
                     </div>
-                    <p className={`${style.description} ${style.marginTop}`}>Save In Progress Description goes here</p>
+                    <div className={style.marginTop}>
+                        {file?.fileType === 'application/pdf' ? (
+                            <iframe src={file?.fileURL} width="100%" height="600px"></iframe>
+                        ) : file?.fileType?.startsWith("image/") ? (
+                            <img src={file?.fileURL} alt="" width="100%" height="600px" className={style.objectFitContain} />
+                        ) : ''}
+                    </div>
                     <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
-                        {/* <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>CANCEL</div> */}
-                        <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(false); }}>OKAY</div>
+                        <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(false); }}>CLOSE</div>
                     </div>
                 </div>
 
@@ -34,4 +39,4 @@ const SubmittedDialog = ({ getIsOpen }) => {
     )
 }
 
-export default SubmittedDialog;
+export default FileDisplayDialog;

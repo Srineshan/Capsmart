@@ -110,7 +110,7 @@
     text-align: left;
     font: normal normal bold 15px/23px proxima-nova;
     letter-spacing: 0.9px;
-    color: #6F7479;
+    color: #52575D;
     text-transform: capitalize;
 }
 
@@ -139,7 +139,7 @@
     text-align: left;
     font: normal normal normal 15px/21px proxima-nova;
     letter-spacing: 0px;
-    color: #6F7479;
+    color: #52575D;
     text-transform: capitalize;
 }
 
@@ -196,7 +196,7 @@
 }
 
 .redBorder {
-    border: 2px dashed #FF6562 !important;
+    border: 1px solid #FF6562 !important;
 }
 
 .uploadDescriptionText {
@@ -268,4 +268,10 @@
 .justifyCenter {
     display: flex;
     justify-content: center;
+}
+
+.docTypeImgStyle {
+    height: 20px;
+    width: auto;
+    object-fit: contain;
 }

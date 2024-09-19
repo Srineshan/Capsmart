@@ -9,9 +9,13 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import style from './index.module.scss';
 import SendEmailFromStaffManagerConfirmationDialog from '../../Components/sendEmailFromStaffManagerConfirmation';
-
+import jwt from 'jwt-decode';
+import Cookie from "universal-cookie";
 
 const CreateStaffMemberApplication = () => {
+    let cookie = new Cookie();
+    let userDetails = cookie.get('user');
+    const user = jwt(userDetails);
     const [form, setForm] = useState();
     const [isNextpage, setIsNextPage] = useState(false);
     const [isShowMailSendDialog, setIsShowMailSendDialog] = useState(false);
@@ -80,6 +84,9 @@ const CreateStaffMemberApplication = () => {
             }
         }
     )
+    useEffect(() => {
+        setUserDetails();
+    }, [user?.id])
 
     const switchTheme = createTheme({
         palette: {
@@ -100,6 +107,11 @@ const CreateStaffMemberApplication = () => {
     useEffect(() => {
         setRequiredDocumentList(basicFormForDocuments?.documentsRequired)
     }, [basicFormForDocuments])
+
+    const setUserDetails = async () => {
+        const { data: userDetails } = await GET(`user-management-service/user/${user?.id}`);
+        sessionStorage.setItem('user', JSON.stringify(userDetails))
+    }
 
     const getShowMailSendDialog = (value) => {
         setIsShowMailSendDialog(value)
@@ -222,7 +234,7 @@ const CreateStaffMemberApplication = () => {
     }
     return (
         <div className={style.screenBackground}>
-            <ApplicationHeader title={'Create A New Staff Member Application'} />
+            <ApplicationHeader title={'Create A New Staff Member Credentialing And Privileging Application'} />
             <div className={style.screenPadding}>
                 <div className={style.displayInRowRev}>
                     {/* <div className={style.breadcrumbStyle}>{`STAFF APPOINTMENT APPLICATION >> NEW APPLICATION`}</div> */}

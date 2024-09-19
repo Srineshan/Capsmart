@@ -29,6 +29,7 @@ import CommonDropZone from '../CommonFields/CommonDropZone';
 import CommonTextField from '../CommonFields/CommonTextField';
 import CommonLabel from '../CommonFields/CommonLabel';
 import { useParams } from 'react-router-dom';
+import axios from "axios";
 
 const TEXTFIELDLEN50 = 50;
 
@@ -48,6 +49,145 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
         renderObjectFields(object)
         console.log('entered')
     }, [basicForm]);
+
+
+    const getValueByPath = (obj, path) => {
+        const keys = path.split(/[\.\[\]]+/).filter(Boolean);
+        console.log(path, keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm), basicForm, 'if')
+        return keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm);
+    };
+
+    let isMailingAddressSameAsHomeAddress = getValueByPath(basicForm, 'forms[1].data.contactAddress2.isMailingAddressSameAsHomeAddress');
+    let isBusinessAddressSameAsHomeAddressOrMailingAddress = getValueByPath(basicForm, 'forms[1].data.contactAddress3.isBusinessAddressSameAsHomeAddressOrMailingAddress');
+    let isHomeAddressPincodeEntered = getValueByPath(basicForm, 'forms[1].data.contactAddress1.homeAddress.pinCode');
+    let isMailingAddressPincodeEntered = getValueByPath(basicForm, 'forms[1].data.contactAddress2.mailingAddress.pinCode');
+    let isBusinessAddressPincodeEntered = getValueByPath(basicForm, 'forms[1].data.contactAddress3.business.businessAddress.pinCode');
+    console.log(isMailingAddressSameAsHomeAddress, isBusinessAddressSameAsHomeAddressOrMailingAddress)
+    useEffect(() => {
+        if (isMailingAddressSameAsHomeAddress !== undefined && isMailingAddressSameAsHomeAddress !== null) {
+            setBasicForm(prevData => {
+                let tempBasicForm = { ...prevData };
+                if (tempBasicForm?.forms[1]?.data?.contactAddress2?.mailingAddress === undefined) {
+                    tempBasicForm.forms[1].data.contactAddress2.mailingAddress = {}
+                }
+                tempBasicForm.contactAddress2 = { mailingAddress: {} }
+                if (isMailingAddressSameAsHomeAddress) {
+                    tempBasicForm.forms[1].data.contactAddress2.mailingAddress.streetName = tempBasicForm?.forms[1]?.data?.contactAddress1?.homeAddress?.streetName !== undefined ? tempBasicForm?.forms[1]?.data?.contactAddress1?.homeAddress?.streetName : '';
+                    tempBasicForm.forms[1].data.contactAddress2.mailingAddress.pinCode = tempBasicForm?.forms[1]?.data?.contactAddress1?.homeAddress?.pinCode !== undefined ? tempBasicForm?.forms[1]?.data?.contactAddress1?.homeAddress?.pinCode : '';
+                    tempBasicForm.forms[1].data.contactAddress2.mailingAddress.city = tempBasicForm?.forms[1]?.data?.contactAddress1?.homeAddress?.city !== undefined ? tempBasicForm?.forms[1]?.data?.contactAddress1?.homeAddress?.city : '';
+                    tempBasicForm.forms[1].data.contactAddress2.mailingAddress.province = tempBasicForm?.forms[1]?.data?.contactAddress1?.homeAddress?.province !== undefined ? tempBasicForm?.forms[1]?.data?.contactAddress1?.homeAddress?.province : '';
+                } else {
+                    tempBasicForm.forms[1].data.contactAddress2.mailingAddress.streetName = '';
+                    tempBasicForm.forms[1].data.contactAddress2.mailingAddress.pinCode = '';
+                    tempBasicForm.forms[1].data.contactAddress2.mailingAddress.city = '';
+                    tempBasicForm.forms[1].data.contactAddress2.mailingAddress.province = '';
+                }
+                tempBasicForm.contactAddress2.mailingAddress = tempBasicForm.forms[1].data.contactAddress2.mailingAddress
+                return tempBasicForm;
+            });
+        }
+    }, [isMailingAddressSameAsHomeAddress]);
+
+    useEffect(() => {
+        if (isBusinessAddressSameAsHomeAddressOrMailingAddress !== undefined && isBusinessAddressSameAsHomeAddressOrMailingAddress !== null) {
+            setBasicForm(prevData => {
+                let tempContactAddress3 = { ...prevData };
+                if (tempContactAddress3?.forms[1]?.data?.contactAddress3?.business === undefined) {
+                    tempContactAddress3.forms[1].data.contactAddress3.business = {}
+                }
+                if (tempContactAddress3?.forms[1]?.data?.contactAddress3?.business?.businessAddress === undefined) {
+                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress = {}
+                }
+                if (isBusinessAddressSameAsHomeAddressOrMailingAddress === "Same as Home Address") {
+                    tempContactAddress3.contactAddress3 = { business: { businessAddress: {} } }
+                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.streetName = tempContactAddress3?.forms[1]?.data?.contactAddress1?.homeAddress?.streetName !== undefined ? tempContactAddress3?.forms[1]?.data?.contactAddress1?.homeAddress?.streetName : '';
+                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.pinCode = tempContactAddress3?.forms[1]?.data?.contactAddress1?.homeAddress?.pinCode !== undefined ? tempContactAddress3?.forms[1]?.data?.contactAddress1?.homeAddress?.pinCode : '';
+                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.city = tempContactAddress3?.forms[1]?.data?.contactAddress1?.homeAddress?.city !== undefined ? tempContactAddress3?.forms[1]?.data?.contactAddress1?.homeAddress?.city : '';
+                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.province = tempContactAddress3?.forms[1]?.data?.contactAddress1?.homeAddress?.province !== undefined ? tempContactAddress3?.forms[1]?.data?.contactAddress1?.homeAddress?.province : '';
+                    tempContactAddress3.contactAddress3 = { business: { businessAddress: tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress } }
+                } else if (isBusinessAddressSameAsHomeAddressOrMailingAddress === "Same as Mailing Address") {
+                    tempContactAddress3.contactAddress3 = { business: { businessAddress: {} } }
+                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.streetName = tempContactAddress3?.forms[1]?.data.contactAddress2?.mailingAddress?.streetName !== undefined ? tempContactAddress3?.forms[1]?.data.contactAddress2?.mailingAddress?.streetName : '';
+                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.pinCode = tempContactAddress3?.forms[1]?.data.contactAddress2?.mailingAddress?.pinCode !== undefined ? tempContactAddress3?.forms[1]?.data.contactAddress2?.mailingAddress?.pinCode : '';
+                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.city = tempContactAddress3?.forms[1]?.data.contactAddress2?.mailingAddress?.city !== undefined ? tempContactAddress3?.forms[1]?.data.contactAddress2?.mailingAddress?.city : '';
+                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.province = tempContactAddress3?.forms[1]?.data.contactAddress2?.mailingAddress?.province !== undefined ? tempContactAddress3?.forms[1]?.data.contactAddress2?.mailingAddress?.province : '';
+                    tempContactAddress3.contactAddress3 = { business: { businessAddress: tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress } }
+                } else {
+                    tempContactAddress3.contactAddress3 = { business: { businessAddress: {} } }
+                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.streetName = '';
+                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.pinCode = '';
+                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.city = '';
+                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.province = '';
+                    tempContactAddress3.contactAddress3 = { business: { businessAddress: tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress } }
+                }
+                return tempContactAddress3;
+            });
+        }
+    }, [isBusinessAddressSameAsHomeAddressOrMailingAddress]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(`https://geocoder.ca/${isHomeAddressPincodeEntered}?json=1`);
+                let data = response.data;
+                console.log(data)
+                setBasicForm(prevData => {
+                    let tempContactAddress1 = { ...prevData };
+                    tempContactAddress1.forms[1].data.contactAddress1.homeAddress.city = (data?.standard?.city || "");
+                    tempContactAddress1.forms[1].data.contactAddress1.homeAddress.province = (data?.standard?.prov || "");
+                    return tempContactAddress1;
+                });
+            } catch (error) {
+                console.log("Error fetching data");
+            }
+        }
+        if (isHomeAddressPincodeEntered !== undefined && isHomeAddressPincodeEntered !== null && isHomeAddressPincodeEntered?.length >= 6) {
+            fetchData()
+        }
+    }, [isHomeAddressPincodeEntered]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(`https://geocoder.ca/${isMailingAddressPincodeEntered}?json=1`);
+                let data = response.data;
+                console.log(data)
+                setBasicForm(prevData => {
+                    let tempContactAddress2 = { ...prevData };
+                    tempContactAddress2.forms[1].data.contactAddress2.mailingAddress.city = (data?.standard?.city || "");
+                    tempContactAddress2.forms[1].data.contactAddress2.mailingAddress.province = (data?.standard?.prov || "");
+                    return tempContactAddress2;
+                });
+            } catch (error) {
+                console.log("Error fetching data");
+            }
+        }
+        if (isMailingAddressPincodeEntered !== undefined && isMailingAddressPincodeEntered !== null && isMailingAddressPincodeEntered?.length >= 6) {
+            fetchData()
+        }
+    }, [isMailingAddressPincodeEntered]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(`https://geocoder.ca/${isBusinessAddressPincodeEntered}?json=1`);
+                let data = response.data;
+                console.log(data)
+                setBasicForm(prevData => {
+                    let tempContactAddress3 = { ...prevData };
+                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.city = (data?.standard?.city || "");
+                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.province = (data?.standard?.prov || "");
+                    return tempContactAddress3;
+                });
+            } catch (error) {
+                console.log("Error fetching data");
+            }
+        }
+        if (isBusinessAddressPincodeEntered !== undefined && isBusinessAddressPincodeEntered !== null && isBusinessAddressPincodeEntered?.length >= 6) {
+            fetchData()
+        }
+    }, [isBusinessAddressPincodeEntered]);
+
     let temp = [];
 
     // const setNestedValue = (obj, path, value) => {
@@ -277,6 +417,14 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
         }
     }
 
+    const handleDatalistInput = (fieldKey, value) => {
+        let temp = {
+            fieldName: fieldKey,
+            fieldValue: value
+        }
+        sessionStorage.setItem('dataListEntry', JSON.stringify(temp))
+    }
+
     // Usage:
     // const thenStrings = getAllThenStrings(object);
     // console.log(thenStrings, '246');
@@ -305,7 +453,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
 
         // Usage:
         // const conditionMet = checkAllOfConditions(object, `${baseKey}`, fieldKey);
-        console.log(fieldKey, fieldData, `${basicpath}.${baseKey}.${fieldKey}`, object?.then?.required, getAllThenStrings(object), getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey), object?.then?.required?.includes(fieldKey), '275', parentData, object?.dependencies)
+        console.log(fieldKey, fieldData, `${basicpath}.${baseKey}.${fieldKey}`, object?.then?.required, getAllThenStrings(object), getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey), object?.then?.required?.includes(fieldKey), '275', parentData, object)
         // if (object?.then?.required?.includes(fieldKey) !== undefined ? (!object?.then?.required?.includes(fieldKey) || object?.if?.properties !== undefined && getValueByPath(basicForm, `${basicpath}.${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`) === Object.entries(object?.if?.properties)?.map(([key, data]) => data)[0]?.const) : getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) ? (getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) && (getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) && getValueByPath(basicForm, `${basicpath}.${baseKey}.${getAllThenStrings(object)?.filter(data => data?.value === fieldKey)[0]?.key}`) === getAllThenStrings(object)?.filter(data => data?.value === fieldKey)[0]?.checkValue)) : true && fieldData.fieldType) {
         let firstObject;
         let dynamicValue;
@@ -346,7 +494,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                                 onSelect={(item) => handleChange(fieldKey, item.value, baseKey)}
                                 className={`${style.fullWidth} ${style.marginTop10} ${style.leftAlign}`}
                                 maxLength={TEXTFIELDLEN50}
-                                onChange={(e) => handleChange(fieldKey, e.target.value, baseKey)}
+                                onChange={(e) => { handleChange(fieldKey, e.target.value, baseKey); handleDatalistInput(fieldKey, e.target.value) }}
                                 placeholder={fieldData.placeHolder !== null ? fieldData.placeHolder : fieldData.label !== null ? `Enter ${fieldData.label}` : null}
                                 value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || ''}
                             />
@@ -379,21 +527,23 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                                 )}
                             </div>
                         ) : (
-                            <CommonTextField
-                                value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || ''}
-                                className={style.fullWidth}
-                                onChange={(e) => handleChange(fieldKey, fieldData.type === "number" ? parseInt(e.target.value <= fieldData.maximum ? e.target.value : fieldData.maximum) : e.target.value, baseKey)}
-                                maxLength={TEXTFIELDLEN50}
-                                placeholder={fieldData.placeHolder !== null ? fieldData.placeHolder : fieldData.label !== null ? `Enter ${fieldData.label}` : null}
-                                label={fieldData.label}
-                                required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))}
-                                type={fieldData.type}
-                                min={fieldData.minimum}
-                                warning={warningFields?.map(data => data?.key)?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
-                            // InputProps={{
-                            //     readOnly: (user?.roles?.filter(data => data?.roleName === "Staff Manager")?.length === 0 && fieldKey === 'officialEmail') ? true : false,
-                            // }}
-                            />
+                            <div key={fieldKey}>
+                                <CommonTextField
+                                    value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || ''}
+                                    className={style.fullWidth}
+                                    onChange={(e) => handleChange(fieldKey, fieldData.type === "number" ? parseInt(e.target.value <= fieldData.maximum ? e.target.value : fieldData.maximum) : e.target.value, baseKey)}
+                                    maxLength={TEXTFIELDLEN50}
+                                    placeholder={fieldData.placeHolder !== null ? fieldData.placeHolder : fieldData.label !== null ? `Enter ${fieldData.label}` : null}
+                                    label={fieldData.label}
+                                    required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))}
+                                    type={fieldData.type}
+                                    min={fieldData.minimum}
+                                    warning={warningFields?.map(data => data?.key)?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
+                                // InputProps={{
+                                //     readOnly: (user?.roles?.filter(data => data?.roleName === "Staff Manager")?.length === 0 && fieldKey === 'officialEmail') ? true : false,
+                                // }}
+                                />
+                            </div>
                         )
                     );
                 case 'textArea':
@@ -652,12 +802,6 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
     //     console.log(path, path.split('.').reduce((acc, part) => acc && acc[part], basicForm), basicForm)
     //     return path.split('.').reduce((acc, part) => acc && acc[part], basicForm);
     // };
-
-    const getValueByPath = (obj, path) => {
-        const keys = path.split(/[\.\[\]]+/).filter(Boolean);
-        console.log(path, keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm), basicForm, 'if')
-        return keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm);
-    };
 
     const handleAddMore = () => {
         let index = basicForm?.forms?.findIndex(data => data?.id === formId);
