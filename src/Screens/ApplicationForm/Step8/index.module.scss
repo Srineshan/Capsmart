@@ -47,16 +47,44 @@
     padding: 10px 20px 20px 20px;
 }
 
+.categoryGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
 .twoCol {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
 }
 
+.disabled {
+    cursor: not-allowed;
+}
+
 .twoColForButton {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
+}
+
+.displayInRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.verticalAlignCenter {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.alignCenter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
 }
 
 .fourCol {
@@ -191,6 +219,72 @@
     // text-transform: capitalize;
 }
 
+.twoColGrid {
+    display: grid;
+    grid-template-columns: 1fr 7fr;
+    gap: 10px;
+}
+
+.itemLeft {
+    padding: 10px;
+    /* Inner padding for each line */
+    text-align: left;
+}
+
+.cursorPointer {
+    cursor: pointer;
+}
+
+.uploadButton {
+    background: #F5F5F8 0% 0% no-repeat padding-box;
+    border: 0.4000000059604645px solid #d7d4f7;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
+.uploadText {
+    text-align: left !important;
+    font: normal normal bold 13px/20px proxima-nova;
+    letter-spacing: 0px;
+    color: #52575D;
+}
+
+.uploadGrid {
+    display: grid;
+    grid-template-columns: 90% 10%;
+    gap: 1%;
+}
+
+.cardDescription {
+    text-align: left;
+    font: normal normal normal 18px/20px proxima-nova;
+    letter-spacing: 0px;
+    color: #52575D;
+    // text-transform: capitalize;
+}
+
 .padding {
     padding: 20px;
+}
+
+.bigButtonTextStyle {
+    text-align: center;
+    font: normal normal bold 18px/30px proxima-nova;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    opacity: 1;
+}
+
+
+.bigButtonStyle {
+    background-color: #7165e3;
+    color: white;
+    border: 1px solid #7165e3;
+    height: 40px;
+    width: 500px;
+    border-radius: 10px;
+    margin-bottom: -20px;
+    box-shadow: 0px 3px 11px #7165e3;
 }
