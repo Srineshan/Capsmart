@@ -217,6 +217,15 @@
     max-width: 85%;
 }
 
+.lableStylePOD {
+    text-align: left;
+    font: normal normal 500 16px/20px proxima-nova;
+    letter-spacing: 0px;
+    color: #52575D;
+    text-transform: capitalize;
+    margin-top: 5px;
+}
+
 .lableRadioStyle {
     text-align: left;
     font: normal normal 500 15px/20px proxima-nova;
@@ -231,6 +240,17 @@
 .lableReadOnlyStyle {
     text-align: left;
     font: normal normal 500 17px/20px proxima-nova;
+    letter-spacing: 0px;
+    color: #52575D;
+    // text-transform: capitalize;
+    opacity: 1;
+    margin-top: 10px;
+    max-width: 85%;
+}
+
+.lableReadOnlyStyleInPOD {
+    text-align: left;
+    font: normal normal normal 14px/20px proxima-nova;
     letter-spacing: 0px;
     color: #52575D;
     // text-transform: capitalize;

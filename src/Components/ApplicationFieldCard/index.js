@@ -64,7 +64,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
     let isBusinessAddressPincodeEntered = getValueByPath(basicForm, 'forms[1].data.contactAddress3.business.businessAddress.pinCode');
     console.log(isMailingAddressSameAsHomeAddress, isBusinessAddressSameAsHomeAddressOrMailingAddress)
     useEffect(() => {
-        if (isMailingAddressSameAsHomeAddress !== undefined && isMailingAddressSameAsHomeAddress !== null) {
+        if (isMailingAddressSameAsHomeAddress !== undefined && isMailingAddressSameAsHomeAddress !== null && !isPOD) {
             setBasicForm(prevData => {
                 let tempBasicForm = { ...prevData };
                 if (tempBasicForm?.forms[1]?.data?.contactAddress2?.mailingAddress === undefined) {
@@ -89,7 +89,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
     }, [isMailingAddressSameAsHomeAddress]);
 
     useEffect(() => {
-        if (isBusinessAddressSameAsHomeAddressOrMailingAddress !== undefined && isBusinessAddressSameAsHomeAddressOrMailingAddress !== null) {
+        if (isBusinessAddressSameAsHomeAddressOrMailingAddress !== undefined && isBusinessAddressSameAsHomeAddressOrMailingAddress !== null && !isPOD) {
             setBasicForm(prevData => {
                 let tempContactAddress3 = { ...prevData };
                 if (tempContactAddress3?.forms[1]?.data?.contactAddress3?.business === undefined) {
@@ -141,7 +141,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                 console.log("Error fetching data");
             }
         }
-        if (isHomeAddressPincodeEntered !== undefined && isHomeAddressPincodeEntered !== null && isHomeAddressPincodeEntered?.length >= 6) {
+        if (isHomeAddressPincodeEntered !== undefined && isHomeAddressPincodeEntered !== null && isHomeAddressPincodeEntered?.length >= 6 && !isPOD) {
             fetchData()
         }
     }, [isHomeAddressPincodeEntered]);
@@ -162,7 +162,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                 console.log("Error fetching data");
             }
         }
-        if (isMailingAddressPincodeEntered !== undefined && isMailingAddressPincodeEntered !== null && isMailingAddressPincodeEntered?.length >= 6) {
+        if (isMailingAddressPincodeEntered !== undefined && isMailingAddressPincodeEntered !== null && isMailingAddressPincodeEntered?.length >= 6 && !isPOD) {
             fetchData()
         }
     }, [isMailingAddressPincodeEntered]);
@@ -183,7 +183,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                 console.log("Error fetching data");
             }
         }
-        if (isBusinessAddressPincodeEntered !== undefined && isBusinessAddressPincodeEntered !== null && isBusinessAddressPincodeEntered?.length >= 6) {
+        if (isBusinessAddressPincodeEntered !== undefined && isBusinessAddressPincodeEntered !== null && isBusinessAddressPincodeEntered?.length >= 6 && !isPOD) {
             fetchData()
         }
     }, [isBusinessAddressPincodeEntered]);
@@ -470,158 +470,221 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
             }
             switch (fieldData.fieldType) {
                 case 'dropdown':
-                    return (
-                        <CommonSelectField
-                            value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
-                            onChange={(e) => handleChange(fieldKey, e.target.value, baseKey)}
-                            className={style.fullWidth}
-                            // firstOptionLabel={fieldData.label}
-                            // firstOptionValue={fieldData.label}
-                            valueList={fieldKey !== 'specialty' ? fieldData.enum : getSpecialityValues(object)}
-                            labelList={fieldKey !== 'specialty' ? fieldData.enum : getSpecialityValues(object)}
-                            disabledList={fieldKey !== 'specialty' ? fieldData.enum.map(data => false) : getSpecialityValues(object)?.map(data => false)}
-                            label={fieldData.label}
-                            required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))}
-                            warning={warningFields?.map(data => data?.key)?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
-                        />
-                    );
-                case 'datalist':
-                    return (
-                        <div>
-                            <div className={`${style.lableStyle}`}>{fieldData.label}{(object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false)) && '*'}</div>
-                            <DatalistInput
-                                items={getItems(fieldData.enum) || []}
-                                onSelect={(item) => handleChange(fieldKey, item.value, baseKey)}
-                                className={`${style.fullWidth} ${style.marginTop10} ${style.leftAlign}`}
-                                maxLength={TEXTFIELDLEN50}
-                                onChange={(e) => { handleChange(fieldKey, e.target.value, baseKey); handleDatalistInput(fieldKey, e.target.value) }}
-                                placeholder={fieldData.placeHolder !== null ? fieldData.placeHolder : fieldData.label !== null ? `Enter ${fieldData.label}` : null}
-                                value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || ''}
-                            />
-                        </div>
-                    );
-                case 'textbox':
-                    console.log(fieldData, parentData, object)
-                    return (
-                        // <CommonInputField
-                        //     value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || ''}
-                        //     className={style.fullWidth}
-                        //     onChange={(e) => handleChange(fieldKey, fieldData.type === "number" ? parseInt(e.target.value <= fieldData.maximum ? e.target.value : fieldData.maximum) : e.target.value, baseKey)}
-                        //     maxLength={TEXTFIELDLEN50}
-                        //     placeholder={fieldData.label !== null ? `Enter ${fieldData.label}` : null}
-                        //     label={fieldData.label}
-                        //     required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))}
-                        //     type={fieldData.type}
-                        //     min={fieldData.minimum}
-                        // />
-                        ((user === null || user?.roles?.filter(data => data?.roleName === "Staff Manager")?.length === 0) && (fieldKey === 'officialEmail' || fieldKey === 'applicantType')) ? (
-                            // <CommonLabel label={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || ''} />\
+                    if (isPOD) {
+                        return (
                             <div>
-                                <div className={`${style.lableStyle}`}>{fieldData.label}{isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false)) && '*'}</div>
-                                {fieldKey === 'applicantType' ? (
-                                    <Tooltip title={`To change applicant type contact ${basicForm?.createdBy?.name?.firstName} ${basicForm?.createdBy?.name?.lastName !== null ? basicForm?.createdBy?.name?.lastName : ''}`} placement="bottom-start" followCursor>
-                                        <div className={style.lableReadOnlyStyle}>{getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || ''}</div>
-                                    </Tooltip>
-                                ) : (
-                                    <div className={style.lableReadOnlyStyle}>{getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || ''}</div>
-                                )}
-                            </div>
-                        ) : (
-                            <div key={fieldKey}>
-                                <CommonTextField
-                                    value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || ''}
-                                    className={style.fullWidth}
-                                    onChange={(e) => handleChange(fieldKey, fieldData.type === "number" ? parseInt(e.target.value <= fieldData.maximum ? e.target.value : fieldData.maximum) : e.target.value, baseKey)}
-                                    maxLength={TEXTFIELDLEN50}
-                                    placeholder={fieldData.placeHolder !== null ? fieldData.placeHolder : fieldData.label !== null ? `Enter ${fieldData.label}` : null}
-                                    label={fieldData.label}
-                                    required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))}
-                                    type={fieldData.type}
-                                    min={fieldData.minimum}
-                                    warning={warningFields?.map(data => data?.key)?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
-                                // InputProps={{
-                                //     readOnly: (user?.roles?.filter(data => data?.roleName === "Staff Manager")?.length === 0 && fieldKey === 'officialEmail') ? true : false,
-                                // }}
-                                />
+                                <div className={`${style.lableStylePOD}`}>{fieldData.label}{isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false)) && '*'}</div>
+                                <div className={style.lableReadOnlyStyleInPOD}>{getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || '-'}</div>
                             </div>
                         )
-                    );
-                case 'textArea':
-                    return (
-                        <div>
-                            <div className={`${style.lableStyle}`}>{fieldData.label}{(isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) && '*'}</div>
-                            <TextArea
+                    } else {
+                        return (
+                            <CommonSelectField
                                 value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
-                                className={`${style.fullWidth} ${style.marginTop10}`}
                                 onChange={(e) => handleChange(fieldKey, e.target.value, baseKey)}
-                                maxLength={TEXTFIELDLEN50}
-                                placeholder={fieldData.placeHolder !== null ? fieldData.placeHolder : fieldData.label !== null ? `Enter ${fieldData.label}` : null}
-                                rows={4}
+                                className={style.fullWidth}
+                                // firstOptionLabel={fieldData.label}
+                                // firstOptionValue={fieldData.label}
+                                valueList={fieldKey !== 'specialty' ? fieldData.enum : getSpecialityValues(object)}
+                                labelList={fieldKey !== 'specialty' ? fieldData.enum : getSpecialityValues(object)}
+                                disabledList={fieldKey !== 'specialty' ? fieldData.enum.map(data => false) : getSpecialityValues(object)?.map(data => false)}
+                                label={fieldData.label}
+                                required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))}
+                                warning={warningFields?.map(data => data?.key)?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
                             />
-                        </div>
-                    );
-                case 'ckeditor':
-                    return (
-                        <div>
-                            <div className={`${style.lableStyle}`}>{fieldData.label}{(isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) && '*'}</div>
-                            <div className={style.marginTop10}>
-                                <CKEditor
-                                    editor={ClassicEditor}
-                                    data={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
-                                    onChange={(event, editor) => {
-                                        const data = editor.getData();
-                                        handleChange(fieldKey, data, baseKey);
-                                    }}
+                        );
+                    }
+                case 'datalist':
+                    if (isPOD) {
+                        return (
+                            <div>
+                                <div className={`${style.lableStylePOD}`}>{fieldData.label}{isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false)) && '*'}</div>
+                                <div className={style.lableReadOnlyStyleInPOD}>{getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || '-'}</div>
+                            </div>
+                        )
+                    } else {
+                        return (
+                            <div>
+                                <div className={`${style.lableStyle}`}>{fieldData.label}{(object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false)) && '*'}</div>
+                                <DatalistInput
+                                    items={getItems(fieldData.enum) || []}
+                                    onSelect={(item) => handleChange(fieldKey, item.value, baseKey)}
+                                    className={`${style.fullWidth} ${style.marginTop10} ${style.leftAlign}`}
+                                    maxLength={TEXTFIELDLEN50}
+                                    onChange={(e) => { handleChange(fieldKey, e.target.value, baseKey); handleDatalistInput(fieldKey, e.target.value) }}
+                                    placeholder={fieldData.placeHolder !== null ? fieldData.placeHolder : fieldData.label !== null ? `Enter ${fieldData.label}` : null}
+                                    value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || ''}
                                 />
                             </div>
-                        </div>
-                    );
-                case 'cellNumber':
-                    console.log(parentData, fieldData, '371')
-                    return (
-                        <CommonPhoneField
-                            value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
-                            className={style.fullWidth}
-                            onChange={(e) => handleChange(fieldKey, FormatPhoneNumber(e.target.value), baseKey)}
-                            placeholder={fieldData.placeHolder !== null ? fieldData.placeHolder : fieldData.label !== null ? `Enter ${fieldData.label}` : null}
-                            label={fieldData.label}
-                            required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))}
-                            warning={warningFields?.map(data => data?.key)?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
-                        />
-                    );
-                case 'datepicker':
-                    return (
-                        <CommonDateField
-                            className={style.fullWidth}
-                            open={calendarStart}
-                            onOpen={() => setCalendarStart(true)}
-                            onClose={() => setCalendarStart(false)}
-                            // minDate={sub(new Date(), { years: 3 })}
-                            // maxDate={add(new Date(), { months: 6 })}
-                            value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
-                            onChange={(newValue) => handleChange(fieldKey, fieldData.format === "date-time" ? format(new Date(newValue), "yyyy-MM-dd'T'HH:mm:ss'Z'") : format(new Date(newValue), 'yyyy-MM-dd'), baseKey)}
-                            InputProps={{
-                                style: {
-                                    fontSize: 14,
-                                    height: 30,
-                                },
-                            }}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    inputProps={{
-                                        ...params.inputProps,
-                                        placeholder: fieldData.placeHolder !== null ? fieldData.placeHolder : fieldData.label !== null ? `Enter ${fieldData.label}` : null,
-                                    }}
-                                    color={(warningFields?.map(data => data?.key)?.includes(`${basicpath}.${baseKey}.${fieldKey}`) && (getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === null || getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === '')) ? 'error' : ''}
-                                    fullWidth
-                                    focused={(warningFields?.map(data => data?.key)?.includes(`${basicpath}.${baseKey}.${fieldKey}`) && (getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === null || getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === '')) ? true : false}
+                        );
+                    }
+                case 'textbox':
+                    console.log(fieldData, parentData, object)
+                    if (isPOD) {
+                        return (
+                            <div>
+                                <div className={`${style.lableStylePOD}`}>{fieldData.label}{isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false)) && '*'}</div>
+                                <div className={style.lableReadOnlyStyleInPOD}>{getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || '-'}</div>
+                            </div>
+                        )
+                    } else {
+                        return (
+                            // <CommonInputField
+                            //     value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || ''}
+                            //     className={style.fullWidth}
+                            //     onChange={(e) => handleChange(fieldKey, fieldData.type === "number" ? parseInt(e.target.value <= fieldData.maximum ? e.target.value : fieldData.maximum) : e.target.value, baseKey)}
+                            //     maxLength={TEXTFIELDLEN50}
+                            //     placeholder={fieldData.label !== null ? `Enter ${fieldData.label}` : null}
+                            //     label={fieldData.label}
+                            //     required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))}
+                            //     type={fieldData.type}
+                            //     min={fieldData.minimum}
+                            // />
+                            ((user === null || user?.roles?.filter(data => data?.roleName === "Staff Manager")?.length === 0) && (fieldKey === 'officialEmail' || fieldKey === 'applicantType')) ? (
+                                // <CommonLabel label={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || ''} />\
+                                <div>
+                                    <div className={`${style.lableStyle}`}>{fieldData.label}{isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false)) && '*'}</div>
+                                    {fieldKey === 'applicantType' ? (
+                                        <Tooltip title={`To change applicant type contact ${basicForm?.createdBy?.name?.firstName} ${basicForm?.createdBy?.name?.lastName !== null ? basicForm?.createdBy?.name?.lastName : ''}`} placement="bottom-start" followCursor>
+                                            <div className={style.lableReadOnlyStyle}>{getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || ''}</div>
+                                        </Tooltip>
+                                    ) : (
+                                        <div className={style.lableReadOnlyStyle}>{getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || ''}</div>
+                                    )}
+                                </div>
+                            ) : (
+                                <div key={fieldKey}>
+                                    <CommonTextField
+                                        value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || ''}
+                                        className={style.fullWidth}
+                                        onChange={(e) => handleChange(fieldKey, fieldData.type === "number" ? parseInt(e.target.value <= fieldData.maximum ? e.target.value : fieldData.maximum) : e.target.value, baseKey)}
+                                        maxLength={TEXTFIELDLEN50}
+                                        placeholder={fieldData.placeHolder !== null ? fieldData.placeHolder : fieldData.label !== null ? `Enter ${fieldData.label}` : null}
+                                        label={fieldData.label}
+                                        required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))}
+                                        type={fieldData.type}
+                                        min={fieldData.minimum}
+                                        warning={warningFields?.map(data => data?.key)?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
+                                    // InputProps={{
+                                    //     readOnly: (user?.roles?.filter(data => data?.roleName === "Staff Manager")?.length === 0 && fieldKey === 'officialEmail') ? true : false,
+                                    // }}
+                                    />
+                                </div>
+                            )
+                        );
+                    }
+                case 'textArea':
+                    if (isPOD) {
+                        return (
+                            <div>
+                                <div className={`${style.lableStylePOD}`}>{fieldData.label}{isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false)) && '*'}</div>
+                                <div className={style.lableReadOnlyStyleInPOD}>{getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || '-'}</div>
+                            </div>
+                        )
+                    } else {
+                        return (
+                            <div>
+                                <div className={`${style.lableStyle}`}>{fieldData.label}{(isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) && '*'}</div>
+                                <TextArea
+                                    value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
+                                    className={`${style.fullWidth} ${style.marginTop10}`}
+                                    onChange={(e) => handleChange(fieldKey, e.target.value, baseKey)}
+                                    maxLength={TEXTFIELDLEN50}
+                                    placeholder={fieldData.placeHolder !== null ? fieldData.placeHolder : fieldData.label !== null ? `Enter ${fieldData.label}` : null}
+                                    rows={4}
                                 />
-                            )}
-                            label={fieldData.label}
-                            required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))}
-                        />
-                    );
+                            </div>
+                        );
+                    }
+                case 'ckeditor':
+                    if (isPOD) {
+                        return (
+                            <div>
+                                <div className={`${style.lableStylePOD}`}>{fieldData.label}{isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false)) && '*'}</div>
+                                <div className={style.lableReadOnlyStyleInPOD} dangerouslySetInnerHTML={{ __html: getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || '-' }} />
+                            </div>
+                        )
+                    } else {
+                        return (
+                            <div>
+                                <div className={`${style.lableStyle}`}>{fieldData.label}{(isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) && '*'}</div>
+                                <div className={style.marginTop10}>
+                                    <CKEditor
+                                        editor={ClassicEditor}
+                                        data={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
+                                        onChange={(event, editor) => {
+                                            const data = editor.getData();
+                                            handleChange(fieldKey, data, baseKey);
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        );
+                    }
+                case 'cellNumber':
+                    if (isPOD) {
+                        return (
+                            <div>
+                                <div className={`${style.lableStylePOD}`}>{fieldData.label}{isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false)) && '*'}</div>
+                                <div className={style.lableReadOnlyStyleInPOD}>{getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || '-'}</div>
+                            </div>
+                        )
+                    } else {
+                        console.log(parentData, fieldData, '371')
+                        return (
+                            <CommonPhoneField
+                                value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
+                                className={style.fullWidth}
+                                onChange={(e) => handleChange(fieldKey, FormatPhoneNumber(e.target.value), baseKey)}
+                                placeholder={fieldData.placeHolder !== null ? fieldData.placeHolder : fieldData.label !== null ? `Enter ${fieldData.label}` : null}
+                                label={fieldData.label}
+                                required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))}
+                                warning={warningFields?.map(data => data?.key)?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
+                            />
+                        );
+                    }
+                case 'datepicker':
+                    if (isPOD) {
+                        return (
+                            <div>
+                                <div className={`${style.lableStylePOD}`}>{fieldData.label}{isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false)) && '*'}</div>
+                                <div className={style.lableReadOnlyStyleInPOD}>{getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || '-'}</div>
+                            </div>
+                        )
+                    } else {
+                        return (
+                            <CommonDateField
+                                className={style.fullWidth}
+                                open={calendarStart}
+                                onOpen={() => setCalendarStart(true)}
+                                onClose={() => setCalendarStart(false)}
+                                // minDate={sub(new Date(), { years: 3 })}
+                                // maxDate={add(new Date(), { months: 6 })}
+                                value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
+                                onChange={(newValue) => handleChange(fieldKey, fieldData.format === "date-time" ? format(new Date(newValue), "yyyy-MM-dd'T'HH:mm:ss'Z'") : format(new Date(newValue), 'yyyy-MM-dd'), baseKey)}
+                                InputProps={{
+                                    style: {
+                                        fontSize: 14,
+                                        height: 30,
+                                    },
+                                }}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        inputProps={{
+                                            ...params.inputProps,
+                                            placeholder: fieldData.placeHolder !== null ? fieldData.placeHolder : fieldData.label !== null ? `Enter ${fieldData.label}` : null,
+                                        }}
+                                        color={(warningFields?.map(data => data?.key)?.includes(`${basicpath}.${baseKey}.${fieldKey}`) && (getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === null || getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === '')) ? 'error' : ''}
+                                        fullWidth
+                                        focused={(warningFields?.map(data => data?.key)?.includes(`${basicpath}.${baseKey}.${fieldKey}`) && (getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === null || getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === '')) ? true : false}
+                                    />
+                                )}
+                                label={fieldData.label}
+                                required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))}
+                            />
+                        );
+                    }
                 case 'radiobutton':
                     return (
                         <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
@@ -629,7 +692,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                             <CommonRadio
                                 className={style.leftAlign}
                                 value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
-                                onChange={(e) => handleChange(fieldKey, e.target.value, baseKey)}
+                                onChange={isPOD ? () => { } : (e) => handleChange(fieldKey, e.target.value, baseKey)}
                                 radioValue={fieldData.enum}
                                 label={fieldData.enum}
                                 required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))}
@@ -639,65 +702,95 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                     );
                 case 'switchbutton':
                     return (
-                        <CommonSwitch label={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === true ? 'YES' : 'NO'} checked={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null} onChange={(e) => handleChange(fieldKey, e.target.checked, baseKey)} labelName={fieldData.label} required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))} />
+                        <CommonSwitch label={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === true ? 'YES' : 'NO'} checked={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null} onChange={isPOD ? () => { } : (e) => handleChange(fieldKey, e.target.checked, baseKey)} labelName={fieldData.label} required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))} />
                     );
                 case 'checkbox':
-                    return (
-                        <CommonCheckBox
-                            checked={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
-                            onChange={(e) => handleChange(fieldKey, e.target.checked, baseKey)} label={`${fieldData.label}${(isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) && '*'}`}
-                        />
-                    );
-                case 'sitecheckbox':
-                    return (
-                        <div className={`${style.siteDisplayCard} ${style.siteDisplayGrid} ${style.verticalAlignCenter}`}>
+                    if (isPOD) {
+                        return (
+                            <div></div>
+                        )
+                    } else {
+                        return (
                             <CommonCheckBox
                                 checked={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
-                                onChange={(e) => handleChange(fieldKey, e.target.checked, baseKey)}
+                                onChange={(e) => handleChange(fieldKey, e.target.checked, baseKey)} label={`${fieldData.label}${(isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) && '*'}`}
                             />
-                            <div>
-                                <div className={style.siteDisplaySiteTextStyle}>Cambridge Memorial Hospital </div>
-                                <div className={style.siteDisplayDepartmentTextStyle}>Department of Surgery (Cardiothoracic Surgery)</div>
+                        );
+                    }
+                case 'sitecheckbox':
+                    if (isPOD) {
+                        return (
+                            <div></div>
+                        )
+                    } else {
+                        return (
+                            <div className={`${style.siteDisplayCard} ${style.siteDisplayGrid} ${style.verticalAlignCenter}`}>
+                                <CommonCheckBox
+                                    checked={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
+                                    onChange={(e) => handleChange(fieldKey, e.target.checked, baseKey)}
+                                />
+                                <div>
+                                    <div className={style.siteDisplaySiteTextStyle}>Cambridge Memorial Hospital </div>
+                                    <div className={style.siteDisplayDepartmentTextStyle}>Department of Surgery (Cardiothoracic Surgery)</div>
+                                </div>
                             </div>
-                        </div>
-                    );
+                        );
+                    }
                 case 'addMoreFileupload':
-                    console.log(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`))
-                    return (
-                        <div className={`${style.addMoreUpload} ${style.addMoreUploadMargin}`}>
-                            <div>
-                                <label for={`file-upload-dynamic-${fieldKey}`} className={`${style.displayInRow} ${style.cursorPointer} `}>
-                                    {/* {getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) !== undefined && (
+                    if (isPOD) {
+                        return (
+                            <div></div>
+                        )
+                    } else {
+                        console.log(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`))
+                        return (
+                            <div className={`${style.addMoreUpload} ${style.addMoreUploadMargin}`}>
+                                <div>
+                                    <label for={`file-upload-dynamic-${fieldKey}`} className={`${style.displayInRow} ${style.cursorPointer} `}>
+                                        {/* {getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) !== undefined && (
                                         <div className={style.checkedCircleIcon}>
                                             <CheckIcon sx={{ color: '#fff', fontSize: '17px' }} />
                                         </div>
                                     )} */}
-                                    <DescriptionOutlinedIcon sx={{ color: '#787f87', fontSize: '30px' }} />
-                                </label>
-                            </div>
-                            <input id={`file-upload-dynamic-${fieldKey}`} type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx" onChange={(e) => { handleChange(fieldKey, e.target.files[0], baseKey) }} />
-                        </div>
-                    );
-                case 'fileupload':
-                    return (
-                        <div>
-                            <div className={`${style.uploadButton}`}>
-                                <div className={style.uploadGrid}>
-                                    <DescriptionOutlinedIcon sx={{ color: '#787f87' }} />
-                                    <label for={`file-upload-dynamic-${fieldKey}`} className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>
-                                        {fieldData.label}
+                                        <DescriptionOutlinedIcon sx={{ color: '#787f87', fontSize: '30px' }} />
                                     </label>
-                                    <div className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>Click to upload</div>
-                                    <div className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>{(isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) ? 'Required' : 'Recommended'}</div>
                                 </div>
+                                <input id={`file-upload-dynamic-${fieldKey}`} type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx" onChange={(e) => { handleChange(fieldKey, e.target.files[0], baseKey) }} />
                             </div>
-                            <input id={`file-upload-dynamic-${fieldKey}`} type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx" onChange={(e) => { handleChange(fieldKey, e.target.files[0], baseKey) }} />
-                        </div>
-                    );
+                        );
+                    }
+                case 'fileupload':
+                    if (isPOD) {
+                        return (
+                            <div></div>
+                        )
+                    } else {
+                        return (
+                            <div>
+                                <div className={`${style.uploadButton}`}>
+                                    <div className={style.uploadGrid}>
+                                        <DescriptionOutlinedIcon sx={{ color: '#787f87' }} />
+                                        <label for={`file-upload-dynamic-${fieldKey}`} className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>
+                                            {fieldData.label}
+                                            <div className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>Click to upload</div>
+                                        </label>
+                                        <div className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>{(isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) ? 'Required' : 'Recommended'}</div>
+                                    </div>
+                                </div>
+                                <input id={`file-upload-dynamic-${fieldKey}`} type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx" onChange={(e) => { handleChange(fieldKey, e.target.files[0], baseKey) }} />
+                            </div>
+                        );
+                    }
                 case 'bulkFileupload':
-                    return (
-                        <CommonDropZone title={fieldData.label} description={fieldData.description} changeHandler={(acceptedFiles) => { handleChange(fieldKey, acceptedFiles, baseKey) }} />
-                    );
+                    if (isPOD) {
+                        return (
+                            <div></div>
+                        )
+                    } else {
+                        return (
+                            <CommonDropZone title={fieldData.label} description={fieldData.description} changeHandler={(acceptedFiles) => { handleChange(fieldKey, acceptedFiles, baseKey) }} />
+                        );
+                    }
                 default:
                     return '';
             }
@@ -803,18 +896,28 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
     //     return path.split('.').reduce((acc, part) => acc && acc[part], basicForm);
     // };
 
+    const generateRandomId = () => {
+        return `id-${Math.random().toString(36).substr(2, 9)}-${Date.now()}`;
+    };
+
     const handleAddMore = () => {
         let index = basicForm?.forms?.findIndex(data => data?.id === formId);
         let temp = basicForm;
         if (!isTableEdit) {
             if (temp.forms[index].data === null) {
                 temp.forms[index].data = {};
-                temp.forms[index].data[baseKey] = [basicForm[baseKey]];
+                let withId = basicForm[baseKey];
+                withId.rowId = generateRandomId();
+                temp.forms[index].data[baseKey] = [withId];
             } else if (temp.forms[index].data[baseKey] === undefined) {
                 temp.forms[index].data[baseKey] = [];
-                temp.forms[index].data[baseKey].push(basicForm[baseKey])
+                let withId = basicForm[baseKey];
+                withId.rowId = generateRandomId();
+                temp.forms[index].data[baseKey].push(withId)
             } else {
-                temp.forms[index].data[baseKey].push(basicForm[baseKey])
+                let withId = basicForm[baseKey];
+                withId.rowId = generateRandomId();
+                temp.forms[index].data[baseKey].push(withId)
             }
         }
         delete basicForm[baseKey];
@@ -863,7 +966,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                 } else {
                     temp.push({ "type": "icon", "icon": array?.map(innerData => <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.file?.fileURL, '_blank'); }} />), 'isShowHoverText': false });
                 }
-                if (index === Object.keys(object?.tableHeaders)?.length - 1) {
+                if (index === Object.keys(object?.tableHeaders)?.length - 1 && !isPOD) {
                     temp.push({ "type": "action", "value": array?.map(innerData => actions) })
                 }
             })
@@ -907,42 +1010,44 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
     console.log(basicForm, object)
     return (
         <div className={`${(window.location.pathname.includes('applicationForm') || isPOD) ? '' : style.backgroundCard} ${style.marginTop}`}>
-            <div className={isPOD ? style.podCardTitle : style.cardTitle}>{object?.label}</div>
+            <div className={style.cardTitle}>{object?.label}</div>
             {object?.description !== null && (
                 <div className={`${style.addMoreDescriptionText} ${style.marginTop10}`}>{object?.description}</div>
             )}
             {(addMoreType && !collapsableQuestionCard) ? (
                 <div>
-                    <div className={`${style.addMoreBorder} ${style.marginTop}`}>
-                        {isAddMore ? (
-                            <div className={style.padding20}>
-                                <div className={style.addMoreText} dangerouslySetInnerHTML={{ __html: object?.items?.label }} />
-                                <div className={`${gridStyle} ${style.marginTop}`}>
-                                    {object?.type === "object" ? renderObjectFields(object, object?.properties) : object?.type === "array" ? renderObjectFields(object, object?.items?.properties) : renderObjectFields(object, object?.properties)}
-                                </div>
-                                <div className={`${style.displayInRowRev} ${style.marginTop}`}>
-                                    <div className={style.marginLeft}>
-                                        <div className={`${style.addMoreButton}`} onClick={() => { setIsAddMore(false); handleAddMore() }}>SAVE & CLOSE</div>
+                    {!isPOD && (
+                        <div className={`${style.addMoreBorder} ${style.marginTop}`}>
+                            {isAddMore ? (
+                                <div className={style.padding20}>
+                                    <div className={style.addMoreText} dangerouslySetInnerHTML={{ __html: object?.items?.label }} />
+                                    <div className={`${gridStyle} ${style.marginTop}`}>
+                                        {object?.type === "object" ? renderObjectFields(object, object?.properties) : object?.type === "array" ? renderObjectFields(object, object?.items?.properties) : renderObjectFields(object, object?.properties)}
                                     </div>
-                                    <div>
-                                        <div className={`${style.addMoreButtonOutlined}`} onClick={() => { handleAddMore() }}>SAVE & ADD MORE</div>
+                                    <div className={`${style.displayInRowRev} ${style.marginTop}`}>
+                                        <div className={style.marginLeft}>
+                                            <div className={`${style.addMoreButton}`} onClick={() => { setIsAddMore(false); handleAddMore() }}>SAVE & CLOSE</div>
+                                        </div>
+                                        <div>
+                                            <div className={`${style.addMoreButtonOutlined}`} onClick={() => { handleAddMore() }}>SAVE & ADD MORE</div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ) : (
-                            <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.padding10}`}>
-                                <div className={style.addMoreText} dangerouslySetInnerHTML={{ __html: object?.items?.label }} />
-                                <div className={`${style.addMoreButton} ${style.marginLeft}`} onClick={() => setIsAddMore(true)}>ADD</div>
-                            </div>
-                        )}
-                    </div>
+                            ) : (
+                                <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.padding10}`}>
+                                    <div className={style.addMoreText} dangerouslySetInnerHTML={{ __html: object?.items?.label }} />
+                                    <div className={`${style.addMoreButton} ${style.marginLeft}`} onClick={() => setIsAddMore(true)}>ADD</div>
+                                </div>
+                            )}
+                        </div>
+                    )}
                     {object?.tableHeaders !== null && basicForm?.forms?.filter(data => data?.id === formId)[0]?.data !== null && (
                         <TableTwo
                             tableHeaderValues={Object.values(object?.tableHeaders)}
                             tableDataValues={getApplicantValues(basicForm?.forms?.filter(data => data?.id === formId)[0]?.data[baseKey])}
                             tableData={basicForm?.forms?.filter(data => data?.id === formId)[0]?.data[baseKey]}
                             gridStyle={tableGrid}
-                            actions={actions}
+                            actions={!isPOD ? actions : []}
                             scrollStyle={style.contractScrollStyle}
                             tableSortValues={[]}
                             heading={heading}
