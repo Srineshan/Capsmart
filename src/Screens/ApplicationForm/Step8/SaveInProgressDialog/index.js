@@ -2,16 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { Dialog, Classes } from '@blueprintjs/core';
 import CrossPink from "../../../../images/crossPink.png";
 import CommonSelectField from '../../../../Components/CommonFields/CommonSelectField';
+import CommonCheckBox from '../../../../Components/CommonFields/CommonCheckBox';
+
 import { GET } from '../../../dataSaver';
 import { Icon } from '@blueprintjs/core';
 
 import style from './index.module.scss'
 
-const SaveInProgressDialog = ({ getIsOpen, primaryPrivilege }) => {
+const SaveInProgressDialog = ({ getIsOpen, primaryPrivilege, getSelectedPrivilegeList }) => {
     const [isContinue, setIsContinue] = useState(false);
     const [staffPrivilege, setStaffPrivilege] = useState([]);
     const [selectedPrivilege, setSelectedPrivilege] = useState('');
     const [collapsibleIndexes, setCollapsibleIndexes] = useState([]);
+    const [openIndex, setOpenIndex] = useState();
 
     console.log('staffPrivilege', staffPrivilege)
 
@@ -61,15 +64,15 @@ const SaveInProgressDialog = ({ getIsOpen, primaryPrivilege }) => {
                             />
                         </div>
                     </div>
-                    <div >
+                    <div>
                         <div className={style.cardTitle}>{'Indicate the Privileges you are seeking as a(n) {Associate} for the {department anesthesiology / speciality}'}</div>
                     </div>
                     <CommonSelectField
-                        // value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
+                        value={staffPrivilege?.filter(data => data?.id === selectedPrivilege)?.map(data => data?.privilegeSetTitle)[0]}
                         onChange={(e) => handleChange(e.target.value)}
                         className={style.fullWidth}
-                        valueList={staffPrivilege?.filter(data => data?.id !== primaryPrivilege)?.map(data => data?.id) || []}
-                        labelList={staffPrivilege?.filter(data => data?.id !== primaryPrivilege)?.map(data => data?.privilegeSetTitle) || []}
+                        valueList={staffPrivilege?.filter(data => !primaryPrivilege.includes(data?.id))?.map(data => data?.id) || []}
+                        labelList={staffPrivilege?.filter(data => !primaryPrivilege.includes(data?.id))?.map(data => data?.privilegeSetTitle) || []}
                         disabledList={[].map(data => false)}
                         label={'Privilege Category'}
                     // required={false}
@@ -77,11 +80,18 @@ const SaveInProgressDialog = ({ getIsOpen, primaryPrivilege }) => {
                     />
 
                     {
-                        staffPrivilege?.filter(data => data?.id === selectedPrivilege)?.map((data, index) => data?.privilegeDetails?.corePrivilegeDetails?.corePrivilegesByCategories?.map(categories => (
+                        staffPrivilege?.filter(data => data?.id === selectedPrivilege)?.map((data) => data?.privilegeDetails?.corePrivilegeDetails?.corePrivilegesByCategories?.map((categories, index) => (
                             <div className={style.marginTop}>
-                                <div>{categories?.category === null ? '' : categories?.category}</div>
-                                <div> {!collapsibleIndexes?.includes(`core${index}`) ? <Icon icon="chevron-down" className={`${style.margin} ${style.cursor} ${style.border} ${style.marginRight}`} onClick={() => handleCollapse('open', `core${index}`)} /> : <Icon icon="chevron-up" className={`${style.margin} ${style.cursor} ${style.border} ${style.marginRight}`} onClick={() => handleCollapse('close', `core${index}`)} />}
-                                </div>{
+                                <div className={`${style.categoryGrid} `}>
+                                    {/* <div className={`${style.itemLeft} ${style.marginTop10}`}><CommonCheckBox
+                                    // checked={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
+                                    // onChange={(e) => handleChange(fieldKey, e.target.checked, baseKey)} label={`${fieldData.label}${(isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) && '*'}`}
+                                    /></div> */}
+                                    <div className={`${style.itemLeft} `}>{categories?.category === null ? 'GENERAL' : categories?.category}</div>
+                                    <div className={`${style.itemLeft} `}> {openIndex !== `primary${index}` ? <Icon icon="chevron-down" className={`${style.margin} ${style.cursor} ${style.border} ${style.marginRight}`} onClick={() => setOpenIndex(`primary${index}`)} /> : <Icon icon="chevron-up" className={`${style.margin} ${style.cursor} ${style.border} ${style.marginRight}`} onClick={() => setOpenIndex()} />}
+                                    </div>
+                                </div>
+                                {openIndex === `primary${index}` && <>{
                                     categories?.privileges?.map(privileges => (
                                         <div className={style.twoColGrid}>
                                             <div className={style.itemLeft}>{privileges?.privilegeId || ''}</div>
@@ -89,7 +99,7 @@ const SaveInProgressDialog = ({ getIsOpen, primaryPrivilege }) => {
                                         </div>
 
                                     ))
-                                }
+                                }</>}
                             </div>
                         )
 
@@ -99,7 +109,7 @@ const SaveInProgressDialog = ({ getIsOpen, primaryPrivilege }) => {
                     }
 
                     <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
-                        <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(false); }}>ADD</div>
+                        <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getSelectedPrivilegeList(selectedPrivilege); getIsOpen(false); }}>ADD</div>
                     </div>
                 </div>
 

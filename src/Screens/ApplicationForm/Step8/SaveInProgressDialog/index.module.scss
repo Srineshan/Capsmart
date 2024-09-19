@@ -45,6 +45,12 @@
     gap: 10px;
 }
 
+.categoryGrid {
+    display: grid;
+    grid-template-columns: 5fr 2fr;
+    gap: 20px;
+}
+
 .itemLeft {
     padding: 10px;
     /* Inner padding for each line */

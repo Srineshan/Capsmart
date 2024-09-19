@@ -47,6 +47,12 @@
     padding: 10px 20px 20px 20px;
 }
 
+.categoryGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
 .twoCol {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -223,6 +229,31 @@
     padding: 10px;
     /* Inner padding for each line */
     text-align: left;
+}
+
+.cursorPointer {
+    cursor: pointer;
+}
+
+.uploadButton {
+    background: #F5F5F8 0% 0% no-repeat padding-box;
+    border: 0.4000000059604645px solid #d7d4f7;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
+.uploadText {
+    text-align: left !important;
+    font: normal normal bold 13px/20px proxima-nova;
+    letter-spacing: 0px;
+    color: #52575D;
+}
+
+.uploadGrid {
+    display: grid;
+    grid-template-columns: 90% 10%;
+    gap: 1%;
 }
 
 .cardDescription {
