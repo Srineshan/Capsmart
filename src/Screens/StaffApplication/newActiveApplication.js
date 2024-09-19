@@ -47,6 +47,8 @@ const NewActiveApplication = ({
     useState(false);
   const [newServiceProviderDialog, setNewServiceProviderDialog] =
     useState(false);
+  const [formSchema, setFormSchema] = useState();
+  const [formSchemaId, setFormSchemaId] = useState();
   const [addOn, setAddOn] = useState(false);
   const [viewPage1, setViewPage1] = useState(true);
   const [viewPage2, setViewPage2] = useState(false);
@@ -109,6 +111,10 @@ const NewActiveApplication = ({
     setAnchorEl(null);
   };
 
+  useEffect(() => {
+    getFormSchema()
+  }, [formSchemaId])
+
   const open = Boolean(anchorEl);
 
   const [anchorTextEl, setAnchorTextEl] = React.useState(null);
@@ -167,6 +173,15 @@ const NewActiveApplication = ({
     );
     if (contractData) {
       setPrevContractData(contractData)
+    }
+  }
+
+  const getFormSchema = async () => {
+    if (formSchemaId !== '') {
+      const { data: form } = await GET(
+        `application-management-service/formSchema/${formSchemaId}`
+      );
+      setFormSchema(form?.schema)
     }
   }
 
@@ -262,6 +277,28 @@ const NewActiveApplication = ({
 
   const handleVerify = async (formId) => {
     await PUT(`application-management-service/application/${applicationId}/APPROVED`)
+      .then(response => {
+        console.log('success')
+      })
+      .catch((error) => {
+        console.log(error)
+      });
+    getPreApplication();
+  }
+
+  const handleStepsVerify = async (formId) => {
+    await PUT(`application-management-service/application/${applicationId}/form/${formId}/APPROVED`)
+      .then(response => {
+        console.log('success')
+      })
+      .catch((error) => {
+        console.log(error)
+      });
+    getPreApplication();
+  }
+
+  const handleApplicationAccept = async () => {
+    await PUT(`application-management-service/application/${applicationId}/workflow/complete/APPROVED`)
       .then(response => {
         console.log('success')
       })
@@ -385,6 +422,110 @@ const NewActiveApplication = ({
     getActiveApplicationView(false);
   };
 
+  const renderFieldsBasedOnStep = (data) => {
+    switch (data?.schemaCategory) {
+      case 'ContactAddress':
+        return (
+          <>
+            {formSchema !== undefined && 'contactAddress1' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.contactAddress1} basicForm={form} setBasicForm={setForm} stepPath={`forms[1].data`} gridStyle={style.homeMailingAddressGrid} baseKey={'contactAddress1'} isPOD={true} />
+            )}
+            <CommonDivider />
+            {formSchema !== undefined && 'contactAddress2' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.contactAddress2} basicForm={form} setBasicForm={setForm} stepPath={`forms[1].data`} gridStyle={style.mailingAddressGrid} baseKey={'contactAddress2'} isPOD={true} />
+            )}
+            <CommonDivider />
+            {formSchema !== undefined && 'contactAddress3' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.contactAddress3} basicForm={form} setBasicForm={setForm} stepPath={`forms[1].data`} gridStyle={style.businessMailingAddressGrid} baseKey={'contactAddress3'} isPOD={true} />
+            )}
+          </>
+        );
+      case 'Qualification':
+        return (
+          <>
+            {formSchema !== undefined && 'certifications' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.certifications} basicForm={form} setBasicForm={setForm} stepPath={`forms[2].data`} gridStyle={style.licenseGrid} baseKey={'certifications'} isPOD={true} />
+            )}
+          </>
+        );
+      case 'MalpracticeInfo':
+        return (
+          <>
+            {formSchema !== undefined && 'insuranceCarrierInformation' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.insuranceCarrierInformation} basicForm={form} setBasicForm={setForm} stepPath={`forms[3].data`} gridStyle={style.insuranceGrid} baseKey={'insuranceCarrierInformation'} isPOD={true} />
+            )}
+          </>
+        );
+      case 'Education':
+        return (
+          <>
+            {formSchema !== undefined && 'graduation' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.graduation} basicForm={form} gridStyle={style.EducationGrid} baseKey={'graduation'} addMoreType={true} formId={form?.forms?.[4]?.id} applicationId={applicationId} tableGrid={style.tableGridGraduation} isPOD={true}
+                heading={'Information Requirement Alert'}
+                subHeading={'For this application you are required to provide information on all of the different undergraduate / graduate qualifications you have.'}
+                subHeading2={'You will not be able to submit your application if this is not provided.'} />
+            )}
+          </>
+        );
+      case 'WorkExperience':
+        return (
+          <>
+            {formSchema !== undefined && 'trainingAndWorkingExperience' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.trainingAndWorkingExperience} basicForm={form} gridStyle={style.trainingGrid} baseKey={'trainingAndWorkingExperience'} addMoreType={true} formId={form?.forms?.[5]?.id} applicationId={applicationId} tableGrid={style.tableGridTrainingAndExperience} isPOD={true} />
+            )}
+            <CommonDivider />
+            {formSchema !== undefined && 'healthcareFacilityAppointments' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.healthcareFacilityAppointments} basicForm={form} gridStyle={style.healthCareGrid} baseKey={'healthcareFacilityAppointments'} addMoreType={true} formId={form?.forms?.[5]?.id} applicationId={applicationId} tableGrid={style.tableGridTrainingAndExperience} isPOD={true} />
+            )}
+          </>
+        );
+      case 'References':
+        return (
+          <>
+            {formSchema !== undefined && 'references' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.references} basicForm={form} gridStyle={style.twoCol} baseKey={'references'} setBasicForm={setForm} addMoreType={true} formId={form?.forms?.[6]?.id} applicationId={applicationId} tableGrid={style.tableGridReferences} isPOD={true} />
+            )}
+            <CommonDivider />
+            {formSchema !== undefined && 'privilegeReferences' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.privilegeReferences} basicForm={form} gridStyle={style.twoCol} baseKey={'privilegeReferences'} setBasicForm={setForm} addMoreType={true} formId={form?.forms?.[6]?.id} applicationId={applicationId} tableGrid={style.tableGridReferences} isPOD={true} />
+            )}
+          </>
+        );
+      case 'ProfessionalConduct':
+        return (
+          <>
+            {formSchema !== undefined && 'conductDisclosure1' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.conductDisclosure1} basicForm={form} stepPath={`forms[7].data`} gridStyle={style.conductGrid} baseKey={'conductDisclosure1'} collapsableQuestionCard={true} isPOD={true} />
+            )}
+            {formSchema !== undefined && 'conductDisclosure2' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.conductDisclosure2} basicForm={form} stepPath={`forms[7].data`} gridStyle={style.conductGrid} baseKey={'conductDisclosure2'} collapsableQuestionCard={true} isPOD={true} />
+            )}
+          </>
+        );
+      case 'CriminalHistory':
+        return (
+          <>
+            {formSchema !== undefined && 'criminalData1' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.criminalData1} basicForm={form} stepPath={`forms[8].data`} gridStyle={style.conductGrid} baseKey={'criminalData1'} collapsableQuestionCard={true} isPOD={true} />
+            )}
+            {formSchema !== undefined && 'criminalData2' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.criminalData2} basicForm={form} stepPath={`forms[8].data`} gridStyle={style.conductGrid} baseKey={'criminalData2'} collapsableQuestionCard={true} isPOD={true} />
+            )}
+          </>
+        );
+      case 'MedicalHistory':
+        return (
+          <>
+            {formSchema !== undefined && 'impactingPractice' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.impactingPractice} basicForm={form} stepPath={`forms[9].data`} gridStyle={style.conductGrid} baseKey={'impactingPractice'} collapsableQuestionCard={true} isPOD={true} />
+            )}
+          </>
+        );
+      default:
+        return <></>;
+    }
+  }
+
 
   return (
     <>
@@ -415,7 +556,7 @@ const NewActiveApplication = ({
       {/* </div > */}
       <div className={`${style.marginLeftRight50}`}>
         <div className={`${style.displayInRow} ${style.spaceBetween} ${style.topHeadingTextStyle} ${style.marginTop20}`}>
-        CAP MANAGER > APPLICATIONS >> {form?.basicDetails?.applicant?.name?.firstName || ''} {form?.basicDetails?.applicant?.name?.lastName || ''}</div>
+          {`CAP MANAGER > APPLICATIONS >> ${form?.basicDetails?.applicant?.name?.firstName || ''} ${form?.basicDetails?.applicant?.name?.lastName || ''}`}</div>
         <div className={style.grid2}>
           <div className={style.grid5and1}>
             <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
@@ -472,8 +613,8 @@ const NewActiveApplication = ({
               </div>
             </div>
             <div className={`${style.marginTop20}`}>
-              <div className={`${style.bigButtonStyle} `}>
-                <div className={`${style.bigButtonTextStyle} ${style.alignCenter}`}>ACCEPT FOR CRED. COMM. REVIEW</div>
+              <div className={`${style.bigButtonStyle} ${style.cursorPointer} `}>
+                <div className={`${style.bigButtonTextStyle} ${style.alignCenter}`} onClick={handleApplicationAccept}>ACCEPT APPLICATION</div>
               </div>
             </div>
           </div>
@@ -645,33 +786,57 @@ const NewActiveApplication = ({
                 </div>
 
                 {
-                  form?.formSchemas?.filter(data => data?.formCategory === 'Form')?.map((data, index) => (
+                  form?.formSchemas?.filter(data => (data?.formCategory === 'Form' || data?.formCategory === 'Disclosure') && data?.schemaCategory !== "UploadYourDoc")?.map((data, index) => (
 
-                    <div className={`${style.tableDataStyle} ${style.marginTop5} ${style.tableHeaderGridStyle}`}>
-                      <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                        <div className={`${style.marginLeft10} ${style.justifySpaceAround} ${style.greyDotStyle}`}></div>
-                      </div>
-                      <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                        <div className={`${style.tableDataFontStyle1}`}>{data?.description}</div>
-                      </div>
-                      <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                        <div className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}></div>
-                      </div>
-                      <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                        <div className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}></div>
-                      </div>
-                      <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                        <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>{form?.forms?.filter((formData, formIndex) => formIndex === index)?.map(data => data?.uploadedFiles?.length || 0)}</div>
-                      </div>
-                      <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                        <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
-                          {
-                            (expand?.status && expand?.index === index + 1) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} />)
-                              : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => setExpand({ status: true, index: index + 1 })} />)
-                          }
+                    <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === index + 1) ? style.tableDataStyle1 : style.tableDataStyle}`}>
+                      <div className={` ${style.tableHeaderGridStyle} ${style.marginTop10}`}>
+                        <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                          <div className={`${style.marginLeft10} ${style.justifySpaceAround} ${form?.forms[index]?.status !== "APPROVED" ? style.greyDotStyle : style.greenDotStyle}`}></div>
+                        </div>
+                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                          <div className={`${style.tableDataFontStyle1}`}>{data?.description}</div>
+                        </div>
+                        {expand?.status && expand?.index === index + 1 ? (
+                          <>
+                            {form?.forms[index]?.status !== "APPROVED" ? (
+                              <div className={`${style.purpleButton}  `}>
+                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleStepsVerify(form?.forms[index]?.id)}>Verify</div>
+                              </div>
+                            ) : (
+                              <div className={`${style.greenButton}  `}>
+                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Verified</div>
+                              </div>
+                            )}
+                            <div></div>
+                          </>
+                        ) : (
+                          <>
+                            <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                              <div className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}></div>
+                            </div>
+                            <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                              <div className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}></div>
+                            </div>
+                            <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                              <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>{form?.forms?.filter((formData, formIndex) => formIndex === index)?.map(data => data?.uploadedFiles?.length || 0)}</div>
+                            </div>
+                          </>
+                        )}
+                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                          <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
+                            {
+                              (expand?.status && expand?.index === index + 1) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: false, index: 0 }); setFormSchemaId('') }} />)
+                                : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: true, index: index + 1 }); setFormSchemaId(data?.id) }} />)
+                            }
 
+                          </div>
                         </div>
                       </div>
+                      {expand?.status && expand?.index === index + 1 &&
+                        <div className={`${style.marginTop} ${style.screenPadding}`}>
+                          {renderFieldsBasedOnStep(data)}
+                        </div>
+                      }
                     </div>))}
 
               </div>
@@ -821,7 +986,7 @@ const NewActiveApplication = ({
           </div>
 
 
-        </div>
+        </div >
         <div className={style.marginTop50}></div>
         {
           showApplicationDeclineDialog && (
