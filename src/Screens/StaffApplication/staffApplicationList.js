@@ -1,29 +1,40 @@
-import React, { useState, useEffect, createRef, useCallback, useRef } from 'react';
-import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
-import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
-import NoteAltOutlinedIcon from '@mui/icons-material/NoteAltOutlined';
-import TimeSmartLogo from './../../images/timeSmartAI-logo-withoutbg.png';
-import StaffApplicationTiles from './staffApplicationTiles';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
-import RemoveIcon from '@mui/icons-material/Remove';
-import AddIcon from '@mui/icons-material/Add';
+import React, {
+  useState,
+  useEffect,
+  createRef,
+  useCallback,
+  useRef,
+} from "react";
+import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
+import TextSnippetOutlinedIcon from "@mui/icons-material/TextSnippetOutlined";
+import NoteAltOutlinedIcon from "@mui/icons-material/NoteAltOutlined";
+import TimeSmartLogo from "./../../images/timeSmartAI-logo-withoutbg.png";
+import StaffApplicationTiles from "./staffApplicationTiles";
+import StaffApplicationTopTiles from "./staffApplicationTopTiles";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
+import RemoveIcon from "@mui/icons-material/Remove";
+import AddIcon from "@mui/icons-material/Add";
 import CircularProgress from "@mui/material/CircularProgress";
-import { format } from 'date-fns';
-import TableTwo from '../../Components/TableDesignTwo';
-import PublicIcon from '@mui/icons-material/Public';
-import PermIdentityIcon from '@mui/icons-material/PermIdentity';
-import style from './index.module.scss';
-import SideBar from '../../Components/Sidebar';
+import { format } from "date-fns";
+import TableTwo from "../../Components/TableDesignTwo";
+import PublicIcon from "@mui/icons-material/Public";
+import PermIdentityIcon from "@mui/icons-material/PermIdentity";
+import style from "./index.module.scss";
+import SideBar from "../../Components/Sidebar";
 import ProgressBar from "@ramonak/react-progress-bar";
-import ApplicationRejection from './applicationRejectionDialog';
-import { useNavigate } from 'react-router-dom';
-import { GET, PUT, POST, TenantID } from '../dataSaver';
-import ReactToPrint, { useReactToPrint } from 'react-to-print';
-import CheckListDialog from './checkListDialog';
+import ApplicationRejection from "./applicationRejectionDialog";
+import { useNavigate } from "react-router-dom";
+import { GET, PUT, POST, TenantID } from "../dataSaver";
+import ReactToPrint, { useReactToPrint } from "react-to-print";
+import CheckListDialog from "./checkListDialog";
 
-
-const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiveApplicationView }) => {
+const StaffApplicationList = ({
+  isLoading,
+  getSelectedTab,
+  selectedTab,
+  getActiveApplicationView,
+}) => {
   const PDFRef = createRef();
   const navigate = useNavigate();
   const componentRef = useRef(null);
@@ -39,43 +50,141 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
     totalRejections: 0,
     appointmentRequestsDenied: 0,
     applicationsRejected: 0,
-    applicationsApprovedButDenied: 0
+    applicationsApprovedButDenied: 0,
   });
 
   const [tableData, setTableData] = useState([]);
   const [rejectionListData, setRejectionListData] = useState([]);
 
-  const applicantHeaderValues = ["", "Applicant Name", "Applicant Type", "Department", "Docs", "Data & Disclosures", "CRs", "Notes", "Last Updated", "Actions"];
-  const applicationHeaderValues = ["", "Applicant Name", "Applicant Type", "Department", "Commitee", "Board", "CEO", "Last Updated On", "Actions"];
-  const clarificationHeaderValues = ["", "Applicant Name", "Type", "Clarification Title", "Raised By", "Created On", "Last Updated On", "Actions"];
-  const approvedHeaderValues = ["", "Applicant Name", "Type", "Notes", "Last Updated On", "Actions"];
-  const reappointmentValues = ["", "Applicant Name", "Applicant Type", "Department", "Docs", "Data & Disclosures", "CRs", "Notes", "Last Updated", "Actions"];
+  const applicantHeaderValues = [
+    "",
+    "Applicant Name",
+    "Applicant Type",
+    "Department",
+    "Docs",
+    "Data & Disclosures",
+    "CRs",
+    "Notes",
+    "Last Updated",
+    "Actions",
+  ];
+  const applicationHeaderValues = [
+    "",
+    "Applicant Name",
+    "Applicant Type",
+    "Department",
+    "Commitee",
+    "Board",
+    "CEO",
+    "Last Updated On",
+    "Actions",
+  ];
+  const clarificationHeaderValues = [
+    "",
+    "Applicant Name",
+    "Type",
+    "Clarification Title",
+    "Raised By",
+    "Created On",
+    "Last Updated On",
+    "Actions",
+  ];
+  const approvedHeaderValues = [
+    "",
+    "Applicant Name",
+    "Type",
+    "Notes",
+    "Last Updated On",
+    "Actions",
+  ];
+  const reappointmentValues = [
+    "",
+    "Applicant Name",
+    "Applicant Type",
+    "Department",
+    "Docs",
+    "Data & Disclosures",
+    "CRs",
+    "Notes",
+    "Last Updated",
+    "Actions",
+  ];
 
-  const applicantColSortValues = [false, false, false, false, false, false, false, false, false];
-  const applicationColSortValues = [false, false, false, false, false, false, false, false, false];
-  const clarificationColSortValues = [false, false, false, false, false, false, false, false, false];
-  const approvedColSortValues = [false, false, false, false, false, false, false, false, false];
-  const reappointmentColSortValues = [false, false, false, false, false, false, false, false, false];
+  const applicantColSortValues = [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ];
+  const applicationColSortValues = [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ];
+  const clarificationColSortValues = [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ];
+  const approvedColSortValues = [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ];
+  const reappointmentColSortValues = [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ];
 
   const [isPrintClicked, setIsPrintClicked] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
-  const [showApplicationRejectionDialog, setShowApplicationRejectionDialog] = useState(false);
+  const [showApplicationRejectionDialog, setShowApplicationRejectionDialog] =
+    useState(false);
   const [showCheckListDialog, setShowCheckListDialog] = useState(false);
-
 
   const getApplicationRejectionDialog = (value) => {
     setShowApplicationRejectionDialog(value);
-    setRejectionTab("rejected")
-  }
+    setRejectionTab("rejected");
+  };
 
   const getCheckListDialog = (value) => {
     setShowCheckListDialog(value);
-  }
+  };
 
   const onClickViewAndVerifyFunction = (data) => {
     getActiveApplicationView(true);
-    sessionStorage.setItem('applicationId', data?.id)
-  }
+    sessionStorage.setItem("applicationId", data?.id);
+  };
 
   useEffect(() => {
     getSentConfirmationCount();
@@ -92,59 +201,64 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
   }, [rejectionTab, showApplicationRejectionDialog]);
 
   const handleIconClick = () => {
-    setShowCardDetails(prev => !prev);
+    setShowCardDetails((prev) => !prev);
   };
 
   const getWorkflowUserData = async () => {
     try {
-      const response = await GET(`application-management-service/application/workflowUser?tab=${selectedTab}`);
-      console.log('Application data', response?.data.applications);
+      const response = await GET(
+        `application-management-service/application/workflowUser?tab=${selectedTab}`
+      );
+      console.log("Application data", response?.data.applications);
       setTableData(response?.data?.applications);
       return response?.data.applications || [];
     } catch (error) {
-      console.error('Error fetching applications:', error);
+      console.error("Error fetching applications:", error);
       return [];
     }
   };
 
-  console.log("rejectionTab", rejectionTab)
+  console.log("rejectionTab", rejectionTab);
 
   const getRejectionData = async () => {
     try {
-      const response = await GET(`application-management-service/application/workflowUser?tab=${rejectionTab}`);
-      console.log('Rejection data', response?.data?.applications);
+      const response = await GET(
+        `application-management-service/application/workflowUser?tab=${rejectionTab}`
+      );
+      console.log("Rejection data", response?.data?.applications);
       setRejectionListData(response?.data?.applications);
       return response?.data.applications || [];
     } catch (error) {
-      console.error('Error fetching applications:', error);
+      console.error("Error fetching applications:", error);
       return [];
     }
   };
 
   const getSentConfirmationCount = async () => {
-    await GET('application-management-service/application/sentToApplicant/status')
-      .then(response => {
+    await GET(
+      "application-management-service/application/sentToApplicant/status"
+    )
+      .then((response) => {
         setSentCompletion(response?.data || null);
-        setShowCardCompletion(response?.data?.applicationsStatus?.length > 0 ? true : false)
+        setShowCardCompletion(
+          response?.data?.applicationsStatus?.length > 0 ? true : false
+        );
         console.log("sentCompletion", response?.data);
       })
-      .catch(error => {
-        console.error('Error fetching request appointment count:', error);
-
+      .catch((error) => {
+        console.error("Error fetching request appointment count:", error);
       });
   };
 
   const getRequestAppointmentCount = async () => {
-    await GET('application-management-service/preApplication')
-      .then(response => {
+    await GET("application-management-service/preApplication")
+      .then((response) => {
         setRequestAppointment(response?.data.numberOfElements || 0);
       })
-      .catch(error => {
-        console.error('Error fetching request appointment count:', error);
-
+      .catch((error) => {
+        console.error("Error fetching request appointment count:", error);
       });
   };
-
 
   const reactToPrintContent = useCallback(() => {
     return componentRef.current;
@@ -153,17 +267,22 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
   const handlePrintClick = useReactToPrint({
     content: reactToPrintContent,
     documentTitle: "Staff Application",
-    removeAfterPrint: true
+    removeAfterPrint: true,
   });
 
   const getRejectionCounts = async () => {
-    await GET('application-management-service/application/rejected/meta')
-      .then(response => {
+    await GET("application-management-service/application/rejected/meta")
+      .then((response) => {
         setApplicationRejected(response?.data);
-        setShowCardDetails((response?.data?.applicationsRejected > 0 || response?.data?.applicationsApprovedButDenied > 0) ? true : false)
+        setShowCardDetails(
+          response?.data?.applicationsRejected > 0 ||
+            response?.data?.applicationsApprovedButDenied > 0
+            ? true
+            : false
+        );
       })
-      .catch(error => {
-        console.error('Error fetching rejection counts:', error);
+      .catch((error) => {
+        console.error("Error fetching rejection counts:", error);
       });
   };
 
@@ -217,44 +336,92 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
     capManager = [];
     action = [];
 
-    tableData?.map(data => {
-      dot.push(data?.status === 'REVIEW_INPROGRESS' ? 'yellow' : data?.status === 'APPROVED' ? 'green' : 'grey');
-      applicantName.push(`${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` || '');
+    tableData?.map((data) => {
+      dot.push(
+        data?.status === "REVIEW_INPROGRESS"
+          ? "yellow"
+          : data?.status === "APPROVED"
+          ? "green"
+          : "grey"
+      );
+      applicantName.push(
+        `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
+          ""
+      );
       applicantId.push(data?.Id);
       applicantType.push(data?.providerType.serviceProviderType);
-      department.push(data?.sites?.siteDepartments?.site?.department?.name || '-');
-      docs.push(data?.docs || '2/8');
-      docsHoverText.push(["Immunization History Verification From PCP pending"])
-      docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} />);
-      dataStatus.push(data?.dataStatus || 'green');
+      department.push(
+        data?.basicDetails?.departmentSpecialty?.department || "-"
+      );
+      docs.push(data?.docs || "2/8");
+      docsHoverText.push([
+        "Immunization History Verification From PCP pending",
+      ]);
+      docsIcon.push(
+        <TextSnippetOutlinedIcon
+          style={{ fontSize: 20, color: `${data?.subStatus}` }}
+        />
+      );
+      dataStatus.push(data?.dataStatus || "green");
       // disclosures.push(data?.disclosures || '7/9');
-      crs.push(data?.crs || '0');
-      crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"])
-      notes.push(data?.notes || '1');
-      notesIcon.push(<NoteAltOutlinedIcon style={{ fontSize: 20, color: `#52575D` }} />);
-      notesHoverText.push(["June 13 00:00, Nina Grealy", "Lorem ipsum dolor sit amet, consetetur sadipscing."])
-      lastUpdated.push(format(new Date(data?.lastModifiedDate), 'MMM dd, yyyy'))
-      lastUpdatedBy.push(['-'])
+      crs.push(data?.crs || "0");
+      crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"]);
+      notes.push(data?.notes || "1");
+      notesIcon.push(
+        <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#52575D` }} />
+      );
+      notesHoverText.push([
+        "June 13 00:00, Nina Grealy",
+        "Lorem ipsum dolor sit amet, consetetur sadipscing.",
+      ]);
+      lastUpdated.push(
+        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+      );
+      lastUpdatedBy.push(["-"]);
       // const lastUpdatedDate = new Date(data?.lastModifiedDate);
       // lastUpdated.push(isNaN(lastUpdatedDate.getTime()) ? 'Invalid Date' : format(lastUpdatedDate, 'MM-dd-yyyy'));
       // capManager.push(data?.interviewDetails?.interviewedBy || '- ');
       action.push(true);
-    })
+
+      console.log("tabledata" + tableData);
+    });
 
     return [
-      { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
-      { "type": "text", "value": applicantName },
-      { "type": "text", "value": applicantType },
-      { "type": "text", "value": department },
-      { "type": "iconWithCount", "value": docs, "hoverText": docsHoverText, 'isShowHoverText': true, "icon": docsIcon },
-      { "type": "dot", "value": dataStatus },
+      { type: "dot", value: dot, tooltipValue: dotTooltipValues },
+      { type: "text", value: applicantName },
+      { type: "text", value: applicantType },
+      { type: "text", value: department },
+      {
+        type: "iconWithCount",
+        value: docs,
+        hoverText: docsHoverText,
+        isShowHoverText: true,
+        icon: docsIcon,
+      },
+      { type: "dot", value: dataStatus },
       // { "type": "iconWithCount", "value": disclosures, "hoverText": docsHoverText, 'isShowHoverText': true, "icon": docsIcon },
-      { "type": "countWithHover", "value": crs, "hoverText": crsHoverText, 'isShowHoverText': true },
-      { "type": "iconWithCount", "value": notes, "hoverText": notesHoverText, 'isShowHoverText': true, "icon": notesIcon },
-      { "type": "iconWithCount", "value": lastUpdated, "hoverText": lastUpdatedBy, 'isShowHoverText': true },
-      { "type": "action", "value": action },
+      {
+        type: "countWithHover",
+        value: crs,
+        hoverText: crsHoverText,
+        isShowHoverText: true,
+      },
+      {
+        type: "iconWithCount",
+        value: notes,
+        hoverText: notesHoverText,
+        isShowHoverText: true,
+        icon: notesIcon,
+      },
+      {
+        type: "iconWithCount",
+        value: lastUpdated,
+        hoverText: lastUpdatedBy,
+        isShowHoverText: true,
+      },
+      { type: "action", value: action },
     ];
-  }
+  };
 
   const getApplicationValues = () => {
     applicantName = [];
@@ -267,31 +434,43 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
     lastUpdatedBy = [];
     action = [];
 
-    tableData?.map(data => {
+    tableData?.map((data) => {
       dot.push("");
-      applicantName.push(`${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` || '');
+      applicantName.push(
+        `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
+          ""
+      );
       applicantType.push(data?.providerType.serviceProviderType);
-      department.push(data?.sites?.siteDepartments?.site?.department?.name || '-');
-      commiteeStatus.push(data?.commiteeStatus || 'yellow');
-      boardStatus.push(data?.boardStatus || 'green');
-      ceoStatus.push(data?.ceoStatus || 'grey');
-      lastUpdatedOn.push(format(new Date(data?.lastModifiedDate), 'MMM dd, yyyy'))
-      lastUpdatedBy.push([data?.updatedBy || '-']);
+      department.push(
+        data?.sites?.siteDepartments?.site?.department?.name || "-"
+      );
+      commiteeStatus.push(data?.commiteeStatus || "yellow");
+      boardStatus.push(data?.boardStatus || "green");
+      ceoStatus.push(data?.ceoStatus || "grey");
+      lastUpdatedOn.push(
+        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+      );
+      lastUpdatedBy.push([data?.updatedBy || "-"]);
       action.push(true);
-    })
+    });
 
     return [
-      { "type": "dot", "value": dot },
-      { "type": "text", "value": applicantName },
-      { "type": "text", "value": applicantType },
-      { "type": "text", "value": department },
-      { "type": "dot", "value": commiteeStatus },
-      { "type": "dot", "value": boardStatus },
-      { "type": "dot", "value": ceoStatus },
-      { "type": "iconWithCount", "value": lastUpdatedOn, "hoverText": lastUpdatedBy, 'isShowHoverText': true },
-      { "type": "action", "value": action },
+      { type: "dot", value: dot },
+      { type: "text", value: applicantName },
+      { type: "text", value: applicantType },
+      { type: "text", value: department },
+      { type: "dot", value: commiteeStatus },
+      { type: "dot", value: boardStatus },
+      { type: "dot", value: ceoStatus },
+      {
+        type: "iconWithCount",
+        value: lastUpdatedOn,
+        hoverText: lastUpdatedBy,
+        isShowHoverText: true,
+      },
+      { type: "action", value: action },
     ];
-  }
+  };
 
   const getClarificationValues = () => {
     dot = [];
@@ -303,28 +482,31 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
     lastUpdatedOn = [];
     action = [];
 
-    tableData?.map(data => {
-      dot.push(data?.subStatus || 'green');
-      applicantName.push(`${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` || '');
+    tableData?.map((data) => {
+      dot.push(data?.subStatus || "green");
+      applicantName.push(
+        `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
+          ""
+      );
       applicantType.push(data?.providerType.serviceProviderType);
       clarificationTitle.push(data?.clarificationTitle);
       raisedBy.push(data?.raisedBy);
       createdOn.push(data?.createdOn);
       lastUpdatedOn.push(data?.lastUpdatedOn);
       action.push(true);
-    })
+    });
 
     return [
-      { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
-      { "type": "text", "value": applicantName },
-      { "type": "text", "value": applicantType },
-      { "type": "text", "value": clarificationTitle },
-      { "type": "text", "value": raisedBy },
-      { "type": "text", "value": createdOn },
-      { "type": "text", "value": lastUpdatedOn },
-      { "type": "action", "value": action },
+      { type: "dot", value: dot, tooltipValue: dotTooltipValues },
+      { type: "text", value: applicantName },
+      { type: "text", value: applicantType },
+      { type: "text", value: clarificationTitle },
+      { type: "text", value: raisedBy },
+      { type: "text", value: createdOn },
+      { type: "text", value: lastUpdatedOn },
+      { type: "action", value: action },
     ];
-  }
+  };
 
   const getApprovedValues = () => {
     dot = [];
@@ -334,80 +516,173 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
     lastUpdatedOn = [];
     action = [];
 
-    tableData?.map(data => {
+    tableData?.map((data) => {
       dot.push(data?.subStatus);
-      applicantName.push(`${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` || '');
+      applicantName.push(
+        `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
+          ""
+      );
       applicantType.push(data?.providerType.serviceProviderType);
       approvedNotes.push(data?.approvedNotes);
-      lastUpdatedOn.push(format(new Date(data?.lastModifiedDate), 'MMM dd, yyyy'));
+      lastUpdatedOn.push(
+        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+      );
       action.push(true);
-    })
+    });
 
     return [
-      { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
-      { "type": "text", "value": applicantName },
-      { "type": "text", "value": applicantType },
-      { "type": "text", "value": approvedNotes },
-      { "type": "text", "value": lastUpdatedOn },
-      { "type": "action", "value": action },
+      { type: "dot", value: dot, tooltipValue: dotTooltipValues },
+      { type: "text", value: applicantName },
+      { type: "text", value: applicantType },
+      { type: "text", value: approvedNotes },
+      { type: "text", value: lastUpdatedOn },
+      { type: "action", value: action },
     ];
-  }
+  };
 
   const applicantActionsData = [
-    { 'data': 'View & Verify', 'requiredValue': 'boolean', "onClick": onClickViewAndVerifyFunction },
-    { 'data': 'Send for Committee Review', 'requiredValue': 'boolean', "onClick": '' },
-    { 'data': 'Request for Clarification', 'requiredValue': 'boolean', "onClick": '' },
-    { 'data': 'From Applicant', 'requiredValue': 'boolean', "onClick": '' },
-    { 'data': 'From Internal Approver', 'requiredValue': 'boolean', "onClick": '' },
-    { 'data': 'From Institution', 'requiredValue': 'boolean', "onClick": '' },
-  ]
+    {
+      data: "View & Verify",
+      requiredValue: "boolean",
+      onClick: onClickViewAndVerifyFunction,
+    },
+    {
+      data: "Send for Committee Review",
+      requiredValue: "boolean",
+      onClick: "",
+    },
+    {
+      data: "Request for Clarification",
+      requiredValue: "boolean",
+      onClick: "",
+    },
+    { data: "From Applicant", requiredValue: "boolean", onClick: "" },
+    { data: "From Internal Approver", requiredValue: "boolean", onClick: "" },
+    { data: "From Institution", requiredValue: "boolean", onClick: "" },
+  ];
 
   const applicationActionsData = [
-    { 'data': 'View & Verify', 'requiredValue': 'boolean', "onClick": '' },
-    { 'data': 'Send for Committee Review', 'requiredValue': 'boolean', "onClick": '' },
-    { 'data': 'Request for Clarification', 'requiredValue': 'boolean', "onClick": '' },
-    { 'data': 'From Applicant', 'requiredValue': 'boolean', "onClick": '' },
-    { 'data': 'From Internal Approver', 'requiredValue': 'boolean', "onClick": '' },
-    { 'data': 'From Institution', 'requiredValue': 'boolean', "onClick": '' },
-  ]
+    { data: "View & Verify", requiredValue: "boolean", onClick: "" },
+    {
+      data: "Send for Committee Review",
+      requiredValue: "boolean",
+      onClick: "",
+    },
+    {
+      data: "Request for Clarification",
+      requiredValue: "boolean",
+      onClick: "",
+    },
+    { data: "From Applicant", requiredValue: "boolean", onClick: "" },
+    { data: "From Internal Approver", requiredValue: "boolean", onClick: "" },
+    { data: "From Institution", requiredValue: "boolean", onClick: "" },
+  ];
 
   const clarificationActionsData = [
-    { 'data': 'View & Verify', 'requiredValue': 'boolean', "onClick": '' },
-    { 'data': 'Send for Committee Review', 'requiredValue': 'boolean', "onClick": '' },
-    { 'data': 'Request for Clarification', 'requiredValue': 'boolean', "onClick": '' },
-    { 'data': 'From Applicant', 'requiredValue': 'boolean', "onClick": '' },
-    { 'data': 'From Internal Approver', 'requiredValue': 'boolean', "onClick": '' },
-    { 'data': 'From Institution', 'requiredValue': 'boolean', "onClick": '' },
-  ]
+    { data: "View & Verify", requiredValue: "boolean", onClick: "" },
+    {
+      data: "Send for Committee Review",
+      requiredValue: "boolean",
+      onClick: "",
+    },
+    {
+      data: "Request for Clarification",
+      requiredValue: "boolean",
+      onClick: "",
+    },
+    { data: "From Applicant", requiredValue: "boolean", onClick: "" },
+    { data: "From Internal Approver", requiredValue: "boolean", onClick: "" },
+    { data: "From Institution", requiredValue: "boolean", onClick: "" },
+  ];
 
   const approvedActionsData = [
-    { 'data': 'Add as active staff', 'requiredValue': 'boolean', "onClick": () => { setShowCheckListDialog(true) } },
-    { 'data': 'Send follow up disclosures', 'requiredValue': 'boolean', "onClick": () => { } },
-  ]
+    {
+      data: "Add as active staff",
+      requiredValue: "boolean",
+      onClick: () => {
+        setShowCheckListDialog(true);
+      },
+    },
+    {
+      data: "Send follow up disclosures",
+      requiredValue: "boolean",
+      onClick: () => {},
+    },
+  ];
 
-  const reappointmentActionsData = []
+  const reappointmentActionsData = [];
 
   const getIsExpanded = (value) => {
     setIsExpanded(value);
-  }
+  };
 
-  let tableHeaderValues = selectedTab === 'applicantsToProcess' ? applicantHeaderValues : selectedTab === "applicationsUnderReview" ? applicationHeaderValues : selectedTab === "clarificationsRequired" ? clarificationHeaderValues : selectedTab === "staffReappointment" ? [] : approvedHeaderValues;
-  let tableSortValues = selectedTab === 'applicantsToProcess' ? applicantColSortValues : selectedTab === "applicationsUnderReview" ? applicationColSortValues : selectedTab === "clarificationsRequired" ? clarificationColSortValues : selectedTab === "staffReappointment" ? [] : approvedColSortValues;
-  let tableDataValues = selectedTab === 'applicantsToProcess' ? getApplicantValues() : selectedTab === "applicationsUnderReview" ? getApplicationValues() : selectedTab === "clarificationsRequired" ? getClarificationValues() : selectedTab === "staffReappointment" ? [] : getApprovedValues();
-  let actions = selectedTab === 'applicantsToProcess' ? applicantActionsData : selectedTab === "applicationsUnderReview" ? applicationActionsData : selectedTab === "clarificationsRequired" ? clarificationActionsData : selectedTab === "staffReappointment" ? [] : approvedActionsData;
-  let gridStyle = selectedTab === 'applicantsToProcess' ? style.applicantStaffGrid : selectedTab === "applicationsUnderReview" ? style.applicationStaffGrid : selectedTab === "clarificationsRequired" ? style.clarificationStaffGrid : selectedTab === "staffReappointment" ? '' : style.approvedStaffGrid;
+  let tableHeaderValues =
+    selectedTab === "chiefOfStaff"
+      ? applicantHeaderValues
+      : selectedTab === "credentialingCommittee"
+      ? applicationHeaderValues
+      : selectedTab === "mac"
+      ? clarificationHeaderValues
+      : selectedTab === "bod"
+      ? []
+      : approvedHeaderValues;
+  let tableSortValues =
+    selectedTab === "chiefOfStaff"
+      ? applicantColSortValues
+      : selectedTab === "credentialingCommittee"
+      ? applicationColSortValues
+      : selectedTab === "mac"
+      ? clarificationColSortValues
+      : selectedTab === "bod"
+      ? []
+      : approvedColSortValues;
+  let tableDataValues =
+    selectedTab === "chiefOfStaff"
+      ? getApplicantValues()
+      : selectedTab === "credentialingCommittee"
+      ? getApplicationValues()
+      : selectedTab === "mac"
+      ? getClarificationValues()
+      : selectedTab === "bod"
+      ? []
+      : getApprovedValues();
+  let actions =
+    selectedTab === "chiefOfStaff"
+      ? applicantActionsData
+      : selectedTab === "credentialingCommittee"
+      ? applicationActionsData
+      : selectedTab === "mac"
+      ? clarificationActionsData
+      : selectedTab === "bod"
+      ? []
+      : approvedActionsData;
+  let gridStyle =
+    selectedTab === "chiefOfStaff"
+      ? style.applicantStaffGrid
+      : selectedTab === "credentialingCommittee"
+      ? style.applicationStaffGrid
+      : selectedTab === "mac"
+      ? style.clarificationStaffGrid
+      : selectedTab === "bod"
+      ? ""
+      : style.approvedStaffGrid;
 
   return (
     <div className={style.margin20}>
       <div className={isExpanded ? style.bigCardGrid : style.smallCardGrid}>
         <div>
           <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
-            <div className={`${style.addStyle}  ${style.applicationButton} ${style.spaceBetween} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`} >
-              <div className={`${style.displayInRow} ${style.marginLeftRight10} `} onClick={() => navigate('/createStaffMemberApplication')}>
+            <div
+              className={`${style.addStyle}  ${style.applicationButton} ${style.spaceBetween} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`}
+            >
+              <div
+                className={`${style.displayInRow} ${style.marginLeftRight10} `}
+                onClick={() => navigate("/createStaffMemberApplication")}
+              >
                 CREATE NEW APPLICATION
               </div>
-              <div className={`${style.displayInRow} ${style.marginLeft20} `} >
-                <AddCircleOutlineIcon sx={{ fontSize: 20, color: 'white' }} />
+              <div className={`${style.displayInRow} ${style.marginLeft20} `}>
+                <AddCircleOutlineIcon sx={{ fontSize: 20, color: "white" }} />
               </div>
             </div>
 
@@ -472,16 +747,33 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
               </>)}
             </div> */}
 
-            <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
-              <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
-                <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
-                  Sent for Completion <span className={`${style.numberBackground} ${style.marginLeft} ${style.yellowSmallNumberSelected}`}>{sentCompletion?.totalApplicationsSent || 0}</span>
+            <div
+              className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}
+            >
+              <div
+                className={`${style.spaceBetween}  ${style.marginLeftRight10}`}
+              >
+                <div
+                  className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}
+                >
+                  Sent for Completion{" "}
+                  <span
+                    className={`${style.numberBackground} ${style.marginLeft} ${style.yellowSmallNumberSelected}`}
+                  >
+                    {sentCompletion?.totalApplicationsSent || 0}
+                  </span>
                 </div>
-                <div className={`${style.marginLeft10} `} >
+                <div className={`${style.marginLeft10} `}>
                   {!showCardCompletion ? (
-                    <AddIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setShowCardCompletion(!showCardCompletion)} />
+                    <AddIcon
+                      sx={{ fontSize: 20, color: "#7165E3", cursor: "pointer" }}
+                      onClick={() => setShowCardCompletion(!showCardCompletion)}
+                    />
                   ) : (
-                    <RemoveIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setShowCardCompletion(!showCardCompletion)} />
+                    <RemoveIcon
+                      sx={{ fontSize: 20, color: "#7165E3", cursor: "pointer" }}
+                      onClick={() => setShowCardCompletion(!showCardCompletion)}
+                    />
                   )}
                 </div>
               </div>
@@ -512,20 +804,21 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
                                 className={style.marginLeft10}
                               >{`${status.basicDetail.applicant.name.firstName} ${status.basicDetail.applicant.name.lastName}`}</div>
                               {/* <span className={style.textStyleProgress}> ({status.providerType.serviceProviderType}) </span> */}
-                              {/* <div
+                              <div
                                 className={`${style.smallTextStyle} ${style.justifyCenter}`}
                               >
-
+                              
+                                {/* {`${status.basicDetail.applicant.startDate}`} */}
                                 {status.basicDetail.applicant.startDate
                                   ? format(
-                                    new Date(
-                                      status?.basicDetail?.applicant?.startDate
-                                    ),
-                                    "MMM dd, yyyy"
-                                  )
+                                      new Date(
+                                        status.basicDetail.applicant.startDate
+                                      ),
+                                      "MMM dd, yyyy"
+                                    )
                                   : "N/A"}
-
-                              </div> */}
+                            
+                              </div>
                             </div>
                             {/* <p className={style.progressTopText}>
                               {" "}
@@ -562,67 +855,127 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
                   ))}
                 </div>
               )}
-
             </div>
 
-            <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
-              <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
-                <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
-                  Rejected / Declined <span className={`${style.numberBackground} ${style.marginLeft} ${style.redSmallNumberSelected}`}>{applicationRejected.totalRejections}</span>
+            <div
+              className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}
+            >
+              <div
+                className={`${style.spaceBetween}  ${style.marginLeftRight10}`}
+              >
+                <div
+                  className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}
+                >
+                  Rejected / Declined{" "}
+                  <span
+                    className={`${style.numberBackground} ${style.marginLeft} ${style.redSmallNumberSelected}`}
+                  >
+                    {applicationRejected.totalRejections}
+                  </span>
                 </div>
-                <div className={`${style.marginLeft10} `} >
+                <div className={`${style.marginLeft10} `}>
                   {!showCardDetails ? (
-                    <AddIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setShowCardDetails(!showCardDetails)} />
+                    <AddIcon
+                      sx={{ fontSize: 20, color: "#7165E3", cursor: "pointer" }}
+                      onClick={() => setShowCardDetails(!showCardDetails)}
+                    />
                   ) : (
-                    <RemoveIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setShowCardDetails(!showCardDetails)} />
+                    <RemoveIcon
+                      sx={{ fontSize: 20, color: "#7165E3", cursor: "pointer" }}
+                      onClick={() => setShowCardDetails(!showCardDetails)}
+                    />
                   )}
                 </div>
               </div>
-              {
-                showCardDetails && (<>
+              {showCardDetails && (
+                <>
                   {/* <div className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}>
                     Appointment Requests Denied ({applicationRejected.appointmentRequestsDenied})
                   </div> */}
-                  <div className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`} onClick={() => { setShowApplicationRejectionDialog(true) }}>
-                    Applicants Rejected ({applicationRejected.applicationsRejected})
+                  <div
+                    className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}
+                    onClick={() => {
+                      setShowApplicationRejectionDialog(true);
+                    }}
+                  >
+                    Applicants Rejected (
+                    {applicationRejected.applicationsRejected})
                   </div>
-                  <div className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}>
-                    Approved But Declined ({applicationRejected.applicationsApprovedButDenied})
+                  <div
+                    className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}
+                  >
+                    Approved But Declined (
+                    {applicationRejected.applicationsApprovedButDenied})
                   </div>
-                </>)
-              }
+                </>
+              )}
             </div>
-
-
           </SideBar>
         </div>
         <div>
-          <div className={`${style.displayInRow} ${style.spaceBetween} ${style.headingForStaffs} ${style.bottomTextStyle}`}>
+          <div
+            className={`${style.displayInRow} ${style.spaceBetween} ${style.headingForStaffs} ${style.bottomTextStyle}`}
+          >
             {`STAFF MANAGER >> APPLICATIONS`}
           </div>
-
-          <div className={`${style.spaceBetween} ${style.marginTop20} ${style.marginLeft30} `}>
-            <StaffApplicationTiles getSelectedTab={getSelectedTab} selectedTab={selectedTab} />
+          <div
+            className={`${style.spaceBetween} ${style.marginTop20} ${style.marginLeft30} `}
+          >
+          <StaffApplicationTopTiles
+              getSelectedTab={getSelectedTab}
+              selectedTab={selectedTab}
+            />
+            </div>
+          <div
+            className={`${style.spaceBetween} ${style.marginTop20} ${style.marginLeft30} `}
+          >
+            <StaffApplicationTiles
+              getSelectedTab={getSelectedTab}
+              selectedTab={selectedTab}
+            />
 
             <div className={`${style.spaceBetween} ${style.marginLeft} `}>
-              <div className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`} >
-                <SearchOutlinedIcon sx={{ fontSize: isPrintClicked ? 20 : 25, color: isPrintClicked ? '#fff' : '#857AEF' }} />
-              </div>
-              <div className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginRight}`}
+              <div
+                className={`${isPrintClicked && style.addStyle} ${
+                  style.alignCenter
+                } ${style.cursorPointer} ${style.marginRight20}`}
               >
-                <PrintOutlinedIcon sx={{ fontSize: isPrintClicked ? 20 : 25, color: isPrintClicked ? '#fff' : '#857AEF' }} onClick={handlePrintClick} />
+                <SearchOutlinedIcon
+                  sx={{
+                    fontSize: isPrintClicked ? 20 : 25,
+                    color: isPrintClicked ? "#fff" : "#857AEF",
+                  }}
+                />
               </div>
-
+              <div
+                className={`${isPrintClicked && style.addStyle} ${
+                  style.alignCenter
+                } ${style.cursorPointer} ${style.marginRight}`}
+              >
+                <PrintOutlinedIcon
+                  sx={{
+                    fontSize: isPrintClicked ? 20 : 25,
+                    color: isPrintClicked ? "#fff" : "#857AEF",
+                  }}
+                  onClick={handlePrintClick}
+                />
+              </div>
             </div>
           </div>
 
           <div className={`${style.bigCardStyle}`}>
-            {isLoading ?
-              <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
+            {isLoading ? (
+              <div
+                className={`${style.verticalAlignCenter} ${style.justifyCenter}`}
+              >
                 <CircularProgress sx={{ color: "#7165E3" }} />
-              </div> :
+              </div>
+            ) : (
               <div ref={componentRef}>
-                <div className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`} ref={PDFRef}>
+                <div
+                  className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`}
+                  ref={PDFRef}
+                >
                   <TableTwo
                     tableHeaderValues={tableHeaderValues}
                     tableDataValues={tableDataValues}
@@ -631,33 +984,37 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
                     actions={actions}
                     scrollStyle={style.contractScrollStyle}
                     tableSortValues={tableSortValues}
-                    heading={'There are no Record for you to manage'}
-                    onClickFunction={() => { }}
+                    heading={"There are no Record for you to manage"}
+                    onClickFunction={() => {}}
                   />
                 </div>
               </div>
-            }
+            )}
           </div>
         </div>
-      </div >
+      </div>
       <div className={style.spaceBetween}>
         <div className={`${style.displayInRow}`}>
-          <p className={`${style.poweredBy} ${style.marginTop10}`}>Powered by - CAPSmart</p>
+          <p className={`${style.poweredBy} ${style.marginTop10}`}>
+            Powered by - CAPSmart
+          </p>
           {/* <img src={TimeSmartLogo} alt="footer" className={`${style.footerIconStyle} ${style.marginLeft10}`} /> */}
         </div>
         <p className={style.poweredBy}>© {new Date().getFullYear()} CAPSmart</p>
       </div>
 
-      {
-        showApplicationRejectionDialog && (
-          <ApplicationRejection getApplicationRejectionDialog={getApplicationRejectionDialog} rejectionListData={rejectionListData} rejectedCount={applicationRejected.applicationsRejected} />
-        )
-      }
+      {showApplicationRejectionDialog && (
+        <ApplicationRejection
+          getApplicationRejectionDialog={getApplicationRejectionDialog}
+          rejectionListData={rejectionListData}
+          rejectedCount={applicationRejected.applicationsRejected}
+        />
+      )}
       {showCheckListDialog && (
         <CheckListDialog getCheckListDialog={getCheckListDialog} />
       )}
-    </div >
-  )
-}
+    </div>
+  );
+};
 
 export default StaffApplicationList;
