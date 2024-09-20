@@ -58,10 +58,12 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
     }
 
     const getFormSchema = async () => {
-        const { data: form } = await GET(
-            `application-management-service/formSchema/${basicForm?.formSchemas?.[6]?.id}`
-        );
-        setFormSchema(form?.schema)
+        if (basicForm?.formSchemas?.[6]?.id !== undefined) {
+            const { data: form } = await GET(
+                `application-management-service/formSchema/${basicForm?.formSchemas?.[6]?.id}`
+            );
+            setFormSchema(form?.schema)
+        }
     }
 
     const getStaffPrivilege = async () => {
@@ -103,13 +105,13 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
             .catch((error) => {
                 ErrorToaster("Unexpected Error Updating Application");
             });
-        // if (sessionStorage.getItem('fromSummary') === "true") {
-        //     navigate(-1);
-        // }
-        // else {
-        //     navigate('/applicationForm/section1/step9')
+        if (sessionStorage.getItem('fromSummary') === "true") {
+            navigate(-1);
+        }
+        else {
+            navigate('/applicationForm/section1/step10')
 
-        // }
+        }
     }
 
     const getIsOpen = (value) => {
@@ -140,7 +142,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 6'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={20} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                <ProgressCard step={'STEP 6'} title={'Details of request for privileges'} dataType={'Step 7'} timeNumber={20} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
@@ -172,7 +174,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                     </div>
                     <div className={`${style.applicationCardStyle} ${style.marginTop}`} >
                         <div className={style.padding}>
-                            <div className={style.cardTitle}>{`CAMBRIDGE MEMORIAL HOSPITAL ${staffPrivilege?.filter(data => data?.id === selectedPrivilege)?.map(data => data?.privilegeSetTitle)[0].toUpperCase()}`}</div>
+                            <div className={style.cardTitle}>{`CAMBRIDGE MEMORIAL HOSPITAL ${staffPrivilege?.filter(data => data?.id === selectedPrivilege)?.map(data => data?.privilegeSetTitle)[0]?.toUpperCase()}`}</div>
 
                             {
                                 staffPrivilege?.filter(data => data?.id === selectedPrivilege)?.map((data) => data?.privilegeDetails?.corePrivilegeDetails?.corePrivilegesByCategories?.map((categories, index) => (
@@ -284,7 +286,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                     </div>
 
 
-                    <div className={`${style.applicationCardStyle} ${style.marginTop}`} >
+                    <div className={`${style.applicationCardStyle} ${style.marginTop40}`} >
                         <div className={style.padding}>
                             <div className={style.cardDescription}>{'For specialties recognized by the Royal College of Physicians and Surgeons of Canada please attach a copy of a Royal College Certificate or a College Certificate of Registration permitting the practice of that sub-specialty.'}</div>
 

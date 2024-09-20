@@ -217,15 +217,17 @@ const LoginDialog = ({ getIsOpen, days }) => {
           <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
           <div className={style.welcomeText}>Welcome!</div>
           <div className={`${style.descriptionStyle} ${style.marginTop10}`}>
-            Cambridge Memorial Hospitals Automated Credentialing & Privileging
-            Portal
+            Cambridge Memorial Hospital (CMH) is a thriving 180-bed community hospital with over 1300 staff, 250
+            Medical/Professional Staff and over 500 volunteers. CMH has recently completed an exciting Capital
+            Redevelopment Project with brand new facilities in Emergency, Critical Care, Inpatient Medicine, Surgery,
+            Obstetrics, Pediatrics and Mental Health.
           </div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
-            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
-            nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam
-            erat, sed diam voluptua. At vero eos et accusam et justo duo dolores
-            et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est
-            Lorem ipsum dolor sit amet. Lorem.
+            Located 1 hour from each Toronto, London and Hamilton, Cambridge is a family friendly city where one can
+            enjoy the benefits of a small town with the perks of a big city. Our business-friendly environment and appealing
+            lifestyle have made us one of the fastest growing cities in Canada. Cambridge enjoys an excellent standard of
+            living with access to parks, rivers, recreational facilities, universities, colleges and high-tech jobs all within the
+            region.
           </div>
           <div className={style.alignCenter}>
             <div

@@ -11,8 +11,7 @@ const ApplicationAssistanceCard = ({ user, designation, contactNumber, email }) 
         <div className={style.applicationAssistanceCard}>
             <div className={style.forAssistance}>For Assistance Contact:</div>
             <div className={`${style.displayInRow} ${style.marginTop}`}><span className={style.nameStyle}> Nina Grealy</span></div>
-            <div className={`${style.displayInRow} ${style.marginTop}`}><span className={style.contactStyle}> Administrative Assistant, Medical Affairs and</span> </div>
-            <div className={`${style.displayInRow}`}><span className={style.contactStyle}> Chief of Staff Office</span> </div>
+            <div className={`${style.displayInRow} ${style.marginTop}`}><span className={style.contactStyle}> Administrative Assistant, Medical Affairs and Chief of Staff Office</span> </div>
             <div className={`${style.displayInRow} ${style.marginTop}`}><img src={PhoneIcon} alt="" className={style.iconStyle} /><span className={`${style.contactStyle} ${style.marginLeft}`}> +1 (519) 621-2333 EXT 2305</span> </div>
             <div className={`${style.displayInRow} ${style.marginTop} ${style.cursorPointer}`} onClick={() => window.location.href = "mailto:ngrealy@cmh.org"}><img src={MailIcon} alt="" className={style.iconStyle} /><span className={`${style.contactStyle} ${style.marginLeft} ${style.purpleText}`}> ngrealy@cmh.org</span> </div>
 

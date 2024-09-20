@@ -17,7 +17,7 @@ const SendEmailFromStaffManagerConfirmationDialog = ({ getIsOpen, basicForm }) =
             <div>
                 <div className={Classes.DIALOG_BODY}>
                     <div className={style.spaceBetween}>
-                        <div className={style.heading}>Application Created!</div>
+                        <div className={style.heading}>Request to complete an Application</div>
                         <div className={style.displayInRow}>
                             <img
                                 src={CrossPink}
