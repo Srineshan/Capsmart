@@ -21,7 +21,12 @@
   justify-content: center;
   height: 100%;
 }
-
+.border{
+  border-color: #7165e3;
+}
+.backgroundcolorwhite{
+  background-color: white;
+}
 .marginTop5 {
   margin-top: 5px;
 }
@@ -51,6 +56,9 @@
 
 .marginLeft20 {
   margin-left: 20px !important;
+}
+.marginright20 {
+  margin-right: 40px !important;
 }
 
 .crossStyle {

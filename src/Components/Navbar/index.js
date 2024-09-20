@@ -308,7 +308,7 @@ const Navbar = () => {
     }
   };
 
-  console.log(selectedWorkingMode);
+  // console.log(selectedWorkingMode);
 
   return (
     <div className={style.navbarStyle}>

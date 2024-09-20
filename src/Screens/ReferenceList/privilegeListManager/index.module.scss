@@ -30,12 +30,18 @@ body::-webkit-scrollbar {
 .marginLeftRight50 {
     margin: 0 50px !important;
 }
-
+.flex {
+    display: flex;
+}
 .marginLeft10 {
     margin-left: 10px !important;
 }
 .marginbottom70 {
     margin-bottom: 70px !important;
+}
+.ReferenceListEntityBorder {
+    background-color: #826be9;
+    height: 3px;
 }
 
 .marginLeft5 {
@@ -496,7 +502,7 @@ body::-webkit-scrollbar {
 }
 
 .redLabel {
-    color: red;
+    color: rgb(163, 130, 246);
 }
 
 .darkText {
@@ -699,13 +705,13 @@ body::-webkit-scrollbar {
 
 .applicantStaffGrid {
     display: grid;
-    grid-template-columns: 5% 11% 15% 15% 5% 12% 12% 12%;
+    grid-template-columns: 5% 11% 15% 15% 20% 12% 12% 12%;
     grid-gap: 10px;
 }
 
 .locumStaffGrid {
     display: grid;
-    grid-template-columns: 5% 11% 15% 15% 5% 12% 12% 12%;
+    grid-template-columns: 5% 11% 15% 15% 20% 12% 12% 12%;
     grid-gap: 10px;
 }
 
@@ -723,7 +729,7 @@ body::-webkit-scrollbar {
 
 .approvedStaffGrid {
     display: grid;
-    grid-template-columns: 3% 27% 32% 16% 12% 5%;
+    grid-template-columns: 5% 11% 15% 15% 20% 12% 12% 12%;
     grid-gap: 10px;
 }
 
@@ -2161,9 +2167,7 @@ select {
     margin-left: 10px;
 }
 
-.redFont {
-    color: red;
-}
+
 
 .envelopeImageStyle {
     height: 60px;
@@ -2293,7 +2297,12 @@ input[type="file"] {
 .marginTop50 {
     margin-top: 50px;
 }
-
+.marginRight100 {
+    margin-right: 300px;
+}
+.padding4{
+    padding: 4px;
+}
 .marginTop80 {
     margin-top: 80px;
 }
@@ -2443,10 +2452,7 @@ input[type="file"] {
     color: #14b15a;
 }
 
-.orangeChip {
-    background: orange 0% 0% no-repeat padding-box;
-    color: orangered;
-}
+
 
 .yellowChip {
     background: lemonchiffon 0% 0% no-repeat padding-box;
@@ -2458,10 +2464,7 @@ input[type="file"] {
     color: #7165e3;
 }
 
-.redChip {
-    background: #f6baa2 0% 0% no-repeat padding-box;
-    color: #ff6f3b;
-}
+
 
 .administrativePopoverStyle {
     margin: 20px;
@@ -2629,9 +2632,7 @@ input[type="file"] {
     color: #fec106 !important;
 }
 
-.redBigNumber {
-    color: #f94848 !important;
-}
+
 
 .greenSmallNumber {
     color: #14b15a;
@@ -2653,15 +2654,7 @@ input[type="file"] {
     background-color: #fec106;
 }
 
-.redSmallNumber {
-    color: #f94848;
-    background-color: #fdcece;
-}
 
-.redSmallNumberSelected {
-    color: #fff;
-    background-color: #f94848;
-}
 
 .purpleText {
     color: #e316d6;
@@ -2789,19 +2782,9 @@ input[type="number"] {
     text-transform: uppercase;
 }
 
-.redBorder {
-    border: 0.6000000238418579px solid #f54646;
-}
 
-.redBorderInput {
-    border: 0.6000000238418579px solid #f54646;
-    border-radius: 4px;
-    margin-bottom: 10px;
-}
 
-.redLable {
-    color: #f54646 !important;
-}
+
 
 .validationTopicText {
     text-align: left;
@@ -2901,7 +2884,7 @@ input[type="number"] {
     position: absolute;
     background-color: #fff;
     border-radius: 50%;
-    color: red;
+   
     font-size: 10px;
     display: flex;
     flex-direction: row-reverse;
@@ -3467,4 +3450,28 @@ input[type="number"] {
 
 .tabs input[type="radio"]:checked+label+.tab {
     display: block;
+}
+.Borderthick {
+    border-top: 2px solid rgb(117, 94, 247);
+
+    width: 100%;
+
+    height: 20px;
+
+}
+.tableheader {
+    white-space: nowrap; // Prevent text from wrapping
+    overflow: hidden; // Hide any overflowing content
+    text-overflow: ellipsis; // Add ellipsis (...) if text is too long
+    padding: 8px; // Add some padding for better appearance
+}
+
+.tableheader th {
+    text-align: left; // Align text to the left
+}
+
+.tableheader {
+    display: flex; // Use flexbox for alignment
+    align-items: center; // Center items vertically
+    justify-content: center; // Center items horizontally
 }

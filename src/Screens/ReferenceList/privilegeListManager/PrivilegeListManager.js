@@ -24,14 +24,6 @@ export const PrivilegeListManager = () => {
   const [editData, setEditData] = useState();
   const [isRefetch, setIsRefetch] = useState(false);
 
-  const tableHeadKeys = [
-    "Privilege ID",
-    "Privilege Type",
-    "Privilege Ttile",
-    "Department/services",
-    "Applicant type",
-    "Last Updated",
-  ];
   const tableDataKeys = ["applicantType", "lastModifiedDate"];
   const [selectedTab, setSelectedTab] = useState("permanentStaff");
   const [isLoading, setIsLoading] = useState(false);
@@ -92,7 +84,7 @@ export const PrivilegeListManager = () => {
   const getStaffPrivileges = async (id) => {
     if (id) {
       const { data: staffPrivilegesForm } = await GET(
-        `entity-service/staffPrivilege?applicantTypeId=${id}`
+        `entity-service/privilegeMaster?applicantTypeId=${id}`
       );
       setIsRefetch(false);
       setStaffPrivilegesForm(staffPrivilegesForm);
@@ -108,7 +100,7 @@ export const PrivilegeListManager = () => {
 
   const getApplicantType = async () => {
     const { data: types } = await GET("entity-service/sites");
-    setApplicantTypeList(types || []);
+    setApplicantTypeList(types);
   };
 
   const handleSiteClick = (siteName) => {
@@ -140,7 +132,7 @@ export const PrivilegeListManager = () => {
           <div className={style.bigCardGrid}>
             <ApplicantSideBar
               applicantType={applicantTypeList?.map(
-                (data) => data?.applicantType
+                (data) => data?.siteName?.siteName
               )}
               siteType={applicantTypeList?.map((data) => data?.siteType)}
               selectedTile={getSelectedTile}
