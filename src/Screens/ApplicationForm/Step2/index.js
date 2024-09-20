@@ -397,7 +397,10 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
                                     </p>
 
                                     <p className={style.uploadDescriptionText}>
-                                        {'Our paperless automated application submission uses electronic signatures with digital fingerprinting. Click here to setup your electronic signature for use.'}
+                                        {'Our paperless automated application submission uses electronic signatures with digital fingerprinting.'}
+                                    </p>
+                                    <p className={style.uploadDescriptionText}>
+                                        {'Click here to setup your electronic signature for use.'}
                                     </p>
                                 </div>
                             </div>

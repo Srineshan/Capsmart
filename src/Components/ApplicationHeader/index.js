@@ -4,24 +4,26 @@ import CrossPink from "../../images/crossPink.png";
 import { useDescope } from '@descope/react-sdk';
 import style from './index.module.scss';
 
-const ApplicationHeader = ({ title }) => {
-    const { logout } = useDescope();
-    const handleSignOut = () => {
-        logout()
-    }
+const ApplicationHeader = ({ title, close, closeClick }) => {
+    // const { logout } = useDescope();
+    // const handleSignOut = () => {
+    //     logout()
+    // }
     return (
         <div className={`${style.headerCard}`}>
             <div className={`${style.headerGrid}`}>
                 <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
                 <div className={`${style.titleText} ${style.verticalAlignCenter}`}>{title}</div>
-                <div className={style.verticalAlignCenter}>
-                    <img
-                        src={CrossPink}
-                        alt="cross"
-                        className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft20}`}
-                        onClick={() => { handleSignOut() }}
-                    />
-                </div>
+                {close && (
+                    <div className={style.verticalAlignCenter}>
+                        <img
+                            src={CrossPink}
+                            alt="cross"
+                            className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft20}`}
+                            onClick={closeClick}
+                        />
+                    </div>
+                )}
             </div>
         </div>
     )

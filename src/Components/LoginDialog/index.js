@@ -239,9 +239,9 @@ const LoginDialog = ({ getIsOpen, days }) => {
               CONTINUE
             </div>
           </div>
-          <div className={`${style.linkStyle} ${style.marginTop}`}>
+          {/* <div className={`${style.linkStyle} ${style.marginTop}`}>
             Cliquez pour voir la candidature en français
-          </div>
+          </div> */}
         </div>
         <div
           className={`${style.daysToCompleteCard} ${style.marginTop} ${style.displayInRow} ${style.alignCenter}`}

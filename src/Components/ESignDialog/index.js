@@ -29,7 +29,7 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
     };
 
     useEffect(() => {
-        if (contentRef.current && eSignType !== null) {
+        if (contentRef.current && contentRef.current.innerHTML !== eSignType && eSignType !== null) {
             contentRef.current.innerHTML = eSignType;
         }
     }, [eSignType]);

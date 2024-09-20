@@ -660,7 +660,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                                 onClose={() => setCalendarStart(false)}
                                 // minDate={sub(new Date(), { years: 3 })}
                                 // maxDate={add(new Date(), { months: 6 })}
-                                value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
+                                value={(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) !== undefined && getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) !== '' && getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) !== null) ? `${getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)}T00:00` : null}
                                 onChange={(newValue) => handleChange(fieldKey, fieldData.format === "date-time" ? format(new Date(newValue), "yyyy-MM-dd'T'HH:mm:ss'Z'") : format(new Date(newValue), 'yyyy-MM-dd'), baseKey)}
                                 InputProps={{
                                     style: {
