@@ -59,13 +59,22 @@ const PrivilegeListDialog = ({
   const [title, setTitle] = useState("");
   const [id, setId] = useState("");
   const [descripition, setDescripition] = useState("");
+  const [applicantTypeList, setApplicantTypeList] = useState([]);
 
   const [privilegeSpecificationType, setPrivilegeSpecificationType] = useState(
     "DescriptiveDocument"
   );
-  const [selectedOption, setSelectedOption] = useState("Core");
-  const [privilegeStatusType, setPrivilegeStatusType] = useState("Active");
+  const [selectedOption, setSelectedOption] = useState("");
+  const [privilegeTypeOption, setPrivilegeTypeOption] = useState("Core");
+  const [privilegeStatusOption, setPrivilegeStatusOption] = useState("Active");
 
+  const handlePrivilegeTypeChange = (event) => {
+    setPrivilegeTypeOption(event.target.value);
+  };
+
+  const handlePrivilegeStatusChange = (event) => {
+    setPrivilegeStatusOption(event.target.value);
+  };
   const classes = useStyles();
 
   const updateSaveData = (property, data) => {
@@ -79,9 +88,6 @@ const PrivilegeListDialog = ({
     setPrivilegeSpecificationType(event.target.value);
 
     setIsProofOfDocumentRequired(false);
-  };
-  const handlePrivilegeStatusChange = (event) => {
-    setPrivilegeStatusType(event.target.value);
   };
 
   useEffect(() => {
@@ -138,6 +144,20 @@ const PrivilegeListDialog = ({
       console.error("Error fetching specific sites:", error);
     }
   };
+  useEffect(() => {
+    if (Array.isArray(applicantType) && applicantType.length > 0) {
+      let temp = [];
+      applicantType.map((data) => {
+        temp.push(
+          applicantTypeList
+            .filter((applicantData) => applicantData?.id === data)
+            .map((innerData) => innerData)?.[0]
+        );
+      });
+      console.log(temp);
+      setSelectedApplicantType(temp);
+    }
+  }, [applicantType, applicantTypeList]);
 
   const handleDepartmentChange = (e) => {
     const departmentData = {
@@ -177,15 +197,37 @@ const PrivilegeListDialog = ({
     setShowCard(true);
   };
 
-  const handleApplicantTypeChange = (value) => {
-    setApplicantType(typeof value === "string" ? value.split(",") : value);
+  const handleApplicantTypeChange = (event) => {
+    const selectedId = event.target.value;
+    setSaveData((prev) => ({
+      ...prev,
+      applicantType: {
+        id: selectedId,
+        type: applicantTypes.find((item) => item.id === selectedId)?.type || "",
+      },
+    }));
   };
   const handleSaveAcknowledgementForm = async () => {
+    const privilegeTypeMap = {
+      Core: "CORE",
+      Restricted: "RESTRICTED",
+      "Non-Core": "NON_CORE",
+    };
+
+    const privilegeStatusMap = {
+      Active: "ACTIVE",
+      Retired: "RETIRED",
+    };
+
     const data = {
+      type: privilegeTypeMap[privilegeTypeOption] || "CORE",
       applicantTypes: selectedApplicantType,
-      id: id,
+      status: privilegeStatusMap[privilegeStatusOption] || "ACTIVE",
+      privilegeId: id,
       title: title,
-      descripition: descripition,
+      isevidenceRequired: evidenceRequired,
+      iscompetencyDisclosureRequired: competencyRequired,
+      description: descripition,
     };
 
     console.log(data);
@@ -269,8 +311,8 @@ const PrivilegeListDialog = ({
                 <FormControlLabel
                   control={
                     <Radio
-                      checked={selectedOption === "Core"}
-                      onChange={handleChange}
+                      checked={privilegeTypeOption === "Core"}
+                      onChange={handlePrivilegeTypeChange}
                       value="Core"
                       sx={{ "& .MuiSvgIcon-root": { borderRadius: "50%" } }}
                       className={classes.radio}
@@ -285,8 +327,8 @@ const PrivilegeListDialog = ({
                 <FormControlLabel
                   control={
                     <Radio
-                      checked={selectedOption === "Restricted"}
-                      onChange={handleChange}
+                      checked={privilegeTypeOption === "Restricted"}
+                      onChange={handlePrivilegeTypeChange}
                       value="Restricted"
                       sx={{ "& .MuiSvgIcon-root": { borderRadius: "50%" } }}
                       className={classes.radio}
@@ -301,8 +343,8 @@ const PrivilegeListDialog = ({
                 <FormControlLabel
                   control={
                     <Radio
-                      checked={selectedOption === "Non-Core"}
-                      onChange={handleChange}
+                      checked={privilegeTypeOption === "Non-Core"}
+                      onChange={handlePrivilegeTypeChange}
                       value="Non-Core"
                       sx={{ "& .MuiSvgIcon-root": { borderRadius: "50%" } }}
                       className={classes.radio}
@@ -319,7 +361,7 @@ const PrivilegeListDialog = ({
               <Select
                 labelId="application-type-checkbox"
                 id="application-type-checkbox"
-                value={saveData.applicantType ? saveData.applicantType.id : ""}
+                value={saveData.applicantType?.id || ""}
                 onChange={handleApplicantTypeChange}
                 SelectDisplayProps={{
                   style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 },
@@ -336,7 +378,7 @@ const PrivilegeListDialog = ({
           <div
             className={`${style.Borderthick}  ${style.padding4} ${style.marginTop10}`}
           />
-          {selectedOption === "Core" && (
+          {privilegeTypeOption === "Core" && (
             <div className={style.marginTop190}>
               <div className={style.entityLableStyle}> CORE PRIVILEGES</div>
 
@@ -355,8 +397,8 @@ const PrivilegeListDialog = ({
                       <FormControlLabel
                         control={
                           <Radio
-                            checked={selectedOption === "Active"}
-                            onChange={handleChange}
+                            checked={privilegeStatusOption === "Active"}
+                            onChange={handlePrivilegeStatusChange}
                             value="Active"
                             sx={{
                               "& .MuiSvgIcon-root": { borderRadius: "50%" },
@@ -373,8 +415,8 @@ const PrivilegeListDialog = ({
                       <FormControlLabel
                         control={
                           <Radio
-                            checked={selectedOption === "Retired"}
-                            onChange={handleChange}
+                            checked={privilegeStatusOption === "Retired"}
+                            onChange={handlePrivilegeStatusChange}
                             value="Retired"
                             sx={{
                               "& .MuiSvgIcon-root": { borderRadius: "50%" },
@@ -425,7 +467,7 @@ const PrivilegeListDialog = ({
               </div>
             </div>
           )}
-          {selectedOption === "Restricted" && (
+          {privilegeTypeOption === "Restricted" && (
             <div>
               <div className={style.marginTop190}>
                 <div className={style.entityLableStyle}>
@@ -447,7 +489,7 @@ const PrivilegeListDialog = ({
                           <FormControlLabel
                             control={
                               <Radio
-                                checked={selectedOption === "Active"}
+                                checked={privilegeStatusOption === "Active"}
                                 onChange={handleChange}
                                 value="Active"
                                 sx={{
@@ -465,7 +507,7 @@ const PrivilegeListDialog = ({
                           <FormControlLabel
                             control={
                               <Radio
-                                checked={selectedOption === "Retired"}
+                                checked={privilegeStatusOption === "Retired"}
                                 onChange={handleChange}
                                 value="Retired"
                                 sx={{
@@ -564,7 +606,7 @@ const PrivilegeListDialog = ({
               </div>
             </div>
           )}
-          {selectedOption === "Non-Core" && (
+          {privilegeTypeOption === "Non-Core" && (
             <div>
               <div className={style.marginTop190}>
                 <div className={style.entityLableStyle}>NON COREPRIVILEGE</div>
@@ -585,8 +627,8 @@ const PrivilegeListDialog = ({
                           <FormControlLabel
                             control={
                               <Radio
-                                checked={selectedOption === "Active"}
-                                // onChange={handlePrivilegeStatusChange}
+                                checked={privilegeStatusOption === "Active"}
+                                onChange={handlePrivilegeStatusChange}
                                 value="Active"
                                 sx={{
                                   "& .MuiSvgIcon-root": { borderRadius: "50%" },
@@ -603,8 +645,8 @@ const PrivilegeListDialog = ({
                           <FormControlLabel
                             control={
                               <Radio
-                                checked={selectedOption === "Retired"}
-                                // onChange={handlePrivilegeStatusChange}
+                                checked={privilegeStatusOption === "Retired"}
+                                onChange={handlePrivilegeStatusChange}
                                 value="Retired"
                                 sx={{
                                   "& .MuiSvgIcon-root": { borderRadius: "50%" },
