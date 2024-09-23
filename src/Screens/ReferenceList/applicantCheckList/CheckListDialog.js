@@ -8,7 +8,6 @@ import {
   InputGroup,
   Button,
   RadioGroup,
-  Radio,
   Checkbox,
 } from "@blueprintjs/core";
 import style from "./../index.module.scss";
@@ -21,11 +20,22 @@ import Select from "@mui/material/Select";
 import CommonInputField from "../../../Components/CommonFields/CommonInputField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { Switch, makeStyles } from "@material-ui/core";
-import { Box } from "@mui/material";
+import {
+  Box,
+  InputAdornment,
+  Radio,
+  TextField,
+  Typography,
+} from "@mui/material";
 import Chip from "@mui/material/Chip";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import PreviewDialog from "./PreviewDialog";
+import CheckboxIcon from "./../../../images/CheckboxIcon.png";
+import CommonDropZone from "../../../Components/CommonFields/CommonDropZone";
+import CompletedIcon from "./../../../images/completedIcon.png";
+import Alert from "./../../../images/alert.png";
+import redWarning from "./../../../images/redWarning.png";
 
 const useStyles = makeStyles({
   switch: {
@@ -36,30 +46,152 @@ const useStyles = makeStyles({
       backgroundColor: "#7165e3 !important",
     },
   },
+  radio: {
+    "& .Mui-checked": {
+      color: "#7165e3 !important",
+    },
+  },
 });
 
 const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
   const [isConstraintsRequired, setIsConstraintsRequired] = useState(false);
+  const [isApplicantInformation, setIsApplicantInformation] = useState(false);
+
   const [activityTitle, setActivityTitle] = useState("");
   const [promptLabel, setPromptLabel] = useState("");
   const [applicantTypes, setApplicantTypesState] = useState([]);
-  const [selectedValues, setSelectedValues] = useState([]);
+  const [selectedApplicantValues, setSelectedApplicantValues] = useState([]);
+  const [departmentTypes, setDepartmentTypesState] = useState([]);
+  const [selectedDepartmentValues, setSelectedDepartmentValues] = useState([]);
   const [sendAsType, setSendAsType] = useState("");
   const [isProofOfDocumentRequired, setIsProofOfDocumentRequired] =
     useState(false);
+  const [
+    isProofOfCompleteDocumentRequired,
+    setIsProofOfCompleteDocumentRequired,
+  ] = useState(false);
+
   const [isCompletionDependant, setIsCompletionDependant] = useState(false);
+  const [toemails, setToEmails] = useState([]); // Store entered emails
+  const [inputToEmailValue, setInputToEmailValue] = useState(""); // Store the current input value
+  const [ccemails, setCCEmails] = useState([]); // Store entered emails
+  const [inputCCEmailValue, setInputCCEmailValue] = useState(""); // Store the current input value
+  const [emailSubject, setEmailSubject] = useState(""); // Initialize state
+  const [isToChecked, setIsToChecked] = useState(false); // State to track checkbox
+  const [isCCChecked, setIsCCChecked] = useState(false); // State to track checkbox
+  const [toDocumentemails, setToDocumentEmails] = useState([]); // Store entered emails
+  const [inputToDocumentEmailValue, setInputToDocumentEmailValue] =
+    useState(""); // Store the current input value
+  const [ccDocumentemails, setCCDocumentEmails] = useState([]); // Store entered emails
+  const [inputCCDocumentEmailValue, setInputCCDocumentEmailValue] =
+    useState(""); // Store the current input value
+  const [emailDocumentSubject, setEmailDocumentSubject] = useState(""); // Initialize state
+  const [isToDocumentChecked, setIsDocumentToChecked] = useState(false); // State to track checkbox
+  const [isCCDocumentChecked, setIsDocumentCCChecked] = useState(false); // State to track checkbox
+  const [sendAsDocumentType, setSendAsDocumentType] = useState("");
+  const [toCompleteemails, setToCompleteEmails] = useState([]); // Store entered emails
+  const [inputToCompleteEmailValue, setInputToCompleteEmailValue] =
+    useState(""); // Store the current input value
+  const [ccCompleteemails, setCCCompleteEmails] = useState([]); // Store entered emails
+  const [inputCCCompleteEmailValue, setInputCCCompleteEmailValue] =
+    useState(""); // Store the current input value
+  const [emailCompleteSubject, setEmailCompleteSubject] = useState(""); // Initialize state
+  const [isToCompleteChecked, setIsToCompleteChecked] = useState(false); // State to track checkbox
+  const [isCCCompleteChecked, setIsCCCompleteChecked] = useState(false); // State to track checkbox
+
+  const [editorContent, setEditorContent] = useState("Hello"); // State to track editor content
+  const [taskAction, setTaskAction] = useState("");
+  const [notelabel, setNoteLabel] = useState(""); // Initialize state
+  const [selectedDisplayOption, setSelectedDisplayOption] = useState("");
 
   const [selectedValue, setSelectedValue] = useState("");
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [taskactivityTitle, setTaskActivityTitle] = useState("");
+  const [taskDefaultStatus, setTaskDefaultStatus] = useState("");
+  const [taskInprogressStatus, setTaskInprogressStatus] = useState("");
+  const [taskCompleteStatus, setTaskCompleteStatus] = useState("");
+  const [taskDefaultStatus2, setTaskDefaultStatus2] = useState("");
+  const [taskInprogressStatus2, setTaskInprogressStatus2] = useState("");
+  const [taskCompleteStatus2, setTaskCompleteStatus2] = useState("");
+  const [documentLabel, setDocumentLabel] = useState("");
+  const [file, setFile] = useState(null);
+  const [sendAsCompleteType, setSendAsCompleteType] = useState("");
+  const [isToFormDetailsChecked, setIsToFormDetailsChecked] = useState(false); // State to track checkbox
+  const [isCCFormDetailsChecked, setIsCCFormDetailsChecked] = useState(false); // State to track checkbox
+  const [toFormDetailsemails, setToFormDetailsEmails] = useState([]); // Store entered emails
+  const [inputToFormDetailsEmailValue, setInputToFormDetailsEmailValue] =
+    useState(""); // Store the current input value
+  const [ccFormDetailsemails, setCCFormDetailsEmails] = useState([]); // Store entered emails
+  const [inputCCFormDetailsEmailValue, setInputCCFormDetailsEmailValue] =
+    useState(""); // Store the current input value
+  const [emailFormDetailsSubject, setEmailFormDetailsSubject] = useState(""); // Initialize state
+  const [sendAsFormDetailType, setSendAsFormDetailType] = useState("");
+  const [isPODFormDetailsRequired, setIsPODFormDetailsRequired] =
+    useState(false);
+  const [completeLabel, setCompleteLabel] = useState("");
+  const [editorDocumentContent, setEditorDocumentContent] = useState(""); // State to track editor content
+  const [editorCompleteContent, setEditorCompleteContent] = useState(""); // State to track editor content
+  const [editorFormDetailsContent, setEditorFormDetailsContent] = useState(""); // State to track editor content
+  const [responseData, setResponseData] = useState(null);
 
-  const sites = [
-    { id: 1, name: "Send notification email" },
-    { id: 2, name: "Site B" },
-    { id: 3, name: "Site C" },
+  const [fromLinkText, setFromLinkText] = useState("");
+
+  const [fromLinkurl, setFromLinkUrl] = useState("");
+
+  const displayOptions = [
+    { value: "IN_TASK_OR_ACTIVITY_BAR", label: "In Task/Activity Bar" },
+    { value: "IN_CHECKLIST_HEADER", label: "In CheckList Header" },
   ];
 
+  const sites = [
+    {
+      id: 1,
+      name: "Send notification email",
+      label: "SEND_NOTIFICATION_EMAIL",
+    },
+    {
+      id: 2,
+      name: "Task Status Update Only",
+      label: "TASK_STATUS_UPDATE_ONLY",
+    },
+    {
+      id: 3,
+      name: "Send Non-Capsmart Form-Internal Source URL",
+      label: "SEND_NON_CAPSMART_FORM_INTERNAL_SOURCE_URL",
+    },
+    {
+      id: 4,
+      name: "Send Non-Capsmart Form-PDF Document/ Form",
+      label: "SEND_NON_CAPSMART_FORM_PDF_DOCUMENT_OR_FORM", // Corrected
+    },
+    {
+      id: 5,
+      name: "Send Applicants Completed Information",
+      label: "SEND_APPLICANTS_COMPLETED_INFORMATION",
+    },
+    { id: 6, name: "Send Capsmart Form", label: "SEND_CAPSMART_FORM" },
+  ];
+
+  const handleDisplaySelectChange = (event) => {
+    const selectedOption = displayOptions.find(
+      (option) => option.value === event.target.value
+    );
+    if (selectedOption) {
+      setSelectedDisplayOption(selectedOption.value); // Set the value in the state
+    }
+  };
+
+  console.log("selectedApplicantforCheckList", selectedApplicant);
   const handleSelectChange = (event) => {
-    setSelectedValue(event.target.value);
+    const selectedId = event.target.value;
+    setSelectedValue(selectedId);
+
+    const selectedSite = sites.find(
+      (site) => site.id === parseInt(selectedId, 10)
+    );
+    if (selectedSite) {
+      setTaskAction(selectedSite.label); // Set taskAction to the selected label
+    }
   };
 
   const SendAsType1 = "Secure Email";
@@ -67,12 +199,12 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
 
   const sendAs = [
     {
-      id: "Secure_Email",
+      id: "SECURE_EMAIL",
       value: SendAsType1,
       label: "Secure Email",
     },
     {
-      id: "Standard_Email",
+      id: "STANDARD_EMAIL",
       value: SendAsType2,
       label: "Standard Email",
     },
@@ -82,7 +214,242 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
 
   useEffect(() => {
     fetchApplicantTypes();
+    fetchDepartmentTypes();
   }, []);
+
+  useEffect(() => {
+    if (!isEdit) {
+      resetForm();
+    }
+  }, [isEdit, selectedApplicant]);
+
+  const resetForm = () => {
+    setActivityTitle("");
+    setPromptLabel("");
+    setSelectedApplicantValues([]);
+    setSelectedDepartmentValues([]);
+    setSendAsType("");
+    setIsProofOfDocumentRequired(false);
+    setIsCompletionDependant(false);
+    setToEmails([]);
+    setCCEmails([]);
+    setIsToChecked(false);
+    setIsCCChecked(false);
+    setEmailSubject("");
+    setEditorContent("");
+    setTaskAction("");
+    setSelectedValue(null);
+    setNoteLabel("");
+    setSelectedDisplayOption("");
+    setTaskDefaultStatus("");
+    setTaskInprogressStatus("");
+    setTaskCompleteStatus("");
+    setTaskDefaultStatus2("");
+    setTaskInprogressStatus2("");
+    setTaskCompleteStatus2("");
+    setFromLinkText("");
+    setFromLinkUrl("");
+    setIsToCompleteChecked(false);
+    setIsCCCompleteChecked(false);
+    setEmailCompleteSubject("");
+    setSendAsCompleteType("");
+    setIsProofOfCompleteDocumentRequired(false);
+    setIsApplicantInformation(false);
+    setToFormDetailsEmails([]);
+    setCCFormDetailsEmails([]);
+    setEmailFormDetailsSubject("");
+    setSendAsFormDetailType("");
+    setIsPODFormDetailsRequired(false);
+  };
+
+  useEffect(() => {
+    if (isEdit && selectedApplicant) {
+      setActivityTitle(selectedApplicant.taskName || "");
+      setPromptLabel(
+        selectedApplicant.activityExecutionPromptLabel?.text || ""
+      );
+      setSelectedApplicantValues(
+        selectedApplicant.applicantTypes.map((type) => type.id)
+      );
+      setSelectedDepartmentValues(
+        selectedApplicant.departments.map((dept) => dept.id)
+      );
+      setIsConstraintsRequired(selectedApplicant.hasAnyConstraints);
+      setSendAsType(selectedApplicant.sendAsType || "");
+      setIsProofOfDocumentRequired(
+        selectedApplicant.isProofOfDocumentRequired || false
+      );
+      setIsCompletionDependant(
+        selectedApplicant.taskDependentNoteDetail?.hasDependentNote || false
+      );
+      setToEmails(
+        selectedApplicant.notificationEmail?.taskEmailDetails?.recipients
+          ?.recipientEmails || []
+      );
+      setCCEmails(
+        selectedApplicant.notificationEmail?.taskEmailDetails?.ccRecipients
+          ?.recipientEmails || []
+      );
+      setIsToChecked(
+        selectedApplicant.notificationEmail?.taskEmailDetails?.recipients
+          .includeApplicantEmail || false
+      );
+      setIsCCChecked(
+        selectedApplicant.notificationEmail?.taskEmailDetails?.ccRecipients
+          .includeApplicantEmail || false
+      );
+      setEmailSubject(
+        selectedApplicant.notificationEmail?.taskEmailDetails?.subject || ""
+      );
+      setEditorContent(
+        selectedApplicant.notificationEmail?.taskEmailDetails?.content || ""
+      );
+      const selectedSite = sites.find(
+        (site) => site.label === selectedApplicant.taskAction
+      );
+      if (selectedSite) {
+        setTaskAction(selectedSite.label);
+        setSelectedValue(selectedSite.id);
+      }
+      setNoteLabel(
+        selectedApplicant.taskDependentNoteDetail?.noteLabel?.text || ""
+      );
+      setSelectedDisplayOption(
+        selectedApplicant.taskDependentNoteDetail?.displayOption || ""
+      );
+      setTaskDefaultStatus(
+        selectedApplicant.taskStatusUpdate?.statusLabels?.[0]?.label || ""
+      );
+      setTaskInprogressStatus(
+        selectedApplicant.taskStatusUpdate?.statusLabels?.[1]?.label || ""
+      );
+      setTaskCompleteStatus(
+        selectedApplicant.taskStatusUpdate?.statusLabels?.[2]?.label || ""
+      );
+      setTaskDefaultStatus2(
+        selectedApplicant.externalFormSourceLink?.statusLabels?.[0]?.label || ""
+      );
+      setTaskInprogressStatus2(
+        selectedApplicant.externalFormSourceLink?.statusLabels?.[1]?.label || ""
+      );
+      setTaskCompleteStatus2(
+        selectedApplicant.externalFormSourceLink?.statusLabels?.[2]?.label || ""
+      );
+
+      setFromLinkText(
+        selectedApplicant.externalFormSourceLink?.formLink?.urlLabel?.text || ""
+      );
+      setFromLinkUrl(
+        selectedApplicant.externalFormSourceLink?.formLink?.url || ""
+      );
+
+      setToDocumentEmails(
+        selectedApplicant.externalFormDocument?.taskEmailDetails
+          ?.recipientEmails || []
+      );
+      setCCDocumentEmails(
+        selectedApplicant.externalFormDocument?.taskEmailDetails
+          ?.ccRecipients || []
+      );
+
+      setIsDocumentToChecked(
+        selectedApplicant.externalFormDocument?.taskEmailDetails?.recipients
+          ?.includeApplicantEmail || false
+      );
+      setIsDocumentCCChecked(
+        selectedApplicant.externalFormDocument?.taskEmailDetails?.ccRecipients
+          ?.includeApplicantEmail || false
+      );
+
+      setEmailDocumentSubject(
+        selectedApplicant.externalFormDocument?.taskEmailDetails?.subject || ""
+      );
+      setEditorDocumentContent(
+        selectedApplicant.completedApplicantDetails?.taskEmailDetails
+          ?.content || ""
+      );
+      setSendAsCompleteType(
+        selectedApplicant.completedApplicantDetails?.taskEmailDetails
+          ?.emailDeliveryMethod || ""
+      );
+
+      setIsProofOfCompleteDocumentRequired(
+        selectedApplicant.completedApplicantDetails?.taskEmailDetails
+          ?.podRequired || false
+      );
+
+      setIsApplicantInformation(
+        selectedApplicant.completedApplicantDetails?.attachmentDetails
+          ?.includeApplicantAttachment || false
+      );
+
+      setToCompleteEmails(
+        selectedApplicant.completedApplicantDetails?.taskEmailDetails
+          ?.recipientEmails || []
+      );
+      setCCCompleteEmails(
+        selectedApplicant.completedApplicantDetails?.taskEmailDetails
+          ?.ccRecipients || []
+      );
+
+      setIsToCompleteChecked(
+        selectedApplicant.completedApplicantDetails?.taskEmailDetails
+          ?.recipients?.includeApplicantEmail || false
+      );
+      setIsCCCompleteChecked(
+        selectedApplicant.completedApplicantDetails?.taskEmailDetails
+          ?.ccRecipients?.includeApplicantEmail || false
+      );
+
+      setEmailCompleteSubject(
+        selectedApplicant.completedApplicantDetails?.taskEmailDetails
+          ?.subject || ""
+      );
+      setEditorCompleteContent(
+        selectedApplicant.completedApplicantDetails?.taskEmailDetails
+          ?.content || ""
+      );
+      setSendAsCompleteType(
+        selectedApplicant.completedApplicantDetails?.taskEmailDetails
+          ?.emailDeliveryMethod || ""
+      );
+
+      setIsProofOfCompleteDocumentRequired(
+        selectedApplicant.completedApplicantDetails?.taskEmailDetails
+          ?.podRequired || false
+      );
+
+      setIsApplicantInformation(
+        selectedApplicant.completedApplicantDetails?.attachmentDetails
+          ?.includeApplicantAttachment || false
+      );
+
+      setToFormDetailsEmails(
+        selectedApplicant.formDetails?.taskEmailDetails?.recipients
+          ?.recipientEmails || []
+      );
+      setCCFormDetailsEmails(
+        selectedApplicant.formDetails?.taskEmailDetails?.ccRecipients
+          ?.recipientEmails || []
+      );
+      setEmailFormDetailsSubject(
+        selectedApplicant.formDetails?.taskEmailDetails?.subject || ""
+      );
+      setEditorFormDetailsContent(
+        selectedApplicant.formDetails?.taskEmailDetails?.content || ""
+      );
+
+      setSendAsFormDetailType(
+        selectedApplicant.formDetails?.taskEmailDetails?.emailDeliveryMethod ||
+          ""
+      );
+      setIsPODFormDetailsRequired(
+        selectedApplicant.formDetails?.taskEmailDetails?.podRequired || false
+      );
+    } else {
+      resetForm();
+    }
+  }, [isEdit, selectedApplicant]);
 
   const fetchApplicantTypes = async () => {
     try {
@@ -99,19 +466,466 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
       console.error("Error fetching applicant types:", error);
     }
   };
+  const fetchDepartmentTypes = async () => {
+    try {
+      const response = await GET("entity-service/documentType");
+      console.log("department", response.data);
+      const departmentTypes = response.data.map((item) => ({
+        id: item.id,
+        type: item.type,
+      }));
+
+      if (departmentTypes && departmentTypes.length > 0) {
+        setDepartmentTypesState(departmentTypes);
+      }
+    } catch (error) {
+      console.error("Error fetching applicant types:", error);
+    }
+  };
   const handleChange = (event) => {
     const {
       target: { value },
     } = event;
-    setSelectedValues(
-      // On autofill we get a stringified value.
+    setSelectedApplicantValues(
       typeof value === "string" ? value.split(",") : value
     );
   };
 
+  const handleDepartmentChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setSelectedDepartmentValues(
+      typeof value === "string" ? value.split(",") : value
+    );
+  };
+
+  const handleKeyPress = (e, inputValue, setEmails) => {
+    if (e.key === "Enter" && inputValue) {
+      if (validateEmail(inputValue)) {
+        setEmails((prevEmails) => [...prevEmails, inputValue]); // Add email to the list
+        return true; // Indicate success
+      } else {
+        alert("Please enter a valid email address.");
+      }
+    }
+    return false; // Indicate failure
+  };
+
+  const handleCCKeyPress = (e) => {
+    if (e.key === "Enter" && inputCCEmailValue) {
+      if (validateEmail(inputCCEmailValue)) {
+        setCCEmails((prevToEmails) => [...prevToEmails, inputCCEmailValue]);
+        setInputCCEmailValue("");
+      } else {
+        alert("Please enter a valid email address.");
+      }
+    }
+  };
+  const removeCCEmail = (email) => {
+    setCCEmails((prevToEmails) =>
+      prevToEmails.filter((existingEmail) => existingEmail !== email)
+    );
+  };
+
+  const validateEmail = (email) => {
+    const re = /\S+@\S+\.\S+/;
+    return re.test(email);
+  };
+  const removeEmail = (email, setEmailState) => {
+    setEmailState((prevEmails) =>
+      prevEmails.filter((existingEmail) => existingEmail !== email)
+    );
+  };
+  const handleKeyDocumentPress = (e) => {
+    if (e.key === "Enter" && inputToDocumentEmailValue) {
+      if (validateEmail(inputToDocumentEmailValue)) {
+        setToEmails((prevToEmails) => [
+          ...prevToEmails,
+          inputToDocumentEmailValue,
+        ]); // Add email to the list
+        setInputToDocumentEmailValue(""); // Clear input field
+      } else {
+        alert("Please enter a valid email address.");
+      }
+    }
+  };
+
+  const handleCCDocumentKeyPress = (e) => {
+    if (e.key === "Enter" && inputCCDocumentEmailValue) {
+      if (validateEmail(inputCCDocumentEmailValue)) {
+        setCCDocumentEmails((prevToEmails) => [
+          ...prevToEmails,
+          inputCCDocumentEmailValue,
+        ]);
+        setInputCCDocumentEmailValue("");
+      } else {
+        alert("Please enter a valid email address.");
+      }
+    }
+  };
+  const removeCCDocumentEmail = (email) => {
+    setCCDocumentEmails((prevToEmails) =>
+      prevToEmails.filter((existingEmail) => existingEmail !== email)
+    );
+  };
+
+  // const removeDocumentEmail = (email) => {
+  //   setToDocumentEmails((prevToEmails) =>
+  //     prevToEmails.filter((existingEmail) => existingEmail !== email)
+  //   );
+  // };
+
+  const handleKeyCompletePress = (e) => {
+    if (e.key === "Enter" && inputToCompleteEmailValue) {
+      console.log("handlekrypress");
+      if (validateEmail(inputToCompleteEmailValue)) {
+        setToCompleteEmails((prevToEmails) => [
+          ...prevToEmails,
+          inputToCompleteEmailValue,
+        ]); // Add email to the list
+        setInputToCompleteEmailValue(""); // Clear input field
+      } else {
+        alert("Please enter a valid email address.");
+      }
+    }
+  };
+
+  const handleCCCompleteKeyPress = (e) => {
+    if (e.key === "Enter" && inputCCCompleteEmailValue) {
+      if (validateEmail(inputCCCompleteEmailValue)) {
+        setCCCompleteEmails((prevToEmails) => [
+          ...prevToEmails,
+          inputCCCompleteEmailValue,
+        ]);
+        setInputCCCompleteEmailValue("");
+      } else {
+        alert("Please enter a valid email address.");
+      }
+    }
+  };
+  const removeCCCompleteEmail = (email) => {
+    setCCCompleteEmails((prevToEmails) =>
+      prevToEmails.filter((existingEmail) => existingEmail !== email)
+    );
+  };
+
+  // const removeCompleteEmail = (email) => {
+  //   setToCompleteEmails((prevToEmails) =>
+  //     prevToEmails.filter((existingEmail) => existingEmail !== email)
+  //   );
+  // };
+
+  const handleKeyFormDetailsPress = (e) => {
+    if (e.key === "Enter" && inputToFormDetailsEmailValue) {
+      if (validateEmail(inputToFormDetailsEmailValue)) {
+        setToFormDetailsEmails((prevToEmails) => [
+          ...prevToEmails,
+          inputToFormDetailsEmailValue,
+        ]); // Add email to the list
+        setInputToFormDetailsEmailValue(""); // Clear input field
+      } else {
+        alert("Please enter a valid email address.");
+      }
+    }
+  };
+
+  // const removeFormDetailEmail = (email) => {
+  //   setToFormDetailsEmails((prevToEmails) =>
+  //     prevToEmails.filter((existingEmail) => existingEmail !== email)
+  //   );
+  // };
+
+  const handleCCFormDetailsKeyPress = (e) => {
+    if (e.key === "Enter" && inputCCFormDetailsEmailValue) {
+      if (validateEmail(inputCCFormDetailsEmailValue)) {
+        setCCFormDetailsEmails((prevToEmails) => [
+          ...prevToEmails,
+          inputCCFormDetailsEmailValue,
+        ]);
+        setInputCCFormDetailsEmailValue("");
+      } else {
+        alert("Please enter a valid email address.");
+      }
+    }
+  };
+
+  const removeCCFormDetailsEmail = (email) => {
+    setCCFormDetailsEmails((prevToEmails) =>
+      prevToEmails.filter((existingEmail) => existingEmail !== email)
+    );
+  };
+
+  const handleEditorChange = (setContent) => (event, editor) => {
+    const data = editor.getData();
+    setContent(data);
+  };
+
   const handleSendAsTypeChange = (event) => {
-    setSendAsType(event.target.value);
+    const selectedId = event.target.id;
+    setSendAsType(selectedId);
     setIsProofOfDocumentRequired(false);
+  };
+
+  const handleSendAsFormDetailsTypeChange = (event) => {
+    const selectedId = event.target.id;
+    setSendAsFormDetailType(selectedId);
+    setIsPODFormDetailsRequired(false);
+  };
+
+  const handleSendAsDoumentTypeChange = (event) => {
+    const selectedId = event.target.id;
+    setSendAsDocumentType(selectedId);
+  };
+
+  const handleSendAsCompleteTypeChange = (event) => {
+    console.log("event.target.id", event.target.id);
+    const selectedId = event.target.id;
+    setSendAsCompleteType(selectedId);
+  };
+
+  const changeHandler = async (event) => {
+    setFile(event);
+    let fileName = {
+      fileName: event[0]?.name,
+    };
+    const formData = new FormData();
+
+    if (event[0] !== null) {
+      formData.append(
+        "fileDTO",
+        new Blob([JSON.stringify(fileName)], {
+          type: "application/json",
+        })
+      );
+      formData.append("file", event[0]);
+      try {
+        const response = await POST(`entity-service/checklist/file`, formData);
+        SuccessToaster("File Uploaded Successfully");
+        setFile(response?.data);
+      } catch (error) {
+        ErrorToaster("File Upload Failed");
+        console.error(error);
+      }
+    }
+  };
+
+  const handleSubmit = async () => {
+    const formattedApplicantTypes = selectedApplicantValues.map((value) => {
+      const selectedType = applicantTypes.find((type) => type.id === value);
+      return {
+        id: selectedType?.id || "",
+        applicantType: selectedType?.type || "",
+      };
+    });
+
+    const formattedDepartments = selectedDepartmentValues.map((value) => {
+      const selectedDepartment = departmentTypes.find(
+        (type) => type.id === value
+      );
+      return {
+        id: selectedDepartment?.id || "",
+        departmentName: {
+          name: selectedDepartment?.type || "",
+        },
+      };
+    });
+
+    if (inputToEmailValue && validateEmail(inputToEmailValue)) {
+      setToEmails((prevToEmails) => [...prevToEmails, inputToEmailValue]);
+    }
+    if (inputCCEmailValue && validateEmail(inputCCEmailValue)) {
+      setCCEmails((prevToEmails) => [...prevToEmails, inputCCEmailValue]);
+    }
+    const statusLabel = [
+      {
+        status: "NOT_STARTED",
+        label: taskDefaultStatus || "Not Started(Default)",
+      },
+      {
+        status: "IN_PROGRESS",
+        label: taskInprogressStatus || "In Progress",
+      },
+      {
+        status: "COMPLETED_OR_DONE",
+        label: taskCompleteStatus || "Complete/Done",
+      },
+    ];
+    const statusLabel2 = [
+      {
+        status: "NOT_STARTED",
+        label: taskDefaultStatus2 || "Not Started(Default)",
+      },
+      {
+        status: "IN_PROGRESS",
+        label: taskInprogressStatus2 || "In Progress",
+      },
+      {
+        status: "COMPLETED_OR_DONE",
+        label: taskCompleteStatus2 || "Complete/Done",
+      },
+    ];
+
+    let data = {
+      applicantTypes: formattedApplicantTypes,
+      departments: formattedDepartments,
+      taskName: activityTitle,
+      taskAction: taskAction,
+      hasAnyConstraints: isConstraintsRequired,
+      activityExecutionPromptLabel: {
+        text: promptLabel,
+      },
+      taskDependentNoteDetail: {
+        hasDependentNote: isCompletionDependant,
+        noteLabel: {
+          text: notelabel,
+        },
+        displayOption: selectedDisplayOption,
+      },
+    };
+
+    if (selectedValue === 1) {
+      data = {
+        ...data,
+        notificationEmail: {
+          taskEmailDetails: {
+            recipients: {
+              recipientEmails: [...toemails, inputToEmailValue],
+              includeApplicantEmail: isToChecked,
+            },
+            ccRecipients: {
+              recipientEmails: [...ccemails, inputCCEmailValue],
+              includeApplicantEmail: isCCChecked,
+            },
+            subject: emailSubject,
+            content: editorContent,
+            emailDeliveryMethod: sendAsType,
+            podRequired: isProofOfDocumentRequired,
+          },
+        },
+      };
+    } else if (selectedValue === 2) {
+      data = {
+        ...data,
+        taskStatusUpdate: {
+          statusLabels: statusLabel,
+        },
+      };
+    } else if (selectedValue === 3) {
+      data = {
+        ...data,
+        externalFormSourceLink: {
+          statusLabels: statusLabel2,
+          formLink: {
+            url: fromLinkurl,
+            urlLabel: {
+              text: fromLinkText,
+            },
+          },
+        },
+      };
+    } else if (selectedValue === 4) {
+      data = {
+        ...data,
+        externalFormDocument: {
+          taskEmailDetails: {
+            recipients: [...toDocumentemails, inputToDocumentEmailValue].filter(
+              Boolean
+            ),
+            includeApplicantEmail: isToDocumentChecked,
+          },
+          ccRecipients: [...ccDocumentemails, inputCCDocumentEmailValue].filter(
+            Boolean
+          ),
+          includeApplicantEmail: isCCDocumentChecked,
+          subject: emailDocumentSubject,
+          content: editorDocumentContent,
+        },
+        externalFormSource: {
+          document: {
+            filePath: file.filePath,
+            fileName: file.fileName,
+            fileURL: file.fileURL,
+          },
+          label: {
+            text: documentLabel,
+          },
+        },
+      };
+    } else if (selectedValue === 5) {
+      data = {
+        ...data,
+        completedApplicantDetails: {
+          taskEmailDetails: {
+            recipients: [...toCompleteemails, inputToCompleteEmailValue].filter(
+              Boolean
+            ),
+            includeApplicantEmail: true,
+          },
+          ccRecipients: [...ccCompleteemails, inputCCCompleteEmailValue].filter(
+            Boolean
+          ),
+          includeApplicantEmail: true,
+          subject: emailCompleteSubject,
+          content: editorCompleteContent,
+          podRequired: isProofOfCompleteDocumentRequired,
+        },
+        attachmentDetails: {
+          includeApplicantAttachment: isApplicantInformation,
+        },
+      };
+    } else if (selectedValue === 6) {
+      data = {
+        ...data,
+        formDetails: {
+          taskEmailDetails: {
+            recipients: [
+              ...toFormDetailsemails,
+              inputToFormDetailsEmailValue,
+            ].filter(Boolean),
+            includeApplicantEmail: isToFormDetailsChecked,
+            ccRecipients: [
+              ...ccFormDetailsemails,
+              inputCCFormDetailsEmailValue,
+            ].filter(Boolean),
+            includeApplicantEmail: isCCFormDetailsChecked,
+            subject: emailFormDetailsSubject,
+            content: editorFormDetailsContent,
+            podRequired: isPODFormDetailsRequired,
+          },
+          formSourceDetails: {
+            label: {
+              text: completeLabel,
+            },
+          },
+        },
+      };
+    }
+    if (!isEdit) {
+      await POST("entity-service/checklist", JSON.stringify(data))
+        .then((response) => {
+          SuccessToaster("CheckList Form Added Successfully");
+          setResponseData(response); // Store the response data
+          handleClose(true);
+        })
+        .catch((error) => {
+          ErrorToaster(error);
+        });
+    } else {
+      await PUT(
+        `entity-service/checklist/${selectedApplicant?.id}`,
+        JSON.stringify(data)
+      )
+        .then((response) => {
+          SuccessToaster("CheckList Form Updated Successfully");
+          setResponseData(response); // Store the response data
+
+          handleClose(true);
+        })
+        .catch((error) => {
+          ErrorToaster(error);
+        });
+    }
   };
 
   return (
@@ -126,12 +940,14 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
           <p
             className={style.extensionStyle}
           >{`Application Processing Task/Activity`}</p>
-          <div className={`${style.floatRight} ${style.imageSpaceAlignment}`}>
-            <img
-              src={WritingFile}
-              className={style.dialogCrossStyle}
-              alt="Writing File"
-            />
+          <div className={`${style.floatRight} ${style.imageSpaceAlignment2}`}>
+            <div className={style.marginRight20}>
+              <img
+                src={WritingFile}
+                className={style.dialogCrossStyle}
+                alt="Writing File"
+              />
+            </div>
             <div>
               <Icon
                 icon="cross"
@@ -153,7 +969,7 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
               <Select
                 labelId="department-service-select"
                 id="department-service-select"
-                value={selectedValues}
+                value={selectedApplicantValues}
                 onChange={handleChange}
                 multiple
                 SelectDisplayProps={{
@@ -168,9 +984,9 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                 ))}
               </Select>
             </FormControl>
-            {selectedValues.length > 0 && (
+            {selectedApplicantValues.length > 0 && (
               <Box sx={{ mt: 2, display: "flex", flexWrap: "wrap", gap: 1 }}>
-                {selectedValues.map((value) => (
+                {selectedApplicantValues.map((value) => (
                   <Chip
                     key={value}
                     label={
@@ -185,8 +1001,8 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                       padding: "0px 5px",
                     }}
                     onDelete={() => {
-                      setSelectedValues(
-                        selectedValues.filter((val) => val !== value)
+                      setSelectedApplicantValues(
+                        selectedApplicantValues.filter((val) => val !== value)
                       );
                     }}
                     deleteIcon={<span style={{ fontSize: "14px" }}>✖</span>}
@@ -199,13 +1015,51 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
             <div className={style.entityLableStyle}>
               DEPARTMENT/SERVICE AREA*
             </div>
-            <CommonInputField
-              value={""}
-              className={style.fullWidth}
-              multiple
-              placeholder={"select Department/Service Area"}
-              required={true}
-            />
+            <FormControl fullWidth size="small">
+              <Select
+                labelId="department-service-select"
+                id="department-service-select"
+                value={selectedDepartmentValues}
+                onChange={handleDepartmentChange}
+                multiple
+                SelectDisplayProps={{
+                  style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 },
+                }}
+                renderValue={() => "Select Applicant Type"}
+              >
+                {departmentTypes.map((data, index) => (
+                  <MenuItem value={data?.id} key={index}>
+                    {data?.type}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            {selectedDepartmentValues.length > 0 && (
+              <Box sx={{ mt: 2, display: "flex", flexWrap: "wrap", gap: 1 }}>
+                {selectedDepartmentValues.map((value) => (
+                  <Chip
+                    key={value}
+                    label={
+                      departmentTypes.find((type) => type.id === value)?.type ||
+                      ""
+                    }
+                    sx={{
+                      backgroundColor: "#EDE7F6",
+                      color: "#673AB7",
+                      borderRadius: "4px",
+                      fontSize: "13px",
+                      padding: "0px 5px",
+                    }}
+                    onDelete={() => {
+                      setSelectedDepartmentValues(
+                        selectedDepartmentValues.filter((val) => val !== value)
+                      );
+                    }}
+                    deleteIcon={<span style={{ fontSize: "14px" }}>✖</span>}
+                  />
+                ))}
+              </Box>
+            )}
           </div>
           <div className={style.marginTop20}>
             <div className={style.entityLableStyle}>
@@ -213,8 +1067,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
             </div>
             <FormControl fullWidth size="small">
               <Select
-                labelId="department-service-select"
-                id="department-service-select"
                 value={selectedValue}
                 onChange={handleSelectChange}
                 SelectDisplayProps={{
@@ -287,49 +1139,86 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                 >
                   SELECT EMAIL ADDRESSES TO SEND TO*
                   <Checkbox
-                    // value="ADD SUB-REASONS"
-                    // checked={addSubReasons}
-                    // onChange={(e) => handleAddSubReasons(e.target.checked)}
                     className={` ${style.marginLeft20} ${style.marginTop}`}
                     label="INCLUDE APPLICANT EMAIL ADDRESS"
+                    checked={isToChecked} // Control checkbox state
+                    onChange={(e) => setIsToChecked(e.target.checked)} // Inline handler
                   />
                 </div>
                 <CommonInputField
-                  value={""}
+                  value={inputToEmailValue}
                   className={style.fullWidth}
                   multiple
                   placeholder={"name@gmail.com"}
                   required={true}
+                  onChange={(e) => setInputToEmailValue(e.target.value)}
+                  onKeyDown={handleKeyPress} // Call when pressing keys
                 />
               </div>
+              <Box sx={{ mt: 2, display: "flex", flexWrap: "wrap", gap: 1 }}>
+                {toemails.map((email, index) => (
+                  <Chip
+                    key={index}
+                    label={email}
+                    sx={{
+                      backgroundColor: "#EDE7F6", // Light purple background
+                      color: "#673AB7", // Dark purple text color
+                      borderRadius: "4px",
+                      fontSize: "13px",
+                      padding: "0px 5px",
+                    }}
+                    onDelete={() => removeEmail(email, setToEmails)} // Remove from `ToEmails`
+                    deleteIcon={<span style={{ fontSize: "14px" }}>✖</span>}
+                  />
+                ))}
+              </Box>
+
               <div className={style.marginTop20}>
                 <div
                   className={`${style.entityLableStyle} ${style.spaceBetween}`}
                 >
                   SELECT EMAIL ADDRESSES TO SEND CC*
                   <Checkbox
-                    // value="ADD SUB-REASONS"
-                    // checked={addSubReasons}
-                    // onChange={(e) => handleAddSubReasons(e.target.checked)}
                     className={` ${style.marginLeft20} ${style.marginTop}`}
                     label="INCLUDE APPLICANT EMAIL ADDRESS"
+                    checked={isCCChecked} // Control checkbox state
+                    onChange={(e) => setIsCCChecked(e.target.checked)} // Inline handler
                   />
                 </div>
                 <CommonInputField
-                  value={""}
+                  value={inputCCEmailValue}
                   className={style.fullWidth}
                   multiple
-                  placeholder={"Enter email address to cc"}
+                  placeholder={"name@gmail.com"}
                   required={true}
+                  onChange={(e) => setInputCCEmailValue(e.target.value)}
+                  onKeyDown={handleCCKeyPress} // Call when pressing keys
                 />
+                <Box sx={{ mt: 2, display: "flex", flexWrap: "wrap", gap: 1 }}>
+                  {ccemails.map((email, index) => (
+                    <Chip
+                      key={index}
+                      label={email}
+                      sx={{
+                        backgroundColor: "#EDE7F6", // Light purple background
+                        color: "#673AB7", // Dark purple text color
+                        borderRadius: "4px",
+                        fontSize: "13px",
+                        padding: "0px 5px",
+                      }}
+                      onDelete={() => removeCCEmail(email)} // Allow removing the email
+                      deleteIcon={<span style={{ fontSize: "14px" }}>✖</span>}
+                    />
+                  ))}
+                </Box>
               </div>
               <div className={style.marginTop20}>
                 <div className={style.entityLableStyle}>EMAIL SUBJECT*</div>
                 <Box display={"flex"} gap={3}>
                   <Box width={"50%"}>
                     <CommonInputField
-                      value={""}
-                      multiple
+                      value={emailSubject} // Set value to the state
+                      onChange={(e) => setEmailSubject(e.target.value)} // Inline handler
                       placeholder={"Swichboard Notification"}
                       required={true}
                       sx={{ width: "100%" }}
@@ -340,7 +1229,11 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
               </div>
               <div className={style.marginTop20}>
                 <div className={style.entityLableStyle}>EMAIL CONTENTENTS*</div>
-                <CKEditor editor={ClassicEditor} />
+                <CKEditor
+                  editor={ClassicEditor}
+                  data={editorContent} // Set the value of the editor from the state
+                  onChange={handleEditorChange(setEditorContent)}
+                />
               </div>
               <div className={`${style.marginTop20} ${style.validation}`}>
                 <div className={style.entityLableStyle}>SEND AS*</div>
@@ -350,9 +1243,18 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                       control={
                         <Radio
                           id={item.id}
-                          checked={item.value == sendAsType}
+                          className={classes.radio}
+                          checked={item.id == sendAsType}
                           onChange={handleSendAsTypeChange}
                           value={item.value}
+                          sx={{
+                            "&.Mui-checked": {
+                              color: "#7165e3",
+                            },
+                          }}
+                          style={{
+                            marginBottom: 0,
+                          }}
                         />
                       }
                     />
@@ -360,7 +1262,7 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                   </div>
                 ))}
               </div>
-              {sendAsType == SendAsType2 && (
+              {sendAsType === "Standard_Email" && (
                 <div className={`${style.validation} ${style.marginTop20}`}>
                   <div className={style.entityLableStyle}>
                     PROOF OF DOCUMENTATION REQUIRED?
@@ -394,50 +1296,682 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                   required action.
                 </p>
               </div>
-              <div className={`${style.validation} ${style.marginTop20}`}>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                  }}
-                >
+            </>
+          )}
+          {selectedValue === 2 && (
+            <>
+              <div className={style.marginTop20}>
+                <div className={style.entityLableStyle}>
+                  TASK/ACTIVITY TITLE*
+                </div>
+                <CommonInputField
+                  value={activityTitle}
+                  className={style.fullWidth}
+                  onChange={(e) => setActivityTitle(e.target.value)}
+                  placeholder={
+                    "Add To Outlook For Medical & Professional Staff"
+                  }
+                  required={true}
+                />
+              </div>
+              <div className={style.marginTop20}>
+                <div className={style.entityLableStyle}>
+                  TASK/ACTIVITY COMPLETION STATUS*
+                </div>
+                <Box display="flex" gap={3} alignItems="center">
+                  <Box width={"80%"}>
+                    <TextField
+                      className={`${style.fullWidth}`}
+                      variant="outlined"
+                      size="small"
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment
+                            position="start"
+                            sx={{ display: "flex", alignItems: "center" }}
+                          >
+                            <img src={CheckboxIcon} alt="Email" />
+                            <img
+                              src={redWarning}
+                              alt="alert"
+                              className={`${style.completedIconStyle2}`}
+                            ></img>
+
+                            <span style={{ marginRight: "8px" }}>
+                              Not Started(Default)
+                            </span>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  </Box>
+                  <Box width={"10%"}>
+                    <span style={{ fontSize: "30px", fontWeight: 100 }}>=</span>
+                  </Box>
+                  <Box width={"90%"}>
+                    <CommonInputField
+                      value={taskDefaultStatus}
+                      className={style.fullWidth}
+                      onChange={(e) => setTaskDefaultStatus(e.target.value)}
+                      placeholder={"Enter Applicant Type"}
+                      required={true}
+                    ></CommonInputField>
+                  </Box>
+                </Box>
+                <div className={style.marginTop10}>
+                  <Box display="flex" gap={3} alignItems="center">
+                    <Box width={"80%"}>
+                      <TextField
+                        className={`${style.fullWidth}`}
+                        variant="outlined"
+                        size="small"
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <img src={CheckboxIcon} alt="Email" />
+                              <img
+                                src={Alert}
+                                alt="alert"
+                                className={`${style.completedIconStyle2}`}
+                              ></img>
+
+                              <span style={{ marginRight: "8px" }}>
+                                In Progress
+                              </span>
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    </Box>
+                    <Box width={"10%"}>
+                      <span style={{ fontSize: "30px", fontWeight: 100 }}>
+                        =
+                      </span>
+                    </Box>
+                    <Box width={"90%"}>
+                      <CommonInputField
+                        value={taskInprogressStatus}
+                        className={style.fullWidth}
+                        onChange={(e) =>
+                          setTaskInprogressStatus(e.target.value)
+                        }
+                        placeholder={"Enter Applicant Type"}
+                        required={true}
+                      ></CommonInputField>
+                    </Box>
+                  </Box>
+                </div>
+                <div className={style.marginTop10}>
+                  <Box display="flex" gap={3} alignItems="center">
+                    <Box width={"80%"}>
+                      <TextField
+                        className={`${style.fullWidth}`}
+                        variant="outlined"
+                        size="small"
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment
+                              position="start"
+                              sx={{ display: "flex", alignItems: "center" }}
+                            >
+                              <img src={CheckboxIcon} alt="Email" />
+                              <img
+                                src={CompletedIcon}
+                                alt="completed"
+                                className={`${style.completedIconStyle2}`}
+                              ></img>
+                              <span style={{ marginRight: "8px" }}>
+                                Complete/Done
+                              </span>
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    </Box>
+                    <Box width={"10%"}>
+                      <span style={{ fontSize: "30px", fontWeight: 100 }}>
+                        =
+                      </span>
+                    </Box>
+                    <Box width={"90%"}>
+                      <CommonInputField
+                        value={taskCompleteStatus}
+                        className={style.fullWidth}
+                        onChange={(e) => setTaskCompleteStatus(e.target.value)}
+                        placeholder={"Enter Applicant Type"}
+                        required={true}
+                      ></CommonInputField>
+                    </Box>
+                  </Box>
+                </div>
+              </div>
+            </>
+          )}
+          {selectedValue === 3 && (
+            <>
+              <div className={style.marginTop20}>
+                <div className={style.entityLableStyle}>
+                  TASK/ACTIVITY TITLE*
+                </div>
+                <CommonInputField
+                  value={activityTitle}
+                  className={style.fullWidth}
+                  onChange={(e) => setActivityTitle(e.target.value)}
+                  placeholder={"IT Logistics From To Get Completed"}
+                  required={true}
+                />
+              </div>
+              <div className={style.marginTop20}>
+                <div className={style.entityLableStyle}>
+                  NON CAPSMART FORM SOURCE*
+                </div>
+                <CommonInputField
+                  value={fromLinkurl}
+                  placeholder={"https://www.google.com"}
+                  className={style.fullWidth}
+                  onChange={(e) => setFromLinkUrl(e.target.value)}
+                />
+              </div>
+              <div className={style.marginTop20}>
+                <div className={style.entityLableStyle}>
+                  DISPLAY LABEL TO ACCESS*
+                </div>
+                <CommonInputField
+                  value={fromLinkText}
+                  placeholder={"Click to complete & send Logistics form"}
+                  className={style.fullWidth}
+                  onChange={(e) => setFromLinkText(e.target.value)}
+                />
+              </div>
+              <div className={style.marginTop20}>
+                <div className={style.entityLableStyle}>
+                  TASK/ACTIVITY COMPLETION STATUS*
+                </div>
+                <Box display="flex" gap={3} alignItems="center">
+                  <Box width={"80%"}>
+                    <TextField
+                      className={`${style.fullWidth}`}
+                      variant="outlined"
+                      size="small"
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <img src={CheckboxIcon} alt="Email" />
+                            <img
+                              src={redWarning}
+                              alt="alert"
+                              className={`${style.completedIconStyle2}`}
+                            ></img>
+
+                            <span style={{ marginRight: "8px" }}>
+                              Not Started(Default)
+                            </span>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  </Box>
+                  <Box width={"10%"}>
+                    <span style={{ fontSize: "30px", fontWeight: 100 }}>=</span>
+                  </Box>
+                  <Box width={"90%"}>
+                    <CommonInputField
+                      value={taskDefaultStatus2}
+                      className={style.fullWidth}
+                      onChange={(e) => setTaskDefaultStatus2(e.target.value)}
+                      placeholder={"Logistics From Not Send To IT"}
+                      required={true}
+                    ></CommonInputField>
+                  </Box>
+                </Box>
+                <div className={style.marginTop10}>
+                  <Box display="flex" gap={3} alignItems="center">
+                    <Box width={"80%"}>
+                      <TextField
+                        className={`${style.fullWidth}`}
+                        variant="outlined"
+                        size="small"
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment
+                              position="start"
+                              sx={{ display: "flex", alignItems: "center" }}
+                            >
+                              <img src={CheckboxIcon} alt="Email" />
+                              <img
+                                src={Alert}
+                                alt="alert"
+                                className={`${style.completedIconStyle2}`}
+                              ></img>
+
+                              <span style={{ marginRight: "8px" }}>
+                                In Progress
+                              </span>
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    </Box>
+                    <Box width={"10%"}>
+                      <span style={{ fontSize: "30px", fontWeight: 100 }}>
+                        =
+                      </span>
+                    </Box>
+                    <Box width={"90%"}>
+                      <CommonInputField
+                        value={taskInprogressStatus2}
+                        className={style.fullWidth}
+                        onChange={(e) =>
+                          setTaskInprogressStatus2(e.target.value)
+                        }
+                        placeholder={"Logistics From  Send To IT"}
+                        required={true}
+                      ></CommonInputField>
+                    </Box>
+                  </Box>
+                </div>
+                <div className={style.marginTop10}>
+                  <Box display="flex" gap={3} alignItems="center">
+                    <Box width={"80%"}>
+                      <TextField
+                        className={`${style.fullWidth}`}
+                        variant="outlined"
+                        size="small"
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment
+                              position="start"
+                              sx={{ display: "flex", alignItems: "center" }}
+                            >
+                              <img src={CheckboxIcon} alt="Email" />
+                              <img
+                                src={CompletedIcon}
+                                alt="completed"
+                                className={`${style.completedIconStyle2}`}
+                              ></img>
+                              <span style={{ marginRight: "8px" }}>
+                                Complete/Done
+                              </span>
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    </Box>
+                    <Box width={"10%"}>
+                      <span style={{ fontSize: "30px", fontWeight: 100 }}>
+                        =
+                      </span>
+                    </Box>
+                    <Box width={"90%"}>
+                      <CommonInputField
+                        value={taskCompleteStatus2}
+                        className={style.fullWidth}
+                        onChange={(e) => setTaskCompleteStatus2(e.target.value)}
+                        placeholder={"Logistics From Processed By IT"}
+                        required={true}
+                      ></CommonInputField>
+                    </Box>
+                  </Box>
+                </div>
+              </div>
+            </>
+          )}
+          {selectedValue === 4 && (
+            <>
+              <Box display={"flex"} gap={3}>
+                <Box width={"50%"} key={"department-service"}>
                   <div className={style.entityLableStyle}>
-                    Task Completion Dependant Note Capture
+                    TASK/ACTIVITY TITLE *
                   </div>
-                  <div className={style.marginLeft40}>
+                  <CommonInputField
+                    value={activityTitle}
+                    className={style.fullWidth}
+                    onChange={(e) => setActivityTitle(e.target.value)}
+                    placeholder={"Send Parking Lot instructions"}
+                    required={true}
+                  />
+                </Box>
+                <Box width={"50%"}>
+                  <div className={style.entityLableStyle}>
+                    ACTIVITY EXECUTION PROMPT LABEL*
+                  </div>
+                  <CommonInputField
+                    value={promptLabel}
+                    className={style.fullWidth}
+                    onChange={(e) => setPromptLabel(e.target.value)}
+                    placeholder={"Send To Applicant"}
+                    required={true}
+                  />
+                </Box>
+              </Box>
+              <div className={style.marginTop20}>
+                <div className={`${style.entityLableStyle}`}>
+                  NON CAPSMART FORM SOURCE
+                </div>
+                <CommonDropZone
+                  title={"Upload Your PDF Document/Form"}
+                  description={
+                    "Upload your files or drag & drop from your cabinet"
+                  }
+                  changeHandler={changeHandler}
+                />
+                <div className={`${style.marginTop10} ${style.dropzoneStyle}`}>
+                  <p>Document</p>
+                  <p>5 Mb</p>
+                  <p>Delete</p>
+                </div>
+                <div className={style.marginTop20}>
+                  <div className={style.entityLableStyle}>
+                    DISPLAY LABEL TO VIEW*
+                  </div>
+                  <CommonInputField
+                    value={documentLabel}
+                    className={style.fullWidth}
+                    placeholder={"View Parking Document"}
+                    onChange={(e) => setDocumentLabel(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className={style.marginTop20}>
+                <div
+                  className={`${style.entityLableStyle} ${style.spaceBetween}`}
+                >
+                  SELECT EMAIL ADDRESSES TO SEND TO*
+                  <Checkbox
+                    className={` ${style.marginLeft20} ${style.marginTop}`}
+                    label="INCLUDE APPLICANT EMAIL ADDRESS"
+                    checked={isToDocumentChecked} // Control checkbox state
+                    onChange={(e) => setIsDocumentToChecked(e.target.checked)} // Inline handler
+                  />
+                </div>
+                <CommonInputField
+                  value={inputToDocumentEmailValue}
+                  className={style.fullWidth}
+                  multiple
+                  placeholder={"name@gmail.com"}
+                  required={true}
+                  onChange={(e) => setInputToDocumentEmailValue(e.target.value)}
+                  onKeyDown={handleKeyDocumentPress} // Call when pressing keys
+                />
+              </div>
+              <Box sx={{ mt: 2, display: "flex", flexWrap: "wrap", gap: 1 }}>
+                {toDocumentemails.map((email, index) => (
+                  <Chip
+                    key={index}
+                    label={email}
+                    sx={{
+                      backgroundColor: "#EDE7F6", // Light purple background
+                      color: "#673AB7", // Dark purple text color
+                      borderRadius: "4px",
+                      fontSize: "13px",
+                      padding: "0px 5px",
+                    }}
+                    onDelete={() => removeEmail(email, setToDocumentEmails)} // Remove from `DocumentEmails`
+                    deleteIcon={<span style={{ fontSize: "14px" }}>✖</span>}
+                  />
+                ))}
+              </Box>
+
+              <div className={style.marginTop20}>
+                <div
+                  className={`${style.entityLableStyle} ${style.spaceBetween}`}
+                >
+                  SELECT EMAIL ADDRESSES TO SEND CC*
+                  <Checkbox
+                    className={` ${style.marginLeft20} ${style.marginTop}`}
+                    label="INCLUDE APPLICANT EMAIL ADDRESS"
+                    checked={isCCDocumentChecked} // Control checkbox state
+                    onChange={(e) => setIsDocumentCCChecked(e.target.checked)} // Inline handler
+                  />
+                </div>
+                <CommonInputField
+                  value={inputCCDocumentEmailValue}
+                  className={style.fullWidth}
+                  multiple
+                  placeholder={"name@gmail.com"}
+                  required={true}
+                  onChange={(e) => setInputCCDocumentEmailValue(e.target.value)}
+                  onKeyDown={handleCCDocumentKeyPress} // Call when pressing keys
+                />
+                <Box sx={{ mt: 2, display: "flex", flexWrap: "wrap", gap: 1 }}>
+                  {ccDocumentemails.map((email, index) => (
+                    <Chip
+                      key={index}
+                      label={email}
+                      sx={{
+                        backgroundColor: "#EDE7F6", // Light purple background
+                        color: "#673AB7", // Dark purple text color
+                        borderRadius: "4px",
+                        fontSize: "13px",
+                        padding: "0px 5px",
+                      }}
+                      onDelete={() => removeCCDocumentEmail(email)} // Allow removing the email
+                      deleteIcon={<span style={{ fontSize: "14px" }}>✖</span>}
+                    />
+                  ))}
+                </Box>
+              </div>
+              <div className={style.marginTop20}>
+                <div className={style.entityLableStyle}>EMAIL SUBJECT*</div>
+                <Box display={"flex"} gap={3}>
+                  <Box width={"50%"}>
+                    <CommonInputField
+                      value={emailDocumentSubject} // Set value to the state
+                      onChange={(e) => setEmailDocumentSubject(e.target.value)} // Inline handler
+                      placeholder={"Swichboard Notification"}
+                      required={true}
+                      sx={{ width: "100%" }}
+                    />
+                  </Box>
+                  <p>FOR[APPLICANT NAME]</p>
+                </Box>
+              </div>
+              <div className={style.marginTop20}>
+                <div className={style.entityLableStyle}>EMAIL CONTENTENTS*</div>
+                <CKEditor
+                  editor={ClassicEditor}
+                  data={editorDocumentContent} // Set initial value from state
+                  onChange={handleEditorChange(setEditorDocumentContent)}
+                />
+              </div>
+              <div className={`${style.marginTop20} ${style.validation}`}>
+                <div className={style.entityLableStyle}>SEND AS*</div>
+                {sendAs.map((item) => (
+                  <div className={`${style.marginLeft40} ${style.validation}`}>
                     <FormControlLabel
                       control={
-                        <Switch
-                          checked={isCompletionDependant}
-                          onChange={(e) => {
-                            setIsCompletionDependant(e.target.checked);
+                        <Radio
+                          id={item.id}
+                          className={classes.radio}
+                          checked={item.id == sendAsDocumentType}
+                          onChange={handleSendAsDoumentTypeChange}
+                          value={item.value}
+                          sx={{
+                            "&.Mui-checked": {
+                              color: "#7165e3",
+                            },
                           }}
-                          className={classes.switch}
+                          style={{
+                            color: "#B3B8BD",
+                            marginBottom: 0,
+                          }}
                         />
                       }
-                      className={`${style.switchFontStyle}`}
-                      label={isCompletionDependant ? "Yes" : "No"}
-                      labelPlacement="start"
                     />
+                    <label>{item.label}</label>
                   </div>
-                  {isCompletionDependant && (
-                    <div
-                      className={`${style.marginLeft40} ${style.marginTop20}`}
-                    >
-                      <div className={style.entityLableStyle}>NOTE LABEL</div>
-                      <CommonInputField
-                        value={""}
-                        placeholder={"Outlook ID"}
-                        required={true}
+                ))}
+              </div>
+              <div
+                className={`${style.ReferenceListEntityBorder} ${style.marginTop20}`}
+              ></div>
+              <div className={style.marginTop20}>
+                <p>
+                  NOTE: Activity/Task Status Completion will be captured
+                  automatically by the system when the user executes the
+                  required action.
+                </p>
+              </div>
+            </>
+          )}
+          {selectedValue === 5 && (
+            <>
+              <Box display={"flex"} gap={3}>
+                <Box width={"50%"} key={"department-service"}>
+                  <div className={style.entityLableStyle}>
+                    TASK/ACTIVITY TITLE *
+                  </div>
+                  <CommonInputField
+                    value={activityTitle}
+                    className={style.fullWidth}
+                    onChange={(e) => setActivityTitle(e.target.value)}
+                    placeholder={"Send Email To Switchboard"}
+                    required={true}
+                  />
+                </Box>
+                <Box width={"50%"}>
+                  <div className={style.entityLableStyle}>
+                    ACTIVITY EXECUTION PROMPT LABEL*
+                  </div>
+                  <CommonInputField
+                    value={promptLabel}
+                    className={style.fullWidth}
+                    onChange={(e) => setPromptLabel(e.target.value)}
+                    placeholder={"Send To Switchboard"}
+                    required={true}
+                  />
+                </Box>
+              </Box>
+              <div className={style.marginTop20}>
+                <div
+                  className={`${style.entityLableStyle} ${style.spaceBetween}`}
+                >
+                  SELECT EMAIL ADDRESSES TO SEND TO*
+                  <Checkbox
+                    className={` ${style.marginLeft20} ${style.marginTop}`}
+                    label="INCLUDE APPLICANT EMAIL ADDRESS"
+                    checked={isToCompleteChecked} // Control checkbox state
+                    onChange={(e) => setIsToCompleteChecked(e.target.checked)} // Inline handler
+                  />
+                </div>
+                <CommonInputField
+                  value={inputToCompleteEmailValue}
+                  className={style.fullWidth}
+                  multiple
+                  placeholder={"name@gmail.com"}
+                  required={true}
+                  onChange={(e) => setInputToCompleteEmailValue(e.target.value)}
+                  onKeyDown={handleKeyCompletePress} // Call when pressing keys
+                />
+              </div>
+              <Box sx={{ mt: 2, display: "flex", flexWrap: "wrap", gap: 1 }}>
+                {toCompleteemails.map((email, index) => (
+                  <Chip
+                    key={index}
+                    label={email}
+                    sx={{
+                      backgroundColor: "#EDE7F6",
+                      color: "#673AB7",
+                      borderRadius: "4px",
+                      fontSize: "13px",
+                      padding: "0px 5px",
+                    }}
+                    onDelete={() => removeEmail(email, setToCompleteEmails)} // Remove from `CompleteEmails`
+                    deleteIcon={<span style={{ fontSize: "14px" }}>✖</span>}
+                  />
+                ))}
+              </Box>
+              <div className={style.marginTop20}>
+                <div
+                  className={`${style.entityLableStyle} ${style.spaceBetween}`}
+                >
+                  SELECT EMAIL ADDRESSES TO SEND CC*
+                  <Checkbox
+                    className={` ${style.marginLeft20} ${style.marginTop}`}
+                    label="INCLUDE APPLICANT EMAIL ADDRESS"
+                    checked={isCCCompleteChecked} // Control checkbox state
+                    onChange={(e) => setIsCCCompleteChecked(e.target.checked)} // Inline handler
+                  />
+                </div>
+                <CommonInputField
+                  value={inputCCCompleteEmailValue}
+                  className={style.fullWidth}
+                  multiple
+                  placeholder={"name@gmail.com"}
+                  required={true}
+                  onChange={(e) => setInputCCCompleteEmailValue(e.target.value)}
+                  onKeyDown={handleCCCompleteKeyPress} // Call when pressing keys
+                />
+                <Box sx={{ mt: 2, display: "flex", flexWrap: "wrap", gap: 1 }}>
+                  {ccCompleteemails.map((email, index) => (
+                    <Chip
+                      key={index}
+                      label={email}
+                      sx={{
+                        backgroundColor: "#EDE7F6", // Light purple background
+                        color: "#673AB7", // Dark purple text color
+                        borderRadius: "4px",
+                        fontSize: "13px",
+                        padding: "0px 5px",
+                      }}
+                      onDelete={() => removeCCCompleteEmail(email)} // Allow removing the email
+                      deleteIcon={<span style={{ fontSize: "14px" }}>✖</span>}
+                    />
+                  ))}
+                </Box>
+              </div>
+              <div className={style.marginTop20}>
+                <div className={style.entityLableStyle}>EMAIL SUBJECT*</div>
+                <Box display={"flex"} gap={3}>
+                  <Box width={"50%"}>
+                    <CommonInputField
+                      value={emailCompleteSubject} // Set value to the state
+                      onChange={(e) => setEmailCompleteSubject(e.target.value)} // Inline handler
+                      placeholder={"Swichboard Notification"}
+                      required={true}
+                      sx={{ width: "100%" }}
+                    />
+                  </Box>
+                  <p>FOR[APPLICANT NAME]</p>
+                </Box>
+              </div>
+              <div className={style.marginTop20}>
+                <div className={style.entityLableStyle}>EMAIL CONTENTENTS*</div>
+                <CKEditor
+                  editor={ClassicEditor}
+                  data={editorCompleteContent} // Set initial value from state
+                  onChange={handleEditorChange(setEditorCompleteContent)}
+                />
+              </div>
+              <div className={`${style.validation} ${style.marginTop20}`}>
+                <div className={style.entityLableStyle}>
+                  ATTACH APPLICANT INFORMATION FROM APPLICATION
+                </div>
+                <div>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={isApplicantInformation}
+                        onChange={(e) => {
+                          setIsApplicantInformation(e.target.checked);
+                        }}
+                        className={classes.switch}
                       />
-                      <div className={style.entityLableStyle}>
-                        DISPLAY OPTION
-                      </div>
+                    }
+                    className={`${style.switchFontStyle}`}
+                    label={isConstraintsRequired ? "Yes" : "No"}
+                    labelPlacement="start"
+                  />
+                </div>
+                <div className={style.marginLeft40}>
+                  {isApplicantInformation && (
+                    <>
                       <FormControl fullWidth size="small">
                         <Select
                           labelId="department-service-select"
                           id="department-service-select"
-                          value={"In Task/Activity Bar"}
+                          value={"Select from list-multi select"}
+                          multiple
                           SelectDisplayProps={{
                             style: {
                               paddingTop: 5,
@@ -445,14 +1979,404 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                               fontSize: 15,
                             },
                           }}
-                        ></Select>
+                          renderValue={() => "Select from list-multi select"} // Keep placeholder when nothing selected
+                        >
+                          {/* {applicantTypes.map((data, index) => (
+                  <MenuItem value={data?.id} key={index}>
+                    {data?.type}
+                  </MenuItem>
+                ))} */}
+                        </Select>
                       </FormControl>
-                    </div>
+                      {/* {selectedValues.length > 0 && (
+              <Box sx={{ mt: 2, display: "flex", flexWrap: "wrap", gap: 1 }}>
+                {selectedValues.map((value) => (
+                  <Chip
+                    key={value}
+                    label={
+                      applicantTypes.find((type) => type.id === value)?.type ||
+                      ""
+                    }
+                    sx={{
+                      backgroundColor: "#EDE7F6", // Light purple background
+                      color: "#673AB7", // Dark purple text color
+                      borderRadius: "4px",
+                      fontSize: "13px",
+                      padding: "0px 5px",
+                    }}
+                    onDelete={() => {
+                      setSelectedValues(
+                        selectedValues.filter((val) => val !== value)
+                      );
+                    }}
+                    deleteIcon={<span style={{ fontSize: "14px" }}>✖</span>}
+                  />
+                ))}
+              </Box>
+            )} */}
+                    </>
                   )}
                 </div>
               </div>
+
+              <div className={`${style.marginTop20} ${style.validation}`}>
+                <div className={style.entityLableStyle}>SEND AS*</div>
+                {sendAs.map((item) => (
+                  <div className={`${style.marginLeft40} ${style.validation}`}>
+                    <FormControlLabel
+                      control={
+                        <Radio
+                          id={item.id}
+                          checked={item.id == sendAsCompleteType}
+                          onChange={handleSendAsCompleteTypeChange}
+                          sx={{
+                            "&.Mui-checked": {
+                              color: "#7165e3",
+                            },
+                          }}
+                          value={item.value}
+                          style={{
+                            marginBottom: 0,
+                          }}
+                        />
+                      }
+                    />
+                    <label>{item.label}</label>
+                  </div>
+                ))}
+              </div>
+              {sendAsCompleteType == "Standard_Email" && (
+                <div className={`${style.validation} ${style.marginTop20}`}>
+                  <div className={style.entityLableStyle}>
+                    PROOF OF DOCUMENTATION REQUIRED?
+                  </div>
+                  <div>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={isProofOfCompleteDocumentRequired}
+                          onChange={(e) => {
+                            setIsProofOfCompleteDocumentRequired(
+                              e.target.checked
+                            );
+                          }}
+                          className={classes.switch}
+                        />
+                      }
+                      className={`${style.switchFontStyle}`}
+                      label={isProofOfDocumentRequired ? "Yes" : "No"}
+                      labelPlacement="start"
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div
+                className={`${style.ReferenceListEntityBorder} ${style.marginTop20}`}
+              ></div>
+              <div className={style.marginTop20}>
+                <p>
+                  NOTE: Activity/Task Status Completion will be captured
+                  automatically by the system when the user executes the
+                  required action.
+                </p>
+              </div>
             </>
           )}
+          {selectedValue === 6 && (
+            <>
+              <Box display={"flex"} gap={3}>
+                <Box width={"50%"} key={"department-service"}>
+                  <div className={style.entityLableStyle}>
+                    TASK/ACTIVITY TITLE *
+                  </div>
+                  <CommonInputField
+                    value={activityTitle}
+                    className={style.fullWidth}
+                    onChange={(e) => setActivityTitle(e.target.value)}
+                    placeholder={"Send Email To Switchboard"}
+                    required={true}
+                  />
+                </Box>
+                <Box width={"50%"}>
+                  <div className={style.entityLableStyle}>
+                    ACTIVITY EXECUTION PROMPT LABEL*
+                  </div>
+                  <CommonInputField
+                    value={promptLabel}
+                    className={style.fullWidth}
+                    onChange={(e) => setPromptLabel(e.target.value)}
+                    placeholder={"Send To Switchboard"}
+                    required={true}
+                  />
+                </Box>
+              </Box>
+              <div className={style.marginTop20}>
+                <div
+                  className={`${style.entityLableStyle} ${style.spaceBetween}`}
+                >
+                  SELECT EMAIL ADDRESSES TO SEND TO*
+                  <Checkbox
+                    className={` ${style.marginLeft20} ${style.marginTop}`}
+                    label="INCLUDE APPLICANT EMAIL ADDRESS"
+                    checked={isToFormDetailsChecked} // Control checkbox state
+                    onChange={(e) =>
+                      setIsToFormDetailsChecked(e.target.checked)
+                    } // Inline handler
+                  />
+                </div>
+                <CommonInputField
+                  value={inputToFormDetailsEmailValue}
+                  className={style.fullWidth}
+                  multiple
+                  placeholder={"name@gmail.com"}
+                  required={true}
+                  onChange={(e) =>
+                    setInputToFormDetailsEmailValue(e.target.value)
+                  }
+                  onKeyDown={handleKeyFormDetailsPress} // Call when pressing keys
+                />
+              </div>
+              <Box sx={{ mt: 2, display: "flex", flexWrap: "wrap", gap: 1 }}>
+                {toFormDetailsemails.map((email, index) => (
+                  <Chip
+                    key={index}
+                    label={email}
+                    sx={{
+                      backgroundColor: "#EDE7F6", // Light purple background
+                      color: "#673AB7", // Dark purple text color
+                      borderRadius: "4px",
+                      fontSize: "13px",
+                      padding: "0px 5px",
+                    }}
+                    onDelete={() => removeEmail(email, setToFormDetailsEmails)} // Remove from `FormDetailsEmails`
+                    deleteIcon={<span style={{ fontSize: "14px" }}>✖</span>}
+                  />
+                ))}
+              </Box>
+
+              <div className={style.marginTop20}>
+                <div
+                  className={`${style.entityLableStyle} ${style.spaceBetween}`}
+                >
+                  SELECT EMAIL ADDRESSES TO SEND CC*
+                  <Checkbox
+                    className={` ${style.marginLeft20} ${style.marginTop}`}
+                    label="INCLUDE APPLICANT EMAIL ADDRESS"
+                    checked={isCCFormDetailsChecked} // Control checkbox state
+                    onChange={(e) =>
+                      setIsCCFormDetailsChecked(e.target.checked)
+                    } // Inline handler
+                  />
+                </div>
+                <CommonInputField
+                  value={inputCCFormDetailsEmailValue}
+                  className={style.fullWidth}
+                  multiple
+                  placeholder={"name@gmail.com"}
+                  required={true}
+                  onChange={(e) =>
+                    setInputCCFormDetailsEmailValue(e.target.value)
+                  }
+                  onKeyDown={handleCCFormDetailsKeyPress} // Call when pressing keys
+                />
+                <Box sx={{ mt: 2, display: "flex", flexWrap: "wrap", gap: 1 }}>
+                  {ccFormDetailsemails.map((email, index) => (
+                    <Chip
+                      key={index}
+                      label={email}
+                      sx={{
+                        backgroundColor: "#EDE7F6", // Light purple background
+                        color: "#673AB7", // Dark purple text color
+                        borderRadius: "4px",
+                        fontSize: "13px",
+                        padding: "0px 5px",
+                      }}
+                      onDelete={() => removeCCFormDetailsEmail(email)} // Allow removing the email
+                      deleteIcon={<span style={{ fontSize: "14px" }}>✖</span>}
+                    />
+                  ))}
+                </Box>
+              </div>
+              <div className={style.marginTop20}>
+                <div className={style.entityLableStyle}>EMAIL SUBJECT*</div>
+                <Box display={"flex"} gap={3}>
+                  <Box width={"50%"}>
+                    <CommonInputField
+                      value={emailFormDetailsSubject} // Set value to the state
+                      onChange={(e) =>
+                        setEmailFormDetailsSubject(e.target.value)
+                      } // Inline handler
+                      placeholder={"Swichboard Notification"}
+                      required={true}
+                      sx={{ width: "100%" }}
+                    />
+                  </Box>
+                  <p>FOR[APPLICANT NAME]</p>
+                </Box>
+              </div>
+              <div className={style.marginTop20}>
+                <div className={style.entityLableStyle}>EMAIL CONTENTENTS*</div>
+                <CKEditor
+                  editor={ClassicEditor}
+                  data={editorFormDetailsContent} // Set initial value from state
+                  onChange={handleEditorChange(setEditorFormDetailsContent)}
+                />
+              </div>
+              <div className={style.marginTop20}>
+                <Box display={"flex"} gap={3}>
+                  <Box width={"50%"} key={"department-service"}>
+                    <div className={style.entityLableStyle}>
+                      TASK/ACTIVITY TITLE *
+                    </div>
+                    <CommonInputField
+                      value={activityTitle}
+                      className={style.fullWidth}
+                      // onChange={(e) => setActivityTitle(e.target.value)}
+                      placeholder={"Send Email To Switchboard"}
+                      required={true}
+                    />
+                  </Box>
+                  <Box width={"50%"}>
+                    <div className={style.entityLableStyle}>
+                      DISPLAY LABEL TO ACCESS*
+                    </div>
+                    <CommonInputField
+                      value={completeLabel}
+                      className={style.fullWidth}
+                      onChange={(e) => setCompleteLabel(e.target.value)}
+                      placeholder={"Click to Complete form"}
+                      required={true}
+                    />
+                  </Box>
+                </Box>
+              </div>
+              <div className={`${style.marginTop20} ${style.validation}`}>
+                <div className={style.entityLableStyle}>SEND AS*</div>
+                {sendAs.map((item) => (
+                  <div className={`${style.marginLeft40} ${style.validation}`}>
+                    <FormControlLabel
+                      control={
+                        <Radio
+                          id={item.id}
+                          className={classes.radio}
+                          checked={item.id == sendAsFormDetailType}
+                          sx={{
+                            "&.Mui-checked": {
+                              color: "#7165e3",
+                            },
+                          }}
+                          onChange={handleSendAsFormDetailsTypeChange}
+                          value={item.value}
+                          style={{
+                            color: "#B3B8BD",
+                            marginBottom: 0,
+                          }}
+                        />
+                      }
+                    />
+                    <label>{item.label}</label>
+                  </div>
+                ))}
+              </div>
+              {sendAsFormDetailType === "STANDARD_EMAIL" && (
+                <div className={`${style.validation} ${style.marginTop20}`}>
+                  <div className={style.entityLableStyle}>
+                    PROOF OF DOCUMENTATION REQUIRED?
+                  </div>
+                  <div>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={isPODFormDetailsRequired}
+                          onChange={(e) => {
+                            setIsPODFormDetailsRequired(e.target.checked);
+                          }}
+                          className={classes.switch}
+                        />
+                      }
+                      className={`${style.switchFontStyle}`}
+                      label={isPODFormDetailsRequired ? "Yes" : "No"}
+                      labelPlacement="start"
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div
+                className={`${style.ReferenceListEntityBorder} ${style.marginTop20}`}
+              ></div>
+              <div className={style.marginTop20}>
+                <p>
+                  NOTE: Activity/Task Status Completion will be captured
+                  automatically by the system when the user executes the
+                  required action.
+                </p>
+              </div>
+            </>
+          )}
+
+          <div className={`${style.validation} ${style.marginTop20}`}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <div className={style.entityLableStyle}>
+                Task Completion Dependant Note Capture
+              </div>
+              <div className={style.marginLeft40}>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={isCompletionDependant}
+                      onChange={(e) => {
+                        setIsCompletionDependant(e.target.checked);
+                      }}
+                      className={classes.switch}
+                    />
+                  }
+                  className={`${style.switchFontStyle}`}
+                  label={isCompletionDependant ? "Yes" : "No"}
+                  labelPlacement="start"
+                />
+              </div>
+              {isCompletionDependant && (
+                <div className={`${style.marginLeft40} ${style.marginTop20}`}>
+                  <div className={style.entityLableStyle}>NOTE LABEL</div>
+                  <CommonInputField
+                    value={notelabel} // Bind state to input field
+                    placeholder={"Outlook ID"}
+                    required={true}
+                    onChange={(e) => setNoteLabel(e.target.value)} // Update state inline
+                  />
+                  <div className={style.entityLableStyle}>DISPLAY OPTION</div>
+                  <FormControl fullWidth size="small">
+                    <Select
+                      labelId="department-service-select"
+                      id="department-service-select"
+                      value={selectedDisplayOption}
+                      onChange={handleDisplaySelectChange}
+                      SelectDisplayProps={{
+                        style: {
+                          paddingTop: 5,
+                          paddingBottom: 5,
+                          fontSize: 15,
+                        },
+                      }}
+                    >
+                      {displayOptions.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <div className={`${style.marginTop20} `} style={{ float: "left" }}>
@@ -462,15 +2386,18 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
             >
               PREVIEW
             </button>
-            <button
-              className={`${style.outlinedButton} ${style.borderRadius10}`}
-            >
-              BULK UPOAD
-            </button>
+            {!selectedValue && (
+              <button
+                className={`${style.outlinedButton} ${style.borderRadius10} ${style.marginLeft20}`}
+              >
+                BULK UPOAD
+              </button>
+            )}
           </div>
           <div className={`${style.floatRight} ${style.marginTop20}`}>
             <button
               className={`${style.outlinedButton} ${style.borderRadius10}`}
+              onClick={handleSubmit} // Call the handleSubmit function on click
             >
               SAVE & EXIT
             </button>
@@ -485,6 +2412,8 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
       <PreviewDialog
         open={previewOpen}
         handleClose={() => setPreviewOpen(false)}
+        selectedValue={selectedValue}
+        selectedApplicant={responseData}
       />
     </Dialog>
   );

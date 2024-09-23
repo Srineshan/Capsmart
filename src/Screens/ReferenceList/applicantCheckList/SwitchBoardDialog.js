@@ -14,43 +14,28 @@ import style from "./../index.module.scss";
 import { GET, POST, PUT, TenantID } from "../../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../../utils/toaster";
 import MaskGroup206 from "./../../../images/MaskGroup206.png";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
-import CommonInputField from "../../../Components/CommonFields/CommonInputField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import { Switch } from "@material-ui/core";
-import { Box } from "@mui/material";
 import Chip from "@mui/material/Chip";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
-import EmailIcon from "@material-ui/icons/Email";
 import Email from "./../../../images/Email.png";
-import DeleteIcon from "@mui/icons-material/Delete";
-const SwitchBoardDialog = ({ open }) => {
-  const [applicantName, setApplicantName] = useState("");
-  const [privilegeType, setPrivilegeType] = useState("");
-  const [applicantType, setApplicantType] = useState("");
-  const [expectedStartDate, setExpectedStartDate] = useState("");
-  const [departmentArea, setDepartmentArea] = useState("");
-  const [licenseNumber, setLicenseNumber] = useState("");
-  const [billingNumber, setBillingNumber] = useState("");
+import TableTwo from "../../../Components/TableDesignTwo";
+
+const SwitchBoardDialog = ({
+  open,
+  handleClose,
+  selectedValue,
+  selectedApplicant,
+}) => {
   const [emailRecipients, setEmailRecipients] = useState([]);
+  const [ccRecipients, setCcRecipients] = useState([]);
   const [email, setEmail] = useState("switchboard@gmail.com");
   const [ccemail, setccEmail] = useState("");
-  const [selectedValues, setSelectedValues] = useState([]);
+  const [selectedCCValues, setSelectedCCValues] = useState([]);
 
-  const [ccRecipients, setCcRecipients] = useState([
-    "HIM_clerks",
-    "HIM_Coding",
-  ]);
   const handleEmailSelect = (event) => {
     setEmailRecipients(event.target.value);
   };
-
+  console.log("selectedApplicant", selectedApplicant);
   const handleEmailChange = (event) => {
     const newValue = event.target.value.replace(/^To:\s*/, "");
     setEmail(newValue);
@@ -73,20 +58,76 @@ const SwitchBoardDialog = ({ open }) => {
     if (event.key === "Enter") {
       // Add the new value to selectedValues when Enter is pressed
       if (email.trim() !== "") {
-        setSelectedValues([...selectedValues, email]);
+        setSelectedCCValues([...selectedCCValues, email]);
         setccEmail(""); // Clear the input field
       }
     }
   };
   const handleDeleteChip = (valueToDelete) => {
-    setSelectedValues(
-      selectedValues.filter((value) => value !== valueToDelete)
+    setSelectedCCValues(
+      selectedCCValues.filter((value) => value !== valueToDelete)
     );
   };
+
+  useEffect(() => {
+    console.log("SwitchBoardDialog open:", open);
+  }, [open]);
+
+  useEffect(() => {
+    if (selectedApplicant) {
+      switch (selectedValue) {
+        case 1:
+          setEmailRecipients(
+            selectedApplicant.notificationEmail?.taskEmailDetails?.recipients
+              ?.recipientEmails || []
+          );
+          setCcRecipients(
+            selectedApplicant.notificationEmail?.taskEmailDetails?.ccRecipients
+              ?.recipientEmails || []
+          );
+          break;
+        case 4:
+          setEmailRecipients(
+            selectedApplicant.externalFormDocument?.taskEmailDetails
+              ?.recipientEmails || []
+          );
+          setCcRecipients(
+            selectedApplicant.externalFormDocument?.taskEmailDetails
+              ?.ccRecipients || []
+          );
+          break;
+        case 5:
+          setEmailRecipients(
+            selectedApplicant.completedApplicantDetails?.taskEmailDetails
+              ?.recipientEmails || []
+          );
+          setCcRecipients(
+            selectedApplicant.completedApplicantDetails?.taskEmailDetails
+              ?.ccRecipients || []
+          );
+          break;
+        case 6:
+          setEmailRecipients(
+            selectedApplicant.formDetails?.taskEmailDetails?.recipients
+              ?.recipientEmails || []
+          );
+          setCcRecipients(
+            selectedApplicant.formDetails?.taskEmailDetails?.ccRecipients
+              ?.recipientEmails || []
+          );
+          break;
+        default:
+          setEmailRecipients([]);
+          setCcRecipients([]);
+          break;
+      }
+    }
+  }, [selectedValue, selectedApplicant]);
 
   return (
     <Dialog
       isOpen={open}
+      onClose={handleClose}
       className={`${style.healthCareDialogStyle} ${style.dialogPaddingBottom}`}
     >
       <div
@@ -110,6 +151,9 @@ const SwitchBoardDialog = ({ open }) => {
                 size={30}
                 intent={Intent.DANGER}
                 className={style.dialogCrossStyle}
+                onClick={() => {
+                  handleClose();
+                }}
               />
             </div>
           </div>
@@ -128,7 +172,7 @@ const SwitchBoardDialog = ({ open }) => {
                   sx={{ display: "flex", alignItems: "center" }}
                 >
                   <img src={Email} alt="Email" />
-                  <span style={{ marginRight: "8px" }}>Cc:</span>
+                  <span style={{ marginRight: "8px" }}>T0:</span>
                 </InputAdornment>
               ),
             }}
@@ -152,7 +196,7 @@ const SwitchBoardDialog = ({ open }) => {
                   <img src={Email} alt="Email" />
                   <span style={{ marginRight: "8px" }}>Cc:</span>
 
-                  {selectedValues.map((value, index) => (
+                  {selectedCCValues.map((value, index) => (
                     <Chip
                       key={index}
                       label={value}
@@ -190,6 +234,33 @@ const SwitchBoardDialog = ({ open }) => {
             OHIP Billing Number:<br></br>
           </p>
         </div>
+        {(selectedValue === 4 || selectedValue === 5) && (
+          <div className={style.marginTop20}>
+            <div
+              className={style.entityLableStyle}
+              style={{ fontStyle: "bold" }}
+            >
+              Would to Like to send any additional documents to the applicant?
+            </div>
+            <p>
+              Review the list of documents available and select as
+              needed.Missing Documents?
+            </p>
+            <TableTwo
+              tableHeaderValues={[
+                "CHECKBOX",
+                "documentName",
+                "format",
+                "size",
+                "Requirement",
+                "lastUpdatedOn",
+                "lastUpdatedBy",
+              ]}
+              gridStyle={style.ApplicantStyle}
+              tableSortValues={[]}
+            />
+          </div>
+        )}
       </div>
     </Dialog>
   );

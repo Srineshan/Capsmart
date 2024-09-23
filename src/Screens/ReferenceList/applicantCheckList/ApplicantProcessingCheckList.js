@@ -31,8 +31,8 @@ const ApplicantProcessingCheckList = () => {
   const [editData, setEditData] = useState();
   const [isRefetch, setIsRefetch] = useState(false);
 
-  const tableHeadKeys = ["APPLICANT TYPES", "CATEGORY", "LAST UPDATED"];
-  const tableDataKeys = ["applicantType", "category", "lastModifiedDate"];
+  const tableHeadKeys = ["APPLICANT TYPES", "LAST UPDATED"];
+  const tableDataKeys = ["applicantType", "lastModifiedDate"];
 
   useEffect(() => {
     getApplicantType();
@@ -86,8 +86,9 @@ const ApplicantProcessingCheckList = () => {
   const getStaffPrivileges = async (id) => {
     if (id !== "") {
       const { data: applicantTypeForm } = await GET(
-        `entity-service/applicantType?applicantTypeId=${id}`
+        `entity-service/checklist?applicantTypeId=${id}`
       );
+      console.log("applicantTypeFormchecklist", applicantTypeForm);
       setIsRefetch(false);
       setApplicantTypeEntityForm(applicantTypeForm);
     }
@@ -114,6 +115,12 @@ const ApplicantProcessingCheckList = () => {
     setIsRefetch(needRefetch);
   };
 
+  const onAddClick = () => {
+    setIsEdit(false); // Set to false for adding a new entry
+    setEditData(null); // Reset editData for new entry
+    setIsDialogOpen(true);
+  };
+
   return (
     <Fragment>
       <Navbar />
@@ -121,13 +128,13 @@ const ApplicantProcessingCheckList = () => {
         <div className={style.padding20}>
           <div>
             <LevelTwoHeader
-              heading={"Applicant Types by Entity Types"}
+              heading={"application Processing Checklist by applicant"}
               updatedTime={`UPDATED ON ${lastUpdatedDate}`}
               path={"/Screens/ReferenceList/customerAdminDashboard"}
               callingFrom={"Customer Admin"}
               needHeader={false}
-              tileType={"Applicant"}
-              onAddClick={() => setIsDialogOpen(true)}
+              tileType={"CheckList"}
+              onAddClick={onAddClick} // Use the updated function here
               onCloseLevel2={() => setIsDialogOpen(false)}
             />
           </div>
@@ -139,7 +146,7 @@ const ApplicantProcessingCheckList = () => {
               siteType={applicantTypeList?.map((data) => data?.siteType)}
               selectedTile={getSelectedTile}
               onSelectSite={handleSiteClick}
-              tileType={"ApplicantType"}
+              tileType={"CheckList"}
               sideBarList={applicantTypeList}
               siteDropdown={true}
             />
@@ -164,7 +171,7 @@ const ApplicantProcessingCheckList = () => {
                 }
                 tableDataKeys={tableDataKeys}
                 tableHeadKeys={tableHeadKeys}
-                tileType={"ApplicantType"}
+                tileType={"CheckList"}
                 groupFirstTwoColumn={true}
                 onEditClick={(data) => {
                   setIsEdit(true);
@@ -172,7 +179,6 @@ const ApplicantProcessingCheckList = () => {
                   setEditData(data);
                 }}
               />
-
               <ReferenceListActionButton
                 button1={"Save In-Progress"}
                 button2={" Mark as Done"}

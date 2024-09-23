@@ -18,6 +18,30 @@
 .top70 {
   top: 70%;
 }
+.dropzoneStyle {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  height: auto;
+  border-width: 2;
+  border-color: rgb(139, 136, 136);
+  background-color: #f5f5f8;
+  color: #484c51;
+}
+.completedIconStyle {
+  height: 25px;
+  width: 25px;
+  object-fit: contain;
+  // margin-top: 18px;
+}
+.completedIconStyle2 {
+  height: 18px;
+  width: 20px;
+  object-fit: contain;
+  margin-right: 10px;
+  margin-left: 10px;
+  // margin-top: 18px;
+}
 
 .headingStyle {
   display: flex;
@@ -1506,7 +1530,7 @@
   color: #52575d;
   margin-top: 5px;
 }
-.entityLableStyle2 {
+.entityLableStyle4 {
   text-align: left;
   font: normal normal normal 14px/20px proxima-nova;
   letter-spacing: 0px;
@@ -1515,7 +1539,7 @@
 }
 .entityLableStyle3 {
   text-align: left;
-  font: normal normal normal 13px/8px proxima-nova;
+  font: normal normal normal 13px/20px proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   margin-top: 5px;
@@ -1527,6 +1551,11 @@
   letter-spacing: 0px;
   color: #52575d;
   opacity: 0.5;
+}
+.ApplicantStyle {
+  display: grid;
+  grid-template-columns: 7% 20% 10% 8% 12% 18% 18%;
+  gap: 1%;
 }
 
 .displayFlex {
@@ -3290,6 +3319,11 @@
 .validation {
   display: flex;
   align-items: center;
+  .bp4-control {
+    input:checked ~ .bp4-control-indicator {
+      background-color: #7165e3 !important;
+    }
+  }
 }
 
 .dialogOutlinedButton {
@@ -3650,6 +3684,12 @@ input:checked + .slider:before {
   width: 25%;
   display: flex;
   justify-content: space-evenly;
+  align-items: center;
+}
+.imageSpaceAlignment2 {
+  width: 25%;
+  display: flex;
+  justify-content: flex-end;
   align-items: center;
 }
 

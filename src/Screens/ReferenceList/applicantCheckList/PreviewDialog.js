@@ -13,26 +13,26 @@ import {
 import style from "./../index.module.scss";
 import { GET, POST, PUT, TenantID } from "../../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../../utils/toaster";
-import WritingFile from "./../../../images/writing-file.svg";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
-import CommonInputField from "../../../Components/CommonFields/CommonInputField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import { Switch, makeStyles } from "@material-ui/core";
-import { Box } from "@mui/material";
-import Chip from "@mui/material/Chip";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import SwitchBoardDialog from "./SwitchBoardDialog";
+import CompletedIcon from "./../../../images/completedIcon.png";
 
-const PreviewDialog = ({ open, handleClose }) => {
+const PreviewDialog = ({
+  open,
+  handleClose,
+  selectedValue,
+  selectedApplicant,
+}) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectOption, setSelectOption] = useState(""); // State to handle selected option
 
   const handleOpenDialog = () => {
     setIsDialogOpen(true);
   };
+  console.log("selectedApplicant", selectedApplicant);
 
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
@@ -50,10 +50,12 @@ const PreviewDialog = ({ open, handleClose }) => {
           <p
             className={style.extensionStyle}
           >{`Applicant Processing Status For:`}</p>
-          <div className={`${style.floatRight} ${style.imageSpaceAlignment}`}>
-            <PrintOutlinedIcon
-              className={`${style.headerPrintIcon} ${style.cursorPointer}`}
-            />
+          <div className={`${style.floatRight} ${style.imageSpaceAlignment2}`}>
+            <div className={style.marginRight20}>
+              <PrintOutlinedIcon
+                className={`${style.headerPrintIcon} ${style.cursorPointer}`}
+              />
+            </div>
             <div>
               <Icon
                 icon="cross"
@@ -66,20 +68,68 @@ const PreviewDialog = ({ open, handleClose }) => {
           </div>
         </div>
         <div className={style.ReferenceListEntityBorder}></div>
-        <div style={{ display: "flex" }}>
+        <div style={{ display: "flex", alignItems: "center" }}>
           <div className={style.entityLableStyle}>John Doe,</div>
-          <div className={style.entityLableStyle2}>John Doe,</div>
+          <div className={style.entityLableStyle4}>John Doe,</div>
           <div className={style.entityLableStyle3}>John Doe</div>
         </div>
         <div className={`${style.flexContainer} ${style.marginTop20}`}>
-          <p>Send Email Notification To SwitchBoard</p>
-          <p> Ready to Send</p>
-          <p onClick={handleOpenDialog} style={{ cursor: "pointer" }}>
-            Send To Switchboard
-          </p>
+          {(selectedValue === 1 ||
+            selectedValue === 4 ||
+            selectedValue === 5 ||
+            selectedValue === 6) && (
+            <>
+              <p>Send Email Notification To SwitchBoard</p>
+              <p>Ready to Send</p>
+              <p
+                onClick={handleOpenDialog}
+                style={{ cursor: "pointer", color: "#7165E3" }}
+              >
+                {selectedValue === 1
+                  ? "Send To Switchboard"
+                  : selectedValue === 4
+                  ? "Send To Applicant"
+                  : selectedValue === 5
+                  ? "Send To Applicant"
+                  : "Send Email"}
+              </p>
+            </>
+          )}
+          {selectedValue === 2 && (
+            <>
+              <img
+                src={CompletedIcon}
+                alt="completed"
+                className={`${style.completedIconStyle}`}
+              ></img>
+              <div className={style.entityLableStyle}>
+                Add To Outlook For Medical &Professional Staff
+              </div>
+              <p>Last updated</p>
+              <FormControl size="small">
+                <Select
+                  value={selectOption}
+                  onChange={(e) => setSelectOption(e.target.value)}
+                  displayEmpty
+                >
+                  <MenuItem value="" disabled>
+                    Select an Option
+                  </MenuItem>
+                  <MenuItem value={1}>Option 1</MenuItem>
+                  <MenuItem value={2}>Option 2</MenuItem>
+                  <MenuItem value={3}>Option 3</MenuItem>
+                </Select>
+              </FormControl>
+            </>
+          )}
         </div>
       </div>
-      <SwitchBoardDialog open={isDialogOpen} />
+      <SwitchBoardDialog
+        open={isDialogOpen}
+        selectedValue={selectedValue}
+        selectedApplicant={selectedApplicant}
+        handleClose={handleCloseDialog}
+      />
     </Dialog>
   );
 };
