@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from '../../images/loaderCommon.gif';
+import logo from '../../images/loaderCommon.GIF';
 
 import styles from './index.module.scss';
 

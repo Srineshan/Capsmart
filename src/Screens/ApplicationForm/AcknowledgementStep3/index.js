@@ -136,18 +136,6 @@ const ApplicationAcknowledgementStep3 = ({ acknowledgementForm, dateFormat, name
         }
     }
 
-    const handleSubmitApplication = async () => {
-        await POST(`application-management-service/application/${applicationId}/submit`)
-            .then(response => {
-                console.log(response)
-                SuccessToaster("Application Submitted Successfully");
-            })
-            .catch((error) => {
-                console.log(error)
-                ErrorToaster("Unexpected Error Submitting Application");
-            });
-    }
-
     const handleSubmitApplicationReq = async () => {
         if (isSigned) {
             let temp = {
@@ -166,22 +154,22 @@ const ApplicationAcknowledgementStep3 = ({ acknowledgementForm, dateFormat, name
                     if (sessionStorage.getItem('fromSummary') === 'true') {
                         navigate(-1);
                     }
-                    // else {
-                    //     navigate('/applicationForm/section1/acknowledgementStep3')
-                    // }
+                    else {
+                        navigate('/applicationForm/applicationacknowledgement')
+                    }
                 })
                 .catch((error) => {
                     console.log(error)
                     ErrorToaster("Unexpected Error Updating Application");
                 });
         }
-        // else {
-        //     if (sessionStorage.getItem('fromSummary') === 'true') {
-        //         navigate(-1);
-        //     } else {
-        //         navigate('/applicationForm/section1/acknowledgementStep3')
-        //     }
-        // }
+        else {
+            if (sessionStorage.getItem('fromSummary') === 'true') {
+                navigate(-1);
+            } else {
+                navigate('/applicationForm/applicationacknowledgement')
+            }
+        }
     }
     const handleContinue = () => {
         if (sessionStorage.getItem('fromSummary') === 'true') {
@@ -250,7 +238,6 @@ const ApplicationAcknowledgementStep3 = ({ acknowledgementForm, dateFormat, name
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()} >CONTINUE</div>
                     </div>
-                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplication()} >SUBMIT APPLICATION</div>
                 </div>
             </div>
         </div>

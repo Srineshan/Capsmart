@@ -331,3 +331,16 @@
     letter-spacing: 0px;
     color: #52575D;
 }
+
+.changePrivilegeText {
+    text-align: right;
+    text-decoration: underline;
+    font: normal normal bold 20px/26px Proxima Nova;
+    letter-spacing: 0px;
+    color: #7165E3;
+}
+
+.spaceBetween {
+    display: flex;
+    justify-content: space-between;
+}

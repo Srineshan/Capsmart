@@ -184,7 +184,7 @@ const NewActiveApplication = ({
   }
 
   const getFormSchema = async () => {
-    if (formSchemaId !== '') {
+    if (formSchemaId !== '' && formSchemaId !== undefined && formSchemaId !== null) {
       const { data: form } = await GET(
         `application-management-service/formSchema/${formSchemaId}`
       );
@@ -325,6 +325,7 @@ const NewActiveApplication = ({
     await PUT(`application-management-service/application/${applicationId}/workflow/complete/APPROVED`)
       .then(response => {
         console.log('success')
+        window.location.reload()
       })
       .catch((error) => {
         console.log(error)
@@ -451,15 +452,15 @@ const NewActiveApplication = ({
       case 'ContactAddress':
         return (
           <>
-            {formSchema !== undefined && 'contactAddress1' in formSchema?.properties && (
+            {formSchema !== undefined && formSchema?.properties !== null && 'contactAddress1' in formSchema?.properties && (
               <ApplicationFieldCard object={formSchema?.properties?.contactAddress1} basicForm={form} setBasicForm={setForm} stepPath={`forms[1].data`} gridStyle={style.homeMailingAddressGrid} baseKey={'contactAddress1'} isPOD={true} />
             )}
             <CommonDivider />
-            {formSchema !== undefined && 'contactAddress2' in formSchema?.properties && (
+            {formSchema !== undefined && formSchema?.properties !== null && 'contactAddress2' in formSchema?.properties && (
               <ApplicationFieldCard object={formSchema?.properties?.contactAddress2} basicForm={form} setBasicForm={setForm} stepPath={`forms[1].data`} gridStyle={style.mailingAddressGrid} baseKey={'contactAddress2'} isPOD={true} />
             )}
             <CommonDivider />
-            {formSchema !== undefined && 'contactAddress3' in formSchema?.properties && (
+            {formSchema !== undefined && formSchema?.properties !== null && 'contactAddress3' in formSchema?.properties && (
               <ApplicationFieldCard object={formSchema?.properties?.contactAddress3} basicForm={form} setBasicForm={setForm} stepPath={`forms[1].data`} gridStyle={style.businessMailingAddressGrid} baseKey={'contactAddress3'} isPOD={true} />
             )}
           </>
@@ -467,7 +468,7 @@ const NewActiveApplication = ({
       case 'Qualification':
         return (
           <>
-            {formSchema !== undefined && 'certifications' in formSchema?.properties && (
+            {formSchema !== undefined && formSchema?.properties !== null && 'certifications' in formSchema?.properties && (
               <ApplicationFieldCard object={formSchema?.properties?.certifications} basicForm={form} setBasicForm={setForm} stepPath={`forms[2].data`} gridStyle={style.licenseGrid} baseKey={'certifications'} isPOD={true} />
             )}
           </>
@@ -475,7 +476,7 @@ const NewActiveApplication = ({
       case 'MalpracticeInfo':
         return (
           <>
-            {formSchema !== undefined && 'insuranceCarrierInformation' in formSchema?.properties && (
+            {formSchema !== undefined && formSchema?.properties !== null && 'insuranceCarrierInformation' in formSchema?.properties && (
               <ApplicationFieldCard object={formSchema?.properties?.insuranceCarrierInformation} basicForm={form} setBasicForm={setForm} stepPath={`forms[3].data`} gridStyle={style.insuranceGrid} baseKey={'insuranceCarrierInformation'} isPOD={true} />
             )}
           </>
@@ -483,7 +484,7 @@ const NewActiveApplication = ({
       case 'Education':
         return (
           <>
-            {formSchema !== undefined && 'graduation' in formSchema?.properties && (
+            {formSchema !== undefined && formSchema?.properties !== null && 'graduation' in formSchema?.properties && (
               <ApplicationFieldCard object={formSchema?.properties?.graduation} basicForm={form} gridStyle={style.EducationGrid} baseKey={'graduation'} addMoreType={true} formId={form?.forms?.[4]?.id} applicationId={applicationId} tableGrid={style.tableGridGraduation} isPOD={true}
                 heading={'Information Requirement Alert'}
                 subHeading={'For this application you are required to provide information on all of the different undergraduate / graduate qualifications you have.'}
@@ -521,7 +522,7 @@ const NewActiveApplication = ({
       case 'WorkExperience':
         return (
           <>
-            {formSchema !== undefined && 'trainingAndWorkingExperience' in formSchema?.properties && (
+            {formSchema !== undefined && formSchema?.properties !== null && 'trainingAndWorkingExperience' in formSchema?.properties && (
               <ApplicationFieldCard object={formSchema?.properties?.trainingAndWorkingExperience} basicForm={form} gridStyle={style.trainingGrid} baseKey={'trainingAndWorkingExperience'} addMoreType={true} formId={form?.forms?.[5]?.id} applicationId={applicationId} tableGrid={style.tableGridTrainingAndExperience} isPOD={true} />
             )}
             <div className={style.marginTop20}>
@@ -552,7 +553,7 @@ const NewActiveApplication = ({
               )}
             </div>
             <CommonDivider />
-            {formSchema !== undefined && 'healthcareFacilityAppointments' in formSchema?.properties && (
+            {formSchema !== undefined && formSchema?.properties !== null && 'healthcareFacilityAppointments' in formSchema?.properties && (
               <ApplicationFieldCard object={formSchema?.properties?.healthcareFacilityAppointments} basicForm={form} gridStyle={style.healthCareGrid} baseKey={'healthcareFacilityAppointments'} addMoreType={true} formId={form?.forms?.[5]?.id} applicationId={applicationId} tableGrid={style.tableGridTrainingAndExperience} isPOD={true} />
             )}
             <div className={style.marginTop20}>
@@ -585,18 +586,19 @@ const NewActiveApplication = ({
           </>
         );
       case 'References':
+        console.log(formSchema)
         return (
           <>
-            {formSchema !== undefined && 'references' in formSchema?.properties && (
-              <ApplicationFieldCard object={formSchema?.properties?.references} basicForm={form} gridStyle={style.twoCol} baseKey={'references'} setBasicForm={setForm} addMoreType={true} formId={form?.forms?.[6]?.id} applicationId={applicationId} tableGrid={style.tableGridReferences} isPOD={true} />
+            {formSchema !== undefined && formSchema?.properties !== null && 'references' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.references} basicForm={form} gridStyle={style.twoCol} baseKey={'references'} setBasicForm={setForm} addMoreType={true} formId={form?.forms?.[7]?.id} applicationId={applicationId} tableGrid={style.tableGridReferences} isPOD={true} />
             )}
             <div className={style.marginTop20}>
-              {form?.forms?.[6]?.data?.references?.map((data, index) =>
+              {form?.forms?.[7]?.data?.references?.map((data, index) =>
                 data?.file?.fileURL !== undefined ? (
                   <div className={`${style.documentBackground} ${style.documentCardGrid} ${style.marginTop10}`} key={index}>
                     <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.file?.fileName}</div>
                     <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.file?.classification !== null ? data?.file?.classification : '-'}</div>
-                    <div className={`${style.displayInRow} ${style.cursorPointer}`} onClick={() => { setFile(data?.file); setShowDocVerifyDialog(true); setSelectedRow(data); setSelectedRowTableName('references'); setSelectedFormId(form?.forms?.[6]?.id) }}>
+                    <div className={`${style.displayInRow} ${style.cursorPointer}`} onClick={() => { setFile(data?.file); setShowDocVerifyDialog(true); setSelectedRow(data); setSelectedRowTableName('references'); setSelectedFormId(form?.forms?.[7]?.id) }}>
                       {(data?.file?.isVerified !== undefined && data?.file?.isVerified) ? (
                         <>
                           <img src={Verified} alt="" className={style.verifyImage} />
@@ -618,16 +620,16 @@ const NewActiveApplication = ({
               )}
             </div>
             <CommonDivider />
-            {formSchema !== undefined && 'privilegeReferences' in formSchema?.properties && (
-              <ApplicationFieldCard object={formSchema?.properties?.privilegeReferences} basicForm={form} gridStyle={style.twoCol} baseKey={'privilegeReferences'} setBasicForm={setForm} addMoreType={true} formId={form?.forms?.[6]?.id} applicationId={applicationId} tableGrid={style.tableGridReferences} isPOD={true} />
+            {formSchema !== undefined && formSchema?.properties !== null && 'privilegeReferences' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.privilegeReferences} basicForm={form} gridStyle={style.twoCol} baseKey={'privilegeReferences'} setBasicForm={setForm} addMoreType={true} formId={form?.forms?.[7]?.id} applicationId={applicationId} tableGrid={style.tableGridReferences} isPOD={true} />
             )}
             <div className={style.marginTop20}>
-              {form?.forms?.[6]?.data?.privilegeReferences?.map((data, index) =>
+              {form?.forms?.[7]?.data?.privilegeReferences?.map((data, index) =>
                 data?.file?.fileURL !== undefined ? (
                   <div className={`${style.documentBackground} ${style.documentCardGrid} ${style.marginTop10}`} key={index}>
                     <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.file?.fileName}</div>
                     <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.file?.classification !== null ? data?.file?.classification : '-'}</div>
-                    <div className={`${style.displayInRow} ${style.cursorPointer}`} onClick={() => { setFile(data?.file); setShowDocVerifyDialog(true); setSelectedRow(data); setSelectedRowTableName('privilegeReferences'); setSelectedFormId(form?.forms?.[6]?.id) }}>
+                    <div className={`${style.displayInRow} ${style.cursorPointer}`} onClick={() => { setFile(data?.file); setShowDocVerifyDialog(true); setSelectedRow(data); setSelectedRowTableName('privilegeReferences'); setSelectedFormId(form?.forms?.[7]?.id) }}>
                       {(data?.file?.isVerified !== undefined && data?.file?.isVerified) ? (
                         <>
                           <img src={Verified} alt="" className={style.verifyImage} />
@@ -653,30 +655,30 @@ const NewActiveApplication = ({
       case 'ProfessionalConduct':
         return (
           <>
-            {formSchema !== undefined && 'conductDisclosure1' in formSchema?.properties && (
-              <ApplicationFieldCard object={formSchema?.properties?.conductDisclosure1} basicForm={form} stepPath={`forms[7].data`} gridStyle={style.conductGrid} baseKey={'conductDisclosure1'} collapsableQuestionCard={true} isPOD={true} />
+            {formSchema !== undefined && formSchema?.properties !== null && 'conductDisclosure1' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.conductDisclosure1} basicForm={form} stepPath={`forms[8].data`} gridStyle={style.conductGrid} baseKey={'conductDisclosure1'} collapsableQuestionCard={true} isPOD={true} />
             )}
-            {formSchema !== undefined && 'conductDisclosure2' in formSchema?.properties && (
-              <ApplicationFieldCard object={formSchema?.properties?.conductDisclosure2} basicForm={form} stepPath={`forms[7].data`} gridStyle={style.conductGrid} baseKey={'conductDisclosure2'} collapsableQuestionCard={true} isPOD={true} />
+            {formSchema !== undefined && formSchema?.properties !== null && 'conductDisclosure2' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.conductDisclosure2} basicForm={form} stepPath={`forms[8].data`} gridStyle={style.conductGrid} baseKey={'conductDisclosure2'} collapsableQuestionCard={true} isPOD={true} />
             )}
           </>
         );
       case 'CriminalHistory':
         return (
           <>
-            {formSchema !== undefined && 'criminalData1' in formSchema?.properties && (
-              <ApplicationFieldCard object={formSchema?.properties?.criminalData1} basicForm={form} stepPath={`forms[8].data`} gridStyle={style.conductGrid} baseKey={'criminalData1'} collapsableQuestionCard={true} isPOD={true} />
+            {formSchema !== undefined && formSchema?.properties !== null && 'criminalData1' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.criminalData1} basicForm={form} stepPath={`forms[9].data`} gridStyle={style.conductGrid} baseKey={'criminalData1'} collapsableQuestionCard={true} isPOD={true} />
             )}
-            {formSchema !== undefined && 'criminalData2' in formSchema?.properties && (
-              <ApplicationFieldCard object={formSchema?.properties?.criminalData2} basicForm={form} stepPath={`forms[8].data`} gridStyle={style.conductGrid} baseKey={'criminalData2'} collapsableQuestionCard={true} isPOD={true} />
+            {formSchema !== undefined && formSchema?.properties !== null && 'criminalData2' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.criminalData2} basicForm={form} stepPath={`forms[9].data`} gridStyle={style.conductGrid} baseKey={'criminalData2'} collapsableQuestionCard={true} isPOD={true} />
             )}
           </>
         );
       case 'MedicalHistory':
         return (
           <>
-            {formSchema !== undefined && 'impactingPractice' in formSchema?.properties && (
-              <ApplicationFieldCard object={formSchema?.properties?.impactingPractice} basicForm={form} stepPath={`forms[9].data`} gridStyle={style.conductGrid} baseKey={'impactingPractice'} collapsableQuestionCard={true} isPOD={true} />
+            {formSchema !== undefined && formSchema?.properties !== null && 'impactingPractice' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.impactingPractice} basicForm={form} stepPath={`forms[10].data`} gridStyle={style.conductGrid} baseKey={'impactingPractice'} collapsableQuestionCard={true} isPOD={true} />
             )}
           </>
         );
@@ -685,7 +687,10 @@ const NewActiveApplication = ({
           <>
             <div className={style.marginLeft50}>
               <div className={style.cardTextBoldStyle}>Selected Previleges</div>
-              {form?.privileges?.map((data, index) => (
+              {form?.privileges?.obligatedPrivileges?.map((data, index) => (
+                <div className={`${style.documentTextStyle} ${style.marginLeft} ${style.marginTop10}`} key={index}>{data?.privilegeSetTitle}</div>
+              ))}
+              {form?.privileges?.additionalPrivileges?.map((data, index) => (
                 <div className={`${style.documentTextStyle} ${style.marginLeft} ${style.marginTop10}`} key={index}>{data?.privilegeSetTitle}</div>
               ))}
             </div>
