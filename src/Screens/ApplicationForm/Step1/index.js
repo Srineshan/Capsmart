@@ -35,6 +35,7 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
     }
 
     const getIsValidationDialogOpen = (value) => {
+        
         setShowValidationDialog(value);
     }
 

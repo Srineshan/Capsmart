@@ -26,9 +26,9 @@ const getSelectedTab = (tab) => {
   };
 
   return (
-    <div className={`${style.tabs}`}>
-      <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="New Applicants" currentTile="NewApplicants" />
-      <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Staff Reappointments" />
+    <div className={`${style.tabs}`} >
+      <TileApplication  selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="New Applicants" currentTile="NewApplicants" />
+      <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Staff Reappointments"  isDisabled={true}/>
     </div>
   )
 }

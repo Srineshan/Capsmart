@@ -918,14 +918,17 @@ const StaffApplicationList = ({
           >
             {`STAFF MANAGER >> APPLICATIONS`}
           </div>
-          <div
-            className={`${style.spaceBetween} ${style.marginTop20} ${style.marginLeft30} `}
-          >
+          <div className={`${style.marginTop20}`}>
           <StaffApplicationTopTiles
               getSelectedTab={getSelectedTab}
               selectedTab={selectedTab}
             />
-            </div>
+          </div>
+          <div className={`${style.borderStyleTiles}`}></div>
+          {/* <StaffApplicationTopTiles
+              getSelectedTab={getSelectedTab}
+              selectedTab={selectedTab}
+            /> */}
           <div
             className={`${style.spaceBetween} ${style.marginTop20} ${style.marginLeft30} `}
           >

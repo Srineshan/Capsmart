@@ -30,15 +30,21 @@ const TileApplication = ({
   smallNum1SelectedColor,
   smallNum2SelectedColor,
   smallNum3SelectedColor,
+  isDisabled,
   getTabFilter
 }) => {
-
+  const isSelected = selectedTab === currentTile;
+  const handleClick = () => {
+    if (!isDisabled) {
+      getSelectedTab(currentTile);
+    }
+  };
   console.log(selectedTab, currentTile)
 
   return (
     <div
-      className={`${style.applicationCardStyle} ${style.alignCenter} ${selectedTab === currentTile && style.selectedApplicantBackground}`}
-      onClick={() => getSelectedTab(currentTile)}
+      className={`${style.applicationCardStyle} ${style.alignCenter}  ${isSelected ? style.selectedApplicantBackground : ''} ${isDisabled ? style.disabled : ''}`}
+      onClick={handleClick}
     >
       {topText !== "" && <p className={style.next30Style}>{topText}</p>}
       <div className={`${style.spaceBetweenColumn} ${style.padding5}`}>
