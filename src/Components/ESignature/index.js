@@ -32,17 +32,9 @@ const ESignature = ({ userName, currentDate, encData, showData, showDatais = tru
                 <div className={`${style.boxContainer} ${style.border}`} >
                     <div className={style.userDetails} >
                         {!showData ? (
-                            <>
-                                <span> Click To Electronically Signed by</span>
-                                <span className={style.gap}></span >
-                                <span>DD/MM/YYYY</span>
-                            </>
+                            <span> Click To Electronically Sign</span>
                         ) : (
-                            <>
-                                <span className={style.userName}>{userName}</span>
-                                <span className={style.gap}></span>
-                                <span className={style.currentDate}>{currentDate}</span>
-                            </>
+                            <span className={style.userName}>{userName}</span>
                         )}
                     </div >
                 </div >

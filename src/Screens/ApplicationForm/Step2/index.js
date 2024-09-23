@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import PdfDoc from './../../../images/pdfDoc.png';
 import WordDoc from './../../../images/wordDoc.png';
 import ImgDoc from './../../../images/imgDoc.png';
+import DeleteIcon from './../../../images/deleteHcRow.png';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
@@ -41,6 +42,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
     const [replaceFileIndex, setReplaceFileIndex] = useState(-1);
     const [showFileDisplayDialog, setShowFileDisplayDialog] = useState(false);
     const [selectedFile, setselectedFile] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     let eSignTitle = getValueByPath(basicForm, 'forms[0].data.setUpYourSignature.title');
     let eSignInitial = getValueByPath(basicForm, 'forms[0].data.setUpYourSignature.initial')
     let showRedBorderForESign = ((eSignTitle === '' || eSignTitle === undefined) || (eSignInitial === '' || eSignInitial === undefined))
@@ -128,6 +130,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
     console.log(formSchema, basicForm, tempValue)
 
     const changeHandler = async (event) => {
+        setIsLoading(true);
         console.log(event)
         setFiles(event);
         console.log(event, 'Test');
@@ -152,10 +155,12 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
                 table.push({ documentType: response?.data[index]?.classification !== null ? response?.data[index]?.classification : '', fileSize: `${(data?.size / (1024 * 1024)).toFixed(2)} Mb`, fileURL: response?.data[index]?.fileURL, fileType: response?.data[index]?.fileType, fileUploaded: data?.name, requirement: response?.data[index]?.classification !== null ? basicForm?.documentsRequired?.filter(data => data?.document?.name === response?.data[index]?.classification)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data[index]?.valid, verified: response?.data[index]?.verified })
             })
             handleSubmitApplicationReq(table)
+            setIsLoading(false);
             return response?.data;
         } catch (error) {
             ErrorToaster('File Upload Failed');
             console.error(error);
+            setIsLoading(false);
             return null;
         }
     };
@@ -248,7 +253,12 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
                 }
             }
             if (index === Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.length - 1) {
-                temp.push({ "type": "action", "value": array?.map(innerData => actions) })
+                // temp.push({ "type": "action", "value": array?.map(innerData => actions) })
+                temp.push({
+                    "type": "icon", "icon": array?.map(innerData =>
+                        <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => { handleDelete(innerData) }} />
+                    ), 'isShowHoverText': false
+                });
             }
         })
         console.log(temp, array, basicForm?.documentsRequired?.map(data => data?.document?.name))

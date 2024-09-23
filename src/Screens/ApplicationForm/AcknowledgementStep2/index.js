@@ -189,10 +189,16 @@ const ApplicationAcknowledgementStep2 = ({ acknowledgementForm, dateFormat, name
                             <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
                         </div>
                         <CommonDivider />
+                        {formSchema?.content?.title !== null && (
+                            <div className={style.cardTitle}>{formSchema?.content?.title}</div>
+                        )}
                         <div
                             className={`${style.leftAlign} ${style.marginTop} ${style.descriptionStyle}`}
                             dangerouslySetInnerHTML={{ __html: formContent?.content?.content }}
                         />
+                        {formSchema?.disclaimer?.title !== null && (
+                            <div className={style.cardTitle}>{formSchema?.disclaimer?.title}</div>
+                        )}
                         <div className={`${style.checkGrid} ${style.marginTop}`}>
                             {formContent?.disclaimer?.content !== null && (
                                 <CommonCheckBox checked={isChecked} onChange={(e) => handleIsChecked(e.target.checked)} />
