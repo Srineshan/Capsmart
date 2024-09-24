@@ -2127,6 +2127,11 @@
   grid-template-columns: 170px 1fr 1fr;
   grid-gap: 20px;
 }
+.PrivilegesListManager {
+  display: grid;
+  grid-template-columns: 15% 15% 15% 15% 15% 15% 15%;
+  grid-gap: 20px;
+}
 
 .entityLableStyle2 {
   text-align: left;

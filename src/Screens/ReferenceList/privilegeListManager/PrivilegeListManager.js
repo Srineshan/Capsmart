@@ -11,18 +11,22 @@ import { ReferenceListActionButton } from "../common/ReferenceListActionButton";
 import { Typography } from "@material-ui/core";
 import ActivePrivilegesList from "./ActivePrivilegesList";
 import PrivilegeListDialog from "./PrivilegesListDialog";
+import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
-export const PrivilegeListManager = () => {
+export const PrivilegeListManager = (getTableData) => {
   const [isEdit, setIsEdit] = useState(false);
+
   const [entityId, setEntityId] = useState("");
   const [lastUpdatedDate, setLastUpdatedDate] = useState("");
   const [selectedApplicantType, setSelectedApplicantType] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [applicantTypeList, setApplicantTypeList] = useState([]);
+  const [departmentList, setDepartmentList] = useState([]);
   const [applicantId, setApplicantId] = useState("");
   const [staffPrivilegesForm, setStaffPrivilegesForm] = useState([]);
   const [editData, setEditData] = useState();
   const [isRefetch, setIsRefetch] = useState(false);
+  const [selectedDepartment, setSelectedDepartment] = useState("");
 
   const tableDataKeys = ["applicantType", "lastModifiedDate"];
   const [selectedTab, setSelectedTab] = useState("permanentStaff");
@@ -35,6 +39,7 @@ export const PrivilegeListManager = () => {
   useEffect(() => {
     getApplicantType();
     getEntity();
+    getDepartmentName();
   }, []);
 
   useEffect(() => {
@@ -102,9 +107,16 @@ export const PrivilegeListManager = () => {
     const { data: types } = await GET("entity-service/sites");
     setApplicantTypeList(types);
   };
+  const getDepartmentName = async () => {
+    const { data: types } = await GET("entity-service/department");
+    setDepartmentList(types);
+  };
 
   const handleSiteClick = (siteName) => {
     setSelectedApplicantType(siteName);
+  };
+  const handleDepartmentChange = (event) => {
+    setSelectedDepartment(event.target.value); // Update the selected department
   };
 
   const handleCloseDialog = (needRefetch = false) => {
@@ -117,30 +129,71 @@ export const PrivilegeListManager = () => {
       <Navbar />
       <div className={` ${style.applicantTypeBackground}`}>
         <div className={style.padding20}>
-          {/* <div>
-            <LevelTwoHeader
-              heading={"Staff Privileges List Manager"}
-              updatedTime={UPDATED ON ${lastUpdatedDate}}
-              path={"/Screens/ReferenceList/customerAdminDashboard"}
-              callingFrom={"Customer Admin"}
-              needHeader={false}
-              tileType={"StaffPrivileges"}
-              onAddClick={() => setIsDialogOpen(true)}
-              onCloseLevel2={() => setIsDialogOpen(false)}
-            />
-          </div> */}
-          <div className={style.bigCardGrid}>
-            <ApplicantSideBar
-              applicantType={applicantTypeList?.map(
-                (data) => data?.siteName?.siteName
-              )}
-              siteType={applicantTypeList?.map((data) => data?.siteType)}
-              selectedTile={getSelectedTile}
-              onSelectSite={handleSiteClick}
-              tileType={"StaffPrivileges"}
-              sideBarList={applicantTypeList}
-              siteDropdown={true}
-            />
+          <div>
+            <div>
+              <LevelTwoHeader
+                heading={"Privileges List Manager"}
+                updatedTime={`UPDATED ON ${lastUpdatedDate}`}
+                path={"/Screens/ReferenceList/department/department"}
+                callingFrom={"Customer Admin"}
+                needHeader={false}
+                tileType={"Privileges List Manager"}
+                onAddClick={() => setIsDialogOpen(true)}
+                onCloseLevel2={() => setIsDialogOpen(false)}
+              />
+            </div>
+          </div>
+          <div className={` ${style.bigCardGrid} `}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <div
+                style={{
+                  marginBottom: "100px",
+                }}
+              >
+                <div className={`${style.entityLabelStyle} `}>
+                  Department/Service Area
+                </div>
+                <FormControl fullWidth>
+                  <Select
+                    labelId="department-select-label"
+                    id="department-select"
+                    value={selectedDepartment}
+                    onChange={handleDepartmentChange}
+                    SelectDisplayProps={{
+                      style: {
+                        paddingTop: 5,
+                        paddingBottom: 5,
+                        fontSize: 15,
+                      },
+                    }}
+                  >
+                    {departmentList?.map((department) => (
+                      <MenuItem value={department?.id} key={department?.id}>
+                        {department?.departmentName?.name ||
+                          "Unnamed Department"}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </div>
+              <ApplicantSideBar
+                applicantType={applicantTypeList?.map(
+                  (data) => data?.siteName?.siteName
+                )}
+                siteType={applicantTypeList?.map((data) => data?.siteType)}
+                selectedTile={getSelectedTile}
+                onSelectSite={handleSiteClick}
+                tileType={"PrivilegeListManager"}
+                sideBarList={applicantTypeList}
+                siteDropdown={true}
+              />
+            </div>
+
             <div className={style.applicantList}>
               <ActivePrivilegesList
                 isLoading={isLoading}
@@ -151,6 +204,12 @@ export const PrivilegeListManager = () => {
           </div>
         </div>
       </div>
+      {isDialogOpen && (
+        <PrivilegeListDialog
+          open={isDialogOpen}
+          handleClose={handleCloseDialog}
+        />
+      )}
     </Fragment>
   );
 };

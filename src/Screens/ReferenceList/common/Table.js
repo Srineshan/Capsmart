@@ -11,6 +11,7 @@ import ConsentsDialog from "../consents/consentsDialog";
 import AcknowledgmentDialog from "../acknowledgment/AcknowledgmentDialog";
 import DisclosureByIndustriesDialog from "../disclosureByIndustries/disclosureByIndustriesDialog";
 import { format } from "date-fns";
+import PrivilegeListDialog from "../privilegeListManager/PrivilegesListDialog";
 
 const ReferenceListCommonTable = ({
   applicantTypes,
@@ -22,6 +23,8 @@ const ReferenceListCommonTable = ({
   tileType,
   onEditClick,
 }) => {
+  console.log("tileType", tileType);
+
   const [selectedApplicant, setSelectedApplicant] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -100,6 +103,15 @@ const ReferenceListCommonTable = ({
     if (tileType === "Acknowedgement") {
       try {
         await DELETE(`entity-service/acknowledgementForm/${id}`);
+
+        console.log("Document deleted successfully");
+      } catch (error) {
+        console.error("Error deleting document:", error);
+      }
+    }
+    if (tileType === "PrivilegeListManager") {
+      try {
+        await DELETE(`entity-service/privilegeMaster/${id}`);
 
         console.log("Document deleted successfully");
       } catch (error) {
@@ -204,7 +216,7 @@ const ReferenceListCommonTable = ({
                       </td>
                     ))}
                     <td className={style.actions} height="100%">
-                      {/* <img
+                      <img
                         src={EditHcFolder}
                         alt="Edit"
                         className={style.actionIcon}
@@ -215,9 +227,9 @@ const ReferenceListCommonTable = ({
                         alt="Delete"
                         className={style.actionIcon}
                         onClick={() => handleDelete(applicant.id)}
-                      /> */}
+                      />
                       {/* <DragHandleIcon className={style.actionIcon} /> */}
-                      {tileType === "PrivilegeListManager" ? (
+                      {/* {tileType === "PrivilegeListManager" ? (
                         <img
                           src={ThreeDots}
                           alt="More"
@@ -238,7 +250,7 @@ const ReferenceListCommonTable = ({
                             onClick={() => handleDelete(applicant.id)}
                           />
                         </>
-                      )}
+                      )} */}
                     </td>
                   </tr>
                   {applicant.sub &&
@@ -260,7 +272,7 @@ const ReferenceListCommonTable = ({
                           </td>
                         ))}
                         <td className={style.actions}>
-                          {/* <img
+                          <img
                             src={EditHcFolder}
                             alt="Edit"
                             className={style.actionIcon}
@@ -269,9 +281,9 @@ const ReferenceListCommonTable = ({
                             src={DeleteHcFolder}
                             alt="Delete"
                             className={style.actionIcon}
-                          /> */}
+                          />
                           {/* <DragHandleIcon className={style.actionIcon} /> */}
-                          {tileType === "PrivilegeListManager" ? (
+                          {/* {tileType === "PrivilegeListManager" ? (
                             <img
                               src={ThreeDots}
                               alt="More"
@@ -290,7 +302,7 @@ const ReferenceListCommonTable = ({
                                 className={style.actionIcon}
                               />
                             </>
-                          )}
+                          )} */}
                         </td>
                       </tr>
                     ))}
@@ -343,6 +355,19 @@ const ReferenceListCommonTable = ({
           handleClose={handleCloseDialog}
         />
       )}
+      {selectedApplicant &&
+        tileType == "PrivilegeListManager" &&
+        openDialog && (
+          <PrivilegeListDialog
+            open={openDialog}
+            onClose={handleCloseDialog}
+            selectedAcknowledgement={selectedApplicant}
+            documents={documents}
+            isEdit={openDialog}
+            handleClose={handleCloseDialog}
+            tileType={tileType}
+          />
+        )}
     </div>
   );
 };

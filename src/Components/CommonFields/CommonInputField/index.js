@@ -6,7 +6,7 @@ import style from './index.module.scss';
 
 const CommonInputField = ({ onChange, readOnly, className, leftElement, placeholder, maxLength, onFocus, value, disabled, type, min, key, defaultValue, onBlur, error, label, required }) => {
     const contractStatus = sessionStorage.getItem('Selected Contract Status');
-    console.log(error)
+    // console.log(error)
     return (
         <div>
             {/* <div className={`${style.lableStyle}`}>{label}{required && '*'}</div> */}

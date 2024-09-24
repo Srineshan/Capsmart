@@ -6,6 +6,15 @@
 //     font-style: normal;
 // } */
 
+.sideBar {
+
+    height: 100px;
+}
+
+.privilegeManagerHeight {
+    height: 10px;
+}
+
 .ql-editor {
     font: normal normal normal 23px/26px Proxima Nova;
     font-size: 15px;

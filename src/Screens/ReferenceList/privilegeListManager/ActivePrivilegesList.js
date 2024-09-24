@@ -6,8 +6,6 @@ import React, {
   useRef,
 } from "react";
 import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
-import TextSnippetOutlinedIcon from "@mui/icons-material/TextSnippetOutlined";
-import NoteAltOutlinedIcon from "@mui/icons-material/NoteAltOutlined";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
@@ -30,7 +28,7 @@ import ActivePrivilegesTiles from "./ActivePrivilegesTiles";
 import PrivilegeListDialog from "./PrivilegesListDialog";
 import LevelTwoHeader from "../../../Components/LevelTwoHeader";
 import { siteTimeZone, timeZoneAbbreviation } from "../../../utils/formatting";
-import ApplicantTable from "../common/Table";
+
 import ReferenceListCommonTable from "../common/Table";
 
 const ActivePrivilegesList = ({
@@ -63,6 +61,8 @@ const ActivePrivilegesList = ({
   const [tableData, setTableData] = useState([]);
   const [rejectionListData, setRejectionListData] = useState([]);
   const [staffPrivilegesForm, setStaffPrivilegesForm] = useState([]);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [selectedAcknowledgement, setSelectedAcknowledgement] = useState(null);
 
   const applicantHeaderValues = [
     "Privilege ID",
@@ -300,7 +300,7 @@ const ActivePrivilegesList = ({
 
   return (
     <div className={style.margin20}>
-      <div>
+      {/* <div>
         <LevelTwoHeader
           heading={"Privileges List Manager"}
           updatedTime={`UPDATED ON ${lastUpdatedDate}`}
@@ -311,7 +311,7 @@ const ActivePrivilegesList = ({
           onAddClick={() => setIsDialogOpen(true)}
           onCloseLevel2={() => setIsDialogOpen(false)}
         />
-      </div>
+      </div> */}
       <div>
         <div
           className={`${style.displayInRow}  ${style.bottomTextStyle} ${style.marginTop10}`}
@@ -363,19 +363,7 @@ const ActivePrivilegesList = ({
           </div>
         </div>
 
-        {/* <div className={`${style.bigCardStyle}`}>
-          {isLoading ? (
-            <div
-              className={`${style.verticalAlignCenter} ${style.justifyCenter}`}
-            >
-              <CircularProgress sx={{ color: "#7165E3" }} />
-            </div>
-          ) : (
-            <div ref={componentRef}>
-              <div
-                className={`${style.reduceMarginTop10} staffApplicationList`}
-                ref={PDFRef}
-              > */}
+        {/* <div className={style.PrivilegesListManager}> */}
         <ReferenceListCommonTable
           applicantTypes={tableDataValues}
           applicantNotice={
@@ -387,12 +375,10 @@ const ActivePrivilegesList = ({
           tileType={"PrivilegeListManager"}
           documents={staffPrivilegesForm}
           getAddEntityTypes={getAddEntityTypes}
+          style={style.PrivilegesListManager}
           handleClose={handleCloseDialog}
         />
-        {/* </div>
-            </div>
-          )}
-        </div> */}
+        {/* </div> */}
       </div>
 
       <div className={style.spaceBetween}>
@@ -404,12 +390,7 @@ const ActivePrivilegesList = ({
         </div>
         <p className={style.poweredBy}>© {new Date().getFullYear()} CAPSmart</p>
       </div>
-      {isDialogOpen && (
-        <PrivilegeListDialog
-          open={isDialogOpen}
-          handleClose={handleCloseDialog}
-        />
-      )}
+    
     </div>
   );
 };

@@ -39,6 +39,9 @@ body::-webkit-scrollbar {
 .marginbottom70 {
     margin-bottom: 70px !important;
 }
+.marginbottom200 {
+    margin-bottom: 720px !important;
+}
 .ReferenceListEntityBorder {
     background-color: #826be9;
     height: 3px;
@@ -708,6 +711,12 @@ body::-webkit-scrollbar {
     grid-template-columns: 5% 11% 15% 15% 20% 12% 12% 12%;
     grid-gap: 10px;
 }
+
+// .PrivilegesListManager {
+//     display: grid;
+//     grid-template-columns: 5% 11% 15% 15% 20% 12% 12% 12%;
+//     grid-gap: 10px;
+// }
 
 .locumStaffGrid {
     display: grid;
@@ -2296,6 +2305,9 @@ input[type="file"] {
 
 .marginTop50 {
     margin-top: 50px;
+}
+.marginTop200 {
+    margin-top: 200px;
 }
 .marginRight100 {
     margin-right: 300px;

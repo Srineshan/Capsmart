@@ -6,7 +6,6 @@ import WritingFile from "./../../../images/writing-file.svg";
 import { Box, Divider } from "@mui/material";
 import { POST, GET, PUT } from "./../../dataSaver";
 import { ErrorToaster, SuccessToaster } from "../../../utils/toaster";
-import Editor from "../common/Editor";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
@@ -35,7 +34,11 @@ const PrivilegeListDialog = ({
   handleClose,
   isEdit,
   selectedAcknowledgement,
+
+  tileType,
 }) => {
+  console.log(isEdit, tileType);
+
   const [selectedApplicantType, setSelectedApplicantType] = useState([]);
   const [isPrivilagesRequired, setPrivilagesRequired] = useState(false);
   const [applicantTypes, setApplicantTypesState] = useState([]);
@@ -44,6 +47,7 @@ const PrivilegeListDialog = ({
   const [generalInstructionContent, setGeneralInstructionContent] =
     useState("");
   const [advancePrivilegeContent, setAdvancePrivilegeContent] = useState("");
+  const [selectedData, setSelectedData] = useState([]);
 
   const [saveData, setSaveData] = useState({});
   const [isProofOfDocumentRequired, setIsProofOfDocumentRequired] =
@@ -58,6 +62,7 @@ const PrivilegeListDialog = ({
   const [applicantType, setApplicantType] = useState([]);
   const [title, setTitle] = useState("");
   const [id, setId] = useState("");
+
   const [descripition, setDescripition] = useState("");
   const [applicantTypeList, setApplicantTypeList] = useState([]);
 
@@ -95,7 +100,98 @@ const PrivilegeListDialog = ({
     fetchSpecificSites();
     fetchDepartments();
   }, []);
+  console.log(selectedAcknowledgement);
 
+  const getTableData = async (id) => {
+    if (id) {
+      try {
+        const { data: staffPrivilegesForm } = await GET(
+          `entity-service/privilegeMaster/${id}`
+        );
+
+        setSelectedData(staffPrivilegesForm || []);
+      } catch (error) {
+        console.error("Error fetching privileges data:", error);
+      }
+    }
+  };
+
+  // useEffect(() => {
+  //   console.log("is edot effect opened");
+
+  //   const fetchData = async () => {
+  //     if (isEdit) {
+  //       console.log(
+  //         "selectedAcknowledgement?.id:",
+  //         selectedAcknowledgement?.id
+  //       );
+  //       if (selectedAcknowledgement?.id) {
+  //         await getTableData(selectedAcknowledgement.id);
+  //       }
+  //     }
+
+  //     const tempApplicantTypes = selectedAcknowledgement?.applicantTypes?.map(
+  //       (data) => data?.id
+  //     );
+  //     console.log(selectedData);
+
+  //     setApplicantType(tempApplicantTypes || []);
+  //     setSelectedApplicantType(selectedData?.applicantType || []);
+  //     setTitle(selectedData?.title || "");
+  //     setId(selectedData?.privilegeId || "");
+  //     setDescripition(selectedData?.description || "");
+  //     setPrivilegeTypeOption(
+  //       selectedData?.type === "CORE"
+  //         ? "Core"
+  //         : selectedData?.type === "RESTRICTED"
+  //         ? "Restricted"
+  //         : "Non-Core"
+  //     );
+  //     setPrivilegeStatusOption(
+  //       selectedData?.status === "ACTIVE" ? "Active" : "Retired"
+  //     );
+  //     setEvidenceRequired(selectedData?.isevidenceRequired || false);
+  //     setCompetencyRequired(
+  //       selectedData?.iscompetencyDisclosureRequired || false
+  //     );
+  //   };
+  //   fetchData();
+  // }, [isEdit, selectedData]);
+
+  console.log(selectedData);
+  useEffect(() => {
+    if (isEdit && selectedAcknowledgement?.id) {
+      const fetchData = async () => {
+        try {
+          const { data: staffPrivilegesForm } = await GET(
+            `entity-service/privilegeMaster/${selectedAcknowledgement.id}`
+          );
+          setSelectedData(staffPrivilegesForm || {});
+          setApplicantType(staffPrivilegesForm.applicantType || []);
+          setTitle(staffPrivilegesForm.title || "");
+          setId(staffPrivilegesForm.privilegeId || "");
+          setDescripition(staffPrivilegesForm.description || "");
+          setPrivilegeTypeOption(
+            staffPrivilegesForm.type === "CORE"
+              ? "Core"
+              : staffPrivilegesForm.type === "RESTRICTED"
+              ? "Restricted"
+              : "Non-Core"
+          );
+          setPrivilegeStatusOption(
+            staffPrivilegesForm.status === "ACTIVE" ? "Active" : "Retired"
+          );
+          setEvidenceRequired(staffPrivilegesForm.isevidenceRequired || false);
+          setCompetencyRequired(
+            staffPrivilegesForm.iscompetencyDisclosureRequired || false
+          );
+        } catch (error) {
+          console.error("Error fetching privileges data:", error);
+        }
+      };
+      fetchData();
+    }
+  }, [isEdit, selectedAcknowledgement?.id]);
   const fetchApplicantTypes = async () => {
     try {
       const response = await GET("entity-service/applicantType");
@@ -199,6 +295,18 @@ const PrivilegeListDialog = ({
 
   const handleApplicantTypeChange = (event) => {
     const selectedId = event.target.value;
+    console.log("Selected Applicant Type ID:", selectedId);
+
+    const selectedData = applicantTypes.find((data) => data.id === selectedId);
+    if (selectedData) {
+      console.log("Selected Data ID:", selectedData.id);
+    }
+    setSelectedApplicantType({
+      id: selectedData.id,
+      type:
+        applicantTypes.find((item) => item.id === selectedData.id)?.type || "",
+    });
+    console.log(selectedApplicantType);
     setSaveData((prev) => ({
       ...prev,
       applicantType: {
@@ -207,6 +315,13 @@ const PrivilegeListDialog = ({
       },
     }));
   };
+  // const handleApplicantTypeChange = (event) => {
+  //   const selectedId = event.target.value;
+  //   const selectedType =
+  //     applicantTypes.find((item) => item.id === selectedId)?.type || "";
+
+  //   setSelectedApplicantType({ id: selectedId, type: selectedType });
+  // };
   const handleSaveAcknowledgementForm = async () => {
     const privilegeTypeMap = {
       Core: "CORE",
@@ -490,7 +605,7 @@ const PrivilegeListDialog = ({
                             control={
                               <Radio
                                 checked={privilegeStatusOption === "Active"}
-                                onChange={handleChange}
+                                onChange={handlePrivilegeStatusChange}
                                 value="Active"
                                 sx={{
                                   "& .MuiSvgIcon-root": { borderRadius: "50%" },
@@ -508,7 +623,7 @@ const PrivilegeListDialog = ({
                             control={
                               <Radio
                                 checked={privilegeStatusOption === "Retired"}
-                                onChange={handleChange}
+                                onChange={handlePrivilegeStatusChange}
                                 value="Retired"
                                 sx={{
                                   "& .MuiSvgIcon-root": { borderRadius: "50%" },
@@ -532,6 +647,8 @@ const PrivilegeListDialog = ({
                         placeholder="00"
                         className={style.inputField}
                         fullWidth
+                        value={id}
+                        onChange={(e) => setId(e.target.value)}
                       />
                     </div>
 
@@ -543,6 +660,8 @@ const PrivilegeListDialog = ({
                         placeholder="Add Privilege Title"
                         className={style.inputField}
                         fullWidth
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
                       />
                     </div>
                   </div>
@@ -550,10 +669,11 @@ const PrivilegeListDialog = ({
                     PRIVILEGE DESCRIPITION
                   </div>
                   <CommonInputField
-                    // value={aliasName2}
+                    value={descripition}
                     // onChange={(e) => setAliasName2(e.target.value)}
                     className={`${style.inputField} `}
                     fullWidth
+                    onChange={(e) => setDescripition(e.target.value)}
                   />
                 </div>
               </div>
@@ -670,6 +790,8 @@ const PrivilegeListDialog = ({
                         placeholder="00"
                         className={style.inputField}
                         fullWidth
+                        value={id}
+                        onChange={(e) => setId(e.target.value)}
                       />
                     </div>
 
@@ -681,6 +803,8 @@ const PrivilegeListDialog = ({
                         placeholder="Add Privilege Title"
                         className={style.inputField}
                         fullWidth
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
                       />
                     </div>
                   </div>
@@ -688,10 +812,11 @@ const PrivilegeListDialog = ({
                     PRIVILEGE DESCRIPITION *
                   </div>
                   <CommonInputField
-                    // value={aliasName2}
+                    value={descripition}
                     // onChange={(e) => setAliasName2(e.target.value)}
                     className={`${style.inputField} `}
                     fullWidth
+                    onChange={(e) => setDescripition(e.target.value)}
                   />
                 </div>
               </div>
