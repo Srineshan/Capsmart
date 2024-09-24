@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Dialog,
   Classes,
@@ -36,6 +36,7 @@ import CommonDropZone from "../../../Components/CommonFields/CommonDropZone";
 import CompletedIcon from "./../../../images/completedIcon.png";
 import Alert from "./../../../images/alert.png";
 import redWarning from "./../../../images/redWarning.png";
+import axios from "axios";
 
 const useStyles = makeStyles({
   switch: {
@@ -53,7 +54,24 @@ const useStyles = makeStyles({
   },
 });
 
+const staticContent = `Hello,<br>
+We have a new {Privilege type} {applicant type} starting {expected Start date} in {Department/service area}<br>
+{Name}<br>
+{Phone Number}<br>
+CPSO Number: {Licence number}<br>
+OHIP Billing Number: {OHIP Billing Number}`;
+
 const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
+  const initialContent = `Hello,<br>
+  
+  We have a new {Privilege type} {applicant type} starting {expected Start date} in {Department/service area}<br>
+  
+  {Name}<br>
+  {Phone Number}<br>
+  
+  CPSO Number: {Licence number}<br>
+  OHIP Billing Number: {OHIP Billing Number}`;
+
   const [isConstraintsRequired, setIsConstraintsRequired] = useState(false);
   const [isApplicantInformation, setIsApplicantInformation] = useState(false);
 
@@ -99,7 +117,7 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
   const [isToCompleteChecked, setIsToCompleteChecked] = useState(false); // State to track checkbox
   const [isCCCompleteChecked, setIsCCCompleteChecked] = useState(false); // State to track checkbox
 
-  const [editorContent, setEditorContent] = useState("Hello"); // State to track editor content
+  const [editorContent, setEditorContent] = useState(initialContent); // Initialize state with staticContent
   const [taskAction, setTaskAction] = useState("");
   const [notelabel, setNoteLabel] = useState(""); // Initialize state
   const [selectedDisplayOption, setSelectedDisplayOption] = useState("");
@@ -133,6 +151,7 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
   const [editorCompleteContent, setEditorCompleteContent] = useState(""); // State to track editor content
   const [editorFormDetailsContent, setEditorFormDetailsContent] = useState(""); // State to track editor content
   const [responseData, setResponseData] = useState(null);
+  const editorRef = useRef();
 
   const [fromLinkText, setFromLinkText] = useState("");
 
@@ -172,6 +191,33 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
     { id: 6, name: "Send Capsmart Form", label: "SEND_CAPSMART_FORM" },
   ];
 
+  const replacePlaceholders = (content) => {
+    const privilegeType = "Admin"; // Example values
+    const applicantType = "Full-time";
+    const expectedStartDate = "01/01/2025";
+    const department = "IT";
+    const name = "John Doe";
+    const phoneNumber = "123-456-7890";
+    const licenceNumber = "ABC123";
+    const ohipBillingNumber = "XYZ456";
+
+    return content
+      .replace(/{Privilege type}/g, privilegeType)
+      .replace(/{applicant type}/g, applicantType)
+      .replace(/{expected Start date}/g, expectedStartDate)
+      .replace(/{Department\/service area}/g, department)
+      .replace(/{Name}/g, name)
+      .replace(/{Phone Number}/g, phoneNumber)
+      .replace(/{Licence number}/g, licenceNumber)
+      .replace(/{OHIP Billing Number}/g, ohipBillingNumber);
+  };
+
+  const handleEditorChange = (setState) => (event, editor) => {
+    let data = editor.getData();
+    data = replacePlaceholders(data);
+    setState(data);
+  };
+
   const handleDisplaySelectChange = (event) => {
     const selectedOption = displayOptions.find(
       (option) => option.value === event.target.value
@@ -181,7 +227,7 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
     }
   };
 
-  console.log("selectedApplicantforCheckList", selectedApplicant);
+  console.log("selectedApplicantforCheckListHiii", selectedApplicant);
   const handleSelectChange = (event) => {
     const selectedId = event.target.value;
     setSelectedValue(selectedId);
@@ -190,7 +236,7 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
       (site) => site.id === parseInt(selectedId, 10)
     );
     if (selectedSite) {
-      setTaskAction(selectedSite.label); // Set taskAction to the selected label
+      setTaskAction(selectedSite.label);
     }
   };
 
@@ -317,31 +363,38 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
       setSelectedDisplayOption(
         selectedApplicant.taskDependentNoteDetail?.displayOption || ""
       );
-      setTaskDefaultStatus(
-        selectedApplicant.taskStatusUpdate?.statusLabels?.[0]?.label || ""
-      );
-      setTaskInprogressStatus(
-        selectedApplicant.taskStatusUpdate?.statusLabels?.[1]?.label || ""
-      );
-      setTaskCompleteStatus(
-        selectedApplicant.taskStatusUpdate?.statusLabels?.[2]?.label || ""
-      );
-      setTaskDefaultStatus2(
-        selectedApplicant.externalFormSourceLink?.statusLabels?.[0]?.label || ""
-      );
-      setTaskInprogressStatus2(
-        selectedApplicant.externalFormSourceLink?.statusLabels?.[1]?.label || ""
-      );
-      setTaskCompleteStatus2(
-        selectedApplicant.externalFormSourceLink?.statusLabels?.[2]?.label || ""
-      );
-
-      setFromLinkText(
-        selectedApplicant.externalFormSourceLink?.formLink?.urlLabel?.text || ""
-      );
-      setFromLinkUrl(
-        selectedApplicant.externalFormSourceLink?.formLink?.url || ""
-      );
+      if (selectedValue === 2) {
+        // Set taskStatusUpdate
+        setTaskDefaultStatus(
+          selectedApplicant.taskStatusUpdate?.statusLabels?.[0]?.label || ""
+        );
+        setTaskInprogressStatus(
+          selectedApplicant.taskStatusUpdate?.statusLabels?.[1]?.label || ""
+        );
+        setTaskCompleteStatus(
+          selectedApplicant.taskStatusUpdate?.statusLabels?.[2]?.label || ""
+        );
+      } else if (selectedValue === 3) {
+        setTaskDefaultStatus(
+          selectedApplicant.externalFormSourceLink?.statusLabels?.[0]?.label ||
+            ""
+        );
+        setTaskInprogressStatus(
+          selectedApplicant.externalFormSourceLink?.statusLabels?.[1]?.label ||
+            ""
+        );
+        setTaskCompleteStatus(
+          selectedApplicant.externalFormSourceLink?.statusLabels?.[2]?.label ||
+            ""
+        );
+        setFromLinkText(
+          selectedApplicant.externalFormSourceLink?.formLink?.urlLabel?.text ||
+            ""
+        );
+        setFromLinkUrl(
+          selectedApplicant.externalFormSourceLink?.formLink?.url || ""
+        );
+      }
 
       setToDocumentEmails(
         selectedApplicant.externalFormDocument?.taskEmailDetails
@@ -449,7 +502,7 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
     } else {
       resetForm();
     }
-  }, [isEdit, selectedApplicant]);
+  }, [isEdit, selectedApplicant, selectedValue]);
 
   const fetchApplicantTypes = async () => {
     try {
@@ -570,12 +623,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
     );
   };
 
-  // const removeDocumentEmail = (email) => {
-  //   setToDocumentEmails((prevToEmails) =>
-  //     prevToEmails.filter((existingEmail) => existingEmail !== email)
-  //   );
-  // };
-
   const handleKeyCompletePress = (e) => {
     if (e.key === "Enter" && inputToCompleteEmailValue) {
       console.log("handlekrypress");
@@ -610,12 +657,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
     );
   };
 
-  // const removeCompleteEmail = (email) => {
-  //   setToCompleteEmails((prevToEmails) =>
-  //     prevToEmails.filter((existingEmail) => existingEmail !== email)
-  //   );
-  // };
-
   const handleKeyFormDetailsPress = (e) => {
     if (e.key === "Enter" && inputToFormDetailsEmailValue) {
       if (validateEmail(inputToFormDetailsEmailValue)) {
@@ -629,12 +670,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
       }
     }
   };
-
-  // const removeFormDetailEmail = (email) => {
-  //   setToFormDetailsEmails((prevToEmails) =>
-  //     prevToEmails.filter((existingEmail) => existingEmail !== email)
-  //   );
-  // };
 
   const handleCCFormDetailsKeyPress = (e) => {
     if (e.key === "Enter" && inputCCFormDetailsEmailValue) {
@@ -656,10 +691,10 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
     );
   };
 
-  const handleEditorChange = (setContent) => (event, editor) => {
-    const data = editor.getData();
-    setContent(data);
-  };
+  // const handleEditorChange = (setContent) => (event, editor) => {
+  //   const data = editor.getData();
+  //   setContent(data);
+  // };
 
   const handleSendAsTypeChange = (event) => {
     const selectedId = event.target.id;
@@ -702,6 +737,7 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
       try {
         const response = await POST(`entity-service/checklist/file`, formData);
         SuccessToaster("File Uploaded Successfully");
+        console.log("documentFile", response?.data);
         setFile(response?.data);
       } catch (error) {
         ErrorToaster("File Upload Failed");
@@ -749,20 +785,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
       {
         status: "COMPLETED_OR_DONE",
         label: taskCompleteStatus || "Complete/Done",
-      },
-    ];
-    const statusLabel2 = [
-      {
-        status: "NOT_STARTED",
-        label: taskDefaultStatus2 || "Not Started(Default)",
-      },
-      {
-        status: "IN_PROGRESS",
-        label: taskInprogressStatus2 || "In Progress",
-      },
-      {
-        status: "COMPLETED_OR_DONE",
-        label: taskCompleteStatus2 || "Complete/Done",
       },
     ];
 
@@ -815,7 +837,7 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
       data = {
         ...data,
         externalFormSourceLink: {
-          statusLabels: statusLabel2,
+          statusLabels: statusLabel,
           formLink: {
             url: fromLinkurl,
             urlLabel: {
@@ -901,31 +923,31 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
         },
       };
     }
-    if (!isEdit) {
-      await POST("entity-service/checklist", JSON.stringify(data))
-        .then((response) => {
-          SuccessToaster("CheckList Form Added Successfully");
-          setResponseData(response); // Store the response data
-          handleClose(true);
-        })
-        .catch((error) => {
-          ErrorToaster(error);
-        });
-    } else {
-      await PUT(
-        `entity-service/checklist/${selectedApplicant?.id}`,
-        JSON.stringify(data)
-      )
-        .then((response) => {
-          SuccessToaster("CheckList Form Updated Successfully");
-          setResponseData(response); // Store the response data
+    // if (!isEdit) {
+    //   await POST("entity-service/checklist", JSON.stringify(data))
+    //     .then((response) => {
+    //       SuccessToaster("CheckList Form Added Successfully");
+    //       setResponseData(response); // Store the response data
+    //       handleClose(true);
+    //     })
+    //     .catch((error) => {
+    //       ErrorToaster(error);
+    //     });
+    // } else {
+    //   await PUT(
+    //     `entity-service/checklist/${selectedApplicant?.id}`,
+    //     JSON.stringify(data)
+    //   )
+    //     .then((response) => {
+    //       SuccessToaster("CheckList Form Updated Successfully");
+    //       setResponseData(response); // Store the response data
 
-          handleClose(true);
-        })
-        .catch((error) => {
-          ErrorToaster(error);
-        });
-    }
+    //       handleClose(true);
+    //     })
+    //     .catch((error) => {
+    //       ErrorToaster(error);
+    //     });
+    // }
   };
 
   return (
@@ -994,8 +1016,8 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                       ""
                     }
                     sx={{
-                      backgroundColor: "#EDE7F6", // Light purple background
-                      color: "#673AB7", // Dark purple text color
+                      backgroundColor: "#EDE7F6",
+                      color: "#673AB7",
                       borderRadius: "4px",
                       fontSize: "13px",
                       padding: "0px 5px",
@@ -1231,7 +1253,7 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                 <div className={style.entityLableStyle}>EMAIL CONTENTENTS*</div>
                 <CKEditor
                   editor={ClassicEditor}
-                  data={editorContent} // Set the value of the editor from the state
+                  data={editorContent} // Set the initial content
                   onChange={handleEditorChange(setEditorContent)}
                 />
               </div>
@@ -1516,9 +1538,9 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                   </Box>
                   <Box width={"90%"}>
                     <CommonInputField
-                      value={taskDefaultStatus2}
+                      value={taskDefaultStatus}
                       className={style.fullWidth}
-                      onChange={(e) => setTaskDefaultStatus2(e.target.value)}
+                      onChange={(e) => setTaskDefaultStatus(e.target.value)}
                       placeholder={"Logistics From Not Send To IT"}
                       required={true}
                     ></CommonInputField>
@@ -1559,10 +1581,10 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                     </Box>
                     <Box width={"90%"}>
                       <CommonInputField
-                        value={taskInprogressStatus2}
+                        value={taskInprogressStatus}
                         className={style.fullWidth}
                         onChange={(e) =>
-                          setTaskInprogressStatus2(e.target.value)
+                          setTaskInprogressStatus(e.target.value)
                         }
                         placeholder={"Logistics From  Send To IT"}
                         required={true}
@@ -1604,9 +1626,9 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                     </Box>
                     <Box width={"90%"}>
                       <CommonInputField
-                        value={taskCompleteStatus2}
+                        value={taskCompleteStatus}
                         className={style.fullWidth}
-                        onChange={(e) => setTaskCompleteStatus2(e.target.value)}
+                        onChange={(e) => setTaskCompleteStatus(e.target.value)}
                         placeholder={"Logistics From Processed By IT"}
                         required={true}
                       ></CommonInputField>
@@ -1770,7 +1792,7 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                 <div className={style.entityLableStyle}>EMAIL CONTENTENTS*</div>
                 <CKEditor
                   editor={ClassicEditor}
-                  data={editorDocumentContent} // Set initial value from state
+                  data={initialContent} // Set initial value from state
                   onChange={handleEditorChange(setEditorDocumentContent)}
                 />
               </div>
@@ -1939,7 +1961,7 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                 <div className={style.entityLableStyle}>EMAIL CONTENTENTS*</div>
                 <CKEditor
                   editor={ClassicEditor}
-                  data={editorCompleteContent} // Set initial value from state
+                  data={initialContent} // Set initial value from state
                   onChange={handleEditorChange(setEditorCompleteContent)}
                 />
               </div>
@@ -2219,7 +2241,7 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                 <div className={style.entityLableStyle}>EMAIL CONTENTENTS*</div>
                 <CKEditor
                   editor={ClassicEditor}
-                  data={editorFormDetailsContent} // Set initial value from state
+                  data={initialContent} // Set initial value from state
                   onChange={handleEditorChange(setEditorFormDetailsContent)}
                 />
               </div>
@@ -2414,6 +2436,18 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
         handleClose={() => setPreviewOpen(false)}
         selectedValue={selectedValue}
         selectedApplicant={responseData}
+        file={file}
+        editorContent={
+          selectedValue === 1
+            ? editorContent
+            : selectedValue === 4
+            ? editorDocumentContent
+            : selectedValue === 5
+            ? editorCompleteContent
+            : selectedValue === 6
+            ? editorFormDetailsContent
+            : null
+        }
       />
     </Dialog>
   );

@@ -25,6 +25,8 @@ const PreviewDialog = ({
   handleClose,
   selectedValue,
   selectedApplicant,
+  editorContent,
+  file,
 }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectOption, setSelectOption] = useState(""); // State to handle selected option
@@ -32,7 +34,7 @@ const PreviewDialog = ({
   const handleOpenDialog = () => {
     setIsDialogOpen(true);
   };
-  console.log("selectedApplicant", selectedApplicant);
+  console.log("editorContentpreview", editorContent);
 
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
@@ -129,6 +131,8 @@ const PreviewDialog = ({
         selectedValue={selectedValue}
         selectedApplicant={selectedApplicant}
         handleClose={handleCloseDialog}
+        editorContent={editorContent}
+        file={file}
       />
     </Dialog>
   );

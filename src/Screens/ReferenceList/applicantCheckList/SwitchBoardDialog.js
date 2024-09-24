@@ -25,6 +25,8 @@ const SwitchBoardDialog = ({
   handleClose,
   selectedValue,
   selectedApplicant,
+  editorContent,
+  file,
 }) => {
   const [emailRecipients, setEmailRecipients] = useState([]);
   const [ccRecipients, setCcRecipients] = useState([]);
@@ -50,7 +52,7 @@ const SwitchBoardDialog = ({
       recipients.filter((recipient) => recipient !== recipientToDelete)
     );
   };
-
+  console.log("switchboardEditercontent", editorContent);
   const handleCCEmailChange = (event) => {
     setccEmail(event.target.value);
   };
@@ -144,7 +146,7 @@ const SwitchBoardDialog = ({
               />
             </div>
           </div>
-          <div className={`${style.floatRight} ${style.imageSpaceAlignment}`}>
+          <div>
             <div>
               <Icon
                 icon="cross"
@@ -172,7 +174,7 @@ const SwitchBoardDialog = ({
                   sx={{ display: "flex", alignItems: "center" }}
                 >
                   <img src={Email} alt="Email" />
-                  <span style={{ marginRight: "8px" }}>T0:</span>
+                  <span style={{ marginRight: "8px" }}>To:</span>
                 </InputAdornment>
               ),
             }}
@@ -225,14 +227,7 @@ const SwitchBoardDialog = ({
           </div>
         </div>
         <div className={`${style.addHealthCareBoxStyle}`}>
-          <p>
-            Hello,<br></br>
-            We Have a new<br></br>
-            Name:<br></br>
-            phone no:<br></br>
-            CPSO Number:<br></br>
-            OHIP Billing Number:<br></br>
-          </p>
+          <p>{editorContent}</p>
         </div>
         {(selectedValue === 4 || selectedValue === 5) && (
           <div className={style.marginTop20}>
