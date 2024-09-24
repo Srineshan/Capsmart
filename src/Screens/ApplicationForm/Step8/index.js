@@ -187,9 +187,102 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
         handleRestrictedSelection(index, categoriesIndex, privilegesIndex, file, 'file')
     }
 
+    const handleAdditionalRestrictedFileSelection = async (index, categoriesIndex, privilegesIndex, value) => {
+        let file = await addNewDocument(value);
+        handleAdditionalRestrictedSelection(index, categoriesIndex, privilegesIndex, file, 'file')
+    }
+
     const handleRestrictedSelection = (index, categoriesIndex, privilegesIndex, value, key) => {
         console.log(index, categoriesIndex, privilegesIndex, value, key)
         setSelectedPrivilegeForDisplay((prevData) => {
+            const temp = [...prevData];
+
+            temp[index] = {
+                ...temp[index],
+                privilegeDetails: {
+                    ...temp[index].privilegeDetails,
+                    restrictedPrivileges: {
+                        ...temp[index].privilegeDetails.restrictedPrivileges,
+                        privilegesByCategories: [
+                            ...temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories
+                        ]
+                    }
+                }
+            };
+
+            temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories[categoriesIndex] = {
+                ...temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories[categoriesIndex],
+                privileges: [
+                    ...temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories[categoriesIndex].privileges
+                ]
+            };
+            if (key === 'file') {
+                temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories[categoriesIndex]
+                    .privileges[privilegesIndex].file = value;
+                console.log(index, categoriesIndex, privilegesIndex, value, key)
+            } else if (key === 'response') {
+                temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories[categoriesIndex]
+                    .privileges[privilegesIndex].response = value;
+            } else if (key === 'notes') {
+                if (temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories[categoriesIndex]
+                    .privileges[privilegesIndex].notes === undefined) {
+                    temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories[categoriesIndex]
+                        .privileges[privilegesIndex].notes = {}
+                }
+                temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories[categoriesIndex]
+                    .privileges[privilegesIndex].notes.notes = value;
+            }
+
+            return temp;
+        });
+        getFields();
+    }
+
+    const handleSign = (type, basicOrAdditional, index) => {
+        if (basicOrAdditional === 'Basic') {
+            setSelectedPrivilegeForDisplay((prevData) => {
+                const temp = [...prevData];
+                if (type === 'Core' && (temp[0].privilegeDetails.corePrivileges.esign === null || temp[0].privilegeDetails.corePrivileges.esign === undefined)) {
+                    temp[0].privilegeDetails.corePrivileges.esign = {
+                        esign: CryptoJS.AES.encrypt(name + new Date().toISOString(), publicKey).toString(),
+                        name: name,
+                        signedDate: currentDate
+                    };
+                } else if (type === 'Restricted' && temp[0].privilegeDetails.restrictedPrivileges.esign === null) {
+                    temp[0].privilegeDetails.restrictedPrivileges.esign = {
+                        esign: CryptoJS.AES.encrypt(name + new Date().toISOString(), publicKey).toString(),
+                        name: name,
+                        signedDate: currentDate
+                    };
+                }
+
+                return temp;
+            });
+        } else {
+            setSelectedAdditionalPrivilegeForDisplay((prevData) => {
+                const temp = [...prevData];
+                if (type === 'Core' && (temp[index].privilegeDetails.corePrivileges.esign === null || temp[index].privilegeDetails.corePrivileges.esign === undefined)) {
+                    temp[index].privilegeDetails.corePrivileges.esign = {
+                        esign: CryptoJS.AES.encrypt(name + new Date().toISOString(), publicKey).toString(),
+                        name: name,
+                        signedDate: currentDate
+                    };
+                } else if (type === 'Restricted' && (temp[index].privilegeDetails.restrictedPrivileges.esign === null || temp[index].privilegeDetails.restrictedPrivileges.esign === undefined)) {
+                    temp[index].privilegeDetails.restrictedPrivileges.esign = {
+                        esign: CryptoJS.AES.encrypt(name + new Date().toISOString(), publicKey).toString(),
+                        name: name,
+                        signedDate: currentDate
+                    };
+                }
+
+                return temp;
+            });
+        }
+    }
+
+    const handleAdditionalRestrictedSelection = (index, categoriesIndex, privilegesIndex, value, key) => {
+        console.log(index, categoriesIndex, privilegesIndex, value, key)
+        setSelectedAdditionalPrivilegeForDisplay((prevData) => {
             const temp = [...prevData];
 
             temp[index] = {
@@ -250,7 +343,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
 
     const getFields = () => {
         if (selectedPrivilege !== "") {
-            console.log(selectedPrivilegeForDisplay, 'entered')
+            console.log(selectedPrivilegeForDisplay, selectedAdditionalPrivilegeForDisplay, 'entered')
             return (
                 <>
                     <div className={style.padding}>
@@ -285,24 +378,24 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                             )
                         }
 
-                        {/* <div className={style.twoCol}>
+                        <div className={style.twoCol}>
                             <div
-                                onClick={() => setIsSigned(!isSigned)}
+                                onClick={() => handleSign('Core', 'Basic')}
                             >
                                 <ESignature
-                                    userName={isSigned ? name : ""}
-                                    encData={isSigned ? encryptedText : ''}
-                                    showData={isSigned}
+                                    userName={selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign !== null ? selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.name : ""}
+                                    encData={selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign !== null ? selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.esign : ""}
+                                    showData={selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign !== null ? true : false}
                                     showDatais={true}
                                 />
                             </div>
                             <div className={style.verticalAlignCenter}>
                                 <div className={style.displayInRow}>
                                     <div className={style.dateTitle}>Date: </div>
-                                    <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? currentDate : ""}</div>
+                                    <div className={`${style.date} ${style.marginLeft}`}>{selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign !== null ? selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.signedDate : ""}</div>
                                 </div>
                             </div>
-                        </div> */}
+                        </div>
 
                     </div>
 
@@ -329,7 +422,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                                             {
                                                 categories?.privileges?.map((privileges, privilegesIndex) => (
                                                     <div className={`${style.restrictedPrivilegeGrid} ${privilegesIndex === 0 ? style.marginTop : ''}`} key={`${index}${privilegesIndex}`}>
-                                                        <div className={style.itemLeft}>{privileges?.privilegeId || ''}</div>
+                                                        <div className={style.itemLeft}><strong>{privileges?.privilegeId || ''}</strong></div>
                                                         <div className={style.itemLeft}>{privileges?.title || ''}</div>
                                                         <div className={style.floatRight}>
                                                             <CommonRadio
@@ -381,24 +474,24 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
 
                                 )
                             }
-                            {/* <div className={style.twoCol}>
+                            <div className={style.twoCol}>
                                 <div
-                                    onClick={() => { setIsRestrictedSigned(!isRestrictedSigned) }}
+                                    onClick={() => { handleSign('Restricted', 'Basic') }}
                                 >
                                     <ESignature
-                                        userName={isRestrictedSigned ? name : ""}
-                                        encData={isRestrictedSigned ? encryptedText : ''}
-                                        showData={isRestrictedSigned}
+                                        userName={selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.esign !== null ? selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.esign?.name : ""}
+                                        encData={selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.esign !== null ? selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.esign?.esign : ""}
+                                        showData={selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.esign !== null ? true : false}
                                         showDatais={true}
                                     />
                                 </div>
                                 <div className={style.verticalAlignCenter}>
                                     <div className={style.displayInRow}>
                                         <div className={style.dateTitle}>Date: </div>
-                                        <div className={`${style.date} ${style.marginLeft}`}>{isRestrictedSigned ? currentDate : ""}</div>
+                                        <div className={`${style.date} ${style.marginLeft}`}>{selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.esign !== null ? selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.esign?.signedDate : ""}</div>
                                     </div>
                                 </div>
-                            </div> */}
+                            </div>
 
                         </div>
                     )}
@@ -450,55 +543,214 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                                 <div className={style.padding}>
                                     <div className={style.cardTitle}>{`Additional Privileges you are requesting as a(n) ${applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory : ''} for the ${applicationData?.basicDetails?.departmentSpecialty?.department || ''} / ${applicationData?.basicDetails?.departmentSpecialty?.specialty || ''}`}</div>
                                     <div className={style.marginTop}>
-                                        {selectedAdditionalPrivilegeForDisplay?.map((data) => data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map((categories, index) => (
-                                            <div>
-                                                {index === 0 && (
-                                                    <div className={style.spaceBetween}>
-                                                        <div className={style.cardTitle}>{data?.privilegeSetTitle}</div>
-                                                        <div className={`${style.changePrivilegeText} ${style.cursorPointer}`} onClick={() => { setSelectedAdditionalPrivilegeForEdit(data); setIsOpen(true) }}>Change Privilege Set</div>
-                                                    </div>
-                                                )}
-                                                <div className={style.categoryGrid}>
-                                                    <div className={style.itemLeft}><strong>{categories?.category === null ? '' : categories?.category}</strong></div>
-                                                    {/* <div className={style.itemLeft}> 
-                                        {openIndex !== `primary${index}` ? <Icon icon="chevron-down" className={`${style.margin} ${style.cursor} ${style.border} ${style.marginRight}`} onClick={() => setOpenIndex(`primary${index}`)} /> : <Icon icon="chevron-up" className={`${style.margin} ${style.cursor} ${style.border} ${style.marginRight}`} onClick={() => setOpenIndex()} />}
-                                    </div> */}
-                                                </div>
-                                                {/* {openIndex === `primary${index}` &&  */}
-                                                <>{
-                                                    categories?.privileges?.map(privileges => (
-                                                        <div className={style.privilegeCodeGrid}>
-                                                            <div className={style.itemLeft}><strong>{privileges?.privilegeId || ''}</strong></div>
-                                                            <div className={style.itemLeft}>{privileges?.title || ''}</div>
+                                        {selectedAdditionalPrivilegeForDisplay?.map((data, index) =>
+                                            <>
+                                                {data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map((categories, categoryIndex) => (
+                                                    <div>
+                                                        {categoryIndex === 0 && (
+                                                            <div className={`${style.spaceBetween} ${style.marginTop}`}>
+                                                                <div className={style.cardTitle}>{data?.privilegeSetTitle}</div>
+                                                                <div className={`${style.changePrivilegeText} ${style.cursorPointer}`} onClick={() => { setSelectedAdditionalPrivilegeForEdit(data); setIsOpen(true) }}>Change Privilege Set</div>
+                                                            </div>
+                                                        )}
+                                                        <div className={style.categoryGrid}>
+                                                            <div className={style.itemLeft}><strong>{categories?.category === null ? '' : categories?.category}</strong></div>
                                                         </div>
+                                                        {
+                                                            categories?.privileges?.map(privileges => (
+                                                                <div className={style.privilegeCodeGrid}>
+                                                                    <div className={style.itemLeft}><strong>{privileges?.privilegeId || ''}</strong></div>
+                                                                    <div className={style.itemLeft}>{privileges?.title || ''}</div>
+                                                                </div>
 
-                                                    ))
-                                                }
-                                                </>
-                                                {/* } */}
+                                                            ))
+                                                        }
+                                                    </div>
+                                                ))}
+                                                <div className={style.twoCol}>
+                                                    <div
+                                                        onClick={() => { handleSign('Core', 'Additional', index) }}
+                                                    >
+                                                        <ESignature
+                                                            userName={data?.privilegeDetails?.corePrivileges?.esign !== null ? data?.privilegeDetails?.corePrivileges?.esign?.name : ''}
+                                                            encData={data?.privilegeDetails?.corePrivileges?.esign !== null ? data?.privilegeDetails?.corePrivileges?.esign?.esign : ''}
+                                                            showData={(data?.privilegeDetails?.corePrivileges?.esign !== null && data?.privilegeDetails?.corePrivileges?.esign !== undefined) ? true : false}
+                                                            showDatais={true}
+                                                        />
+                                                    </div>
+                                                    <div className={style.verticalAlignCenter}>
+                                                        <div className={style.displayInRow}>
+                                                            <div className={style.dateTitle}>Date: </div>
+                                                            <div className={`${style.date} ${style.marginLeft}`}>{data?.privilegeDetails?.corePrivileges?.esign !== null ? data?.privilegeDetails?.corePrivileges?.esign?.signedDate : ""}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {data?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.length !== 0 && (
+                                                    <>
+                                                        <div className={`${style.cardDescription} ${style.marginTop}`}>{'The following privileges are restricted and require evidence of qualification and competence. Continued competence would be evaluated as that being acceptable to the Medical Consultant of the Program. Please signify your intention regarding each privilege by marking and X opposite and sign below.'}</div>
+                                                        {data?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.map((categories, categoriesIndex) => (
+                                                            <div key={`${index}${categoriesIndex}`}>
+                                                                <>
+                                                                    {
+                                                                        categories?.privileges?.map((privileges, privilegesIndex) => (
+                                                                            <div className={`${style.restrictedPrivilegeGrid} ${privilegesIndex === 0 ? style.marginTop : ''}`} key={`${index}${privilegesIndex}`}>
+                                                                                <div className={style.itemLeft}><strong>{privileges?.privilegeId || ''}</strong></div>
+                                                                                <div className={style.itemLeft}>{privileges?.title || ''}</div>
+                                                                                <div className={style.floatRight}>
+                                                                                    <CommonRadio
+                                                                                        value={privileges?.response || ''}
+                                                                                        onChange={(e) => handleAdditionalRestrictedSelection(index, categoriesIndex, privilegesIndex, e.target.value, 'response')}
+                                                                                        radioValue={['NO', 'YES']}
+                                                                                        label={['No', 'Yes']}
+                                                                                    />
+                                                                                </div>
+                                                                                {privileges?.response === 'Yes' && privileges?.isevidenceRequired && (
+                                                                                    <>
+                                                                                        <div className={style.marginTop}>
+                                                                                            <CKEditor
+                                                                                                editor={ClassicEditor}
+                                                                                                data={privileges?.notes?.notes || null}
+                                                                                                onChange={(event, editor) => {
+                                                                                                    const data = editor.getData();
+                                                                                                    handleAdditionalRestrictedSelection(index, categoriesIndex, privilegesIndex, data, 'notes');
+                                                                                                }}
+                                                                                            />
+                                                                                        </div>
+                                                                                        <div className={style.marginTop10}>
+                                                                                            <div className={`${style.uploadButton}`}>
+                                                                                                <div className={style.uploadGrid}>
+                                                                                                    <label for={`file-upload-dynamic-additional`} className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>
+                                                                                                        Upload any supporting documents for evidence of qualification and competence
+                                                                                                        {/* <div className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>Click to upload</div> */}
+                                                                                                    </label>
+                                                                                                    <DescriptionOutlinedIcon sx={{ color: '#787f87' }} />
+
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <input id={`file-upload-dynamic-additional`} type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx"
+                                                                                                onChange={(e) => { handleAdditionalRestrictedFileSelection(index, categoriesIndex, privilegesIndex, e.target.files[0], 'file') }}
+                                                                                            />
+                                                                                        </div>
+                                                                                        <br />
+                                                                                    </>
+                                                                                )}
+                                                                            </div>
+
+                                                                        ))
+                                                                    }
+                                                                </>
+                                                            </div>
+                                                        )
+
+                                                        )}
+                                                        <div className={style.twoCol}>
+                                                            <div
+                                                                onClick={() => { handleSign('Restricted', 'Additional', index) }}
+                                                            >
+                                                                <ESignature
+                                                                    userName={data?.privilegeDetails?.restrictedPrivileges?.esign !== null ? data?.privilegeDetails?.restrictedPrivileges?.esign?.name : ""}
+                                                                    encData={data?.privilegeDetails?.restrictedPrivileges?.esign !== null ? data?.privilegeDetails?.restrictedPrivileges?.esign?.esign : ''}
+                                                                    showData={(data?.privilegeDetails?.restrictedPrivileges?.esign !== null && data?.privilegeDetails?.restrictedPrivileges?.esign !== undefined) ? true : false}
+                                                                    showDatais={true}
+                                                                />
+                                                            </div>
+                                                            <div className={style.verticalAlignCenter}>
+                                                                <div className={style.displayInRow}>
+                                                                    <div className={style.dateTitle}>Date: </div>
+                                                                    <div className={`${style.date} ${style.marginLeft}`}>{data?.privilegeDetails?.restrictedPrivileges?.esign !== null ? data?.privilegeDetails?.restrictedPrivileges?.esign?.signedDate : ""}</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </>
+                                                )}
+                                            </>
+                                        )
+                                        }
+                                    </div>
+                                    {/* <div className={style.marginTop}>
+                                        <div>
+                                            <div className={style.cardDescription}>{'The following privileges are restricted and require evidence of qualification and competence. Continued competence would be evaluated as that being acceptable to the Medical Consultant of the Program. Please signify your intention regarding each privilege by marking and X opposite and sign below.'}</div>
+
+                                            {
+                                                selectedAdditionalPrivilegeForDisplay?.map((data, index) => data?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.map((categories, categoriesIndex) => (
+                                                    <div key={`${index}${categoriesIndex}`}>
+                                                        <>
+                                                            {
+                                                                categories?.privileges?.map((privileges, privilegesIndex) => (
+                                                                    <div className={`${style.restrictedPrivilegeGrid} ${privilegesIndex === 0 ? style.marginTop : ''}`} key={`${index}${privilegesIndex}`}>
+                                                                        <div className={style.itemLeft}><strong>{privileges?.privilegeId || ''}</strong></div>
+                                                                        <div className={style.itemLeft}>{privileges?.title || ''}</div>
+                                                                        <div className={style.floatRight}>
+                                                                            <CommonRadio
+                                                                                value={privileges?.response || ''}
+                                                                                onChange={(e) => handleAdditionalRestrictedSelection(index, categoriesIndex, privilegesIndex, e.target.value, 'response')}
+                                                                                radioValue={['NO', 'YES']}
+                                                                                label={['No', 'Yes']}
+                                                                            />
+                                                                        </div>
+                                                                        {privileges?.response === 'Yes' && privileges?.isevidenceRequired && (
+                                                                            <>
+                                                                                <div className={style.marginTop}>
+                                                                                    <CKEditor
+                                                                                        editor={ClassicEditor}
+                                                                                        data={privileges?.notes?.notes || null}
+                                                                                        onChange={(event, editor) => {
+                                                                                            const data = editor.getData();
+                                                                                            handleAdditionalRestrictedSelection(index, categoriesIndex, privilegesIndex, data, 'notes');
+                                                                                        }}
+                                                                                    />
+                                                                                </div>
+                                                                                <div className={style.marginTop10}>
+                                                                                    <div className={`${style.uploadButton}`}>
+                                                                                        <div className={style.uploadGrid}>
+                                                                                            <label for={`file-upload-dynamic-additional`} className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>
+                                                                                                Upload any supporting documents for evidence of qualification and competence
+                                                                                            </label>
+                                                                                            <DescriptionOutlinedIcon sx={{ color: '#787f87' }} />
+
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <input id={`file-upload-dynamic-additional`} type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx"
+                                                                                        onChange={(e) => { handleAdditionalRestrictedFileSelection(index, categoriesIndex, privilegesIndex, e.target.files[0], 'file') }}
+                                                                                    />
+                                                                                </div>
+                                                                                <br />
+                                                                            </>
+                                                                        )}
+                                                                    </div>
+
+                                                                ))
+                                                            }
+                                                        </>
+                                                    </div>
+                                                )
+
+                                                )
+
+                                                )
+                                            }
+                                            <div className={style.twoCol}>
+                                                <div
+                                                    onClick={() => { setIsRestrictedSigned(!isRestrictedSigned) }}
+                                                >
+                                                    <ESignature
+                                                        userName={isRestrictedSigned ? name : ""}
+                                                        encData={isRestrictedSigned ? encryptedText : ''}
+                                                        showData={isRestrictedSigned}
+                                                        showDatais={true}
+                                                    />
+                                                </div>
+                                                <div className={style.verticalAlignCenter}>
+                                                    <div className={style.displayInRow}>
+                                                        <div className={style.dateTitle}>Date: </div>
+                                                        <div className={`${style.date} ${style.marginLeft}`}>{isRestrictedSigned ? currentDate : ""}</div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        )))}
-                                    </div>
-                                </div>
 
-                                {/* <div className={style.twoCol}>
-                                    <div
-                                        onClick={() => { setIsAdditionalSigned(!isAdditionalSigned) }}
-                                    >
-                                        <ESignature
-                                            userName={isAdditionalSigned ? name : ""}
-                                            encData={isAdditionalSigned ? encryptedText : ''}
-                                            showData={isAdditionalSigned}
-                                            showDatais={true}
-                                        />
-                                    </div>
-                                    <div className={style.verticalAlignCenter}>
-                                        <div className={style.displayInRow}>
-                                            <div className={style.dateTitle}>Date: </div>
-                                            <div className={`${style.date} ${style.marginLeft}`}>{isAdditionalSigned ? currentDate : ""}</div>
                                         </div>
-                                    </div>
-                                </div> */}
+                                    </div> */}
+                                </div>
                             </div>
 
                         </div>
@@ -553,7 +805,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
 
                 </div>
 
-                {isOpen && <AdditionalPrivilegesDialog getIsOpen={getIsOpen} primaryPrivilege={selectedPrivilege} getSelectedPrivilegeList={getSelectedPrivilegeList} basicForm={basicForm} selectedAdditionalPrivilegeForEdit={selectedAdditionalPrivilegeForEdit} />}
+                {isOpen && <AdditionalPrivilegesDialog getIsOpen={getIsOpen} primaryPrivilege={selectedPrivilege} getSelectedPrivilegeList={getSelectedPrivilegeList} basicForm={basicForm} selectedAdditionalPrivilegeForEdit={selectedAdditionalPrivilegeForEdit} applicationId={applicationId} />}
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
