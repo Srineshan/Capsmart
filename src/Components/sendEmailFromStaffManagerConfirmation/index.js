@@ -17,7 +17,7 @@ const SendEmailFromStaffManagerConfirmationDialog = ({ getIsOpen, basicForm }) =
             <div>
                 <div className={Classes.DIALOG_BODY}>
                     <div className={style.spaceBetween}>
-                        <div className={style.heading}>Application Created!</div>
+                        <div className={style.heading}>Request to complete an Application</div>
                         <div className={style.displayInRow}>
                             <img
                                 src={CrossPink}
@@ -27,12 +27,12 @@ const SendEmailFromStaffManagerConfirmationDialog = ({ getIsOpen, basicForm }) =
                             />
                         </div>
                     </div>
-                    <div className={style.sendMailGrid}>
+                    <div className={`${style.sendMailGrid} ${style.marginTop}`}>
                         <div className={style.verticalAlignCenter}>
                             <img
                                 src={Mail}
                                 alt="cross"
-                                className={`${style.mailEnvelopeStyle} `}
+                                className={`${style.mailEnvelopeStyle} ${style.marginTop10}`}
                             />
                         </div>
                         <p className={`${style.emailSentText} ${style.marginTop}`}>{`Email Notifcation has been sent successfully to ${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName}`}</p>

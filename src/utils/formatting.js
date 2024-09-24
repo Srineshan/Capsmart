@@ -39,6 +39,11 @@ export const EmptyStringCheck = (value, message) => {
   }
 }
 
+export const getValueByPath = (obj, path) => {
+  const keys = path.split(/[\.\[\]]+/).filter(Boolean);
+  return keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], obj);
+};
+
 export const extractNumbersFromString = (inputString) => {
   const regex = /\d+/g;
   const numbersArray = inputString.match(regex);

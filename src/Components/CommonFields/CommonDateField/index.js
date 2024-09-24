@@ -30,11 +30,14 @@ const CommonDateField = ({ onChange, value, InputProps, onOpen, onClose, open, r
             <div className={`${className} ${style.marginTop}`}>
                 <LocalizationProvider dateAdapter={AdapterDateFns} sx={className}>
                     <ThemeProvider theme={theme}>
-                        <FormControl size="small" className={style.fullWidth} sx={`${{
-                            '& .MuiFormControlLabel-root': {
-                                color: warningCheck ? !required ? theme.palette.error.main : theme.palette.warning.main : '',
-                            },
-                        }}`} error={warningCheck}>
+                        <FormControl size="small" className={style.fullWidth}
+                        // sx={`${{
+                        //     '& .MuiFormControlLabel-root': {
+                        //         color: warningCheck ? !required ? theme.palette.error.main : theme.palette.warning.main : '',
+                        //     },
+                        // }}`}
+                        // error={warningCheck}
+                        >
                             <DesktopDatePicker
                                 value={value}
                                 onChange={onChange}

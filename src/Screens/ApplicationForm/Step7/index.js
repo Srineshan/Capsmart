@@ -21,10 +21,12 @@ const Step7 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
     }, [basicForm])
 
     const getFormSchema = async () => {
-        const { data: form } = await GET(
-            `application-management-service/formSchema/${basicForm?.formSchemas?.[5]?.id}`
-        );
-        setFormSchema(form?.schema)
+        if (basicForm?.formSchemas?.[5]?.id !== undefined) {
+            const { data: form } = await GET(
+                `application-management-service/formSchema/${basicForm?.formSchemas?.[5]?.id}`
+            );
+            setFormSchema(form?.schema)
+        }
     }
 
     const getIsSubmitClicked = (value, data) => {
@@ -55,7 +57,7 @@ const Step7 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
             navigate(-1);
         }
         else {
-            navigate('/applicationForm/section1/step10')
+            navigate('/applicationForm/section1/step8')
 
         }
     }

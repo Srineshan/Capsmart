@@ -487,23 +487,73 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
               </div>
 
               {showCardCompletion && (
-                <div style={{ maxHeight: '200px', overflowY: 'auto', padding: '10px' }}>
+                <div
+                  style={{
+                    maxHeight: "200px",
+                    overflowY: "auto",
+                    scrollbarWidth: "thin",
+                    scrollbarColor: "gray transparent",
+                  }}
+                >
                   {sentCompletion?.applicationsStatus?.map((status, index) => (
-                    <div key={index} className={`${style.displayInCol} ${style.marginTop}`}>
-                      <div className={`${style.warningTextAlign} ${style.staffTextStyle}`}>
+                    <div
+                      key={index}
+                      className={`${style.displayInCol} ${style.marginTop}`}
+                    >
+                      <div
+                        className={`${style.warningTextAlign} ${style.staffTextStyle}`}
+                      >
                         <div className={style.progressbarStyle}>
                           <div className={style.spaceBetween}>
                             <div className={style.statisticsProgress}>
                               <div className={`${style.greyDotStyle}`}></div>
-                              <div className={style.marginLeft10}>{`${status.basicDetail.applicant.name.firstName} ${status.basicDetail.applicant.name.lastName}`}</div>
+
+                              <div
+                                className={style.marginLeft10}
+                              >{`${status.basicDetail.applicant.name.firstName} ${status.basicDetail.applicant.name.lastName}`}</div>
                               {/* <span className={style.textStyleProgress}> ({status.providerType.serviceProviderType}) </span> */}
+                              {/* <div
+                                className={`${style.smallTextStyle} ${style.justifyCenter}`}
+                              >
+
+                                {status.basicDetail.applicant.startDate
+                                  ? format(
+                                    new Date(
+                                      status?.basicDetail?.applicant?.startDate
+                                    ),
+                                    "MMM dd, yyyy"
+                                  )
+                                  : "N/A"}
+
+                              </div> */}
                             </div>
-                            <p className={style.progressTopText}> Due in {status.dueDays} Days </p>
+                            {/* <p className={style.progressTopText}>
+                              {" "}
+                              Due in {status.dueDays} Days{" "}
+                            </p> */}
                           </div>
-                          <ProgressBar completed={100 - status.remainingCompletionPercentage} isLabelVisible={false} height='5px' bgColor='#7165E3' baseBgColor="#E9E9F0" className={style.marginLeft20} />
+                          <ProgressBar
+                            completed={
+                              100 - status.remainingCompletionPercentage
+                            }
+                            isLabelVisible={false}
+                            height="5px"
+                            bgColor="#7165E3"
+                            baseBgColor="#E9E9F0"
+                            className={style.marginLeft20}
+                          />
                           <div className={style.spaceBetween}>
-                            <span className={style.textStyleProgress}> {status.providerType.category} </span>
-                            <div className={style.progressBottomText}>{status.remainingCompletionPercentage}% remaining</div>
+                            <span className={style.textStyleProgress}>
+                              {/* <span className={style.textalign}> */}{" "}
+                              {status.providerType.category}{" "}
+                            </span>
+                            {/* <div className={style.progressBottomText}>
+                              {status.remainingCompletionPercentage}% remaining
+                            </div> */}
+                            <p className={style.progressTopText}>
+                              {" "}
+                              Due in {status.dueDays} Days{" "}
+                            </p>
                           </div>
                           {/* <div className={style.progressBottomText}>{status.remainingCompletionPercentage}% remaining</div> */}
                         </div>
@@ -518,7 +568,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
             <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
               <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
                 <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
-                  Rejected/Declined <span className={`${style.numberBackground} ${style.marginLeft} ${style.redSmallNumberSelected}`}>{applicationRejected.totalRejections}</span>
+                  Rejected / Declined <span className={`${style.numberBackground} ${style.marginLeft} ${style.redSmallNumberSelected}`}>{applicationRejected.totalRejections}</span>
                 </div>
                 <div className={`${style.marginLeft10} `} >
                   {!showCardDetails ? (
@@ -534,10 +584,10 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
                     Appointment Requests Denied ({applicationRejected.appointmentRequestsDenied})
                   </div> */}
                   <div className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`} onClick={() => { setShowApplicationRejectionDialog(true) }}>
-                    Applications Rejected ({applicationRejected.applicationsRejected})
+                    Applicants Rejected ({applicationRejected.applicationsRejected})
                   </div>
                   <div className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}>
-                    Applications Approved But Declined ({applicationRejected.applicationsApprovedButDenied})
+                    Approved But Declined ({applicationRejected.applicationsApprovedButDenied})
                   </div>
                 </>)
               }
@@ -572,7 +622,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
                 <CircularProgress sx={{ color: "#7165E3" }} />
               </div> :
               <div ref={componentRef}>
-                <div className={`${style.reduceMarginTop10} staffApplicationList`} ref={PDFRef}>
+                <div className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`} ref={PDFRef}>
                   <TableTwo
                     tableHeaderValues={tableHeaderValues}
                     tableDataValues={tableDataValues}

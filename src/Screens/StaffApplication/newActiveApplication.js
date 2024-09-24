@@ -6,6 +6,9 @@ import CompletedIcon from "./../../images/completedIcon.png";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
 import RedWarning from "./../../images/redWarning.png";
+import Verified from "./../../images/verifiedImage.png";
+import CrossPink from "./../../images/crossPink.png";
+import ToBeVerified from "./../../images/toBeVerifiedImage.png";
 import Tooltip from "@mui/material/Tooltip";
 import { DELETE, TenantID, GET, PUT } from "./../dataSaver";
 import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
@@ -47,6 +50,8 @@ const NewActiveApplication = ({
     useState(false);
   const [newServiceProviderDialog, setNewServiceProviderDialog] =
     useState(false);
+  const [formSchema, setFormSchema] = useState();
+  const [formSchemaId, setFormSchemaId] = useState();
   const [addOn, setAddOn] = useState(false);
   const [viewPage1, setViewPage1] = useState(true);
   const [viewPage2, setViewPage2] = useState(false);
@@ -83,7 +88,11 @@ const NewActiveApplication = ({
       ?.filter((contract) => contract?.id === contractId)
       ?.map((data) => data)[0]
   );
-
+  const [showDocVerifyDialog, setShowDocVerifyDialog] = useState(false);
+  const [file, setFile] = useState();
+  const [selectedRow, setSelectedRow] = useState();
+  const [selectedRowTableName, setSelectedRowTableName] = useState();
+  const [selectedFormId, setSelectedFormId] = useState();
   useEffect(() => {
     getPreApplication();
   }, [])
@@ -108,6 +117,10 @@ const NewActiveApplication = ({
   const handlePopoverClose = () => {
     setAnchorEl(null);
   };
+
+  useEffect(() => {
+    getFormSchema()
+  }, [formSchemaId])
 
   const open = Boolean(anchorEl);
 
@@ -167,6 +180,15 @@ const NewActiveApplication = ({
     );
     if (contractData) {
       setPrevContractData(contractData)
+    }
+  }
+
+  const getFormSchema = async () => {
+    if (formSchemaId !== '' && formSchemaId !== undefined && formSchemaId !== null) {
+      const { data: form } = await GET(
+        `application-management-service/formSchema/${formSchemaId}`
+      );
+      setFormSchema(form?.schema)
     }
   }
 
@@ -264,6 +286,46 @@ const NewActiveApplication = ({
     await PUT(`application-management-service/application/${applicationId}/APPROVED`)
       .then(response => {
         console.log('success')
+      })
+      .catch((error) => {
+        console.log(error)
+      });
+    getPreApplication();
+  }
+
+  const handleStepsVerify = async (formId) => {
+    await PUT(`application-management-service/application/${applicationId}/form/${formId}/APPROVED`)
+      .then(response => {
+        console.log('success')
+      })
+      .catch((error) => {
+        console.log(error)
+      });
+    getPreApplication();
+  }
+
+  const handleDocVerify = async (rowId) => {
+    let temp = {
+      "formId": selectedFormId,
+      "contentToVerify": "DOCUMENT",
+      "tableName": selectedRowTableName,
+      "rowId": rowId
+    }
+    await PUT(`application-management-service/application/${applicationId}/verifyForm`, temp)
+      .then(response => {
+        console.log('success')
+      })
+      .catch((error) => {
+        console.log(error)
+      });
+    getPreApplication();
+  }
+
+  const handleApplicationAccept = async () => {
+    await PUT(`application-management-service/application/${applicationId}/workflow/complete/APPROVED`)
+      .then(response => {
+        console.log('success')
+        window.location.reload()
       })
       .catch((error) => {
         console.log(error)
@@ -385,6 +447,260 @@ const NewActiveApplication = ({
     getActiveApplicationView(false);
   };
 
+  const renderFieldsBasedOnStep = (data) => {
+    switch (data?.schemaCategory) {
+      case 'ContactAddress':
+        return (
+          <>
+            {formSchema !== undefined && formSchema?.properties !== null && 'contactAddress1' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.contactAddress1} basicForm={form} setBasicForm={setForm} stepPath={`forms[1].data`} gridStyle={style.homeMailingAddressGrid} baseKey={'contactAddress1'} isPOD={true} />
+            )}
+            <CommonDivider />
+            {formSchema !== undefined && formSchema?.properties !== null && 'contactAddress2' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.contactAddress2} basicForm={form} setBasicForm={setForm} stepPath={`forms[1].data`} gridStyle={style.mailingAddressGrid} baseKey={'contactAddress2'} isPOD={true} />
+            )}
+            <CommonDivider />
+            {formSchema !== undefined && formSchema?.properties !== null && 'contactAddress3' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.contactAddress3} basicForm={form} setBasicForm={setForm} stepPath={`forms[1].data`} gridStyle={style.businessMailingAddressGrid} baseKey={'contactAddress3'} isPOD={true} />
+            )}
+          </>
+        );
+      case 'Qualification':
+        return (
+          <>
+            {formSchema !== undefined && formSchema?.properties !== null && 'certifications' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.certifications} basicForm={form} setBasicForm={setForm} stepPath={`forms[2].data`} gridStyle={style.licenseGrid} baseKey={'certifications'} isPOD={true} />
+            )}
+          </>
+        );
+      case 'MalpracticeInfo':
+        return (
+          <>
+            {formSchema !== undefined && formSchema?.properties !== null && 'insuranceCarrierInformation' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.insuranceCarrierInformation} basicForm={form} setBasicForm={setForm} stepPath={`forms[3].data`} gridStyle={style.insuranceGrid} baseKey={'insuranceCarrierInformation'} isPOD={true} />
+            )}
+          </>
+        );
+      case 'Education':
+        return (
+          <>
+            {formSchema !== undefined && formSchema?.properties !== null && 'graduation' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.graduation} basicForm={form} gridStyle={style.EducationGrid} baseKey={'graduation'} addMoreType={true} formId={form?.forms?.[4]?.id} applicationId={applicationId} tableGrid={style.tableGridGraduation} isPOD={true}
+                heading={'Information Requirement Alert'}
+                subHeading={'For this application you are required to provide information on all of the different undergraduate / graduate qualifications you have.'}
+                subHeading2={'You will not be able to submit your application if this is not provided.'} />
+            )}
+            <div className={style.marginTop20}>
+              {form?.forms?.[4]?.data?.graduation?.map((data, index) =>
+                data?.file?.fileURL !== undefined ? (
+                  <div className={`${style.documentBackground} ${style.documentCardGrid} ${style.marginTop10}`} key={index}>
+                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.file?.fileName}</div>
+                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.file?.classification !== null ? data?.file?.classification : '-'}</div>
+                    <div className={`${style.displayInRow} ${style.cursorPointer}`} onClick={() => { setFile(data?.file); setShowDocVerifyDialog(true); setSelectedRow(data); setSelectedRowTableName('graduation'); setSelectedFormId(form?.forms?.[4]?.id) }}>
+                      {(data?.file?.isVerified !== undefined && data?.file?.isVerified) ? (
+                        <>
+                          <img src={Verified} alt="" className={style.verifyImage} />
+                          <div className={`${style.greenButtonSmall} ${style.cursorPointer} ${style.marginLeft20}`}>
+                            <div className={`${style.buttonGreyTextStyleSmall} ${style.alignCenter}`}>Verified</div>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <img src={ToBeVerified} alt="" className={style.verifyImage} />
+                          <div className={`${style.purpleButtonSmall} ${style.cursorPointer} ${style.marginLeft20}`}>
+                            <div className={`${style.buttonGreyTextStyleSmall} ${style.alignCenter}`}>Verify</div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                ) : ''
+              )}
+            </div>
+          </>
+        );
+      case 'WorkExperience':
+        return (
+          <>
+            {formSchema !== undefined && formSchema?.properties !== null && 'trainingAndWorkingExperience' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.trainingAndWorkingExperience} basicForm={form} gridStyle={style.trainingGrid} baseKey={'trainingAndWorkingExperience'} addMoreType={true} formId={form?.forms?.[5]?.id} applicationId={applicationId} tableGrid={style.tableGridTrainingAndExperience} isPOD={true} />
+            )}
+            <div className={style.marginTop20}>
+              {form?.forms?.[5]?.data?.trainingAndWorkingExperience?.map((data, index) =>
+                data?.file?.fileURL !== undefined ? (
+                  <div className={`${style.documentBackground} ${style.documentCardGrid} ${style.marginTop10}`} key={index}>
+                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.file?.fileName}</div>
+                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.file?.classification !== null ? data?.file?.classification : '-'}</div>
+                    <div className={`${style.displayInRow} ${style.cursorPointer}`} onClick={() => { setFile(data?.file); setShowDocVerifyDialog(true); setSelectedRow(data); setSelectedRowTableName('trainingAndWorkingExperience'); setSelectedFormId(form?.forms?.[5]?.id) }}>
+                      {(data?.file?.isVerified !== undefined && data?.file?.isVerified) ? (
+                        <>
+                          <img src={Verified} alt="" className={style.verifyImage} />
+                          <div className={`${style.greenButtonSmall} ${style.cursorPointer} ${style.marginLeft20}`}>
+                            <div className={`${style.buttonGreyTextStyleSmall} ${style.alignCenter}`}>Verified</div>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <img src={ToBeVerified} alt="" className={style.verifyImage} />
+                          <div className={`${style.purpleButtonSmall} ${style.cursorPointer} ${style.marginLeft20}`}>
+                            <div className={`${style.buttonGreyTextStyleSmall} ${style.alignCenter}`}>Verify</div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                ) : ''
+              )}
+            </div>
+            <CommonDivider />
+            {formSchema !== undefined && formSchema?.properties !== null && 'healthcareFacilityAppointments' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.healthcareFacilityAppointments} basicForm={form} gridStyle={style.healthCareGrid} baseKey={'healthcareFacilityAppointments'} addMoreType={true} formId={form?.forms?.[5]?.id} applicationId={applicationId} tableGrid={style.tableGridTrainingAndExperience} isPOD={true} />
+            )}
+            <div className={style.marginTop20}>
+              {form?.forms?.[5]?.data?.healthcareFacilityAppointments?.map((data, index) =>
+                data?.file?.fileURL !== undefined ? (
+                  <div className={`${style.documentBackground} ${style.documentCardGrid} ${style.marginTop10}`} key={index}>
+                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.file?.fileName}</div>
+                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.file?.classification !== null ? data?.file?.classification : '-'}</div>
+                    <div className={`${style.displayInRow} ${style.cursorPointer}`} onClick={() => { setFile(data?.file); setShowDocVerifyDialog(true); setSelectedRow(data); setSelectedRowTableName('healthcareFacilityAppointments'); setSelectedFormId(form?.forms?.[5]?.id) }}>
+                      {(data?.file?.isVerified !== undefined && data?.file?.isVerified) ? (
+                        <>
+                          <img src={Verified} alt="" className={style.verifyImage} />
+                          <div className={`${style.greenButtonSmall} ${style.cursorPointer} ${style.marginLeft20}`}>
+                            <div className={`${style.buttonGreyTextStyleSmall} ${style.alignCenter}`}>Verified</div>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <img src={ToBeVerified} alt="" className={style.verifyImage} />
+                          <div className={`${style.purpleButtonSmall} ${style.cursorPointer} ${style.marginLeft20}`}>
+                            <div className={`${style.buttonGreyTextStyleSmall} ${style.alignCenter}`}>Verify</div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                ) : ''
+              )}
+            </div>
+          </>
+        );
+      case 'References':
+        console.log(formSchema)
+        return (
+          <>
+            {formSchema !== undefined && formSchema?.properties !== null && 'references' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.references} basicForm={form} gridStyle={style.twoCol} baseKey={'references'} setBasicForm={setForm} addMoreType={true} formId={form?.forms?.[7]?.id} applicationId={applicationId} tableGrid={style.tableGridReferences} isPOD={true} />
+            )}
+            <div className={style.marginTop20}>
+              {form?.forms?.[7]?.data?.references?.map((data, index) =>
+                data?.file?.fileURL !== undefined ? (
+                  <div className={`${style.documentBackground} ${style.documentCardGrid} ${style.marginTop10}`} key={index}>
+                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.file?.fileName}</div>
+                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.file?.classification !== null ? data?.file?.classification : '-'}</div>
+                    <div className={`${style.displayInRow} ${style.cursorPointer}`} onClick={() => { setFile(data?.file); setShowDocVerifyDialog(true); setSelectedRow(data); setSelectedRowTableName('references'); setSelectedFormId(form?.forms?.[7]?.id) }}>
+                      {(data?.file?.isVerified !== undefined && data?.file?.isVerified) ? (
+                        <>
+                          <img src={Verified} alt="" className={style.verifyImage} />
+                          <div className={`${style.greenButtonSmall} ${style.cursorPointer} ${style.marginLeft20}`}>
+                            <div className={`${style.buttonGreyTextStyleSmall} ${style.alignCenter}`}>Verified</div>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <img src={ToBeVerified} alt="" className={style.verifyImage} />
+                          <div className={`${style.purpleButtonSmall} ${style.cursorPointer} ${style.marginLeft20}`}>
+                            <div className={`${style.buttonGreyTextStyleSmall} ${style.alignCenter}`}>Verify</div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                ) : ''
+              )}
+            </div>
+            <CommonDivider />
+            {formSchema !== undefined && formSchema?.properties !== null && 'privilegeReferences' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.privilegeReferences} basicForm={form} gridStyle={style.twoCol} baseKey={'privilegeReferences'} setBasicForm={setForm} addMoreType={true} formId={form?.forms?.[7]?.id} applicationId={applicationId} tableGrid={style.tableGridReferences} isPOD={true} />
+            )}
+            <div className={style.marginTop20}>
+              {form?.forms?.[7]?.data?.privilegeReferences?.map((data, index) =>
+                data?.file?.fileURL !== undefined ? (
+                  <div className={`${style.documentBackground} ${style.documentCardGrid} ${style.marginTop10}`} key={index}>
+                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.file?.fileName}</div>
+                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.file?.classification !== null ? data?.file?.classification : '-'}</div>
+                    <div className={`${style.displayInRow} ${style.cursorPointer}`} onClick={() => { setFile(data?.file); setShowDocVerifyDialog(true); setSelectedRow(data); setSelectedRowTableName('privilegeReferences'); setSelectedFormId(form?.forms?.[7]?.id) }}>
+                      {(data?.file?.isVerified !== undefined && data?.file?.isVerified) ? (
+                        <>
+                          <img src={Verified} alt="" className={style.verifyImage} />
+                          <div className={`${style.greenButtonSmall} ${style.cursorPointer} ${style.marginLeft20}`}>
+                            <div className={`${style.buttonGreyTextStyleSmall} ${style.alignCenter}`}>Verified</div>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <img src={ToBeVerified} alt="" className={style.verifyImage} />
+                          <div className={`${style.purpleButtonSmall} ${style.cursorPointer} ${style.marginLeft20}`}>
+                            <div className={`${style.buttonGreyTextStyleSmall} ${style.alignCenter}`}>Verify</div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                ) : ''
+              )}
+            </div>
+          </>
+        );
+      case 'ProfessionalConduct':
+        return (
+          <>
+            {formSchema !== undefined && formSchema?.properties !== null && 'conductDisclosure1' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.conductDisclosure1} basicForm={form} stepPath={`forms[8].data`} gridStyle={style.conductGrid} baseKey={'conductDisclosure1'} collapsableQuestionCard={true} isPOD={true} />
+            )}
+            {formSchema !== undefined && formSchema?.properties !== null && 'conductDisclosure2' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.conductDisclosure2} basicForm={form} stepPath={`forms[8].data`} gridStyle={style.conductGrid} baseKey={'conductDisclosure2'} collapsableQuestionCard={true} isPOD={true} />
+            )}
+          </>
+        );
+      case 'CriminalHistory':
+        return (
+          <>
+            {formSchema !== undefined && formSchema?.properties !== null && 'criminalData1' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.criminalData1} basicForm={form} stepPath={`forms[9].data`} gridStyle={style.conductGrid} baseKey={'criminalData1'} collapsableQuestionCard={true} isPOD={true} />
+            )}
+            {formSchema !== undefined && formSchema?.properties !== null && 'criminalData2' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.criminalData2} basicForm={form} stepPath={`forms[9].data`} gridStyle={style.conductGrid} baseKey={'criminalData2'} collapsableQuestionCard={true} isPOD={true} />
+            )}
+          </>
+        );
+      case 'MedicalHistory':
+        return (
+          <>
+            {formSchema !== undefined && formSchema?.properties !== null && 'impactingPractice' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.impactingPractice} basicForm={form} stepPath={`forms[10].data`} gridStyle={style.conductGrid} baseKey={'impactingPractice'} collapsableQuestionCard={true} isPOD={true} />
+            )}
+          </>
+        );
+      case 'PrivilegeSelection':
+        return (
+          <>
+            <div className={style.marginLeft50}>
+              <div className={style.cardTextBoldStyle}>Selected Previleges</div>
+              {form?.privileges?.obligatedPrivileges?.map((data, index) => (
+                <div className={`${style.documentTextStyle} ${style.marginLeft} ${style.marginTop10}`} key={index}>{data?.privilegeSetTitle}</div>
+              ))}
+              {form?.privileges?.additionalPrivileges?.map((data, index) => (
+                <div className={`${style.documentTextStyle} ${style.marginLeft} ${style.marginTop10}`} key={index}>{data?.privilegeSetTitle}</div>
+              ))}
+            </div>
+          </>
+        );
+      default:
+        return <></>;
+    }
+  }
+
 
   return (
     <>
@@ -415,7 +731,7 @@ const NewActiveApplication = ({
       {/* </div > */}
       <div className={`${style.marginLeftRight50}`}>
         <div className={`${style.displayInRow} ${style.spaceBetween} ${style.topHeadingTextStyle} ${style.marginTop20}`}>
-        CAP MANAGER > APPLICATIONS >> {form?.basicDetails?.applicant?.name?.firstName || ''} {form?.basicDetails?.applicant?.name?.lastName || ''}</div>
+          {`CAP MANAGER > APPLICATIONS >> ${form?.basicDetails?.applicant?.name?.firstName || ''} ${form?.basicDetails?.applicant?.name?.lastName || ''}`}</div>
         <div className={style.grid2}>
           <div className={style.grid5and1}>
             <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
@@ -457,7 +773,7 @@ const NewActiveApplication = ({
               </div>
             </div>
             <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}  ${style.marginTop20} ${style.statusCardHeight} ${style.displayInCol}`}>
-              <div className={style.justifyCenter}><div className={`${style.greyBigDotStyle} `}></div></div>
+              <div className={`${style.greyBigDotStyle} ${style.marginCenter} `}></div>
               <div className={`${style.greyDotTextStyle}`}>Overall Verification & Acceptance Status</div>
             </div>
           </div>
@@ -472,8 +788,8 @@ const NewActiveApplication = ({
               </div>
             </div>
             <div className={`${style.marginTop20}`}>
-              <div className={`${style.bigButtonStyle} `}>
-                <div className={`${style.bigButtonTextStyle} ${style.alignCenter}`}>ACCEPT FOR CRED. COMM. REVIEW</div>
+              <div className={`${style.bigButtonStyle} ${style.cursorPointer} `}>
+                <div className={`${style.bigButtonTextStyle} ${style.alignCenter}`} onClick={handleApplicationAccept}>ACCEPT APPLICATION</div>
               </div>
             </div>
           </div>
@@ -579,14 +895,14 @@ const NewActiveApplication = ({
               </div>
               <div>
                 <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === 0) ? style.tableDataStyle1 : style.tableDataStyle}`}>
-                  <div className={` ${style.tableHeaderGridStyle}`}>
+                  <div className={` ${style.tableHeaderGridStyle} ${style.marginTop10}`}>
                     <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                       <div className={`${style.marginLeft10} ${style.justifySpaceAround} ${form?.basicInformationStatus ? style.greenDotStyle : style.greyDotStyle}`}></div>
                     </div>
                     <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                       <div className={`${(expand?.status && expand?.index === 0) ? style.tableHeaderTextStyle : style.tableDataFontStyle1}`}>Applicant Profile Information</div>
                     </div>
-                    {form?.basicInformationStatus ? <div className={`${style.greenButton}  `}> <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Verified</div>
+                    {/* {(expand?.status && expand?.index === 0) ? <div className={`${style.greenButton}  `}> <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Verified</div>
                     </div> : <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                       <div className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}></div>
                     </div>}
@@ -606,7 +922,33 @@ const NewActiveApplication = ({
                         <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>0</div>
                       </div>
                       : ''
-                    }
+                    } */}
+                    {(expand?.status && expand?.index === 0) ? (
+                      <>
+                        {!form?.basicInformationStatus ? (
+                          <div className={`${style.purpleButton} ${style.cursorPointer} `}>
+                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleVerify()}>Verify</div>
+                          </div>
+                        ) : (
+                          <div className={`${style.greenButton}  ${style.cursorPointer} `}>
+                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Verified</div>
+                          </div>
+                        )}
+                        <div></div>
+                      </>
+                    ) : (
+                      <>
+                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                          <div className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}></div>
+                        </div>
+                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                          <div className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}></div>
+                        </div>
+                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                          <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>-</div>
+                        </div>
+                      </>
+                    )}
 
                     <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                       <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
@@ -645,33 +987,56 @@ const NewActiveApplication = ({
                 </div>
 
                 {
-                  form?.formSchemas?.filter(data => data?.formCategory === 'Form')?.map((data, index) => (
+                  form?.formSchemas?.filter(data => (data?.formCategory === 'Form' || data?.formCategory === 'Disclosure') && data?.schemaCategory !== "UploadYourDoc")?.map((data, index) => (
 
-                    <div className={`${style.tableDataStyle} ${style.marginTop5} ${style.tableHeaderGridStyle}`}>
-                      <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                        <div className={`${style.marginLeft10} ${style.justifySpaceAround} ${style.greyDotStyle}`}></div>
-                      </div>
-                      <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                        <div className={`${style.tableDataFontStyle1}`}>{data?.description}</div>
-                      </div>
-                      <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                        <div className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}></div>
-                      </div>
-                      <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                        <div className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}></div>
-                      </div>
-                      <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                        <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>{form?.forms?.filter((formData, formIndex) => formIndex === index)?.map(data => data?.uploadedFiles?.length || 0)}</div>
-                      </div>
-                      <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                        <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
-                          {
-                            (expand?.status && expand?.index === index + 1) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} />)
-                              : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => setExpand({ status: true, index: index + 1 })} />)
-                          }
+                    <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === index + 1) ? style.tableDataStyle1 : style.tableDataStyle}`}>
+                      <div className={` ${expand?.index === index + 1 ? style.tableHeaderGridStyleForm : style.tableHeaderGridStyle} ${style.marginTop10}`}>
+                        <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                          <div className={`${style.marginLeft10} ${style.justifySpaceAround} ${form?.forms[index]?.status !== "APPROVED" ? style.greyDotStyle : style.greenDotStyle}`}></div>
+                        </div>
+                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                          <div className={`${style.tableDataFontStyle1}`}>{data?.description}</div>
+                        </div>
+                        {expand?.status && expand?.index === index + 1 ? (
+                          <>
+                            {form?.forms[index]?.status !== "APPROVED" ? (
+                              <div className={`${style.purpleButton} ${style.cursorPointer} `}>
+                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleStepsVerify(form?.forms[index]?.id)}>Verify</div>
+                              </div>
+                            ) : (
+                              <div className={`${style.greenButton}  ${style.cursorPointer} `}>
+                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Verified</div>
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                              <div className={`${style.marginLeft10}${style.justifySpaceAround} ${form?.forms[index]?.status !== "APPROVED" ? style.greyDotStyle : style.greenDotStyle}`}></div>
+                            </div>
+                            <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                              <div className={`${style.marginLeft10}${style.justifySpaceAround} ${form?.forms[index]?.status !== "APPROVED" ? style.greyDotStyle : style.greenDotStyle}`}></div>
+                            </div>
+                            <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                              <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>{form?.forms?.filter((formData, formIndex) => formIndex === index)?.map(data => data?.uploadedFiles?.length || 0)}</div>
+                            </div>
+                          </>
+                        )}
+                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                          <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
+                            {
+                              (expand?.status && expand?.index === index + 1) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: false, index: 0 }); setFormSchemaId('') }} />)
+                                : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: true, index: index + 1 }); setFormSchemaId(data?.id) }} />)
+                            }
 
+                          </div>
                         </div>
                       </div>
+                      {expand?.status && expand?.index === index + 1 &&
+                        <div className={`${style.marginTop} ${style.screenPadding}`}>
+                          {renderFieldsBasedOnStep(data)}
+                        </div>
+                      }
                     </div>))}
 
               </div>
@@ -685,7 +1050,7 @@ const NewActiveApplication = ({
                     <div className={`${style.tableHeaderTextStyle}`}>Requested Form Completeness Check</div>
                   </div>
                 </div>
-                {form?.formSchemas?.filter(data => data?.formCategory !== 'Form')?.map((data, index) => (<div className={`${style.tableDataStyle} ${style.marginTop5} ${style.tableHeaderGridStyle1}`}>
+                {form?.formSchemas?.filter(data => data?.formCategory === 'Acknowledgement')?.map((data, index) => (<div className={`${style.tableDataStyle} ${style.marginTop5} ${style.tableHeaderGridStyle1}`}>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                     <div className={`${style.marginLeft10} ${style.justifySpaceAround} ${style.greyDotStyle}`}></div>
                   </div>
@@ -821,13 +1186,48 @@ const NewActiveApplication = ({
           </div>
 
 
-        </div>
+        </div >
         <div className={style.marginTop50}></div>
         {
           showApplicationDeclineDialog && (
             <ApplicationDecline getApplicationDeclineDialog={getApplicationDeclineDialog} />
           )
         }
+        {showDocVerifyDialog && (
+          <Dialog isOpen={showDocVerifyDialog} onClose={() => setShowDocVerifyDialog(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
+            <div>
+              <div className={Classes.DIALOG_BODY}>
+                <div className={style.spaceBetween}>
+                  <div className={style.heading}>{`${form?.basicDetails?.applicant?.name?.firstName} ${form?.basicDetails?.applicant?.name?.lastName} ${file?.fileName} Preview`}</div>
+                  <div className={style.displayInRow}>
+                    {(file?.isVerified !== undefined && file?.isVerified) ? (
+                      <div className={`${style.greenButton} ${style.cursorPointer} `}>
+                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Verified</div>
+                      </div>
+                    ) : (
+                      <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => { handleDocVerify(selectedRow?.rowId); setShowDocVerifyDialog(false) }}>Verify</div>
+                      </div>
+                    )}
+                    <img
+                      src={CrossPink}
+                      alt="cross"
+                      className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft20} `}
+                      onClick={() => { setShowDocVerifyDialog(false) }}
+                    />
+                  </div>
+                </div>
+                <div className={style.marginTop20}>
+                  <iframe src={file?.fileURL} width="100%" height="600px"></iframe>
+                </div>
+                <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
+                  <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { setShowDocVerifyDialog(false); }}>CLOSE</div>
+                </div>
+              </div>
+
+            </div>
+          </Dialog >
+        )}
       </div >
     </>
 

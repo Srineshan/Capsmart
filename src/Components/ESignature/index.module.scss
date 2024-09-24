@@ -83,7 +83,7 @@
     display: flex;
     align-items: center;
     position: relative;
-    padding: 10px 0;
+    // padding: 10px 0;
 }
 
 .text {
@@ -105,6 +105,7 @@
     font-family: 'calgary-script-ot', cursive;
     font-size: 24px;
     padding-right: 30px;
+    text-transform: capitalize;
 }
 
 .currentDate {
@@ -121,11 +122,11 @@
 }
 
 
-.border::before {
+.border:before {
     content: "";
     position: absolute;
     left: 0;
-    height: 55px;
+    height: 45px;
     border-left: 3px solid gray;
     border-top: 3px solid gray;
     border-top-left-radius: 20px;
@@ -133,10 +134,10 @@
     top: -10px;
 }
 
-.border::after {
+.border:after {
     content: "";
     position: absolute;
-    height: 57px;
+    height: 47px;
     border-left: 3px solid gray;
     border-bottom: 3px solid gray;
     border-bottom-left-radius: 20px;

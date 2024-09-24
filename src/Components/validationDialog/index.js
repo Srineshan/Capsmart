@@ -20,8 +20,11 @@ const ValidationDialog = ({ getIsOpen, labelList, getSkipClicked }) => {
                             />
                         </div> */}
                     </div>
-                    <p className={`${style.description} ${style.marginTop}`}>The below fields are mandatory. Do you want to skip or continue your data entry?</p>
-                    <p className={`${style.description} ${style.marginTop}`}>{labelList?.map(data => data?.label)?.join(', ')}</p>
+                    <p className={`${style.description} ${style.marginTop}`}>The below fields are mandatory. </p>
+                    {labelList?.map((data, index) => (
+                        <p className={`${style.description} ${style.marginTop10} ${style.marginLeft}`}>{`${index + 1}. ${data?.label}`}</p>
+                    ))}
+                    <p className={`${style.description} ${style.marginTop}`}>Do you want to skip or continue your data entry?</p>
                     <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
                         <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>CONTINUE</div>
                         <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(false); getSkipClicked(true); }}>SKIP</div>
