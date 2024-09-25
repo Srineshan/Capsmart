@@ -661,9 +661,7 @@ const ApplicationFieldCard = ({
     style,
     calendarStart,
     setCalendarStart,
-    parentData,
-    warning,
-    warningCheck
+    parentData
   ) => {
     // const checkAllOfConditions = (object, path = '', fieldKey) => {
     //     if (!object) return true;

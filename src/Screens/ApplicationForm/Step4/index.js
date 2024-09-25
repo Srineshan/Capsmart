@@ -70,9 +70,17 @@ const Step4 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
     }
 
 
+    // const getSkipClicked = (value) => {
+    //     if (value) {
+    //         handleSubmitApplicationReq(true); // Pass true if skipped
+    //     } else {
+    //         handleSubmitApplicationReq(false); // Pass false if not skipped
+    //     }
+    // }
+
     const getSkipClicked = (value) => {
         if (value) {
-            handleSubmitApplicationReq()
+            handleSubmitApplicationReq("skipped")
         }
     }
 
@@ -96,12 +104,14 @@ const Step4 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
         console.log(keyValuePair, 'Metadata', missingKeys)
     }
 
-    const handleSubmitApplicationReq = async () => {
+    const handleSubmitApplicationReq = async (data) => {
         if (isEdited) {
             console.log(basicForm?.forms?.[2]?.data)
             let temp = {
                 schemaId: basicForm?.forms?.[2]?.schemaId,
-                data: basicForm?.forms?.[2]?.data
+                data: basicForm?.forms?.[2]?.data,
+                unFilledFields: metadata,
+                acknowledged: data === "skipped" ? false : true
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[2]?.id}`, temp)
                 .then(response => {

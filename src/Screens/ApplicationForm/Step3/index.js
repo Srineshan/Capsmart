@@ -93,10 +93,37 @@ const Step3 = ({ basicForm, setBasicForm, applicationId }) => {
 
     const getSkipClicked = (value) => {
         if (value) {
-            handleSubmitApplicationReq()
+            handleSubmitApplicationReq("skipped")
         }
     }
+    // const getSkipClicked = async () => {
+    //     let temp = {
+    //         schemaId: basicForm?.forms?.[1]?.schemaId,
+    //         data: basicForm?.forms?.[1]?.data,
+    //         unFilledFields: basicForm?.forms?.[1]?.unFilledFields,
+    //         acknowledged: basicForm?.forms?.[1]?.acknowledged
+    //     };
+    
+    //     if (temp.acknowledged === true) {
+    //         handleSubmitApplicationReq();
+    //     } else {
+    //         temp.acknowledged = true;
+    //         temp.unFilledFields = metadata;
+    
+    //             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[1]?.id}`, temp)
+    //             .then(response => {
+    //             console.log("Response received:", response);  // Log entire response
+    //             if (response?.data) {
+    //                 setBasicForm(response.data);
+    //                 SuccessToaster("Application Updated Successfullyyyyyyyyy");
+    //             } else {
+    //                 console.error("No data in response:", response);
+    //             }
+    //         })
 
+    //     }
+    // };
+    
     const getMissingFields = () => {
         let missingKeys = [];
         let keyValuePair = [];
@@ -114,15 +141,17 @@ const Step3 = ({ basicForm, setBasicForm, applicationId }) => {
             handleSubmitApplicationReq()
         }
         setWarningFields(missingKeys)
-        console.log(keyValuePair, 'Metadata....................................', missingKeys)
+        console.log(keyValuePair, 'Metadata', missingKeys)
     }
 
 
-    const handleSubmitApplicationReq = async () => {
+    const handleSubmitApplicationReq = async (data) => {
         if (isEdited) {
             let temp = {
                 schemaId: basicForm?.forms?.[1]?.schemaId,
-                data: basicForm?.forms?.[1]?.data
+                data: basicForm?.forms?.[1]?.data,
+                unFilledFields: metadata,
+                acknowledged: data === "skipped" ? false : true
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[1]?.id}`, temp)
                 .then(response => {

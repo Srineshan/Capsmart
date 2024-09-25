@@ -11,7 +11,7 @@ const CommonSelectField = ({ value, onChange, className, firstOptionLabel, first
     const theme = createTheme({
         palette: {
             error: {
-                main: '#cc0000', // Customize your error color here
+                main: '#FF6562', // Customize your error color here
             },
             warning: {
                 main: '#f57c00', // Customize your error color here

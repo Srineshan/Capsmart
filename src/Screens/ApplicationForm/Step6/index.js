@@ -71,7 +71,7 @@ const Step6 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
 
     const getSkipClicked = (value) => {
         if (value) {
-            handleSubmitApplicationReq()
+            handleSubmitApplicationReq("skipped")
         }
     }
 
@@ -99,7 +99,10 @@ const Step6 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
     const handleSubmitApplicationReq = async (data) => {
         let temp = {
             schemaId: data?.forms?.[4]?.schemaId,
-            data: data?.forms?.[4]?.data
+            data: data?.forms?.[4]?.data,
+            unFilledFields: metadata,
+            acknowledged: data === "skipped" ? false : true
+
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[4]?.id}`, temp)
             .then(response => {
@@ -146,7 +149,7 @@ const Step6 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'graduation' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.graduation} gridStyle={style.EducationGrid} baseKey={'graduation'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[4]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields}
+                            <ApplicationFieldCard object={formSchema?.properties?.graduation} gridStyle={style.EducationGrid} baseKey={'graduation'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} stepPath={`forms[4].data`} addMoreType={true} formId={basicForm?.forms?.[4]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields}
                                 heading={'Information Requirement Alert'}
                                 subHeading={'For this application you are required to provide information on all of the different undergraduate / graduate qualifications you have.'}
                                 subHeading2={'You will not be able to submit your application if this is not provided.'} />

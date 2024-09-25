@@ -71,7 +71,7 @@ const Step5 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
 
     const getSkipClicked = (value) => {
         if (value) {
-            handleSubmitApplicationReq()
+            handleSubmitApplicationReq("skipped")
         }
     }
 
@@ -100,7 +100,9 @@ const Step5 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
         if (isEdited) {
             let temp = {
                 schemaId: basicForm?.forms?.[3]?.schemaId,
-                data: basicForm?.forms?.[3]?.data
+                data: basicForm?.forms?.[3]?.data,
+                unFilledFields: metadata,
+                acknowledged: data === "skipped" ? false : true
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[3]?.id}`, temp)
                 .then(response => {

@@ -70,7 +70,7 @@ const Step7 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
 
     const getSkipClicked = (value) => {
         if (value) {
-            handleSubmitApplicationReq()
+            handleSubmitApplicationReq("skipped")
         }
     }
 
@@ -98,7 +98,9 @@ const Step7 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
     const handleSubmitApplicationReq = async (data) => {
         let temp = {
             schemaId: data?.forms?.[5]?.schemaId,
-            data: data?.forms?.[5]?.data
+            data: data?.forms?.[5]?.data,
+            unFilledFields: metadata,
+            acknowledged: data === "skipped" ? false : true
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[5]?.id}`, temp)
             .then(response => {
@@ -145,11 +147,11 @@ const Step7 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'trainingAndWorkingExperience' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.trainingAndWorkingExperience} gridStyle={style.trainingGrid} baseKey={'trainingAndWorkingExperience'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[5]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields} />
+                            <ApplicationFieldCard object={formSchema?.properties?.trainingAndWorkingExperience} gridStyle={style.trainingGrid} baseKey={'trainingAndWorkingExperience'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} stepPath={`forms[5].data`} addMoreType={true} formId={basicForm?.forms?.[5]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields} />
                         )}
                         <CommonDivider />
                         {formSchema !== undefined && 'healthcareFacilityAppointments' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.healthcareFacilityAppointments} gridStyle={style.healthCareGrid} baseKey={'healthcareFacilityAppointments'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[5]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields}/>
+                            <ApplicationFieldCard object={formSchema?.properties?.healthcareFacilityAppointments} gridStyle={style.healthCareGrid} baseKey={'healthcareFacilityAppointments'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} stepPath={`forms[5].data`} addMoreType={true} formId={basicForm?.forms?.[5]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields}/>
                         )}
                     </div>
                 </div>

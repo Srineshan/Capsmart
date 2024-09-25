@@ -71,7 +71,7 @@ const Step10 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =
 
     const getSkipClicked = (value) => {
         if (value) {
-            handleSubmitApplicationReq()
+            handleSubmitApplicationReq("skipped")
         }
     }
 
@@ -98,7 +98,9 @@ const Step10 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =
     const handleSubmitApplicationReq = async (data) => {
         let temp = {
             schemaId: data?.forms?.[7]?.schemaId,
-            data: data?.forms?.[7]?.data
+            data: data?.forms?.[7]?.data,
+            unFilledFields: metadata,
+            acknowledged: data === "skipped" ? false : true
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[7]?.id}`, temp)
             .then(response => {
@@ -144,11 +146,11 @@ const Step10 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'references' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.references} gridStyle={style.twoCol} baseKey={'references'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[7]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields} />
+                            <ApplicationFieldCard object={formSchema?.properties?.references} gridStyle={style.twoCol} baseKey={'references'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} stepPath={`forms[7].data`} addMoreType={true} formId={basicForm?.forms?.[7]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields} />
                         )}
                         <CommonDivider />
                         {formSchema !== undefined && 'privilegeReferences' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.privilegeReferences} gridStyle={style.twoCol} baseKey={'privilegeReferences'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[7]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields} />
+                            <ApplicationFieldCard object={formSchema?.properties?.privilegeReferences} gridStyle={style.twoCol} baseKey={'privilegeReferences'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} stepPath={`forms[7].data`} addMoreType={true} formId={basicForm?.forms?.[7]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields} />
                         )}
                     </div>
                 </div>
