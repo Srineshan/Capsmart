@@ -4,15 +4,21 @@ import CrossPink from "../../../../images/crossPink.png";
 import CommonSelectField from '../../../../Components/CommonFields/CommonSelectField';
 import CommonCheckBox from '../../../../Components/CommonFields/CommonCheckBox';
 
-import { GET } from '../../../dataSaver';
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import CommonRadio from '../../../../Components/CommonFields/CommonRadio';
+import { GET, POST } from '../../../dataSaver';
 import { Icon } from '@blueprintjs/core';
+import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import CryptoJS from 'crypto-js';
+import { ErrorToaster, SuccessToaster } from '../../../../utils/toaster';
 import ESignature from '../../../../Components/ESignature';
 import style from './index.module.scss'
 import { format } from 'date-fns';
 
-const AdditionalPrivileges = ({ getIsOpen, primaryPrivilege, getSelectedPrivilegeList, basicForm, selectedAdditionalPrivilegeForEdit }) => {
+const AdditionalPrivileges = ({ getIsOpen, primaryPrivilege, getSelectedPrivilegeList, basicForm, selectedAdditionalPrivilegeForEdit, applicationId }) => {
     const [isContinue, setIsContinue] = useState(false);
+    const [isRestrictedSigned, setIsRestrictedSigned] = useState(false);
     const [staffPrivilege, setStaffPrivilege] = useState([]);
     const [selectedPrivilege, setSelectedPrivilege] = useState('');
     const [collapsibleIndexes, setCollapsibleIndexes] = useState([]);
@@ -47,6 +53,82 @@ const AdditionalPrivileges = ({ getIsOpen, primaryPrivilege, getSelectedPrivileg
     const handleChange = (privilegeId) => {
         setSelectedPrivilege(privilegeId);
         setSelectedPrivilegeForDisplay(staffPrivilege?.filter(data => data?.id === privilegeId))
+    }
+
+    const addNewDocument = async (file) => {
+        console.log(file, file?.name, 'Test')
+        let fileName = {
+            "fileName": file?.name
+        };
+        const formData = new FormData();
+
+        if (file !== null) {
+
+            formData.append('files', new Blob([JSON.stringify(fileName)], {
+                type: "application/json"
+            }));
+            formData.append('documents', file);
+            try {
+                const response = await POST(`application-management-service/application/${applicationId}/files`, formData);
+                SuccessToaster('File Uploaded Successfully');
+                console.log(response?.data);
+                return response?.data;
+            } catch (error) {
+                ErrorToaster('File Upload Failed');
+                console.error(error);
+                return null;
+            }
+        }
+    }
+
+    const handleAdditionalRestrictedFileSelection = async (index, categoriesIndex, privilegesIndex, value) => {
+        let file = await addNewDocument(value);
+        handleAdditionalRestrictedSelection(index, categoriesIndex, privilegesIndex, file, 'file')
+    }
+
+    const handleAdditionalRestrictedSelection = (index, categoriesIndex, privilegesIndex, value, key) => {
+        console.log(index, categoriesIndex, privilegesIndex, value, key)
+        setSelectedPrivilegeForDisplay((prevData) => {
+            const temp = [...prevData];
+
+            temp[index] = {
+                ...temp[index],
+                privilegeDetails: {
+                    ...temp[index].privilegeDetails,
+                    restrictedPrivileges: {
+                        ...temp[index].privilegeDetails.restrictedPrivileges,
+                        privilegesByCategories: [
+                            ...temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories
+                        ]
+                    }
+                }
+            };
+
+            temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories[categoriesIndex] = {
+                ...temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories[categoriesIndex],
+                privileges: [
+                    ...temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories[categoriesIndex].privileges
+                ]
+            };
+            if (key === 'file') {
+                temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories[categoriesIndex]
+                    .privileges[privilegesIndex].file = value;
+                console.log(index, categoriesIndex, privilegesIndex, value, key)
+            } else if (key === 'response') {
+                temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories[categoriesIndex]
+                    .privileges[privilegesIndex].response = value;
+            } else if (key === 'notes') {
+                if (temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories[categoriesIndex]
+                    .privileges[privilegesIndex].notes === undefined) {
+                    temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories[categoriesIndex]
+                        .privileges[privilegesIndex].notes = {}
+                }
+                temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories[categoriesIndex]
+                    .privileges[privilegesIndex].notes.notes = value;
+            }
+
+            return temp;
+        });
     }
 
     const handleCollapse = (value, index) => {
@@ -145,6 +227,123 @@ const AdditionalPrivileges = ({ getIsOpen, primaryPrivilege, getSelectedPrivileg
                             </div>
                         </div>
                     )} */}
+                    {staffPrivilege?.filter(data => data?.id === selectedPrivilege)?.length !== 0 && staffPrivilege?.filter(data => data?.id === selectedPrivilege)[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.length !== 0 && (
+                        <div className={style.marginTop40}>
+                            <div className={style.applicationCardStyle}>
+                                <div className={style.marginTop}>
+                                    {/* {selectedAdditionalPrivilegeForDisplay?.map((data) => data?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.length !== 0 && ( */}
+                                    <div>
+                                        <div className={style.cardDescription}>{'The following privileges are restricted and require evidence of qualification and competence. Continued competence would be evaluated as that being acceptable to the Medical Consultant of the Program. Please signify your intention regarding each privilege by marking and X opposite and sign below.'}</div>
+
+                                        {
+                                            staffPrivilege?.filter(data => data?.id === selectedPrivilege)?.map((data, index) => data?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.map((categories, categoriesIndex) => (
+                                                <div key={`${index}${categoriesIndex}`}>
+                                                    <div className={style.categoryGrid}>
+                                                        {/* <div className={style.itemLeft}>{categories?.category === null ? 'GENERAL' : categories?.category}</div> */}
+                                                        {/* <div className={style.itemLeft}> {openIndex !== `restricited${index}` ? <Icon icon="chevron-down" className={`${style.margin} ${style.cursor} ${style.border} ${style.marginRight}`} onClick={() => setOpenIndex(`restricited${index}`)} /> : <Icon icon="chevron-up" className={`${style.margin} ${style.cursor} ${style.border} ${style.marginRight}`} onClick={() => setOpenIndex()} />}
+                            </div> */}
+                                                    </div>
+                                                    <>
+                                                        {
+                                                            categories?.privileges?.map((privileges, privilegesIndex) => (
+                                                                <div className={`${style.restrictedPrivilegeGrid} ${privilegesIndex === 0 ? style.marginTop : ''}`} key={`${index}${privilegesIndex}`}>
+                                                                    <div className={style.itemLeft}><strong>{privileges?.privilegeId || ''}</strong></div>
+                                                                    <div className={style.itemLeft}>{privileges?.title || ''}</div>
+                                                                    <div className={style.floatRight}>
+                                                                        <CommonRadio
+                                                                            value={privileges?.response || ''}
+                                                                            onChange={(e) => handleAdditionalRestrictedSelection(index, categoriesIndex, privilegesIndex, e.target.value, 'response')}
+                                                                            radioValue={['NO', 'YES']}
+                                                                            label={['No', 'Yes']}
+                                                                        />
+                                                                    </div>
+                                                                    {privileges?.response === 'Yes' && privileges?.isevidenceRequired && (
+                                                                        <>
+                                                                            <div className={style.marginTop}>
+                                                                                <CKEditor
+                                                                                    editor={ClassicEditor}
+                                                                                    data={privileges?.notes?.notes || null}
+                                                                                    onChange={(event, editor) => {
+                                                                                        const data = editor.getData();
+                                                                                        handleAdditionalRestrictedSelection(index, categoriesIndex, privilegesIndex, data, 'notes');
+                                                                                    }}
+                                                                                />
+                                                                            </div>
+                                                                            <div className={style.marginTop10}>
+                                                                                <div className={`${style.uploadButton}`}>
+                                                                                    <div className={style.uploadGrid}>
+                                                                                        <label for={`file-upload-dynamic-additional`} className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>
+                                                                                            Upload any supporting documents for evidence of qualification and competence
+                                                                                            {/* <div className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>Click to upload</div> */}
+                                                                                        </label>
+                                                                                        <DescriptionOutlinedIcon sx={{ color: '#787f87' }} />
+
+                                                                                    </div>
+                                                                                </div>
+                                                                                <input id={`file-upload-dynamic-additional`} type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx"
+                                                                                    onChange={(e) => { handleAdditionalRestrictedFileSelection(index, categoriesIndex, privilegesIndex, e.target.files[0], 'file') }}
+                                                                                />
+                                                                            </div>
+                                                                            <br />
+                                                                        </>
+                                                                    )}
+                                                                </div>
+
+                                                            ))
+                                                        }
+                                                    </>
+                                                </div>
+                                            )
+
+                                            )
+
+                                            )
+                                        }
+                                        {/* <div className={style.eSignGrid}>
+                                            <div
+                                                onClick={() => { setIsRestrictedSigned(!isRestrictedSigned) }}
+                                            >
+                                                <ESignature
+                                                    userName={isRestrictedSigned ? name : ""}
+                                                    encData={isRestrictedSigned ? encryptedText : ''}
+                                                    showData={isRestrictedSigned}
+                                                    showDatais={true}
+                                                />
+                                            </div>
+                                            <div className={style.verticalAlignCenter}>
+                                                <div className={style.displayInRow}>
+                                                    <div className={style.dateTitle}>Date: </div>
+                                                    <div className={`${style.date} ${style.marginLeft}`}>{isRestrictedSigned ? currentDate : ""}</div>
+                                                </div>
+                                            </div>
+                                        </div> */}
+
+                                    </div>
+                                    {/* ))} */}
+                                </div>
+
+                                {/* <div className={style.twoCol}>
+                                    <div
+                                        onClick={() => { setIsAdditionalSigned(!isAdditionalSigned) }}
+                                    >
+                                        <ESignature
+                                            userName={isAdditionalSigned ? name : ""}
+                                            encData={isAdditionalSigned ? encryptedText : ''}
+                                            showData={isAdditionalSigned}
+                                            showDatais={true}
+                                        />
+                                    </div>
+                                    <div className={style.verticalAlignCenter}>
+                                        <div className={style.displayInRow}>
+                                            <div className={style.dateTitle}>Date: </div>
+                                            <div className={`${style.date} ${style.marginLeft}`}>{isAdditionalSigned ? currentDate : ""}</div>
+                                        </div>
+                                    </div>
+                                </div> */}
+                            </div>
+
+                        </div>
+                    )}
 
                     <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
                         <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getSelectedPrivilegeList(selectedPrivilegeForDisplay); getIsOpen(false); }}>ADD</div>

@@ -895,7 +895,7 @@ const NewActiveApplication = ({
               </div>
               <div>
                 <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === 0) ? style.tableDataStyle1 : style.tableDataStyle}`}>
-                  <div className={` ${style.tableHeaderGridStyle} ${style.marginTop10}`}>
+                  <div className={` ${(expand?.status && expand?.index === 0) ? style.tableHeaderGridStyleForm : style.tableHeaderGridStyle} ${style.marginTop10}`}>
                     <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                       <div className={`${style.marginLeft10} ${style.justifySpaceAround} ${form?.basicInformationStatus ? style.greenDotStyle : style.greyDotStyle}`}></div>
                     </div>
@@ -934,7 +934,6 @@ const NewActiveApplication = ({
                             <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Verified</div>
                           </div>
                         )}
-                        <div></div>
                       </>
                     ) : (
                       <>

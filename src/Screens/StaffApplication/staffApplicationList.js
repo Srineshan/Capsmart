@@ -234,7 +234,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
       notesIcon.push(<NoteAltOutlinedIcon style={{ fontSize: 20, color: `#52575D` }} />);
       notesHoverText.push(["June 13 00:00, Nina Grealy", "Lorem ipsum dolor sit amet, consetetur sadipscing."])
       lastUpdated.push(format(new Date(data?.lastModifiedDate), 'MMM dd, yyyy'))
-      lastUpdatedBy.push(['-'])
+      lastUpdatedBy.push([[data?.updatedBy?.name?.firstName || '-']])
       // const lastUpdatedDate = new Date(data?.lastModifiedDate);
       // lastUpdated.push(isNaN(lastUpdatedDate.getTime()) ? 'Invalid Date' : format(lastUpdatedDate, 'MM-dd-yyyy'));
       // capManager.push(data?.interviewDetails?.interviewedBy || '- ');
@@ -276,7 +276,7 @@ const StaffApplicationList = ({ isLoading, getSelectedTab, selectedTab, getActiv
       boardStatus.push(data?.boardStatus || 'green');
       ceoStatus.push(data?.ceoStatus || 'grey');
       lastUpdatedOn.push(format(new Date(data?.lastModifiedDate), 'MMM dd, yyyy'))
-      lastUpdatedBy.push([data?.updatedBy || '-']);
+      lastUpdatedBy.push([data?.updatedBy?.name?.firstName || '-']);
       action.push(true);
     })
 
