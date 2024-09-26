@@ -96,10 +96,11 @@ const Step6 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
     }
 
 
-    const handleSubmitApplicationReq = async (skip) => {
+    const handleSubmitApplicationReq = async (data,skip) => {
+        // if(isEdited){
         let temp = {
-            schemaId: basicForm?.forms?.[4]?.schemaId,
-            data: basicForm?.forms?.[4]?.data,
+            schemaId: data?.forms?.[4]?.schemaId,
+            data: data?.forms?.[4]?.data,
             unFilledFields: metadata,
             acknowledged: skip === "skipped" ? false : true
 
@@ -120,7 +121,16 @@ const Step6 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
             .catch((error) => {
                 console.log(error)
                 ErrorToaster("Unexpected Error Updating Application");
-            });
+            })
+        // } else {
+        //     if (sessionStorage.getItem('fromSummary') === "true") {
+        //         navigate(-1);
+        //     }
+        //     else {
+        //         navigate('/applicationForm/section1/step7')
+
+        //     }
+        // }
     }
 
     const handleContinue = () => {
@@ -139,6 +149,10 @@ const Step6 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
         return keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm);
     };
 
+    // const getIsEdited = (value) => {
+    //     setIsEdited(value)
+    // }
+
     return (
         <div>
             <div className={style.applicationScreenGrid}>
@@ -149,7 +163,7 @@ const Step6 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'graduation' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.graduation} gridStyle={style.EducationGrid} baseKey={'graduation'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} stepPath={`forms[4].data`} addMoreType={true} formId={basicForm?.forms?.[4]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields}
+                            <ApplicationFieldCard object={formSchema?.properties?.graduation} gridStyle={style.EducationGrid} baseKey={'graduation'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[4]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields}
                                 heading={'Information Requirement Alert'}
                                 subHeading={'For this application you are required to provide information on all of the different undergraduate / graduate qualifications you have.'}
                                 subHeading2={'You will not be able to submit your application if this is not provided.'} />

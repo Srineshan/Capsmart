@@ -59,8 +59,9 @@ const StaffApplicationList = ({
   const applicantHeaderValues = [
     "",
     "Applicant Name",
+    "Applicant Id",
     "Applicant Type",
-    "Department",
+    // "Department",
     "Docs",
     "Data & Disclosures",
     "CRs",
@@ -71,13 +72,14 @@ const StaffApplicationList = ({
   const applicationHeaderValues = [
     "",
     "Applicant Name",
+    "Applicant Id",
     "Applicant Type",
-    "Department",
+    // "Department",
     "Commitee",
     "Board",
     "CEO",
-    "Last Updated On",
-    "Actions",
+    "Last Updated",
+    "",
   ];
   const clarificationHeaderValues = [
     "",
@@ -122,6 +124,7 @@ const StaffApplicationList = ({
     false,
   ];
   const applicationColSortValues = [
+    false,
     false,
     false,
     false,
@@ -348,11 +351,11 @@ const StaffApplicationList = ({
         `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
           ""
       );
-      applicantId.push(data?.Id);
+      applicantId.push(data?.applicant?.id);
       applicantType.push(data?.providerType.serviceProviderType);
-      department.push(
-        data?.basicDetails?.departmentSpecialty?.department || "-"
-      );
+      // department.push(
+      //   data?.basicDetails?.departmentSpecialty?.department || "-"
+      // );
       docs.push(data?.docs || "2/8");
       docsHoverText.push([
         "Immunization History Verification From PCP pending",
@@ -389,8 +392,9 @@ const StaffApplicationList = ({
     return [
       { type: "dot", value: dot, tooltipValue: dotTooltipValues },
       { type: "text", value: applicantName },
+      { type: "text", value: applicantId },
       { type: "text", value: applicantType },
-      { type: "text", value: department },
+      // { type: "text", value: department },
       {
         type: "iconWithCount",
         value: docs,
@@ -426,7 +430,8 @@ const StaffApplicationList = ({
   const getApplicationValues = () => {
     applicantName = [];
     applicantType = [];
-    department = [];
+    applicantId = [];
+    // department = [];
     commiteeStatus = [];
     boardStatus = [];
     ceoStatus = [];
@@ -441,9 +446,10 @@ const StaffApplicationList = ({
           ""
       );
       applicantType.push(data?.providerType.serviceProviderType);
-      department.push(
-        data?.sites?.siteDepartments?.site?.department?.name || "-"
-      );
+      applicantId.push(data?.applicant?.id);
+      // department.push(
+      //   data?.basicDetails?.departmentSpecialty?.department || "-"
+      // );
       commiteeStatus.push(data?.commiteeStatus || "yellow");
       boardStatus.push(data?.boardStatus || "green");
       ceoStatus.push(data?.ceoStatus || "grey");
@@ -457,8 +463,10 @@ const StaffApplicationList = ({
     return [
       { type: "dot", value: dot },
       { type: "text", value: applicantName },
+      { type: "text", value: applicantId },
       { type: "text", value: applicantType },
-      { type: "text", value: department },
+      
+      // { type: "text", value: department },
       { type: "dot", value: commiteeStatus },
       { type: "dot", value: boardStatus },
       { type: "dot", value: ceoStatus },
@@ -489,7 +497,7 @@ const StaffApplicationList = ({
           ""
       );
       applicantType.push(data?.providerType.serviceProviderType);
-      clarificationTitle.push(data?.clarificationTitle);
+      clarificationTitle.push(data?.title);
       raisedBy.push(data?.raisedBy);
       createdOn.push(data?.createdOn);
       lastUpdatedOn.push(data?.lastUpdatedOn);
@@ -621,51 +629,71 @@ const StaffApplicationList = ({
       ? applicantHeaderValues
       : selectedTab === "credentialingCommittee"
       ? applicationHeaderValues
+      : selectedTab === "clarifications"
+      ? clarificationHeaderValues
       : selectedTab === "mac"
       ? clarificationHeaderValues
       : selectedTab === "bod"
       ? []
-      : approvedHeaderValues;
+    
+      // : approvedHeaderValues;
+      :clarificationHeaderValues;
   let tableSortValues =
     selectedTab === "chiefOfStaff"
       ? applicantColSortValues
       : selectedTab === "credentialingCommittee"
       ? applicationColSortValues
+      : selectedTab === "clarifications"
+      ? applicationColSortValues
       : selectedTab === "mac"
       ? clarificationColSortValues
       : selectedTab === "bod"
       ? []
-      : approvedColSortValues;
+
+      // : approvedColSortValues;
+      : clarificationColSortValues;
   let tableDataValues =
     selectedTab === "chiefOfStaff"
       ? getApplicantValues()
       : selectedTab === "credentialingCommittee"
       ? getApplicationValues()
+      : selectedTab === "clarifications"
+      ? getClarificationValues()
       : selectedTab === "mac"
       ? getClarificationValues()
       : selectedTab === "bod"
       ? []
-      : getApprovedValues();
+      
+      // : getApprovedValues();
+      : getClarificationValues();
   let actions =
     selectedTab === "chiefOfStaff"
       ? applicantActionsData
       : selectedTab === "credentialingCommittee"
       ? applicationActionsData
+      : selectedTab === "clarifications"
+      ? clarificationActionsData
       : selectedTab === "mac"
       ? clarificationActionsData
       : selectedTab === "bod"
       ? []
-      : approvedActionsData;
+
+      // : approvedActionsData;
+      : clarificationActionsData;
   let gridStyle =
     selectedTab === "chiefOfStaff"
       ? style.applicantStaffGrid
       : selectedTab === "credentialingCommittee"
       ? style.applicationStaffGrid
+      : selectedTab === "clarification"
+      ? style.clarificationStaffGrid
       : selectedTab === "mac"
       ? style.clarificationStaffGrid
       : selectedTab === "bod"
-      ? ""
-      : style.approvedStaffGrid;
+      ? []
+
+      // : style.approvedStaffGrid;
+      :style.clarificationStaffGrid;
 
   return (
     <div className={style.margin20}>

@@ -33,7 +33,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
       <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Cred. Comm." tileCount={counts.credentialingCommittee} currentTile="credentialingCommittee" />
       <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="MAC" tileCount={counts.mac} currentTile="mac" />
       <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="BOD" tileCount={counts.bod} currentTile="bod" />
-      {/* <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Clarifications" tileCount={0} currentTile="Clarifications" /> */}
+      <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Clarifications" tileCount={counts.clarificationsRequired} currentTile="clarificationsRequired" />
 
     </div>
   )
