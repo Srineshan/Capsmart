@@ -95,12 +95,12 @@ const Step7 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
     }
 
 
-    const handleSubmitApplicationReq = async (data) => {
+    const handleSubmitApplicationReq = async (skip) => {
         let temp = {
-            schemaId: data?.forms?.[5]?.schemaId,
-            data: data?.forms?.[5]?.data,
+            schemaId: basicForm?.forms?.[5]?.schemaId,
+            data: basicForm?.forms?.[5]?.data,
             unFilledFields: metadata,
-            acknowledged: data === "skipped" ? false : true
+            acknowledged: skip === "skipped" ? false : true
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[5]?.id}`, temp)
             .then(response => {
