@@ -18,7 +18,17 @@ import Chip from "@mui/material/Chip";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import Email from "./../../../images/Email.png";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+} from "@mui/material";
 import TableTwo from "../../../Components/TableDesignTwo";
+import CommonCheckBox from "../../../Components/CommonFields/CommonCheckBox";
 
 const SwitchBoardDialog = ({
   open,
@@ -26,18 +36,32 @@ const SwitchBoardDialog = ({
   selectedValue,
   selectedApplicant,
   editorContent,
-  file,
+  toEmail,
+  previewData,
 }) => {
   const [emailRecipients, setEmailRecipients] = useState([]);
   const [ccRecipients, setCcRecipients] = useState([]);
   const [email, setEmail] = useState("switchboard@gmail.com");
   const [ccemail, setccEmail] = useState("");
-  const [selectedCCValues, setSelectedCCValues] = useState([]);
-
+  const [selectedCCValues, setSelectedCCValues] = useState([
+    "static1@gmail.com",
+    "static2@gmail.com",
+  ]);
   const handleEmailSelect = (event) => {
     setEmailRecipients(event.target.value);
   };
-  console.log("selectedApplicant", selectedApplicant);
+
+  console.log("file", previewData);
+  useEffect(() => {
+    if (previewData) {
+      const toEmails = previewData?.mail?.recipientEmails || [];
+      setEmail(toEmails.join(", "));
+
+      const ccEmails = previewData?.mail?.ccRecipientEmails || [];
+      setSelectedCCValues(ccEmails);
+    }
+  }, [previewData]);
+
   const handleEmailChange = (event) => {
     const newValue = event.target.value.replace(/^To:\s*/, "");
     setEmail(newValue);
@@ -52,16 +76,16 @@ const SwitchBoardDialog = ({
       recipients.filter((recipient) => recipient !== recipientToDelete)
     );
   };
-  console.log("switchboardEditercontent", editorContent);
+  console.log("previewDatain SwitchBoardDialog", previewData);
+
   const handleCCEmailChange = (event) => {
     setccEmail(event.target.value);
   };
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
-      // Add the new value to selectedValues when Enter is pressed
       if (email.trim() !== "") {
         setSelectedCCValues([...selectedCCValues, email]);
-        setccEmail(""); // Clear the input field
+        setccEmail("");
       }
     }
   };
@@ -74,57 +98,6 @@ const SwitchBoardDialog = ({
   useEffect(() => {
     console.log("SwitchBoardDialog open:", open);
   }, [open]);
-
-  useEffect(() => {
-    if (selectedApplicant) {
-      switch (selectedValue) {
-        case 1:
-          setEmailRecipients(
-            selectedApplicant.notificationEmail?.taskEmailDetails?.recipients
-              ?.recipientEmails || []
-          );
-          setCcRecipients(
-            selectedApplicant.notificationEmail?.taskEmailDetails?.ccRecipients
-              ?.recipientEmails || []
-          );
-          break;
-        case 4:
-          setEmailRecipients(
-            selectedApplicant.externalFormDocument?.taskEmailDetails
-              ?.recipientEmails || []
-          );
-          setCcRecipients(
-            selectedApplicant.externalFormDocument?.taskEmailDetails
-              ?.ccRecipients || []
-          );
-          break;
-        case 5:
-          setEmailRecipients(
-            selectedApplicant.completedApplicantDetails?.taskEmailDetails
-              ?.recipientEmails || []
-          );
-          setCcRecipients(
-            selectedApplicant.completedApplicantDetails?.taskEmailDetails
-              ?.ccRecipients || []
-          );
-          break;
-        case 6:
-          setEmailRecipients(
-            selectedApplicant.formDetails?.taskEmailDetails?.recipients
-              ?.recipientEmails || []
-          );
-          setCcRecipients(
-            selectedApplicant.formDetails?.taskEmailDetails?.ccRecipients
-              ?.recipientEmails || []
-          );
-          break;
-        default:
-          setEmailRecipients([]);
-          setCcRecipients([]);
-          break;
-      }
-    }
-  }, [selectedValue, selectedApplicant]);
 
   return (
     <Dialog
@@ -165,7 +138,6 @@ const SwitchBoardDialog = ({
           <TextField
             value={email}
             className={`${style.fullWidth}`}
-            onChange={handleEmailChange}
             variant="outlined"
             InputProps={{
               startAdornment: (
@@ -184,8 +156,8 @@ const SwitchBoardDialog = ({
         <div className={style.marginTop20}>
           <TextField
             value={ccemail}
-            onChange={handleCCEmailChange}
-            onKeyDown={handleKeyDown} // Capture Enter key press
+            // onChange={handleCCEmailChange}
+            // onKeyDown={handleKeyDown} // Capture Enter key press
             variant="outlined"
             className={`${style.fullWidth}`}
             placeholder="Type and press Enter"
@@ -227,7 +199,9 @@ const SwitchBoardDialog = ({
           </div>
         </div>
         <div className={`${style.addHealthCareBoxStyle}`}>
-          <p>{editorContent}</p>
+          <p
+            dangerouslySetInnerHTML={{ __html: previewData?.mail?.content }}
+          ></p>
         </div>
         {(selectedValue === 4 || selectedValue === 5) && (
           <div className={style.marginTop20}>
@@ -240,20 +214,48 @@ const SwitchBoardDialog = ({
             <p>
               Review the list of documents available and select as
               needed.Missing Documents?
+              <span className={style.spanAlignment}>Add To Library</span>
             </p>
-            <TableTwo
-              tableHeaderValues={[
-                "CHECKBOX",
-                "documentName",
-                "format",
-                "size",
-                "Requirement",
-                "lastUpdatedOn",
-                "lastUpdatedBy",
-              ]}
-              gridStyle={style.ApplicantStyle}
-              tableSortValues={[]}
-            />
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>CHECKBOX</TableCell>
+                    <TableCell>Document Name</TableCell>
+                    <TableCell>Format</TableCell>
+                    <TableCell>Size</TableCell>
+                    <TableCell>Last Updated On</TableCell>
+                    <TableCell>Last Updated By</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {previewData &&
+                  Array.isArray(previewData.externalFormSource?.document) &&
+                  previewData.externalFormSource.document.length > 0 ? (
+                    previewData.externalFormSource.document.map(
+                      (row, index) => (
+                        <TableRow key={index} className={style.grayRow}>
+                          <TableCell>
+                            <CommonCheckBox />
+                          </TableCell>
+                          <TableCell>{row.fileName}</TableCell>
+                          <TableCell>{row.fileFormat}</TableCell>
+                          <TableCell>{row.fileSize}</TableCell>
+                          <TableCell>{row.lastmodifiedDate}</TableCell>
+                          <TableCell>{row.lastUpdatedBy}</TableCell>
+                        </TableRow>
+                      )
+                    )
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={7} align="center">
+                        No documents available
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </div>
         )}
       </div>

@@ -31,8 +31,12 @@ const ApplicantProcessingCheckList = () => {
   const [editData, setEditData] = useState();
   const [isRefetch, setIsRefetch] = useState(false);
 
-  const tableHeadKeys = ["APPLICANT TYPES", "LAST UPDATED"];
-  const tableDataKeys = ["applicantType", "lastModifiedDate"];
+  const tableHeadKeys = [
+    "ACTION REQUIRED",
+    "TASK/ACTIVTY TITLE",
+    "LAST UPDATED",
+  ];
+  const tableDataKeys = ["taskAction", "taskName", "lastModifiedDate"];
 
   useEffect(() => {
     getApplicantType();
@@ -88,8 +92,8 @@ const ApplicantProcessingCheckList = () => {
       const { data: applicantTypeForm } = await GET(
         `entity-service/checklist?applicantTypeId=${id}`
       );
-      console.log("applicantTypeFormchecklist", applicantTypeForm);
       setIsRefetch(false);
+      console.log("applicantTypeForm", applicantTypeForm);
       setApplicantTypeEntityForm(applicantTypeForm);
     }
   };
@@ -128,7 +132,7 @@ const ApplicantProcessingCheckList = () => {
         <div className={style.padding20}>
           <div>
             <LevelTwoHeader
-              heading={"application Processing Checklist by applicant"}
+              heading={"Application Processing Checklist by applicant"}
               updatedTime={`UPDATED ON ${lastUpdatedDate}`}
               path={"/Screens/ReferenceList/customerAdminDashboard"}
               callingFrom={"Customer Admin"}
@@ -178,6 +182,8 @@ const ApplicantProcessingCheckList = () => {
                   setIsDialogOpen(true);
                   setEditData(data);
                 }}
+                applicantId={applicantId}
+                refetchStaffPrivileges={getStaffPrivileges} // Pass the fetch function as a prop
               />
               <ReferenceListActionButton
                 button1={"Save In-Progress"}

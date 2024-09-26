@@ -715,6 +715,13 @@
   grid-template-columns: 59% 16% 15% 10%;
 }
 
+.spanAlignment {
+  color: #7165e3;
+  text-decoration: underline;
+  cursor: pointer;
+  font: normal normal bold 16px/26px Proxima Nova;
+}
+
 .tableHeaderIndustriesFontStyle {
   font: normal normal bold 12px/18px proxima-nova;
   letter-spacing: 0px;
@@ -2935,6 +2942,9 @@
 .headerStyle {
   align-items: center;
 }
+.grayRow {
+  background-color: gray;
+}
 
 .tagStyle {
   margin: 0 5px 10px 0;
@@ -3117,6 +3127,10 @@
 
 .firstColumn {
   min-width: 400px;
+  padding: 10px 20px;
+}
+.firstmaxWidth {
+  max-width: 200px;
   padding: 10px 20px;
 }
 
