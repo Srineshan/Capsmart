@@ -6,7 +6,7 @@ import { corsUrl } from "../../../utils/formatting";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
-const PdfViewer = ({ pdfurl, name, currentDate, initialArray, setInitialArray }) => {
+const PdfViewer = ({ pdfurl, name, currentDate, initialArray, setInitialArray, isSigned, setIsSigned }) => {
     const [pages, setPages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -50,10 +50,10 @@ const PdfViewer = ({ pdfurl, name, currentDate, initialArray, setInitialArray })
             {loading ? (
                 <p>Loading PDF...</p>
             ) : error ? (
-                <p>Error: {error}</p>
+                <p>Error: {error} Try refreshing your browser</p>
             ) : (
                 pages.map((page, index) => (
-                    <PdfPage key={index} page={page} index={index} totalPages={pages.length} name={name} currentDate={currentDate} initialArray={initialArray} setInitialArray={setInitialArray} />
+                    <PdfPage key={index} page={page} index={index} totalPages={pages.length} name={name} currentDate={currentDate} initialArray={initialArray} setInitialArray={setInitialArray} isSigned={isSigned} setIsSigned={setIsSigned} />
                 ))
             )}
         </div>

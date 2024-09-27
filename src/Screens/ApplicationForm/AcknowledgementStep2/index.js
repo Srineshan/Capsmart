@@ -69,7 +69,7 @@ const ApplicationAcknowledgementStep2 = ({ acknowledgementForm, dateFormat, name
     const addNewDocument = async (file) => {
         console.log(file, file?.name, 'Test')
         let fileName = {
-            "fileName": 'acknowledgement.pdf'
+            "fileName": 'schedule-a.pdf'
         };
         const formData = new FormData();
 

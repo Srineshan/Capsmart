@@ -52,29 +52,30 @@ const ApplicationAcknowledgementStep4 = ({ acknowledgementForm, dateFormat, name
         if (basicForm && !formSchema) {
             getFormSchema()
         }
-        setIsChecked(basicForm?.forms?.[13]?.acknowledged);
-        // setEncryptedText(basicForm?.forms?.[13]?.esign?.esign)
-        setSignText(basicForm?.forms?.[13]?.acknowledged ? basicForm?.forms?.[13]?.esign?.esign : '');
-        setIsSigned((basicForm?.forms?.[13]?.esign?.esign !== undefined && basicForm?.forms?.[13]?.acknowledged) ? true : false);
-        // setDecryptedText(CryptoJS.AES.decrypt(basicForm?.forms?.[13]?.esign?.esign, publicKey).toString(CryptoJS.enc.Utf8))
+        setIsChecked(basicForm?.forms?.[15]?.acknowledged);
+        // setEncryptedText(basicForm?.forms?.[15]?.esign?.esign)
+        setInitialArray(basicForm?.forms?.[15]?.data ? basicForm?.forms?.[15]?.data?.initials : []);
+        setSignText(basicForm?.forms?.[15]?.acknowledged ? basicForm?.forms?.[15]?.esign?.esign : '');
+        setIsSigned((basicForm?.forms?.[15]?.esign?.esign !== undefined && basicForm?.forms?.[15]?.acknowledged) ? true : false);
+        // setDecryptedText(CryptoJS.AES.decrypt(basicForm?.forms?.[15]?.esign?.esign, publicKey).toString(CryptoJS.enc.Utf8))
     }, [basicForm])
 
     useEffect(() => {
-        if (basicForm?.forms?.[13]?.id !== undefined) {
+        if (basicForm?.forms?.[15]?.id !== undefined) {
             getRenderedContent()
         }
-    }, [basicForm?.forms?.[13]?.id])
+    }, [basicForm?.forms?.[15]?.id])
 
     const getFormSchema = async () => {
         const { data: form } = await GET(
-            `application-management-service/formSchema/${basicForm?.formSchemas?.[13]?.id}`
+            `application-management-service/formSchema/${basicForm?.formSchemas?.[15]?.id}`
         );
         setFormSchema(form)
     }
 
     const getRenderedContent = async () => {
         const { data: content } = await GET(
-            `application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[13]?.id}/render`
+            `application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[15]?.id}/render`
         );
         setFormContent(content)
     }
@@ -82,7 +83,7 @@ const ApplicationAcknowledgementStep4 = ({ acknowledgementForm, dateFormat, name
     const addNewDocument = async (file) => {
         console.log(file, file?.name, 'Test')
         let fileName = {
-            "fileName": 'acknowledgement.pdf'
+            "fileName": 'codeOfConduct.pdf'
         };
         const formData = new FormData();
 
@@ -104,7 +105,7 @@ const ApplicationAcknowledgementStep4 = ({ acknowledgementForm, dateFormat, name
             }
 
             try {
-                const response = await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[13]?.id}/addFileToForm`, uploadedFile);
+                const response = await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[15]?.id}/addFileToForm`, uploadedFile);
                 console.log(response?.data);
                 return response?.data;
             } catch (error) {
@@ -137,67 +138,38 @@ const ApplicationAcknowledgementStep4 = ({ acknowledgementForm, dateFormat, name
         });
     };
 
-    const handleIsChecked = (value) => {
-        setIsEdited(true)
-        setIsChecked(value)
-        if (!value) {
-            setIsSigned(false)
-        }
-    }
-
-    const handleSubmitApplication = async () => {
-        await POST(`application-management-service/application/${applicationId}/submit`)
-            .then(response => {
-                console.log(response)
-                SuccessToaster("Application Submitted Successfully");
-            })
-            .catch((error) => {
-                console.log(error)
-                ErrorToaster("Unexpected Error Submitting Application");
-            });
-    }
-
     const handleSubmitApplicationReq = async () => {
         if (isSigned) {
             let temp = {
-                schemaId: basicForm?.forms?.[13]?.schemaId,
-                data: !isEdited ? basicForm?.forms?.[13]?.data : { esignDate: isChecked ? name + " " + currentDate : '' },
-                acknowledged: isChecked,
-                esign: { esign: isChecked ? encryptedText : '', name: isChecked ? name : '', signedDate: isChecked ? currentDate : '' }
+                schemaId: basicForm?.forms?.[15]?.schemaId,
+                data: { initials: initialArray },
+                acknowledged: isSigned,
+                esign: { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
             }
-            await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[13]?.id}`, temp)
+            await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[15]?.id}`, temp)
                 .then(response => {
                     console.log(response)
                     getPreApplication()
                     SuccessToaster("Application Updated Successfully");
                     handleDownload();
-                    getFormSchema();
-                    handleSubmitApplication()
                     if (sessionStorage.getItem('fromSummary') === 'true') {
                         navigate(-1);
                     }
-                    // else {
-                    //     navigate('/applicationForm/section1/acknowledgementStep3')
-                    // }
+                    else {
+                        navigate('/applicationForm/section1/acknowledgementStep6')
+                    }
                 })
                 .catch((error) => {
                     console.log(error)
                     ErrorToaster("Unexpected Error Updating Application");
                 });
         }
-        // else {
-        //     if (sessionStorage.getItem('fromSummary') === 'true') {
-        //         navigate(-1);
-        //     } else {
-        //         navigate('/applicationForm/section1/acknowledgementStep3')
-        //     }
-        // }
-    }
-    const handleContinue = () => {
-        if (sessionStorage.getItem('fromSummary') === 'true') {
-            navigate(-1);
-        } else {
-            navigate('/applicationForm/section1/acknowledgementStep5')
+        else {
+            if (sessionStorage.getItem('fromSummary') === 'true') {
+                navigate(-1);
+            } else {
+                navigate('/applicationForm/section1/acknowledgementStep6')
+            }
         }
     }
 
@@ -209,7 +181,11 @@ const ApplicationAcknowledgementStep4 = ({ acknowledgementForm, dateFormat, name
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
-                    <div className={style.applicationCardStyle}>
+                    <div className={style.applicationCardStyle} ref={targetRef}>
+                        <div className={`${style.marginTop} ${style.justifyCenter}`}>
+                            <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
+                        </div>
+                        <CommonDivider />
                         <div className={`${style.labelText} ${style.marginTop}`}>My making of this application and signature below indicate my understanding of and consent to the following (please note that references to Public Hospitals Act are not applicable to Homewood):</div>
                         <CommonDivider />
                         {/* <img src={pdf} alt="" className={style.pdfStyle} />
@@ -226,15 +202,15 @@ const ApplicationAcknowledgementStep4 = ({ acknowledgementForm, dateFormat, name
                         <ESign />
                         <img src={pdf7} alt="" className={style.pdfStyle} />
                         <ESign /> */}
-                        <PdfViewer pdfurl={"https://dev-application-management-service.s3.amazonaws.com/CMH/CMH+Code+of+conduct.pdf"} name={name} currentDate={currentDate} initialArray={initialArray} setInitialArray={setInitialArray} />
+                        <PdfViewer pdfurl={formSchema?.file?.fileURL} name={name} currentDate={currentDate} initialArray={initialArray} setInitialArray={setInitialArray} isSigned={isSigned} setIsSigned={setIsSigned} />
                     </div>
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-                    <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
+                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleDownload()}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()} >CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()} >CONTINUE</div>
                     </div>
                 </div>
             </div>

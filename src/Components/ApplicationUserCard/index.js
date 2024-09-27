@@ -20,7 +20,7 @@ const ApplicationUserCard = ({ user, applyingFor }) => {
         );
         setBasicForm(basicForm)
         let profilePicData = (basicForm?.forms[0]?.data !== null && basicForm !== undefined) ? basicForm?.forms[0]?.data?.table?.filter(fileData => fileData?.documentType === "Passport Size Photo")?.map(data => data) : [];
-        setProfilePic(profilePicData?.length !== 0 ? profilePicData[0]?.fileURL : '')
+        setProfilePic((profilePicData !== undefined && profilePicData?.length !== 0) ? profilePicData[0]?.fileURL : '')
         console.log(profilePicData, 'pic')
     }
     return (

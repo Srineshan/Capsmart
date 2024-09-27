@@ -73,7 +73,7 @@ const ApplicationAcknowledgementStep3 = ({ acknowledgementForm, dateFormat, name
     const addNewDocument = async (file) => {
         console.log(file, file?.name, 'Test')
         let fileName = {
-            "fileName": 'acknowledgement.pdf'
+            "fileName": 'schedule-b.pdf'
         };
         const formData = new FormData();
 
@@ -155,7 +155,7 @@ const ApplicationAcknowledgementStep3 = ({ acknowledgementForm, dateFormat, name
                         navigate(-1);
                     }
                     else {
-                        navigate('/applicationForm/applicationacknowledgement')
+                        navigate('/applicationForm/section1/acknowledgementStep5')
                     }
                 })
                 .catch((error) => {
@@ -167,7 +167,7 @@ const ApplicationAcknowledgementStep3 = ({ acknowledgementForm, dateFormat, name
             if (sessionStorage.getItem('fromSummary') === 'true') {
                 navigate(-1);
             } else {
-                navigate('/applicationForm/applicationacknowledgement')
+                navigate('/applicationForm/section1/acknowledgementStep5')
             }
         }
     }
@@ -175,7 +175,7 @@ const ApplicationAcknowledgementStep3 = ({ acknowledgementForm, dateFormat, name
         if (sessionStorage.getItem('fromSummary') === 'true') {
             navigate(-1);
         } else {
-            navigate('/applicationForm/section1/acknowledgementStep4')
+            navigate('/applicationForm/section1/acknowledgementStep5')
         }
     }
 
@@ -207,7 +207,7 @@ const ApplicationAcknowledgementStep3 = ({ acknowledgementForm, dateFormat, name
                                 <CommonCheckBox checked={isChecked} onChange={(e) => handleIsChecked(e.target.checked)} />
                             )}
                             <div
-                                className={`${style.leftAlign} ${style.marginTop10}`}
+                                className={`${style.leftAlign} ${style.marginTop10} ${style.descriptionStyle}`}
                                 dangerouslySetInnerHTML={{ __html: formContent?.disclaimer?.content }}
                             />
                         </div>

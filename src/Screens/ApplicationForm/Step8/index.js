@@ -248,7 +248,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                         name: name,
                         signedDate: currentDate
                     };
-                } else if (type === 'Restricted' && temp[0].privilegeDetails.restrictedPrivileges.esign === null) {
+                } else if (type === 'Restricted' && (temp[0].privilegeDetails.restrictedPrivileges.esign === null || temp[0].privilegeDetails.restrictedPrivileges.esign === undefined)) {
                     temp[0].privilegeDetails.restrictedPrivileges.esign = {
                         esign: CryptoJS.AES.encrypt(name + new Date().toISOString(), publicKey).toString(),
                         name: name,
@@ -759,7 +759,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                         <>
                             <div className={`${style.marginTop} `}>
                                 <div className={`${style.alignCenter}`} onClick={() => setIsOpen(true)}>
-                                    <div className={`${style.bigButtonStyle} `}>
+                                    <div className={`${style.bigButtonStyle} ${style.cursorPointer}`}>
                                         <div className={`${style.bigButtonTextStyle} ${style.alignCenter}`}>REQUEST ADDITIONAL PRIVILEGES</div>
                                     </div>
                                 </div>
