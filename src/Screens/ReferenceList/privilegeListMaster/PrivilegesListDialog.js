@@ -4,7 +4,7 @@ import style from "./../index.module.scss";
 import { Radio, Switch, makeStyles } from "@material-ui/core";
 import WritingFile from "./../../../images/writing-file.svg";
 import { Box, Divider } from "@mui/material";
-import { POST, GET, PUT } from "./../../dataSaver";
+import { POST, GET, PUT } from "../../dataSaver";
 import { ErrorToaster, SuccessToaster } from "../../../utils/toaster";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import MenuItem from "@mui/material/MenuItem";

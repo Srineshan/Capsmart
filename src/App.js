@@ -25,6 +25,7 @@ import LoginDialog from "./Components/LoginDialog";
 import Departments from "./Screens/ReferenceList/department/Department";
 import ApplicantTypesByEntity from "./Screens/ReferenceList/applicantTypeByEntity/applicantTypesByEntity";
 import Speciality from "./Screens/ReferenceList/speciality/Speciality";
+import { PrivilegeListMaster } from "./Screens/ReferenceList/privilegeListMaster/PrivilegeListMaster";
 import { PrivilegeListManager } from "./Screens/ReferenceList/privilegeListManager/PrivilegeListManager";
 
 const ReportType = React.lazy(() => import("./Screens/Reports/reportType"));
@@ -666,8 +667,16 @@ const App = ({ props }) => {
               <Route path="/staffs" element={<StaffManager />} />
               <Route path="/applications" element={<StaffApplication />} />
               <Route path="/activeStaff" element={<ActiveStaff />} />
-              <Route
+              {/* <Route
                 path="/privilegeListManager"
+                element={<PrivilegeListMaster />}
+              /> */}
+              <Route
+                path="/referenceList/privilegeListMaster"
+                element={<PrivilegeListMaster />}
+              />
+              <Route
+                path="/referenceList/privilegeListManager"
                 element={<PrivilegeListManager />}
               />
 

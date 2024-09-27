@@ -646,16 +646,6 @@ const Navbar = () => {
               </Popover>
             </div>
           </div> */}
-          <Link to={"/privilegeListManager"} className={style.noFontStyle}>
-            <div
-              className={`${style.menuStyle} ${
-                window.location.pathname.includes("/privilegeListManager") &&
-                style.activeMenuColor
-              }`}
-            >
-              <p>Privileges List Manager</p>
-            </div>
-          </Link>
         </div>
 
         <div className={style.displayInRow}>

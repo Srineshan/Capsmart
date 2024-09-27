@@ -11,7 +11,7 @@ import ConsentsDialog from "../consents/consentsDialog";
 import AcknowledgmentDialog from "../acknowledgment/AcknowledgmentDialog";
 import DisclosureByIndustriesDialog from "../disclosureByIndustries/disclosureByIndustriesDialog";
 import { format } from "date-fns";
-import PrivilegeListDialog from "../privilegeListManager/PrivilegesListDialog";
+import PrivilegeListDialog from "../privilegeListMaster/PrivilegesListDialog";
 
 const ReferenceListCommonTable = ({
   applicantTypes,
@@ -110,7 +110,7 @@ const ReferenceListCommonTable = ({
         console.error("Error deleting document:", error);
       }
     }
-    if (tileType === "PrivilegeListManager") {
+    if (tileType === "PrivilegeListMaster") {
       try {
         await DELETE(`entity-service/privilegeMaster/${id}`);
 
@@ -140,19 +140,23 @@ const ReferenceListCommonTable = ({
 
       <table className={`${style.applicantTable} `}>
         <thead>
-          <tr className={`${style.applicantHeader} `}>
+          <tr className={`${style.applicantHeader}`}>
             {tableHeadKeys &&
               tableHeadKeys.map((head, index) => (
                 <th
                   className={`${
-                    index === 0 ? style.firstColumn : style.centerAligned
-                  }   ${gridStyle}`}
+                    index === 0
+                      ? tileType === "PrivilegeListMaster" ||
+                        tileType === "PrivilegeListManager"
+                        ? style.firstColumnPrivilegeListMaster
+                        : style.firstColumn
+                      : style.centerAligned
+                  } ${gridStyle}`}
                   key={index}
                 >
                   {head}
                 </th>
               ))}
-
             <th></th>
           </tr>
         </thead>
@@ -171,9 +175,12 @@ const ReferenceListCommonTable = ({
                         key={keyIndex}
                         className={`${
                           keyIndex === 0
-                            ? style.leftAligned
+                            ? tileType === "PrivilegeListMaster" ||
+                              tileType === "PrivilegeListManager"
+                              ? `${style.leftAligned} ${style.firstColumnPrivilegeListMaster}`
+                              : `${style.leftAligned} ${style.firstColumn}`
                             : style.centerAligned
-                        } ${keyIndex === 0 ? style.firstColumn : ""} `}
+                        }`}
                       >
                         {tileType === "ApplicantType"
                           ? key === "category"
@@ -357,19 +364,17 @@ const ReferenceListCommonTable = ({
           handleClose={handleCloseDialog}
         />
       )}
-      {selectedApplicant &&
-        tileType == "PrivilegeListManager" &&
-        openDialog && (
-          <PrivilegeListDialog
-            open={openDialog}
-            onClose={handleCloseDialog}
-            selectedAcknowledgement={selectedApplicant}
-            documents={documents}
-            isEdit={openDialog}
-            handleClose={handleCloseDialog}
-            tileType={tileType}
-          />
-        )}
+      {selectedApplicant && tileType == "PrivilegeListMaster" && openDialog && (
+        <PrivilegeListDialog
+          open={openDialog}
+          onClose={handleCloseDialog}
+          selectedAcknowledgement={selectedApplicant}
+          documents={documents}
+          isEdit={openDialog}
+          handleClose={handleCloseDialog}
+          tileType={tileType}
+        />
+      )}
     </div>
   );
 };
