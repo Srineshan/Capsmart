@@ -76,7 +76,9 @@ const PrivilegeListDialog = ({
   const handlePrivilegeTypeChange = (event) => {
     setPrivilegeTypeOption(event.target.value);
   };
-
+  useEffect(() => {
+    fetchApplicantTypes();
+  }, []);
   const handlePrivilegeStatusChange = (event) => {
     setPrivilegeStatusOption(event.target.value);
   };
@@ -85,14 +87,16 @@ const PrivilegeListDialog = ({
   const updateSaveData = (property, data) => {
     setSaveData((prev) => ({ ...prev, [property]: data }));
   };
-  const handleChange = (event) => {
-    setSelectedOption(event.target.value);
-  };
 
   const handlePrivilegeSpecificationChange = (event) => {
     setPrivilegeSpecificationType(event.target.value);
 
     setIsProofOfDocumentRequired(false);
+  };
+
+  const getApplicantType = async () => {
+    const { data: types } = await GET("entity-service/applicantType");
+    setApplicantTypeList(types);
   };
 
   useEffect(() => {
@@ -102,72 +106,21 @@ const PrivilegeListDialog = ({
   }, []);
   console.log(selectedAcknowledgement);
 
-  const getTableData = async (id) => {
-    if (id) {
-      try {
-        const { data: staffPrivilegesForm } = await GET(
-          `entity-service/privilegeMaster/${id}`
-        );
-
-        setSelectedData(staffPrivilegesForm || []);
-      } catch (error) {
-        console.error("Error fetching privileges data:", error);
-      }
-    }
-  };
-
-  // useEffect(() => {
-  //   console.log("is edot effect opened");
-
-  //   const fetchData = async () => {
-  //     if (isEdit) {
-  //       console.log(
-  //         "selectedAcknowledgement?.id:",
-  //         selectedAcknowledgement?.id
-  //       );
-  //       if (selectedAcknowledgement?.id) {
-  //         await getTableData(selectedAcknowledgement.id);
-  //       }
-  //     }
-
-  //     const tempApplicantTypes = selectedAcknowledgement?.applicantTypes?.map(
-  //       (data) => data?.id
-  //     );
-  //     console.log(selectedData);
-
-  //     setApplicantType(tempApplicantTypes || []);
-  //     setSelectedApplicantType(selectedData?.applicantType || []);
-  //     setTitle(selectedData?.title || "");
-  //     setId(selectedData?.privilegeId || "");
-  //     setDescripition(selectedData?.description || "");
-  //     setPrivilegeTypeOption(
-  //       selectedData?.type === "CORE"
-  //         ? "Core"
-  //         : selectedData?.type === "RESTRICTED"
-  //         ? "Restricted"
-  //         : "Non-Core"
-  //     );
-  //     setPrivilegeStatusOption(
-  //       selectedData?.status === "ACTIVE" ? "Active" : "Retired"
-  //     );
-  //     setEvidenceRequired(selectedData?.isevidenceRequired || false);
-  //     setCompetencyRequired(
-  //       selectedData?.iscompetencyDisclosureRequired || false
-  //     );
-  //   };
-  //   fetchData();
-  // }, [isEdit, selectedData]);
-
   console.log(selectedData);
   useEffect(() => {
     if (isEdit && selectedAcknowledgement?.id) {
+      console.log(selectedAcknowledgement);
+
       const fetchData = async () => {
         try {
           const { data: staffPrivilegesForm } = await GET(
             `entity-service/privilegeMaster/${selectedAcknowledgement.id}`
           );
           setSelectedData(staffPrivilegesForm || {});
-          setApplicantType(staffPrivilegesForm.applicantType || []);
+          setApplicantType({
+            id: staffPrivilegesForm.applicantType.id,
+            applicantType: staffPrivilegesForm.applicantType.type,
+          });
           setTitle(staffPrivilegesForm.title || "");
           setId(staffPrivilegesForm.privilegeId || "");
           setDescripition(staffPrivilegesForm.description || "");
@@ -192,6 +145,18 @@ const PrivilegeListDialog = ({
       fetchData();
     }
   }, [isEdit, selectedAcknowledgement?.id]);
+  // const fetchApplicantTypes = async () => {
+  //   try {
+  //     const response = await GET("entity-service/applicantType");
+  //     const applicantTypes = response.data;
+
+  //     if (applicantTypes && applicantTypes.length > 0) {
+  //       setApplicantTypesState(applicantTypes);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching applicant types:", error);
+  //   }
+  // };
   const fetchApplicantTypes = async () => {
     try {
       const response = await GET("entity-service/applicantType");
@@ -255,31 +220,6 @@ const PrivilegeListDialog = ({
     }
   }, [applicantType, applicantTypeList]);
 
-  const handleDepartmentChange = (e) => {
-    const departmentData = {
-      id: e.target.value,
-      departmentName: {
-        name: departments.find((item) => item.id === e.target.value).name,
-      },
-    };
-    setSaveData((prev) => ({
-      ...prev,
-      department: departmentData,
-    }));
-  };
-
-  const handleSelectSiteChange = (e) => {
-    const selectedIds = e.target.value;
-    if (selectedIds) {
-      setSaveData((prev) => ({
-        ...prev,
-        sites: selectedIds.map((item) => ({
-          id: item,
-        })),
-      }));
-    }
-  };
-
   const resetDialogFields = () => {
     setSaveData({});
     setPrivilegeSpecificationType("DescriptiveDocument");
@@ -293,35 +233,45 @@ const PrivilegeListDialog = ({
     setShowCard(true);
   };
 
-  const handleApplicantTypeChange = (event) => {
-    const selectedId = event.target.value;
-    console.log("Selected Applicant Type ID:", selectedId);
+  // const handleApplicantTypeChange = (event) => {
+  //   const selected_applicantType = event.target.value;
+  //   console.log("selected_applicantType", selected_applicantType);
 
-    const selectedData = applicantTypes.find((data) => data.id === selectedId);
-    if (selectedData) {
-      console.log("Selected Data ID:", selectedData.id);
-    }
-    setSelectedApplicantType({
-      id: selectedData.id,
-      type:
-        applicantTypes.find((item) => item.id === selectedData.id)?.type || "",
-    });
-    console.log(selectedApplicantType);
+  //   const selectedType = applicantTypes.find(
+  //     (data) => data.applicantType === selected_applicantType
+  //   );
+
+  //   if (selectedType) {
+  //     console.log(selectedType);
+
+  //     setSelectedApplicantType({
+  //       id: selectedType.id,
+  //       applicantType: selectedType.type,
+  //     });
+
+  //     // Update the saveData state to ensure the correct applicantType is saved
+  //     setSaveData((prev) => ({
+  //       ...prev,
+  //       applicantType: {
+  //         id: selectedType.id,
+  //         applicantType: selectedType.type,
+  //       },
+  //     }));
+  //   }
+  // };
+  const handleApplicantTypeChange = (e) => {
+    const applicantData = {
+      id: e.target.value,
+      applicantType: applicantTypes.find((item) => item.id == e.target.value)
+        .type,
+    };
+    setSelectedApplicantType([applicantData]);
     setSaveData((prev) => ({
       ...prev,
-      applicantType: {
-        id: selectedId,
-        type: applicantTypes.find((item) => item.id === selectedId)?.type || "",
-      },
+      applicantType: [applicantData],
     }));
   };
-  // const handleApplicantTypeChange = (event) => {
-  //   const selectedId = event.target.value;
-  //   const selectedType =
-  //     applicantTypes.find((item) => item.id === selectedId)?.type || "";
 
-  //   setSelectedApplicantType({ id: selectedId, type: selectedType });
-  // };
   const handleSaveAcknowledgementForm = async () => {
     const privilegeTypeMap = {
       Core: "CORE",
@@ -336,7 +286,7 @@ const PrivilegeListDialog = ({
 
     const data = {
       type: privilegeTypeMap[privilegeTypeOption] || "CORE",
-      applicantTypes: selectedApplicantType,
+      applicantType: selectedApplicantType,
       status: privilegeStatusMap[privilegeStatusOption] || "ACTIVE",
       privilegeId: id,
       title: title,
@@ -472,11 +422,31 @@ const PrivilegeListDialog = ({
           </div>
           <Box width={"100%"}>
             <div className={style.entityLableStyle}>APPLICATION TYPE*</div>
-            <FormControl fullWidth>
+            {/* <FormControl fullWidth>
               <Select
                 labelId="application-type-checkbox"
                 id="application-type-checkbox"
-                value={saveData.applicantType?.id || ""}
+                value={selectedAcknowledgement?.applicantType || ""}
+                onChange={handleApplicantTypeChange}
+                SelectDisplayProps={{
+                  style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 },
+                }}
+              >
+                {applicantTypes?.map((data, index) => {
+                  console.log("Applicant Type Data:", data); // Log the data here
+                  return (
+                    <MenuItem value={data?.applicantType} key={index}>
+                      {data?.applicantType}
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+            </FormControl> */}
+            <FormControl fullWidth size="small">
+              <Select
+                labelId="application-type-checkbox"
+                id="application-type-checkbox"
+                value={saveData.applicantType ? saveData.applicantType.id : ""}
                 onChange={handleApplicantTypeChange}
                 SelectDisplayProps={{
                   style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 },
@@ -490,12 +460,13 @@ const PrivilegeListDialog = ({
               </Select>
             </FormControl>
           </Box>
+
           <div
             className={`${style.Borderthick}  ${style.padding4} ${style.marginTop10}`}
           />
           {privilegeTypeOption === "Core" && (
             <div className={style.marginTop190}>
-              <div className={style.entityLableStyle}> CORE PRIVILEGES</div>
+              <div className={style.entityLableStyle}> CORE PRIVILEGE</div>
 
               <div>
                 <div className={`  ${style.verticalAlignCenter}`}>
@@ -591,7 +562,7 @@ const PrivilegeListDialog = ({
 
                 <div>
                   <div className={`  ${style.verticalAlignCenter}`}>
-                    <div className={`  ${style.verticalAlignCenter}`}>
+                    <div className={` ${style.verticalAlignCenter}`}>
                       <div
                         className={`${style.displayInRow}  ${style.entityLableStyle} ${style.marginRight100}`}
                       >
@@ -729,7 +700,7 @@ const PrivilegeListDialog = ({
           {privilegeTypeOption === "Non-Core" && (
             <div>
               <div className={style.marginTop190}>
-                <div className={style.entityLableStyle}>NON COREPRIVILEGE</div>
+                <div className={style.entityLableStyle}>NON CORE PRIVILEGE</div>
 
                 <div>
                   <div className={`  ${style.verticalAlignCenter}`}>

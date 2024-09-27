@@ -1,77 +1,87 @@
-import React, { Fragment, useState, useEffect } from "react";
-import Navbar from "../../../Components/Navbar";
-import style from "./index.module.scss";
+import { useState, useEffect, Fragment } from "react";
 import { GET, POST, TenantID } from "../../dataSaver";
+import Navbar from "../../../Components/Navbar";
 import LevelTwoHeader from "../../../Components/LevelTwoHeader";
-import { formatInTimeZone } from "date-fns-tz";
-import { siteTimeZone, timeZoneAbbreviation } from "../../../utils/formatting";
-import ReferenceListCommonTable from "../common/Table";
 import ApplicantSideBar from "../common/SideBar";
-import { ReferenceListActionButton } from "../common/ReferenceListActionButton";
-import { Typography } from "@material-ui/core";
-import ActivePrivilegesList from "./ActivePrivilegesList";
 import PrivilegeListDialog from "./PrivilegesListDialog";
-import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import ReferenceListCommonTable from "../common/Table";
+import {
+  Typography,
+  FormControl,
+  Select,
+  MenuItem,
+  ListItemText,
+} from "@mui/material";
+import style from "./index.module.scss";
+import ActivePrivilegesTiles from "./ActivePrivilegesTiles";
+import DiscreetPrivilegesTiles from "./DiscreetPrivilegesTiles";
+import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
+import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
+import { formatInTimeZone } from "date-fns-tz";
+import { format } from "date-fns";
+import { siteTimeZone, timeZoneAbbreviation } from "../../../utils/formatting";
 
-export const PrivilegeListManager = (getTableData) => {
-  const [isEdit, setIsEdit] = useState(false);
-
-  const [entityId, setEntityId] = useState("");
-  const [lastUpdatedDate, setLastUpdatedDate] = useState("");
+export const PrivilegeListManager = () => {
   const [selectedApplicantType, setSelectedApplicantType] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [applicantTypeList, setApplicantTypeList] = useState([]);
-  const [departmentList, setDepartmentList] = useState([]);
-  const [applicantId, setApplicantId] = useState("");
-  const [staffPrivilegesForm, setStaffPrivilegesForm] = useState([]);
-  const [editData, setEditData] = useState();
-  const [isRefetch, setIsRefetch] = useState(false);
+  const [lastUpdatedDate, setLastUpdatedDate] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("");
-
-  const tableDataKeys = ["applicantType", "lastModifiedDate"];
-  const [selectedTab, setSelectedTab] = useState("permanentStaff");
+  const [selectedDepartmentId, setSelectedDepartmentId] = useState(null);
+  const [departmentList, setDepartmentList] = useState([]);
+  const [applicantTypeList, setApplicantTypeList] = useState([]);
+  const [staffPrivilegesForm, setStaffPrivilegesForm] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [applicantId, setApplicantId] = useState("");
+  const [selectedTab, setSelectedTab] = useState("permanentStaff");
+  const [isPrintClicked, setIsPrintClicked] = useState(false);
+  const [tableDataValues, setTableDataValues] = useState([]);
+  const [tableData, setTableData] = useState([]);
+  const [entityId, setEntityId] = useState("");
 
+  const tableDataKeys1 = [
+    "privilegeId",
+    "privilegeType",
+    "privilegeTitle",
+    "department",
+    "applicantType",
+    "lastUpdated",
+  ];
+  const tableDataKeys2 = [
+    "privilegeId",
+    "privilegeType",
+    "privilegeTitle",
+    "department",
+    "applicantType",
+    "lastUpdated",
+  ];
+  const applicantHeaderValues = [
+    "Privilege ID",
+    "Privilege Type",
+    "Privilege Title",
+    "Department/Service Area",
+    "Applicant Type",
+    "Last Updated",
+  ];
+  const approvedHeaderValues = [
+    "Applicant Name",
+    "Applicant Type",
+    "Department",
+    "Department/Service Area",
+    "Data & Disclosures",
+    "Last Updated",
+    "Reappointment Date",
+  ];
+  useEffect(() => {
+    getDepartmentName();
+  }, []);
   const getSelectedTab = (value) => {
     setSelectedTab(value);
   };
-
-  useEffect(() => {
-    getApplicantType();
-    getEntity();
-    getDepartmentName();
-  }, []);
-
-  useEffect(() => {
-    if (applicantTypeList && applicantTypeList.length > 0) {
-      setSelectedApplicantType(applicantTypeList[0]?.applicantType || "");
-      setApplicantId(applicantTypeList[0]?.id);
-    }
-  }, [applicantTypeList]);
-
   useEffect(() => {
     if (entityId !== "" && entityId !== undefined) {
       getLastModifiedDate();
     }
   }, [entityId]);
-
-  useEffect(() => {
-    console.log(applicantId);
-
-    if (applicantId && applicantId != "") getStaffPrivileges(applicantId);
-  }, [applicantId]);
-
-  useEffect(() => {
-    if (isRefetch) {
-      getStaffPrivileges(applicantId);
-    }
-  }, [isRefetch]);
-
-  const getEntity = async () => {
-    const { data: entity } = await GET(`entity-service/entity`);
-    setEntityId(entity?.[0]?.id);
-  };
-
   const getLastModifiedDate = async () => {
     const { data: lastModifiedDate } = await GET(
       `entity-service/referenceList/entity/${entityId}`
@@ -86,101 +96,276 @@ export const PrivilegeListManager = (getTableData) => {
     );
   };
 
-  const getStaffPrivileges = async (id) => {
-    if (id) {
-      const { data: staffPrivilegesForm } = await GET(
-        `entity-service/privilegeMaster?applicantTypeId=${id}`
-      );
-      setIsRefetch(false);
-      setStaffPrivilegesForm(staffPrivilegesForm);
+  useEffect(() => {
+    if (applicantTypeList && applicantTypeList.length > 0) {
+      setSelectedApplicantType(applicantTypeList[0]?.applicantType || "");
+      setApplicantId(applicantTypeList[0]?.id);
+    }
+  }, [applicantTypeList]);
+
+  useEffect(() => {
+    if (selectedDepartmentId) {
+      getStaffPrivileges(selectedDepartmentId);
+    }
+  }, [selectedDepartmentId]);
+
+  const getDepartmentName = async () => {
+    try {
+      const { data } = await GET("entity-service/department");
+      setDepartmentList(data);
+    } catch (error) {
+      console.error("Error fetching department names:", error);
     }
   };
 
+  const getStaffPrivileges = async (id) => {
+    try {
+      setIsLoading(true);
+      const { data: staffPrivilegesForm } = await GET(
+        `entity-service/staffPrivilege?department=${id}`
+      );
+      console.log("staff", staffPrivilegesForm);
+
+      setStaffPrivilegesForm(staffPrivilegesForm || []);
+      setTableData(staffPrivilegesForm);
+
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching staff privileges:", error);
+      setIsLoading(false);
+    }
+  };
+  const getAddEntityTypes = async (data) => {
+    await POST(`entity-service/document/?${TenantID}`, data);
+  };
   const getSelectedTile = (applicantId) => {
     if (applicantId && applicantId != "") {
       setApplicantId(applicantId);
-      getStaffPrivileges(applicantId);
     }
   };
-
-  const getApplicantType = async () => {
-    const { data: types } = await GET("entity-service/sites");
-    setApplicantTypeList(types);
-  };
-  const getDepartmentName = async () => {
-    const { data: types } = await GET("entity-service/department");
-    setDepartmentList(types);
-  };
-
   const handleSiteClick = (siteName) => {
     setSelectedApplicantType(siteName);
   };
+
   const handleDepartmentChange = (event) => {
-    setSelectedDepartment(event.target.value); // Update the selected department
+    const departmentId = event.target.value;
+    setSelectedDepartment(departmentId);
+    // getStaffPrivileges(departmentId);
+    setSelectedDepartmentId(departmentId);
   };
 
-  const handleCloseDialog = (needRefetch = false) => {
+  const handleCloseDialog = () => {
     setIsDialogOpen(false);
-    setIsRefetch(needRefetch);
+  };
+  useEffect(() => {
+    var tableDataValue = getTableDataValues();
+    setTableDataValues(tableDataValue);
+  }, [selectedTab, tableData, selectedDepartmentId]);
+
+  const getTableDataKeys = () => {
+    return selectedTab === "permanentStaff" ? tableDataKeys1 : tableDataKeys2;
+  };
+  const getTableHeaderValues = () => {
+    return selectedTab === "permanentStaff"
+      ? applicantHeaderValues
+      : approvedHeaderValues;
+  };
+  // const getTableDataValues = () => {
+  //   console.log("beforeif", tableData);
+  //   if (selectedTab === "permanentStaff") {
+  //     console.log("Hiiii", tableData);
+  //     return tableData.map((data) => ({
+  //       id: data.id,
+  //       privilegeId:
+  //         data?.privilegeDetails?.corePrivileges?.privilegesByCategories
+  //           ?.flatMap((category) =>
+  //             category?.privileges?.map((privilege) => privilege?.privilegeId)
+  //           )
+  //           .join("\n"),
+
+  //       // privilegeType: data.type,
+  //       privilegeTitle:
+  //         data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.flatMap(
+  //           (category) =>
+  //             category?.privileges?.map((privilege) => privilege?.title)
+  //         ),
+  //       department: data.department.departmentName.name,
+  //       applicantType:
+  //         data.applicantType.length > 0 ? data.applicantType.length : "N/A",
+  //       lastUpdated: format(new Date(data.lastModifiedDate), "MMM dd, yyyy"),
+  //     }));
+  //   } else if (selectedTab === "provisionalStaff") {
+  //     return tableData.map((data) => ({
+  //       id: data.id,
+  //       privilegeId: data.privilegeId,
+  //       privilegeType: data.type,
+  //       privilegeTitle: data.title,
+  //       department: data.department || "N/A",
+  //       applicantType:
+  //         data.applicantType.length > 0
+  //           ? data.applicantType[0]?.applicantType
+  //           : "N/A",
+  //       lastUpdated: format(new Date(data.lastModifiedDate), "MMM dd, yyyy"),
+  //     }));
+  //   }
+  //   return [];
+  // };
+  // const getTableDataValues = () => {
+  //   console.log("beforeif", tableData);
+
+  //   if (selectedTab === "permanentStaff") {
+  //     console.log("Hiiii", tableData);
+
+  //     const result = [];
+
+  //     tableData.forEach((data) => {
+  //       const privileges =
+  //         data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.flatMap(
+  //           (category) => category?.privileges
+  //         ) || [];
+
+  //       privileges.forEach((privilege) => {
+  //         result.push({
+  //           id: data.id,
+  //           privilegeId: privilege?.privilegeId,
+  //           privilegeTitle: privilege?.title,
+  //           department: data.department.departmentName.name,
+  //           applicantType:
+  //             data.applicantType.length > 0 ? data.applicantType.length : "N/A",
+  //           lastUpdated: format(
+  //             new Date(data.lastModifiedDate),
+  //             "MMM dd, yyyy"
+  //           ),
+  //         });
+  //       });
+  //     });
+
+  //     return result;
+  //   } else if (selectedTab === "provisionalStaff") {
+  //     return tableData.map((data) => ({
+  //       id: data.id,
+  //       privilegeId: data.privilegeId,
+  //       privilegeType: data.type,
+  //       privilegeTitle: data.title,
+  //       department: data.department || "N/A",
+  //       applicantType:
+  //         data.applicantType.length > 0
+  //           ? data.applicantType[0]?.applicantType
+  //           : "N/A",
+  //       lastUpdated: format(new Date(data.lastModifiedDate), "MMM dd, yyyy"),
+  //     }));
+  //   }
+
+  //   return [];
+  // };
+  const getTableDataValues = () => {
+    console.log("beforeif", tableData);
+
+    if (selectedTab === "permanentStaff") {
+      console.log("Hiiii", tableData);
+
+      const result = [];
+
+      tableData.forEach((data) => {
+        const corePrivileges =
+          data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.flatMap(
+            (category) => category?.privileges
+          ) || [];
+
+        const restrictedPrivileges =
+          data?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.flatMap(
+            (category) => category?.privileges
+          ) || [];
+
+        const nonCorePrivileges =
+          data?.privilegeDetails?.nonCorePrivileges?.privilegesByCategories?.flatMap(
+            (category) => category?.privileges
+          ) || [];
+
+        const privileges =
+          corePrivileges.length > 0
+            ? corePrivileges
+            : restrictedPrivileges.length > 0
+            ? restrictedPrivileges
+            : nonCorePrivileges;
+
+        privileges.forEach((privilege) => {
+          result.push({
+            id: data.id,
+            privilegeId: privilege?.privilegeId,
+            privilegeTitle: privilege?.title,
+            privilegeType:
+              corePrivileges.length > 0
+                ? "Core"
+                : restrictedPrivileges.length > 0
+                ? "Restricted"
+                : "Non-Core",
+            department: data.department.departmentName.name,
+            applicantType:
+              data.applicantType.length > 0 ? data.applicantType.length : "N/A",
+            lastUpdated: format(
+              new Date(data.lastModifiedDate),
+              "MMM dd, yyyy"
+            ),
+          });
+        });
+      });
+
+      return result;
+    } else if (selectedTab === "provisionalStaff") {
+      return tableData.map((data) => ({
+        id: data.id,
+        privilegeId: data.privilegeId,
+        privilegeType: data.type,
+        privilegeTitle: data.title,
+        department: data.department || "N/A",
+        applicantType:
+          data.applicantType.length > 0
+            ? data.applicantType[0]?.applicantType
+            : "N/A",
+        lastUpdated: format(new Date(data.lastModifiedDate), "MMM dd, yyyy"),
+      }));
+    }
+
+    return [];
   };
 
   return (
     <Fragment>
       <Navbar />
-      <div className={` ${style.applicantTypeBackground}`}>
+      <div className={style.applicantTypeBackground}>
         <div className={style.padding20}>
-          <div>
-            <div>
-              <LevelTwoHeader
-                heading={"Privileges List Manager"}
-                updatedTime={`UPDATED ON ${lastUpdatedDate}`}
-                path={"/Screens/ReferenceList/department/department"}
-                callingFrom={"Customer Admin"}
-                needHeader={false}
-                tileType={"Privileges List Manager"}
-                onAddClick={() => setIsDialogOpen(true)}
-                onCloseLevel2={() => setIsDialogOpen(false)}
-              />
-            </div>
-          </div>
-          <div className={` ${style.bigCardGrid} `}>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <div
-                style={{
-                  marginBottom: "100px",
-                }}
-              >
-                <div className={`${style.entityLabelStyle} `}>
-                  Department/Service Area
-                </div>
-                <FormControl fullWidth>
-                  <Select
-                    labelId="department-select-label"
-                    id="department-select"
-                    value={selectedDepartment}
-                    onChange={handleDepartmentChange}
-                    SelectDisplayProps={{
-                      style: {
-                        paddingTop: 5,
-                        paddingBottom: 5,
-                        fontSize: 15,
-                      },
-                    }}
-                  >
-                    {departmentList?.map((department) => (
-                      <MenuItem value={department?.id} key={department?.id}>
-                        {department?.departmentName?.name ||
-                          "Unnamed Department"}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </div>
+          <LevelTwoHeader
+            heading="Privileges List Manager"
+            updatedTime={`UPDATED ON ${lastUpdatedDate}`}
+            path="/Screens/ReferenceList/department/department"
+            callingFrom="Customer Admin"
+            tileType="Privileges List Manager"
+            onAddClick={() => setIsDialogOpen(true)}
+            onCloseLevel2={() => setIsDialogOpen(false)}
+          />
+
+          <div className={style.bigCardGrid}>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <Typography variant="h6">Department/Service Area</Typography>
+              <FormControl fullWidth>
+                <Select
+                  labelId="department-select-label"
+                  id="department-select"
+                  value={selectedDepartment}
+                  onChange={handleDepartmentChange}
+                  SelectDisplayProps={{
+                    style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 },
+                  }}
+                >
+                  {departmentList.map((department) => (
+                    <MenuItem value={department.id} key={department.id}>
+                      <ListItemText primary={department.departmentName.name} />
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
               <ApplicantSideBar
                 applicantType={applicantTypeList?.map(
                   (data) => data?.siteName?.siteName
@@ -194,16 +379,83 @@ export const PrivilegeListManager = (getTableData) => {
               />
             </div>
 
-            <div className={style.applicantList}>
-              <ActivePrivilegesList
-                isLoading={isLoading}
-                getSelectedTab={getSelectedTab}
-                selectedTab={selectedTab}
-              />
-            </div>
+            {selectedDepartmentId && (
+              <div className={style.applicantList}>
+                <div>
+                  <div
+                    className={`${style.displayInRow}  ${style.bottomTextStyle} ${style.marginTop10}`}
+                  >
+                    Privileges List Manager {`>`} APPLICATIONS
+                  </div>
+
+                  <div className={style.marginTop10}>
+                    <ActivePrivilegesTiles
+                      getSelectedTab={getSelectedTab}
+                      selectedTab={selectedTab}
+                    />
+                    <div
+                      className={`${style.Borderthick}  ${style.padding4} ${style.marginTop1}`}
+                    />
+                  </div>
+
+                  <div
+                    className={`${style.spaceBetween} ${style.marginTop3}  `}
+                  >
+                    <DiscreetPrivilegesTiles
+                      getSelectedTab={getSelectedTab}
+                      selectedTab={selectedTab}
+                    />
+
+                    <div
+                      className={`${style.spaceBetween} ${style.marginLeft} `}
+                    >
+                      <div
+                        className={`${isPrintClicked && style.addStyle} ${
+                          style.alignCenter
+                        } ${style.cursorPointer} ${style.marginRight20}`}
+                      >
+                        <SearchOutlinedIcon
+                          sx={{
+                            fontSize: isPrintClicked ? 20 : 25,
+                            color: isPrintClicked ? "#fff" : "#857AEF",
+                          }}
+                        />
+                      </div>
+                      <div
+                        className={`${isPrintClicked && style.addStyle} ${
+                          style.alignCenter
+                        } ${style.cursorPointer} ${style.marginRight}`}
+                      >
+                        <PrintOutlinedIcon
+                          sx={{
+                            fontSize: isPrintClicked ? 20 : 25,
+                            color: isPrintClicked ? "#fff" : "#857AEF",
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <ReferenceListCommonTable
+                    applicantTypes={tableDataValues}
+                    applicantNotice={
+                      "Applicant types are ordered as they will appear on forms. To change the order, click and drag "
+                    }
+                    tableDataKeys={getTableDataKeys()}
+                    tableHeadKeys={getTableHeaderValues()}
+                    groupFirstTwoColumn={true}
+                    tileType={"PrivilegeListManager"}
+                    documents={staffPrivilegesForm}
+                    getAddEntityTypes={getAddEntityTypes}
+                    handleClose={handleCloseDialog}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
+
       {isDialogOpen && (
         <PrivilegeListDialog
           open={isDialogOpen}

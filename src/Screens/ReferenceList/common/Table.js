@@ -22,6 +22,7 @@ const ReferenceListCommonTable = ({
   handleClose,
   tileType,
   onEditClick,
+  gridStyle,
 }) => {
   console.log("tileType", tileType);
 
@@ -126,7 +127,7 @@ const ReferenceListCommonTable = ({
   };
 
   return (
-    <div className={style.applicantTableContainer}>
+    <div className={`${style.applicantTableContainer} `}>
       {/* {applicantNotice && (
         <div className={style.headerNotice}>
           <p> {applicantNotice}</p>
@@ -137,7 +138,7 @@ const ReferenceListCommonTable = ({
         </div>
       )} */}
 
-      <table className={style.applicantTable}>
+      <table className={`${style.applicantTable} `}>
         <thead>
           <tr className={`${style.applicantHeader} `}>
             {tableHeadKeys &&
@@ -145,7 +146,7 @@ const ReferenceListCommonTable = ({
                 <th
                   className={`${
                     index === 0 ? style.firstColumn : style.centerAligned
-                  } `}
+                  }   ${gridStyle}`}
                   key={index}
                 >
                   {head}
@@ -155,6 +156,7 @@ const ReferenceListCommonTable = ({
             <th></th>
           </tr>
         </thead>
+
         <tbody>
           {applicantTypes.length
             ? applicantTypes.map((applicant, index) => (
@@ -171,7 +173,7 @@ const ReferenceListCommonTable = ({
                           keyIndex === 0
                             ? style.leftAligned
                             : style.centerAligned
-                        } ${keyIndex === 0 ? style.firstColumn : ""}`}
+                        } ${keyIndex === 0 ? style.firstColumn : ""} `}
                       >
                         {tileType === "ApplicantType"
                           ? key === "category"

@@ -320,3 +320,17 @@ ol ol {
 .quill {
     height: 100px;
 }
+
+.Department {
+    display: grid;
+    grid-template-columns: 10% 15% 20% 10% 10% 10% 20%;
+    /* Adjust these percentages based on your desired widths */
+    grid-gap: 10px;
+    /* This controls the gap between grid items */
+    padding: 10px;
+    /* Add some padding to ensure the content doesn't touch the edges */
+    background-color: #e0e0f8;
+    /* Adjust background to match your design */
+    text-align: center;
+    /* Center text in the columns */
+}
