@@ -12,7 +12,7 @@ const SubmittedDialog = ({ getIsOpen }) => {
             <div>
                 <div className={Classes.DIALOG_BODY}>
                     <div className={style.spaceBetween}>
-                        <div className={style.heading}>Save In Progress Alert!</div>
+                        <div className={style.heading}>Application Submitted Successfully</div>
                         <div className={style.displayInRow}>
                             <img
                                 src={CrossPink}

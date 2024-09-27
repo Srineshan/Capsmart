@@ -55,9 +55,9 @@ const CommonSelectField = ({ value, onChange, className, firstOptionLabel, first
                             focused={(warningCheck && warning) ? true : false}
                         // disabled={(contractStatus === "ACTIVE" && !window.location.pathname.includes('moveToDraft')) ? true : disabledSelect || false}
                         >
-                            {/* {firstOptionLabel !== '' && (
-                            <MenuItem value={firstOptionValue}>{firstOptionLabel}</MenuItem>
-                        )} */}
+                            {firstOptionLabel !== '' && firstOptionLabel && (
+                                <MenuItem value={firstOptionValue}>{firstOptionLabel}</MenuItem>
+                            )}
                             {valueList?.map((data, index) => (
                                 <MenuItem value={data} key={index} disabled={disabledList[index]} style={{ backgroundColor: menuColor ? menuColor[index] : '' }}>{labelList[index]}</MenuItem>
                             ))}

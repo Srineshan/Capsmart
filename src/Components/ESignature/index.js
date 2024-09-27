@@ -3,7 +3,7 @@ import ESignImg from "./../../images/eSign.png";
 import ESignEmptyImg from "./../../images/eSignEmpty.png";
 import style from './index.module.scss'
 
-const ESignature = ({ userName, currentDate, encData, showData, showDatais = true }) => {
+const ESignature = ({ userName, currentDate, encData, showData, showDatais = true, isInitial }) => {
     const [isClicked, setIsClicked] = useState(false);
     return (
         <>
@@ -27,22 +27,14 @@ const ESignature = ({ userName, currentDate, encData, showData, showDatais = tru
             </div> */}
             <div className={style.signature}>
                 <div className={style.text}>
-                    <span>Electronically Signed by</span>
+                    <span>{isInitial ? 'Electronically Initialed by' : 'Electronically Signed by'}</span>
                 </div >
                 <div className={`${style.boxContainer} ${style.border}`} >
                     <div className={style.userDetails} >
                         {!showData ? (
-                            <>
-                                <span> Click To Electronically Signed by</span>
-                                <span className={style.gap}></span >
-                                <span>DD/MM/YYYY</span>
-                            </>
+                            <span> {isInitial ? 'Click To Electronically Initial' : 'Click To Electronically Sign'}</span>
                         ) : (
-                            <>
-                                <span className={style.userName}>{userName}</span>
-                                <span className={style.gap}></span>
-                                <span className={style.currentDate}>{currentDate}</span>
-                            </>
+                            <span className={style.userName}>{userName}</span>
                         )}
                     </div >
                 </div >

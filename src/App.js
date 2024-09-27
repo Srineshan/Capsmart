@@ -287,6 +287,11 @@ const App = ({ props }) => {
       getEntityId();
     }
   }, []);
+  // useEffect(() => {
+  //   if (cookie.get('entityId') === undefined || cookie.get('entityId') === null) {
+  //     getEntityId();
+  //   }
+  // }, [])
 
   // useEffect(() => {
   //   if(!cookie.get("user")){

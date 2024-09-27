@@ -22,10 +22,12 @@ const Step4 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
     }, [basicForm])
 
     const getFormSchema = async () => {
-        const { data: form } = await GET(
-            `application-management-service/formSchema/${basicForm?.formSchemas?.[2]?.id}`
-        );
-        setFormSchema(form?.schema)
+        if (basicForm?.formSchemas?.[2]?.id !== undefined) {
+            const { data: form } = await GET(
+                `application-management-service/formSchema/${basicForm?.formSchemas?.[2]?.id}`
+            );
+            setFormSchema(form?.schema)
+        }
     }
 
     const getIsSubmitClicked = (value, data) => {
@@ -62,6 +64,16 @@ const Step4 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                     console.log(error)
                     ErrorToaster("Unexpected Error Updating Application");
                 });
+            let dataListEntry = (sessionStorage.getItem('dataListEntry') !== undefined && sessionStorage.getItem('dataListEntry') !== null) ? JSON.parse(sessionStorage.getItem('dataListEntry')) : '';
+            if (dataListEntry !== '') {
+                await PUT(`application-management-service/formSchema/${basicForm?.formSchemas?.[2]?.id}/addValueToDatalist`, dataListEntry)
+                    .then(response => {
+                        sessionStorage.removeItem('dataListEntry')
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    });
+            }
         } else {
             if (sessionStorage.getItem('fromSummary') === "true") {
                 navigate(-1);

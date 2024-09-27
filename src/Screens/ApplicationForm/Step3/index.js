@@ -20,8 +20,11 @@ const Step3 = ({ basicForm, setBasicForm, applicationId }) => {
         if (basicForm && !formSchema) {
             getFormSchema()
         }
+    }, [basicForm?.formSchemas?.[1]?.id])
+
+    useEffect(() => {
         getApplicantProfile()
-    }, [basicForm])
+    }, [applicationId])
 
     const getApplicantProfile = async () => {
         const { data: profile } = await GET(
@@ -32,10 +35,12 @@ const Step3 = ({ basicForm, setBasicForm, applicationId }) => {
     }
 
     const getFormSchema = async () => {
-        const { data: form } = await GET(
-            `application-management-service/formSchema/${basicForm?.formSchemas?.[1]?.id}`
-        );
-        setFormSchema(form?.schema)
+        if (basicForm?.formSchemas?.[1]?.id !== undefined) {
+            const { data: form } = await GET(
+                `application-management-service/formSchema/${basicForm?.formSchemas?.[1]?.id}`
+            );
+            setFormSchema(form?.schema)
+        }
     }
     const handleSubmitApplicationReq = async () => {
         if (isEdited) {

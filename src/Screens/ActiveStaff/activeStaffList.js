@@ -586,7 +586,7 @@ const ActiveStaffList = ({
           <div
             className={`${style.displayInRow} ${style.spaceBetween} ${style.headingForStaffs} ${style.bottomTextStyle}`}
           >
-            STAFF MANAGER > APPLICATIONS
+            {`STAFF MANAGER > APPLICATIONS`}
           </div>
 
           <div
@@ -635,7 +635,7 @@ const ActiveStaffList = ({
             ) : (
               <div ref={componentRef}>
                 <div
-                  className={`${style.reduceMarginTop10} staffApplicationList`}
+                  className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`}
                   ref={PDFRef}
                 >
                   <TableTwo
