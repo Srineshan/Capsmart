@@ -21,6 +21,7 @@ import pdf4 from "../../../images/CodeofConduct4.png";
 import pdf5 from "../../../images/CodeofConduct5.png";
 import pdf6 from "../../../images/CodeofConduct6.png";
 import pdf7 from "../../../images/CodeofConduct7.png";
+import PdfViewer from '../pdfViewer';
 
 
 const ApplicationAcknowledgementStep4 = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApplication, applicationId }) => {
@@ -37,6 +38,9 @@ const ApplicationAcknowledgementStep4 = ({ acknowledgementForm, dateFormat, name
     const [formSchema, setFormSchema] = useState();
     const [formContent, setFormContent] = useState();
     const [signText, setSignText] = useState(name + " " + currentDate);
+    const [initialArray, setInitialArray] = useState([])
+
+    console.log(initialArray)
 
     useEffect(() => {
         if (dateFormat) {
@@ -203,12 +207,12 @@ const ApplicationAcknowledgementStep4 = ({ acknowledgementForm, dateFormat, name
                 <ProgressCard step={'STEP 4'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={34} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
-            {/* <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
+            <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
                     <div className={style.applicationCardStyle}>
                         <div className={`${style.labelText} ${style.marginTop}`}>My making of this application and signature below indicate my understanding of and consent to the following (please note that references to Public Hospitals Act are not applicable to Homewood):</div>
                         <CommonDivider />
-                        <img src={pdf} alt="" className={style.pdfStyle} />
+                        {/* <img src={pdf} alt="" className={style.pdfStyle} />
                         <ESign />
                         <img src={pdf2} alt="" className={style.pdfStyle} />
                         <ESign />
@@ -221,8 +225,8 @@ const ApplicationAcknowledgementStep4 = ({ acknowledgementForm, dateFormat, name
                         <img src={pdf6} alt="" className={style.pdfStyle} />
                         <ESign />
                         <img src={pdf7} alt="" className={style.pdfStyle} />
-                        <ESign />
-                        <PdfViewer pdfurl={"https://dev-application-management-service.s3.amazonaws.com/64246d491b70b07241d37aa1/66dede8fdf5e683573132ec1/Pixl_Chatbot_Flyer.pdf"} />
+                        <ESign /> */}
+                        <PdfViewer pdfurl={"https://dev-application-management-service.s3.amazonaws.com/CMH/CMH+Code+of+conduct.pdf"} name={name} currentDate={currentDate} initialArray={initialArray} setInitialArray={setInitialArray} />
                     </div>
                 </div>
                 <div>
@@ -233,8 +237,8 @@ const ApplicationAcknowledgementStep4 = ({ acknowledgementForm, dateFormat, name
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()} >CONTINUE</div>
                     </div>
                 </div>
-            </div> */}
-            <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
+            </div>
+            {/* <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
                     <div className={`${style.applicationCardStyle} ${style.applicationCardScrollStyle}`} ref={targetRef}>
                         <div className={`${style.marginTop} ${style.justifyCenter}`}>
@@ -282,7 +286,7 @@ const ApplicationAcknowledgementStep4 = ({ acknowledgementForm, dateFormat, name
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()} >CONTINUE</div>
                     </div>
                 </div>
-            </div>
+            </div> */}
         </div>
     )
 }

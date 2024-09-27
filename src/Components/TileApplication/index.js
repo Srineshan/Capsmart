@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import style from "./index.module.scss";
 import { extractNumbersFromString } from "../../utils/formatting";
 import { Tooltip } from "@mui/material";
-import ClearIcon from '@mui/icons-material/Clear';
+import ClearIcon from "@mui/icons-material/Clear";
 
 const TileApplication = ({
   selectedTab,
@@ -30,25 +30,33 @@ const TileApplication = ({
   smallNum1SelectedColor,
   smallNum2SelectedColor,
   smallNum3SelectedColor,
-  getTabFilter
+  getTabFilter,
 }) => {
-
-  console.log(selectedTab, currentTile)
+  // console.log(selectedTab, currentTile)
 
   return (
     <div
-      className={`${style.applicationCardStyle} ${style.alignCenter} ${selectedTab === currentTile && style.selectedApplicantBackground}`}
+      className={`${style.applicationCardStyle} ${style.alignCenter} ${
+        selectedTab === currentTile && style.selectedApplicantBackground
+      }`}
       onClick={() => getSelectedTab(currentTile)}
     >
       {topText !== "" && <p className={style.next30Style}>{topText}</p>}
       <div className={`${style.spaceBetweenColumn} ${style.padding5}`}>
         <div>
-          <div className={`${style.spaceBetween}  ${selectedTab === currentTile ? style.selectedApplicationText : style.headingForContracts}`}>{tileLabel}
+          <div
+            className={`${style.spaceBetween}  ${
+              selectedTab === currentTile
+                ? style.selectedApplicationText
+                : style.headingForContracts
+            }`}
+          >
+            {tileLabel}
             <span className={style.countDesign}>{tileCount}</span>
           </div>
         </div>
       </div>
-    </div >
+    </div>
   );
 };
 

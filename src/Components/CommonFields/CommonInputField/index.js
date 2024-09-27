@@ -22,10 +22,9 @@ const CommonInputField = ({
   error,
   label,
   required,
-  onKeyDown,
 }) => {
   const contractStatus = sessionStorage.getItem("Selected Contract Status");
-  console.log(error);
+  // console.log(error)
   return (
     <div>
       {/* <div className={`${style.lableStyle}`}>{label}{required && '*'}</div> */}
@@ -43,14 +42,9 @@ const CommonInputField = ({
         min={min}
         key={key}
         defaultValue={defaultValue}
-        onKeyDown={(e) => {
-          if (type === "number" || type === "tel") {
-            preventNegativeValues(e); // Apply specific handling for number and tel types
-          }
-          if (onKeyDown) {
-            onKeyDown(e);
-          }
-        }}
+        onKeyDown={
+          type === "number" || type === "tel" ? preventNegativeValues : () => {}
+        }
         onBlur={onBlur}
         intent={error ? Intent.DANGER : Intent.NONE}
       />

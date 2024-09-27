@@ -26,6 +26,7 @@ import Departments from "./Screens/ReferenceList/department/Department";
 import ApplicantTypesByEntity from "./Screens/ReferenceList/applicantTypeByEntity/applicantTypesByEntity";
 import Speciality from "./Screens/ReferenceList/speciality/Speciality";
 import ApplicantProcessingCheckList from "./Screens/ReferenceList/applicantCheckList/ApplicantProcessingCheckList";
+import { PrivilegeListManager } from "./Screens/ReferenceList/privilegeListManager/PrivilegeListManager";
 
 const ReportType = React.lazy(() => import("./Screens/Reports/reportType"));
 const ReportTypeOverview = React.lazy(() =>
@@ -279,6 +280,14 @@ const App = ({ props }) => {
 
   // const navigate = useNavigate();
 
+  useEffect(() => {
+    if (
+      cookie.get("entityId") === undefined ||
+      cookie.get("entityId") === null
+    ) {
+      getEntityId();
+    }
+  }, []);
   // useEffect(() => {
   //   if (cookie.get('entityId') === undefined || cookie.get('entityId') === null) {
   //     getEntityId();
@@ -658,6 +667,11 @@ const App = ({ props }) => {
               <Route path="/staffs" element={<StaffManager />} />
               <Route path="/applications" element={<StaffApplication />} />
               <Route path="/activeStaff" element={<ActiveStaff />} />
+              <Route
+                path="/privilegeListManager"
+                element={<PrivilegeListManager />}
+              />
+
               <Route path="/profile" element={<Profile />} />
               <Route path="/notifyUser" element={<Notify />} />
               <Route path="/applicant" element={<Applicant />} />
@@ -731,6 +745,7 @@ const App = ({ props }) => {
                 path="/referenceList/industriesWithEntityTypes"
                 element={<IndustriesWithEntityTypes />}
               />
+
               <Route
                 path="/referenceList/departmentsByEntityTypes"
                 element={<DepartmentsByEntityTypes />}

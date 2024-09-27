@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import RenewDark from "./../../../images/renewDark.png";
 import DeleteHcFolder from "./../../../images/deleteHcFolder.png";
 import EditHcFolder from "./../../../images/editHcRow.png";
+import ThreeDots from "./../../../images/threeDot.png";
 import style from "./../index.module.scss";
 import DragHandleIcon from "@mui/icons-material/DragHandle";
 import ProofOfDocumentDialog from "../proofOfDocument/proofOfDocumentDialog";
@@ -11,6 +12,7 @@ import AcknowledgmentDialog from "../acknowledgment/AcknowledgmentDialog";
 import DisclosureByIndustriesDialog from "../disclosureByIndustries/disclosureByIndustriesDialog";
 import { format } from "date-fns";
 import { ErrorToaster, SuccessToaster } from "../../../utils/toaster";
+import PrivilegeListDialog from "../privilegeListManager/PrivilegesListDialog";
 
 const ReferenceListCommonTable = ({
   applicantTypes,
@@ -23,7 +25,10 @@ const ReferenceListCommonTable = ({
   onEditClick,
   applicantId,
   refetchStaffPrivileges,
+  gridStyle,
 }) => {
+  console.log("tileType", tileType);
+
   const [selectedApplicant, setSelectedApplicant] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -122,6 +127,15 @@ const ReferenceListCommonTable = ({
     } catch (error) {
       console.error("Error deleting:", error);
     }
+    if (tileType === "PrivilegeListManager") {
+      try {
+        await DELETE(`entity-service/privilegeMaster/${id}`);
+
+        console.log("Document deleted successfully");
+      } catch (error) {
+        console.error("Error deleting document:", error);
+      }
+    }
   };
 
   const isDateStamp = (str) => {
@@ -137,7 +151,7 @@ const ReferenceListCommonTable = ({
   };
 
   return (
-    <div className={style.applicantTableContainer}>
+    <div className={`${style.applicantTableContainer} `}>
       {/* {applicantNotice && (
         <div className={style.headerNotice}>
           <p> {applicantNotice}</p>
@@ -147,7 +161,8 @@ const ReferenceListCommonTable = ({
           <p> {"  next to the applicant type."}</p>
         </div>
       )} */}
-      <table className={style.applicantTable}>
+
+      <table className={`${style.applicantTable} `}>
         <thead>
           <tr className={`${style.applicantHeader} `}>
             {tableHeadKeys &&
@@ -169,6 +184,7 @@ const ReferenceListCommonTable = ({
             <th></th>
           </tr>
         </thead>
+
         <tbody>
           {applicantTypes
             .sort((a, b) => {
@@ -215,7 +231,11 @@ const ReferenceListCommonTable = ({
                             ? applicant[key]
                               ? format(new Date(applicant[key]), "MMM dd, yyyy")
                               : "N/A"
-                            : "N/A" // Handle other cases for ApplicantType
+                            : "N/A" // Handle other cases or provide a default value
+                          : key === "applicantType"
+                          ? (applicant.applicantType &&
+                              applicant.applicantType[key]) ||
+                            applicant.applicantType
                           : key === "disclaimer"
                           ? applicant[key]?.content != null
                             ? "Yes"
@@ -346,6 +366,19 @@ const ReferenceListCommonTable = ({
           handleClose={handleCloseDialog}
         />
       )}
+      {selectedApplicant &&
+        tileType == "PrivilegeListManager" &&
+        openDialog && (
+          <PrivilegeListDialog
+            open={openDialog}
+            onClose={handleCloseDialog}
+            selectedAcknowledgement={selectedApplicant}
+            documents={documents}
+            isEdit={openDialog}
+            handleClose={handleCloseDialog}
+            tileType={tileType}
+          />
+        )}
     </div>
   );
 };

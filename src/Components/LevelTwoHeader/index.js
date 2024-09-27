@@ -235,6 +235,16 @@ const LevelTwoHeader = ({
             )}
           </>
         )}
+        {tileType === "Privileges List Manager" && (
+          <button
+            className={`${style.border}  ${style.borderRadius5} ${style.marginright20} ${style.backgroundcolorwhite}`}
+            onClick={handleOpenDialog}
+          >
+            <div className={` ${style.outlined}`} style={{ color: "#7165e3" }}>
+              <span>Bulk Upload</span>
+            </div>
+          </button>
+        )}
 
         {!needHeader && !hideClose && (
           <div>
@@ -328,6 +338,7 @@ const LevelTwoHeader = ({
           handleClose={handleCloseDialog}
         />
       )} */}
+
       {tileType == "Disclosure Industries" && (
         <DisclosureByIndustriesDialog
           open={isDialogOpen}
