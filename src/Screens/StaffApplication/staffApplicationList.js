@@ -97,7 +97,16 @@ const StaffApplicationList = ({
     "Last Updated",
     "",
   ];
-  
+  const bodHeaderValues = [
+    "Applicant Name",
+    "Applicant ID",
+    "Applicant Type",
+    "Ref",
+    "MAC Approval",
+    "Checklist Status",
+    "Last Updated",
+    "",
+  ];
   const clarificationHeaderValues = [
     "",
     "Applicant Name",
@@ -156,6 +165,16 @@ const StaffApplicationList = ({
   ];
   const macColSortValues = [
     false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ];
+  const bodColSortValues = [
     false,
     false,
     false,
@@ -354,6 +373,8 @@ const StaffApplicationList = ({
   let cosapproval = [];
   let ref=[];
   let taskListStatus = [];
+  let macapproval = [];
+  let checkListStatus = [];
 
   const getApplicantValues = () => {
     dot = [];
@@ -595,6 +616,51 @@ const StaffApplicationList = ({
     ];
   };
 
+  const getBodValues = () => {
+    applicantName = [];
+    applicantId = [];
+    applicantType = [];
+    ref = [];
+    macapproval = [];
+    checkListStatus = [];
+    lastUpdated = [];
+    action = [];
+
+    tableData?.map((data) => {
+      applicantName.push(
+        `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
+          ""
+      );
+      applicantId.push(data?.applicant?.id);
+      applicantType.push(data?.providerType.serviceProviderType);
+      ref.push(data?.ref || "4/6");
+      macapproval.push(data?.macapproval || "05/05/2024");
+      checkListStatus.push(data?.checkListStatus || "2/10");
+      lastUpdated.push(
+        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+      );
+      action.push(true);
+
+      console.log("tabledata" + tableData);
+    });
+
+    return [
+      { type: "text", value: applicantName },
+      { type: "text", value: applicantId },
+      { type: "text", value: applicantType },
+      { type: "text", value: ref },
+      { type: "text", value: macapproval },
+      { type: "text", value: checkListStatus },
+      {
+        type: "iconWithCount",
+        value: lastUpdated,
+        hoverText: lastUpdatedBy,
+        isShowHoverText: true,
+      },
+      { type: "action", value: action },
+    ];
+  };
+
   const getClarificationValues = () => {
     dot = [];
     applicantName = [];
@@ -685,14 +751,23 @@ const StaffApplicationList = ({
   ];
 
   const applicationActionsData = [
-    { data: "View & Verify", requiredValue: "boolean", onClick: "" },
+    // { data: "View & Verify", requiredValue: "boolean", onClick: "" },
+    // {
+    //   data: "Send for Committee Review",
+    //   requiredValue: "boolean",
+    //   onClick: "",
+    // },
+    // {
+    //   data: "Request for Clarification",
+    //   requiredValue: "boolean",
+    //   onClick: "",
+    // },
+    // { data: "From Applicant", requiredValue: "boolean", onClick: "" },
+    // { data: "From Internal Approver", requiredValue: "boolean", onClick: "" },
+    // { data: "From Institution", requiredValue: "boolean", onClick: "" },
+    { data: "Review & Approve", requiredValue: "boolean", onClick: "" },
     {
-      data: "Send for Committee Review",
-      requiredValue: "boolean",
-      onClick: "",
-    },
-    {
-      data: "Request for Clarification",
+      data: "From staff manager",
       requiredValue: "boolean",
       onClick: "",
     },
@@ -722,6 +797,26 @@ const StaffApplicationList = ({
     { data: "Applicant Processing Tasks", requiredValue: "boolean", onClick: "" },
   ];
 
+  const bodActionsData = [
+    // {
+    //   data: "View & Verify",
+    //   requiredValue: "boolean",
+    //   onClick: onClickViewAndVerifyFunction,
+    // },
+    // {
+    //   data: "Send for Committee Review",
+    //   requiredValue: "boolean",
+    //   onClick: "",
+    // },
+    // {
+    //   data: "Request for Clarification",
+    //   requiredValue: "boolean",
+    //   onClick: "",
+    // },
+    { data: "BOD Approval Status", requiredValue: "boolean", onClick: "" },
+    { data: "Print Summary For BOD", requiredValue: "boolean", onClick: "" },
+    { data: "Applicant Processing Tasks", requiredValue: "boolean", onClick: "" },
+  ];
   const clarificationActionsData = [
     { data: "View & Verify", requiredValue: "boolean", onClick: "" },
     {
@@ -767,13 +862,15 @@ const StaffApplicationList = ({
       ? applicationHeaderValues
       : selectedTab === "mac"
       ? macHeaderValues
+      : selectedTab === "bod"
+      ? bodHeaderValues
       : selectedTab === "clarifications"
       ? clarificationHeaderValues
-      : selectedTab === "bod"
+      : selectedTab === "rejected"
       ? []
     
-      // : approvedHeaderValues;
-      :clarificationHeaderValues;
+      : approvedHeaderValues;
+      // :clarificationHeaderValues;
   let tableSortValues =
     selectedTab === "chiefOfStaff"
       ? applicantColSortValues
@@ -781,13 +878,15 @@ const StaffApplicationList = ({
       ? applicationColSortValues
       : selectedTab === "mac"
       ? macColSortValues
+      : selectedTab === "bod"
+      ? bodColSortValues
       : selectedTab === "clarifications"
       ? clarificationColSortValues
-      : selectedTab === "bod"
+      : selectedTab === "rejected"
       ? []
 
-      // : approvedColSortValues;
-      : clarificationColSortValues;
+      : approvedColSortValues;
+      // : clarificationColSortValues;
   let tableDataValues =
     selectedTab === "chiefOfStaff"
       ? getApplicantValues()
@@ -795,13 +894,15 @@ const StaffApplicationList = ({
       ? getApplicationValues()
       : selectedTab === "mac"
       ? getMacValues()
+      : selectedTab === "bod"
+      ? getBodValues()
       : selectedTab === "clarifications"
       ? getClarificationValues()
-      : selectedTab === "bod"
+      : selectedTab === "rejected"
       ? []
       
-      // : getApprovedValues();
-      : getClarificationValues();
+      : getApprovedValues();
+      // : getClarificationValues();
   let actions =
     selectedTab === "chiefOfStaff"
       ? applicantActionsData
@@ -809,13 +910,15 @@ const StaffApplicationList = ({
       ? applicationActionsData
       : selectedTab === "mac"
       ? macActionsData
+      : selectedTab === "bod"
+      ? bodActionsData
       : selectedTab === "clarifications"
       ? clarificationActionsData
-      : selectedTab === "bod"
+      : selectedTab === "rejected"
       ? []
 
-      // : approvedActionsData;
-      : clarificationActionsData;
+      : approvedActionsData;
+      // : clarificationActionsData;
   let gridStyle =
     selectedTab === "chiefOfStaff"
       ? style.applicantStaffGrid
@@ -823,13 +926,15 @@ const StaffApplicationList = ({
       ? style.applicationStaffGrid
       : selectedTab === "mac"
       ? style.macStaffGrid
+      : selectedTab === "bod"
+      ? style.bodStaffGrid
       : selectedTab === "clarifications"
       ? style.clarificationStaffGrid
-      : selectedTab === "bod"
+      : selectedTab === "rejected"
       ? []
 
-      // : style.approvedStaffGrid;
-      :style.clarificationStaffGrid;
+      : style.approvedStaffGrid;
+      // :style.clarificationStaffGrid;
 
   return (
     <div className={style.margin20}>

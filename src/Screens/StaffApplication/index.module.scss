@@ -838,6 +838,12 @@ body::-webkit-scrollbar {
   grid-gap: 1%;
 }
 
+.bodStaffGrid {
+  display: grid;
+  grid-template-columns: 15% 14% 14% 5% 15% 14% 10% 3%;
+  grid-gap: 1%;
+}
+
 .clarificationStaffGrid {
   display: grid;
   grid-template-columns: 3% 18% 10% 26% 12% 8% 11% 5%;
