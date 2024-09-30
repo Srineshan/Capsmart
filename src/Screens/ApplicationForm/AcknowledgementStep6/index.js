@@ -154,7 +154,7 @@ const ApplicationAcknowledgementStep6 = ({ acknowledgementForm, dateFormat, name
                         navigate(-1);
                     }
                     else {
-                        navigate('/applicationForm/applicationacknowledgement')
+                        navigate('/applicationForm/section1/acknowledgementStep7')
                     }
                 })
                 .catch((error) => {
@@ -166,7 +166,7 @@ const ApplicationAcknowledgementStep6 = ({ acknowledgementForm, dateFormat, name
             if (sessionStorage.getItem('fromSummary') === 'true') {
                 navigate(-1);
             } else {
-                navigate('/applicationForm/applicationacknowledgement')
+                navigate('/applicationForm/section1/acknowledgementStep7')
             }
         }
     }
@@ -216,7 +216,7 @@ const ApplicationAcknowledgementStep6 = ({ acknowledgementForm, dateFormat, name
                                     <ESignature
                                         userName={isSigned ? name : ""}
                                         encData={isSigned ? encryptedText : ''}
-                                        showData={true}
+                                        showData={isSigned}
                                         showDatais={true}
                                     />
                                 </div>

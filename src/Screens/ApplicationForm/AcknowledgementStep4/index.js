@@ -202,7 +202,7 @@ const ApplicationAcknowledgementStep4 = ({ acknowledgementForm, dateFormat, name
                         <ESign />
                         <img src={pdf7} alt="" className={style.pdfStyle} />
                         <ESign /> */}
-                        <PdfViewer pdfurl={formSchema?.file?.fileURL} name={name} currentDate={currentDate} initialArray={initialArray} setInitialArray={setInitialArray} isSigned={isSigned} setIsSigned={setIsSigned} />
+                        <PdfViewer pdfurl={formSchema?.file?.fileURL} name={name} currentDate={currentDate} initialArray={initialArray} setInitialArray={setInitialArray} isSigned={isSigned} setIsSigned={setIsSigned} formData={basicForm} />
                     </div>
                 </div>
                 <div>

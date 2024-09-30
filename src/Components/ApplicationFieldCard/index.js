@@ -611,7 +611,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                                 <div className={style.marginTop10}>
                                     <CKEditor
                                         editor={ClassicEditor}
-                                        data={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
+                                        data={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || ''}
                                         onChange={(event, editor) => {
                                             const data = editor.getData();
                                             handleChange(fieldKey, data, baseKey);

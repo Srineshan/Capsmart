@@ -50,6 +50,8 @@ const AdditionalPrivileges = ({ getIsOpen, primaryPrivilege, getSelectedPrivileg
         setStaffPrivilege(privilege);
     }
 
+    const startsWithVowel = (str) => /^[aeiouAEIOU]/.test(str);
+
     const handleChange = (privilegeId) => {
         setSelectedPrivilege(privilegeId);
         setSelectedPrivilegeForDisplay(staffPrivilege?.filter(data => data?.id === privilegeId))
@@ -163,7 +165,7 @@ const AdditionalPrivileges = ({ getIsOpen, primaryPrivilege, getSelectedPrivileg
                         </div>
                     </div>
                     <div>
-                        <div className={style.cardTitle}>{'Indicate the Privileges you are seeking as a(n) {Associate} for the {department anesthesiology / speciality}'}</div>
+                        <div className={style.cardTitle}>{`Indicate the Privileges you are seeking as ${startsWithVowel(basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory : '') ? 'an' : 'a'} ${basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory : ''} for the ${basicForm?.basicDetails?.departmentSpecialty?.department || ''} / ${basicForm?.basicDetails?.departmentSpecialty?.specialty || ''}`}</div>
                     </div>
                     <CommonSelectField
                         value={selectedPrivilege}
@@ -233,7 +235,7 @@ const AdditionalPrivileges = ({ getIsOpen, primaryPrivilege, getSelectedPrivileg
                                 <div className={style.marginTop}>
                                     {/* {selectedAdditionalPrivilegeForDisplay?.map((data) => data?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.length !== 0 && ( */}
                                     <div>
-                                        <div className={style.cardDescription}>{'The following privileges are restricted and require evidence of qualification and competence. Continued competence would be evaluated as that being acceptable to the Medical Consultant of the Program. Please signify your intention regarding each privilege by marking and X opposite and sign below.'}</div>
+                                        <div className={style.cardDescription}>{'The following privileges are restricted and require evidence of qualification and competence. Continued competence would be evaluated as that being acceptable to the Medical Consultant of the Program. Please signify your intention regarding each privilege by marking and sign below.'}</div>
 
                                         {
                                             staffPrivilege?.filter(data => data?.id === selectedPrivilege)?.map((data, index) => data?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.map((categories, categoriesIndex) => (

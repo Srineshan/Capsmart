@@ -14,7 +14,10 @@ import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
-
+import PdfDoc from './../../../images/pdfDoc.png';
+import WordDoc from './../../../images/wordDoc.png';
+import ImgDoc from './../../../images/imgDoc.png';
+import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 
 import CryptoJS from 'crypto-js';
 import style from './index.module.scss';
@@ -110,6 +113,8 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
         setApplicationData(form);
     }
 
+    const startsWithVowel = (str) => /^[aeiouAEIOU]/.test(str);
+
     const addNewDocument = async (file) => {
         console.log(file, file?.name, 'Test')
         let fileName = {
@@ -193,7 +198,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
     }
 
     const handleRestrictedSelection = (index, categoriesIndex, privilegesIndex, value, key) => {
-        console.log(index, categoriesIndex, privilegesIndex, value, key)
+        console.log(index, categoriesIndex, privilegesIndex, value, key, 'onChange')
         setSelectedPrivilegeForDisplay((prevData) => {
             const temp = [...prevData];
 
@@ -225,7 +230,8 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                     .privileges[privilegesIndex].response = value;
             } else if (key === 'notes') {
                 if (temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories[categoriesIndex]
-                    .privileges[privilegesIndex].notes === undefined) {
+                    .privileges[privilegesIndex].notes === undefined || temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories[categoriesIndex]
+                        .privileges[privilegesIndex].notes === null) {
                     temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories[categoriesIndex]
                         .privileges[privilegesIndex].notes = {}
                 }
@@ -408,7 +414,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
         )} */}
                     {selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.length !== 0 && (
                         <div className={style.padding}>
-                            <div className={style.cardDescription}>{'The following privileges are restricted and require evidence of qualification and competence. Continued competence would be evaluated as that being acceptable to the Medical Consultant of the Program. Please signify your intention regarding each privilege by marking and X opposite and sign below.'}</div>
+                            <div className={style.cardDescription}>{'The following privileges are restricted and require evidence of qualification and competence. Continued competence would be evaluated as that being acceptable to the Medical Consultant of the Program. Please signify your intention regarding each privilege by marking and sign below.'}</div>
 
                             {
                                 selectedPrivilegeForDisplay?.map((data, index) => data?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.map((categories, categoriesIndex) => (
@@ -432,7 +438,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                                                                 label={['No', 'Yes']}
                                                             />
                                                         </div>
-                                                        {privileges?.response === 'Yes' && privileges?.isevidenceRequired && (
+                                                        {privileges?.response === 'YES' && (privileges?.isevidenceRequired || privileges?.isevidenceRequired === undefined) && (
                                                             <>
                                                                 <div className={style.marginTop}>
                                                                     <CKEditor
@@ -447,7 +453,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                                                                 <div className={style.marginTop10}>
                                                                     <div className={`${style.uploadButton}`}>
                                                                         <div className={style.uploadGrid}>
-                                                                            <label for={`file-upload-dynamic-additional`} className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>
+                                                                            <label for={`file-upload-dynamic-basic${privilegesIndex}`} className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>
                                                                                 Upload any supporting documents for evidence of qualification and competence
                                                                                 {/* <div className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>Click to upload</div> */}
                                                                             </label>
@@ -455,10 +461,24 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
 
                                                                         </div>
                                                                     </div>
-                                                                    <input id={`file-upload-dynamic-additional`} type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx"
+                                                                    <input id={`file-upload-dynamic-basic${privilegesIndex}`} type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx"
                                                                         onChange={(e) => { handleRestrictedFileSelection(index, categoriesIndex, privilegesIndex, e.target.files[0], 'file') }}
                                                                     />
                                                                 </div>
+                                                                {privileges?.file !== null && (
+                                                                    <div className={`${style.fileDisplay} ${style.spaceBetween} ${style.marginTop10}`}>
+                                                                        <div className={style.displayInRow}>
+                                                                            <div onClick={() => { window.open(privileges?.file?.fileURL, '_blank'); }}>
+                                                                                {privileges?.file?.fileType === 'application/pdf' ?
+                                                                                    <img src={PdfDoc} alt="" className={style.docTypeImgStyle} />
+                                                                                    : privileges?.file?.fileType?.startsWith("image/") ?
+                                                                                        <img src={ImgDoc} alt="" className={style.docTypeImgStyle} /> : <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} />}
+                                                                            </div>
+                                                                            <div>{privileges?.file?.fileName}</div>
+                                                                        </div>
+                                                                        <div></div>
+                                                                    </div>
+                                                                )}
                                                                 <br />
                                                             </>
                                                         )}
@@ -512,7 +532,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                 <div>
                     <div className={style.applicationCardStyle}>
                         <div className={style.padding}>
-                            <div className={style.cardTitle}>{`Indicate the Privileges you are seeking as a(n) ${applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory : ''} for the ${applicationData?.basicDetails?.departmentSpecialty?.department || ''} / ${applicationData?.basicDetails?.departmentSpecialty?.specialty || ''}`}</div>
+                            <div className={style.cardTitle}>{`Indicate the Privileges you are seeking as ${startsWithVowel(applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory : '') ? 'an' : 'a'} ${applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory : ''} for the ${applicationData?.basicDetails?.departmentSpecialty?.department || ''} / ${applicationData?.basicDetails?.departmentSpecialty?.specialty || ''}`}</div>
                             <div className={style.marginTop}>
                                 <CommonSelectField
                                     value={selectedPrivilege}
@@ -541,7 +561,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                         <div className={style.marginTop40}>
                             <div className={style.applicationCardStyle}>
                                 <div className={style.padding}>
-                                    <div className={style.cardTitle}>{`Additional Privileges you are requesting as a(n) ${applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory : ''} for the ${applicationData?.basicDetails?.departmentSpecialty?.department || ''} / ${applicationData?.basicDetails?.departmentSpecialty?.specialty || ''}`}</div>
+                                    <div className={style.cardTitle}>{`Additional Privileges you are requesting as ${startsWithVowel(applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory : '') ? 'an' : 'a'} ${applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory : ''} for the ${applicationData?.basicDetails?.departmentSpecialty?.department || ''} / ${applicationData?.basicDetails?.departmentSpecialty?.specialty || ''}`}</div>
                                     <div className={style.marginTop}>
                                         {selectedAdditionalPrivilegeForDisplay?.map((data, index) =>
                                             <>
@@ -587,7 +607,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                                                 </div>
                                                 {data?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.length !== 0 && (
                                                     <>
-                                                        <div className={`${style.cardDescription} ${style.marginTop}`}>{'The following privileges are restricted and require evidence of qualification and competence. Continued competence would be evaluated as that being acceptable to the Medical Consultant of the Program. Please signify your intention regarding each privilege by marking and X opposite and sign below.'}</div>
+                                                        <div className={`${style.cardDescription} ${style.marginTop}`}>{'The following privileges are restricted and require evidence of qualification and competence. Continued competence would be evaluated as that being acceptable to the Medical Consultant of the Program. Please signify your intention regarding each privilege by marking and sign below.'}</div>
                                                         {data?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.map((categories, categoriesIndex) => (
                                                             <div key={`${index}${categoriesIndex}`}>
                                                                 <>
@@ -604,7 +624,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                                                                                         label={['No', 'Yes']}
                                                                                     />
                                                                                 </div>
-                                                                                {privileges?.response === 'Yes' && privileges?.isevidenceRequired && (
+                                                                                {privileges?.response === 'YES' && (privileges?.isevidenceRequired || privileges?.isevidenceRequired === undefined) && (
                                                                                     <>
                                                                                         <div className={style.marginTop}>
                                                                                             <CKEditor
@@ -619,7 +639,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                                                                                         <div className={style.marginTop10}>
                                                                                             <div className={`${style.uploadButton}`}>
                                                                                                 <div className={style.uploadGrid}>
-                                                                                                    <label for={`file-upload-dynamic-additional`} className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>
+                                                                                                    <label for={`file-upload-dynamic-additional${privilegesIndex}`} className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>
                                                                                                         Upload any supporting documents for evidence of qualification and competence
                                                                                                         {/* <div className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>Click to upload</div> */}
                                                                                                     </label>
@@ -627,7 +647,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
 
                                                                                                 </div>
                                                                                             </div>
-                                                                                            <input id={`file-upload-dynamic-additional`} type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx"
+                                                                                            <input id={`file-upload-dynamic-additional${privilegesIndex}`} type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx"
                                                                                                 onChange={(e) => { handleAdditionalRestrictedFileSelection(index, categoriesIndex, privilegesIndex, e.target.files[0], 'file') }}
                                                                                             />
                                                                                         </div>
@@ -669,7 +689,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                                     </div>
                                     {/* <div className={style.marginTop}>
                                         <div>
-                                            <div className={style.cardDescription}>{'The following privileges are restricted and require evidence of qualification and competence. Continued competence would be evaluated as that being acceptable to the Medical Consultant of the Program. Please signify your intention regarding each privilege by marking and X opposite and sign below.'}</div>
+                                            <div className={style.cardDescription}>{'The following privileges are restricted and require evidence of qualification and competence. Continued competence would be evaluated as that being acceptable to the Medical Consultant of the Program. Please signify your intention regarding each privilege by marking  and sign below.'}</div>
 
                                             {
                                                 selectedAdditionalPrivilegeForDisplay?.map((data, index) => data?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.map((categories, categoriesIndex) => (

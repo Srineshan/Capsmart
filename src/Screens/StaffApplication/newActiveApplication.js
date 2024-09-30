@@ -732,7 +732,14 @@ const NewActiveApplication = ({
       {/* </div > */}
       <div className={`${style.marginLeftRight50}`}>
         <div className={`${style.displayInRow} ${style.spaceBetween} ${style.topHeadingTextStyle} ${style.marginTop20}`}>
-          {`CAP MANAGER > APPLICATIONS >> ${form?.basicDetails?.applicant?.name?.firstName || ''} ${form?.basicDetails?.applicant?.name?.lastName || ''}`}</div>
+          {`CAP MANAGER > APPLICATIONS >> ${form?.basicDetails?.applicant?.name?.firstName || ''} ${form?.basicDetails?.applicant?.name?.lastName || ''}`}
+          <img
+            src={CrossPink}
+            alt="cross"
+            className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft20} `}
+            onClick={() => { onClose() }}
+          />
+        </div>
         <div className={style.grid2}>
           <div className={style.grid5and1}>
             <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>

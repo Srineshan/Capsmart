@@ -213,14 +213,14 @@ const ApplicationAcknowledgementStep2 = ({ acknowledgementForm, dateFormat, name
                                     <ESignature
                                         userName={isSigned ? name : ""}
                                         encData={isSigned ? encryptedText : ''}
-                                        showData={true}
+                                        showData={isSigned}
                                         showDatais={true}
                                     />
                                 </div>
                                 <div className={style.verticalAlignCenter}>
                                     <div className={style.displayInRow}>
                                         <div className={style.dateTitle}>Date: </div>
-                                        <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? currentDate : ""}</div>
+                                        <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? basicForm?.forms?.[12]?.esign?.signedDate ? basicForm?.forms?.[12]?.esign?.signedDate : currentDate : ""}</div>
                                     </div>
                                 </div>
                             </div>

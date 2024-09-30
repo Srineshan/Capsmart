@@ -5,7 +5,7 @@ import ESignature from "../../../Components/ESignature";
 import CryptoJS from 'crypto-js';
 import style from './index.module.scss';
 
-const PdfPage = ({ page, index, totalPages, name, currentDate, initialArray, setInitialArray, isSigned, setIsSigned }) => {
+const PdfPage = ({ page, index, totalPages, name, currentDate, initialArray, setInitialArray, isSigned, setIsSigned, formData }) => {
     const canvasRef = useRef(null);
     const { ref, inView } = useInView({ triggerOnce: true });
     const publicKey = "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
@@ -54,7 +54,7 @@ const PdfPage = ({ page, index, totalPages, name, currentDate, initialArray, set
         setInitialArray(prevData => {
             let temp = { ...prevData };
             if (temp[index].name === '') {
-                temp[index].name = name;
+                temp[index].name = (formData?.forms?.[0]?.data?.setUpYourSignature?.initial !== undefined && formData?.forms?.[0]?.data?.setUpYourSignature?.initial !== '') ? formData?.forms?.[0]?.data?.setUpYourSignature?.initial : name;
                 temp[index].signedDate = currentDate;
                 temp[index].esign = encryptedText;
             }
@@ -78,7 +78,7 @@ const PdfPage = ({ page, index, totalPages, name, currentDate, initialArray, set
                     <div className={style.verticalAlignCenter}>
                         <div className={style.displayInRow}>
                             <div className={style.dateTitle}>Date: </div>
-                            <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? currentDate : ""}</div>
+                            <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? formData?.forms?.[15]?.esign?.signedDate ? formData?.forms?.[15]?.esign?.signedDate : currentDate : ""}</div>
                         </div>
                     </div>
                 </div>
