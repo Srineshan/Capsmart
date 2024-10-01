@@ -63,7 +63,7 @@ const StaffApplicationList = ({
     "Applicant Type",
     // "Department",
     "Docs",
-    "Data & Disclosures",
+    // "Data & Disclosures",
     "CRs",
     "Notes",
     "Task list Status",
@@ -92,7 +92,6 @@ const StaffApplicationList = ({
     "Applicant Type",
     "CC Approval",
     "COS Approval",
-    "Ref",
     "Tasklist Status",
     "Last Updated",
     "",
@@ -101,7 +100,7 @@ const StaffApplicationList = ({
     "Applicant Name",
     "Applicant ID",
     "Applicant Type",
-    "Ref",
+    // "Ref",
     "MAC Approval",
     "Checklist Status",
     "Last Updated",
@@ -116,6 +115,21 @@ const StaffApplicationList = ({
     "Created On",
     "Last Updated On",
     "Actions",
+  ];
+
+  const rejectedHeaderValues = [
+    "",
+    "Applicant Name",
+    "Applicant ID",
+    "Applicant Type",
+    // "Department",
+    "Docs",
+    "Data & Disclosures",
+    "CRs",
+    "Notes",
+    "Task list Status",
+    "Last Updated",
+    "",
   ];
   const approvedHeaderValues = [
     "",
@@ -185,6 +199,19 @@ const StaffApplicationList = ({
     false,
   ];
   const clarificationColSortValues = [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ];
+  const rejectedColSortValues = [
+    false,
+    false,
     false,
     false,
     false,
@@ -375,8 +402,384 @@ const StaffApplicationList = ({
   let taskListStatus = [];
   let macapproval = [];
   let checkListStatus = [];
+  let ccdate = [];
+
 
   const getApplicantValues = () => {
+    dot = [];
+    applicantName = [];
+    applicantId = [];
+    applicantType = [];
+    department = [];
+    docs = [];
+    docsHoverText = [];
+    docsIcon = [];
+    dataStatus = [];
+    // disclosures = [];
+    crs = [];
+    crsHoverText = [];
+    notes = [];
+    notesHoverText = [];
+    notesIcon = [];
+    lastUpdated = [];
+    lastUpdatedBy = [];
+    capManager = [];
+    taskListStatus = [];
+    action = [];
+
+    tableData?.map((data) => {
+      dot.push(
+        data?.status === "REVIEW_INPROGRESS"
+          ? "yellow"
+          : data?.status === "APPROVED"
+          ? "green"
+          : "grey"
+      );
+      applicantName.push(
+        `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
+          ""
+      );
+      applicantId.push(data?.displayId);
+      applicantType.push(data?.providerType?.serviceProviderType);
+      // department.push(
+      //   data?.basicDetails?.departmentSpecialty?.department || "-"
+      // );
+      docs.push(data?.documents?.uploadedCount|| "");
+      docsHoverText.push([
+        "Immunization History Verification From PCP pending",
+      ]);
+      docsIcon.push(
+        <TextSnippetOutlinedIcon
+          style={{ fontSize: 20, color: `${data?.subStatus}` }}
+        />
+      );
+      // dataStatus.push(data?.dataStatus || "green");
+      // dataStatus.push(data?.dataStatus === "REVIEW_INPROGRESS"
+      //   ? "yellow"
+      //   : data?.status === "APPROVED"
+      //   ? "green"
+      //   : "grey");
+      // disclosures.push(data?.disclosures || '7/9');
+      crs.push(data?.clarificationRequiredFor || "-");
+      crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"]);
+      notes.push(data?.notes || "1");
+      notesIcon.push(
+        <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#52575D` }} />
+      );
+      notesHoverText.push([
+        "June 13 00:00, Nina Grealy",
+        "Lorem ipsum dolor sit amet, consetetur sadipscing.",
+      ]);
+      taskListStatus.push(data?.tasks.completedCount+"/"+data?.tasks.totalCount);
+      lastUpdated.push(
+        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+      );
+      lastUpdatedBy.push(["-"]);
+      // const lastUpdatedDate = new Date(data?.lastModifiedDate);
+      // lastUpdated.push(isNaN(lastUpdatedDate.getTime()) ? 'Invalid Date' : format(lastUpdatedDate, 'MM-dd-yyyy'));
+      // capManager.push(data?.interviewDetails?.interviewedBy || '- ');
+      action.push(true);
+
+      console.log("tabledata" + tableData);
+    });
+
+    return [
+      { type: "dot", value: dot, tooltipValue: dotTooltipValues },
+      { type: "text", value: applicantName },
+      { type: "text", value: applicantId },
+      { type: "text", value: applicantType },
+      // { type: "text", value: department },
+      {
+        type: "iconWithCount",
+        value: docs,
+        hoverText: docsHoverText,
+        isShowHoverText: true,
+        icon: docsIcon,
+      },
+      // { type: "dot", value: dataStatus },
+      // { "type": "iconWithCount", "value": disclosures, "hoverText": docsHoverText, 'isShowHoverText': true, "icon": docsIcon },
+      {
+        type: "countWithHover",
+        value: crs,
+        hoverText: crsHoverText,
+        isShowHoverText: true,
+      },
+      {
+        type: "iconWithCount",
+        value: notes,
+        hoverText: notesHoverText,
+        isShowHoverText: true,
+        icon: notesIcon,
+      },
+      { type: "iconWithCount", value: taskListStatus },
+      {
+        type: "iconWithCount",
+        value: lastUpdated,
+        hoverText: lastUpdatedBy,
+        isShowHoverText: true,
+      },
+      { type: "action", value: action },
+    ];
+  };
+
+  const getApplicationValues = () => {
+    dot = [];
+    applicantName = [];
+    applicantType = [];
+    applicantId = [];
+    // department = [];
+    // commiteeStatus = [];
+    // boardStatus = [];
+    // ceoStatus = [];
+    cr = [];
+    cos = [];
+    cc = [];
+    ccdate = [];
+    lastUpdatedOn = [];
+    
+    action = [];
+
+    tableData?.map((data) => {
+      dot.push(
+        data?.status === "REVIEW_INPROGRESS"
+          ? "yellow"
+          : data?.status === "APPROVED"
+          ? "green"
+          : "grey"
+      );
+      applicantName.push(
+        `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
+          ""
+      );
+      applicantType.push(data?.providerType.serviceProviderType);
+      applicantId.push(data?.displayId);
+      // department.push(
+      //   data?.basicDetails?.departmentSpecialty?.department || "-"
+      // );
+      // commiteeStatus.push(data?.commiteeStatus || "yellow");
+      // boardStatus.push(data?.boardStatus || "green");
+      // ceoStatus.push(data?.ceoStatus || "grey");
+      cr.push(data?.clarificationRequiredFor || "-");
+      // cr.push(data?.logs[data.logs.length - 1]?.role)
+      // cos.push(data?.boardStatus || "green");
+      // cos.push(data?.logs[data.logs.length - 1].workflowAction === "SUBMITTED"
+      //   ? "yellow"
+      //   : data?.logs[data.logs.length - 1].workflowAction === "APPROVED"
+      //   ? "green"
+      //   : "grey");
+      if (data?.logs[data.logs.length - 1]?.role === "Chief Of Staff") {
+        if (data.logs[data.logs.length - 1].workflowAction === "SUBMITTED") {
+          cos.push("yellow");
+        } else if (data.logs[data.logs.length - 1].workflowAction === "APPROVED") {
+          cos.push("green");
+        }
+      }
+      else {
+        cos.push("grey"); // If the role is not "Chief of Staff"
+    }
+      // cc.push(data?.ceoStatus || "grey");
+      if (data?.logs[data.logs.length - 2]?.role === "Credentialing Committee") {
+        if (data.logs[data.logs.length - 2].workflowAction === "SUBMITTED") {
+          cc.push("yellow");
+        } else if (data.logs[data.logs.length - 2].workflowAction === "APPROVED") {
+          cc.push("green");
+        }
+      }
+      else {
+        cc.push("grey"); // If the role is not "Chief of Staff"
+    }
+    if (data?.logs[data.logs.length - 2]?.role === "Credentialing Committee") {
+        ccdate.push(
+          format(new Date(data?.logs[data.logs.length - 2].createdDate), "MMM dd, yyyy")
+        )}else{ccdate.push("-")}
+      lastUpdatedOn.push(
+        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+      );
+      // lastUpdatedBy.push([data?.updatedBy || "-"]);
+      action.push(true);
+    });
+
+    return [
+      { type: "dot", value: dot },
+      { type: "text", value: applicantName },
+      { type: "text", value: applicantId },
+      { type: "text", value: applicantType },
+      
+      // { type: "text", value: department },
+      // { type: "dot", value: commiteeStatus },
+      // { type: "dot", value: boardStatus },
+      // { type: "dot", value: ceoStatus },
+
+      { type: "text", value: cr },
+      { type: "dot", value: cos },
+      { type: "dot", value: cc },
+      {
+        type: "iconWithCount",
+        value: ccdate,
+        // hoverText: lastUpdatedBy,
+        // isShowHoverText: true,
+      },
+      {
+        type: "iconWithCount",
+        value: lastUpdatedOn,
+        // hoverText: lastUpdatedBy,
+        // isShowHoverText: true,
+      },
+      { type: "action", value: action },
+    ];
+  };
+
+  const getMacValues = () => {
+    applicantName = [];
+    applicantId = [];
+    applicantType = [];
+    ccapproval = [];
+    cosapproval = [];
+    taskListStatus = [];
+    lastUpdated = [];
+    action = [];
+
+    tableData?.map((data) => {
+      applicantName.push(
+        `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
+          ""
+      );
+      applicantId.push(data?.displayId);
+      applicantType.push(data?.providerType?.serviceProviderType);
+      // ccapproval.push(data?.ccapproval || "05/05/2024");
+      // ccapproval.push(
+      //   format(new Date(data?.logs[data.logs.length - 1].createdDate), "MMM dd, yyyy")
+      // );
+      if (data?.logs[data.logs.length - 1]?.role === "Credentialing Committee") {
+        ccapproval.push(
+          format(new Date(data?.logs[data.logs.length - 1].createdDate), "MMM dd, yyyy")
+        )} else{ccapproval.push("-")}
+      // cosapproval.push(
+      //   format(new Date(data?.logs[data.logs.length - 1].createdDate), "MMM dd, yyyy")
+      // );
+      if (data?.logs[data.logs.length - 2]?.role === "Chief Of Staff") {
+        cosapproval.push(
+          format(new Date(data?.logs[data.logs.length - 2].createdDate), "MMM dd, yyyy")
+        )} else{cosapproval.push("-")}
+      taskListStatus.push(data?.tasks.completedCount+"/"+data?.tasks.totalCount);
+      lastUpdated.push(
+        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+      );
+      lastUpdatedBy.push(["-"]);
+      // const lastUpdatedDate = new Date(data?.lastModifiedDate);
+      // lastUpdated.push(isNaN(lastUpdatedDate.getTime()) ? 'Invalid Date' : format(lastUpdatedDate, 'MM-dd-yyyy'));
+      // capManager.push(data?.interviewDetails?.interviewedBy || '- ');
+      action.push(true);
+
+      console.log("tabledata" + tableData);
+    });
+
+    return [
+      { type: "text", value: applicantName },
+      { type: "text", value: applicantId },
+      { type: "text", value: applicantType },
+      { type: "text", value: ccapproval },
+      { type: "text", value: cosapproval },
+      { type: "text", value: taskListStatus },
+      {
+        type: "iconWithCount",
+        value: lastUpdated,
+        hoverText: lastUpdatedBy,
+        isShowHoverText: true,
+      },
+      { type: "action", value: action },
+    ];
+  };
+
+  const getBodValues = () => {
+    applicantName = [];
+    applicantId = [];
+    applicantType = [];
+    // ref = [];
+    macapproval = [];
+    taskListStatus = [];
+    lastUpdated = [];
+    action = [];
+
+    tableData?.map((data) => {
+      applicantName.push(
+        `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
+          ""
+      );
+      applicantId.push(data?.displayId);
+      applicantType.push(data?.providerType.serviceProviderType);
+      ref.push(data?.ref || "-");
+      // macapproval.push(data?.macapproval || "05/05/2024");
+      // macapproval.push(
+      //   format(new Date(data?.logs[data.logs.length - 1].createdDate), "MMM dd, yyyy")
+      // );
+      if (data?.logs[data.logs.length - 1]?.role === "Advisory Committee") {
+        macapproval.push(
+          format(new Date(data?.logs[data.logs.length - 1].createdDate), "MMM dd, yyyy")
+        )} else{macapproval.push("-")}
+      taskListStatus.push(data?.tasks.completedCount+"/"+data?.tasks.totalCount);
+      lastUpdated.push(
+        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+      );
+      action.push(true);
+
+      console.log("tabledata" + tableData);
+    });
+
+    return [
+      { type: "text", value: applicantName },
+      { type: "text", value: applicantId },
+      { type: "text", value: applicantType },
+      // { type: "text", value: ref },
+      { type: "text", value: macapproval },
+      { type: "text", value: taskListStatus },
+      {
+        type: "iconWithCount",
+        value: lastUpdated,
+        hoverText: lastUpdatedBy,
+        isShowHoverText: true,
+      },
+      { type: "action", value: action },
+    ];
+  };
+
+  const getClarificationValues = () => {
+    dot = [];
+    applicantName = [];
+    applicantType = [];
+    clarificationTitle = [];
+    raisedBy = [];
+    createdOn = [];
+    lastUpdatedOn = [];
+    action = [];
+
+    tableData?.map((data) => {
+      dot.push(data?.subStatus || "green");
+      applicantName.push(
+        `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
+          ""
+      );
+      applicantType.push(data?.providerType.serviceProviderType);
+      clarificationTitle.push(data?.title);
+      raisedBy.push(data?.raisedBy);
+      createdOn.push(data?.createdOn);
+      lastUpdatedOn.push(data?.lastUpdatedOn);
+      action.push(true);
+    });
+
+    return [
+      { type: "dot", value: dot, tooltipValue: dotTooltipValues },
+      { type: "text", value: applicantName },
+      { type: "text", value: applicantType },
+      { type: "text", value: clarificationTitle },
+      { type: "text", value: raisedBy },
+      { type: "text", value: createdOn },
+      { type: "text", value: lastUpdatedOn },
+      { type: "action", value: action },
+    ];
+  };
+
+  const getRejectedValues = () => {
     dot = [];
     applicantName = [];
     applicantId = [];
@@ -415,7 +818,7 @@ const StaffApplicationList = ({
       // department.push(
       //   data?.basicDetails?.departmentSpecialty?.department || "-"
       // );
-      docs.push(data?.docs || "2/8");
+      docs.push(data?.documents?.uploadedCount|| "2/8");
       docsHoverText.push([
         "Immunization History Verification From PCP pending",
       ]);
@@ -426,7 +829,7 @@ const StaffApplicationList = ({
       );
       dataStatus.push(data?.dataStatus || "green");
       // disclosures.push(data?.disclosures || '7/9');
-      crs.push(data?.crs || "0");
+      crs.push(data?.clarificationRequiredFor || "-");
       crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"]);
       notes.push(data?.notes || "1");
       notesIcon.push(
@@ -484,215 +887,6 @@ const StaffApplicationList = ({
         hoverText: lastUpdatedBy,
         isShowHoverText: true,
       },
-      { type: "action", value: action },
-    ];
-  };
-
-  const getApplicationValues = () => {
-    dot = [];
-    applicantName = [];
-    applicantType = [];
-    applicantId = [];
-    // department = [];
-    // commiteeStatus = [];
-    // boardStatus = [];
-    // ceoStatus = [];
-    cr = [];
-    cos = [];
-    cc = [];
-    lastUpdatedOn = [];
-    lastUpdatedBy = [];
-    action = [];
-
-    tableData?.map((data) => {
-      dot.push(
-        data?.status === "REVIEW_INPROGRESS"
-          ? "yellow"
-          : data?.status === "APPROVED"
-          ? "green"
-          : "grey"
-      );
-      applicantName.push(
-        `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
-          ""
-      );
-      applicantType.push(data?.providerType.serviceProviderType);
-      applicantId.push(data?.applicant?.id);
-      // department.push(
-      //   data?.basicDetails?.departmentSpecialty?.department || "-"
-      // );
-      // commiteeStatus.push(data?.commiteeStatus || "yellow");
-      // boardStatus.push(data?.boardStatus || "green");
-      // ceoStatus.push(data?.ceoStatus || "grey");
-      cr.push(data?.cr || "1");
-      cos.push(data?.boardStatus || "green");
-      cc.push(data?.ceoStatus || "grey");
-      lastUpdatedOn.push(
-        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
-      );
-      lastUpdatedBy.push([data?.updatedBy || "-"]);
-      action.push(true);
-    });
-
-    return [
-      { type: "dot", value: dot },
-      { type: "text", value: applicantName },
-      { type: "text", value: applicantId },
-      { type: "text", value: applicantType },
-      
-      // { type: "text", value: department },
-      // { type: "dot", value: commiteeStatus },
-      // { type: "dot", value: boardStatus },
-      // { type: "dot", value: ceoStatus },
-
-      { type: "text", value: cr },
-      { type: "dot", value: cos },
-      { type: "dot", value: cc },
-      {
-        type: "iconWithCount",
-        value: lastUpdatedOn,
-        hoverText: lastUpdatedBy,
-        isShowHoverText: true,
-      },
-      {
-        type: "iconWithCount",
-        value: lastUpdatedOn,
-        hoverText: lastUpdatedBy,
-        isShowHoverText: true,
-      },
-      { type: "action", value: action },
-    ];
-  };
-
-  const getMacValues = () => {
-    applicantName = [];
-    applicantId = [];
-    applicantType = [];
-    ccapproval = [];
-    cosapproval = [];
-    ref=[];
-    taskListStatus = [];
-    lastUpdated = [];
-    action = [];
-
-    tableData?.map((data) => {
-      applicantName.push(
-        `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
-          ""
-      );
-      applicantId.push(data?.applicant?.id);
-      applicantType.push(data?.providerType.serviceProviderType);
-      ccapproval.push(data?.ccapproval || "05/05/2024");
-      cosapproval.push(data?.cosapproval || "05/05/2024");
-      ref.push(data?.ref || "4/6");
-      taskListStatus.push(data?.taskListStatus || "2/10");
-      lastUpdated.push(
-        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
-      );
-      lastUpdatedBy.push(["-"]);
-      // const lastUpdatedDate = new Date(data?.lastModifiedDate);
-      // lastUpdated.push(isNaN(lastUpdatedDate.getTime()) ? 'Invalid Date' : format(lastUpdatedDate, 'MM-dd-yyyy'));
-      // capManager.push(data?.interviewDetails?.interviewedBy || '- ');
-      action.push(true);
-
-      console.log("tabledata" + tableData);
-    });
-
-    return [
-      { type: "text", value: applicantName },
-      { type: "text", value: applicantId },
-      { type: "text", value: applicantType },
-      { type: "text", value: ccapproval },
-      { type: "text", value: cosapproval },
-      { type: "text", value: ref },
-      { type: "text", value: taskListStatus },
-      {
-        type: "iconWithCount",
-        value: lastUpdated,
-        hoverText: lastUpdatedBy,
-        isShowHoverText: true,
-      },
-      { type: "action", value: action },
-    ];
-  };
-
-  const getBodValues = () => {
-    applicantName = [];
-    applicantId = [];
-    applicantType = [];
-    ref = [];
-    macapproval = [];
-    checkListStatus = [];
-    lastUpdated = [];
-    action = [];
-
-    tableData?.map((data) => {
-      applicantName.push(
-        `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
-          ""
-      );
-      applicantId.push(data?.applicant?.id);
-      applicantType.push(data?.providerType.serviceProviderType);
-      ref.push(data?.ref || "4/6");
-      macapproval.push(data?.macapproval || "05/05/2024");
-      checkListStatus.push(data?.checkListStatus || "2/10");
-      lastUpdated.push(
-        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
-      );
-      action.push(true);
-
-      console.log("tabledata" + tableData);
-    });
-
-    return [
-      { type: "text", value: applicantName },
-      { type: "text", value: applicantId },
-      { type: "text", value: applicantType },
-      { type: "text", value: ref },
-      { type: "text", value: macapproval },
-      { type: "text", value: checkListStatus },
-      {
-        type: "iconWithCount",
-        value: lastUpdated,
-        hoverText: lastUpdatedBy,
-        isShowHoverText: true,
-      },
-      { type: "action", value: action },
-    ];
-  };
-
-  const getClarificationValues = () => {
-    dot = [];
-    applicantName = [];
-    applicantType = [];
-    clarificationTitle = [];
-    raisedBy = [];
-    createdOn = [];
-    lastUpdatedOn = [];
-    action = [];
-
-    tableData?.map((data) => {
-      dot.push(data?.subStatus || "green");
-      applicantName.push(
-        `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
-          ""
-      );
-      applicantType.push(data?.providerType.serviceProviderType);
-      clarificationTitle.push(data?.title);
-      raisedBy.push(data?.raisedBy);
-      createdOn.push(data?.createdOn);
-      lastUpdatedOn.push(data?.lastUpdatedOn);
-      action.push(true);
-    });
-
-    return [
-      { type: "dot", value: dot, tooltipValue: dotTooltipValues },
-      { type: "text", value: applicantName },
-      { type: "text", value: applicantType },
-      { type: "text", value: clarificationTitle },
-      { type: "text", value: raisedBy },
-      { type: "text", value: createdOn },
-      { type: "text", value: lastUpdatedOn },
       { type: "action", value: action },
     ];
   };
@@ -834,6 +1028,27 @@ const StaffApplicationList = ({
     { data: "From Institution", requiredValue: "boolean", onClick: "" },
   ];
 
+  const rejectedActionsData = [
+    // {
+    //   data: "View & Verify",
+    //   requiredValue: "boolean",
+    //   onClick: onClickViewAndVerifyFunction,
+    // },
+    // {
+    //   data: "Send for Committee Review",
+    //   requiredValue: "boolean",
+    //   onClick: "",
+    // },
+    // {
+    //   data: "Request for Clarification",
+    //   requiredValue: "boolean",
+    //   onClick: "",
+    // },
+    { data: "MAC Approval", requiredValue: "boolean", onClick: "" },
+    { data: "Print Summary For MAC", requiredValue: "boolean", onClick: "" },
+    { data: "Applicant Processing Tasks", requiredValue: "boolean", onClick: "" },
+  ];
+
   const approvedActionsData = [
     {
       data: "Add as active staff",
@@ -858,7 +1073,7 @@ const StaffApplicationList = ({
   let tableHeaderValues =
     selectedTab === "chiefOfStaff"
       ? applicantHeaderValues
-      : selectedTab === "credentialingCommittee"
+      : selectedTab === "level-1"
       ? applicationHeaderValues
       : selectedTab === "mac"
       ? macHeaderValues
@@ -867,14 +1082,14 @@ const StaffApplicationList = ({
       : selectedTab === "clarifications"
       ? clarificationHeaderValues
       : selectedTab === "rejected"
-      ? []
+      ? rejectedHeaderValues
     
       : approvedHeaderValues;
       // :clarificationHeaderValues;
   let tableSortValues =
     selectedTab === "chiefOfStaff"
       ? applicantColSortValues
-      : selectedTab === "credentialingCommittee"
+      : selectedTab === "level-1"
       ? applicationColSortValues
       : selectedTab === "mac"
       ? macColSortValues
@@ -883,14 +1098,14 @@ const StaffApplicationList = ({
       : selectedTab === "clarifications"
       ? clarificationColSortValues
       : selectedTab === "rejected"
-      ? []
+      ? rejectedColSortValues
 
       : approvedColSortValues;
       // : clarificationColSortValues;
   let tableDataValues =
     selectedTab === "chiefOfStaff"
       ? getApplicantValues()
-      : selectedTab === "credentialingCommittee"
+      : selectedTab === "level-1"
       ? getApplicationValues()
       : selectedTab === "mac"
       ? getMacValues()
@@ -899,14 +1114,14 @@ const StaffApplicationList = ({
       : selectedTab === "clarifications"
       ? getClarificationValues()
       : selectedTab === "rejected"
-      ? []
+      ? getRejectedValues()
       
       : getApprovedValues();
       // : getClarificationValues();
   let actions =
     selectedTab === "chiefOfStaff"
       ? applicantActionsData
-      : selectedTab === "credentialingCommittee"
+      : selectedTab === "level-1"
       ? applicationActionsData
       : selectedTab === "mac"
       ? macActionsData
@@ -915,14 +1130,14 @@ const StaffApplicationList = ({
       : selectedTab === "clarifications"
       ? clarificationActionsData
       : selectedTab === "rejected"
-      ? []
+      ? rejectedActionsData
 
       : approvedActionsData;
       // : clarificationActionsData;
   let gridStyle =
     selectedTab === "chiefOfStaff"
       ? style.applicantStaffGrid
-      : selectedTab === "credentialingCommittee"
+      : selectedTab === "level-1"
       ? style.applicationStaffGrid
       : selectedTab === "mac"
       ? style.macStaffGrid
@@ -931,7 +1146,7 @@ const StaffApplicationList = ({
       : selectedTab === "clarifications"
       ? style.clarificationStaffGrid
       : selectedTab === "rejected"
-      ? []
+      ? style.rejectedStaffGrid
 
       : style.approvedStaffGrid;
       // :style.clarificationStaffGrid;

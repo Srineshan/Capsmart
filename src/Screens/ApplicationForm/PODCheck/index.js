@@ -62,6 +62,7 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
                                 <div className={`${style.greyDotStyle}`}></div>
                             </div>
                         </div>
+                        <div className={`${style.tableHeaderStyle} ${style.marginTop10} ${style.tableHeaderGridStyle} `}></div>
                         <div className={`${style.tableHeaderStyle} ${style.marginTop10} ${style.tableHeaderGridStyle} `}>
                             <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                                 <div className={`${style.tableHeaderTextStyle} ${style.marginLeft20}`}>POD Verification Check</div>
@@ -115,17 +116,23 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
                                 form?.formSchemas?.filter(data => data?.formCategory === 'Form')?.map((data, index) => (
                                     <div className={`${style.tableDataStyle} ${style.marginTop5} ${style.tableValueGridStyle} `}>
                                         <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                            <div className={`${style.marginLeft5} ${style.tableDataFontDisabledStyle1}}`}>{data?.title || ''}</div>
+                                        {index !== 0 && (
+                                           <div className={`${style.marginLeft5} ${style.tableDataFontDisabledStyle1}`}>{data?.title || ''}</div>
+                                        )}
                                         </div>
                                         <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                                             <div className={`${style.tableDataFontStyle1}`}>{data?.description}</div>
                                             <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/section1/${data?.title?.toLowerCase()?.replace(' ', '')}`) }} />
                                         </div>
                                         <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                            <div className={`${style.greyDotStyle} `}></div>
+                                            {/* <div className={`${style.greyDotStyle} `}></div> */}
+                                            <div className={`${data?.acknowledged === true? style.greenDotStyle : style.yellowDotStyle}`}></div>
+                                            {/* <div className={data?.acknowledged ? style.greenDotStyle : style.yellowDotStyle}></div> */}
+                                            
                                         </div>
                                         <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                            <div className={`${style.greyDotStyle} `}></div>
+                                            {/* <div className={`${style.greyDotStyle} `}></div> */}
+                                            <div className={`${data?.acknowledged === true ? style.greenDotStyle : style.yellowDotStyle}`}></div>
                                         </div>
                                         <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                                             {/* <div className={`${style.greenDotStyle} `}></div> */}
