@@ -73,7 +73,7 @@ const ApplicationAcknowledgementStep3 = ({ acknowledgementForm, dateFormat, name
     const addNewDocument = async (file) => {
         console.log(file, file?.name, 'Test')
         let fileName = {
-            "fileName": 'acknowledgement.pdf'
+            "fileName": 'schedule-b.pdf'
         };
         const formData = new FormData();
 
@@ -136,18 +136,6 @@ const ApplicationAcknowledgementStep3 = ({ acknowledgementForm, dateFormat, name
         }
     }
 
-    const handleSubmitApplication = async () => {
-        await POST(`application-management-service/application/${applicationId}/submit`)
-            .then(response => {
-                console.log(response)
-                SuccessToaster("Application Submitted Successfully");
-            })
-            .catch((error) => {
-                console.log(error)
-                ErrorToaster("Unexpected Error Submitting Application");
-            });
-    }
-
     const handleSubmitApplicationReq = async () => {
         if (isSigned) {
             let temp = {
@@ -166,28 +154,28 @@ const ApplicationAcknowledgementStep3 = ({ acknowledgementForm, dateFormat, name
                     if (sessionStorage.getItem('fromSummary') === 'true') {
                         navigate(-1);
                     }
-                    // else {
-                    //     navigate('/applicationForm/section1/acknowledgementStep3')
-                    // }
+                    else {
+                        navigate('/applicationForm/section1/acknowledgementStep5')
+                    }
                 })
                 .catch((error) => {
                     console.log(error)
                     ErrorToaster("Unexpected Error Updating Application");
                 });
         }
-        // else {
-        //     if (sessionStorage.getItem('fromSummary') === 'true') {
-        //         navigate(-1);
-        //     } else {
-        //         navigate('/applicationForm/section1/acknowledgementStep3')
-        //     }
-        // }
+        else {
+            if (sessionStorage.getItem('fromSummary') === 'true') {
+                navigate(-1);
+            } else {
+                navigate('/applicationForm/section1/acknowledgementStep5')
+            }
+        }
     }
     const handleContinue = () => {
         if (sessionStorage.getItem('fromSummary') === 'true') {
             navigate(-1);
         } else {
-            navigate('/applicationForm/section1/acknowledgementStep4')
+            navigate('/applicationForm/section1/acknowledgementStep5')
         }
     }
 
@@ -204,16 +192,24 @@ const ApplicationAcknowledgementStep3 = ({ acknowledgementForm, dateFormat, name
                             <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
                         </div>
                         <CommonDivider />
+                        <div className={`${style.cardTitle} ${style.marginTop}  ${style.justifyCenter}`}>{formSchema?.title}</div>
+                        <CommonDivider />
+                        {formSchema?.content?.title !== null && (
+                            <div className={style.cardTitle}>{formSchema?.content?.title}</div>
+                        )}
                         <div
                             className={`${style.leftAlign} ${style.marginTop} ${style.descriptionStyle}`}
                             dangerouslySetInnerHTML={{ __html: formContent?.content?.content }}
                         />
+                        {formSchema?.disclaimer?.title !== null && (
+                            <div className={style.cardTitle}>{formSchema?.disclaimer?.title}</div>
+                        )}
                         <div className={`${style.checkGrid} ${style.marginTop}`}>
                             {formContent?.disclaimer?.content !== null && (
                                 <CommonCheckBox checked={isChecked} onChange={(e) => handleIsChecked(e.target.checked)} />
                             )}
                             <div
-                                className={`${style.leftAlign} ${style.marginTop10}`}
+                                className={`${style.leftAlign} ${style.marginTop10} ${style.descriptionStyle}`}
                                 dangerouslySetInnerHTML={{ __html: formContent?.disclaimer?.content }}
                             />
                         </div>
@@ -223,14 +219,14 @@ const ApplicationAcknowledgementStep3 = ({ acknowledgementForm, dateFormat, name
                                     <ESignature
                                         userName={isSigned ? name : ""}
                                         encData={isSigned ? encryptedText : ''}
-                                        showData={true}
+                                        showData={isSigned}
                                         showDatais={true}
                                     />
                                 </div>
                                 <div className={style.verticalAlignCenter}>
                                     <div className={style.displayInRow}>
                                         <div className={style.dateTitle}>Date: </div>
-                                        <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? currentDate : ""}</div>
+                                        <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? basicForm?.forms?.[13]?.esign?.signedDate ? basicForm?.forms?.[13]?.esign?.signedDate : currentDate : ""}</div>
                                     </div>
                                 </div>
                             </div>
@@ -244,7 +240,6 @@ const ApplicationAcknowledgementStep3 = ({ acknowledgementForm, dateFormat, name
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()} >CONTINUE</div>
                     </div>
-                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplication()} >SUBMIT APPLICATION</div>
                 </div>
             </div>
         </div>

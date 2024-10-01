@@ -29,7 +29,7 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
     };
 
     useEffect(() => {
-        if (contentRef.current && eSignType !== null) {
+        if (contentRef.current && contentRef.current.innerHTML !== eSignType && eSignType !== null) {
             contentRef.current.innerHTML = eSignType;
         }
     }, [eSignType]);
@@ -143,7 +143,7 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                     </div>
                     {selectedESignFormat === 'DRAW' ? (
                         <div className={`${style.eSignBox} ${style.marginTop} ${style.cursorPointer}`} onClick={!isShowDrawCanvas ? () => setIsShowDrawCanvas(true) : () => { }}>
-                            {(eSignImg !== undefined && !isShowDrawCanvas) ? (
+                            {(eSignImg !== undefined && !isShowDrawCanvas && basicForm?.forms?.[0]?.data !== null) ? (
                                 <div>
                                     <img src={eSignImg?.fileURL} alt="ESign" className={style.eSignImg} />
                                 </div>

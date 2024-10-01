@@ -48,7 +48,7 @@ const Step7 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
         }
         setLabels(tempLabels);
     }
-    
+
     const getIsSaveInProgressOpen = (value) => {
         setIsSaveInProgressOpen(value);
     }
@@ -95,7 +95,7 @@ const Step7 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
     }
 
 
-    const handleSubmitApplicationReq = async (data,skip) => {
+    const handleSubmitApplicationReq = async (data, skip) => {
         let temp = {
             schemaId: data?.forms?.[5]?.schemaId,
             data: data?.forms?.[5]?.data,
@@ -130,7 +130,7 @@ const Step7 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
 
         }
     }
-    
+
     const getValueByPath = (obj, path) => {
         const keys = path.split(/[\.\[\]]+/).filter(Boolean);
         console.log(path, keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm), basicForm, 'if')
@@ -147,11 +147,11 @@ const Step7 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'trainingAndWorkingExperience' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.trainingAndWorkingExperience} gridStyle={style.trainingGrid} baseKey={'trainingAndWorkingExperience'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[5]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields} />
+                            <ApplicationFieldCard object={formSchema?.properties?.trainingAndWorkingExperience} gridStyle={style.trainingGrid} baseKey={'trainingAndWorkingExperience'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[5]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGridTraining} warningFields={warningFields} />
                         )}
                         <CommonDivider />
                         {formSchema !== undefined && 'healthcareFacilityAppointments' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.healthcareFacilityAppointments} gridStyle={style.healthCareGrid} baseKey={'healthcareFacilityAppointments'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels}  addMoreType={true} formId={basicForm?.forms?.[5]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields}/>
+                            <ApplicationFieldCard object={formSchema?.properties?.healthcareFacilityAppointments} gridStyle={style.healthCareGrid} baseKey={'healthcareFacilityAppointments'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[5]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields} />
                         )}
                     </div>
                 </div>

@@ -398,12 +398,11 @@ const StaffApplicationList = ({
   let cc = [];
   let ccapproval = [];
   let cosapproval = [];
-  let ref=[];
+  let ref = [];
   let taskListStatus = [];
   let macapproval = [];
   let checkListStatus = [];
   let ccdate = [];
-
 
   const getApplicantValues = () => {
     dot = [];
@@ -444,7 +443,7 @@ const StaffApplicationList = ({
       // department.push(
       //   data?.basicDetails?.departmentSpecialty?.department || "-"
       // );
-      docs.push(data?.documents?.uploadedCount|| "");
+      docs.push(data?.documents?.uploadedCount || "");
       docsHoverText.push([
         "Immunization History Verification From PCP pending",
       ]);
@@ -470,7 +469,9 @@ const StaffApplicationList = ({
         "June 13 00:00, Nina Grealy",
         "Lorem ipsum dolor sit amet, consetetur sadipscing.",
       ]);
-      taskListStatus.push(data?.tasks.completedCount+"/"+data?.tasks.totalCount);
+      taskListStatus.push(
+        data?.tasks.completedCount + "/" + data?.tasks.totalCount
+      );
       lastUpdated.push(
         format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
       );
@@ -536,7 +537,7 @@ const StaffApplicationList = ({
     cc = [];
     ccdate = [];
     lastUpdatedOn = [];
-    
+
     action = [];
 
     tableData?.map((data) => {
@@ -570,28 +571,40 @@ const StaffApplicationList = ({
       if (data?.logs[data.logs.length - 1]?.role === "Chief Of Staff") {
         if (data.logs[data.logs.length - 1].workflowAction === "SUBMITTED") {
           cos.push("yellow");
-        } else if (data.logs[data.logs.length - 1].workflowAction === "APPROVED") {
+        } else if (
+          data.logs[data.logs.length - 1].workflowAction === "APPROVED"
+        ) {
           cos.push("green");
         }
-      }
-      else {
+      } else {
         cos.push("grey"); // If the role is not "Chief of Staff"
-    }
+      }
       // cc.push(data?.ceoStatus || "grey");
-      if (data?.logs[data.logs.length - 2]?.role === "Credentialing Committee") {
+      if (
+        data?.logs[data.logs.length - 2]?.role === "Credentialing Committee"
+      ) {
         if (data.logs[data.logs.length - 2].workflowAction === "SUBMITTED") {
           cc.push("yellow");
-        } else if (data.logs[data.logs.length - 2].workflowAction === "APPROVED") {
+        } else if (
+          data.logs[data.logs.length - 2].workflowAction === "APPROVED"
+        ) {
           cc.push("green");
         }
-      }
-      else {
+      } else {
         cc.push("grey"); // If the role is not "Chief of Staff"
-    }
-    if (data?.logs[data.logs.length - 2]?.role === "Credentialing Committee") {
+      }
+      if (
+        data?.logs[data.logs.length - 2]?.role === "Credentialing Committee"
+      ) {
         ccdate.push(
-          format(new Date(data?.logs[data.logs.length - 2].createdDate), "MMM dd, yyyy")
-        )}else{ccdate.push("-")}
+          format(
+            new Date(data?.logs[data.logs.length - 2].createdDate),
+            "MMM dd, yyyy"
+          )
+        );
+      } else {
+        ccdate.push("-");
+      }
       lastUpdatedOn.push(
         format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
       );
@@ -604,7 +617,7 @@ const StaffApplicationList = ({
       { type: "text", value: applicantName },
       { type: "text", value: applicantId },
       { type: "text", value: applicantType },
-      
+
       // { type: "text", value: department },
       // { type: "dot", value: commiteeStatus },
       // { type: "dot", value: boardStatus },
@@ -650,18 +663,34 @@ const StaffApplicationList = ({
       // ccapproval.push(
       //   format(new Date(data?.logs[data.logs.length - 1].createdDate), "MMM dd, yyyy")
       // );
-      if (data?.logs[data.logs.length - 1]?.role === "Credentialing Committee") {
+      if (
+        data?.logs[data.logs.length - 1]?.role === "Credentialing Committee"
+      ) {
         ccapproval.push(
-          format(new Date(data?.logs[data.logs.length - 1].createdDate), "MMM dd, yyyy")
-        )} else{ccapproval.push("-")}
+          format(
+            new Date(data?.logs[data.logs.length - 1].createdDate),
+            "MMM dd, yyyy"
+          )
+        );
+      } else {
+        ccapproval.push("-");
+      }
       // cosapproval.push(
       //   format(new Date(data?.logs[data.logs.length - 1].createdDate), "MMM dd, yyyy")
       // );
       if (data?.logs[data.logs.length - 2]?.role === "Chief Of Staff") {
         cosapproval.push(
-          format(new Date(data?.logs[data.logs.length - 2].createdDate), "MMM dd, yyyy")
-        )} else{cosapproval.push("-")}
-      taskListStatus.push(data?.tasks.completedCount+"/"+data?.tasks.totalCount);
+          format(
+            new Date(data?.logs[data.logs.length - 2].createdDate),
+            "MMM dd, yyyy"
+          )
+        );
+      } else {
+        cosapproval.push("-");
+      }
+      taskListStatus.push(
+        data?.tasks.completedCount + "/" + data?.tasks.totalCount
+      );
       lastUpdated.push(
         format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
       );
@@ -715,9 +744,17 @@ const StaffApplicationList = ({
       // );
       if (data?.logs[data.logs.length - 1]?.role === "Advisory Committee") {
         macapproval.push(
-          format(new Date(data?.logs[data.logs.length - 1].createdDate), "MMM dd, yyyy")
-        )} else{macapproval.push("-")}
-      taskListStatus.push(data?.tasks.completedCount+"/"+data?.tasks.totalCount);
+          format(
+            new Date(data?.logs[data.logs.length - 1].createdDate),
+            "MMM dd, yyyy"
+          )
+        );
+      } else {
+        macapproval.push("-");
+      }
+      taskListStatus.push(
+        data?.tasks.completedCount + "/" + data?.tasks.totalCount
+      );
       lastUpdated.push(
         format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
       );
@@ -818,7 +855,7 @@ const StaffApplicationList = ({
       // department.push(
       //   data?.basicDetails?.departmentSpecialty?.department || "-"
       // );
-      docs.push(data?.documents?.uploadedCount|| "2/8");
+      docs.push(data?.documents?.uploadedCount || "2/8");
       docsHoverText.push([
         "Immunization History Verification From PCP pending",
       ]);
@@ -843,7 +880,7 @@ const StaffApplicationList = ({
       lastUpdated.push(
         format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
       );
-      lastUpdatedBy.push(["-"]);
+      lastUpdatedBy.push([data?.updatedBy?.name?.firstName || "-"]);
       // const lastUpdatedDate = new Date(data?.lastModifiedDate);
       // lastUpdated.push(isNaN(lastUpdatedDate.getTime()) ? 'Invalid Date' : format(lastUpdatedDate, 'MM-dd-yyyy'));
       // capManager.push(data?.interviewDetails?.interviewedBy || '- ');
@@ -988,7 +1025,11 @@ const StaffApplicationList = ({
     // },
     { data: "MAC Approval", requiredValue: "boolean", onClick: "" },
     { data: "Print Summary For MAC", requiredValue: "boolean", onClick: "" },
-    { data: "Applicant Processing Tasks", requiredValue: "boolean", onClick: "" },
+    {
+      data: "Applicant Processing Tasks",
+      requiredValue: "boolean",
+      onClick: "",
+    },
   ];
 
   const bodActionsData = [
@@ -1009,7 +1050,11 @@ const StaffApplicationList = ({
     // },
     { data: "BOD Approval Status", requiredValue: "boolean", onClick: "" },
     { data: "Print Summary For BOD", requiredValue: "boolean", onClick: "" },
-    { data: "Applicant Processing Tasks", requiredValue: "boolean", onClick: "" },
+    {
+      data: "Applicant Processing Tasks",
+      requiredValue: "boolean",
+      onClick: "",
+    },
   ];
   const clarificationActionsData = [
     { data: "View & Verify", requiredValue: "boolean", onClick: "" },
@@ -1046,7 +1091,11 @@ const StaffApplicationList = ({
     // },
     { data: "MAC Approval", requiredValue: "boolean", onClick: "" },
     { data: "Print Summary For MAC", requiredValue: "boolean", onClick: "" },
-    { data: "Applicant Processing Tasks", requiredValue: "boolean", onClick: "" },
+    {
+      data: "Applicant Processing Tasks",
+      requiredValue: "boolean",
+      onClick: "",
+    },
   ];
 
   const approvedActionsData = [
@@ -1083,9 +1132,8 @@ const StaffApplicationList = ({
       ? clarificationHeaderValues
       : selectedTab === "rejected"
       ? rejectedHeaderValues
-    
       : approvedHeaderValues;
-      // :clarificationHeaderValues;
+  // :clarificationHeaderValues;
   let tableSortValues =
     selectedTab === "chiefOfStaff"
       ? applicantColSortValues
@@ -1099,9 +1147,8 @@ const StaffApplicationList = ({
       ? clarificationColSortValues
       : selectedTab === "rejected"
       ? rejectedColSortValues
-
       : approvedColSortValues;
-      // : clarificationColSortValues;
+  // : clarificationColSortValues;
   let tableDataValues =
     selectedTab === "chiefOfStaff"
       ? getApplicantValues()
@@ -1115,9 +1162,8 @@ const StaffApplicationList = ({
       ? getClarificationValues()
       : selectedTab === "rejected"
       ? getRejectedValues()
-      
       : getApprovedValues();
-      // : getClarificationValues();
+  // : getClarificationValues();
   let actions =
     selectedTab === "chiefOfStaff"
       ? applicantActionsData
@@ -1131,9 +1177,8 @@ const StaffApplicationList = ({
       ? clarificationActionsData
       : selectedTab === "rejected"
       ? rejectedActionsData
-
       : approvedActionsData;
-      // : clarificationActionsData;
+  // : clarificationActionsData;
   let gridStyle =
     selectedTab === "chiefOfStaff"
       ? style.applicantStaffGrid
@@ -1147,9 +1192,8 @@ const StaffApplicationList = ({
       ? style.clarificationStaffGrid
       : selectedTab === "rejected"
       ? style.rejectedStaffGrid
-
       : style.approvedStaffGrid;
-      // :style.clarificationStaffGrid;
+  // :style.clarificationStaffGrid;
 
   return (
     <div className={style.margin20}>
@@ -1288,21 +1332,19 @@ const StaffApplicationList = ({
                                 className={style.marginLeft10}
                               >{`${status.basicDetail.applicant.name.firstName} ${status.basicDetail.applicant.name.lastName}`}</div>
                               {/* <span className={style.textStyleProgress}> ({status.providerType.serviceProviderType}) </span> */}
-                              <div
-                                className={`${style.smallTextStyle} ${style.justifyCenter}`}
-                              >
-                              
-                                {/* {`${status.basicDetail.applicant.startDate}`} */}
-                                {status.basicDetail.applicant.startDate
-                                  ? format(
-                                      new Date(
-                                        status.basicDetail.applicant.startDate
-                                      ),
-                                      "MMM dd, yyyy"
-                                    )
-                                  : "N/A"}
-                            
-                              </div>
+                            </div>
+                            <div
+                              className={`${style.smallTextStyle} ${style.justifyCenter}`}
+                            >
+                              {/* {`${status.basicDetail.applicant.startDate}`} */}
+                              {status.basicDetail.applicant.startDate
+                                ? format(
+                                    new Date(
+                                      status.basicDetail.applicant.startDate
+                                    ),
+                                    "MMM dd, yyyy"
+                                  )
+                                : "N/A"}
                             </div>
                             {/* <p className={style.progressTopText}>
                               {" "}
@@ -1403,7 +1445,7 @@ const StaffApplicationList = ({
             {`STAFF MANAGER >> APPLICATIONS`}
           </div>
           <div className={`${style.marginTop20}`}>
-          <StaffApplicationTopTiles
+            <StaffApplicationTopTiles
               getSelectedTab={getSelectedTab}
               selectedTab={selectedTab}
             />

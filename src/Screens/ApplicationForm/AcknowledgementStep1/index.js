@@ -174,10 +174,18 @@ const ApplicationAcknowledgementStep1 = ({ acknowledgementForm, dateFormat, name
                             <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
                         </div>
                         <CommonDivider />
+                        <div className={`${style.cardTitle} ${style.marginTop}  ${style.justifyCenter}`}>{formSchema?.title}</div>
+                        <CommonDivider />
+                        {formSchema?.content?.title !== null && (
+                            <div className={style.cardTitle}>{formSchema?.content?.title}</div>
+                        )}
                         <div
                             className={`${style.leftAlign} ${style.marginTop} ${style.descriptionStyle}`}
                             dangerouslySetInnerHTML={{ __html: formContent?.content?.content }}
                         />
+                        {formSchema?.disclaimer?.title !== null && (
+                            <div className={style.cardTitle}>{formSchema?.disclaimer?.title}</div>
+                        )}
                         <div className={`${style.checkGrid} ${style.marginTop}`}>
                             {formContent?.disclaimer?.content !== null && (
                                 <CommonCheckBox checked={isChecked} onChange={(e) => handleIsChecked(e.target.checked)} />
@@ -193,14 +201,14 @@ const ApplicationAcknowledgementStep1 = ({ acknowledgementForm, dateFormat, name
                                     <ESignature
                                         userName={isSigned ? name : ""}
                                         encData={isSigned ? encryptedText : ''}
-                                        showData={true}
+                                        showData={isSigned}
                                         showDatais={true}
                                     />
                                 </div>
                                 <div className={style.verticalAlignCenter}>
                                     <div className={style.displayInRow}>
                                         <div className={style.dateTitle}>Date: </div>
-                                        <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? currentDate : ""}</div>
+                                        <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? basicForm?.forms?.[11]?.esign?.signedDate ? basicForm?.forms?.[11]?.esign?.signedDate : currentDate : ""}</div>
                                     </div>
                                 </div>
                             </div>
