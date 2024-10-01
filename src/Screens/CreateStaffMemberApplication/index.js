@@ -11,10 +11,12 @@ import style from './index.module.scss';
 import SendEmailFromStaffManagerConfirmationDialog from '../../Components/sendEmailFromStaffManagerConfirmation';
 import jwt from 'jwt-decode';
 import Cookie from "universal-cookie";
+import { useNavigate } from 'react-router-dom';
 
 const CreateStaffMemberApplication = () => {
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
+    const navigate = useNavigate();
     const user = jwt(userDetails);
     const [form, setForm] = useState();
     const [isNextpage, setIsNextPage] = useState(false);
@@ -232,9 +234,13 @@ const CreateStaffMemberApplication = () => {
                 ErrorToaster("Unexpected Error Updating Staff Member Application");
             });
     }
+
+    const handleCloseClick = () => {
+        navigate('/applications')
+    }
     return (
         <div className={style.screenBackground}>
-            <ApplicationHeader title={'Create A New Staff Member Credentialing And Privileging Application'} />
+            <ApplicationHeader title={'Create A New Staff Member Credentialing And Privileging Application'} close={true} closeClick={handleCloseClick} />
             <div className={style.screenPadding}>
                 <div className={style.displayInRowRev}>
                     {/* <div className={style.breadcrumbStyle}>{`STAFF APPOINTMENT APPLICATION >> NEW APPLICATION`}</div> */}
@@ -258,7 +264,7 @@ const CreateStaffMemberApplication = () => {
                             <div></div>
                             <div className={style.displayInRow}>
                                 <div className={style.displayInRow}>
-                                    <div className={`${style.saveInProgress} ${style.marginTop}`}>DISCARD</div>
+                                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => window.location.reload()}>DISCARD</div>
                                     <div className={`${style.continue} ${style.marginTop} ${style.marginLeft}`} onClick={() => handleSubmitApplicationReq()}>CONTINUE</div>
                                 </div>
                             </div>

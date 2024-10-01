@@ -7,7 +7,7 @@ import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import CommonCheckBox from '../../../Components/CommonFields/CommonCheckBox';
-import { GET, PUT } from '../../dataSaver';
+import { GET, PUT, POST } from '../../dataSaver';
 import { useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
@@ -42,6 +42,18 @@ const Acknowledgement = ({ basicForm, setBasicForm, applicationId }) => {
             `application-management-service/application/${id}`
         );
         setForm(basicForm)
+    }
+
+    const handleSubmitApplication = async () => {
+        await POST(`application-management-service/application/${id}/submit`)
+            .then(response => {
+                console.log(response)
+                SuccessToaster("Application Submitted Successfully");
+            })
+            .catch((error) => {
+                console.log(error)
+                ErrorToaster("Unexpected Error Submitting Application");
+            });
     }
 
     console.log('form', form)
@@ -137,6 +149,7 @@ const Acknowledgement = ({ basicForm, setBasicForm, applicationId }) => {
                             <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                         </div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplication()}>SUBMIT APPLICATION</div>
                         <div className={`${style.continue} ${style.marginTop10}`}>PROCEED TO PAYMENT</div>
                         {/* <div className={style.marginTop}>
                             <ApplicationReferenceDocuments />

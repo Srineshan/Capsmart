@@ -1,22 +1,29 @@
 import React, { useEffect, useState } from "react";
 import * as pdfjsLib from "pdfjs-dist/build/pdf";
-// import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
 import PdfPage from "./pdfPageView";
+import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
+import { corsUrl } from "../../../utils/formatting";
 
-// Configures PDF.js to use the specified worker script for processing.
-// pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
-const PdfViewer = ({ pdfurl }) => {
+const PdfViewer = ({ pdfurl, name, currentDate, initialArray, setInitialArray, isSigned, setIsSigned, formData }) => {
     const [pages, setPages] = useState([]);
-    console.log(pages)
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
     useEffect(() => {
         const loadPdf = async () => {
             try {
-                const proxyUrl = "https://api.allorigins.win/raw?url=";
-                const pdfUrlWithProxy = `${proxyUrl}${encodeURIComponent(pdfurl)}`;
-                const loadingTask = pdfjsLib.getDocument(pdfUrlWithProxy);
+                setLoading(true);
+                setError(null);
 
-                console.log("Loading PDF from:", pdfUrlWithProxy);
+                // Remove the proxy to test with direct URL
+                // const proxyUrl = "https://api.allorigins.win/raw?url=";
+                // const pdfUrlWithProxy = `${proxyUrl}${encodeURIComponent(pdfurl)}`;
+
+                const loadingTask = pdfjsLib.getDocument(`${corsUrl}${pdfurl}`);
+
+                console.log("Loading PDF from:", pdfurl);
                 const pdf = await loadingTask.promise;
 
                 console.log("PDF loaded, total pages:", pdf.numPages);
@@ -29,6 +36,9 @@ const PdfViewer = ({ pdfurl }) => {
                 setPages(loadedPages);
             } catch (error) {
                 console.error("Error loading PDF:", error);
+                setError(error.message);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -37,12 +47,14 @@ const PdfViewer = ({ pdfurl }) => {
 
     return (
         <div>
-            {pages.length > 0 ? (
-                pages.map((page, index) => (
-                    <PdfPage key={index} page={page} index={index} />
-                ))
-            ) : (
+            {loading ? (
                 <p>Loading PDF...</p>
+            ) : error ? (
+                <p>Error: {error} Try refreshing your browser</p>
+            ) : (
+                pages.map((page, index) => (
+                    <PdfPage key={index} page={page} index={index} totalPages={pages.length} name={name} currentDate={currentDate} initialArray={initialArray} setInitialArray={setInitialArray} isSigned={isSigned} setIsSigned={setIsSigned} formData={formData} />
+                ))
             )}
         </div>
     );

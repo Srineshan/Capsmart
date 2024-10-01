@@ -140,7 +140,6 @@
     font: normal normal normal 15px/21px proxima-nova;
     letter-spacing: 0px;
     color: #52575D;
-    text-transform: capitalize;
 }
 
 .displayInRow {
@@ -207,7 +206,7 @@
 
 .gridStyle {
     display: grid;
-    grid-template-columns: 3% 25% 5% 32% 12% 7% 5% 3%;
+    grid-template-columns: 3% 23% 5% 32% 14% 7% 5% 3%;
     gap: 1%;
 }
 

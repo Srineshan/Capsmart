@@ -19,6 +19,7 @@ import jwt from 'jwt-decode';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import Cookie from "universal-cookie";
+import { differenceInDays } from 'date-fns';
 
 const ApplicationFormRequirement = () => {
     let cookie = new Cookie();
@@ -91,14 +92,14 @@ const ApplicationFormRequirement = () => {
             });
     }
 
-    const calculateRemainingDays = (createdDate, totalDays) => {
-        const currentDate = new Date();
-        const startDate = new Date(createdDate);
-        const timeDiff = currentDate - startDate;
-        const daysPassed = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-        const remainingDays = totalDays - daysPassed;
-        return remainingDays > 0 ? remainingDays : 0;
-    }
+    // const calculateRemainingDays = (createdDate, totalDays) => {
+    //     const currentDate = new Date();
+    //     const startDate = new Date(createdDate);
+    //     const timeDiff = currentDate - startDate;
+    //     const daysPassed = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+    //     const remainingDays = totalDays - daysPassed;
+    //     return remainingDays > 0 ? remainingDays : 0;
+    // }
 
     console.log(basicForm, '75')
 
@@ -154,7 +155,7 @@ const ApplicationFormRequirement = () => {
                     <div>
                         {/* <ApplicationUserCard user={'Guest User'} applyingFor={'Contact'} /> */}
                         <div>
-                            <DaysToComplete days={calculateRemainingDays(basicForm?.createdDate, 30)} />
+                            <DaysToComplete days={differenceInDays(new Date(basicForm?.expiryDate), new Date(basicForm?.createdDate))} />
                         </div>
                         <div className={style.marginTop10}>
                             <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
@@ -165,7 +166,7 @@ const ApplicationFormRequirement = () => {
                 </div>
             </div>
             {!isAuthenticated && !isSessionLoading && (
-                <LoginDialog getIsOpen={getIsOpen} days={calculateRemainingDays(basicForm?.createdDate, 30)} />
+                <LoginDialog getIsOpen={getIsOpen} days={differenceInDays(new Date(basicForm?.expiryDate), new Date(basicForm?.createdDate))} />
             )}
         </div>
     )

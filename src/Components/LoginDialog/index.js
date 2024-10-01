@@ -218,7 +218,7 @@ const LoginDialog = ({ getIsOpen, days }) => {
           <div className={style.welcomeText}>Welcome!</div>
           <div className={`${style.descriptionStyle} ${style.marginTop10}`}>
             Cambridge Memorial Hospital (CMH) is a thriving 180-bed community hospital with over 1300 staff, 250
-            Medical/Professional Staff and over 500 volunteers. CMH has recently completed an exciting Capital
+            Medical / Professional Staff and over 500 volunteers. CMH has recently completed an exciting Capital
             Redevelopment Project with brand new facilities in Emergency, Critical Care, Inpatient Medicine, Surgery,
             Obstetrics, Pediatrics and Mental Health.
           </div>
@@ -239,9 +239,9 @@ const LoginDialog = ({ getIsOpen, days }) => {
               CONTINUE
             </div>
           </div>
-          <div className={`${style.linkStyle} ${style.marginTop}`}>
+          {/* <div className={`${style.linkStyle} ${style.marginTop}`}>
             Cliquez pour voir la candidature en français
-          </div>
+          </div> */}
         </div>
         <div
           className={`${style.daysToCompleteCard} ${style.marginTop} ${style.displayInRow} ${style.alignCenter}`}

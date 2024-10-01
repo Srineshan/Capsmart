@@ -97,7 +97,7 @@ const StaffApplicationList = ({
     "Last Updated",
     "",
   ];
-  
+
   const clarificationHeaderValues = [
     "",
     "Applicant Name",
@@ -352,7 +352,7 @@ const StaffApplicationList = ({
   let cc = [];
   let ccapproval = [];
   let cosapproval = [];
-  let ref=[];
+  let ref = [];
   let taskListStatus = [];
 
   const getApplicantValues = () => {
@@ -382,12 +382,12 @@ const StaffApplicationList = ({
         data?.status === "REVIEW_INPROGRESS"
           ? "yellow"
           : data?.status === "APPROVED"
-          ? "green"
-          : "grey"
+            ? "green"
+            : "grey"
       );
       applicantName.push(
         `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
-          ""
+        ""
       );
       applicantId.push(data?.applicant?.id);
       applicantType.push(data?.providerType.serviceProviderType);
@@ -419,7 +419,7 @@ const StaffApplicationList = ({
       lastUpdated.push(
         format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
       );
-      lastUpdatedBy.push(["-"]);
+      lastUpdatedBy.push([data?.updatedBy?.name?.firstName || '-']);
       // const lastUpdatedDate = new Date(data?.lastModifiedDate);
       // lastUpdated.push(isNaN(lastUpdatedDate.getTime()) ? 'Invalid Date' : format(lastUpdatedDate, 'MM-dd-yyyy'));
       // capManager.push(data?.interviewDetails?.interviewedBy || '- ');
@@ -488,12 +488,12 @@ const StaffApplicationList = ({
         data?.status === "REVIEW_INPROGRESS"
           ? "yellow"
           : data?.status === "APPROVED"
-          ? "green"
-          : "grey"
+            ? "green"
+            : "grey"
       );
       applicantName.push(
         `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
-          ""
+        ""
       );
       applicantType.push(data?.providerType.serviceProviderType);
       applicantId.push(data?.applicant?.id);
@@ -509,7 +509,7 @@ const StaffApplicationList = ({
       lastUpdatedOn.push(
         format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
       );
-      lastUpdatedBy.push([data?.updatedBy || "-"]);
+      lastUpdatedBy.push([data?.updatedBy?.name?.firstName || '-']);
       action.push(true);
     });
 
@@ -518,7 +518,7 @@ const StaffApplicationList = ({
       { type: "text", value: applicantName },
       { type: "text", value: applicantId },
       { type: "text", value: applicantType },
-      
+
       // { type: "text", value: department },
       // { type: "dot", value: commiteeStatus },
       // { type: "dot", value: boardStatus },
@@ -549,7 +549,7 @@ const StaffApplicationList = ({
     applicantType = [];
     ccapproval = [];
     cosapproval = [];
-    ref=[];
+    ref = [];
     taskListStatus = [];
     lastUpdated = [];
     action = [];
@@ -557,7 +557,7 @@ const StaffApplicationList = ({
     tableData?.map((data) => {
       applicantName.push(
         `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
-          ""
+        ""
       );
       applicantId.push(data?.applicant?.id);
       applicantType.push(data?.providerType.serviceProviderType);
@@ -609,7 +609,7 @@ const StaffApplicationList = ({
       dot.push(data?.subStatus || "green");
       applicantName.push(
         `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
-          ""
+        ""
       );
       applicantType.push(data?.providerType.serviceProviderType);
       clarificationTitle.push(data?.title);
@@ -643,7 +643,7 @@ const StaffApplicationList = ({
       dot.push(data?.subStatus);
       applicantName.push(
         `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
-          ""
+        ""
       );
       applicantType.push(data?.providerType.serviceProviderType);
       approvedNotes.push(data?.approvedNotes);
@@ -750,7 +750,7 @@ const StaffApplicationList = ({
     {
       data: "Send follow up disclosures",
       requiredValue: "boolean",
-      onClick: () => {},
+      onClick: () => { },
     },
   ];
 
@@ -764,72 +764,72 @@ const StaffApplicationList = ({
     selectedTab === "chiefOfStaff"
       ? applicantHeaderValues
       : selectedTab === "credentialingCommittee"
-      ? applicationHeaderValues
-      : selectedTab === "mac"
-      ? macHeaderValues
-      : selectedTab === "clarifications"
-      ? clarificationHeaderValues
-      : selectedTab === "bod"
-      ? []
-    
-      // : approvedHeaderValues;
-      :clarificationHeaderValues;
+        ? applicationHeaderValues
+        : selectedTab === "mac"
+          ? macHeaderValues
+          : selectedTab === "clarifications"
+            ? clarificationHeaderValues
+            : selectedTab === "bod"
+              ? []
+
+              // : approvedHeaderValues;
+              : clarificationHeaderValues;
   let tableSortValues =
     selectedTab === "chiefOfStaff"
       ? applicantColSortValues
       : selectedTab === "credentialingCommittee"
-      ? applicationColSortValues
-      : selectedTab === "mac"
-      ? macColSortValues
-      : selectedTab === "clarifications"
-      ? clarificationColSortValues
-      : selectedTab === "bod"
-      ? []
+        ? applicationColSortValues
+        : selectedTab === "mac"
+          ? macColSortValues
+          : selectedTab === "clarifications"
+            ? clarificationColSortValues
+            : selectedTab === "bod"
+              ? []
 
-      // : approvedColSortValues;
-      : clarificationColSortValues;
+              // : approvedColSortValues;
+              : clarificationColSortValues;
   let tableDataValues =
     selectedTab === "chiefOfStaff"
       ? getApplicantValues()
       : selectedTab === "credentialingCommittee"
-      ? getApplicationValues()
-      : selectedTab === "mac"
-      ? getMacValues()
-      : selectedTab === "clarifications"
-      ? getClarificationValues()
-      : selectedTab === "bod"
-      ? []
-      
-      // : getApprovedValues();
-      : getClarificationValues();
+        ? getApplicationValues()
+        : selectedTab === "mac"
+          ? getMacValues()
+          : selectedTab === "clarifications"
+            ? getClarificationValues()
+            : selectedTab === "bod"
+              ? []
+
+              // : getApprovedValues();
+              : getClarificationValues();
   let actions =
     selectedTab === "chiefOfStaff"
       ? applicantActionsData
       : selectedTab === "credentialingCommittee"
-      ? applicationActionsData
-      : selectedTab === "mac"
-      ? macActionsData
-      : selectedTab === "clarifications"
-      ? clarificationActionsData
-      : selectedTab === "bod"
-      ? []
+        ? applicationActionsData
+        : selectedTab === "mac"
+          ? macActionsData
+          : selectedTab === "clarifications"
+            ? clarificationActionsData
+            : selectedTab === "bod"
+              ? []
 
-      // : approvedActionsData;
-      : clarificationActionsData;
+              // : approvedActionsData;
+              : clarificationActionsData;
   let gridStyle =
     selectedTab === "chiefOfStaff"
       ? style.applicantStaffGrid
       : selectedTab === "credentialingCommittee"
-      ? style.applicationStaffGrid
-      : selectedTab === "mac"
-      ? style.macStaffGrid
-      : selectedTab === "clarifications"
-      ? style.clarificationStaffGrid
-      : selectedTab === "bod"
-      ? []
+        ? style.applicationStaffGrid
+        : selectedTab === "mac"
+          ? style.macStaffGrid
+          : selectedTab === "clarifications"
+            ? style.clarificationStaffGrid
+            : selectedTab === "bod"
+              ? []
 
-      // : style.approvedStaffGrid;
-      :style.clarificationStaffGrid;
+              // : style.approvedStaffGrid;
+              : style.clarificationStaffGrid;
 
   return (
     <div className={style.margin20}>
@@ -971,17 +971,17 @@ const StaffApplicationList = ({
                               <div
                                 className={`${style.smallTextStyle} ${style.justifyCenter}`}
                               >
-                              
+
                                 {/* {`${status.basicDetail.applicant.startDate}`} */}
                                 {status.basicDetail.applicant.startDate
                                   ? format(
-                                      new Date(
-                                        status.basicDetail.applicant.startDate
-                                      ),
-                                      "MMM dd, yyyy"
-                                    )
+                                    new Date(
+                                      status.basicDetail.applicant.startDate
+                                    ),
+                                    "MMM dd, yyyy"
+                                  )
                                   : "N/A"}
-                            
+
                               </div>
                             </div>
                             {/* <p className={style.progressTopText}>
@@ -1083,7 +1083,7 @@ const StaffApplicationList = ({
             {`STAFF MANAGER >> APPLICATIONS`}
           </div>
           <div className={`${style.marginTop20}`}>
-          <StaffApplicationTopTiles
+            <StaffApplicationTopTiles
               getSelectedTab={getSelectedTab}
               selectedTab={selectedTab}
             />
@@ -1103,9 +1103,8 @@ const StaffApplicationList = ({
 
             <div className={`${style.spaceBetween} ${style.marginLeft} `}>
               <div
-                className={`${isPrintClicked && style.addStyle} ${
-                  style.alignCenter
-                } ${style.cursorPointer} ${style.marginRight20}`}
+                className={`${isPrintClicked && style.addStyle} ${style.alignCenter
+                  } ${style.cursorPointer} ${style.marginRight20}`}
               >
                 <SearchOutlinedIcon
                   sx={{
@@ -1115,9 +1114,8 @@ const StaffApplicationList = ({
                 />
               </div>
               <div
-                className={`${isPrintClicked && style.addStyle} ${
-                  style.alignCenter
-                } ${style.cursorPointer} ${style.marginRight}`}
+                className={`${isPrintClicked && style.addStyle} ${style.alignCenter
+                  } ${style.cursorPointer} ${style.marginRight}`}
               >
                 <PrintOutlinedIcon
                   sx={{
@@ -1152,7 +1150,7 @@ const StaffApplicationList = ({
                     scrollStyle={style.contractScrollStyle}
                     tableSortValues={tableSortValues}
                     heading={"There are no Record for you to manage"}
-                    onClickFunction={() => {}}
+                    onClickFunction={() => { }}
                   />
                 </div>
               </div>
