@@ -6,6 +6,11 @@
     margin-top: 10px;
 }
 
+.marginLeft {
+    margin-left: 20px !important;
+}
+
+
 .lableStyle {
     text-align: left;
     font: normal normal normal 15px/17px proxima-nova;
@@ -21,4 +26,9 @@
     display: grid;
     grid-template-columns: 60% 38%;
     gap: 2%;
+}
+
+.displayInRow {
+    display: flex;
+    flex-direction: row;
 }

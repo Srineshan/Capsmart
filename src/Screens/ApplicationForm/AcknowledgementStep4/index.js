@@ -186,6 +186,8 @@ const ApplicationAcknowledgementStep4 = ({ acknowledgementForm, dateFormat, name
                             <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
                         </div>
                         <CommonDivider />
+                        <div className={`${style.cardTitle} ${style.marginTop}  ${style.justifyCenter}`}>{formSchema?.title}</div>
+                        <CommonDivider />
                         <div className={`${style.labelText} ${style.marginTop}`}>My making of this application and signature below indicate my understanding of and consent to the following (please note that references to Public Hospitals Act are not applicable to Homewood):</div>
                         <CommonDivider />
                         {/* <img src={pdf} alt="" className={style.pdfStyle} />

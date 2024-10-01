@@ -18,9 +18,12 @@ import PdfDoc from './../../../images/pdfDoc.png';
 import WordDoc from './../../../images/wordDoc.png';
 import ImgDoc from './../../../images/imgDoc.png';
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
-
+import DatalistInput, { useComboboxControls } from "react-datalist-input";
 import CryptoJS from 'crypto-js';
 import style from './index.module.scss';
+
+import VerifiedImage from "./../../../images/verifiedImage.png";
+import ToBeVerifiedImage from "./../../../images/toBeVerifiedImage.png";
 import CommonSelectField from '../../../Components/CommonFields/CommonSelectField';
 import ESignature from '../../../Components/ESignature';
 import CommonRadio from '../../../Components/CommonFields/CommonRadio';
@@ -99,8 +102,11 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
 
     const getStaffPrivilege = async () => {
         if (applicationData) {
+            // const { data: privilege } = await GET(
+            //     `entity-service/staffPrivilege?department=${applicationData?.basicDetailReferences?.department?.id}`
+            // );
             const { data: privilege } = await GET(
-                `entity-service/staffPrivilege?department=${applicationData?.basicDetailReferences?.department?.id}`
+                `entity-service/staffPrivilege`
             );
             setStaffPrivilege(privilege);
         }
@@ -391,7 +397,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                                 <ESignature
                                     userName={selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign !== null ? selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.name : ""}
                                     encData={selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign !== null ? selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.esign : ""}
-                                    showData={selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign !== null ? true : false}
+                                    showData={(selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign !== null && selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign !== undefined) ? true : false}
                                     showDatais={true}
                                 />
                             </div>
@@ -450,12 +456,11 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                                                                         }}
                                                                     />
                                                                 </div>
-                                                                <div className={style.marginTop10}>
+                                                                {/* <div className={style.marginTop10}>
                                                                     <div className={`${style.uploadButton}`}>
                                                                         <div className={style.uploadGrid}>
                                                                             <label for={`file-upload-dynamic-basic${privilegesIndex}`} className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>
-                                                                                Upload any supporting documents for evidence of qualification and competence
-                                                                                {/* <div className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>Click to upload</div> */}
+                                                                                Insert any privilege competency and qualification information
                                                                             </label>
                                                                             <DescriptionOutlinedIcon sx={{ color: '#787f87' }} />
 
@@ -464,8 +469,26 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                                                                     <input id={`file-upload-dynamic-basic${privilegesIndex}`} type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx"
                                                                         onChange={(e) => { handleRestrictedFileSelection(index, categoriesIndex, privilegesIndex, e.target.files[0], 'file') }}
                                                                     />
+                                                                </div> */}
+                                                                <div className={style.marginTop10}>
+                                                                    <div className={`${style.uploadButton}`}>
+                                                                        <div className={style.uploadGrid}>
+                                                                            {privileges?.file !== undefined ? (
+                                                                                <img src={VerifiedImage} alt="" className={`${style.imgIcon} ${style.cursorPointer}`} onClick={window.open(privileges?.file?.fileURL, '_blank')} />
+                                                                            ) : (
+                                                                                <img src={ToBeVerifiedImage} alt="" className={style.imgIcon} />
+                                                                            )}
+                                                                            <div className={`${style.uploadText} ${style.verticalAlignCenter}`}>
+                                                                                Insert any privilege competency and qualification information
+                                                                            </div>
+                                                                            <div>
+                                                                                <label for={`file-upload-dynamic-basic${privilegesIndex}`} className={` ${style.uploadTextButton} ${style.cursorPointer} ${style.verticalAlignCenter}`}>Click to upload</label>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <input id={`file-upload-dynamic-basic${privilegesIndex}`} type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx" onChange={(e) => { handleRestrictedFileSelection(index, categoriesIndex, privilegesIndex, e.target.files[0], 'file') }} />
                                                                 </div>
-                                                                {privileges?.file !== null && (
+                                                                {privileges?.file !== null && privileges?.file !== undefined && (
                                                                     <div className={`${style.fileDisplay} ${style.spaceBetween} ${style.marginTop10}`}>
                                                                         <div className={style.displayInRow}>
                                                                             <div onClick={() => { window.open(privileges?.file?.fileURL, '_blank'); }}>
@@ -474,7 +497,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                                                                                     : privileges?.file?.fileType?.startsWith("image/") ?
                                                                                         <img src={ImgDoc} alt="" className={style.docTypeImgStyle} /> : <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} />}
                                                                             </div>
-                                                                            <div>{privileges?.file?.fileName}</div>
+                                                                            <div className={style.marginLeft}>{privileges?.file?.fileName}</div>
                                                                         </div>
                                                                         <div></div>
                                                                     </div>
@@ -501,7 +524,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                                     <ESignature
                                         userName={selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.esign !== null ? selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.esign?.name : ""}
                                         encData={selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.esign !== null ? selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.esign?.esign : ""}
-                                        showData={selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.esign !== null ? true : false}
+                                        showData={(selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.esign !== null && selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.esign !== undefined) ? true : false}
                                         showDatais={true}
                                     />
                                 </div>
@@ -520,7 +543,15 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
         }
     }
 
-    console.log('collapsibleIndexes', openIndex, selectedPrivilegeForDisplay)
+    const getItems = (data) => {
+        let temp = [];
+        data?.map(privilegedata => {
+            temp.push({ id: privilegedata?.id, value: privilegedata?.privilegeSetTitle })
+        })
+        return temp;
+    }
+
+    console.log('collapsibleIndexes', openIndex, selectedPrivilegeForDisplay, selectedPrivilege)
 
     return (
         <div>
@@ -532,9 +563,9 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                 <div>
                     <div className={style.applicationCardStyle}>
                         <div className={style.padding}>
-                            <div className={style.cardTitle}>{`Indicate the Privileges you are seeking as ${startsWithVowel(applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory : '') ? 'an' : 'a'} ${applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory : ''} for the ${applicationData?.basicDetails?.departmentSpecialty?.department || ''} / ${applicationData?.basicDetails?.departmentSpecialty?.specialty || ''}`}</div>
+                            <div className={style.cardTitle}>{`Indicate the Privileges you are seeking as ${startsWithVowel(applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory : '') ? 'an' : 'a'} ${applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory : ''} for ${applicationData?.basicDetails?.departmentSpecialty?.department || ''} ${applicationData?.basicDetails?.departmentSpecialty?.specialty ? '/' : ''} ${applicationData?.basicDetails?.departmentSpecialty?.specialty || ''}`}</div>
                             <div className={style.marginTop}>
-                                <CommonSelectField
+                                {/* <CommonSelectField
                                     value={selectedPrivilege}
                                     onChange={(e) => handleChange(e.target.value)}
                                     className={style.fullWidth}
@@ -546,6 +577,14 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                                     label={''}
                                     required={false}
                                 // warning={warningFields?.map(data => data?.key)?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
+                                /> */}
+                                <DatalistInput
+                                    items={getItems(staffPrivilege) || []}
+                                    onSelect={(item) => handleChange(item.id)}
+                                    className={`${style.fullWidth} ${style.marginTop10} ${style.leftAlign}`}
+                                    onChange={(e) => { handleChange(e.target.value) }}
+                                    placeholder={'Start typing the title or select from the dropdown of privilege set'}
+                                    value={staffPrivilege?.filter(data => data?.id === selectedPrivilege)[0]?.privilegeSetTitle || ''}
                                 />
                             </div>
                             {/* {formSchema !== undefined && 'privilegeCategories' in formSchema?.properties && (
@@ -561,7 +600,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                         <div className={style.marginTop40}>
                             <div className={style.applicationCardStyle}>
                                 <div className={style.padding}>
-                                    <div className={style.cardTitle}>{`Additional Privileges you are requesting as ${startsWithVowel(applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory : '') ? 'an' : 'a'} ${applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory : ''} for the ${applicationData?.basicDetails?.departmentSpecialty?.department || ''} / ${applicationData?.basicDetails?.departmentSpecialty?.specialty || ''}`}</div>
+                                    <div className={style.cardTitle}>{`Additional Privileges you are requesting as ${startsWithVowel(applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory : '') ? 'an' : 'a'} ${applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory : ''} for ${applicationData?.basicDetails?.departmentSpecialty?.department || ''} ${applicationData?.basicDetails?.departmentSpecialty?.specialty ? '/' : ''} ${applicationData?.basicDetails?.departmentSpecialty?.specialty || ''}`}</div>
                                     <div className={style.marginTop}>
                                         {selectedAdditionalPrivilegeForDisplay?.map((data, index) =>
                                             <>
@@ -636,12 +675,11 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                                                                                                 }}
                                                                                             />
                                                                                         </div>
-                                                                                        <div className={style.marginTop10}>
+                                                                                        {/* <div className={style.marginTop10}>
                                                                                             <div className={`${style.uploadButton}`}>
                                                                                                 <div className={style.uploadGrid}>
                                                                                                     <label for={`file-upload-dynamic-additional${privilegesIndex}`} className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>
-                                                                                                        Upload any supporting documents for evidence of qualification and competence
-                                                                                                        {/* <div className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>Click to upload</div> */}
+                                                                                                        Insert any privilege competency and qualification information
                                                                                                     </label>
                                                                                                     <DescriptionOutlinedIcon sx={{ color: '#787f87' }} />
 
@@ -650,7 +688,39 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                                                                                             <input id={`file-upload-dynamic-additional${privilegesIndex}`} type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx"
                                                                                                 onChange={(e) => { handleAdditionalRestrictedFileSelection(index, categoriesIndex, privilegesIndex, e.target.files[0], 'file') }}
                                                                                             />
+                                                                                        </div> */}
+                                                                                        <div className={style.marginTop10}>
+                                                                                            <div className={`${style.uploadButton}`}>
+                                                                                                <div className={style.uploadGrid}>
+                                                                                                    {privileges?.file !== undefined ? (
+                                                                                                        <img src={VerifiedImage} alt="" className={`${style.imgIcon} ${style.cursorPointer}`} onClick={window.open(privileges?.file?.fileURL, '_blank')} />
+                                                                                                    ) : (
+                                                                                                        <img src={ToBeVerifiedImage} alt="" className={style.imgIcon} />
+                                                                                                    )}
+                                                                                                    <div className={`${style.uploadText} ${style.verticalAlignCenter}`}>
+                                                                                                        Insert any privilege competency and qualification information
+                                                                                                    </div>
+                                                                                                    <div>
+                                                                                                        <label for={`file-upload-dynamic-additional${privilegesIndex}`} className={` ${style.uploadTextButton} ${style.cursorPointer} ${style.verticalAlignCenter}`}>Click to upload</label>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <input id={`file-upload-dynamic-additional${privilegesIndex}`} type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx" onChange={(e) => { handleAdditionalRestrictedFileSelection(index, categoriesIndex, privilegesIndex, e.target.files[0], 'file') }} />
                                                                                         </div>
+                                                                                        {privileges?.file !== null && privileges?.file !== undefined && (
+                                                                                            <div className={`${style.fileDisplay} ${style.spaceBetween} ${style.marginTop10}`}>
+                                                                                                <div className={style.displayInRow}>
+                                                                                                    <div onClick={() => { window.open(privileges?.file?.fileURL, '_blank'); }}>
+                                                                                                        {privileges?.file?.fileType === 'application/pdf' ?
+                                                                                                            <img src={PdfDoc} alt="" className={style.docTypeImgStyle} />
+                                                                                                            : privileges?.file?.fileType?.startsWith("image/") ?
+                                                                                                                <img src={ImgDoc} alt="" className={style.docTypeImgStyle} /> : <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} />}
+                                                                                                    </div>
+                                                                                                    <div className={style.marginLeft}>{privileges?.file?.fileName}</div>
+                                                                                                </div>
+                                                                                                <div></div>
+                                                                                            </div>
+                                                                                        )}
                                                                                         <br />
                                                                                     </>
                                                                                 )}
@@ -724,7 +794,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                                                                                     <div className={`${style.uploadButton}`}>
                                                                                         <div className={style.uploadGrid}>
                                                                                             <label for={`file-upload-dynamic-additional`} className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>
-                                                                                                Upload any supporting documents for evidence of qualification and competence
+                                                                                                Insert any privilege competency and qualification information
                                                                                             </label>
                                                                                             <DescriptionOutlinedIcon sx={{ color: '#787f87' }} />
 
@@ -789,32 +859,23 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                             <div className={`${style.applicationCardStyle} ${style.marginTop40}`} >
                                 <div className={style.padding}>
                                     <div className={style.cardDescription}>{'For specialties recognized by the Royal College of Physicians and Surgeons of Canada please attach a copy of a Royal College Certificate or a College Certificate of Registration permitting the practice of that sub-specialty.'}</div>
-
-                                    <div className={style.marginTop}>
-                                        <CKEditor
-                                            editor={ClassicEditor}
-                                        // data={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
-                                        // onChange={(event, editor) => {
-                                        //     const data = editor.getData();
-                                        //     handleChange(fieldKey, data, baseKey);
-                                        // }}
-                                        />
-                                    </div>
-                                    <div className={style.marginTop}>
+                                    <div className={style.marginTop10}>
                                         <div className={`${style.uploadButton}`}>
                                             <div className={style.uploadGrid}>
-                                                <label for={`file-upload-dynamic-additional`} className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>
-                                                    Upload any supporting documents for evidence of qualification and competence
-                                                    {/* <div className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>Click to upload</div> */}
-                                                </label>
-                                                <DescriptionOutlinedIcon sx={{ color: '#787f87' }} />
-
-                                                {/* <div className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>{(isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) ? 'Required' : 'Recommended'}</div> */}
+                                                {/* {privileges?.file !== undefined ? (
+                                                    <img src={VerifiedImage} alt="" className={`${style.imgIcon} ${style.cursorPointer}`} onClick={window.open(privileges?.file?.fileURL, '_blank')} />
+                                                ) : ( */}
+                                                <img src={ToBeVerifiedImage} alt="" className={style.imgIcon} />
+                                                {/* )} */}
+                                                <div className={`${style.uploadText} ${style.verticalAlignCenter}`}>
+                                                    Insert any privilege competency and qualification information
+                                                </div>
+                                                <div>
+                                                    <label for={`file-upload-dynamic-additional`} className={` ${style.uploadTextButton} ${style.cursorPointer} ${style.verticalAlignCenter}`}>Click to upload</label>
+                                                </div>
                                             </div>
                                         </div>
-                                        <input id={`file-upload-dynamic-additional`} type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx"
-                                        // onChange={(e) => { handleChange(fieldKey, e.target.files[0], baseKey) }}
-                                        />
+                                        <input id={`file-upload-dynamic-additional`} type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx" onChange={(e) => { }} />
                                     </div>
                                 </div>
 

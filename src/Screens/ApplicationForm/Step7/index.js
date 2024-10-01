@@ -71,7 +71,7 @@ const Step7 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'trainingAndWorkingExperience' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.trainingAndWorkingExperience} gridStyle={style.trainingGrid} baseKey={'trainingAndWorkingExperience'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} formId={basicForm?.forms?.[5]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} />
+                            <ApplicationFieldCard object={formSchema?.properties?.trainingAndWorkingExperience} gridStyle={style.trainingGrid} baseKey={'trainingAndWorkingExperience'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} formId={basicForm?.forms?.[5]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGridTraining} />
                         )}
                         <CommonDivider />
                         {formSchema !== undefined && 'healthcareFacilityAppointments' in formSchema?.properties && (

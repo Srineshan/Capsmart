@@ -16,7 +16,7 @@ const CommonSwitch = ({ checked, onChange, label, className, disabled, required,
     const contractStatus = sessionStorage.getItem('Selected Contract Status');
 
     return (
-        <div className={style.labelGrid}>
+        <div className={style.displayInRow}>
             <div className={`${style.lableStyle}`}>{labelName}{required && '*'}</div>
             <ThemeProvider theme={switchTheme}>
                 <FormControlLabel
@@ -24,7 +24,7 @@ const CommonSwitch = ({ checked, onChange, label, className, disabled, required,
                         <Switch className={className} onChange={onChange} checked={checked} disabled={contractStatus === "ACTIVE" ? true : disabled || false} size="small" />
                     }
                     color='primary'
-                    className={className}
+                    className={`${className} ${style.marginLeft}`}
                     label={label}
 
                 />

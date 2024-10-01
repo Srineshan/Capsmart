@@ -13,6 +13,9 @@ import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import CheckIcon from '@mui/icons-material/Check';
+import VerifiedImage from "../../images/verifiedImage.png";
+import ToBeVerifiedImage from "../../images/toBeVerifiedImage.png";
+import DeleteIcon from '../../images/deleteHcRow.png';
 import style from './index.module.scss';
 import CommonCheckBox from '../CommonFields/CommonCheckBox';
 import { TextArea } from '@blueprintjs/core';
@@ -62,6 +65,7 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
     let isHomeAddressPincodeEntered = getValueByPath(basicForm, 'forms[1].data.contactAddress1.homeAddress.pinCode');
     let isMailingAddressPincodeEntered = getValueByPath(basicForm, 'forms[1].data.contactAddress2.mailingAddress.pinCode');
     let isBusinessAddressPincodeEntered = getValueByPath(basicForm, 'forms[1].data.contactAddress3.business.businessAddress.pinCode');
+    let registeredBusinessAddress = getValueByPath(basicForm, 'forms[1].data.contactAddress3.registeredBusinessAddress');
     console.log(isMailingAddressSameAsHomeAddress, isBusinessAddressSameAsHomeAddressOrMailingAddress)
     useEffect(() => {
         if (isMailingAddressSameAsHomeAddress !== undefined && isMailingAddressSameAsHomeAddress !== null && !isPOD) {
@@ -126,6 +130,32 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
     }, [isBusinessAddressSameAsHomeAddressOrMailingAddress]);
 
     useEffect(() => {
+        if (registeredBusinessAddress !== undefined && registeredBusinessAddress !== null && !registeredBusinessAddress && !isPOD) {
+            setBasicForm(prevData => {
+                let tempContactAddress3 = { ...prevData };
+                if (tempContactAddress3?.forms[1]?.data?.contactAddress3?.business === undefined) {
+                    tempContactAddress3.forms[1].data.contactAddress3.business = {}
+                }
+                if (tempContactAddress3?.forms[1]?.data?.contactAddress3?.business?.businessAddress === undefined) {
+                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress = {}
+                }
+
+                tempContactAddress3.contactAddress3 = { business: { businessAddress: {} } }
+                tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.streetName = '';
+                tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.pinCode = '';
+                tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.city = '';
+                tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.province = '';
+                tempContactAddress3.forms[1].data.contactAddress3.business.businessName = '';
+                tempContactAddress3.forms[1].data.contactAddress3.business.businessPhone = '';
+                tempContactAddress3.forms[1].data.contactAddress3.business.businessWebsite = '';
+                tempContactAddress3.forms[1].data.contactAddress3.isBusinessAddressSameAsHomeAddressOrMailingAddress = '';
+                tempContactAddress3.contactAddress3 = { business: { businessAddress: tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress }, isBusinessAddressSameAsHomeAddressOrMailingAddress: '' }
+                return tempContactAddress3;
+            });
+        }
+    }, [registeredBusinessAddress]);
+
+    useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await axios.get(`https://geocoder.ca/${isHomeAddressPincodeEntered}?json=1`);
@@ -141,8 +171,16 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                 console.log("Error fetching data");
             }
         }
-        if (isHomeAddressPincodeEntered !== undefined && isHomeAddressPincodeEntered !== null && isHomeAddressPincodeEntered?.length >= 6 && !isPOD) {
-            fetchData()
+        if (isHomeAddressPincodeEntered !== undefined && isHomeAddressPincodeEntered !== null && isHomeAddressPincodeEntered?.length >= 7 && !isPOD) {
+            if (validateCanadianPostalCode(isHomeAddressPincodeEntered)) {
+                fetchData()
+            } else {
+                setBasicForm(prevData => {
+                    let tempContactAddress1 = { ...prevData };
+                    tempContactAddress1.forms[1].data.contactAddress1.homeAddress.pinCode = "";
+                    return tempContactAddress1;
+                });
+            }
         }
     }, [isHomeAddressPincodeEntered]);
 
@@ -162,8 +200,16 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                 console.log("Error fetching data");
             }
         }
-        if (isMailingAddressPincodeEntered !== undefined && isMailingAddressPincodeEntered !== null && isMailingAddressPincodeEntered?.length >= 6 && !isPOD) {
-            fetchData()
+        if (isMailingAddressPincodeEntered !== undefined && isMailingAddressPincodeEntered !== null && isMailingAddressPincodeEntered?.length >= 7 && !isPOD) {
+            if (validateCanadianPostalCode(isMailingAddressPincodeEntered)) {
+                fetchData()
+            } else {
+                setBasicForm(prevData => {
+                    let tempContactAddress2 = { ...prevData };
+                    tempContactAddress2.forms[1].data.contactAddress2.mailingAddress.pinCode = "";
+                    return tempContactAddress2;
+                });
+            }
         }
     }, [isMailingAddressPincodeEntered]);
 
@@ -183,8 +229,16 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                 console.log("Error fetching data");
             }
         }
-        if (isBusinessAddressPincodeEntered !== undefined && isBusinessAddressPincodeEntered !== null && isBusinessAddressPincodeEntered?.length >= 6 && !isPOD) {
-            fetchData()
+        if (isBusinessAddressPincodeEntered !== undefined && isBusinessAddressPincodeEntered !== null && isBusinessAddressPincodeEntered?.length >= 7 && !isPOD) {
+            if (validateCanadianPostalCode(isBusinessAddressPincodeEntered)) {
+                fetchData()
+            } else {
+                setBasicForm(prevData => {
+                    let tempContactAddress3 = { ...prevData };
+                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.pinCode = "";
+                    return tempContactAddress3;
+                });
+            }
         }
     }, [isBusinessAddressPincodeEntered]);
 
@@ -202,6 +256,11 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
 
     //     current[keys[keys.length - 1]] = value;
     // };
+
+    const validateCanadianPostalCode = (postalCode) => {
+        const canadianPostalCodeRegex = /^[A-Za-z]\d[A-Za-z][ ]?\d[A-Za-z]\d$/;
+        return canadianPostalCodeRegex.test(postalCode);
+    }
 
     const isFileObject = (value) => {
         if (value instanceof File) {
@@ -239,10 +298,20 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
             //         ErrorToaster('File Upload Failed');
             //     })
             try {
-                const response = await POST(`application-management-service/application/${applicationId}/files`, formData);
-                SuccessToaster('File Uploaded Successfully');
-                console.log(response?.data);
-                return response?.data;
+                await POST(`application-management-service/application/${applicationId}/files`, formData)
+                    .then(response => {
+                        if (!response.ok) { // Check if the response status is not OK
+                            throw new Error('File Upload Failed');
+                        }
+                        return response.json(); // Parse the response
+                    })
+                    .then(response => {
+                        SuccessToaster('File Uploaded Successfully');
+                        return response?.data;
+                    })
+                    .catch(error => {
+                        ErrorToaster('File Upload Failed');
+                    })
             } catch (error) {
                 ErrorToaster('File Upload Failed');
                 console.error(error);
@@ -700,6 +769,24 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                             />
                         </div>
                     );
+                case 'disclosureRadioButton':
+                    return (
+                        <div className={`${style.disclosureGrid} ${style.verticalAlignCenter}`}>
+                            <div className={style.displayInRow}>
+                                <div className={`${style.lableRadioSerialNumberStyle}`}>{fieldData.serialNumber !== null ? `${fieldData.serialNumber}, ` : ''}</div>
+                                <div className={`${style.lableRadioStyle} ${fieldData.serialNumber !== null ? style.marginLeft10 : ''} ${fieldData.label !== null ? style.marginRight : ''}`}>{fieldData.label}{(isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) && '*'}</div>
+                            </div>
+                            <CommonRadio
+                                className={style.leftAlign}
+                                value={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
+                                onChange={isPOD ? () => { } : (e) => handleChange(fieldKey, e.target.value, baseKey)}
+                                radioValue={fieldData.enum}
+                                label={fieldData.enum}
+                                required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))}
+                                warning={warningFields?.map(data => data?.key)?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
+                            />
+                        </div>
+                    );
                 case 'switchbutton':
                     return (
                         <CommonSwitch label={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === true ? 'YES' : 'NO'} checked={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null} onChange={isPOD ? () => { } : (e) => handleChange(fieldKey, e.target.checked, baseKey)} labelName={fieldData.label} required={isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))} />
@@ -765,16 +852,22 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                             <div></div>
                         )
                     } else {
+                        console.log(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`), 'fileDisplay')
                         return (
                             <div>
                                 <div className={`${style.uploadButton}`}>
                                     <div className={style.uploadGrid}>
-                                        <DescriptionOutlinedIcon sx={{ color: '#787f87' }} />
-                                        <label for={`file-upload-dynamic-${fieldKey}`} className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>
-                                            {fieldData.label}
-                                            <div className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>Click to upload</div>
-                                        </label>
-                                        <div className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>{(isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) ? 'Required' : 'Recommended'}</div>
+                                        {getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) !== undefined ? (
+                                            <img src={VerifiedImage} alt="" className={`${style.imgIcon} ${style.cursorPointer}`} onClick={window.open(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileURL, '_blank')} />
+                                        ) : (
+                                            <img src={ToBeVerifiedImage} alt="" className={style.imgIcon} />
+                                        )}
+                                        <div className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>
+                                            {`${fieldData.label} (${(isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) ? 'Required' : 'Recommended'})`}
+                                        </div>
+                                        <div>
+                                            <label for={`file-upload-dynamic-${fieldKey}`} className={` ${style.uploadTextButton} ${style.cursorPointer} ${style.verticalAlignCenter}`}>Click to upload</label>
+                                        </div>
                                     </div>
                                 </div>
                                 <input id={`file-upload-dynamic-${fieldKey}`} type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx" onChange={(e) => { handleChange(fieldKey, e.target.files[0], baseKey) }} />
@@ -962,13 +1055,18 @@ const ApplicationFieldCard = ({ object, gridStyle, baseKey, basicForm, setBasicF
                     // temp.push({ "type": "icon", "icon": array?.map(innerData => <CheckCircleIcon style={{ fontSize: 25, color: '#25BF6A' }} onClick={() => { window.open(innerData?.file?.fileURL, '_blank'); }} />), 'isShowHoverText': false })
                 } else if (data !== "file") {
                     temp.push({
-                        "type": "text", "value": array?.map(innerData => innerData !== null ? isValidDateString(innerData[data]) ? format(new Date(innerData[data]), canadaData?.dateFormat || 'MM/dd/yyyy') : innerData[data] : '')
+                        "type": "text", "value": array?.map(innerData => innerData !== null ? isValidDateString(innerData[data]) ? format(new Date(innerData[data]), canadaData?.dateFormat || 'MM/dd/yyyy') : innerData[data] : ''), 'onClickFunction': handleEdit
                     });
                 } else {
                     temp.push({ "type": "icon", "icon": array?.map(innerData => <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.file?.fileURL, '_blank'); }} />), 'isShowHoverText': false });
                 }
                 if (index === Object.keys(object?.tableHeaders)?.length - 1 && !isPOD) {
-                    temp.push({ "type": "action", "value": array?.map(innerData => actions) })
+                    // temp.push({ "type": "action", "value": array?.map(innerData => actions) })
+                    temp.push({
+                        "type": "icon", "icon": array?.map(innerData =>
+                            <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => { handleDelete(innerData) }} />
+                        ), 'isShowHoverText': false
+                    });
                 }
             })
         }

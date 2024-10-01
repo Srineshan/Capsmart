@@ -191,6 +191,8 @@ const ApplicationAcknowledgementStep6 = ({ acknowledgementForm, dateFormat, name
                             <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
                         </div>
                         <CommonDivider />
+                        <div className={`${style.cardTitle} ${style.marginTop}  ${style.justifyCenter}`}>{formSchema?.title}</div>
+                        <CommonDivider />
                         {formSchema?.content?.title !== null && (
                             <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.content?.title}</div>
                         )}

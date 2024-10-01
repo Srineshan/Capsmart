@@ -11,7 +11,11 @@ import { GET, POST } from '../../../dataSaver';
 import { Icon } from '@blueprintjs/core';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import CryptoJS from 'crypto-js';
+
+import VerifiedImage from "./../../../../images/verifiedImage.png";
+import ToBeVerifiedImage from "./../../../../images/toBeVerifiedImage.png";
 import { ErrorToaster, SuccessToaster } from '../../../../utils/toaster';
+import DatalistInput, { useComboboxControls } from "react-datalist-input";
 import ESignature from '../../../../Components/ESignature';
 import style from './index.module.scss'
 import { format } from 'date-fns';
@@ -148,6 +152,14 @@ const AdditionalPrivileges = ({ getIsOpen, primaryPrivilege, getSelectedPrivileg
         }
     }
 
+    const getItems = (data) => {
+        let temp = [];
+        data?.map(privilegedata => {
+            temp.push({ id: privilegedata?.id, value: privilegedata?.privilegeSetTitle })
+        })
+        return temp;
+    }
+
 
     return (
         <Dialog isOpen={getIsOpen} onClose={() => getIsOpen(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
@@ -165,9 +177,9 @@ const AdditionalPrivileges = ({ getIsOpen, primaryPrivilege, getSelectedPrivileg
                         </div>
                     </div>
                     <div>
-                        <div className={style.cardTitle}>{`Indicate the Privileges you are seeking as ${startsWithVowel(basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory : '') ? 'an' : 'a'} ${basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory : ''} for the ${basicForm?.basicDetails?.departmentSpecialty?.department || ''} / ${basicForm?.basicDetails?.departmentSpecialty?.specialty || ''}`}</div>
+                        <div className={style.cardTitle}>{`Indicate the Privileges you are seeking as ${startsWithVowel(basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory : '') ? 'an' : 'a'} ${basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory : ''} for ${basicForm?.basicDetails?.departmentSpecialty?.department || ''} ${basicForm?.basicDetails?.departmentSpecialty?.specialty ? '/' : ''} ${basicForm?.basicDetails?.departmentSpecialty?.specialty || ''}`}</div>
                     </div>
-                    <CommonSelectField
+                    {/* <CommonSelectField
                         value={selectedPrivilege}
                         onChange={(e) => handleChange(e.target.value)}
                         className={style.fullWidth}
@@ -179,6 +191,14 @@ const AdditionalPrivileges = ({ getIsOpen, primaryPrivilege, getSelectedPrivileg
                         label={''}
                     // required={false}
                     // warning={warningFields?.map(data => data?.key)?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
+                    /> */}
+                    <DatalistInput
+                        items={getItems(staffPrivilege?.filter(data => !primaryPrivilege.includes(data?.id))) || []}
+                        onSelect={(item) => handleChange(item.id)}
+                        className={`${style.fullWidth} ${style.marginTop10} ${style.leftAlign}`}
+                        onChange={(e) => { handleChange(e.target.value) }}
+                        placeholder={'Start typing the title or select from the dropdown of privilege set'}
+                        value={staffPrivilege?.filter(data => data?.id === selectedPrivilege)[0]?.privilegeSetTitle || ''}
                     />
 
                     {
@@ -189,13 +209,13 @@ const AdditionalPrivileges = ({ getIsOpen, primaryPrivilege, getSelectedPrivileg
                                     // checked={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
                                     // onChange={(e) => handleChange(fieldKey, e.target.checked, baseKey)} label={`${fieldData.label}${(isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) && '*'}`}
                                     /></div> */}
-                                    <div className={`${style.itemLeft} `}>{categories?.category === null ? 'GENERAL' : categories?.category}</div>
+                                    <div className={`${style.itemLeft} `}>{categories?.category === null ? '' : categories?.category}</div>
                                 </div>
                                 <>
                                     {
                                         categories?.privileges?.map(privileges => (
                                             <div className={style.twoColGrid}>
-                                                <div className={style.itemLeft}>{privileges?.privilegeId || ''}</div>
+                                                <div className={style.itemLeft}><strong>{privileges?.privilegeId || ''}</strong></div>
                                                 <div className={style.itemLeft}>{privileges?.title || ''}</div>
                                             </div>
 
@@ -259,7 +279,7 @@ const AdditionalPrivileges = ({ getIsOpen, primaryPrivilege, getSelectedPrivileg
                                                                             label={['No', 'Yes']}
                                                                         />
                                                                     </div>
-                                                                    {privileges?.response === 'Yes' && privileges?.isevidenceRequired && (
+                                                                    {privileges?.response === 'YES' && (privileges?.isevidenceRequired || privileges?.isevidenceRequired === undefined) && (
                                                                         <>
                                                                             <div className={style.marginTop}>
                                                                                 <CKEditor
@@ -271,12 +291,11 @@ const AdditionalPrivileges = ({ getIsOpen, primaryPrivilege, getSelectedPrivileg
                                                                                     }}
                                                                                 />
                                                                             </div>
-                                                                            <div className={style.marginTop10}>
+                                                                            {/* <div className={style.marginTop10}>
                                                                                 <div className={`${style.uploadButton}`}>
                                                                                     <div className={style.uploadGrid}>
                                                                                         <label for={`file-upload-dynamic-additional`} className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>
-                                                                                            Upload any supporting documents for evidence of qualification and competence
-                                                                                            {/* <div className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>Click to upload</div> */}
+                                                                                            Insert any privilege competency and qualification information
                                                                                         </label>
                                                                                         <DescriptionOutlinedIcon sx={{ color: '#787f87' }} />
 
@@ -285,6 +304,24 @@ const AdditionalPrivileges = ({ getIsOpen, primaryPrivilege, getSelectedPrivileg
                                                                                 <input id={`file-upload-dynamic-additional`} type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx"
                                                                                     onChange={(e) => { handleAdditionalRestrictedFileSelection(index, categoriesIndex, privilegesIndex, e.target.files[0], 'file') }}
                                                                                 />
+                                                                            </div> */}
+                                                                            <div className={style.marginTop10}>
+                                                                                <div className={`${style.uploadButton}`}>
+                                                                                    <div className={style.uploadGrid}>
+                                                                                        {privileges?.file !== undefined ? (
+                                                                                            <img src={VerifiedImage} alt="" className={`${style.imgIcon} ${style.cursorPointer}`} onClick={window.open(privileges?.file?.fileURL, '_blank')} />
+                                                                                        ) : (
+                                                                                            <img src={ToBeVerifiedImage} alt="" className={style.imgIcon} />
+                                                                                        )}
+                                                                                        <div className={`${style.uploadText} ${style.verticalAlignCenter}`}>
+                                                                                            Insert any privilege competency and qualification information
+                                                                                        </div>
+                                                                                        <div>
+                                                                                            <label for={`file-upload-dynamic-additional-add${privilegesIndex}`} className={` ${style.uploadTextButton} ${style.cursorPointer} ${style.verticalAlignCenter}`}>Click to upload</label>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <input id={`file-upload-dynamic-additional-add${privilegesIndex}`} type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx" onChange={(e) => { handleAdditionalRestrictedFileSelection(index, categoriesIndex, privilegesIndex, e.target.files[0], 'file') }} />
                                                                             </div>
                                                                             <br />
                                                                         </>
