@@ -94,7 +94,7 @@ const Step11 = ({ basicForm, setBasicForm, applicationId }) => {
             let temp = {
                 schemaId: basicForm?.forms?.[8]?.schemaId,
                 data: basicForm?.forms?.[8]?.data,
-                unFilledFields: metadata,
+                unFilledFields: warningFields?.map(data => data?.label),
                 acknowledged: data === "skipped" ? false : true
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[8]?.id}`, temp)
@@ -153,7 +153,7 @@ const Step11 = ({ basicForm, setBasicForm, applicationId }) => {
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-                    <div className={`${style.saveInProgress} ${style.marginTop}` } onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>

@@ -110,7 +110,7 @@ const Step4 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
             let temp = {
                 schemaId: basicForm?.forms?.[2]?.schemaId,
                 data: basicForm?.forms?.[2]?.data,
-                unFilledFields: metadata,
+                unFilledFields: warningFields?.map(data => data?.label),
                 acknowledged: data === "skipped" ? false : true
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[2]?.id}`, temp)
@@ -171,7 +171,7 @@ const Step4 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'certifications' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.certifications} gridStyle={style.licenseGrid} baseKey={'certifications'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} stepPath={`forms[2].data`} setIsEdited={getIsEdited}  warningFields={warningFields}
+                            <ApplicationFieldCard object={formSchema?.properties?.certifications} gridStyle={style.licenseGrid} baseKey={'certifications'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} stepPath={`forms[2].data`} setIsEdited={getIsEdited} warningFields={warningFields}
                             // formId={basicForm?.forms?.[2]?.id}  getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid}
                             //     heading={'Information Requirement Alert'}
                             //     subHeading={'For this application you are required to provide information on all of the different Professional licenses & Board certification you have.'}
@@ -182,7 +182,7 @@ const Step4 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-                    <div className={`${style.saveInProgress} ${style.marginTop}`}  onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()} >CONTINUE</div>
