@@ -289,13 +289,14 @@ const AdditionalPrivileges = ({ getIsOpen, primaryPrivilege, getSelectedPrivileg
                                                                                         const data = editor.getData();
                                                                                         handleAdditionalRestrictedSelection(index, categoriesIndex, privilegesIndex, data, 'notes');
                                                                                     }}
+                                                                                    placeholder="Insert any privilege competency and qualification information"
                                                                                 />
                                                                             </div>
                                                                             {/* <div className={style.marginTop10}>
                                                                                 <div className={`${style.uploadButton}`}>
                                                                                     <div className={style.uploadGrid}>
                                                                                         <label for={`file-upload-dynamic-additional`} className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>
-                                                                                            Insert any privilege competency and qualification information
+                                                                                            Upload any supporting documents for evidence of qualification and competence
                                                                                         </label>
                                                                                         <DescriptionOutlinedIcon sx={{ color: '#787f87' }} />
 
@@ -314,7 +315,7 @@ const AdditionalPrivileges = ({ getIsOpen, primaryPrivilege, getSelectedPrivileg
                                                                                             <img src={ToBeVerifiedImage} alt="" className={style.imgIcon} />
                                                                                         )}
                                                                                         <div className={`${style.uploadText} ${style.verticalAlignCenter}`}>
-                                                                                            Insert any privilege competency and qualification information
+                                                                                            Upload any supporting documents for evidence of qualification and competence
                                                                                         </div>
                                                                                         <div>
                                                                                             <label for={`file-upload-dynamic-additional-add${privilegesIndex}`} className={` ${style.uploadTextButton} ${style.cursorPointer} ${style.verticalAlignCenter}`}>Click to upload</label>

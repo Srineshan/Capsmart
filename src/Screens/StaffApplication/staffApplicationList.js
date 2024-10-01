@@ -968,21 +968,22 @@ const StaffApplicationList = ({
                                 className={style.marginLeft10}
                               >{`${status.basicDetail.applicant.name.firstName} ${status.basicDetail.applicant.name.lastName}`}</div>
                               {/* <span className={style.textStyleProgress}> ({status.providerType.serviceProviderType}) </span> */}
-                              <div
-                                className={`${style.smallTextStyle} ${style.justifyCenter}`}
-                              >
 
-                                {/* {`${status.basicDetail.applicant.startDate}`} */}
-                                {status.basicDetail.applicant.startDate
-                                  ? format(
-                                    new Date(
-                                      status.basicDetail.applicant.startDate
-                                    ),
-                                    "MMM dd, yyyy"
-                                  )
-                                  : "N/A"}
+                            </div>
+                            <div
+                              className={`${style.smallTextStyle} ${style.justifyCenter}`}
+                            >
 
-                              </div>
+                              {/* {`${status.basicDetail.applicant.startDate}`} */}
+                              {status.basicDetail.applicant.startDate
+                                ? format(
+                                  new Date(
+                                    status.basicDetail.applicant.startDate
+                                  ),
+                                  "MMM dd, yyyy"
+                                )
+                                : "N/A"}
+
                             </div>
                             {/* <p className={style.progressTopText}>
                               {" "}

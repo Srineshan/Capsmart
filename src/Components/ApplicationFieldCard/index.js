@@ -528,20 +528,10 @@ const ApplicationFieldCard = ({
             //         ErrorToaster('File Upload Failed');
             //     })
             try {
-                await POST(`application-management-service/application/${applicationId}/files`, formData)
-                    .then(response => {
-                        if (!response.ok) { // Check if the response status is not OK
-                            throw new Error('File Upload Failed');
-                        }
-                        return response.json(); // Parse the response
-                    })
-                    .then(response => {
-                        SuccessToaster('File Uploaded Successfully');
-                        return response?.data;
-                    })
-                    .catch(error => {
-                        ErrorToaster('File Upload Failed');
-                    })
+                const response = await POST(`application-management-service/application/${applicationId}/files`, formData);
+                SuccessToaster('File Uploaded Successfully');
+                console.log(response?.data);
+                return response?.data;
             } catch (error) {
                 ErrorToaster('File Upload Failed');
                 console.error(error);
@@ -1413,12 +1403,15 @@ const ApplicationFieldCard = ({
                     if (isPOD) {
                         return <div></div>;
                     } else {
+                        console.log(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`), 'filecheck')
                         return (
                             <div>
                                 <div className={`${style.uploadButton}`}>
                                     <div className={style.uploadGrid}>
                                         {getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) !== undefined ? (
-                                            <img src={VerifiedImage} alt="" className={`${style.imgIcon} ${style.cursorPointer}`} onClick={window.open(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileURL, '_blank')} />
+                                            <img src={VerifiedImage} alt="" className={`${style.imgIcon} ${style.cursorPointer}`}
+                                            //  onClick={window.open(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileURL, '_blank')}
+                                            />
                                         ) : (
                                             <img src={ToBeVerifiedImage} alt="" className={style.imgIcon} />
                                         )}

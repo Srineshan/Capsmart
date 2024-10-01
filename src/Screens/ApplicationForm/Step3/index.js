@@ -48,7 +48,7 @@ const Step3 = ({ basicForm, setBasicForm, applicationId }) => {
             temp.push(data);
         }
         setMetadata(temp);
-        console.log("tempdataaa"+ metadata)
+        console.log("tempdataaa", metadata)
     }
 
     const getAllLabels = (data) => {
@@ -58,7 +58,7 @@ const Step3 = ({ basicForm, setBasicForm, applicationId }) => {
             tempLabels.push(data);
         }
         setLabels(tempLabels);
-        console.log("tempLabelsssss"+ tempLabels)
+        console.log("tempLabelsssss", tempLabels)
     }
 
     const getIsSaveInProgressOpen = (value) => {
@@ -103,13 +103,13 @@ const Step3 = ({ basicForm, setBasicForm, applicationId }) => {
     //         unFilledFields: basicForm?.forms?.[1]?.unFilledFields,
     //         acknowledged: basicForm?.forms?.[1]?.acknowledged
     //     };
-    
+
     //     if (temp.acknowledged === true) {
     //         handleSubmitApplicationReq();
     //     } else {
     //         temp.acknowledged = true;
     //         temp.unFilledFields = metadata;
-    
+
     //             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[1]?.id}`, temp)
     //             .then(response => {
     //             console.log("Response received:", response);  // Log entire response
@@ -123,7 +123,7 @@ const Step3 = ({ basicForm, setBasicForm, applicationId }) => {
 
     //     }
     // };
-    
+
     const getMissingFields = () => {
         let missingKeys = [];
         let keyValuePair = [];
@@ -214,15 +214,15 @@ const Step3 = ({ basicForm, setBasicForm, applicationId }) => {
                             onChangeAddressLine2={() => { }} placeholderAddressLine2={'Apartment 5'} maxLengthAddressLine2={25} valueAddressLine2={''} onChangeCity={() => { }} placeholderCity={'City'} maxLengthCity={25}
                             valueCity={''} onChangeState={() => { }} placeholderState={'Province'} maxLengthState={25} valueState={''} onChangeZipcode={() => { }} placeholderZipcode={'Zipcode'} maxLengthZipcode={15} valueZipcode={''} /> */}
                         {formSchema !== undefined && 'contactAddress1' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.contactAddress1} gridStyle={style.homeMailingAddressGrid} baseKey={'contactAddress1'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} stepPath={`forms[1].data`} setIsEdited={getIsEdited}  warningFields={warningFields} />
+                            <ApplicationFieldCard object={formSchema?.properties?.contactAddress1} gridStyle={style.homeMailingAddressGrid} baseKey={'contactAddress1'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} stepPath={`forms[1].data`} setIsEdited={getIsEdited} warningFields={warningFields} />
                         )}
                         <CommonDivider />
                         {formSchema !== undefined && 'contactAddress2' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.contactAddress2} gridStyle={style.mailingAddressGrid} baseKey={'contactAddress2'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} stepPath={`forms[1].data`} setIsEdited={getIsEdited}  warningFields={warningFields} />
+                            <ApplicationFieldCard object={formSchema?.properties?.contactAddress2} gridStyle={style.mailingAddressGrid} baseKey={'contactAddress2'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} stepPath={`forms[1].data`} setIsEdited={getIsEdited} warningFields={warningFields} />
                         )}
                         <CommonDivider />
                         {formSchema !== undefined && 'contactAddress3' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.contactAddress3} gridStyle={style.businessMailingAddressGrid} baseKey={'contactAddress3'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} stepPath={`forms[1].data`} setIsEdited={getIsEdited}  warningFields={warningFields} />
+                            <ApplicationFieldCard object={formSchema?.properties?.contactAddress3} gridStyle={style.businessMailingAddressGrid} baseKey={'contactAddress3'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} stepPath={`forms[1].data`} setIsEdited={getIsEdited} warningFields={warningFields} />
                         )}
                     </div>
                 </div>
