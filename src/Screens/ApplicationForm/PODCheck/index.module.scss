@@ -747,6 +747,13 @@ body::-webkit-scrollbar {
     margin-left: 50px;
 }
 
+.marginLeft100 {
+    margin-left: 470px;
+}
+
+.marginLeft1 {
+    margin-left: -15px;
+}
 .marginLeft40 {
     margin-left: 40px !important;
 }
@@ -893,6 +900,12 @@ body::-webkit-scrollbar {
     display: grid;
     grid-template-columns: 3% 22% 15% 15% 10% 11% 11% 5%;
     grid-gap: 10px;
+}
+
+.tableTopHeaderGridStyle {
+    display: grid;
+    grid-template-columns: 70% 30%;
+    grid-gap: 1px;
 }
 
 .tableHeaderGridStyle {
@@ -3156,6 +3169,15 @@ input[type="number"] {
     width: 100%;
     border-radius: 6px;
     padding: 0 10px;
+}
+
+.tableTopHeaderStyle {
+    background: #ebe9fb 0% 0% no-repeat padding-box;
+    min-height: 48px;
+    width: 96%;
+    margin-left: 2%;
+    border: 0.400000006px solid #ebe9fb;
+    border-radius: 2px;
 }
 
 .tableHeaderStyle {

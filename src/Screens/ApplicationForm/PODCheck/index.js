@@ -62,7 +62,20 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
                                 <div className={`${style.greyDotStyle}`}></div>
                             </div>
                         </div>
-                        <div className={`${style.tableHeaderStyle} ${style.marginTop10} ${style.tableHeaderGridStyle} `}></div>
+                        <div className={`${style.tableTopHeaderStyle} ${style.marginTop10} ${style.tableTopHeaderGridStyle} `}>
+                        {/* <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                                <div className={`${style.tableHeaderTextStyle} ${style.marginLeft20}`}>POD Verification Check</div>
+                            </div> */}
+                            <div className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginLeft100}`} >
+                            <div className={form?.forms.every(item => item.acknowledged === true) ? style.greenDotStyle : style.yellowDotStyle}></div>
+                            </div>
+                            <div className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginLeft1} `} >
+                            <div className={form?.forms.every(item => item.acknowledged === true) ? style.greenDotStyle : style.yellowDotStyle}></div>
+                            </div>
+                            {/* <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                                <div className={`${style.tableHeaderTextStyle}`}>Items To Address</div>
+                            </div> */}
+                        </div>
                         <div className={`${style.tableHeaderStyle} ${style.marginTop10} ${style.tableHeaderGridStyle} `}>
                             <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                                 <div className={`${style.tableHeaderTextStyle} ${style.marginLeft20}`}>POD Verification Check</div>
@@ -126,16 +139,21 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
                                         </div>
                                         <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                                             {/* <div className={`${style.greyDotStyle} `}></div> */}
-                                            <div className={`${data?.acknowledged === true? style.greenDotStyle : style.yellowDotStyle}`}></div>
+                                            <div className={`${form?.forms[index]?.acknowledged === true? style.greenDotStyle : style.yellowDotStyle}`}></div>
                                             {/* <div className={data?.acknowledged ? style.greenDotStyle : style.yellowDotStyle}></div> */}
                                             
                                         </div>
                                         <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                                             {/* <div className={`${style.greyDotStyle} `}></div> */}
-                                            <div className={`${data?.acknowledged === true ? style.greenDotStyle : style.yellowDotStyle}`}></div>
+                                            <div className={`${form?.forms[index]?.acknowledged === true ? style.greenDotStyle : style.yellowDotStyle}`}></div>
                                         </div>
                                         <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                                             {/* <div className={`${style.greenDotStyle} `}></div> */}
+                                            {/* {form?.forms[index]?.map((data,index,labels) => {
+                                                 ({ key: data, label: labels[index] })
+                                            })} */}
+                                            {/* {form?.forms[index]?.unFilledFields} */}
+
                                         </div>
                                     </div>
                                 ))
