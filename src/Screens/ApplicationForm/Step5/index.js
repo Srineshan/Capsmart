@@ -101,7 +101,7 @@ const Step5 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
             let temp = {
                 schemaId: basicForm?.forms?.[3]?.schemaId,
                 data: basicForm?.forms?.[3]?.data,
-                unFilledFields: metadata,
+                unFilledFields: warningFields?.map(data => data?.label),
                 acknowledged: data === "skipped" ? false : true
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[3]?.id}`, temp)

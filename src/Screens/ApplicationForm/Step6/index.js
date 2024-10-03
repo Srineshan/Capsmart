@@ -96,12 +96,12 @@ const Step6 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
     }
 
 
-    const handleSubmitApplicationReq = async (data,skip) => {
+    const handleSubmitApplicationReq = async (data, skip) => {
         // if(isEdited){
         let temp = {
             schemaId: data?.forms?.[4]?.schemaId,
             data: data?.forms?.[4]?.data,
-            unFilledFields: metadata,
+            unFilledFields: warningFields?.map(data => data?.label),
             acknowledged: skip === "skipped" ? false : true
 
         }
@@ -179,7 +179,7 @@ const Step6 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                     <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10}`}  onClick={() => getMissingFields()}>CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
                     </div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
