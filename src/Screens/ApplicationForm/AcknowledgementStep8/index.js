@@ -12,6 +12,7 @@ import style from './index.module.scss';
 import CommonCheckBox from '../../../Components/CommonFields/CommonCheckBox';
 import ESign from '../../../Components/ESign';
 import { format } from 'date-fns';
+import { TextField } from "@mui/material";
 import { SuccessToaster, ErrorToaster } from '../../../utils/toaster';
 import ESignature from '../../../Components/ESignature';
 
@@ -28,13 +29,23 @@ const ApplicationAcknowledgementStep8 = ({ acknowledgementForm, dateFormat, name
     const [isEdited, setIsEdited] = useState(false);
     const [formSchema, setFormSchema] = useState();
     const [formContent, setFormContent] = useState();
+    const [checkedDisclaimer, setCheckedDisclaimer] = useState('');
     const [signText, setSignText] = useState(name + " " + currentDate);
-
+    const initialData = [
+        { id: 1, dateOfConviction: "", natureOfOffence: "", panaltyImposed: "" },
+        { id: 2, dateOfConviction: "", natureOfOffence: "", panaltyImposed: "" },
+        { id: 3, dateOfConviction: "", natureOfOffence: "", panaltyImposed: "" },
+        { id: 4, dateOfConviction: "", natureOfOffence: "", panaltyImposed: "" },
+        { id: 5, dateOfConviction: "", natureOfOffence: "", panaltyImposed: "" },
+    ];
+    const [tableData, setTableData] = useState(initialData);
     useEffect(() => {
         if (dateFormat) {
             setCurrentDate(format(new Date(), dateFormat))
         }
     }, [dateFormat])
+
+    console.log(tableData)
 
     useEffect(() => {
         if (basicForm && !formSchema) {
@@ -44,6 +55,8 @@ const ApplicationAcknowledgementStep8 = ({ acknowledgementForm, dateFormat, name
         // setEncryptedText(basicForm?.forms?.[18]?.esign?.esign)
         setSignText(basicForm?.forms?.[18]?.acknowledged ? basicForm?.forms?.[18]?.esign?.esign : '');
         setIsSigned((basicForm?.forms?.[18]?.esign?.esign !== undefined && basicForm?.forms?.[18]?.acknowledged) ? true : false);
+        setTableData(basicForm?.forms?.[18]?.data !== null ? basicForm?.forms?.[18]?.data?.tableData : initialData)
+        setCheckedDisclaimer(basicForm?.forms?.[18]?.data !== null ? basicForm?.forms?.[18]?.data?.checkedDisclaimer : checkedDisclaimer)
         // setDecryptedText(CryptoJS.AES.decrypt(basicForm?.forms?.[18]?.esign?.esign, publicKey).toString(CryptoJS.enc.Utf8))
     }, [basicForm])
 
@@ -61,6 +74,17 @@ const ApplicationAcknowledgementStep8 = ({ acknowledgementForm, dateFormat, name
             setFormSchema(form)
         }
     }
+
+    const handleInputChange = (e, rowId, fieldName) => {
+        const newValue = e.target.value;
+        const updatedData = tableData.map((row) => {
+            if (row.id === rowId) {
+                return { ...row, [fieldName]: newValue };
+            }
+            return row;
+        });
+        setTableData(updatedData);
+    };
 
     const getRenderedContent = async () => {
         const { data: content } = await GET(
@@ -139,7 +163,7 @@ const ApplicationAcknowledgementStep8 = ({ acknowledgementForm, dateFormat, name
         if (isSigned) {
             let temp = {
                 schemaId: basicForm?.forms?.[18]?.schemaId,
-                data: !isEdited ? basicForm?.forms?.[18]?.data : { esignDate: isChecked ? name + " " + currentDate : '' },
+                data: !isEdited ? basicForm?.forms?.[18]?.data : { esignDate: isChecked ? name + " " + currentDate : '', checkedDisclaimer: checkedDisclaimer, tableData: tableData },
                 acknowledged: isChecked,
                 esign: { esign: isChecked ? encryptedText : '', name: isChecked ? name : '', signedDate: isChecked ? currentDate : '' }
             }
@@ -178,6 +202,8 @@ const ApplicationAcknowledgementStep8 = ({ acknowledgementForm, dateFormat, name
         }
     }
 
+    console.log(formContent)
+
     return (
         <div>
             <div className={style.applicationScreenGrid}>
@@ -205,13 +231,63 @@ const ApplicationAcknowledgementStep8 = ({ acknowledgementForm, dateFormat, name
                         )}
                         {formContent?.disclaimer !== null && formContent?.disclaimer?.content !== null && (
                             <div className={`${style.checkGrid} ${style.marginTop}`}>
-                                <CommonCheckBox checked={isChecked} onChange={(e) => handleIsChecked(e.target.checked)} />
+                                <CommonCheckBox checked={isChecked && checkedDisclaimer === 'disclaimer'} onChange={(e) => { handleIsChecked(e.target.checked); setCheckedDisclaimer('disclaimer') }} bigCheckbox={true} />
                                 <div
                                     className={`${style.leftAlign} ${style.marginTop10} ${style.descriptionStyle}`}
                                     dangerouslySetInnerHTML={{ __html: formContent?.disclaimer?.content }}
                                 />
                             </div>
                         )}
+
+                        <div className={`${style.descriptionStyle} ${style.justifyCenter} ${style.marginTop}`}>OR</div>
+
+                        {formSchema?.disclaimer1 !== null && formSchema?.disclaimer1?.content !== null && (
+                            <div className={`${style.checkGrid} ${style.marginTop}`}>
+                                <CommonCheckBox checked={isChecked && checkedDisclaimer === 'disclaimer1'} onChange={(e) => { handleIsChecked(e.target.checked); setCheckedDisclaimer('disclaimer1') }} bigCheckbox={true} />
+                                <div
+                                    className={`${style.leftAlign} ${style.marginTop10} ${style.descriptionStyle}`}
+                                    dangerouslySetInnerHTML={{ __html: formSchema?.disclaimer1?.content }}
+                                />
+                            </div>
+                        )}
+                        <div className={style.justifyCenter}>
+                            <table cellPadding="10" >
+                                <thead>
+                                    <tr>
+                                        <th>Date Of Conviction</th>
+                                        <th>Nature Of Offence</th>
+                                        <th>Penalty Imposed</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {tableData?.map((row) => (
+                                        <tr key={row.id}>
+                                            <td>
+                                                <TextField
+                                                    variant="outlined"
+                                                    value={row.dateOfConviction}
+                                                    onChange={(e) => { handleInputChange(e, row.id, "dateOfConviction"); setIsEdited(true) }}
+                                                />
+                                            </td>
+                                            <td>
+                                                <TextField
+                                                    variant="outlined"
+                                                    value={row.natureOfOffence}
+                                                    onChange={(e) => { handleInputChange(e, row.id, "natureOfOffence"); setIsEdited(true) }}
+                                                />
+                                            </td>
+                                            <td>
+                                                <TextField
+                                                    variant="outlined"
+                                                    value={row.panaltyImposed}
+                                                    onChange={(e) => { handleInputChange(e, row.id, "panaltyImposed"); setIsEdited(true) }}
+                                                />
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                         {formSchema?.esignatureRequired && (
                             <div className={style.twoCol}>
                                 <div onClick={isChecked ? () => { setIsSigned(!isSigned); setIsEdited(true) } : () => { }} className={!isChecked ? style.disabled : ''}>

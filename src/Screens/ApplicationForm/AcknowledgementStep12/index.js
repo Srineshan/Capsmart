@@ -16,7 +16,7 @@ import { SuccessToaster, ErrorToaster } from '../../../utils/toaster';
 import ESignature from '../../../Components/ESignature';
 
 const ApplicationAcknowledgementStep12 = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApplication, applicationId }) => {
-    const [isChecked, setIsChecked] = useState(false);
+    const [isChecked, setIsChecked] = useState(true);
     const navigate = useNavigate()
     const targetRef = useRef();
     const [isSigned, setIsSigned] = useState(false);
@@ -40,7 +40,7 @@ const ApplicationAcknowledgementStep12 = ({ acknowledgementForm, dateFormat, nam
         if (basicForm && !formSchema) {
             getFormSchema()
         }
-        setIsChecked(basicForm?.forms?.[19]?.acknowledged);
+        // setIsChecked(basicForm?.forms?.[19]?.acknowledged);
         // setEncryptedText(basicForm?.forms?.[19]?.esign?.esign)
         setSignText(basicForm?.forms?.[19]?.acknowledged ? basicForm?.forms?.[19]?.esign?.esign : '');
         setIsSigned((basicForm?.forms?.[19]?.esign?.esign !== undefined && basicForm?.forms?.[19]?.acknowledged) ? true : false);
@@ -197,7 +197,7 @@ const ApplicationAcknowledgementStep12 = ({ acknowledgementForm, dateFormat, nam
                         )}
                         {formContent?.disclaimer !== null && formContent?.disclaimer?.content !== null && (
                             <div className={`${style.checkGrid} ${style.marginTop}`}>
-                                <CommonCheckBox checked={isChecked} onChange={(e) => handleIsChecked(e.target.checked)} />
+                                <CommonCheckBox checked={isChecked} onChange={(e) => handleIsChecked(e.target.checked)} bigCheckbox={true} />
                                 <div
                                     className={`${style.leftAlign} ${style.marginTop10} ${style.descriptionStyle}`}
                                     dangerouslySetInnerHTML={{ __html: formContent?.disclaimer?.content }}
@@ -222,6 +222,10 @@ const ApplicationAcknowledgementStep12 = ({ acknowledgementForm, dateFormat, nam
                                 </div>
                             </div>
                         )}
+                        <div
+                            className={`${style.leftAlign} ${style.marginTop} ${style.descriptionStyle}`}
+                            dangerouslySetInnerHTML={{ __html: formSchema?.content1?.content }}
+                        />
                     </div>
                 </div>
                 <div>

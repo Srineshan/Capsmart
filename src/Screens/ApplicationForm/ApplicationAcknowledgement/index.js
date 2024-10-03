@@ -15,12 +15,13 @@ import WelcomeCard from '../../../Components/WelcomeCard';
 import style from './index.module.scss';
 import AIAssistantDialog from '../../../Components/AIAssistantDialog';
 import ApplicationHeader from '../../../Components/ApplicationHeader';
+import ApplicationSubmitDialog from '../../../Components/ApplicationSubmitDialog';
 
 const Acknowledgement = ({ basicForm, setBasicForm, applicationId }) => {
     const [form, setForm] = useState();
     const [form2, setForm2] = useState();
     const navigate = useNavigate()
-    const [isOpen, setIsOpen] = useState(true);
+    const [isOpen, setIsOpen] = useState(false);
 
     const id = sessionStorage.getItem('applicationId');
 
@@ -49,6 +50,7 @@ const Acknowledgement = ({ basicForm, setBasicForm, applicationId }) => {
             .then(response => {
                 console.log(response)
                 SuccessToaster("Application Submitted Successfully");
+                setIsOpen(true);
             })
             .catch((error) => {
                 console.log(error)
@@ -155,9 +157,9 @@ const Acknowledgement = ({ basicForm, setBasicForm, applicationId }) => {
                             <ApplicationReferenceDocuments />
                         </div> */}
                     </div>
-                    {/* {isOpen && (
-                <AIAssistantDialog getIsOpen={getIsOpen} />
-            )} */}
+                    {isOpen && (
+                        <ApplicationSubmitDialog getIsOpen={getIsOpen} />
+                    )}
                 </div>
             </div>
         </div >

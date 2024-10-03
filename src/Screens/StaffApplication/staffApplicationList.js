@@ -431,12 +431,12 @@ const StaffApplicationList = ({
         data?.status === "REVIEW_INPROGRESS"
           ? "yellow"
           : data?.status === "APPROVED"
-          ? "green"
-          : "grey"
+            ? "green"
+            : "grey"
       );
       applicantName.push(
         `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
-          ""
+        ""
       );
       applicantId.push(data?.displayId);
       applicantType.push(data?.providerType?.serviceProviderType);
@@ -545,12 +545,12 @@ const StaffApplicationList = ({
         data?.status === "REVIEW_INPROGRESS"
           ? "yellow"
           : data?.status === "APPROVED"
-          ? "green"
-          : "grey"
+            ? "green"
+            : "grey"
       );
       applicantName.push(
         `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
-          ""
+        ""
       );
       applicantType.push(data?.providerType.serviceProviderType);
       applicantId.push(data?.displayId);
@@ -655,7 +655,7 @@ const StaffApplicationList = ({
     tableData?.map((data) => {
       applicantName.push(
         `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
-          ""
+        ""
       );
       applicantId.push(data?.displayId);
       applicantType.push(data?.providerType?.serviceProviderType);
@@ -733,7 +733,7 @@ const StaffApplicationList = ({
     tableData?.map((data) => {
       applicantName.push(
         `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
-          ""
+        ""
       );
       applicantId.push(data?.displayId);
       applicantType.push(data?.providerType.serviceProviderType);
@@ -794,7 +794,7 @@ const StaffApplicationList = ({
       dot.push(data?.subStatus || "green");
       applicantName.push(
         `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
-          ""
+        ""
       );
       applicantType.push(data?.providerType.serviceProviderType);
       clarificationTitle.push(data?.title);
@@ -843,12 +843,12 @@ const StaffApplicationList = ({
         data?.status === "REVIEW_INPROGRESS"
           ? "yellow"
           : data?.status === "APPROVED"
-          ? "green"
-          : "grey"
+            ? "green"
+            : "grey"
       );
       applicantName.push(
         `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
-          ""
+        ""
       );
       applicantId.push(data?.applicant?.id);
       applicantType.push(data?.providerType.serviceProviderType);
@@ -940,7 +940,7 @@ const StaffApplicationList = ({
       dot.push(data?.subStatus);
       applicantName.push(
         `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
-          ""
+        ""
       );
       applicantType.push(data?.providerType.serviceProviderType);
       approvedNotes.push(data?.approvedNotes);
@@ -1109,7 +1109,7 @@ const StaffApplicationList = ({
     {
       data: "Send follow up disclosures",
       requiredValue: "boolean",
-      onClick: () => {},
+      onClick: () => { },
     },
   ];
 
@@ -1120,79 +1120,79 @@ const StaffApplicationList = ({
   };
 
   let tableHeaderValues =
-    selectedTab === "chiefOfStaff"
+    selectedTab === "applicantsToProcess"
       ? applicantHeaderValues
       : selectedTab === "level-1"
-      ? applicationHeaderValues
-      : selectedTab === "mac"
-      ? macHeaderValues
-      : selectedTab === "bod"
-      ? bodHeaderValues
-      : selectedTab === "clarifications"
-      ? clarificationHeaderValues
-      : selectedTab === "rejected"
-      ? rejectedHeaderValues
-      : approvedHeaderValues;
+        ? applicationHeaderValues
+        : selectedTab === "mac"
+          ? macHeaderValues
+          : selectedTab === "bod"
+            ? bodHeaderValues
+            : selectedTab === "clarifications"
+              ? clarificationHeaderValues
+              : selectedTab === "rejected"
+                ? rejectedHeaderValues
+                : approvedHeaderValues;
   // :clarificationHeaderValues;
   let tableSortValues =
-    selectedTab === "chiefOfStaff"
+    selectedTab === "applicantsToProcess"
       ? applicantColSortValues
       : selectedTab === "level-1"
-      ? applicationColSortValues
-      : selectedTab === "mac"
-      ? macColSortValues
-      : selectedTab === "bod"
-      ? bodColSortValues
-      : selectedTab === "clarifications"
-      ? clarificationColSortValues
-      : selectedTab === "rejected"
-      ? rejectedColSortValues
-      : approvedColSortValues;
+        ? applicationColSortValues
+        : selectedTab === "mac"
+          ? macColSortValues
+          : selectedTab === "bod"
+            ? bodColSortValues
+            : selectedTab === "clarifications"
+              ? clarificationColSortValues
+              : selectedTab === "rejected"
+                ? rejectedColSortValues
+                : approvedColSortValues;
   // : clarificationColSortValues;
   let tableDataValues =
-    selectedTab === "chiefOfStaff"
+    selectedTab === "applicantsToProcess"
       ? getApplicantValues()
       : selectedTab === "level-1"
-      ? getApplicationValues()
-      : selectedTab === "mac"
-      ? getMacValues()
-      : selectedTab === "bod"
-      ? getBodValues()
-      : selectedTab === "clarifications"
-      ? getClarificationValues()
-      : selectedTab === "rejected"
-      ? getRejectedValues()
-      : getApprovedValues();
+        ? getApplicationValues()
+        : selectedTab === "mac"
+          ? getMacValues()
+          : selectedTab === "bod"
+            ? getBodValues()
+            : selectedTab === "clarifications"
+              ? getClarificationValues()
+              : selectedTab === "rejected"
+                ? getRejectedValues()
+                : getApprovedValues();
   // : getClarificationValues();
   let actions =
-    selectedTab === "chiefOfStaff"
+    selectedTab === "applicantsToProcess"
       ? applicantActionsData
       : selectedTab === "level-1"
-      ? applicationActionsData
-      : selectedTab === "mac"
-      ? macActionsData
-      : selectedTab === "bod"
-      ? bodActionsData
-      : selectedTab === "clarifications"
-      ? clarificationActionsData
-      : selectedTab === "rejected"
-      ? rejectedActionsData
-      : approvedActionsData;
+        ? applicationActionsData
+        : selectedTab === "mac"
+          ? macActionsData
+          : selectedTab === "bod"
+            ? bodActionsData
+            : selectedTab === "clarifications"
+              ? clarificationActionsData
+              : selectedTab === "rejected"
+                ? rejectedActionsData
+                : approvedActionsData;
   // : clarificationActionsData;
   let gridStyle =
-    selectedTab === "chiefOfStaff"
+    selectedTab === "applicantsToProcess"
       ? style.applicantStaffGrid
       : selectedTab === "level-1"
-      ? style.applicationStaffGrid
-      : selectedTab === "mac"
-      ? style.macStaffGrid
-      : selectedTab === "bod"
-      ? style.bodStaffGrid
-      : selectedTab === "clarifications"
-      ? style.clarificationStaffGrid
-      : selectedTab === "rejected"
-      ? style.rejectedStaffGrid
-      : style.approvedStaffGrid;
+        ? style.applicationStaffGrid
+        : selectedTab === "mac"
+          ? style.macStaffGrid
+          : selectedTab === "bod"
+            ? style.bodStaffGrid
+            : selectedTab === "clarifications"
+              ? style.clarificationStaffGrid
+              : selectedTab === "rejected"
+                ? style.rejectedStaffGrid
+                : style.approvedStaffGrid;
   // :style.clarificationStaffGrid;
 
   return (
@@ -1339,11 +1339,11 @@ const StaffApplicationList = ({
                               {/* {`${status.basicDetail.applicant.startDate}`} */}
                               {status.basicDetail.applicant.startDate
                                 ? format(
-                                    new Date(
-                                      status.basicDetail.applicant.startDate
-                                    ),
-                                    "MMM dd, yyyy"
-                                  )
+                                  new Date(
+                                    status.basicDetail.applicant.startDate
+                                  ),
+                                  "MMM dd, yyyy"
+                                )
                                 : "N/A"}
                             </div>
                             {/* <p className={style.progressTopText}>
@@ -1465,9 +1465,8 @@ const StaffApplicationList = ({
 
             <div className={`${style.spaceBetween} ${style.marginLeft} `}>
               <div
-                className={`${isPrintClicked && style.addStyle} ${
-                  style.alignCenter
-                } ${style.cursorPointer} ${style.marginRight20}`}
+                className={`${isPrintClicked && style.addStyle} ${style.alignCenter
+                  } ${style.cursorPointer} ${style.marginRight20}`}
               >
                 <SearchOutlinedIcon
                   sx={{
@@ -1477,9 +1476,8 @@ const StaffApplicationList = ({
                 />
               </div>
               <div
-                className={`${isPrintClicked && style.addStyle} ${
-                  style.alignCenter
-                } ${style.cursorPointer} ${style.marginRight}`}
+                className={`${isPrintClicked && style.addStyle} ${style.alignCenter
+                  } ${style.cursorPointer} ${style.marginRight}`}
               >
                 <PrintOutlinedIcon
                   sx={{
@@ -1514,7 +1512,7 @@ const StaffApplicationList = ({
                     scrollStyle={style.contractScrollStyle}
                     tableSortValues={tableSortValues}
                     heading={"There are no Record for you to manage"}
-                    onClickFunction={() => {}}
+                    onClickFunction={() => { }}
                   />
                 </div>
               </div>

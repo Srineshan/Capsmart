@@ -310,7 +310,7 @@ const AdditionalPrivileges = ({ getIsOpen, primaryPrivilege, getSelectedPrivileg
                                                                                 <div className={`${style.uploadButton}`}>
                                                                                     <div className={style.uploadGrid}>
                                                                                         {privileges?.file !== undefined ? (
-                                                                                            <img src={VerifiedImage} alt="" className={`${style.imgIcon} ${style.cursorPointer}`} onClick={window.open(privileges?.file?.fileURL, '_blank')} />
+                                                                                            <img src={VerifiedImage} alt="" className={`${style.imgIcon} ${style.cursorPointer}`} />
                                                                                         ) : (
                                                                                             <img src={ToBeVerifiedImage} alt="" className={style.imgIcon} />
                                                                                         )}

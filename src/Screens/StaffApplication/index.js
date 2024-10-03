@@ -4,7 +4,7 @@ import StaffApplicationList from './staffApplicationList';
 import NewActiveApplication from './newActiveApplication';
 
 const StaffApplication = () => {
-    const [selectedTab, setSelectedTab] = useState('chiefOfStaff');
+    const [selectedTab, setSelectedTab] = useState('applicantsToProcess');
     const [activeApplicationView, setActiveApplicationView] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 

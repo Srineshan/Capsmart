@@ -99,21 +99,14 @@ const Step10 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =
         let temp = {
             schemaId: data?.forms?.[7]?.schemaId,
             data: data?.forms?.[7]?.data,
-            unFilledFields: warningFields?.map(data => data?.label),
-            acknowledged: data === "skipped" ? false : true
+            // unFilledFields: warningFields?.map(data => data?.label),
+            // acknowledged: data === "skipped" ? false : true
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[7]?.id}`, temp)
             .then(response => {
                 console.log(response)
                 SuccessToaster("Application Updated Successfully");
                 getPreApplication();
-                if (sessionStorage.getItem('fromSummary') === "true") {
-                    navigate(-1);
-                }
-                else {
-                    navigate('/applicationForm/section1/step11')
-
-                }
             })
             .catch((error) => {
                 console.log(error)
@@ -159,7 +152,7 @@ const Step10 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =
                     <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
                     </div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />

@@ -44,9 +44,9 @@
     box-shadow: 0px 5px 20px #52575D4D;
     border-radius: 20px;
     border: 0.4000000059604645px solid #e5e6e6;
-    padding: 10px 20px 20px 20px;
-    max-height: calc(100vh - 250px);
-    overflow: scroll;
+    padding: 50px;
+    // max-height: calc(100vh - 250px);
+    // overflow: scroll;
 }
 
 .twoCol {
@@ -137,7 +137,7 @@
 
 .descriptionStyle {
     text-align: left;
-    font: normal normal bold 15px/23px proxima-nova;
+    font: normal normal normal 15px/23px proxima-nova;
     letter-spacing: 0px;
     color: #52575D;
 }
@@ -151,7 +151,7 @@
 
 .checkGrid {
     display: grid;
-    grid-template-columns: 30px 1fr;
+    grid-template-columns: 60px 1fr;
 }
 
 .pdfStyle {

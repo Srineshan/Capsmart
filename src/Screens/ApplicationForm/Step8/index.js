@@ -67,13 +67,11 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
         if (basicForm && !formSchema) {
             getFormSchema()
         }
-        if (basicForm?.privileges) {
-            if (basicForm?.privileges?.obligatedPrivileges?.[0]?.id) {
-                setSelectedPrivilege(basicForm?.privileges?.obligatedPrivileges?.[0]?.id)
-            }
-            setSelectedAdditionalPrivilegeForDisplay(basicForm?.privileges?.additionalPrivileges)
-            setSelectedPrivilegeForDisplay(basicForm?.privileges?.obligatedPrivileges)
+        if (basicForm?.privileges?.obligatedPrivileges?.[0]?.id) {
+            setSelectedPrivilege(basicForm?.privileges?.obligatedPrivileges?.[0]?.id)
         }
+        setSelectedAdditionalPrivilegeForDisplay(basicForm?.privileges?.additionalPrivileges)
+        setSelectedPrivilegeForDisplay(basicForm?.privileges?.obligatedPrivileges)
     }, [basicForm])
 
     const getSelectedPrivilegeList = (value) => {
@@ -102,12 +100,12 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
 
     const getStaffPrivilege = async () => {
         if (applicationData) {
-            // const { data: privilege } = await GET(
-            //     `entity-service/staffPrivilege?department=${applicationData?.basicDetailReferences?.department?.id}`
-            // );
             const { data: privilege } = await GET(
-                `entity-service/staffPrivilege`
+                `entity-service/staffPrivilege?department=${applicationData?.basicDetailReferences?.department?.id}`
             );
+            // const { data: privilege } = await GET(
+            //     `entity-service/staffPrivilege`
+            // );
             setStaffPrivilege(privilege);
         }
     }

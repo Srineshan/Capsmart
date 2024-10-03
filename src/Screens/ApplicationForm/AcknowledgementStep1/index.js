@@ -188,7 +188,7 @@ const ApplicationAcknowledgementStep1 = ({ acknowledgementForm, dateFormat, name
                         )}
                         <div className={`${style.checkGrid} ${style.marginTop}`}>
                             {formContent?.disclaimer?.content !== null && (
-                                <CommonCheckBox checked={isChecked} onChange={(e) => handleIsChecked(e.target.checked)} />
+                                <CommonCheckBox checked={isChecked} onChange={(e) => handleIsChecked(e.target.checked)} bigCheckbox={true} />
                             )}
                             <div
                                 className={`${style.leftAlign} ${style.marginTop10}`}

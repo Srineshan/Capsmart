@@ -206,7 +206,7 @@ const ApplicationAcknowledgementStep7 = ({ acknowledgementForm, dateFormat, name
                         )}
                         {formContent?.disclaimer !== null && formContent?.disclaimer?.content !== null && (
                             <div className={`${style.checkGrid} ${style.marginTop}`}>
-                                <CommonCheckBox checked={isChecked} onChange={(e) => handleIsChecked(e.target.checked)} />
+                                <CommonCheckBox checked={isChecked} onChange={(e) => handleIsChecked(e.target.checked)} bigCheckbox={true} />
                                 <div
                                     className={`${style.leftAlign} ${style.marginTop10} ${style.descriptionStyle}`}
                                     dangerouslySetInnerHTML={{ __html: formContent?.disclaimer?.content }}

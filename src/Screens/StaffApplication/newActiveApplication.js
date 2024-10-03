@@ -19,6 +19,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import DataStatusIcon from './../../images/dqStatus.png';
 import DocumentIcon from '../../images/document.png';
 import EditBlue from "../../images/editBlue.png";
+import CryptoJS from 'crypto-js';
 import OutGoing from "../../images/Outgoing.png";
 import { format } from 'date-fns';
 import Popover from '@mui/material/Popover';
@@ -27,6 +28,7 @@ import ApplicationDecline from "./applicationDeclineDialog";
 import ApplicationHeader from '../../Components/ApplicationHeader';
 import ApplicationFieldCard from '../../Components/ApplicationFieldCard';
 import CommonDivider from '../../Components/CommonFields/CommonDivider';
+import ESignature from "../../Components/ESignature";
 
 
 const NewActiveApplication = ({
@@ -94,9 +96,20 @@ const NewActiveApplication = ({
   const [selectedRow, setSelectedRow] = useState();
   const [selectedRowTableName, setSelectedRowTableName] = useState();
   const [selectedFormId, setSelectedFormId] = useState();
+  const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
+  let user = sessionStorage.getItem('user') !== undefined ? JSON.parse(sessionStorage.getItem('user')) : {};
+  const publicKey = "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
+  const [encryptedText, setEncryptedText] = useState(CryptoJS.AES.encrypt(`${user?.name?.firstName} ${user?.name?.lastName}` + new Date().toISOString(), publicKey).toString());
+  const [currentDate, setCurrentDate] = useState();
   useEffect(() => {
     getPreApplication();
   }, [])
+
+  useEffect(() => {
+    if (canadaData) {
+      setCurrentDate(format(new Date(), canadaData?.dateFormat || 'dd/MM/yyyy'))
+    }
+  }, [canadaData])
 
   const [providerDetails, setProviderDetails] = useState();
   const [prevContractData, setPrevContractData] = useState();
@@ -303,6 +316,30 @@ const NewActiveApplication = ({
         console.log(error)
       });
     getPreApplication();
+  }
+
+  const handleStaffEsign = async (formId) => {
+    console.log('entered')
+    let index = form?.forms?.findIndex(row => row?.id === formId);
+    console.log('entered', index, formId, form)
+    let tempData = form?.forms?.[index]?.staffEsign === null ? { name: `${user?.name?.firstName} ${user?.name?.lastName}`, esign: encryptedText, signedDate: currentDate } : form?.forms?.[index]?.staffEsign;
+    let temp = {
+      schemaId: formSchemaId,
+      data: form?.forms?.[index]?.data,
+      acknowledged: form?.forms?.[index]?.acknowledged,
+      esign: form?.forms?.[index]?.esign,
+      staffEsign: tempData
+    }
+    console.log('entered', tempData, index, formId)
+    await PUT(`application-management-service/application/${applicationId}/form/${formId}`, temp)
+      .then(response => {
+        getPreApplication()
+        SuccessToaster("Signed Successfully");
+      })
+      .catch((error) => {
+        console.log(error)
+        ErrorToaster("Unexpected Error");
+      });
   }
 
   const handleDocVerify = async (rowId) => {
@@ -1091,7 +1128,27 @@ const NewActiveApplication = ({
                     {expandAcknowledgement?.status && expandAcknowledgement?.index === index &&
                       <div className={`${style.marginTop} ${style.screenPadding}`}>
                         {form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles?.length !== 0 && (
-                          <iframe src={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles[form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles?.length - 1]?.fileURL} width="100%" height="600px"></iframe>
+                          <>
+                            <iframe src={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles[form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles?.length - 1]?.fileURL} width="100%" height="600px"></iframe>
+                            {(data?.description === 'Statement of Confidentiality and Non-Disclosure' || data?.description === 'Conflict Of Interest Policy') && (
+                              <div className={style.grid2}>
+                                <div onClick={form?.forms[index]?.staffEsign === null ? () => handleStaffEsign(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.id) : () => { }} >
+                                  <ESignature
+                                    userName={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.name : ""}
+                                    encData={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.esign : ''}
+                                    showData={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? true : false}
+                                    showDatais={true}
+                                  />
+                                </div>
+                                <div className={style.verticalAlignCenter}>
+                                  <div className={style.displayInRow}>
+                                    <div className={style.dateTitle}>Date: </div>
+                                    <div className={`${style.date} ${style.marginLeft}`}>{form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? format(new Date(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.signedDate), canadaData?.dateFormat || 'dd/MM/yyyy') : ""}</div>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </>
                         )}
                       </div>
                     }
