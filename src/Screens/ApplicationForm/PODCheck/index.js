@@ -153,6 +153,11 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
                                                  ({ key: data, label: labels[index] })
                                             })} */}
                                             {/* {form?.forms[index]?.unFilledFields} */}
+                                            {form?.forms[index]?.unFilledFields?.map((field, fieldIndex) => (
+                                        <div key={fieldIndex} >
+                                            {field}
+                                        </div>
+                                    ))}
 
                                         </div>
                                     </div>

@@ -3,7 +3,7 @@ import TileApplication from '../../Components/TileApplication';
 import style from './index.module.scss';
 import { GET } from './../../Screens/dataSaver';
 
-const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
+const StaffApplicationTiles = ({ getSelectedTab }) => {
   const [counts, setCounts] = useState({
     chiefOfStaff: 0,
     credentialingCommittee: 0,
@@ -11,6 +11,8 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
     bod: 0
   });
 
+  const [selectedTab, setSelectedTab] = useState('chiefOfStaff');
+  
   const getTitleCounts = async () => {
     await GET('application-management-service/application/workflowUser/meta')
       .then(response => {
@@ -27,14 +29,21 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
     getTitleCounts();
   }, []);
 
+  const handleTileClick = (tile) => {
+    setSelectedTab(tile);
+    if (getSelectedTab) {
+      getSelectedTab(tile);
+    }
+  };
+
   return (
     <div className={`${style.tabs}`}>
-      <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Applicants to Verify" tileCount={counts.chiefOfStaff} currentTile="chiefOfStaff" />
-      <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Cred. Comm." tileCount={counts['level-1']} currentTile="level-1" />
-      <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="MAC" tileCount={counts.mac} currentTile="mac" />
-      <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="BOD" tileCount={counts.bod} currentTile="bod" />
-      <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Clarifications" tileCount={counts.clarificationsRequired} currentTile="clarificationsRequired" />
-      <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Rejected/Declined" tileCount={counts.rejected} currentTile="rejected" />
+      <TileApplication selectedTab={selectedTab} getSelectedTab={handleTileClick} tileLabel="Applicants to Verify" tileCount={counts.chiefOfStaff} currentTile="chiefOfStaff" />
+      <TileApplication selectedTab={selectedTab} getSelectedTab={handleTileClick} tileLabel="Cred. Comm." tileCount={counts['level-1']} currentTile="level-1" />
+      <TileApplication selectedTab={selectedTab} getSelectedTab={handleTileClick} tileLabel="MAC" tileCount={counts.mac} currentTile="mac" />
+      <TileApplication selectedTab={selectedTab} getSelectedTab={handleTileClick} tileLabel="BOD" tileCount={counts.bod} currentTile="bod" />
+      <TileApplication selectedTab={selectedTab} getSelectedTab={handleTileClick} tileLabel="Clarifications" tileCount={counts.clarificationsRequired} currentTile="clarificationsRequired" />
+      <TileApplication selectedTab={selectedTab} getSelectedTab={handleTileClick} tileLabel="Rejected/Declined" tileCount={counts.rejected} currentTile="rejected" />
     </div>
   )
 }
