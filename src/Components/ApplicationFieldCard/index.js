@@ -1206,12 +1206,12 @@ const ApplicationFieldCard = ({
                                                 ? true
                                                 : false
                                         }
-                                        style={
-                                            warningFields?.map(data => data?.key)?.includes(`${basicpath}.${baseKey}.${fieldKey}`)
-                                                && (value === '' || value === null || value === undefined)
-                                                ? { border: '2px solid #cc0000', borderRadius: '5px' }
-                                                : {}
-                                        }
+                                        // style={
+                                        //     warningFields?.map(data => data?.key)?.includes(`${basicpath}.${baseKey}.${fieldKey}`)
+                                        //         && (value === '' || value === null || value === undefined)
+                                        //         ? { border: '2px solid #cc0000', borderRadius: '5px' }
+                                        //         : {}
+                                        // }
                                     />
                                 )}
                                 label={fieldData.label}

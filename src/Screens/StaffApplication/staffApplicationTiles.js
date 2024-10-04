@@ -3,13 +3,15 @@ import TileApplication from '../../Components/TileApplication';
 import style from './index.module.scss';
 import { GET } from './../../Screens/dataSaver';
 
-const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
+const StaffApplicationTiles = ({ getSelectedTab }) => {
   const [counts, setCounts] = useState({
     chiefOfStaff: 0,
     credentialingCommittee: 0,
     mac: 0,
     bod: 0
   });
+
+  const [selectedTab, setSelectedTab] = useState('chiefOfStaff');
 
   const getTitleCounts = async () => {
     await GET('application-management-service/application/workflowUser/meta')
@@ -26,6 +28,13 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
   useEffect(() => {
     getTitleCounts();
   }, []);
+
+  const handleTileClick = (tile) => {
+    setSelectedTab(tile);
+    if (getSelectedTab) {
+      getSelectedTab(tile);
+    }
+  };
 
   return (
     <div className={`${style.tabs}`}>
