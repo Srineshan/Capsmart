@@ -289,7 +289,18 @@ const AdditionalPrivileges = ({ getIsOpen, primaryPrivilege, getSelectedPrivileg
                                                                                         const data = editor.getData();
                                                                                         handleAdditionalRestrictedSelection(index, categoriesIndex, privilegesIndex, data, 'notes');
                                                                                     }}
-                                                                                    placeholder="Insert any privilege competency and qualification information"
+                                                                                    onReady={(editor) => {
+                                                                                        editor.editing.view.change((writer) => {
+                                                                                            writer.setStyle(
+                                                                                                "height",
+                                                                                                "150px",
+                                                                                                editor.editing.view.document.getRoot()
+                                                                                            );
+                                                                                        });
+                                                                                    }}
+                                                                                    config={{
+                                                                                        placeholder: 'Insert any privilege competency and qualification information...',
+                                                                                    }}
                                                                                 />
                                                                             </div>
                                                                             {/* <div className={style.marginTop10}>

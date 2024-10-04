@@ -232,7 +232,7 @@ const ApplicationAcknowledgementStep5 = ({ acknowledgementForm, dateFormat, name
                                 <div className={style.verticalAlignCenter}>
                                     <div className={style.displayInRow}>
                                         <div className={style.dateTitle}>Date: </div>
-                                        <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? currentDate : ""}</div>
+                                        <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? (basicForm?.forms?.[14]?.esign?.signedDate !== '' && basicForm?.forms?.[14]?.esign?.signedDate !== undefined) ? basicForm?.forms?.[14]?.esign?.signedDate : currentDate : ""}</div>
                                     </div>
                                 </div>
                             </div>

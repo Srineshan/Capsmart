@@ -666,8 +666,13 @@ const ApplicationFieldCard = ({
                 getAllPath &&
                 getAllLabels
             ) {
-                getAllPath(`${basicpath}.${baseKey}.${fieldKey}`);
-                getAllLabels(fieldData.label);
+                if (baseKey === 'contactAddress1' || baseKey === 'contactAddress2' || baseKey === 'contactAddress3') {
+                    getAllPath(`${basicpath}.${baseKey}.${fieldKey}`);
+                    getAllLabels({ label: fieldData.label, path: `${basicpath}.${baseKey}.${fieldKey}` });
+                } else {
+                    getAllPath(`${basicpath}.${baseKey}.${fieldKey}`);
+                    getAllLabels(fieldData.label);
+                }
             }
             switch (fieldData.fieldType) {
                 case "dropdown":
@@ -1020,11 +1025,23 @@ const ApplicationFieldCard = ({
                                             getValueByPath(
                                                 basicForm,
                                                 `${basicpath}.${baseKey}.${fieldKey}`
-                                            ) || null
+                                            ) || ''
                                         }
                                         onChange={(event, editor) => {
                                             const data = editor.getData();
                                             handleChange(fieldKey, data, baseKey);
+                                        }}
+                                        onReady={(editor) => {
+                                            editor.editing.view.change((writer) => {
+                                                writer.setStyle(
+                                                    "height",
+                                                    "150px",
+                                                    editor.editing.view.document.getRoot()
+                                                );
+                                            });
+                                        }}
+                                        config={{
+                                            placeholder: 'Type your content here...',
                                         }}
                                     />
                                 </div>

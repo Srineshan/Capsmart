@@ -6,7 +6,7 @@ import ApplicationAssistanceCard from '../../../Components/ApplicationAssistance
 import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
-import { GET, POST } from '../../dataSaver';
+import { DELETE, GET, POST } from '../../dataSaver';
 import { useNavigate } from 'react-router-dom';
 import { Icon } from '@blueprintjs/core';
 import { format } from 'date-fns';
@@ -21,12 +21,14 @@ import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 import DatalistInput, { useComboboxControls } from "react-datalist-input";
 import CryptoJS from 'crypto-js';
 import style from './index.module.scss';
+import DeleteIcon from './../../../images/deleteHcRow.png';
 
 import VerifiedImage from "./../../../images/verifiedImage.png";
 import ToBeVerifiedImage from "./../../../images/toBeVerifiedImage.png";
 import CommonSelectField from '../../../Components/CommonFields/CommonSelectField';
 import ESignature from '../../../Components/ESignature';
 import CommonRadio from '../../../Components/CommonFields/CommonRadio';
+import AlertDialog from '../../../Components/AlertDialog';
 
 const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
     const [isSigned, setIsSigned] = useState(false);
@@ -40,6 +42,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
     const [selectedAdditionalPrivilegeForEdit, setSelectedAdditionalPrivilegeForEdit] = useState()
     const [selectedprivilegeList, setSelectedPrivilegeList] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
+    const [isAlertOpen, setIsAlertOpen] = useState(false);
     let name = `${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `;
     const publicKey = "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
     const [dateTime, setDateTime] = useState(new Date().toISOString());
@@ -147,7 +150,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
 
     console.log('application data', applicationData)
 
-    const handleContinue = async () => {
+    const handleContinue = async (navigation) => {
         // let temp = selectedprivilegeList;
         // temp.push(selectedPrivilege);
         // let tempData = [];
@@ -173,18 +176,42 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
             .catch((error) => {
                 ErrorToaster("Unexpected Error Updating Application");
             });
-        if (sessionStorage.getItem('fromSummary') === "true") {
-            navigate(-1);
-        }
-        else {
-            navigate('/applicationForm/section1/step10')
+        if (navigation) {
+            if (sessionStorage.getItem('fromSummary') === "true") {
+                navigate(-1);
+            }
+            else {
+                navigate('/applicationForm/section1/step10')
 
+            }
         }
+    }
+
+    const handleDeleteFile = async (files) => {
+
+        await DELETE(`application-management-service/application/${applicationId}/files`, files)
+            .then((response) => {
+                SuccessToaster("File Deleted Successfully");
+                handleContinue(false)
+            })
+            .catch((error) => {
+                ErrorToaster("Unexpected Error Deleting File");
+            });
     }
 
     const getIsOpen = (value) => {
         setIsOpen(value);
     }
+
+    const getIsAlertOpen = (value, string) => {
+        if (string === 'OKAY') {
+            setIsAlertOpen(value);
+            setIsOpen(true);
+        } else {
+            setIsAlertOpen(value);
+        }
+    }
+
 
     const handleChange = (privilegeId) => {
         setSelectedPrivilege(privilegeId);
@@ -226,6 +253,12 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                 ]
             };
             if (key === 'file') {
+                temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories[categoriesIndex]
+                    .privileges[privilegesIndex].file = value;
+                console.log(index, categoriesIndex, privilegesIndex, value, key)
+            } else if (key === 'removeFile') {
+                handleDeleteFile([temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories[categoriesIndex]
+                    .privileges[privilegesIndex].file])
                 temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories[categoriesIndex]
                     .privileges[privilegesIndex].file = value;
                 console.log(index, categoriesIndex, privilegesIndex, value, key)
@@ -315,6 +348,12 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                 ]
             };
             if (key === 'file') {
+                temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories[categoriesIndex]
+                    .privileges[privilegesIndex].file = value;
+                console.log(index, categoriesIndex, privilegesIndex, value, key)
+            } else if (key === 'removeFile') {
+                handleDeleteFile([temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories[categoriesIndex]
+                    .privileges[privilegesIndex].file])
                 temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories[categoriesIndex]
                     .privileges[privilegesIndex].file = value;
                 console.log(index, categoriesIndex, privilegesIndex, value, key)
@@ -452,7 +491,18 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                                                                             const data = editor.getData();
                                                                             handleRestrictedSelection(index, categoriesIndex, privilegesIndex, data, 'notes');
                                                                         }}
-                                                                        placeholder="Insert any privilege competency and qualification information"
+                                                                        onReady={(editor) => {
+                                                                            editor.editing.view.change((writer) => {
+                                                                                writer.setStyle(
+                                                                                    "height",
+                                                                                    "150px",
+                                                                                    editor.editing.view.document.getRoot()
+                                                                                );
+                                                                            });
+                                                                        }}
+                                                                        config={{
+                                                                            placeholder: 'Insert any privilege competency and qualification information...',
+                                                                        }}
                                                                     />
                                                                 </div>
                                                                 {/* <div className={style.marginTop10}>
@@ -487,8 +537,8 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                                                                     </div>
                                                                     <input id={`file-upload-dynamic-basic${privilegesIndex}`} type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx" onChange={(e) => { handleRestrictedFileSelection(index, categoriesIndex, privilegesIndex, e.target.files[0], 'file') }} />
                                                                 </div>
-                                                                {privileges?.file !== null && privileges?.file !== undefined && (
-                                                                    <div className={`${style.fileDisplay} ${style.spaceBetween} ${style.marginTop10}`}>
+                                                                {privileges?.file !== null && privileges?.file?.fileName !== undefined && (
+                                                                    <div className={`${style.fileDisplay} ${style.fileDisplayText} ${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
                                                                         <div className={style.displayInRow}>
                                                                             <div onClick={() => { window.open(privileges?.file?.fileURL, '_blank'); }}>
                                                                                 {privileges?.file?.fileType === 'application/pdf' ?
@@ -498,7 +548,9 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                                                                             </div>
                                                                             <div className={style.marginLeft}>{privileges?.file?.fileName}</div>
                                                                         </div>
-                                                                        <div></div>
+                                                                        <div>
+                                                                            <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => { handleRestrictedSelection(index, categoriesIndex, privilegesIndex, null, 'removeFile') }} />
+                                                                        </div>
                                                                     </div>
                                                                 )}
                                                                 <br />
@@ -608,7 +660,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                                                         {categoryIndex === 0 && (
                                                             <div className={`${style.spaceBetween} ${style.marginTop}`}>
                                                                 <div className={style.cardTitle}>{data?.privilegeSetTitle}</div>
-                                                                <div className={`${style.changePrivilegeText} ${style.cursorPointer}`} onClick={() => { setSelectedAdditionalPrivilegeForEdit(data); setIsOpen(true) }}>Change Privilege Set</div>
+                                                                <div className={`${style.changePrivilegeText} ${style.cursorPointer}`} onClick={() => { setSelectedAdditionalPrivilegeForEdit(data); setIsAlertOpen(true) }}>Change Privilege Set</div>
                                                             </div>
                                                         )}
                                                         <div className={style.categoryGrid}>
@@ -672,7 +724,18 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                                                                                                     const data = editor.getData();
                                                                                                     handleAdditionalRestrictedSelection(index, categoriesIndex, privilegesIndex, data, 'notes');
                                                                                                 }}
-                                                                                                placeholder="Insert any privilege competency and qualification information"
+                                                                                                onReady={(editor) => {
+                                                                                                    editor.editing.view.change((writer) => {
+                                                                                                        writer.setStyle(
+                                                                                                            "height",
+                                                                                                            "150px",
+                                                                                                            editor.editing.view.document.getRoot()
+                                                                                                        );
+                                                                                                    });
+                                                                                                }}
+                                                                                                config={{
+                                                                                                    placeholder: 'Insert any privilege competency and qualification information...',
+                                                                                                }}
                                                                                             />
                                                                                         </div>
                                                                                         {/* <div className={style.marginTop10}>
@@ -707,18 +770,20 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                                                                                             </div>
                                                                                             <input id={`file-upload-dynamic-additional${privilegesIndex}`} type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx" onChange={(e) => { handleAdditionalRestrictedFileSelection(index, categoriesIndex, privilegesIndex, e.target.files[0], 'file') }} />
                                                                                         </div>
-                                                                                        {privileges?.file !== null && privileges?.file !== undefined && (
-                                                                                            <div className={`${style.fileDisplay} ${style.spaceBetween} ${style.marginTop10}`}>
-                                                                                                <div className={style.displayInRow}>
+                                                                                        {privileges?.file !== null && privileges?.file?.fileName !== undefined && (
+                                                                                            <div className={`${style.fileDisplay} ${style.fileDisplayText} ${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
+                                                                                                <div className={`${style.displayInRow} ${style.marginTop10}`}>
                                                                                                     <div onClick={() => { window.open(privileges?.file?.fileURL, '_blank'); }}>
                                                                                                         {privileges?.file?.fileType === 'application/pdf' ?
                                                                                                             <img src={PdfDoc} alt="" className={style.docTypeImgStyle} />
                                                                                                             : privileges?.file?.fileType?.startsWith("image/") ?
-                                                                                                                <img src={ImgDoc} alt="" className={style.docTypeImgStyle} /> : <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} />}
+                                                                                                                <img src={ImgDoc} alt="" className={style.docTypeImgStyle} /> : <img src={PdfDoc} alt="" className={style.docTypeImgStyle} />}
                                                                                                     </div>
                                                                                                     <div className={style.marginLeft}>{privileges?.file?.fileName}</div>
                                                                                                 </div>
-                                                                                                <div></div>
+                                                                                                <div>
+                                                                                                    <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => { handleAdditionalRestrictedSelection(index, categoriesIndex, privilegesIndex, null, 'removeFile') }} />
+                                                                                                </div>
                                                                                             </div>
                                                                                         )}
                                                                                         <br />
@@ -885,20 +950,20 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
 
 
                 </div>
-
-                {isOpen && <AdditionalPrivilegesDialog getIsOpen={getIsOpen} primaryPrivilege={selectedPrivilege} getSelectedPrivilegeList={getSelectedPrivilegeList} basicForm={basicForm} selectedAdditionalPrivilegeForEdit={selectedAdditionalPrivilegeForEdit} applicationId={applicationId} />}
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue(true)}>CONTINUE</div>
                     </div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
                     </div>
                 </div>
             </div>
+            {isAlertOpen && <AlertDialog isOpen={isAlertOpen} getIsOpen={getIsAlertOpen} title={'Are you sure?'} description={'Do you want to really change the privilege set?'} />}
+            {isOpen && <AdditionalPrivilegesDialog getIsOpen={getIsOpen} primaryPrivilege={selectedPrivilege} getSelectedPrivilegeList={getSelectedPrivilegeList} basicForm={basicForm} selectedAdditionalPrivilegeForEdit={selectedAdditionalPrivilegeForEdit} applicationId={applicationId} />}
         </div >
     )
 }
