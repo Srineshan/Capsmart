@@ -214,7 +214,7 @@ const TaskStatusDialog = ({ getIsOpen }) => {
                                 value={`${statusLabel?.status}=${statusLabel?.label}`}
                                 className={`${style.selectoption}`}
                               >
-                                {statusLabel?.status} = {statusLabel?.label}
+                                {statusLabel?.label}
                               </option>
                             ))}
                           </select>
