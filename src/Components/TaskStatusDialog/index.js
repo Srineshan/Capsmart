@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useCallback,useRef} from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { GET, POST } from "../../Screens/dataSaver";
 import { Dialog, Classes } from "@blueprintjs/core";
 import CrossPink from "../../images/crossPink.png";
@@ -34,7 +34,7 @@ const TaskStatusDialog = ({ getIsOpen }) => {
       ...prevState,
       [taskId]: value,
     }));
-    tasksendapplication(taskId,status,label);
+    tasksendapplication(taskId, status, label);
   };
   const reactToPrintContent = useCallback(() => {
     return componentRef.current;
@@ -59,13 +59,13 @@ const TaskStatusDialog = ({ getIsOpen }) => {
     setTask(tasks);
   };
 
-  const tasksendapplication = async (taskId , status , label) => {
+  const tasksendapplication = async (taskId, status, label) => {
     let data = {
-        status: status,
-        label: label  
+      status: status,
+      label: label
     };
-    console.log(taskId , status , label);
-    
+    console.log(taskId, status, label);
+
     await POST(`application-management-service/application/${applicationId}/task/${taskId}/execute`, data)
       .then(response => {
         SuccessToaster('Task Update Successfully');
@@ -92,10 +92,9 @@ const TaskStatusDialog = ({ getIsOpen }) => {
               Application Processing Tasks For:
             </div>
             <div className={style.displayInRow}>
-            <div
-                className={`${isPrintClicked && style.addStyle} ${
-                  style.alignCenter
-                } ${style.cursorPointer} ${style.marginRight}`}
+              <div
+                className={`${isPrintClicked && style.addStyle} ${style.alignCenter
+                  } ${style.cursorPointer} ${style.marginRight}`}
               >
                 <PrintOutlinedIcon
                   sx={{
@@ -143,7 +142,62 @@ const TaskStatusDialog = ({ getIsOpen }) => {
                   <div className={`${style.task}`}>{taskData?.taskName}</div>
                   <div>
                     {taskData?.taskAction === "TASK_STATUS_UPDATE_ONLY" ||
-                    taskData?.taskAction ===
+                      taskData?.taskAction ===
+                      "SEND_NON_CAPSMART_FORM_INTERNAL_SOURCE_URL" ? (
+                      <div className={`${style.sentstatus}`}>
+                        Status
+                        <div>
+                          <select
+                            className={`${style.option}`}
+                            name="status"
+                            value={selectedOption[taskData.id] || ""}
+                            onChange={(e) => handleChange(taskData.id, e)}
+                          >
+                            {taskData?.statusLabels.map((statusLabel, index) => (
+                              <option
+                                key={index}
+                                value={`${statusLabel?.status}=${statusLabel?.label}`}
+                                className={`${style.selectoption}`}
+                              >
+                                {statusLabel?.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div className={`${style.sentto}`}>Ready To Send</div>
+                      </>
+                    )}
+                  </div>
+                  <div>
+                    {taskData?.taskAction === "TASK_STATUS_UPDATE_ONLY" ||
+                      taskData?.taskAction ===
+                      "SEND_NON_CAPSMART_FORM_INTERNAL_SOURCE_URL" ? (
+                      <div className={`${style.date}`}>
+                        Last updated on
+                        <div>
+                          {format(
+                            new Date(taskData?.lastModifiedDate),
+                            "MMM dd, yyyy"
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className={`${style.Resend}`} onClick={() => tasksendapplication(taskData?.id, taskData?.statusLabels?.status, taskData?.statusLabels?.label)}>
+                        {taskData?.activityExecutionPromptLabel?.text}
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <TaskAltIcon className={`${style.correcticon}`} />
+                  <div className={`${style.task}`}>{taskData?.taskName}</div>
+                  <div>
+                    {taskData?.taskAction === "TASK_STATUS_UPDATE_ONLY" ||
+                      taskData?.taskAction ===
                       "SEND_NON_CAPSMART_FORM_INTERNAL_SOURCE_URL" ? (
                       <div className={`${style.sentstatus}`}>
                         Status
@@ -167,61 +221,6 @@ const TaskStatusDialog = ({ getIsOpen }) => {
                         </div>
                       </div>
                     ) : (
-                      <>
-                        <div className={`${style.sentto}`}>Ready To Send</div>
-                      </>
-                    )}
-                  </div>
-                  <div>
-                    {taskData?.taskAction === "TASK_STATUS_UPDATE_ONLY" ||
-                    taskData?.taskAction ===
-                      "SEND_NON_CAPSMART_FORM_INTERNAL_SOURCE_URL" ? (
-                      <div className={`${style.date}`}>
-                        Last updated on
-                        <div>
-                          {format(
-                            new Date(taskData?.lastModifiedDate),
-                            "MMM dd, yyyy"
-                          )}
-                        </div>
-                      </div>
-                    ) : (
-                      <div className={`${style.Resend}`}  onClick={() => tasksendapplication(taskData?.id,taskData?.statusLabels?.status, taskData?.statusLabels?.label)}>
-                        {taskData?.activityExecutionPromptLabel?.text}
-                      </div>
-                    )}
-                  </div>
-                </>
-              ) : (
-                <>
-                  <TaskAltIcon className={`${style.correcticon}`} />
-                  <div className={`${style.task}`}>{taskData?.taskName}</div>
-                  <div>
-                    {taskData?.taskAction === "TASK_STATUS_UPDATE_ONLY" ||
-                    taskData?.taskAction ===
-                      "SEND_NON_CAPSMART_FORM_INTERNAL_SOURCE_URL" ? (
-                      <div className={`${style.sentstatus}`}>
-                        Status
-                        <div>
-                          <select
-                            className={`${style.option}`}
-                            name="status"
-                            value={selectedOption[taskData.id] || ""}
-                            onChange={(e) => handleChange(taskData.id, e)}
-                          >
-                            {taskData?.statusLabels.map((statusLabel, index) => (
-                              <option
-                                key={index}
-                                value= {`${statusLabel?.status}=${statusLabel?.label}`}
-                                className={`${style.selectoption}`}
-                              >
-                                {statusLabel?.status} = {statusLabel?.label}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
-                    ) : (
                       <div className={`${style.sentto}`}>
                         {taskData?.activityExecutionPromptLabel?.text} on{" "}
                         {format(
@@ -233,7 +232,7 @@ const TaskStatusDialog = ({ getIsOpen }) => {
                   </div>
                   <div>
                     {taskData?.taskAction === "TASK_STATUS_UPDATE_ONLY" ||
-                    taskData?.taskAction ===
+                      taskData?.taskAction ===
                       "SEND_NON_CAPSMART_FORM_INTERNAL_SOURCE_URL" ? (
                       <div className={`${style.date}`}>
                         Last updated on
@@ -245,9 +244,11 @@ const TaskStatusDialog = ({ getIsOpen }) => {
                         </div>
                       </div>
                     ) : (
-                      <div className={`${style.Resend}`}  
-                      onClick={() =>{console.log("Task Dataaaaaaaa" + JSON.stringify(taskData));
-                       tasksendapplication( taskData?.id , taskData?.statusLabels?.status , taskData?.statusLabels?.label )}}>Resend</div>
+                      <div className={`${style.Resend}`}
+                        onClick={() => {
+                          console.log("Task Dataaaaaaaa" + JSON.stringify(taskData));
+                          tasksendapplication(taskData?.id, taskData?.statusLabels?.status, taskData?.statusLabels?.label)
+                        }}>Resend</div>
                     )}
                   </div>
                 </>
