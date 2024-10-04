@@ -34,6 +34,7 @@ const StaffApplicationList = ({
   getSelectedTab,
   selectedTab,
   getActiveApplicationView,
+  getActiveApplicationTask,
 }) => {
   const PDFRef = createRef();
   const navigate = useNavigate();
@@ -102,7 +103,7 @@ const StaffApplicationList = ({
     "Applicant Type",
     // "Ref",
     "MAC Approval",
-    "Checklist Status",
+    "Task list Status",
     "Last Updated",
     "",
   ];
@@ -262,6 +263,10 @@ const StaffApplicationList = ({
 
   const onClickViewAndVerifyFunction = (data) => {
     getActiveApplicationView(true);
+    sessionStorage.setItem("applicationId", data?.id);
+  };
+  const onClickProcessingTaskFunction = (data) => {
+    getActiveApplicationTask(true);
     sessionStorage.setItem("applicationId", data?.id);
   };
 
@@ -929,18 +934,24 @@ const StaffApplicationList = ({
       onClick: onClickViewAndVerifyFunction,
     },
     {
-      data: "Send for Committee Review",
+      data: "Send for Cred Comm Review",
       requiredValue: "boolean",
       onClick: "",
     },
     {
-      data: "Request for Clarification",
+      data: "Applicant Processing Tasks",
       requiredValue: "boolean",
-      onClick: "",
+      onClick: onClickProcessingTaskFunction,
+      //  onClick: onClickViewAndVerifyFunction,
     },
-    { data: "From Applicant", requiredValue: "boolean", onClick: "" },
-    { data: "From Internal Approver", requiredValue: "boolean", onClick: "" },
-    { data: "From Institution", requiredValue: "boolean", onClick: "" },
+    {
+      data: "Request For Clarification",
+      requiredValue: "boolean",
+      isParagraph: true,
+    },
+    { data: "From Applicant", requiredValue: "boolean", onClick: "", isIndent: true, },
+    { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true,},
+    { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true, },
   ];
 
   const applicationActionsData = [

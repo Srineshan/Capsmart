@@ -501,13 +501,23 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
                                                         horizontal: 'left',
                                                     }}
                                                 >
-                                                    <div className={style.actionsCard} ref={menuRef}>
+                                                    {/* <div className={style.actionsCard} ref={menuRef}>
                                                         {actions?.map((actionsData, actionsIndex) => actionsData?.conditionToShow !== undefined ? eval(actionsData?.conditionToShow) &&
-                                                            (<div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { actionsData?.onClick(data); handleClose() }} key={actionsIndex}>{actionsData?.data}</div>)
+                                                            (<div className={`${style.specificActionCard} ${style.cursorPointer} ${actionsData?.isIndent ? style.marginLeft30 : ''}`}  onClick={() => { actionsData?.onClick(data); handleClose() }} key={actionsIndex}>{actionsData?.data}</div>)
                                                             :
-                                                            (<div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { actionsData?.onClick(data); handleClose() }} key={actionsIndex}>{actionsData?.data}</div>)
+                                                            (<div className={`${style.specificActionCard} ${style.cursorPointer} ${actionsData?.isIndent ? style.marginLeft30 : ''}`} onClick={() => { actionsData?.onClick(data); handleClose() }} key={actionsIndex}>{actionsData?.data}</div>)
                                                         )}
+                                                    </div> */}
+                                                    <div className={style.actionsCard} ref={menuRef}>
+                                                            {actions?.map((actionsData, actionsIndex) => actionsData?.isParagraph ? 
+                                                                ( <div className={`${style.isParagraph}` } key={actionsIndex}> {actionsData.data} </div>
+                                                                ) : actionsData?.conditionToShow !== undefined ? (eval(actionsData?.conditionToShow) && 
+                                                                ( <div className={`${style.specificActionCard} ${style.cursorPointer} ${ actionsData?.isIndent ? style.marginLeft30 : "" }`} onClick={() => {actionsData?.onClick(data); handleClose() }} key={actionsIndex}> {actionsData?.data} </div>))
+                                                                : 
+                                                                (<div className={`${style.specificActionCard} ${style.cursorPointer} ${ actionsData?.isIndent ? style.marginLeft30 : "" }`} onClick={() => { actionsData?.onClick(data); handleClose() }} key={actionsIndex} > {actionsData?.data} </div>)
+                                                            )}
                                                     </div>
+
                                                 </Popover>
                                             )}
                                         </div>
