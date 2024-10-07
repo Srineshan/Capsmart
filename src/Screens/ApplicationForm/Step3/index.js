@@ -13,11 +13,12 @@ import ValidationDialog from '../../../Components/validationDialog';
 
 import style from './index.module.scss';
 
-const Step3 = ({ basicForm, setBasicForm, applicationId }) => {
+const Step3 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
     const [applicantProfile, setApplicantProfile] = useState();
     const [metadata, setMetadata] = useState([]);
     const [labels, setLabels] = useState([]);
+    const [uniqueLabels, setUniqueLabels] = useState([]);
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
     const [showValidationDialog, setShowValidationDialog] = useState(false);
     const [warningFields, setWarningFields] = useState([]);
@@ -32,6 +33,10 @@ const Step3 = ({ basicForm, setBasicForm, applicationId }) => {
     useEffect(() => {
         getApplicantProfile()
     }, [applicationId])
+
+    useEffect(() => {
+        setLabels(uniqueLabels?.map(data => data?.labels));
+    }, [uniqueLabels])
 
     // const getIsOpen = (value) => {
     //     setIsOpen(value);
@@ -51,14 +56,22 @@ const Step3 = ({ basicForm, setBasicForm, applicationId }) => {
         console.log("tempdataaa", metadata)
     }
 
-    const getAllLabels = (data) => {
-        let tempLabels = labels;
-        if (!tempLabels?.includes(data)) {
-            console.log(tempLabels, data, 'Metadata')
-            tempLabels.push(data);
+    const addObjectIfNotPresent = (array, newObject) => {
+        const objectExists = array.some((obj) =>
+            Object.keys(newObject).every((key) => obj[key] === newObject[key])
+        );
+
+        if (!objectExists) {
+            array.push(newObject);
         }
-        setLabels(tempLabels);
-        console.log("tempLabelsssss", tempLabels)
+
+        return array;
+    };
+
+    const getAllLabels = (data) => {
+        let tempLabels = addObjectIfNotPresent(uniqueLabels, data);
+        setUniqueLabels(tempLabels)
+        console.log("tempLabelsssss", tempLabels, uniqueLabels, data)
     }
 
     const getIsSaveInProgressOpen = (value) => {
@@ -128,7 +141,7 @@ const Step3 = ({ basicForm, setBasicForm, applicationId }) => {
         let missingKeys = [];
         let keyValuePair = [];
         metadata?.map((data, index) => {
-            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index] })
+            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: uniqueLabels?.filter(labelData => labelData?.path === data)[0]?.label })
         })
         keyValuePair?.map(data => {
             if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
@@ -158,6 +171,7 @@ const Step3 = ({ basicForm, setBasicForm, applicationId }) => {
                     console.log(response)
                     setBasicForm(response?.data)
                     SuccessToaster("Application Updated Successfully");
+                    getPreApplication()
                     if (sessionStorage.getItem('fromSummary') === "true") {
                         navigate(-1);
                     }

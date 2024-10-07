@@ -21,6 +21,7 @@ const Step6 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
     const [showValidationDialog, setShowValidationDialog] = useState(false);
     const [warningFields, setWarningFields] = useState([]);
+    const [isAddMore, setIsAddMore] = useState(false)
     const navigate = useNavigate()
     useEffect(() => {
         if (basicForm && !formSchema) {
@@ -63,17 +64,17 @@ const Step6 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
         }
     }
 
-    const getIsSubmitClicked = (value, data) => {
+    const getIsSubmitClicked = (value, data, skip) => {
         if (value) {
-            handleSubmitApplicationReq(data)
+            handleSubmitApplicationReq(data, skip)
         }
     }
 
-    const getSkipClicked = (value) => {
-        if (value) {
-            handleSubmitApplicationReq("skipped")
-        }
-    }
+    // const getSkipClicked = (value) => {
+    //     if (value) {
+    //         handleSubmitApplicationReq("skipped")
+    //     }
+    // }
 
     const getMissingFields = () => {
         let missingKeys = [];
@@ -86,14 +87,15 @@ const Step6 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                 missingKeys.push(data)
             }
         })
-        if (missingKeys?.length !== 0) {
-            setShowValidationDialog(true)
-        }
-        else {
-            handleSubmitApplicationReq()
-        }
+        // if (missingKeys?.length !== 0) {
+        //     setShowValidationDialog(true)
+        // }
+        // else {
+        //     handleSubmitApplicationReq()
+        // }
         setWarningFields(missingKeys)
         console.log(keyValuePair, 'Metadata', missingKeys)
+        return missingKeys;
     }
 
 
@@ -102,9 +104,8 @@ const Step6 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
         let temp = {
             schemaId: data?.forms?.[4]?.schemaId,
             data: data?.forms?.[4]?.data,
-            // unFilledFields: warningFields?.map(data => data?.label),
-            // acknowledged: skip === "skipped" ? false : true
-
+            unFilledFields: warningFields?.map(data => data?.label),
+            acknowledged: skip === "skipped" ? false : true
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[4]?.id}`, temp)
             .then(response => {
@@ -149,7 +150,7 @@ const Step6 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'graduation' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.graduation} gridStyle={style.EducationGrid} baseKey={'graduation'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[4]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields}
+                            <ApplicationFieldCard object={formSchema?.properties?.graduation} gridStyle={style.EducationGrid} baseKey={'graduation'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[4]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields} getMissingFields={getMissingFields} showValidationDialog={showValidationDialog} setShowValidationDialog={setShowValidationDialog} isAddMore={isAddMore} setIsAddMore={setIsAddMore}
                                 heading={'Information Requirement Alert'}
                                 subHeading={'For this application you are required to provide information on all of the different undergraduate / graduate qualifications you have.'}
                                 subHeading2={'You will not be able to submit your application if this is not provided.'} />
@@ -177,9 +178,9 @@ const Step6 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                     <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
                 )
             }
-            {showValidationDialog && (
+            {/* {showValidationDialog && (
                 <ValidationDialog getIsOpen={getIsValidationDialogOpen} labelList={warningFields} getSkipClicked={getSkipClicked} />
-            )}
+            )} */}
         </div>
     )
 }

@@ -106,9 +106,9 @@ const ApplicationForm = () => {
             case 'step1':
                 return <Step1 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'step2':
-                return <Step2 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
+                return <Step2 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'step3':
-                return <Step3 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
+                return <Step3 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'step4':
                 return <Step4 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'step5':
