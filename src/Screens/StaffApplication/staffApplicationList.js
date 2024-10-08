@@ -125,7 +125,7 @@ const StaffApplicationList = ({
     "Applicant Type",
     // "Department",
     "Docs",
-    "Data & Disclosures",
+    // "Data & Disclosures",
     "CRs",
     "Notes",
     "Task list Status",
@@ -835,7 +835,7 @@ const StaffApplicationList = ({
           style={{ fontSize: 20, color: `${data?.subStatus}` }}
         />
       );
-      dataStatus.push(data?.dataStatus || "green");
+      // dataStatus.push(data?.dataStatus || "green");
       // disclosures.push(data?.disclosures || '7/9');
       crs.push(data?.clarificationRequiredFor || "-");
       crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"]);
@@ -873,7 +873,7 @@ const StaffApplicationList = ({
         isShowHoverText: true,
         icon: docsIcon,
       },
-      { type: "dot", value: dataStatus },
+      // { type: "dot", value: dataStatus },
       // { "type": "iconWithCount", "value": disclosures, "hoverText": docsHoverText, 'isShowHoverText': true, "icon": docsIcon },
       {
         type: "countWithHover",
@@ -953,9 +953,9 @@ const StaffApplicationList = ({
       requiredValue: "boolean",
       isParagraph: true,
     },
-    { data: "From Applicant", requiredValue: "boolean", onClick: "", isIndent: true, },
-    { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true, },
-    { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true, },
+    { data: "From Applicant", requiredValue: "boolean", onClick: "", isIndent: true },
+    { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true },
+    { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true },
   ];
 
   const applicationActionsData = [
@@ -974,14 +974,21 @@ const StaffApplicationList = ({
     // { data: "From Internal Approver", requiredValue: "boolean", onClick: "" },
     // { data: "From Institution", requiredValue: "boolean", onClick: "" },
     { data: "Review & Approve", requiredValue: "boolean", onClick: "" },
+    { data: "Move to MAC", requiredValue: "boolean", onClick: "" },
+    {
+      data: "Request For Clarification",
+      requiredValue: "boolean",
+      isParagraph: true,
+    },
     {
       data: "From staff manager",
       requiredValue: "boolean",
       onClick: "",
+      isIndent: true
     },
-    { data: "From Applicant", requiredValue: "boolean", onClick: "" },
-    { data: "From Internal Approver", requiredValue: "boolean", onClick: "" },
-    { data: "From Institution", requiredValue: "boolean", onClick: "" },
+    { data: "From Applicant", requiredValue: "boolean", onClick: "",isIndent: true },
+    { data: "From Internal Approver", requiredValue: "boolean", onClick: "",isIndent: true },
+    { data: "From Institution", requiredValue: "boolean", onClick: "",isIndent: true },
   ];
 
   const macActionsData = [
@@ -1000,9 +1007,15 @@ const StaffApplicationList = ({
     //   requiredValue: "boolean",
     //   onClick: "",
     // },
-    { data: "MAC Approval", requiredValue: "boolean", onClick: "" },
-    { data: "Print Summary For MAC", requiredValue: "boolean", onClick: "" },
-    { data: "Applicant Processing Tasks", requiredValue: "boolean", onClick: "" },
+    { data: "Move to BOD", requiredValue: "boolean", onClick: "" },
+    {
+      data: "Request For Clarification",
+      requiredValue: "boolean",
+      isParagraph: true,
+    },
+    { data: "MAC Approval", requiredValue: "boolean", onClick: "",isIndent: true },
+    { data: "Print Summary For MAC", requiredValue: "boolean", onClick: "",isIndent: true},
+    { data: "Applicant Processing Tasks", requiredValue: "boolean", onClick: "",isIndent: true },
   ];
 
   const bodActionsData = [
@@ -1476,7 +1489,7 @@ const StaffApplicationList = ({
                 <CircularProgress sx={{ color: "#7165E3" }} />
               </div>
             ) : (
-              <div ref={componentRef}>
+              <div ref={componentRef} className={`${style.pagebreak}`}>
                 <div
                   className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`}
                   ref={PDFRef}

@@ -339,3 +339,19 @@
 .fullWidth {
     width: 100%;
 }
+
+@media print {
+    .pagebreak {
+      page-break-after: always;
+      width: 100%;
+      height: auto;
+      padding: 20px;
+    }
+  
+    .pagebreak:nth-child(odd) {
+      background-color: #ffffff;
+  }
+  .pagebreak:nth-child(even) {
+      background-color: #ffffff;
+  }
+  }

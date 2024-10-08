@@ -15,6 +15,7 @@ import NoDataBox from '../ReusableSmallComponents/noDataBox';
 import PODIcon from '../../images/PODIcon.png'
 import DataFieldIcon from '../../images/DataFieldIcon.png'
 import style from './index.module.scss';
+import CommonDivider from '../CommonFields/CommonDivider';
 
 const useStyles = makeStyles(theme => ({
     popover: {
@@ -187,7 +188,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
                         </div>
                     ))}
                 </div>
-                <div className={`${scrollStyle}`}>
+                <div className={`${scrollStyle} ${style.pagebreak}`}>
                     {tableData?.length !== 0 ? tableData?.map((data, index) => (
                         <>
                             <div className={`${style.tableData} ${style.marginTop5} ${gridStyle} ${index % 2 === 0 && style.alternativeBackgroundColor}`} key={index}>
