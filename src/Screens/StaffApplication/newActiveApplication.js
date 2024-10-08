@@ -41,6 +41,7 @@ const NewActiveApplication = ({
   getContractIdFromActive,
   method,
   isEditable,
+  selectedTab,
   getActiveApplicationView
 }) => {
   console.log('contract Type', contractType)
@@ -360,11 +361,32 @@ const NewActiveApplication = ({
   }
 
   const handleApplicationAccept = async () => {
-    await PUT(`application-management-service/application/${applicationId}/workflow/complete/APPROVED`)
+    // let role;
+
+    // if (form?.completedWorkflows) {
+    //   if (selectedTab === 'level-1') {
+    //     role = form?.completedWorkflows[1]?.role;
+    //   } else if (selectedTab === 'mac') {
+    //     role = form?.completedWorkflows[2]?.role;
+    //   } else if (selectedTab === 'bod') {
+    //     role = form?.completedWorkflows[3]?.role;
+    //   }
+    // } else {
+    //   console.error("completedWorkflows is null or undefined");
+    //   return;
+    // }
+    let temp = {
+      // role:role,
+      // role: form?.completedWorkflows[1]?.role,
+      notes: form?.notes,
+    }
+    const isDelegate = selectedTab === 'level-1' || selectedTab === 'mac' || selectedTab === 'bod' ? true : false;
+    const requestData = isDelegate === true ? temp : {};
+    await PUT(`application-management-service/application/${applicationId}/workflow/complete/APPROVED?isDelegate=${isDelegate}`,requestData)
       .then(response => {
         console.log('success')
-        window.location.reload()
-      })
+        onClose()
+      })  
       .catch((error) => {
         console.log(error)
       });

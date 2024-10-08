@@ -8,7 +8,8 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
     chiefOfStaff: 0,
     credentialingCommittee: 0,
     mac: 0,
-    bod: 0
+    bod: 0,
+    'level-1' :0,
   });
 
   // const [selectedTab, setSelectedTab] = useState('applicantsToProcess');

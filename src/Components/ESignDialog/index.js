@@ -32,7 +32,7 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
         if (contentRef.current && contentRef.current.innerHTML !== eSignType && eSignType !== null) {
             contentRef.current.innerHTML = eSignType;
         }
-    }, [eSignType]);
+    }, [eSignType, selectedESignFormat]);
 
     // useEffect(() => {
     //     console.log(tempValue)
