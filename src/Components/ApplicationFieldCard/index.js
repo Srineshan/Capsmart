@@ -1092,7 +1092,7 @@ const ApplicationFieldCard = ({
                                     getValueByPath(
                                         basicForm,
                                         `${basicpath}.${baseKey}.${fieldKey}`
-                                    ) || null
+                                    ) || ""
                                 }
                                 className={style.fullWidth}
                                 onChange={(e) =>

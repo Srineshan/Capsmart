@@ -136,40 +136,23 @@ const ApplicationAcknowledgementStep5 = ({ acknowledgementForm, dateFormat, name
     }
 
     const handleSubmitApplicationReq = async () => {
-        // if (isSigned) {
-        //     let temp = {
-        //         schemaId: basicForm?.forms?.[14]?.schemaId,
-        //         data: !isEdited ? basicForm?.forms?.[14]?.data : { esignDate: isChecked ? name + " " + currentDate : '' },
-        //         acknowledged: isChecked,
-        //         esign: { esign: isChecked ? encryptedText : '', name: isChecked ? name : '', signedDate: isChecked ? currentDate : '' }
-        //     }
-        //     await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[14]?.id}`, temp)
-        //         .then(response => {
-        //             console.log(response)
-        //             getPreApplication()
-        //             SuccessToaster("Application Updated Successfully");
-        //             handleDownload();
-        //             getFormSchema();
-        //             if (sessionStorage.getItem('fromSummary') === 'true') {
-        //                 navigate(-1);
-        //             }
-        //             else {
-        //                 navigate('/applicationForm/section1/acknowledgementStep4')
-        //             }
-        //         })
-        //         .catch((error) => {
-        //             console.log(error)
-        //             ErrorToaster("Unexpected Error Updating Application");
-        //         });
-        // }
-        // else {
-        //     if (sessionStorage.getItem('fromSummary') === 'true') {
-        //         navigate(-1);
-        //     } else {
-        //         navigate('/applicationForm/section1/acknowledgementStep4')
-        //     }
-        // }
-        handleDownload();
+        let temp = {
+            schemaId: basicForm?.forms?.[14]?.schemaId,
+            data: !isEdited ? basicForm?.forms?.[14]?.data : { esignDate: isChecked && formSchema?.esignatureRequired ? name + " " + currentDate : '' },
+            acknowledged: !formSchema?.esignatureRequired ? true : isChecked,
+            esign: { esign: isChecked && formSchema?.esignatureRequired ? encryptedText : '', name: isChecked && formSchema?.esignatureRequired ? name : '', signedDate: isChecked && formSchema?.esignatureRequired ? currentDate : '' }
+        }
+        await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[14]?.id}`, temp)
+            .then(response => {
+                console.log(response)
+                getPreApplication()
+                SuccessToaster("Application Updated Successfully");
+                handleDownload();
+            })
+            .catch((error) => {
+                console.log(error)
+                ErrorToaster("Unexpected Error Updating Application");
+            });
         if (sessionStorage.getItem('fromSummary') === 'true') {
             navigate(-1);
         } else {

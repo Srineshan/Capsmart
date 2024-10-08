@@ -3,7 +3,7 @@ import ProgressCard from '../../../Components/ProgressCard';
 import ApplicationUserCard from '../../../Components/ApplicationUserCard';
 import ApplicationAssistanceCard from '../../../Components/ApplicationAssistanceCard';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
-import { GET, PUT } from '../../dataSaver';
+import { GET, POST, PUT } from '../../dataSaver';
 import { useNavigate } from 'react-router-dom';
 import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
@@ -98,14 +98,39 @@ const Step6 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
         return missingKeys;
     }
 
+    const removeEmptyStrings = (obj) => {
+        Object.keys(obj).forEach((key) => {
+            if (typeof obj[key] === "string" && obj[key].trim() === "") {
+                delete obj[key];
+            } else if (typeof obj[key] === "object" && obj[key] !== null) {
+                removeEmptyStrings(obj[key]);
+            }
+        });
+        return obj;
+    };
+
 
     const handleSubmitApplicationReq = async (data, skip) => {
         // if(isEdited){
+        let missingFields = []
+        let emptyStringCheckedObject = removeEmptyStrings(data?.forms?.[4]?.data);
+        let tempValidation = {
+            schemaId: data?.forms?.[4]?.schemaId,
+            data: emptyStringCheckedObject,
+        }
+        await POST(`application-management-service/application/validateForm`, tempValidation)
+            .then(response => {
+                console.log(response, response?.response?.data, 'missingFields')
+                missingFields = (response?.data !== undefined && response?.data === true) ? [] : response?.response?.data;
+            })
+            .catch((error) => {
+                console.log(error)
+            })
         let temp = {
             schemaId: data?.forms?.[4]?.schemaId,
             data: data?.forms?.[4]?.data,
-            unFilledFields: warningFields?.map(data => data?.label),
-            acknowledged: skip === "skipped" ? false : true
+            unFilledFields: missingFields,
+            acknowledged: missingFields?.length !== 0 ? false : true
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[4]?.id}`, temp)
             .then(response => {

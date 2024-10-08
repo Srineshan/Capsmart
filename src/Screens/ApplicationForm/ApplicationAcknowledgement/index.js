@@ -111,7 +111,7 @@ const Acknowledgement = ({ basicForm, setBasicForm, applicationId }) => {
                             <div className={`${style.displayInRow}${style.marginTop20}`}>
                                 <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}>
                                     <span className={`${style.tableHeaderHeadingTextStyle}`}>Acknowledgements, Consents & Disclosures</span>
-                                    <div className={`${style.greenDotStyle}`}></div>
+                                    <div className={`${form?.forms?.filter(data => data?.formCategory !== 'Form')?.every(item => item.acknowledged === true) ? style.greenDotStyle : style.yellowDotStyle}`}></div>
                                 </div>
                             </div>
                             <div className={`${style.tableHeaderStyle} ${style.marginTop10} ${style.tableHeaderGridStyle} `}>
@@ -136,7 +136,7 @@ const Acknowledgement = ({ basicForm, setBasicForm, applicationId }) => {
                                             <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/section1/acknowledgementStep${index + 1}`) }} />
                                         </div>
                                         <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                            <div className={`${style.greenDotStyle} `}></div>
+                                            <div className={`${form?.forms?.filter(data => data?.formCategory !== 'Form')[index]?.acknowledged ? style.greenDotStyle : style.yellowDotStyle} `}></div>
                                         </div>
                                     </div>
                                 ))

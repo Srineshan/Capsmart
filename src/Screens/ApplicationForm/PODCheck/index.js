@@ -22,6 +22,7 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
     const [form2, setForm2] = useState();
     const navigate = useNavigate()
     const [isOpen, setIsOpen] = useState(true);
+    const itemsToProcessConditionCheckCategories = ['Education', 'WorkExperience', 'References']
     const id = sessionStorage.getItem('applicationId');
     useEffect(() => {
         sessionStorage.setItem('fromSummary', false);
@@ -144,7 +145,7 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
                                         </div>
                                         <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                                             <div className={`${style.marginLeft5} ${style.tableDataFontDisabledStyle1}`}>
-                                                {form?.forms[index]?.unFilledFields?.join(', ')}
+                                                {(itemsToProcessConditionCheckCategories?.includes(form?.forms?.filter(data => data?.formCategory === 'Form')[index]?.schemaCategory) && form?.forms[index]?.unFilledFields?.length !== 0) ? 'Missing mandatory fields. Please complete.' : form?.forms[index]?.unFilledFields?.join(', ')}
                                             </div>
                                         </div>
                                     </div>
