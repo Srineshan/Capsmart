@@ -19,13 +19,34 @@ const Step10 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =
     const [labels, setLabels] = useState([]);
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
     const [showValidationDialog, setShowValidationDialog] = useState(false);
+    const [showValidationDialog2, setShowValidationDialog2] = useState(false);
     const [warningFields, setWarningFields] = useState([]);
+    const [isAddMore, setIsAddMore] = useState(false)
+    const [isAddMore2, setIsAddMore2] = useState(false)
     const navigate = useNavigate()
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
         }
     }, [basicForm])
+
+
+    useEffect(() => {
+        if (isAddMore) {
+            setIsAddMore2(false)
+            setMetadata([])
+            setLabels([])
+        }
+    }, [isAddMore])
+
+    useEffect(() => {
+        if (isAddMore2) {
+            setIsAddMore(false)
+            setMetadata([])
+            setLabels([])
+        }
+    }, [isAddMore2])
+
 
     const getIsValidationDialogOpen = (value) => {
         setShowValidationDialog(value);
@@ -63,17 +84,19 @@ const Step10 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =
         }
     }
 
-    const getIsSubmitClicked = (value, data) => {
+    const getIsSubmitClicked = (value, data, skip) => {
         if (value) {
-            handleSubmitApplicationReq(data)
+            setIsAddMore(false);
+            setIsAddMore2(false);
+            handleSubmitApplicationReq(data, skip)
         }
     }
 
-    const getSkipClicked = (value) => {
-        if (value) {
-            handleSubmitApplicationReq("skipped")
-        }
-    }
+    // const getSkipClicked = (value) => {
+    //     if (value) {
+    //         handleSubmitApplicationReq("skipped")
+    //     }
+    // }
 
     const getMissingFields = () => {
         let missingKeys = [];
@@ -86,21 +109,22 @@ const Step10 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =
                 missingKeys.push(data)
             }
         })
-        if (missingKeys?.length !== 0) {
-            setShowValidationDialog(true)
-        } else {
-            handleSubmitApplicationReq()
-        }
+        // if (missingKeys?.length !== 0) {
+        //     setShowValidationDialog(true)
+        // } else {
+        //     handleSubmitApplicationReq()
+        // }
         setWarningFields(missingKeys)
         console.log(keyValuePair, 'Metadata', missingKeys)
+        return missingKeys;
     }
 
     const handleSubmitApplicationReq = async (data) => {
         let temp = {
             schemaId: data?.forms?.[7]?.schemaId,
             data: data?.forms?.[7]?.data,
-            // unFilledFields: warningFields?.map(data => data?.label),
-            // acknowledged: data === "skipped" ? false : true
+            unFilledFields: warningFields?.map(data => data?.label),
+            acknowledged: data === "skipped" ? false : true
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[7]?.id}`, temp)
             .then(response => {
@@ -139,11 +163,11 @@ const Step10 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'references' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.references} gridStyle={style.twoCol} baseKey={'references'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[7]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields} />
+                            <ApplicationFieldCard object={formSchema?.properties?.references} gridStyle={style.twoCol} baseKey={'references'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[7]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields} getMissingFields={getMissingFields} showValidationDialog={showValidationDialog} setShowValidationDialog={setShowValidationDialog} isAddMore={isAddMore} setIsAddMore={setIsAddMore} />
                         )}
                         <CommonDivider />
                         {formSchema !== undefined && 'privilegeReferences' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.privilegeReferences} gridStyle={style.twoCol} baseKey={'privilegeReferences'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[7]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields} />
+                            <ApplicationFieldCard object={formSchema?.properties?.privilegeReferences} gridStyle={style.twoCol} baseKey={'privilegeReferences'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[7]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields} getMissingFields={getMissingFields} showValidationDialog={showValidationDialog2} setShowValidationDialog={setShowValidationDialog2} isAddMore={isAddMore2} setIsAddMore={setIsAddMore2} />
                         )}
                     </div>
                 </div>
@@ -164,9 +188,9 @@ const Step10 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =
                     <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
                 )
             }
-            {showValidationDialog && (
+            {/* {showValidationDialog && (
                 <ValidationDialog getIsOpen={getIsValidationDialogOpen} labelList={warningFields} getSkipClicked={getSkipClicked} />
-            )}
+            )} */}
         </div>
     )
 }

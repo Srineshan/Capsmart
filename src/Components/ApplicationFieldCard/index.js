@@ -6,7 +6,7 @@ import CommonDateField from '../CommonFields/CommonDateField';
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 import { TextField, Tooltip } from '@mui/material';
 import { add, format, isValid, parse, sub } from 'date-fns';
-import { FormatPhoneNumber } from '../../utils/formatting';
+import { FormatPhoneNumber, FormatPostalCode } from '../../utils/formatting';
 import CommonRadio from '../CommonFields/CommonRadio';
 import CommonSwitch from '../CommonFields/CommonSwitch';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
@@ -33,6 +33,7 @@ import CommonTextField from "../CommonFields/CommonTextField";
 import CommonLabel from "../CommonFields/CommonLabel";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import ValidationDialog from '../validationDialog';
 
 const TEXTFIELDLEN50 = 50;
 
@@ -60,12 +61,17 @@ const ApplicationFieldCard = ({
     isPOD,
     getAllLabels,
     warningFields,
+    getMissingFields,
+    showValidationDialog,
+    setShowValidationDialog,
+    isAddMore,
+    setIsAddMore
 }) => {
     const [calendarStart, setCalendarStart] = useState(false);
     const { section, step } = useParams();
-    const [isAddMore, setIsAddMore] = useState(
-        addMoreOpenBydefault ? true : false
-    );
+    // const [isAddMore, setIsAddMore] = useState(
+    //     addMoreOpenBydefault ? true : false
+    // );
     const [isCollapsableCard, setIsCollapsableCard] = useState(true);
     const basicpath = isBasicPath ? "basicDetails" : stepPath;
     const [isTableEdit, setIsTableEdit] = useState(false);
@@ -77,7 +83,7 @@ const ApplicationFieldCard = ({
     useEffect(() => {
         renderObjectFields(object);
         console.log("entered");
-    }, [basicForm]);
+    }, [basicForm, isAddMore]);
 
     const getValueByPath = (obj, path) => {
         const keys = path.split(/[\.\[\]]+/).filter(Boolean);
@@ -483,6 +489,19 @@ const ApplicationFieldCard = ({
         return temp;
     };
 
+    const getIsValidationDialogOpen = (value) => {
+        setShowValidationDialog(value);
+    }
+
+    const getSkipClicked = (value) => {
+        if (value) {
+            console.log('skip clicked', baseKey)
+            // setIsAddMore(false);
+            setShowValidationDialog(false);
+            handleAddMore('close', 'skipped')
+        }
+    }
+
     const isLableEmpty = (data) => {
         if (data === "" || data === null) {
             return true;
@@ -666,7 +685,7 @@ const ApplicationFieldCard = ({
                 getAllPath &&
                 getAllLabels
             ) {
-                if (baseKey === 'contactAddress1' || baseKey === 'contactAddress2' || baseKey === 'contactAddress3') {
+                if (baseKey?.split('.')[0] === 'contactAddress1' || baseKey?.split('.')[0] === 'contactAddress2' || baseKey?.split('.')[0] === 'contactAddress3') {
                     getAllPath(`${basicpath}.${baseKey}.${fieldKey}`);
                     getAllLabels({ label: fieldData.label, path: `${basicpath}.${baseKey}.${fieldKey}` });
                 } else {
@@ -786,11 +805,6 @@ const ApplicationFieldCard = ({
 
 
                 case "textbox":
-                    console.log(
-                        "....................................." + fieldData,
-                        parentData,
-                        object
-                    );
                     if (isPOD) {
                         return (
                             <div>
@@ -888,7 +902,7 @@ const ApplicationFieldCard = ({
                                                             ? e.target.value
                                                             : fieldData.maximum
                                                     )
-                                                    : e.target.value,
+                                                    : fieldKey === "pinCode" ? FormatPostalCode(e.target.value) : e.target.value,
                                                 baseKey
                                             )
                                         }
@@ -1206,12 +1220,12 @@ const ApplicationFieldCard = ({
                                                 ? true
                                                 : false
                                         }
-                                        // style={
-                                        //     warningFields?.map(data => data?.key)?.includes(`${basicpath}.${baseKey}.${fieldKey}`)
-                                        //         && (value === '' || value === null || value === undefined)
-                                        //         ? { border: '2px solid #cc0000', borderRadius: '5px' }
-                                        //         : {}
-                                        // }
+                                    // style={
+                                    //     warningFields?.map(data => data?.key)?.includes(`${basicpath}.${baseKey}.${fieldKey}`)
+                                    //         && (value === '' || value === null || value === undefined)
+                                    //         ? { border: '2px solid #cc0000', borderRadius: '5px' }
+                                    //         : {}
+                                    // }
                                     />
                                 )}
                                 label={fieldData.label}
@@ -1768,39 +1782,49 @@ const ApplicationFieldCard = ({
         return `id-${Math.random().toString(36).substr(2, 9)}-${Date.now()}`;
     };
 
-    const handleAddMore = () => {
-        let index = basicForm?.forms?.findIndex((data) => data?.id === formId);
-        let temp = basicForm;
-        console.log(basicForm[baseKey], "check");
-        if (!isTableEdit) {
-            if (temp.forms[index].data === null) {
-                temp.forms[index].data = {};
-                let withId = basicForm[baseKey];
-                withId.rowId = generateRandomId();
-                temp.forms[index].data[baseKey] = [withId];
-            } else if (temp.forms[index].data[baseKey] === undefined) {
-                temp.forms[index].data[baseKey] = [];
-                let withId = basicForm[baseKey];
-                withId.rowId = generateRandomId();
-                temp.forms[index].data[baseKey].push(withId);
-            } else {
-                let withId = basicForm[baseKey];
-                withId.rowId = generateRandomId();
-                temp.forms[index].data[baseKey].push(withId);
+    const handleAddMore = (type, skip) => {
+        let missingTemp = getMissingFields();
+        console.log(type, 'typeCheck', missingTemp, basicForm, baseKey, basicForm[baseKey], skip)
+        if (missingTemp?.length === 0 || skip === 'skipped') {
+            let index = basicForm?.forms?.findIndex((data) => data?.id === formId);
+            let temp = basicForm;
+            console.log(basicForm[baseKey], "check");
+            if (!isTableEdit) {
+                if (temp.forms[index].data === null) {
+                    temp.forms[index].data = {};
+                    let withId = basicForm[baseKey];
+                    withId.rowId = generateRandomId();
+                    temp.forms[index].data[baseKey] = [withId];
+                } else if (temp.forms[index].data[baseKey] === undefined) {
+                    temp.forms[index].data[baseKey] = [];
+                    let withId = basicForm[baseKey];
+                    withId.rowId = generateRandomId();
+                    temp.forms[index].data[baseKey].push(withId);
+                } else if (basicForm[baseKey] !== undefined) {
+                    let withId = basicForm[baseKey];
+                    withId.rowId = generateRandomId();
+                    temp.forms[index].data[baseKey].push(withId);
+                }
             }
+            delete basicForm[baseKey];
+            delete basicForm.undefined;
+            setBasicForm(temp);
+            if (type === 'close' || skip === 'skipped') {
+                setIsAddMore(false);
+            }
+            getIsSubmitClicked(true, temp, skip);
+            console.log(
+                basicForm?.forms?.filter((data) => data?.id === formId),
+                basicForm[baseKey],
+                "addMore",
+                index,
+                basicForm,
+                basicForm.baseKey
+            );
+            setIsTableEdit(false);
+        } else {
+            setShowValidationDialog(true)
         }
-        delete basicForm[baseKey];
-        delete basicForm.undefined;
-        setBasicForm(temp);
-        getIsSubmitClicked(true, temp);
-        console.log(
-            basicForm?.forms?.filter((data) => data?.id === formId),
-            basicForm[baseKey],
-            "addMore",
-            index,
-            basicForm,
-            basicForm.baseKey
-        );
     };
 
     const isValidDateString = (dateString) => {
@@ -1908,10 +1932,10 @@ const ApplicationFieldCard = ({
         return JSON.stringify(obj1) === JSON.stringify(obj2);
     };
 
-    const actions = [
-        { data: "Edit", requiredValue: "boolean", onClick: handleEdit },
-        { data: "Delete", requiredValue: "boolean", onClick: handleDelete },
-    ];
+    // const actions = [
+    //     { data: "Edit", requiredValue: "boolean", onClick: handleEdit },
+    //     { data: "Delete", requiredValue: "boolean", onClick: handleDelete },
+    // ];
 
     // console.log(object, Object.entries(object?.properties)?.map(([data, details]) => data), Object.entries(object?.properties)?.map(([data, details]) => details?.properties !== null && details?.properties !== undefined && Object.entries(details?.properties)?.map(([innerKey, innerData]) => innerData?.label)),
     //     getValueByPath(basicForm, `${'applicant'}.${"name"}.${'firstName'}`))
@@ -1922,7 +1946,7 @@ const ApplicationFieldCard = ({
                 ? ""
                 : style.backgroundCard
                 } ${style.marginTop}`}
-        >
+            key={baseKey}>
             <div className={style.cardTitle}>{object?.label}</div>
             {object?.description !== null && (
                 <div className={`${style.addMoreDescriptionText} ${style.marginTop10}`}>
@@ -1953,8 +1977,7 @@ const ApplicationFieldCard = ({
                                             <div
                                                 className={`${style.addMoreButton}`}
                                                 onClick={() => {
-                                                    setIsAddMore(false);
-                                                    handleAddMore();
+                                                    handleAddMore('close');
                                                 }}
                                             >
                                                 SAVE & CLOSE
@@ -1964,7 +1987,7 @@ const ApplicationFieldCard = ({
                                             <div
                                                 className={`${style.addMoreButtonOutlined}`}
                                                 onClick={() => {
-                                                    handleAddMore();
+                                                    handleAddMore('');
                                                 }}
                                             >
                                                 SAVE & ADD MORE
@@ -2004,7 +2027,7 @@ const ApplicationFieldCard = ({
                                         ?.data[baseKey]
                                 }
                                 gridStyle={tableGrid}
-                                actions={!isPOD ? actions : []}
+                                // actions={!isPOD ? actions : []}
                                 scrollStyle={style.contractScrollStyle}
                                 tableSortValues={[]}
                                 heading={heading}
@@ -2066,6 +2089,9 @@ const ApplicationFieldCard = ({
                     <div></div>
                     <div className={`${style.addButton}`}>ADD</div>
                 </div>
+            )}
+            {showValidationDialog && (
+                <ValidationDialog getIsOpen={getIsValidationDialogOpen} labelList={warningFields} getSkipClicked={getSkipClicked} />
             )}
         </div>
     );
