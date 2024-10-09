@@ -63,13 +63,13 @@ const StaffApplicationList = ({
     "Applicant ID",
     "Applicant Type",
     // "Department",
-    "Docs",
+    "DOCS",
     // "Data & Disclosures",
     "CRs",
     "Notes",
     "Task list Status",
     "Last Updated",
-    "",
+    "Action",
   ];
   const applicationHeaderValues = [
     "",
@@ -85,7 +85,7 @@ const StaffApplicationList = ({
     "CC",
     "CC Date",
     "Last Updated",
-    "",
+    "Action",
   ];
   const macHeaderValues = [
     "Applicant Name",
@@ -95,7 +95,7 @@ const StaffApplicationList = ({
     "COS Approval",
     "Tasklist Status",
     "Last Updated",
-    "",
+    "Action",
   ];
   const bodHeaderValues = [
     "Applicant Name",
@@ -105,7 +105,7 @@ const StaffApplicationList = ({
     "MAC Approval",
     "Task list Status",
     "Last Updated",
-    "",
+    "Action",
   ];
   const clarificationHeaderValues = [
     "",
@@ -115,7 +115,7 @@ const StaffApplicationList = ({
     "Raised By",
     "Created On",
     "Last Updated On",
-    "Actions",
+    "Action",
   ];
 
   const rejectedHeaderValues = [
@@ -130,7 +130,7 @@ const StaffApplicationList = ({
     "Notes",
     "Task list Status",
     "Last Updated",
-    "",
+    "Action",
   ];
   const approvedHeaderValues = [
     "",
@@ -433,25 +433,28 @@ const StaffApplicationList = ({
 
     tableData?.map((data) => {
       dot.push(
-        data?.status === "REVIEW_INPROGRESS"
+        data?.status === "SUBMITTED"
           ? "yellow"
           : data?.status === "APPROVED"
             ? "green"
             : "grey"
       );
       applicantName.push(
-        `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
-        ""
+        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
+        " "
       );
       applicantId.push(data?.displayId);
       applicantType.push(data?.providerType?.serviceProviderType);
       // department.push(
       //   data?.basicDetails?.departmentSpecialty?.department || "-"
       // );
-      docs.push(data?.documents?.uploadedCount || "");
-      docsHoverText.push([
-        "Immunization History Verification From PCP pending",
-      ]);
+      docs.push(data?.documents?.uploadedCount|| "");
+      // docsHoverText.push([
+      //   "Immunization History Verification From PCP pending",
+      // ]);
+      const documentDetails = data?.documents?.documentDetails || [];
+      const docHoverTextArray = documentDetails.length > 0 ? documentDetails.map(doc => doc.documentType): ["-"];
+      docsHoverText.push(docHoverTextArray);
       docsIcon.push(
         <TextSnippetOutlinedIcon
           style={{ fontSize: 20, color: `${data?.subStatus}` }}
@@ -466,14 +469,17 @@ const StaffApplicationList = ({
       // disclosures.push(data?.disclosures || '7/9');
       crs.push(data?.clarificationRequiredFor || "-");
       crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"]);
-      notes.push(data?.notes || "1");
+      // notes.push(data?.clarificationRequiredFor || "1");
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#52575D` }} />
       );
-      notesHoverText.push([
-        "June 13 00:00, Nina Grealy",
-        "Lorem ipsum dolor sit amet, consetetur sadipscing.",
-      ]);
+      const notesDetails = data?.notes || [];
+      const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes): ["-"];
+      // notesHoverText.push([
+      //   "June 13 00:00, Nina Grealy",
+      //   "Lorem ipsum dolor sit amet, consetetur sadipscing.",
+      // ]);
+      notesHoverText.push(notesHoverTextArray);
       taskListStatus.push(data?.tasks.completedCount + "/" + data?.tasks.totalCount);
       lastUpdated.push(
         format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
@@ -510,7 +516,7 @@ const StaffApplicationList = ({
       },
       {
         type: "iconWithCount",
-        value: notes,
+        // value: notes,
         hoverText: notesHoverText,
         isShowHoverText: true,
         icon: notesIcon,
@@ -552,8 +558,8 @@ const StaffApplicationList = ({
             : "grey"
       );
       applicantName.push(
-        `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
-        ""
+        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
+        " "
       );
       applicantType.push(data?.providerType.serviceProviderType);
       applicantId.push(data?.displayId);
@@ -646,8 +652,8 @@ const StaffApplicationList = ({
 
     tableData?.map((data) => {
       applicantName.push(
-        `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
-        ""
+        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
+        " "
       );
       applicantId.push(data?.displayId);
       applicantType.push(data?.providerType?.serviceProviderType);
@@ -710,8 +716,8 @@ const StaffApplicationList = ({
 
     tableData?.map((data) => {
       applicantName.push(
-        `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
-        ""
+        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
+        " "
       );
       applicantId.push(data?.displayId);
       applicantType.push(data?.providerType.serviceProviderType);
@@ -818,8 +824,8 @@ const StaffApplicationList = ({
             : "grey"
       );
       applicantName.push(
-        `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
-        ""
+        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
+        " "
       );
       applicantId.push(data?.applicant?.id);
       applicantType.push(data?.providerType.serviceProviderType);
@@ -1314,11 +1320,14 @@ const StaffApplicationList = ({
                         <div className={style.progressbarStyle}>
                           <div className={style.spaceBetween}>
                             <div className={style.statisticsProgress}>
-                              <div className={`${style.greyDotStyle}`}></div>
+                            <div className={status?.status === "SUBMITTED" ? style.yellowDotStyle : status?.status === "APPROVED" ? style.greenDotStyle : style.greyDotStyle}></div>
 
                               <div
-                                className={style.marginLeft10}
-                              >{`${status.basicDetail.applicant.name.firstName} ${status.basicDetail.applicant.name.lastName}`}</div>
+                                className={style.marginLeft10}>
+                                  {/* {`${status?.basicDetail?.applicant?.name?.firstName} ${status.basicDetail.applicant.name.lastName}`} */}
+                                  {status?.basicDetail?.applicant?.name?.firstName.charAt(0).toUpperCase() + status?.basicDetail?.applicant?.name?.firstName.slice(1).toLowerCase()}, {status.basicDetail.applicant.name.lastName.toUpperCase()}
+                                  </div>
+
                               {/* <span className={style.textStyleProgress}> ({status.providerType.serviceProviderType}) </span> */}
 
                             </div>
@@ -1355,7 +1364,7 @@ const StaffApplicationList = ({
                           <div className={style.spaceBetween}>
                             <span className={style.textStyleProgress}>
                               {/* <span className={style.textalign}> */}{" "}
-                              {status.providerType.category}{" "}
+                              {status?.providerType?.serviceProviderType}{" "}
                             </span>
                             {/* <div className={style.progressBottomText}>
                               {status.remainingCompletionPercentage}% remaining
