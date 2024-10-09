@@ -4,6 +4,7 @@ import Timer from "./../../images/Timer.png";
 import Reminder from "./../../images/reminder.png";
 import DataEntry from "./../../images/dataEntry.png";
 import CrossPink from "../../images/crossPink.png";
+import CAPSmart from "./../../images/capSmartTransparent.png";
 import style from './index.module.scss'
 
 const AIAssistantDialog = ({ getIsOpen }) => {
@@ -14,7 +15,12 @@ const AIAssistantDialog = ({ getIsOpen }) => {
                 <div className={style.whiteBackground}>
                     <div className={style.spaceBetween}>
                         <div></div>
-                        <p className={style.loginHeaderText}><span className={style.bold}>Cap</span>Smart</p>
+                        <img
+                            src={CAPSmart}
+                            alt="cross"
+                            className={`${style.logoStyle}  `}
+                        />
+                        {/* <p className={style.loginHeaderText}><span className={style.bold}>Cap</span>Smart</p> */}
                         <img
                             src={CrossPink}
                             alt="cross"
@@ -22,7 +28,7 @@ const AIAssistantDialog = ({ getIsOpen }) => {
                             onClick={() => { getIsOpen(false) }}
                         />
                     </div>
-                    <div className={`${style.featureTextStyle} ${style.marginTop}`}>Our Smart features and <span className={style.featureTextHighlight}> AI assistant</span> shortens your time to complete,</div>
+                    <div className={`${style.featureTextStyle} ${style.marginTop}`}>Our Smart features and inbuilt <span className={style.featureTextHighlight}> AI assistant</span> shortens your time to complete from hours to less than 30 mins.</div>
                     {/* <div className={`${style.featureGrid} ${style.marginTop40}`}>
                         <div className={style.alignCenter}>
                             <div>
@@ -41,17 +47,17 @@ const AIAssistantDialog = ({ getIsOpen }) => {
                         <div className={style.advantagesCard}>
                             <img src={Timer} alt='' className={style.advantagesImageStyle} />
                             <div className={`${style.advantageHeading} ${style.marginTop}`}>90% Faster</div>
-                            <div className={`${style.advantageDescription} ${style.marginTop10}`}>Than other conventional credentialing Platforms</div>
+                            <div className={`${style.advantageDescription} ${style.marginTop10}`}>Than other conventional credentialing platforms</div>
                         </div>
                         <div className={style.advantagesCard}>
                             <img src={Reminder} alt='' className={style.advantagesImageStyle} />
-                            <div className={`${style.advantageHeading} ${style.marginTop}`}>Auto-Fill</div>
-                            <div className={`${style.advantageDescription} ${style.marginTop10}`}>Scan all the documents and Autofill the data fields</div>
+                            <div className={`${style.advantageHeading} ${style.marginTop}`}>AI Aided Auto-Fill</div>
+                            <div className={`${style.advantageDescription} ${style.marginTop10}`}>Simply upload or take pictures of your documents and CAPSmart will autofill required data fields throughout your application.</div>
                         </div>
                         <div className={style.advantagesCard}>
                             <img src={DataEntry} alt='' className={style.advantagesImageStyle} />
                             <div className={`${style.advantageHeading} ${style.marginTop}`}>Stay Updated</div>
-                            <div className={`${style.advantageDescription} ${style.marginTop10}`}>Get Notifications when your documents approach expiry</div>
+                            <div className={`${style.advantageDescription} ${style.marginTop10}`}>Get Alerts and Notifications when your application moves different stages of Review and Approvals.</div>
                         </div>
                     </div>
                 </div>

@@ -12,7 +12,7 @@ const FileDisplayDialog = ({ getIsOpen, file }) => {
             <div>
                 <div className={Classes.DIALOG_BODY}>
                     <div className={style.spaceBetween}>
-                        <div className={style.heading}>{`${file?.documentType} (${file?.fileUploaded})`}</div>
+                        <div className={style.heading}>{file?.fileUploaded !== undefined ? `${file?.documentType} (${file?.fileUploaded})` : file?.fileName !== undefined ? ` (${file?.fileName})` : ''}</div>
                         <div className={style.displayInRow}>
                             <img
                                 src={CrossPink}

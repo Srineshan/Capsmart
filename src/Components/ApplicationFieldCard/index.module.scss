@@ -131,6 +131,11 @@
     height: 100%;
 }
 
+.justifyCenter {
+    display: flex;
+    justify-content: center;
+}
+
 .siteDisplayCard {
     background: #EFEEFC 0% 0% no-repeat padding-box;
     border: 0.4000000059604645px solid #d7d4f7;
@@ -292,4 +297,10 @@
     opacity: 1;
     margin-top: 10px;
     max-width: 85%;
+}
+
+.fileLoadingStyle {
+    height: auto;
+    width: 40%;
+    object-fit: contain;
 }

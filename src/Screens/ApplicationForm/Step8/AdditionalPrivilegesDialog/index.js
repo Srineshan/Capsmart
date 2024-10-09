@@ -249,7 +249,7 @@ const AdditionalPrivileges = ({ getIsOpen, primaryPrivilege, getSelectedPrivileg
                             </div>
                         </div>
                     )} */}
-                    {staffPrivilege?.filter(data => data?.id === selectedPrivilege)?.length !== 0 && staffPrivilege?.filter(data => data?.id === selectedPrivilege)[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.length !== 0 && (
+                    {staffPrivilege?.filter(data => data?.id === selectedPrivilege)?.length !== 0 && staffPrivilege?.filter(data => data?.id === selectedPrivilege)[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length !== 0 && (
                         <div className={style.marginTop40}>
                             <div className={style.applicationCardStyle}>
                                 <div className={style.marginTop}>

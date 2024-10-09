@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import PdfDoc from './../../../images/pdfDoc.png';
 import WordDoc from './../../../images/wordDoc.png';
 import ImgDoc from './../../../images/imgDoc.png';
+import FileLoading from './../../../images/fileLoading.GIF';
 import DeleteIcon from './../../../images/deleteHcRow.png';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
@@ -309,11 +310,13 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
     console.log(showRedBorderForESign, eSignInitial, eSignTitle)
 
     const handleContinue = async () => {
+        setIsLoading(true);
         if (tempValue?.table !== undefined) {
             await PUT(`application-management-service/application/${applicationId}/addUploadedDocuments`, tempValue?.table)
                 .then(response => {
                     console.log(response)
                     getPreApplication();
+                    setIsLoading(false);
                     // temp[index].verified = response?.data?.verified;
                     // temp[index].valid = response?.data?.valid;
                 })
@@ -324,6 +327,15 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
         if (sessionStorage.getItem('fromSummary') === "true") {
             navigate(-1);
         } else { navigate('/applicationForm/section1/step3') }
+        setIsLoading(false);
+    }
+
+    if (isLoading) {
+        return (
+            <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
+                <img src={FileLoading} alt="" className={style.fileLoadingStyle} />
+            </div>
+        )
     }
 
     return (
