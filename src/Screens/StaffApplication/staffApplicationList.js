@@ -56,6 +56,8 @@ const StaffApplicationList = ({
 
   const [tableData, setTableData] = useState([]);
   const [rejectionListData, setRejectionListData] = useState([]);
+  const [sortField, setSortField] = useState('DEFAULT');
+  const [sortValue, setSortValue] = useState('ASCENDING');
 
   const applicantHeaderValues = [
     "",
@@ -155,72 +157,69 @@ const StaffApplicationList = ({
 
   const applicantColSortValues = [
     false,
+    true,
+    false,
+    true,
     false,
     false,
     false,
     false,
-    false,
-    false,
-    false,
-    false,
-    false,
+    true,
     false,
   ];
   const applicationColSortValues = [
     false,
+    true,
+    false,
+    true,
     false,
     false,
     false,
     false,
-    false,
-    false,
-    false,
-    false,
+    true,
     false,
   ];
   const macColSortValues = [
+    true,
+    false,
+    true,
     false,
     false,
     false,
-    false,
-    false,
-    false,
-    false,
-    false,
+    true,
     false,
   ];
   const bodColSortValues = [
+    true,
+    false,
+    true,
     false,
     false,
-    false,
-    false,
-    false,
-    false,
-    false,
+    true,
     false,
   ];
   const clarificationColSortValues = [
     false,
+    true,
+    false,
+    true,
     false,
     false,
     false,
     false,
-    false,
-    false,
-    false,
+    true,
     false,
   ];
   const rejectedColSortValues = [
     false,
+    true,
+    false,
+    true,
     false,
     false,
     false,
     false,
-    false,
-    false,
-    false,
-    false,
-    false,
+    true,
     false,
   ];
   const approvedColSortValues = [
@@ -281,6 +280,10 @@ const StaffApplicationList = ({
   }, [selectedTab]);
 
   useEffect(() => {
+    getWorkflowUserDataSort(selectedTab);
+  }, [selectedTab,sortField, sortValue]);
+
+  useEffect(() => {
     getRejectionData(rejectionTab);
   }, [rejectionTab, showApplicationRejectionDialog]);
 
@@ -302,6 +305,32 @@ const StaffApplicationList = ({
     }
   };
 
+  const getWorkflowUserDataSort = async () => {
+    try {
+      const response = await GET(
+        `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}`
+      //  `application-management-service/application/workflowUser?tab=${selectedTab}`
+      );
+      console.log("Application data", response?.data.applications);
+      setTableData(response?.data?.applications);
+      return response?.data.applications || [];
+    } catch (error) {
+      console.error("Error fetching applications:", error);
+      return [];
+    }
+  };
+  const getHandleSort = (value, sortBy) => {
+    if (sortBy === 'ASCENDING') {
+        setSortField(value)
+        setSortValue('DESCENDING')
+    } else if (sortBy === 'DESCENDING') {
+        setSortField('DEFAULT')
+        setSortValue('ASCENDING')
+    } else if (sortBy === 'NONE') {
+        setSortField(value)
+        setSortValue('ASCENDING')
+    }
+}
   console.log("rejectionTab", rejectionTab);
 
   const getRejectionData = async () => {
@@ -943,11 +972,11 @@ const StaffApplicationList = ({
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyFunction,
     },
-    {
-      data: "Send for Cred Comm Review",
-      requiredValue: "boolean",
-      onClick: "",
-    },
+    // {
+    //   data: "Send for Cred Comm Review",
+    //   requiredValue: "boolean",
+    //   onClick: "",
+    // },
     {
       data: "Applicant Processing Tasks",
       requiredValue: "boolean",
@@ -987,7 +1016,7 @@ const StaffApplicationList = ({
       isParagraph: true,
     },
     {
-      data: "From staff manager",
+      data: "From Staff Manager",
       requiredValue: "boolean",
       onClick: "",
       isIndent: true
@@ -1513,6 +1542,8 @@ const StaffApplicationList = ({
                     tableSortValues={tableSortValues}
                     heading={"There are no Record for you to manage"}
                     onClickFunction={() => { }}
+                    getHandleSort={getHandleSort}
+                    sortValue={{ sortBy: sortValue, sortByField: sortField }}
                   />
                 </div>
               </div>

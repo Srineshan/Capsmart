@@ -37,11 +37,11 @@
 
 .isParagraph {
     font-size: 14px;
-    color: #F5F9FD;
+    color: #000000;
     opacity: 0.4;
     font-weight: bold;
     margin-left: 10px;
-    margin-top: 10px
+    margin-bottom: 5px
   }
 
 .tableHeaderFontStyle {
@@ -338,6 +338,14 @@
 
 .fullWidth {
     width: 100%;
+}
+
+.divider {
+    background: #686869 0% 0% no-repeat padding-box;
+    height: 2px;
+    margin: 10px auto;
+    width: 90%;
+    display: block;
 }
 
 @media print {
