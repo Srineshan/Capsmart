@@ -60,10 +60,7 @@ const ESignature = ({
                 {/* {eSignTypeContent} */}
               </span>
             ) : (
-              <span
-                // className={style.userName}
-                style={{ fontFamily: selectedESignTypeStyle }}
-              >
+              <span style={{ fontFamily: selectedESignTypeStyle }}>
                 {userName}
               </span>
             )}
