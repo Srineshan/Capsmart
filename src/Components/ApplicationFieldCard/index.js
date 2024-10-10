@@ -15,6 +15,7 @@ import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import CheckIcon from '@mui/icons-material/Check';
 import VerifiedImage from "../../images/verifiedImage.png";
 import ToBeVerifiedImage from "../../images/toBeVerifiedImage.png";
+import FileLoading from '../../images/fileLoading.GIF';
 import DeleteIcon from '../../images/deleteHcRow.png';
 import style from './index.module.scss';
 import CommonCheckBox from '../CommonFields/CommonCheckBox';
@@ -34,6 +35,7 @@ import CommonLabel from "../CommonFields/CommonLabel";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import ValidationDialog from '../validationDialog';
+import FileDisplayDialog from '../fileDisplayDialog';
 
 const TEXTFIELDLEN50 = 50;
 
@@ -73,9 +75,12 @@ const ApplicationFieldCard = ({
     //     addMoreOpenBydefault ? true : false
     // );
     const [isCollapsableCard, setIsCollapsableCard] = useState(true);
+    const [showFileDisplayDialog, setShowFileDisplayDialog] = useState(false);
+    const [selectedFile, setselectedFile] = useState(false);
     const basicpath = isBasicPath ? "basicDetails" : stepPath;
     const [isTableEdit, setIsTableEdit] = useState(false);
     const [files, setFiles] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
     const { setValue, value } = useComboboxControls({ initialValue: "" });
     const canadaData = JSON.parse(sessionStorage.getItem("canadaData")) || {};
     let user = JSON.parse(sessionStorage.getItem("user"));
@@ -184,6 +189,7 @@ const ApplicationFieldCard = ({
             : Number(keys[keys.length - 1]);
         console.log(value);
         if (isFileObject(value)) {
+            setIsLoading(true)
             let file;
             if (Array.isArray(value)) {
                 file = await changeHandler(value);
@@ -192,6 +198,7 @@ const ApplicationFieldCard = ({
             }
             console.log(file);
             current[lastKey] = file;
+            setIsLoading(false)
         } else {
             current[lastKey] = value;
         }
@@ -491,6 +498,10 @@ const ApplicationFieldCard = ({
 
     const getIsValidationDialogOpen = (value) => {
         setShowValidationDialog(value);
+    }
+
+    const getIsShowFileDialog = (value) => {
+        setShowFileDisplayDialog(value);
     }
 
     const getSkipClicked = (value) => {
@@ -1125,6 +1136,7 @@ const ApplicationFieldCard = ({
                         );
                     }
                 case "datepicker":
+                    console.log(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`), 'datecheck', isValidDateString(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)))
                     if (isPOD) {
                         return (
                             <div>
@@ -1139,10 +1151,10 @@ const ApplicationFieldCard = ({
                                         "*"}
                                 </div>
                                 <div className={style.lableReadOnlyStyleInPOD}>
-                                    {getValueByPath(
-                                        basicForm,
-                                        `${basicpath}.${baseKey}.${fieldKey}`
-                                    ) || "-"}
+                                    {getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) !== undefined && isValidDateString(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)) ? format(
+                                        new Date(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)),
+                                        canadaData?.dateFormat || "dd/MM/yyyy"
+                                    ) : "-"}
                                 </div>
                             </div>
                         );
@@ -1398,36 +1410,37 @@ const ApplicationFieldCard = ({
                         return <div></div>;
                     } else {
                         console.log(
-                            getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)
+                            getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`), 'checkstring'
                         );
                         return (
                             <div
                                 className={`${style.addMoreUpload} ${style.addMoreUploadMargin}`}
                             >
-                                <div>
-                                    <label
-                                        for={`file-upload-dynamic-${fieldKey}`}
-                                        className={`${style.displayInRow} ${style.cursorPointer} `}
-                                    >
-                                        {/* {getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) !== undefined && (
-                                        <div className={style.checkedCircleIcon}>
-                                            <CheckIcon sx={{ color: '#fff', fontSize: '17px' }} />
-                                        </div>
-                                    )} */}
-                                        <DescriptionOutlinedIcon
-                                            sx={{ color: "#787f87", fontSize: "30px" }}
+                                {(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) !== undefined && getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) !== '' && getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileURL !== null) ? (
+                                    <div onClick={() => { setShowFileDisplayDialog(true); setselectedFile(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)) }}>
+                                        <img src={VerifiedImage} alt="" className={`${style.imgIcon} ${style.cursorPointer}`} />
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div>
+                                            <label
+                                                for={`addMore-file-upload-dynamic-${fieldKey}`}
+                                                className={`${style.displayInRow} ${style.cursorPointer} `}
+                                            >
+                                                <img src={ToBeVerifiedImage} alt="" className={style.imgIcon} />
+                                            </label>
+                                        </div >
+                                        <input
+                                            id={`addMore-file-upload-dynamic-${fieldKey}`}
+                                            type="file"
+                                            accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx"
+                                            onChange={(e) => {
+                                                handleChange(fieldKey, e.target.files[0], baseKey);
+                                            }}
                                         />
-                                    </label>
-                                </div>
-                                <input
-                                    id={`file-upload-dynamic-${fieldKey}`}
-                                    type="file"
-                                    accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx"
-                                    onChange={(e) => {
-                                        handleChange(fieldKey, e.target.files[0], baseKey);
-                                    }}
-                                />
-                            </div>
+                                    </>
+                                )}
+                            </div >
                         );
                     }
                 case "fileupload":
@@ -1871,7 +1884,7 @@ const ApplicationFieldCard = ({
                                 ? isValidDateString(innerData[data])
                                     ? format(
                                         new Date(innerData[data]),
-                                        canadaData?.dateFormat || "MM/dd/yyyy"
+                                        canadaData?.dateFormat || "dd/MM/yyyy"
                                     )
                                     : innerData[data]
                                 : ""
@@ -1940,6 +1953,14 @@ const ApplicationFieldCard = ({
     // console.log(object, Object.entries(object?.properties)?.map(([data, details]) => data), Object.entries(object?.properties)?.map(([data, details]) => details?.properties !== null && details?.properties !== undefined && Object.entries(details?.properties)?.map(([innerKey, innerData]) => innerData?.label)),
     //     getValueByPath(basicForm, `${'applicant'}.${"name"}.${'firstName'}`))
     console.log(basicForm, object);
+
+    if (isLoading) {
+        return (
+            <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
+                <img src={FileLoading} alt="" className={style.fileLoadingStyle} />
+            </div>
+        )
+    }
     return (
         <div
             className={`${window.location.pathname.includes("applicationForm") || isPOD
@@ -2092,6 +2113,9 @@ const ApplicationFieldCard = ({
             )}
             {showValidationDialog && (
                 <ValidationDialog getIsOpen={getIsValidationDialogOpen} labelList={warningFields} getSkipClicked={getSkipClicked} />
+            )}
+            {showFileDisplayDialog && (
+                <FileDisplayDialog getIsOpen={getIsShowFileDialog} file={selectedFile} />
             )}
         </div>
     );

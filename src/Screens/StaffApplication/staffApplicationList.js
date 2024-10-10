@@ -271,7 +271,7 @@ const StaffApplicationList = ({
 
   useEffect(() => {
     getSentConfirmationCount();
-    getRequestAppointmentCount();
+    // getRequestAppointmentCount();
     getRejectionCounts();
   }, []);
 
@@ -363,15 +363,15 @@ const StaffApplicationList = ({
       });
   };
 
-  const getRequestAppointmentCount = async () => {
-    await GET("application-management-service/preApplication")
-      .then((response) => {
-        setRequestAppointment(response?.data.numberOfElements || 0);
-      })
-      .catch((error) => {
-        console.error("Error fetching request appointment count:", error);
-      });
-  };
+  // const getRequestAppointmentCount = async () => {
+  //   await GET("application-management-service/preApplication")
+  //     .then((response) => {
+  //       setRequestAppointment(response?.data.numberOfElements || 0);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching request appointment count:", error);
+  //     });
+  // };
 
   const reactToPrintContent = useCallback(() => {
     return componentRef.current;
@@ -1021,9 +1021,9 @@ const StaffApplicationList = ({
       onClick: "",
       isIndent: true
     },
-    { data: "From Applicant", requiredValue: "boolean", onClick: "",isIndent: true },
-    { data: "From Internal Approver", requiredValue: "boolean", onClick: "",isIndent: true },
-    { data: "From Institution", requiredValue: "boolean", onClick: "",isIndent: true },
+    { data: "From Applicant", requiredValue: "boolean", onClick: "", isIndent: true },
+    { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true },
+    { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true },
   ];
 
   const macActionsData = [
@@ -1048,9 +1048,9 @@ const StaffApplicationList = ({
       requiredValue: "boolean",
       isParagraph: true,
     },
-    { data: "MAC Approval", requiredValue: "boolean", onClick: "",isIndent: true },
-    { data: "Print Summary For MAC", requiredValue: "boolean", onClick: "",isIndent: true},
-    { data: "Applicant Processing Tasks", requiredValue: "boolean", onClick: "",isIndent: true },
+    { data: "MAC Approval", requiredValue: "boolean", onClick: "", isIndent: true },
+    { data: "Print Summary For MAC", requiredValue: "boolean", onClick: "", isIndent: true },
+    { data: "Applicant Processing Tasks", requiredValue: "boolean", onClick: "", isIndent: true },
   ];
 
   const bodActionsData = [

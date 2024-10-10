@@ -171,7 +171,7 @@ const Step4 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'certifications' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.certifications} gridStyle={style.licenseGrid} baseKey={'certifications'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} stepPath={`forms[2].data`} setIsEdited={getIsEdited} warningFields={warningFields}
+                            <ApplicationFieldCard object={formSchema?.properties?.certifications} applicationId={applicationId} gridStyle={style.licenseGrid} baseKey={'certifications'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} stepPath={`forms[2].data`} setIsEdited={getIsEdited} warningFields={warningFields}
                             // formId={basicForm?.forms?.[2]?.id}  getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid}
                             //     heading={'Information Requirement Alert'}
                             //     subHeading={'For this application you are required to provide information on all of the different Professional licenses & Board certification you have.'}

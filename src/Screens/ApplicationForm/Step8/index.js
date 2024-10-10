@@ -392,11 +392,11 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
 
     const getFields = () => {
         if (selectedPrivilege !== "") {
-            console.log(selectedPrivilegeForDisplay, selectedAdditionalPrivilegeForDisplay, 'entered')
+            console.log(selectedPrivilegeForDisplay, selectedAdditionalPrivilegeForDisplay, 'entered', selectedPrivilege, staffPrivilege?.filter(data => data?.id === selectedPrivilege), staffPrivilege)
             return (
                 <>
                     <div className={style.padding}>
-                        <div className={style.cardTitle}>{`CAMBRIDGE MEMORIAL HOSPITAL ${staffPrivilege?.filter(data => data?.id === selectedPrivilege)?.map(data => data?.privilegeSetTitle)[0]?.toUpperCase()}`}</div>
+                        <div className={style.cardTitle}>{`CAMBRIDGE MEMORIAL HOSPITAL ${staffPrivilege?.filter(data => data?.id === selectedPrivilege)?.map(data => data?.privilegeSetTitle)[0] !== undefined ? staffPrivilege?.filter(data => data?.id === selectedPrivilege)?.map(data => data?.privilegeSetTitle)[0]?.toUpperCase() : ''}`}</div>
 
                         {
                             selectedPrivilegeForDisplay?.map((data) => data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map((categories, index) => (
@@ -426,26 +426,26 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
 
                             )
                         }
-
-                        <div className={style.twoCol}>
-                            <div
-                                onClick={() => handleSign('Core', 'Basic')}
-                            >
-                                <ESignature
-                                    userName={selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign !== null ? selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.name : ""}
-                                    encData={selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign !== null ? selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.esign : ""}
-                                    showData={(selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign !== null && selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign !== undefined) ? true : false}
-                                    showDatais={true}
-                                />
-                            </div>
-                            <div className={style.verticalAlignCenter}>
-                                <div className={style.displayInRow}>
-                                    <div className={style.dateTitle}>Date: </div>
-                                    <div className={`${style.date} ${style.marginLeft}`}>{selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign !== null ? selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.signedDate : ""}</div>
+                        {selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.privilegesByCategories?.[0]?.privileges?.length !== 0 && (
+                            <div className={style.twoCol}>
+                                <div
+                                    onClick={() => handleSign('Core', 'Basic')}
+                                >
+                                    <ESignature
+                                        userName={selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign !== null ? selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.name : ""}
+                                        encData={selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign !== null ? selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.esign : ""}
+                                        showData={(selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign !== null && selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign !== undefined) ? true : false}
+                                        showDatais={true}
+                                    />
+                                </div>
+                                <div className={style.verticalAlignCenter}>
+                                    <div className={style.displayInRow}>
+                                        <div className={style.dateTitle}>Date: </div>
+                                        <div className={`${style.date} ${style.marginLeft}`}>{selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign !== null ? selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.signedDate : ""}</div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-
+                        )}
                     </div>
 
 
@@ -455,7 +455,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
         {formSchema !== undefined && 'additionalInformationAndSupportingDocuments' in formSchema?.properties && (
             <ApplicationFieldCard object={formSchema?.properties?.additionalInformationAndSupportingDocuments} gridStyle={style.privilegeGrid} baseKey={'additionalInformationAndSupportingDocuments'} basicForm={basicForm} setBasicForm={setBasicForm} />
         )} */}
-                    {selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.length !== 0 && (
+                    {selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length !== 0 && (
                         <div className={style.padding}>
                             <div className={style.cardDescription}>{'The following privileges are restricted and require evidence of qualification and competence. Continued competence would be evaluated as that being acceptable to the Medical Consultant of the Program. Please signify your intention regarding each privilege by marking and sign below.'}</div>
 
@@ -677,25 +677,27 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                                                         }
                                                     </div>
                                                 ))}
-                                                <div className={style.twoCol}>
-                                                    <div
-                                                        onClick={() => { handleSign('Core', 'Additional', index) }}
-                                                    >
-                                                        <ESignature
-                                                            userName={data?.privilegeDetails?.corePrivileges?.esign !== null ? data?.privilegeDetails?.corePrivileges?.esign?.name : ''}
-                                                            encData={data?.privilegeDetails?.corePrivileges?.esign !== null ? data?.privilegeDetails?.corePrivileges?.esign?.esign : ''}
-                                                            showData={(data?.privilegeDetails?.corePrivileges?.esign !== null && data?.privilegeDetails?.corePrivileges?.esign !== undefined) ? true : false}
-                                                            showDatais={true}
-                                                        />
-                                                    </div>
-                                                    <div className={style.verticalAlignCenter}>
-                                                        <div className={style.displayInRow}>
-                                                            <div className={style.dateTitle}>Date: </div>
-                                                            <div className={`${style.date} ${style.marginLeft}`}>{data?.privilegeDetails?.corePrivileges?.esign !== null ? data?.privilegeDetails?.corePrivileges?.esign?.signedDate : ""}</div>
+                                                {data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.[0]?.privileges?.length !== 0 && (
+                                                    <div className={style.twoCol}>
+                                                        <div
+                                                            onClick={() => { handleSign('Core', 'Additional', index) }}
+                                                        >
+                                                            <ESignature
+                                                                userName={data?.privilegeDetails?.corePrivileges?.esign !== null ? data?.privilegeDetails?.corePrivileges?.esign?.name : ''}
+                                                                encData={data?.privilegeDetails?.corePrivileges?.esign !== null ? data?.privilegeDetails?.corePrivileges?.esign?.esign : ''}
+                                                                showData={(data?.privilegeDetails?.corePrivileges?.esign !== null && data?.privilegeDetails?.corePrivileges?.esign !== undefined) ? true : false}
+                                                                showDatais={true}
+                                                            />
+                                                        </div>
+                                                        <div className={style.verticalAlignCenter}>
+                                                            <div className={style.displayInRow}>
+                                                                <div className={style.dateTitle}>Date: </div>
+                                                                <div className={`${style.date} ${style.marginLeft}`}>{data?.privilegeDetails?.corePrivileges?.esign !== null ? data?.privilegeDetails?.corePrivileges?.esign?.signedDate : ""}</div>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                {data?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.length !== 0 && (
+                                                )}
+                                                {data?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length !== 0 && (
                                                     <>
                                                         <div className={`${style.cardDescription} ${style.marginTop}`}>{'The following privileges are restricted and require evidence of qualification and competence. Continued competence would be evaluated as that being acceptable to the Medical Consultant of the Program. Please signify your intention regarding each privilege by marking and sign below.'}</div>
                                                         {data?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.map((categories, categoriesIndex) => (

@@ -32,6 +32,12 @@
     width: 18px;
 }
 
+.logoStyle {
+    height: 60px;
+    width: auto;
+    object-fit: contain;
+}
+
 .loginHeaderText {
     text-align: left;
     font: normal normal normal 27px/40px proxima-nova;
