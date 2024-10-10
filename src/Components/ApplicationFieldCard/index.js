@@ -156,12 +156,16 @@ const ApplicationFieldCard = ({
                 `application-management-service/application/${applicationId}/files/bulk`,
                 formData
             );
-            SuccessToaster("File Uploaded Successfully");
-            console.log(response?.data);
+            console.log(response, 'response');
+            if (response?.data) {
+                SuccessToaster("File Uploaded Successfully");
+            } else {
+                ErrorToaster("File Upload Failed");
+            }
             return response?.data;
         } catch (error) {
             ErrorToaster("File Upload Failed");
-            console.error(error);
+            console.error(error, 'response');
             return null;
         }
     };
@@ -312,6 +316,7 @@ const ApplicationFieldCard = ({
     let isMailingAddressPincodeEntered = getValueByPath(basicForm, 'forms[1].data.contactAddress2.mailingAddress.pinCode');
     let isBusinessAddressPincodeEntered = getValueByPath(basicForm, 'forms[1].data.contactAddress3.business.businessAddress.pinCode');
     let registeredBusinessAddress = getValueByPath(basicForm, 'forms[1].data.contactAddress3.registeredBusinessAddress');
+    let department = getValueByPath(basicForm, 'basicDetails.departmentSpecialty.department');
     console.log(isMailingAddressSameAsHomeAddress, isBusinessAddressSameAsHomeAddressOrMailingAddress)
     useEffect(() => {
         if (isMailingAddressSameAsHomeAddress !== undefined && isMailingAddressSameAsHomeAddress !== null && !isPOD) {
@@ -400,6 +405,16 @@ const ApplicationFieldCard = ({
             });
         }
     }, [registeredBusinessAddress]);
+
+    // useEffect(() => {
+    //     if (department !== undefined && department !== null && !isPOD) {
+    //         setBasicForm(prevData => {
+    //             let tempData = { ...prevData };
+    //             tempData.basicDetails.departmentSpecialty.specialty = '';
+    //             return tempData;
+    //         });
+    //     }
+    // }, [department]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -1200,6 +1215,7 @@ const ApplicationFieldCard = ({
                                                     : fieldData.label !== null
                                                         ? `Enter ${fieldData.label}`
                                                         : null,
+                                            readOnly: true
                                         }}
                                         color={
                                             warningFields
@@ -1410,13 +1426,13 @@ const ApplicationFieldCard = ({
                         return <div></div>;
                     } else {
                         console.log(
-                            getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`), 'checkstring'
+                            getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`), getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`), getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileURL !== undefined, 'checkstring'
                         );
                         return (
                             <div
                                 className={`${style.addMoreUpload} ${style.addMoreUploadMargin}`}
                             >
-                                {(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) !== undefined && getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) !== '' && getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileURL !== null) ? (
+                                {(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) !== undefined && getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) !== null && getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) !== '' && getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileURL !== null) ? (
                                     <div onClick={() => { setShowFileDisplayDialog(true); setselectedFile(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)) }}>
                                         <img src={VerifiedImage} alt="" className={`${style.imgIcon} ${style.cursorPointer}`} />
                                     </div>
@@ -1954,36 +1970,140 @@ const ApplicationFieldCard = ({
     //     getValueByPath(basicForm, `${'applicant'}.${"name"}.${'firstName'}`))
     console.log(basicForm, object);
 
-    if (isLoading) {
-        return (
-            <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
-                <img src={FileLoading} alt="" className={style.fileLoadingStyle} />
-            </div>
-        )
-    }
+    // if (isLoading) {
+    //     return (
+    //         <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
+    //             <img src={FileLoading} alt="" className={style.fileLoadingStyle} />
+    //         </div>
+    //     )
+    // }
     return (
-        <div
-            className={`${window.location.pathname.includes("applicationForm") || isPOD
-                ? ""
-                : style.backgroundCard
-                } ${style.marginTop}`}
-            key={baseKey}>
-            <div className={style.cardTitle}>{object?.label}</div>
-            {object?.description !== null && (
-                <div className={`${style.addMoreDescriptionText} ${style.marginTop10}`}>
-                    {object?.description}
+        <>
+            {isLoading && (
+                <div className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}>
+                    <img src={FileLoading} alt="" className={style.fileLoadingStyle} />
                 </div>
             )}
-            {addMoreType && !collapsableQuestionCard ? (
-                <div>
-                    {!isPOD && (
-                        <div className={`${style.addMoreBorder} ${style.marginTop}`}>
-                            {isAddMore ? (
-                                <div className={style.padding20}>
+            <div
+                className={`${window.location.pathname.includes("applicationForm") || isPOD
+                    ? ""
+                    : style.backgroundCard
+                    } ${style.marginTop}`}
+                key={baseKey}>
+                <div className={style.cardTitle}>{object?.label}</div>
+                {object?.description !== null && (
+                    <div className={`${style.addMoreDescriptionText} ${style.marginTop10}`}>
+                        {object?.description}
+                    </div>
+                )}
+                {addMoreType && !collapsableQuestionCard ? (
+                    <div>
+                        {!isPOD && (
+                            <div className={`${style.addMoreBorder} ${style.marginTop}`}>
+                                {isAddMore ? (
+                                    <div className={style.padding20}>
+                                        <div
+                                            className={style.addMoreText}
+                                            dangerouslySetInnerHTML={{ __html: object?.items?.label }}
+                                        />
+                                        <div className={`${gridStyle} ${style.marginTop}`}>
+                                            {object?.type === "object"
+                                                ? renderObjectFields(object, object?.properties)
+                                                : object?.type === "array"
+                                                    ? renderObjectFields(object, object?.items?.properties)
+                                                    : renderObjectFields(object, object?.properties)}
+                                        </div>
+                                        <div
+                                            className={`${style.displayInRowRev} ${style.marginTop}`}
+                                        >
+                                            <div className={style.marginLeft}>
+                                                <div
+                                                    className={`${style.addMoreButton}`}
+                                                    onClick={() => {
+                                                        handleAddMore('close');
+                                                    }}
+                                                >
+                                                    SAVE & CLOSE
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div
+                                                    className={`${style.addMoreButtonOutlined}`}
+                                                    onClick={() => {
+                                                        handleAddMore('');
+                                                    }}
+                                                >
+                                                    SAVE & ADD MORE
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
                                     <div
-                                        className={style.addMoreText}
-                                        dangerouslySetInnerHTML={{ __html: object?.items?.label }}
-                                    />
+                                        className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.padding10}`}
+                                    >
+                                        <div
+                                            className={style.addMoreText}
+                                            dangerouslySetInnerHTML={{ __html: object?.items?.label }}
+                                        />
+                                        <div
+                                            className={`${style.addMoreButton} ${style.marginLeft}`}
+                                            onClick={() => setIsAddMore(true)}
+                                        >
+                                            ADD
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                        {object?.tableHeaders !== null &&
+                            basicForm?.forms?.filter((data) => data?.id === formId)[0]?.data !==
+                            null && (
+                                <TableTwo
+                                    tableHeaderValues={Object.values(object?.tableHeaders)}
+                                    tableDataValues={getApplicantValues(
+                                        basicForm?.forms?.filter((data) => data?.id === formId)[0]
+                                            ?.data[baseKey]
+                                    )}
+                                    tableData={
+                                        basicForm?.forms?.filter((data) => data?.id === formId)[0]
+                                            ?.data[baseKey]
+                                    }
+                                    gridStyle={tableGrid}
+                                    // actions={!isPOD ? actions : []}
+                                    scrollStyle={style.contractScrollStyle}
+                                    tableSortValues={[]}
+                                    heading={heading}
+                                    subHeading={subHeading}
+                                    subHeading2={subHeading2}
+                                    onClickFunction={() => { }}
+                                />
+                            )}
+                    </div>
+                ) : !addMoreType && collapsableQuestionCard ? (
+                    <div className={`${style.addMoreBorder} ${style.marginTop}`}>
+                        <div className={style.padding20}>
+                            <div className={style.spaceBetween}>
+                                <div className={style.collapsableCardText}>
+                                    {
+                                        Object.entries(object?.properties)?.map(
+                                            ([key, data]) => data
+                                        )[0]?.label
+                                    }
+                                </div>
+                                {isCollapsableCard ? (
+                                    <div onClick={() => setIsCollapsableCard(false)}>
+                                        <KeyboardArrowUpIcon sx={{ color: "#c4bef3" }} />
+                                    </div>
+                                ) : (
+                                    <div onClick={() => setIsCollapsableCard(true)}>
+                                        <KeyboardArrowDownIcon sx={{ color: "#c4bef3" }} />
+                                    </div>
+                                )}
+                            </div>
+                            {isCollapsableCard && (
+                                <>
+                                    <CommonDivider />
                                     <div className={`${gridStyle} ${style.marginTop}`}>
                                         {object?.type === "object"
                                             ? renderObjectFields(object, object?.properties)
@@ -1991,133 +2111,36 @@ const ApplicationFieldCard = ({
                                                 ? renderObjectFields(object, object?.items?.properties)
                                                 : renderObjectFields(object, object?.properties)}
                                     </div>
-                                    <div
-                                        className={`${style.displayInRowRev} ${style.marginTop}`}
-                                    >
-                                        <div className={style.marginLeft}>
-                                            <div
-                                                className={`${style.addMoreButton}`}
-                                                onClick={() => {
-                                                    handleAddMore('close');
-                                                }}
-                                            >
-                                                SAVE & CLOSE
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div
-                                                className={`${style.addMoreButtonOutlined}`}
-                                                onClick={() => {
-                                                    handleAddMore('');
-                                                }}
-                                            >
-                                                SAVE & ADD MORE
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div
-                                    className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.padding10}`}
-                                >
-                                    <div
-                                        className={style.addMoreText}
-                                        dangerouslySetInnerHTML={{ __html: object?.items?.label }}
-                                    />
-                                    <div
-                                        className={`${style.addMoreButton} ${style.marginLeft}`}
-                                        onClick={() => setIsAddMore(true)}
-                                    >
-                                        ADD
-                                    </div>
-                                </div>
+                                </>
                             )}
                         </div>
-                    )}
-                    {object?.tableHeaders !== null &&
-                        basicForm?.forms?.filter((data) => data?.id === formId)[0]?.data !==
-                        null && (
-                            <TableTwo
-                                tableHeaderValues={Object.values(object?.tableHeaders)}
-                                tableDataValues={getApplicantValues(
-                                    basicForm?.forms?.filter((data) => data?.id === formId)[0]
-                                        ?.data[baseKey]
-                                )}
-                                tableData={
-                                    basicForm?.forms?.filter((data) => data?.id === formId)[0]
-                                        ?.data[baseKey]
-                                }
-                                gridStyle={tableGrid}
-                                // actions={!isPOD ? actions : []}
-                                scrollStyle={style.contractScrollStyle}
-                                tableSortValues={[]}
-                                heading={heading}
-                                subHeading={subHeading}
-                                subHeading2={subHeading2}
-                                onClickFunction={() => { }}
-                            />
-                        )}
-                </div>
-            ) : !addMoreType && collapsableQuestionCard ? (
-                <div className={`${style.addMoreBorder} ${style.marginTop}`}>
-                    <div className={style.padding20}>
-                        <div className={style.spaceBetween}>
-                            <div className={style.collapsableCardText}>
-                                {
-                                    Object.entries(object?.properties)?.map(
-                                        ([key, data]) => data
-                                    )[0]?.label
-                                }
-                            </div>
-                            {isCollapsableCard ? (
-                                <div onClick={() => setIsCollapsableCard(false)}>
-                                    <KeyboardArrowUpIcon sx={{ color: "#c4bef3" }} />
-                                </div>
-                            ) : (
-                                <div onClick={() => setIsCollapsableCard(true)}>
-                                    <KeyboardArrowDownIcon sx={{ color: "#c4bef3" }} />
-                                </div>
-                            )}
-                        </div>
-                        {isCollapsableCard && (
-                            <>
-                                <CommonDivider />
-                                <div className={`${gridStyle} ${style.marginTop}`}>
-                                    {object?.type === "object"
-                                        ? renderObjectFields(object, object?.properties)
-                                        : object?.type === "array"
-                                            ? renderObjectFields(object, object?.items?.properties)
-                                            : renderObjectFields(object, object?.properties)}
-                                </div>
-                            </>
-                        )}
                     </div>
-                </div>
-            ) : (
-                <div
-                    className={`${gridStyle} ${object?.label !== null ? style.marginTop : ""
-                        }`}
-                >
-                    {object?.type === "object"
-                        ? renderObjectFields(object, object?.properties)
-                        : object?.type === "array"
-                            ? renderObjectFields(object, object?.items?.properties)
-                            : renderObjectFields(object, object?.properties)}
-                </div>
-            )}
-            {showAdd && (
-                <div className={`${style.spaceBetween} ${style.marginTop}`}>
-                    <div></div>
-                    <div className={`${style.addButton}`}>ADD</div>
-                </div>
-            )}
-            {showValidationDialog && (
-                <ValidationDialog getIsOpen={getIsValidationDialogOpen} labelList={warningFields} getSkipClicked={getSkipClicked} />
-            )}
-            {showFileDisplayDialog && (
-                <FileDisplayDialog getIsOpen={getIsShowFileDialog} file={selectedFile} />
-            )}
-        </div>
+                ) : (
+                    <div
+                        className={`${gridStyle} ${object?.label !== null ? style.marginTop : ""
+                            }`}
+                    >
+                        {object?.type === "object"
+                            ? renderObjectFields(object, object?.properties)
+                            : object?.type === "array"
+                                ? renderObjectFields(object, object?.items?.properties)
+                                : renderObjectFields(object, object?.properties)}
+                    </div>
+                )}
+                {showAdd && (
+                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
+                        <div></div>
+                        <div className={`${style.addButton}`}>ADD</div>
+                    </div>
+                )}
+                {showValidationDialog && (
+                    <ValidationDialog getIsOpen={getIsValidationDialogOpen} labelList={warningFields} getSkipClicked={getSkipClicked} />
+                )}
+                {showFileDisplayDialog && (
+                    <FileDisplayDialog getIsOpen={getIsShowFileDialog} file={selectedFile} />
+                )}
+            </div>
+        </>
     );
 };
 

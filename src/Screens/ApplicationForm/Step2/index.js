@@ -310,36 +310,46 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
     console.log(showRedBorderForESign, eSignInitial, eSignTitle)
 
     const handleContinue = async () => {
-        setIsLoading(true);
-        if (tempValue?.table !== undefined) {
-            await PUT(`application-management-service/application/${applicationId}/addUploadedDocuments`, tempValue?.table)
-                .then(response => {
-                    console.log(response)
-                    getPreApplication();
-                    setIsLoading(false);
-                    // temp[index].verified = response?.data?.verified;
-                    // temp[index].valid = response?.data?.valid;
-                })
-                .catch((error) => {
-                    console.log(error)
-                });
+        if (tempValue?.table?.filter(data => data?.documentType === "")?.length !== 0) {
+            ErrorToaster('Please select the missing document type for the uploaded documents')
         }
-        if (sessionStorage.getItem('fromSummary') === "true") {
-            navigate(-1);
-        } else { navigate('/applicationForm/section1/step3') }
-        setIsLoading(false);
+        else {
+            setIsLoading(true);
+            if (tempValue?.table !== undefined) {
+                await PUT(`application-management-service/application/${applicationId}/addUploadedDocuments`, tempValue?.table)
+                    .then(response => {
+                        console.log(response)
+                        getPreApplication();
+                        setIsLoading(false);
+                        // temp[index].verified = response?.data?.verified;
+                        // temp[index].valid = response?.data?.valid;
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    });
+            }
+            if (sessionStorage.getItem('fromSummary') === "true") {
+                navigate(-1);
+            } else { navigate('/applicationForm/section1/step3') }
+            setIsLoading(false);
+        }
     }
 
-    if (isLoading) {
-        return (
-            <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
-                <img src={FileLoading} alt="" className={style.fileLoadingStyle} />
-            </div>
-        )
-    }
+    // if (isLoading) {
+    //     return (
+    //         <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
+    //             <img src={FileLoading} alt="" className={style.fileLoadingStyle} />
+    //         </div>
+    //     )
+    // }
 
     return (
         <div>
+            {isLoading && (
+                <div className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}>
+                    <img src={FileLoading} alt="" className={style.fileLoadingStyle} />
+                </div>
+            )}
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
                     <ProgressCard step={''} dataType={formSchema?.description} title={formSchema?.title} timeNumber={1} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />

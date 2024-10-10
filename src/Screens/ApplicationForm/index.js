@@ -104,7 +104,7 @@ const ApplicationForm = () => {
     const StepDisplay = () => {
         switch (step) {
             case 'step1':
-                return <Step1 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
+                return <Step1 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'step2':
                 return <Step2 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'step3':
