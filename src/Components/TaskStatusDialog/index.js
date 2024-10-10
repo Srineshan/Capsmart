@@ -14,7 +14,7 @@ import CommonSelectField from "../CommonFields/CommonSelectField";
 
 const TaskStatusDialog = ({ getIsOpen }) => {
   const [isPrintClicked, setIsPrintClicked] = useState(false);
-  const [selectedOption, setSelectedOption] = useState("");
+  const [selectedOption, setSelectedOption] = useState({});
   const [task, setTask] = useState([]);
   const [formDetails, setFormDetails] = useState([]);
   // const applicationId = "66fe243d635f001b562ab97a";
@@ -27,16 +27,19 @@ const TaskStatusDialog = ({ getIsOpen }) => {
     getApplication();
   }, []);
 
-  const handleChange = (taskId, event) => {
-    const { name, value } = event.target;
-    let status = value.split('=')?.[0];
-    let label = value.split('=')?.[1];
+  const handleChange = (taskId, event, label) => {
+    const status = event.target.value;
+    console.log("status"+ status);
+    console.log("label"+ typeof label);
+    
     setSelectedOption((prevState) => ({
       ...prevState,
-      [taskId]: value,
+      [taskId]: status,
     }));
+    
     tasksendapplication(taskId, status, label);
   };
+
   const reactToPrintContent = useCallback(() => {
     return componentRef.current;
   }, [componentRef.current]);
@@ -117,8 +120,13 @@ const TaskStatusDialog = ({ getIsOpen }) => {
           <div ref={componentRef} className={`${style.pagebreak}`}>
           <div className={`${style.spaceBetween}`}>
             <div className={`${style.fontstyle} ${style.marginTop10}`}>
-              {formDetails?.basicDetails?.applicant?.name?.lastName}{" "}
-              {formDetails?.basicDetails?.applicant?.name?.firstName},{" "}
+              {/* {formDetails?.basicDetails?.applicant?.name?.firstName},{" "}
+              {formDetails?.basicDetails?.applicant?.name?.lastName}{" "} */}
+              {formDetails?.basicDetails?.applicant?.name?.firstName
+                ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() + 
+                  formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
+                : ""}{", "}
+              {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{" "}
               <span className={`${style.fontstyleassociate}`}>
                 {formDetails?.basicDetails?.applicant?.applicantType} |{" "}
                 {
@@ -153,7 +161,7 @@ const TaskStatusDialog = ({ getIsOpen }) => {
                     <TaskAltIcon className={style.correcticon} />
                   )}
                   <div className={style.task}>{taskData?.taskName}
-                  {taskData?.taskName === 'Logistics Form for IT' && <p className={style.requestForm}>Complete Request Form</p>}
+                  {taskData?.taskName === 'Logistics Form for IT' && <div className={style.requestForm} onClick={() => window.open(taskData?.formLink?.url, '_blank')}>{taskData?.formLink?.urlLabel?.text}</div>}
                   </div>
                   <div>
                     {showSelect ? (
@@ -161,27 +169,18 @@ const TaskStatusDialog = ({ getIsOpen }) => {
                         Status
                         <div>
                         <CommonSelectField
-                              value={selectedOption[taskData.id] || ""}
-                              onChange={(e) => handleChange(taskData.id, e)}
+                              value={selectedOption[taskData.id] || taskData?.taskUpdateStatus?.status}
+                              onChange={(e) => handleChange(taskData.id, e ,taskData?.statusLabels?.filter((data) => e.target.value === data.status)?.map((statusLabel) => statusLabel?.label)?.[0])}
                               className={`${style.fullWidth}`}
-                              valueList={taskData?.statusLabels
-                                .filter((statusLabel) => statusLabel?.label !== taskData?.taskUpdateStatus?.label)
-                                .map((statusLabel) => `${statusLabel?.status}=${statusLabel?.label}`)}
-                              labelList={taskData?.statusLabels
-                                .filter((statusLabel) => statusLabel?.label !== taskData?.taskUpdateStatus?.label)
-                                .map((statusLabel) => `${statusLabel?.label}`)}
-                              disabledList={taskData?.statusLabels
-                                .filter((statusLabel) => statusLabel?.label !== taskData?.taskUpdateStatus?.label)
-                                .map(() => false)}
-                              firstOptionLabel={taskData?.taskUpdateStatus?.label}
-                              firstOptionValue={""}
+                              valueList={taskData?.statusLabels.map((statusLabel) => `${statusLabel?.status}`)}
+                              labelList={taskData?.statusLabels.map((statusLabel) => `${statusLabel?.label}`)}
+                              disabledList={taskData?.statusLabels.map(() => false)}
                           />
                         </div>
                       </div>
                     ) : (
                       <div className={style.sentto}>
-                        {isNotCompleted ? "Ready To Send" : taskData?.activityExecutionPromptLabel?.text} on{" "}
-                        {formattedDate}
+                        {isNotCompleted ? "Ready To Send" : `${taskData?.activityExecutionPromptLabel?.text} on ${formattedDate}`}
                       </div>
                     )}
                   </div>

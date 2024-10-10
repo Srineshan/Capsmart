@@ -56,21 +56,17 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
     useOptionsHide(textHoverRef);
 
     const availableSortValue = {
-        CONTRACT_NAME: 'NAME',
-        CONTRACT_ID: 'ID',
-        EFFECTIVE_DATE: 'EFFECTIVE DATE',
-        LAST_UPDATED: 'LAST UPDATED',
-        ACTIVIATION_STATUS: 'ACTIVATION STATUS',
-        EXPIRATION_DATE: 'EXPIRATION DATE'
+        APPLICANT_NAME: 'Applicant Name',
+        APPLICANT_TYPE: 'Applicant Type',
+        CREATED_DATE: 'created date',
+        LAST_UPDATED: 'Last Updated',
     }
 
     const availableSortValueEnum = {
-        'NAME': 'CONTRACT_NAME',
-        'ID': 'CONTRACT_ID',
-        'EFFECTIVE DATE': 'EFFECTIVE_DATE',
-        'LAST UPDATED': 'LAST_UPDATED',
-        'ACTIVATION STATUS': 'ACTIVIATION_STATUS',
-        'EXPIRATION DATE': 'EXPIRATION_DATE'
+        'Applicant Name': 'APPLICANT_NAME',
+        'Applicant Type': 'APPLICANT_TYPE',
+        'created date': 'CREATED_DATE',
+        'Last Updated': 'LAST_UPDATED'
     }
 
     const handleClick = (event) => {
@@ -511,7 +507,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
                                                     </div> */}
                                                     <div className={style.actionsCard} ref={menuRef}>
                                                             {actions?.map((actionsData, actionsIndex) => actionsData?.isParagraph ? 
-                                                                ( <div className={`${style.isParagraph}` } key={actionsIndex}> {actionsData.data} </div>
+                                                                ( <><div className={`${style.divider}`}></div><div className={`${style.isParagraph}` } key={actionsIndex}> {actionsData.data} </div></>
                                                                 ) : actionsData?.conditionToShow !== undefined ? (eval(actionsData?.conditionToShow) && 
                                                                 ( <div className={`${style.specificActionCard} ${style.cursorPointer} ${ actionsData?.isIndent ? style.marginLeft30 : "" }`} onClick={() => {actionsData?.onClick(data); handleClose() }} key={actionsIndex}> {actionsData?.data} </div>))
                                                                 : 
