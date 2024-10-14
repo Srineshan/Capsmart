@@ -28,6 +28,7 @@ import { useNavigate } from "react-router-dom";
 import { GET, PUT, POST, TenantID } from "../dataSaver";
 import ReactToPrint, { useReactToPrint } from "react-to-print";
 import CheckListDialog from "./checkListDialog";
+import CircleIcon from '@mui/icons-material/Circle';
 
 const StaffApplicationList = ({
   isLoading,
@@ -435,7 +436,7 @@ const StaffApplicationList = ({
   let ref = [];
   let taskListStatus = [];
   let macapproval = [];
-  let checkListStatus = [];
+  let  taskListDotColor = [];
   let ccdate = [];
 
   const getApplicantValues = () => {
@@ -458,6 +459,7 @@ const StaffApplicationList = ({
     lastUpdatedBy = [];
     capManager = [];
     taskListStatus = [];
+    taskListDotColor = [];
     action = [];
 
     tableData?.map((data) => {
@@ -486,7 +488,7 @@ const StaffApplicationList = ({
       docsHoverText.push(docHoverTextArray);
       docsIcon.push(
         <TextSnippetOutlinedIcon
-          style={{ fontSize: 20, color: `${data?.subStatus}` }}
+          style={{ fontSize: 20, color: `#52575D` }}
         />
       );
       // dataStatus.push(data?.dataStatus || "green");
@@ -498,7 +500,7 @@ const StaffApplicationList = ({
       // disclosures.push(data?.disclosures || '7/9');
       crs.push(data?.clarificationRequiredFor || "-");
       crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"]);
-      // notes.push(data?.clarificationRequiredFor || "1");
+      notes.push(data?.notes.length || "0");
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#52575D` }} />
       );
@@ -509,6 +511,15 @@ const StaffApplicationList = ({
       //   "Lorem ipsum dolor sit amet, consetetur sadipscing.",
       // ]);
       notesHoverText.push(notesHoverTextArray);
+
+      if (data?.tasks.completedCount === data?.tasks.totalCount) {
+        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#00C07F` }}/>);
+      } else if (data?.tasks.completedCount === 0) {
+        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#52575D` }}/>);
+      } else {
+        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#FEC106` }}/>);
+      }
+
       taskListStatus.push(data?.tasks.completedCount + "/" + data?.tasks.totalCount);
       lastUpdated.push(
         format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
@@ -545,12 +556,15 @@ const StaffApplicationList = ({
       },
       {
         type: "iconWithCount",
-        // value: notes,
+        value: notes,
         hoverText: notesHoverText,
         isShowHoverText: true,
         icon: notesIcon,
       },
-      { type: "iconWithCount", value: taskListStatus },
+      { type: "iconWithCount",
+         value: taskListStatus ,
+         icon: taskListDotColor },
+      // { type: "dot", value: taskListDotColor, tooltipValue: dotTooltipValues },
       {
         type: "iconWithCount",
         value: lastUpdated,
