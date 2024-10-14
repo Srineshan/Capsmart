@@ -14,6 +14,7 @@ const ESignature = ({
 }) => {
   let eSignImg = getValueByPath(
     basicForm,
+
     "forms[0].data.setUpYourSignature.file"
   );
   let eSignTypeContent = getValueByPath(
@@ -32,7 +33,7 @@ const ESignature = ({
         <div className={style.text}>
           <span>
             {isInitial
-              ? "Electronically Initialed by"
+              ? "Electronically Initialed by y"
               : "Electronically Signed by"}
           </span>
         </div>
