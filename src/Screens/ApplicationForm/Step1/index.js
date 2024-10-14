@@ -15,7 +15,7 @@ import AIAssistantDialog from '../../../Components/AIAssistantDialog';
 import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 import ValidationDialog from '../../../Components/validationDialog';
 
-const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
+const Step1 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) => {
     const [form1, setForm1] = useState();
     const [form2, setForm2] = useState();
     const navigate = useNavigate()
@@ -171,6 +171,7 @@ const Step1 = ({ basicForm, setBasicForm, applicationId }) => {
                 console.log(response)
                 setBasicForm(response?.data)
                 SuccessToaster("Staff Member Application Updated Successfully");
+                getPreApplication();
                 if (sessionStorage.getItem('fromSummary') === "true") {
                     navigate(-1);
                 } else {

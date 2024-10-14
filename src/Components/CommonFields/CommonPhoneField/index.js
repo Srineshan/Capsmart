@@ -4,8 +4,8 @@ import InputAdornment from '@mui/material/InputAdornment';
 import style from './index.module.scss';
 import { TextField } from '@mui/material';
 
-const CommonPhoneField = ({ onChange, placeholder, maxLength, value, error, label, required }) => {
-    const warningCheck = (value === '');
+const CommonPhoneField = ({ onChange, placeholder, type, maxLength, value, error, label, required, warning }) => {
+    const warningCheck = type === 'number' ? (value === 0 || value === '') : (value === '' || value === null || value === undefined);
     return (
         <div>
             <div className={`${style.lableStyle}`}>{label}{required && '*'}</div>
@@ -29,10 +29,10 @@ const CommonPhoneField = ({ onChange, placeholder, maxLength, value, error, labe
                     }}
                     fullWidth
                     placeholder={placeholder}
-                // className={`${style.marginTop}`}
-                // color={warningCheck ? required ? 'error' : 'warning' : ''}
-                // helperText={warningCheck ? (<div className={`${style.helperText} ${required ? style.errorColor : style.warningColor}`}>Could not find data</div>) : ''}
-                // focused={warningCheck ? true : false}
+                    // className={`${style.marginTop}`}
+                    color={(warning && warningCheck) ? 'error' : ''}
+                    // helperText={warningCheck ? (<div className={`${style.helperText} ${required ? style.errorColor : style.warningColor}`}>Could not find data</div>) : ''}
+                    focused={(warning && warningCheck) ? true : false}
                 />
             </div>
         </div>

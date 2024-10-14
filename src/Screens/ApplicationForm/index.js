@@ -104,11 +104,11 @@ const ApplicationForm = () => {
     const StepDisplay = () => {
         switch (step) {
             case 'step1':
-                return <Step1 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
+                return <Step1 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'step2':
-                return <Step2 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
+                return <Step2 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'step3':
-                return <Step3 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
+                return <Step3 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'step4':
                 return <Step4 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'step5':
@@ -142,13 +142,13 @@ const ApplicationForm = () => {
             case 'acknowledgementStep4':
                 return <ApplicationAcknowledgementStep4 acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
             case 'acknowledgementStep5':
-                return <ApplicationAcknowledgementStep5 />;
+                return <ApplicationAcknowledgementStep5 acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
             case 'acknowledgementStep6':
-                return <ApplicationAcknowledgementStep6 />;
+                return <ApplicationAcknowledgementStep6 acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
             case 'acknowledgementStep7':
-                return <ApplicationAcknowledgementStep7 />;
+                return <ApplicationAcknowledgementStep7 acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
             case 'acknowledgementStep8':
-                return <ApplicationAcknowledgementStep8 />;
+                return <ApplicationAcknowledgementStep8 acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
             case 'acknowledgementStep9':
                 return <ApplicationAcknowledgementStep9 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'acknowledgementStep10':
@@ -156,7 +156,7 @@ const ApplicationForm = () => {
             case 'acknowledgementStep11':
                 return <ApplicationAcknowledgementStep11 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'acknowledgementStep12':
-                return <ApplicationAcknowledgementStep12 />;
+                return <ApplicationAcknowledgementStep12 acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
             case 'pacsAdminStep1':
                 return <PACSAdminStep1 />;
             // case 'pacsAdminStep2':

@@ -41,9 +41,10 @@ export const POST = (url, data) => {
     });
 };
 
-export const DELETE = (url) => {
+export const DELETE = (url, data) => {
     return axios(`${baseUrl()}/${url}`, {
         method: "DELETE",
         headers: headers,
+        data,
     });
 };

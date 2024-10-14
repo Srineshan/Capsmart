@@ -21,6 +21,10 @@
     margin-left: 20px;
 }
 
+.marginLeft10 {
+    margin-left: 10px;
+}
+
 .marginRight {
     margin-right: 20px;
 }
@@ -88,7 +92,6 @@
     background: #F5F5F8 0% 0% no-repeat padding-box;
     border: 0.4000000059604645px solid #d7d4f7;
     border-radius: 4px;
-    cursor: pointer;
     padding: 5px 10px;
 }
 
@@ -99,9 +102,26 @@
     color: #52575D;
 }
 
+.uploadTextButton {
+    display: inline-block !important;
+    font: normal normal bold 13px/20px proxima-nova;
+    color: #52575D;
+    border: 1px solid #52575D;
+    border-radius: 4px;
+    padding: 5px;
+    text-align: center !important;
+    cursor: pointer;
+}
+
+.imgIcon {
+    height: 30px;
+    width: auto;
+    object-fit: contain;
+}
+
 .uploadGrid {
     display: grid;
-    grid-template-columns: 3% 74% 10% 10%;
+    grid-template-columns: 3% 80% 15%;
     gap: 1%;
 }
 
@@ -109,6 +129,11 @@
     display: flex;
     align-items: center;
     height: 100%;
+}
+
+.justifyCenter {
+    display: flex;
+    justify-content: center;
 }
 
 .siteDisplayCard {
@@ -234,7 +259,22 @@
     // text-transform: capitalize;
     opacity: 1;
     margin-top: 5px;
-    max-width: 80%;
+}
+
+.lableRadioSerialNumberStyle {
+    text-align: left;
+    font: normal normal 500 15px/20px proxima-nova;
+    color: #52575D;
+    margin-top: 5px;
+}
+
+.disclosureGrid {
+    display: grid;
+    grid-template-columns: 80% 20%;
+}
+
+.disclosureGrid> :nth-child(2) {
+    justify-self: end;
 }
 
 .lableReadOnlyStyle {
@@ -257,4 +297,23 @@
     opacity: 1;
     margin-top: 10px;
     max-width: 85%;
+}
+
+.fileLoadingStyle {
+    height: auto;
+    width: 40%;
+    object-fit: contain;
+}
+
+.loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
 }

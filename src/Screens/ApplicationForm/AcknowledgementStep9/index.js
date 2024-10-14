@@ -192,9 +192,9 @@ const ApplicationAcknowledgementStep9 = ({ basicForm, setBasicForm, applicationI
                                 required={false}
                             />
                         </div>
-                        {formSchema !== undefined && 'agreeToComplyWithHospitalPolicy' in formSchema?.properties && (
+                        {/* {formSchema !== undefined && 'agreeToComplyWithHospitalPolicy' in formSchema?.properties && (
                             <ApplicationFieldCard object={formSchema?.properties?.agreeToComplyWithHospitalPolicy?.properties?.agreeToComplyWithHospitalPolicy} gridStyle={style.pacsRequestGrid} baseKey={'agreeToComplyWithHospitalPolicy'} basicForm={basicForm} setBasicForm={setBasicForm} stepPath={`forms[12].data`} setIsEdited={getIsEdited} />
-                        )}
+                        )} */}
                         <div className={`${style.boldNote} ${style.marginTop}`}>Your User ID and Password will be assigned to you and the PACS administrator will contact you with the information. Please read the below statement and Sign.</div>
                         <div className={style.marginTop}>
                             <CommonCheckBox checked={true} onChange={(e) => { }} label="I understand the necessity of confidentiality of my password and agree to comply with Hospital Policy regarding the confidentiality of patient data." />

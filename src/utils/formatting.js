@@ -18,6 +18,16 @@ export const FormatPhoneNumber = (value) => {
   )}-${phoneNumber.slice(6, 10)}`;
 }
 
+export const FormatPostalCode = (value) => {
+  let cleaned = value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+
+  if (cleaned.length > 3) {
+    cleaned = `${cleaned.slice(0, 3)} ${cleaned.slice(3, 6)}`;
+  }
+
+  return cleaned;
+};
+
 export const EmailValidator = (value) => {
   if (!value?.includes('@') || !value?.includes('.')) {
     ErrorToaster('Enter valid Email');

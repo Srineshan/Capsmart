@@ -229,36 +229,62 @@ const ApplicationAcknowledgementStep1 = ({
             <div className={`${style.marginTop} ${style.justifyCenter}`}>
               <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
             </div>
-            <CommonDivider />
-            {formSchema?.content?.title !== null && (
-              <div className={style.cardTitle}>
-                {formSchema?.content?.title}
-              </div>
-            )}
-            <div
-              className={`${style.leftAlign} ${style.marginTop} ${style.descriptionStyle}`}
-              dangerouslySetInnerHTML={{
-                __html: formContent?.content?.content,
-              }}
-            />
-            {formSchema?.disclaimer?.title !== null && (
-              <div className={style.cardTitle}>
-                {formSchema?.disclaimer?.title}
-              </div>
-            )}
-            <div className={`${style.checkGrid} ${style.marginTop}`}>
-              {formContent?.disclaimer?.content !== null && (
-                <CommonCheckBox
-                  checked={isChecked}
-                  onChange={(e) => handleIsChecked(e.target.checked)}
-                />
-              )}
-              <div
-                className={`${style.leftAlign} ${style.marginTop10}`}
-                dangerouslySetInnerHTML={{
-                  __html: formContent?.disclaimer?.content,
-                }}
-              />
+            <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
+                <div>
+                    <div className={`${style.applicationCardStyle} ${style.applicationCardScrollStyle}`} ref={targetRef}>
+                        <div className={`${style.marginTop} ${style.justifyCenter}`}>
+                            <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
+                        </div>
+                        <CommonDivider />
+                        <div className={`${style.cardTitle} ${style.marginTop}  ${style.justifyCenter}`}>{formSchema?.title}</div>
+                        <CommonDivider />
+                        {formSchema?.content?.title !== null && (
+                            <div className={style.cardTitle}>{formSchema?.content?.title}</div>
+                        )}
+                        <div
+                            className={`${style.leftAlign} ${style.marginTop} ${style.descriptionStyle}`}
+                            dangerouslySetInnerHTML={{ __html: formContent?.content?.content }}
+                        />
+                        {formSchema?.disclaimer?.title !== null && (
+                            <div className={style.cardTitle}>{formSchema?.disclaimer?.title}</div>
+                        )}
+                        <div className={`${style.checkGrid} ${style.marginTop}`}>
+                            {formContent?.disclaimer?.content !== null && (
+                                <CommonCheckBox checked={isChecked} onChange={(e) => handleIsChecked(e.target.checked)} bigCheckbox={true} />
+                            )}
+                            <div
+                                className={`${style.leftAlign} ${style.marginTop10}`}
+                                dangerouslySetInnerHTML={{ __html: formContent?.disclaimer?.content }}
+                            />
+                        </div>
+                        {formSchema?.esignatureRequired && (
+                            <div className={style.twoCol}>
+                                <div onClick={isChecked ? () => { setIsSigned(!isSigned); setIsEdited(true) } : () => { }} className={!isChecked ? style.disabled : ''}>
+                                    <ESignature
+                                        userName={isSigned ? name : ""}
+                                        encData={isSigned ? encryptedText : ''}
+                                        showData={isSigned}
+                                        showDatais={true}
+                                    />
+                                </div>
+                                <div className={style.verticalAlignCenter}>
+                                    <div className={style.displayInRow}>
+                                        <div className={style.dateTitle}>Date: </div>
+                                        <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? (basicForm?.forms?.[11]?.esign?.signedDate !== '' && basicForm?.forms?.[11]?.esign?.signedDate !== undefined) ? basicForm?.forms?.[11]?.esign?.signedDate : currentDate : ""}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+                <div>
+                    <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
+                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleDownload()}>SAVE IN PROGRESS</div>
+                    <div className={style.twoColForButton}>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()} >CONTINUE</div>
+                    </div>
+                </div>
             </div>
             {formSchema?.esignatureRequired && (
               <div className={style.twoCol}>

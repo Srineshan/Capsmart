@@ -31,9 +31,21 @@
 .marginLeft30 {
     margin-left: 30px;
 }
+.marginLeft10 {
+    margin-left: 10px !important;
+}
+
+.isParagraph {
+    font-size: 14px;
+    color: #000000;
+    opacity: 0.4;
+    font-weight: bold;
+    margin-left: 10px;
+    margin-bottom: 5px
+  }
 
 .tableHeaderFontStyle {
-    font: normal normal 600 15px/20px proxima-nova;
+    font: normal normal 600 17px proxima-nova;
     letter-spacing: 0px;
     color: #52575D;
     text-transform: capitalize;
@@ -41,6 +53,7 @@
     text-align: left;
     word-break: break-word;
     width: auto;
+    text-align: center;
 }
 
 .tableData {
@@ -115,13 +128,14 @@
 }
 
 .tableDataFontStyle {
-    font: normal normal normal 15px/23px proxima-nova;
+    font: normal normal normal 18px proxima-nova;
     letter-spacing: 0px;
     color: #52575D;
     text-transform: capitalize;
     text-align: left;
     word-break: break-word;
     width: auto;
+    text-align: center;
 }
 
 .cursorPointer {
@@ -191,6 +205,7 @@
     display: flex;
     align-items: center;
     height: 100%;
+    justify-content: center;
 }
 
 .actionsCard {
@@ -324,3 +339,27 @@
 .fullWidth {
     width: 100%;
 }
+
+.divider {
+    background: #686869 0% 0% no-repeat padding-box;
+    height: 2px;
+    margin: 10px auto;
+    width: 90%;
+    display: block;
+}
+
+@media print {
+    .pagebreak {
+      page-break-after: always;
+      width: 100%;
+      height: auto;
+      padding: 20px;
+    }
+  
+    .pagebreak:nth-child(odd) {
+      background-color: #ffffff;
+  }
+  .pagebreak:nth-child(even) {
+      background-color: #ffffff;
+  }
+  }

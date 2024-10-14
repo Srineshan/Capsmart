@@ -5,9 +5,8 @@ import ESignature from "../../../Components/ESignature";
 import CryptoJS from 'crypto-js';
 import style from './index.module.scss';
 
-const PdfPage = ({ page, index, totalPages, name, currentDate, initialArray, setInitialArray }) => {
+const PdfPage = ({ page, index, totalPages, name, currentDate, initialArray, setInitialArray, isSigned, setIsSigned, formData }) => {
     const canvasRef = useRef(null);
-    const [isSigned, setIsSigned] = useState(false);
     const { ref, inView } = useInView({ triggerOnce: true });
     const publicKey = "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
     const [dateTime, setDateTime] = useState(new Date().toISOString());
@@ -26,10 +25,10 @@ const PdfPage = ({ page, index, totalPages, name, currentDate, initialArray, set
     console.log(initialArray)
 
     useEffect(() => {
-        if (!inView) return;
+        // if (!inView) return;
 
         const render = async () => {
-            const viewport = page.getViewport({ scale: 1.5 });
+            const viewport = page.getViewport({ scale: 1.2 });
             const canvas = canvasRef.current;
             const context = canvas.getContext("2d");
             canvas.height = viewport.height;
@@ -49,13 +48,13 @@ const PdfPage = ({ page, index, totalPages, name, currentDate, initialArray, set
         };
 
         render();
-    }, [inView, page, index]);
+    }, [page, index]);
 
     const handleSign = (index) => {
         setInitialArray(prevData => {
             let temp = { ...prevData };
             if (temp[index].name === '') {
-                temp[index].name = name;
+                temp[index].name = (formData?.forms?.[0]?.data?.setUpYourSignature?.initial !== undefined && formData?.forms?.[0]?.data?.setUpYourSignature?.initial !== '') ? formData?.forms?.[0]?.data?.setUpYourSignature?.initial : name;
                 temp[index].signedDate = currentDate;
                 temp[index].esign = encryptedText;
             }
@@ -64,7 +63,7 @@ const PdfPage = ({ page, index, totalPages, name, currentDate, initialArray, set
     }
 
     return (
-        <div ref={ref} style={{ marginBottom: "20px" }}>
+        <div style={{ marginBottom: "20px" }}>
             <canvas ref={canvasRef}></canvas>
             {index === totalPages - 1 ? (
                 <div className={style.twoCol}>
@@ -79,21 +78,19 @@ const PdfPage = ({ page, index, totalPages, name, currentDate, initialArray, set
                     <div className={style.verticalAlignCenter}>
                         <div className={style.displayInRow}>
                             <div className={style.dateTitle}>Date: </div>
-                            <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? currentDate : ""}</div>
+                            <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? formData?.forms?.[15]?.esign?.signedDate ? formData?.forms?.[15]?.esign?.signedDate : currentDate : ""}</div>
                         </div>
                     </div>
                 </div>
             ) : (
-                <div className={style.twoCol}>
-                    <div onClick={() => { handleSign(index) }}>
-                        <ESignature
-                            userName={(initialArray[index] !== undefined && initialArray[index]?.name !== '') ? initialArray[index]?.name : ""}
-                            encData={(initialArray[index] !== undefined && initialArray[index]?.name !== '') ? initialArray[index]?.esign : ''}
-                            showData={(initialArray[index] !== undefined && initialArray[index]?.name !== '') ? true : false}
-                            showDatais={true}
-                            isInitial={true}
-                        />
-                    </div>
+                <div onClick={() => { handleSign(index) }}>
+                    <ESignature
+                        userName={(initialArray[index] !== undefined && initialArray[index]?.name !== '') ? initialArray[index]?.name : ""}
+                        encData={(initialArray[index] !== undefined && initialArray[index]?.name !== '') ? initialArray[index]?.esign : ''}
+                        showData={(initialArray[index] !== undefined && initialArray[index]?.name !== '') ? true : false}
+                        showDatais={true}
+                        isInitial={true}
+                    />
                 </div>
             )}
         </div>

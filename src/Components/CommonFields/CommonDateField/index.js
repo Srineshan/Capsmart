@@ -16,7 +16,7 @@ const CommonDateField = ({ onChange, value, InputProps, onOpen, onClose, open, r
     const theme = createTheme({
         palette: {
             error: {
-                main: '#FF6562', // Customize your error color here
+                main: '#cc0000', // Customize your error color here
             },
             warning: {
                 main: '#f57c00', // Customize your error color here

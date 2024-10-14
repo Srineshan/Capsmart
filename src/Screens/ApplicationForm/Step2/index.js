@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import PdfDoc from './../../../images/pdfDoc.png';
 import WordDoc from './../../../images/wordDoc.png';
 import ImgDoc from './../../../images/imgDoc.png';
+import FileLoading from './../../../images/fileLoading.GIF';
 import DeleteIcon from './../../../images/deleteHcRow.png';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
@@ -31,7 +32,7 @@ import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import { getValueByPath } from '../../../utils/formatting';
 import FileDisplayDialog from '../../../Components/fileDisplayDialog';
 
-const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
+const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
     const fileInputRef = useRef(null);
     const [isEdited, setIsEdited] = useState(false);
@@ -179,18 +180,18 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
             required: temp[index]?.requirement === 'Mandatory' ? 'Required' : 'ToBeDecided',
         };
 
-        let documentData = {
-            uploadedDocument: tempDocumentData
-        }
-        await PUT(`application-management-service/application/${applicationId}/addUploadedDocuments`, documentData)
-            .then(response => {
-                console.log(response)
-                temp[index].verified = response?.data?.verified;
-                temp[index].valid = response?.data?.valid;
-            })
-            .catch((error) => {
-                console.log(error)
-            });
+        // let documentData = {
+        //     uploadedDocument: tempDocumentData
+        // }
+        // await PUT(`application-management-service/application/${applicationId}/addUploadedDocuments`, documentData)
+        //     .then(response => {
+        //         console.log(response)
+        //         temp[index].verified = response?.data?.verified;
+        //         temp[index].valid = response?.data?.valid;
+        //     })
+        //     .catch((error) => {
+        //         console.log(error)
+        //     });
         temp[index].documentType = value;
         if (value !== null || value !== "") {
             temp[index].requirement = basicForm?.documentsRequired?.filter(data => data?.document?.name === value)?.[0]?.required ? 'Required' : 'Recommended';
@@ -308,14 +309,47 @@ const Step2 = ({ basicForm, setBasicForm, applicationId }) => {
 
     console.log(showRedBorderForESign, eSignInitial, eSignTitle)
 
-    const handleContinue = () => {
-        if (sessionStorage.getItem('fromSummary') === "true") {
-            navigate(-1);
-        } else { navigate('/applicationForm/section1/step3') }
+    const handleContinue = async () => {
+        if (tempValue?.table?.filter(data => data?.documentType === "")?.length !== 0) {
+            ErrorToaster('Please select the missing document type for the uploaded documents')
+        }
+        else {
+            setIsLoading(true);
+            if (tempValue?.table !== undefined) {
+                await PUT(`application-management-service/application/${applicationId}/addUploadedDocuments`, tempValue?.table)
+                    .then(response => {
+                        console.log(response)
+                        getPreApplication();
+                        setIsLoading(false);
+                        // temp[index].verified = response?.data?.verified;
+                        // temp[index].valid = response?.data?.valid;
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    });
+            }
+            if (sessionStorage.getItem('fromSummary') === "true") {
+                navigate(-1);
+            } else { navigate('/applicationForm/section1/step3') }
+            setIsLoading(false);
+        }
     }
+
+    // if (isLoading) {
+    //     return (
+    //         <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
+    //             <img src={FileLoading} alt="" className={style.fileLoadingStyle} />
+    //         </div>
+    //     )
+    // }
 
     return (
         <div>
+            {isLoading && (
+                <div className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}>
+                    <img src={FileLoading} alt="" className={style.fileLoadingStyle} />
+                </div>
+            )}
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
                     <ProgressCard step={''} dataType={formSchema?.description} title={formSchema?.title} timeNumber={1} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />

@@ -15,12 +15,13 @@ import WelcomeCard from '../../../Components/WelcomeCard';
 import style from './index.module.scss';
 import AIAssistantDialog from '../../../Components/AIAssistantDialog';
 import ApplicationHeader from '../../../Components/ApplicationHeader';
+import ApplicationSubmitDialog from '../../../Components/ApplicationSubmitDialog';
 
 const Acknowledgement = ({ basicForm, setBasicForm, applicationId }) => {
     const [form, setForm] = useState();
     const [form2, setForm2] = useState();
     const navigate = useNavigate()
-    const [isOpen, setIsOpen] = useState(true);
+    const [isOpen, setIsOpen] = useState(false);
 
     const id = sessionStorage.getItem('applicationId');
 
@@ -49,6 +50,7 @@ const Acknowledgement = ({ basicForm, setBasicForm, applicationId }) => {
             .then(response => {
                 console.log(response)
                 SuccessToaster("Application Submitted Successfully");
+                setIsOpen(true);
             })
             .catch((error) => {
                 console.log(error)
@@ -109,7 +111,7 @@ const Acknowledgement = ({ basicForm, setBasicForm, applicationId }) => {
                             <div className={`${style.displayInRow}${style.marginTop20}`}>
                                 <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}>
                                     <span className={`${style.tableHeaderHeadingTextStyle}`}>Acknowledgements, Consents & Disclosures</span>
-                                    <div className={`${style.greenDotStyle}`}></div>
+                                    <div className={`${form?.forms?.filter(data => data?.formCategory !== 'Form')?.every(item => item.acknowledged === true) ? style.greenDotStyle : style.yellowDotStyle}`}></div>
                                 </div>
                             </div>
                             <div className={`${style.tableHeaderStyle} ${style.marginTop10} ${style.tableHeaderGridStyle} `}>
@@ -134,7 +136,7 @@ const Acknowledgement = ({ basicForm, setBasicForm, applicationId }) => {
                                             <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/section1/acknowledgementStep${index + 1}`) }} />
                                         </div>
                                         <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                            <div className={`${style.greenDotStyle} `}></div>
+                                            <div className={`${form?.forms?.filter(data => data?.formCategory !== 'Form')[index]?.acknowledged ? style.greenDotStyle : style.yellowDotStyle} `}></div>
                                         </div>
                                     </div>
                                 ))
@@ -155,9 +157,9 @@ const Acknowledgement = ({ basicForm, setBasicForm, applicationId }) => {
                             <ApplicationReferenceDocuments />
                         </div> */}
                     </div>
-                    {/* {isOpen && (
-                <AIAssistantDialog getIsOpen={getIsOpen} />
-            )} */}
+                    {isOpen && (
+                        <ApplicationSubmitDialog getIsOpen={getIsOpen} />
+                    )}
                 </div>
             </div>
         </div >

@@ -22,6 +22,7 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
     const [form2, setForm2] = useState();
     const navigate = useNavigate()
     const [isOpen, setIsOpen] = useState(true);
+    const itemsToProcessConditionCheckCategories = ['Education', 'WorkExperience', 'References']
     const id = sessionStorage.getItem('applicationId');
     useEffect(() => {
         sessionStorage.setItem('fromSummary', false);
@@ -61,6 +62,16 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
                                 <span className={`${style.tableHeaderHeadingTextStyle}`}>Overall Status Of Data & Documents Required For This Application</span>
                                 <div className={`${style.greyDotStyle}`}></div>
                             </div>
+                        </div>
+                        <div className={` ${style.marginTop10} ${style.tableHeaderGridStyle} `}>
+                            <div></div>
+                            <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                                <div className={form?.forms.every(item => item.acknowledged === true) ? style.greenDotStyle : style.yellowDotStyle}></div>
+                            </div>
+                            <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                                <div className={form?.forms.every(item => item.acknowledged === true) ? style.greenDotStyle : style.yellowDotStyle}></div>
+                            </div>
+                            <div></div>
                         </div>
                         <div className={`${style.tableHeaderStyle} ${style.marginTop10} ${style.tableHeaderGridStyle} `}>
                             <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
@@ -106,7 +117,6 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
                                 <div className={`${style.greenDotStyle} `}></div>
                             </div>
                             <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                {/* <div className={`${style.greenDotStyle} `}></div> */}
                             </div>
                         </div>
                         <div>
@@ -115,20 +125,28 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
                                 form?.formSchemas?.filter(data => data?.formCategory === 'Form')?.map((data, index) => (
                                     <div className={`${style.tableDataStyle} ${style.marginTop5} ${style.tableValueGridStyle} `}>
                                         <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                            <div className={`${style.marginLeft5} ${style.tableDataFontDisabledStyle1}}`}>{data?.title || ''}</div>
+                                            {index !== 0 && (
+                                                <div className={`${style.marginLeft5} ${style.tableDataFontDisabledStyle1}`}>{data?.title || ''}</div>
+                                            )}
                                         </div>
                                         <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                                             <div className={`${style.tableDataFontStyle1}`}>{data?.description}</div>
                                             <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/section1/${data?.title?.toLowerCase()?.replace(' ', '')}`) }} />
                                         </div>
                                         <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                            <div className={`${style.greyDotStyle} `}></div>
+                                            {/* <div className={`${style.greyDotStyle} `}></div> */}
+                                            <div className={`${form?.forms[index]?.acknowledged === true ? style.greenDotStyle : style.yellowDotStyle}`}></div>
+                                            {/* <div className={data?.acknowledged ? style.greenDotStyle : style.yellowDotStyle}></div> */}
+
                                         </div>
                                         <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                            <div className={`${style.greyDotStyle} `}></div>
+                                            {/* <div className={`${style.greyDotStyle} `}></div> */}
+                                            <div className={`${form?.forms[index]?.acknowledged === true ? style.greenDotStyle : style.yellowDotStyle}`}></div>
                                         </div>
                                         <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                            {/* <div className={`${style.greenDotStyle} `}></div> */}
+                                            <div className={`${style.marginLeft5} ${style.tableDataFontDisabledStyle1}`}>
+                                                {(itemsToProcessConditionCheckCategories?.includes(form?.forms?.filter(data => data?.formCategory === 'Form')[index]?.schemaCategory) && form?.forms[index]?.unFilledFields?.length !== 0) ? 'Missing mandatory fields. Please complete.' : form?.forms[index]?.unFilledFields?.join(', ')}
+                                            </div>
                                         </div>
                                     </div>
                                 ))

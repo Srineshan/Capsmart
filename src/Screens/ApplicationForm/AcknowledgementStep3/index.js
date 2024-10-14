@@ -92,7 +92,7 @@ const ApplicationAcknowledgementStep3 = ({
   const addNewDocument = async (file) => {
     console.log(file, file?.name, "Test");
     let fileName = {
-      fileName: "acknowledgement.pdf",
+      fileName: "schedule-b.pdf",
     };
     const formData = new FormData();
 
@@ -197,7 +197,7 @@ const ApplicationAcknowledgementStep3 = ({
           if (sessionStorage.getItem("fromSummary") === "true") {
             navigate(-1);
           } else {
-            navigate("/applicationForm/applicationacknowledgement");
+            navigate("/applicationForm/section1/acknowledgementStep5");
           }
         })
         .catch((error) => {
@@ -208,7 +208,7 @@ const ApplicationAcknowledgementStep3 = ({
       if (sessionStorage.getItem("fromSummary") === "true") {
         navigate(-1);
       } else {
-        navigate("/applicationForm/applicationacknowledgement");
+        navigate("/applicationForm/section1/acknowledgementStep5");
       }
     }
   };
@@ -216,7 +216,7 @@ const ApplicationAcknowledgementStep3 = ({
     if (sessionStorage.getItem("fromSummary") === "true") {
       navigate(-1);
     } else {
-      navigate("/applicationForm/section1/acknowledgementStep4");
+      navigate("/applicationForm/section1/acknowledgementStep5");
     }
   };
 
@@ -246,6 +246,12 @@ const ApplicationAcknowledgementStep3 = ({
               <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
             </div>
             <CommonDivider />
+            <div
+              className={`${style.cardTitle} ${style.marginTop}  ${style.justifyCenter}`}
+            >
+              {formSchema?.title}
+            </div>
+            <CommonDivider />
             {formSchema?.content?.title !== null && (
               <div className={style.cardTitle}>
                 {formSchema?.content?.title}
@@ -267,10 +273,11 @@ const ApplicationAcknowledgementStep3 = ({
                 <CommonCheckBox
                   checked={isChecked}
                   onChange={(e) => handleIsChecked(e.target.checked)}
+                  bigCheckbox={true}
                 />
               )}
               <div
-                className={`${style.leftAlign} ${style.marginTop10}`}
+                className={`${style.leftAlign} ${style.marginTop10} ${style.descriptionStyle}`}
                 dangerouslySetInnerHTML={{
                   __html: formContent?.disclaimer?.content,
                 }}
@@ -292,7 +299,7 @@ const ApplicationAcknowledgementStep3 = ({
                   <ESignature
                     userName={isSigned ? name : ""}
                     encData={isSigned ? encryptedText : ""}
-                    showData={true}
+                    showData={isSigned}
                     showDatais={true}
                   />
                 </div>
@@ -300,7 +307,13 @@ const ApplicationAcknowledgementStep3 = ({
                   <div className={style.displayInRow}>
                     <div className={style.dateTitle}>Date: </div>
                     <div className={`${style.date} ${style.marginLeft}`}>
-                      {isSigned ? currentDate : ""}
+                      {isSigned
+                        ? basicForm?.forms?.[13]?.esign?.signedDate !== "" &&
+                          basicForm?.forms?.[13]?.esign?.signedDate !==
+                            undefined
+                          ? basicForm?.forms?.[13]?.esign?.signedDate
+                          : currentDate
+                        : ""}
                     </div>
                   </div>
                 </div>

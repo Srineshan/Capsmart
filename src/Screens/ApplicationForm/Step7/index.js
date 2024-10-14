@@ -5,20 +5,72 @@ import ApplicationAssistanceCard from '../../../Components/ApplicationAssistance
 import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
-import { GET, PUT } from '../../dataSaver';
+import { GET, POST, PUT } from '../../dataSaver';
 import { useNavigate } from 'react-router-dom';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
+import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
+import ValidationDialog from '../../../Components/validationDialog';
 
 import style from './index.module.scss';
 
 const Step7 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
+    const [metadata, setMetadata] = useState([]);
+    const [labels, setLabels] = useState([]);
+    const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
+    const [showValidationDialog, setShowValidationDialog] = useState(false);
+    const [showValidationDialog2, setShowValidationDialog2] = useState(false);
+    const [warningFields, setWarningFields] = useState([]);
+    const [isAddMore, setIsAddMore] = useState(false)
+    const [isAddMore2, setIsAddMore2] = useState(false)
     const navigate = useNavigate()
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
         }
     }, [basicForm])
+
+    useEffect(() => {
+        if (isAddMore) {
+            setIsAddMore2(false)
+            setMetadata([])
+            setLabels([])
+        }
+    }, [isAddMore])
+
+    useEffect(() => {
+        if (isAddMore2) {
+            setIsAddMore(false)
+            setMetadata([])
+            setLabels([])
+        }
+    }, [isAddMore2])
+
+    const getIsValidationDialogOpen = (value) => {
+        setShowValidationDialog(value);
+    }
+
+    const getAllPath = (data) => {
+        let temp = metadata;
+        if (!temp?.includes(data)) {
+            console.log(temp, data, 'Metadata')
+            temp.push(data);
+        }
+        setMetadata(temp);
+    }
+
+    const getAllLabels = (data) => {
+        let tempLabels = labels;
+        if (!tempLabels?.includes(data)) {
+            console.log(tempLabels, data, 'Metadata')
+            tempLabels.push(data);
+        }
+        setLabels(tempLabels);
+    }
+
+    const getIsSaveInProgressOpen = (value) => {
+        setIsSaveInProgressOpen(value);
+    }
 
     const getFormSchema = async () => {
         if (basicForm?.formSchemas?.[5]?.id !== undefined) {
@@ -29,17 +81,75 @@ const Step7 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
         }
     }
 
-    const getIsSubmitClicked = (value, data) => {
+    const getIsSubmitClicked = (value, data, skip) => {
         if (value) {
-            handleSubmitApplicationReq(data)
+            setIsAddMore(false);
+            setIsAddMore2(false);
+            handleSubmitApplicationReq(data, skip)
         }
     }
 
-    const handleSubmitApplicationReq = async (data) => {
+    // const getSkipClicked = (value) => {
+    //     if (value) {
+    //         handleSubmitApplicationReq("skipped")
+    //     }
+    // }
+
+    const getMissingFields = () => {
+        let missingKeys = [];
+        let keyValuePair = [];
+        metadata?.map((data, index) => {
+            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index] })
+        })
+        keyValuePair?.map(data => {
+            if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
+                missingKeys.push(data)
+            }
+        })
+        // if (missingKeys?.length !== 0) {
+        //     setShowValidationDialog(true)
+        // } else {
+        //     handleSubmitApplicationReq()
+        // }
+        setWarningFields(missingKeys)
+        console.log(keyValuePair, 'Metadata', missingKeys)
+        return missingKeys;
+    }
+
+    const removeEmptyStrings = (obj) => {
+        Object.keys(obj).forEach((key) => {
+            if (typeof obj[key] === "string" && obj[key].trim() === "") {
+                delete obj[key];
+            } else if (typeof obj[key] === "object" && obj[key] !== null) {
+                removeEmptyStrings(obj[key]);
+            }
+        });
+        return obj;
+    };
+
+
+    const handleSubmitApplicationReq = async (data, skip) => {
+        let missingFields = []
+        let emptyStringCheckedObject = removeEmptyStrings(data?.forms?.[5]?.data);
+        let tempValidation = {
+            schemaId: data?.forms?.[5]?.schemaId,
+            data: emptyStringCheckedObject,
+        }
+        await POST(`application-management-service/application/validateForm`, tempValidation)
+            .then(response => {
+                console.log(response, response?.response?.data, 'missingFields')
+                missingFields = (response?.data !== undefined && response?.data === true) ? [] : response?.response?.data;
+            })
+            .catch((error) => {
+                console.log(error)
+            })
         let temp = {
             schemaId: data?.forms?.[5]?.schemaId,
-            data: data?.forms?.[5]?.data
+            data: data?.forms?.[5]?.data,
+            unFilledFields: missingFields,
+            acknowledged: missingFields?.length !== 0 ? false : true
         }
+        console.log(missingFields, 'missingFields')
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[5]?.id}`, temp)
             .then(response => {
                 console.log(response)
@@ -61,6 +171,13 @@ const Step7 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
 
         }
     }
+
+    const getValueByPath = (obj, path) => {
+        const keys = path.split(/[\.\[\]]+/).filter(Boolean);
+        console.log(path, keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm), basicForm, 'if')
+        return keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm);
+    };
+
     return (
         <div>
             <div className={style.applicationScreenGrid}>
@@ -71,17 +188,17 @@ const Step7 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'trainingAndWorkingExperience' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.trainingAndWorkingExperience} gridStyle={style.trainingGrid} baseKey={'trainingAndWorkingExperience'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} formId={basicForm?.forms?.[5]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} />
+                            <ApplicationFieldCard object={formSchema?.properties?.trainingAndWorkingExperience} gridStyle={style.trainingGrid} baseKey={'trainingAndWorkingExperience'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[5]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGridTraining} warningFields={warningFields} getMissingFields={getMissingFields} showValidationDialog={showValidationDialog} setShowValidationDialog={setShowValidationDialog} isAddMore={isAddMore} setIsAddMore={setIsAddMore} />
                         )}
                         <CommonDivider />
                         {formSchema !== undefined && 'healthcareFacilityAppointments' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.healthcareFacilityAppointments} gridStyle={style.healthCareGrid} baseKey={'healthcareFacilityAppointments'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} formId={basicForm?.forms?.[5]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} />
+                            <ApplicationFieldCard object={formSchema?.properties?.healthcareFacilityAppointments} gridStyle={style.healthCareGrid} baseKey={'healthcareFacilityAppointments'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[5]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields} getMissingFields={getMissingFields} showValidationDialog={showValidationDialog2} setShowValidationDialog={setShowValidationDialog2} isAddMore={isAddMore2} setIsAddMore={setIsAddMore2} />
                         )}
                     </div>
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-                    <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
+                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
@@ -91,6 +208,14 @@ const Step7 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                     </div>
                 </div>
             </div>
+            {
+                isSaveInProgressOpen && (
+                    <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
+                )
+            }
+            {/* {showValidationDialog && (
+                <ValidationDialog getIsOpen={getIsValidationDialogOpen} labelList={warningFields} getSkipClicked={getSkipClicked} />
+            )} */}
         </div>
     )
 }

@@ -203,7 +203,7 @@ const LoginDialog = ({ getIsOpen, days }) => {
           <div className={style.alignCenter}>
             {/* <div></div> */}
             <p className={style.loginHeaderText}>
-              <span className={style.bold}>Cap</span>Smart
+              <span className={style.bold}>CAP</span>Smart
             </p>
             {/* <img
               src={CrossPink}

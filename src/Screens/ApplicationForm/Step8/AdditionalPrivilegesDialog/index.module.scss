@@ -41,8 +41,46 @@
 
 .twoColGrid {
     display: grid;
-    grid-template-columns: 1fr 7fr;
+    grid-template-columns: 30px 1fr;
     gap: 10px;
+}
+
+.uploadTextButton {
+    display: inline-block !important;
+    font: normal normal bold 13px/20px proxima-nova;
+    color: #52575D;
+    border: 1px solid #52575D;
+    border-radius: 4px;
+    padding: 5px;
+    text-align: center !important;
+    cursor: pointer;
+}
+
+.imgIcon {
+    height: 30px;
+    width: auto;
+    object-fit: contain;
+}
+
+.uploadGrid {
+    display: grid;
+    grid-template-columns: 3% 80% 15%;
+    gap: 1%;
+}
+
+.uploadButton {
+    background: #F5F5F8 0% 0% no-repeat padding-box;
+    border: 0.4000000059604645px solid #d7d4f7;
+    border-radius: 4px;
+    padding: 5px 10px;
+}
+
+
+.uploadText {
+    text-align: left !important;
+    font: normal normal bold 13px/20px proxima-nova;
+    letter-spacing: 0px;
+    color: #52575D;
 }
 
 .categoryGrid {
@@ -123,7 +161,6 @@
 
 .verticalAlignCenter {
     display: flex;
-    justify-content: center;
     align-items: center;
     height: 100%;
 }
@@ -150,7 +187,7 @@
 
 .restrictedPrivilegeGrid {
     display: grid;
-    grid-template-columns: 10% 72% 15%;
+    grid-template-columns: 3% 80% 15%;
     gap: 1%;
 }
 

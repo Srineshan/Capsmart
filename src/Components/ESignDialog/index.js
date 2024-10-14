@@ -9,45 +9,44 @@ import style from "./index.module.scss";
 import CommonSelectField from "../CommonFields/CommonSelectField";
 import { getValueByPath } from "../../utils/formatting";
 
-const ESignDialog = ({
-  children,
-  getIsOpen,
-  tempValue,
-  baseKey,
-  applicationId,
-  basicForm,
-  setBasicForm,
-}) => {
-  const [isContinue, setIsContinue] = useState(false);
-  const [selectedESignFormat, setSelectedESignFormat] = useState("DRAW");
-  const [isShowDrawCanvas, setIsShowDrawCanvas] = useState(false);
-  const [isShowType, setIsShowType] = useState(false);
-  const sigCanvas = useRef({});
-  const contentRef = useRef(null);
-  let eSignImg = getValueByPath(
-    basicForm,
-    "forms[0].data.setUpYourSignature.file"
-  );
-  let eSignTypeContent = getValueByPath(
-    basicForm,
-    "forms[0].data.setUpYourSignature.type.text"
-  );
-  let eSignTypeContentStyle = getValueByPath(
-    basicForm,
-    "forms[0].data.setUpYourSignature.type.style"
-  );
-  const [selectedESignTypeStyle, setSelectedESignTypeStyle] = useState(
-    eSignTypeContentStyle !== undefined
-      ? eSignTypeContentStyle
-      : "calgary-script-ot"
-  );
-  const [eSignType, setESignType] = useState(
-    eSignTypeContent !== undefined ? eSignTypeContent : ""
-  );
-  console.log(eSignTypeContent, eSignType);
-  const clearSignature = () => {
-    if (isShowDrawCanvas) {
-      sigCanvas.current.clear();
+const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, basicForm, setBasicForm }) => {
+    const [isContinue, setIsContinue] = useState(false);
+    const [selectedESignFormat, setSelectedESignFormat] = useState('DRAW');
+    const [isShowDrawCanvas, setIsShowDrawCanvas] = useState(false);
+    const [isShowType, setIsShowType] = useState(false);
+    const sigCanvas = useRef({});
+    const contentRef = useRef(null);
+    let eSignImg = getValueByPath(basicForm, 'forms[0].data.setUpYourSignature.file');
+    let eSignTypeContent = getValueByPath(basicForm, 'forms[0].data.setUpYourSignature.type.text');
+    let eSignTypeContentStyle = getValueByPath(basicForm, 'forms[0].data.setUpYourSignature.type.style');
+    const [selectedESignTypeStyle, setSelectedESignTypeStyle] = useState(eSignTypeContentStyle !== undefined ? eSignTypeContentStyle : 'calgary-script-ot');
+    const [eSignType, setESignType] = useState(eSignTypeContent !== undefined ? eSignTypeContent : '');
+    console.log(eSignTypeContent, eSignType)
+    const clearSignature = () => {
+        if (isShowDrawCanvas) {
+            sigCanvas.current.clear();
+        }
+    };
+
+    useEffect(() => {
+        if (contentRef.current && contentRef.current.innerHTML !== eSignType && eSignType !== null) {
+            contentRef.current.innerHTML = eSignType;
+        }
+    }, [eSignType, selectedESignFormat]);
+
+    // useEffect(() => {
+    //     console.log(tempValue)
+    // }, tempValue)
+
+    const dataURLToBlob = (dataURL) => {
+        const [header, data] = dataURL.split(',');
+        const mime = header.split(':')[1].split(';')[0];
+        const binary = atob(data);
+        const array = [];
+        for (let i = 0; i < binary.length; i++) {
+            array.push(binary.charCodeAt(i));
+        }
+        return new Blob([new Uint8Array(array)], { type: mime });
     }
   };
 
@@ -354,6 +353,6 @@ const ESignDialog = ({
       </div>
     </Dialog>
   );
-};
+
 
 export default ESignDialog;
