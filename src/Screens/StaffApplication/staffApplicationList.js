@@ -515,7 +515,7 @@ const StaffApplicationList = ({
       if (data?.tasks.completedCount === data?.tasks.totalCount) {
         taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#00C07F` }}/>);
       } else if (data?.tasks.completedCount === 0) {
-        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#52575D` }}/>);
+        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#94979A` }}/>);
       } else {
         taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#FEC106` }}/>);
       }
@@ -1363,7 +1363,7 @@ const StaffApplicationList = ({
                         <div className={style.progressbarStyle}>
                           <div className={style.spaceBetween}>
                             <div className={style.statisticsProgress}>
-                            <div className={status?.status === "SUBMITTED" ? style.yellowDotStyle : status?.status === "APPROVED" ? style.greenDotStyle : style.greyDotStyle}></div>
+                            <div className={status?.remainingCompletionPercentage === 0 ? style.greenDotStyle : status?.remainingCompletionPercentage === 100 ? style.greyDotStyle : style.yellowDotStyle}></div>
 
                               <div
                                 className={style.marginLeft10}>
