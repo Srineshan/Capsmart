@@ -149,6 +149,7 @@ const ESignDialog = ({
         ErrorToaster("Unexpected Error Updating Application");
       });
   };
+
   return (
     <Dialog
       isOpen={getIsOpen}

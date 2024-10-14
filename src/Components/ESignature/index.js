@@ -3,7 +3,6 @@ import style from "./index.module.scss";
 import { getValueByPath } from "../../utils/formatting";
 
 const ESignature = ({
-  userName,
   currentDate,
   encData,
   showData,
@@ -11,6 +10,7 @@ const ESignature = ({
   isInitial,
   basicForm,
   selectedESignTypeStyle,
+  eSignType,
 }) => {
   let eSignImg = getValueByPath(
     basicForm,
@@ -25,7 +25,7 @@ const ESignature = ({
     "forms[0].data.setUpYourSignature.type.style"
   );
   console.log("awsedrfgth", selectedESignTypeStyle);
-
+  console.log("text", eSignType);
   return (
     <>
       <div className={style.signature}>
@@ -57,13 +57,9 @@ const ESignature = ({
                 // className={style.userName}
                 style={{ fontFamily: eSignTypeContentStyle }}
               >
-                {/* {eSignTypeContent} */}
+                {eSignType}
               </span>
-            ) : (
-              <span style={{ fontFamily: selectedESignTypeStyle }}>
-                {userName}
-              </span>
-            )}
+            ) : null}
           </div>
         </div>
         <div className={style.signatureData}>

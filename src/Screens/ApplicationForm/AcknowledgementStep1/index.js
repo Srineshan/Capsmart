@@ -274,7 +274,6 @@ const ApplicationAcknowledgementStep1 = ({
                   className={!isChecked ? style.disabled : ""}
                 >
                   <ESignature
-                    userName={isSigned ? name : ""}
                     encData={isSigned ? encryptedText : ""}
                     showData={true}
                     showDatais={true}
