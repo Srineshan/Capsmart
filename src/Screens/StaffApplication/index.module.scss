@@ -826,6 +826,13 @@ body::-webkit-scrollbar {
   grid-gap: 1%;
 }
 
+.departmentHeadStaffGrid {
+  display: grid;
+  grid-template-columns: 2% 16% 8% 19% 6% 6% 6% 10% 14% 6%;
+  grid-gap: 1%;
+}
+
+
 .applicationStaffGrid {
   display: grid;
   grid-template-columns: 2% 16% 9% 17% 6% 5% 5% 13% 13% 6%;
@@ -3606,7 +3613,7 @@ input[type="number"] {
  */
 .tabs {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   /* Items will stay in a single line */
   gap: 5px;
   opacity: 1;

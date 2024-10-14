@@ -10,6 +10,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
     mac: 0,
     bod: 0,
     'level-1' :0,
+    'level-2' :0,
   });
 
   // const [selectedTab, setSelectedTab] = useState('applicantsToProcess');
@@ -40,6 +41,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
   return (
     <div className={`${style.tabs}`}>
       <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Applicants to Verify" tileCount={counts?.applicantsToProcess} currentTile="applicantsToProcess" />
+      <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Department Head" tileCount={counts['level-2']} currentTile="level-2" />
       <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Cred. Comm." tileCount={counts['level-1']} currentTile="level-1" />
       <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="MAC" tileCount={counts?.mac} currentTile="mac" />
       <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="BOD" tileCount={counts?.bod} currentTile="bod" />

@@ -74,10 +74,25 @@ const StaffApplicationList = ({
     "Last Updated",
     "Action",
   ];
+
+  const departmentHeadHeaderValues = [
+    "",
+    "Applicant Name",
+    "Applicant ID",
+    "Applicant Type",
+    // "Department",
+    "DOCS",
+    // "Data & Disclosures",
+    "CRs",
+    "Notes",
+    "Task list Status",
+    "Last Updated",
+    "Action",
+  ];
   const applicationHeaderValues = [
     "",
     "Applicant Name",
-    "Applicant Id",
+    "Applicant ID",
     "Applicant Type",
     // "Department",
     // "Commitee",
@@ -159,7 +174,20 @@ const StaffApplicationList = ({
   const applicantColSortValues = [
     false,
     true,
+    true,
+    true,
     false,
+    false,
+    false,
+    false,
+    true,
+    false,
+  ];
+
+  const departmentHeadColSortValues = [
+    false,
+    true,
+    true,
     true,
     false,
     false,
@@ -171,7 +199,7 @@ const StaffApplicationList = ({
   const applicationColSortValues = [
     false,
     true,
-    false,
+    true,
     true,
     false,
     false,
@@ -182,7 +210,7 @@ const StaffApplicationList = ({
   ];
   const macColSortValues = [
     true,
-    false,
+    true,
     true,
     false,
     false,
@@ -192,7 +220,7 @@ const StaffApplicationList = ({
   ];
   const bodColSortValues = [
     true,
-    false,
+    true,
     true,
     false,
     false,
@@ -202,7 +230,7 @@ const StaffApplicationList = ({
   const clarificationColSortValues = [
     false,
     true,
-    false,
+    true,
     true,
     false,
     false,
@@ -214,7 +242,7 @@ const StaffApplicationList = ({
   const rejectedColSortValues = [
     false,
     true,
-    false,
+    true,
     true,
     false,
     false,
@@ -325,7 +353,7 @@ const StaffApplicationList = ({
         setSortField(value)
         setSortValue('DESCENDING')
     } else if (sortBy === 'DESCENDING') {
-        setSortField('DEFAULT')
+        setSortField(value)
         setSortValue('ASCENDING')
     } else if (sortBy === 'NONE') {
         setSortField(value)
@@ -574,6 +602,143 @@ const StaffApplicationList = ({
       { type: "action", value: action },
     ];
   };
+
+  const getDepartmentHeadValues = () => {
+    dot = [];
+    applicantName = [];
+    applicantId = [];
+    applicantType = [];
+    department = [];
+    docs = [];
+    docsHoverText = [];
+    docsIcon = [];
+    dataStatus = [];
+    // disclosures = [];
+    crs = [];
+    crsHoverText = [];
+    notes = [];
+    notesHoverText = [];
+    notesIcon = [];
+    lastUpdated = [];
+    lastUpdatedBy = [];
+    capManager = [];
+    taskListStatus = [];
+    taskListDotColor = [];
+    action = [];
+
+    tableData?.map((data) => {
+      dot.push(
+        data?.status === "SUBMITTED"
+          ? "yellow"
+          : data?.status === "APPROVED"
+            ? "green"
+            : "grey"
+      );
+      applicantName.push(
+        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
+        " "
+      );
+      applicantId.push(data?.displayId);
+      applicantType.push(data?.providerType?.serviceProviderType);
+      // department.push(
+      //   data?.basicDetails?.departmentSpecialty?.department || "-"
+      // );
+      docs.push(data?.documents?.uploadedCount|| "");
+      // docsHoverText.push([
+      //   "Immunization History Verification From PCP pending",
+      // ]);
+      const documentDetails = data?.documents?.documentDetails || [];
+      const docHoverTextArray = documentDetails.length > 0 ? documentDetails.map(doc => doc.documentType): ["-"];
+      docsHoverText.push(docHoverTextArray);
+      docsIcon.push(
+        <TextSnippetOutlinedIcon
+          style={{ fontSize: 20, color: `#52575D` }}
+        />
+      );
+      // dataStatus.push(data?.dataStatus || "green");
+      // dataStatus.push(data?.dataStatus === "REVIEW_INPROGRESS"
+      //   ? "yellow"
+      //   : data?.status === "APPROVED"
+      //   ? "green"
+      //   : "grey");
+      // disclosures.push(data?.disclosures || '7/9');
+      crs.push(data?.clarificationRequiredFor || "-");
+      crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"]);
+      notes.push(data?.notes.length || "0");
+      notesIcon.push(
+        <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#52575D` }} />
+      );
+      const notesDetails = data?.notes || [];
+      const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes): ["-"];
+      // notesHoverText.push([
+      //   "June 13 00:00, Nina Grealy",
+      //   "Lorem ipsum dolor sit amet, consetetur sadipscing.",
+      // ]);
+      notesHoverText.push(notesHoverTextArray);
+
+      if (data?.tasks.completedCount === data?.tasks.totalCount) {
+        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#00C07F` }}/>);
+      } else if (data?.tasks.completedCount === 0) {
+        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#94979A` }}/>);
+      } else {
+        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#FEC106` }}/>);
+      }
+
+      taskListStatus.push(data?.tasks.completedCount + "/" + data?.tasks.totalCount);
+      lastUpdated.push(
+        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+      );
+      lastUpdatedBy.push(["-"]);
+      // const lastUpdatedDate = new Date(data?.lastModifiedDate);
+      // lastUpdated.push(isNaN(lastUpdatedDate.getTime()) ? 'Invalid Date' : format(lastUpdatedDate, 'MM-dd-yyyy'));
+      // capManager.push(data?.interviewDetails?.interviewedBy || '- ');
+      action.push(true);
+
+      console.log("tabledata" + tableData);
+    });
+
+    return [
+      { type: "dot", value: dot, tooltipValue: dotTooltipValues },
+      { type: "text", value: applicantName },
+      { type: "text", value: applicantId },
+      { type: "text", value: applicantType },
+      // { type: "text", value: department },
+      {
+        type: "iconWithCount",
+        value: docs,
+        hoverText: docsHoverText,
+        isShowHoverText: true,
+        icon: docsIcon,
+      },
+      // { type: "dot", value: dataStatus },
+      // { "type": "iconWithCount", "value": disclosures, "hoverText": docsHoverText, 'isShowHoverText': true, "icon": docsIcon },
+      {
+        type: "countWithHover",
+        value: crs,
+        hoverText: crsHoverText,
+        isShowHoverText: true,
+      },
+      {
+        type: "iconWithCount",
+        value: notes,
+        hoverText: notesHoverText,
+        isShowHoverText: true,
+        icon: notesIcon,
+      },
+      { type: "iconWithCount",
+         value: taskListStatus ,
+         icon: taskListDotColor },
+      // { type: "dot", value: taskListDotColor, tooltipValue: dotTooltipValues },
+      {
+        type: "iconWithCount",
+        value: lastUpdated,
+        hoverText: lastUpdatedBy,
+        isShowHoverText: true,
+      },
+      { type: "action", value: action },
+    ];
+  };
+
 
   const getApplicationValues = () => {
     dot = [];
@@ -888,7 +1053,7 @@ const StaffApplicationList = ({
       // disclosures.push(data?.disclosures || '7/9');
       crs.push(data?.clarificationRequiredFor || "-");
       crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"]);
-      notes.push(data?.notes || "1");
+      notes.push(data?.notes.length || "0");
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#52575D` }} />
       );
@@ -1006,6 +1171,34 @@ const StaffApplicationList = ({
     { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true },
     { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true },
   ];
+
+  const departmentHeadActionsData = [
+    {
+      data: "View & Verify",
+      requiredValue: "boolean",
+      onClick: onClickViewAndVerifyFunction,
+    },
+    // {
+    //   data: "Send for Cred Comm Review",
+    //   requiredValue: "boolean",
+    //   onClick: "",
+    // },
+    {
+      data: "Applicant Processing Tasks",
+      requiredValue: "boolean",
+      onClick: onClickProcessingTaskFunction,
+      //  onClick: onClickViewAndVerifyFunction,
+    },
+    {
+      data: "Request For Clarification",
+      requiredValue: "boolean",
+      isParagraph: true,
+    },
+    { data: "From Applicant", requiredValue: "boolean", onClick: "", isIndent: true },
+    { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true },
+    { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true },
+  ];
+
 
   const applicationActionsData = [
     // { data: "View & Verify", requiredValue: "boolean", onClick: "" },
@@ -1149,74 +1342,84 @@ const StaffApplicationList = ({
   let tableHeaderValues =
     selectedTab === "applicantsToProcess"
       ? applicantHeaderValues
-      : selectedTab === "level-1"
-        ? applicationHeaderValues
-        : selectedTab === "mac"
-          ? macHeaderValues
-          : selectedTab === "bod"
-            ? bodHeaderValues
-            : selectedTab === "clarifications"
-              ? clarificationHeaderValues
-              : selectedTab === "rejected"
-                ? rejectedHeaderValues
-                // :[];
+        : selectedTab === "level-2"
+          ? departmentHeadHeaderValues
+           : selectedTab === "level-1"
+            ? applicationHeaderValues
+            : selectedTab === "mac"
+              ? macHeaderValues
+              : selectedTab === "bod"
+                ? bodHeaderValues
+                : selectedTab === "clarifications"
+                  ? clarificationHeaderValues
+                  : selectedTab === "rejected"
+                    ? rejectedHeaderValues
+                    // :[];
 
-                // : approvedHeaderValues;
-                : applicantHeaderValues;
+                    // : approvedHeaderValues;
+                  : applicantHeaderValues;
   let tableSortValues =
     selectedTab === "applicantsToProcess"
       ? applicantColSortValues
-      : selectedTab === "level-1"
-        ? applicationColSortValues
-        : selectedTab === "mac"
-          ? macColSortValues
-          : selectedTab === "bod"
-            ? bodColSortValues
-            : selectedTab === "clarifications"
-              ? clarificationColSortValues
-              : selectedTab === "rejected"
-                ? rejectedColSortValues
-                // :[];
+        :  selectedTab === "level-2"
+         ? departmentHeadColSortValues
+          : selectedTab === "level-1"
+            ? applicationColSortValues
+            : selectedTab === "mac"
+              ? macColSortValues
+              : selectedTab === "bod"
+                ? bodColSortValues
+                : selectedTab === "clarifications"
+                  ? clarificationColSortValues
+                  : selectedTab === "rejected"
+                    ? rejectedColSortValues
+                    // :[];
 
-                // : approvedColSortValues;
-                : applicantColSortValues;
+                    // : approvedColSortValues;
+                    : applicantColSortValues;
   let tableDataValues =
     selectedTab === "applicantsToProcess"
       ? getApplicantValues()
-      : selectedTab === "level-1"
-        ? getApplicationValues()
-        : selectedTab === "mac"
-          ? getMacValues()
-          : selectedTab === "bod"
-            ? getBodValues()
-            : selectedTab === "clarifications"
-              ? getClarificationValues()
-              : selectedTab === "rejected"
-                ? getRejectedValues()
-                // :[];
+       :selectedTab === "level-2"
+        ? getDepartmentHeadValues()
+          : selectedTab === "level-1"
+            ? getApplicationValues()
+            : selectedTab === "mac"
+              ? getMacValues()
+              : selectedTab === "bod"
+                ? getBodValues()
+                : selectedTab === "clarifications"
+                  ? getClarificationValues()
+                  : selectedTab === "rejected"
+                    ? getRejectedValues()
+                    // :[];
 
-                // : getApprovedValues();
-                : getApplicantValues();
+                    // : getApprovedValues();
+                    : getApplicantValues();
   let actions =
     selectedTab === "applicantsToProcess"
       ? applicantActionsData
-      : selectedTab === "level-1"
-        ? applicationActionsData
-        : selectedTab === "mac"
-          ? macActionsData
-          : selectedTab === "bod"
-            ? bodActionsData
-            : selectedTab === "clarifications"
-              ? clarificationActionsData
-              : selectedTab === "rejected"
-                ? rejectedActionsData
-                // :[];
+       : selectedTab === "level-2"
+        ? departmentHeadActionsData
+          : selectedTab === "level-1"
+            ? applicationActionsData
+            : selectedTab === "mac"
+              ? macActionsData
+              : selectedTab === "bod"
+                ? bodActionsData
+                : selectedTab === "clarifications"
+                  ? clarificationActionsData
+                  : selectedTab === "rejected"
+                    ? rejectedActionsData
+                    // :[];
 
-                // : approvedActionsData;
-                : applicantActionsData;
+                    // : approvedActionsData;
+                    : applicantActionsData;
   let gridStyle =
     selectedTab === "applicantsToProcess"
       ? style.applicantStaffGrid
+      :selectedTab === "level-2"
+      ? style.departmentHeadStaffGrid
       : selectedTab === "level-1"
         ? style.applicationStaffGrid
         : selectedTab === "mac"
@@ -1363,8 +1566,13 @@ const StaffApplicationList = ({
                         <div className={style.progressbarStyle}>
                           <div className={style.spaceBetween}>
                             <div className={style.statisticsProgress}>
-                            <div className={status?.remainingCompletionPercentage === 0 ? style.greenDotStyle : status?.remainingCompletionPercentage === 100 ? style.greyDotStyle : style.yellowDotStyle}></div>
-
+                            {/* <div className={status?.remainingCompletionPercentage === 0 ? style.greenDotStyle : status?.remainingCompletionPercentage === 100 ? style.greyDotStyle : status?.dueStatus === "PastDue" ? style.redDotStyle : style.yellowDotStyle}></div> */}
+                            <div className={
+                                status?.dueStatus === "PastDue" ? style.redDotStyle :
+                                status?.remainingCompletionPercentage === 0 ? style.greenDotStyle :
+                                status?.remainingCompletionPercentage === 100 ? style.greyDotStyle :
+                                style.yellowDotStyle
+                              }></div>
                               <div
                                 className={style.marginLeft10}>
                                   {/* {`${status?.basicDetail?.applicant?.name?.firstName} ${status.basicDetail.applicant.name.lastName}`} */}
@@ -1379,10 +1587,10 @@ const StaffApplicationList = ({
                             >
 
                               {/* {`${status.basicDetail.applicant.startDate}`} */}
-                              {status.basicDetail.applicant.startDate
+                              {status?.createdDate
                                 ? format(
                                   new Date(
-                                    status.basicDetail.applicant.startDate
+                                    status?.createdDate
                                   ),
                                   "MMM dd, yyyy"
                                 )
@@ -1412,9 +1620,14 @@ const StaffApplicationList = ({
                             {/* <div className={style.progressBottomText}>
                               {status.remainingCompletionPercentage}% remaining
                             </div> */}
-                            <p className={style.progressTopText}>
+                            {/* <p className={style.progressTopText}>
                               {" "}
                               Due in {status.dueDays} Days{" "}
+                            </p> */}
+                            <p className={style.progressTopText}>
+                              {status?.dueStatus === "Due" 
+                                ? `Due in ${status.dueDays} Days` 
+                                : `${status.dueDays} days past due`}
                             </p>
                           </div>
                           {/* <div className={style.progressBottomText}>{status.remainingCompletionPercentage}% remaining</div> */}
