@@ -9,7 +9,6 @@ const ESignature = ({
   showDatais = true,
   isInitial,
   basicForm,
-  
 }) => {
   let eSignImg = getValueByPath(
     basicForm,
@@ -53,10 +52,7 @@ const ESignature = ({
                 className={style.eSignImg}
               />
             ) : (
-              <span
-                // className={style.userName}
-                style={{ fontFamily: eSignTypeContentStyle }}
-              >
+              <span style={{ fontFamily: eSignTypeContentStyle }}>
                 {eSignTypeContent || ""}
               </span>
             )}
