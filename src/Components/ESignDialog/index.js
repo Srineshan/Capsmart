@@ -8,46 +8,58 @@ import { ErrorToaster, SuccessToaster } from "../../utils/toaster";
 import style from "./index.module.scss";
 import CommonSelectField from "../CommonFields/CommonSelectField";
 import { getValueByPath } from "../../utils/formatting";
+import ESignature from "../ESignature";
+import { useNavigate } from "react-router-dom";
 
-const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, basicForm, setBasicForm }) => {
-    const [isContinue, setIsContinue] = useState(false);
-    const [selectedESignFormat, setSelectedESignFormat] = useState('DRAW');
-    const [isShowDrawCanvas, setIsShowDrawCanvas] = useState(false);
-    const [isShowType, setIsShowType] = useState(false);
-    const sigCanvas = useRef({});
-    const contentRef = useRef(null);
-    let eSignImg = getValueByPath(basicForm, 'forms[0].data.setUpYourSignature.file');
-    let eSignTypeContent = getValueByPath(basicForm, 'forms[0].data.setUpYourSignature.type.text');
-    let eSignTypeContentStyle = getValueByPath(basicForm, 'forms[0].data.setUpYourSignature.type.style');
-    const [selectedESignTypeStyle, setSelectedESignTypeStyle] = useState(eSignTypeContentStyle !== undefined ? eSignTypeContentStyle : 'calgary-script-ot');
-    const [eSignType, setESignType] = useState(eSignTypeContent !== undefined ? eSignTypeContent : '');
-    console.log(eSignTypeContent, eSignType)
-    const clearSignature = () => {
-        if (isShowDrawCanvas) {
-            sigCanvas.current.clear();
-        }
-    };
+const ESignDialog = ({
+  children,
+  getIsOpen,
+  tempValue,
+  baseKey,
+  applicationId,
+  basicForm,
+  setBasicForm,
+}) => {
+  const navigate = useNavigate();
+  const [isContinue, setIsContinue] = useState(false);
+  const [selectedESignFormat, setSelectedESignFormat] = useState("DRAW");
+  const [isShowDrawCanvas, setIsShowDrawCanvas] = useState(false);
+  const [isShowType, setIsShowType] = useState(false);
+  const sigCanvas = useRef({});
+  const contentRef = useRef(null);
+  let eSignImg = getValueByPath(
+    basicForm,
+    "forms[0].data.setUpYourSignature.file"
+  );
+  let eSignTypeContent = getValueByPath(
+    basicForm,
+    "forms[0].data.setUpYourSignature.type.text"
+  );
+  let eSignTypeContentStyle = getValueByPath(
+    basicForm,
+    "forms[0].data.setUpYourSignature.type.style"
+  );
+  const [selectedESignTypeStyle, setSelectedESignTypeStyle] = useState(
+    eSignTypeContentStyle !== undefined
+      ? eSignTypeContentStyle
+      : "calgary-script-ot"
+  );
+  const [eSignType, setESignType] = useState(
+    eSignTypeContent !== undefined ? eSignTypeContent : ""
+  );
 
-    useEffect(() => {
-        if (contentRef.current && contentRef.current.innerHTML !== eSignType && eSignType !== null) {
-            contentRef.current.innerHTML = eSignType;
-        }
-    }, [eSignType, selectedESignFormat]);
-
-    // useEffect(() => {
-    //     console.log(tempValue)
-    // }, tempValue)
-
-    const dataURLToBlob = (dataURL) => {
-        const [header, data] = dataURL.split(',');
-        const mime = header.split(':')[1].split(';')[0];
-        const binary = atob(data);
-        const array = [];
-        for (let i = 0; i < binary.length; i++) {
-            array.push(binary.charCodeAt(i));
-        }
-        return new Blob([new Uint8Array(array)], { type: mime });
+  const clearSignature = () => {
+    if (isShowDrawCanvas) {
+      sigCanvas.current.clear();
     }
+  };
+  const handleNavigateToAcknowledgment = () => {
+    navigate(`/applicationForm/section1/acknowledgementStep1`, {
+      state: {
+        eSignType: eSignType, // Replace with actual eSignType variable
+        selectedESignTypeStyle: selectedESignTypeStyle, // Replace with actual style variable
+      },
+    });
   };
 
   useEffect(() => {
@@ -58,11 +70,11 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
     ) {
       contentRef.current.innerHTML = eSignType;
     }
-  }, [eSignType]);
+  }, [eSignType, selectedESignFormat]);
 
-  // useEffect(() => {
-  //     console.log(tempValue)
-  // }, tempValue)
+  useEffect(() => {
+    handleNavigateToAcknowledgment();
+  }, [eSignType, selectedESignTypeStyle]);
 
   const dataURLToBlob = (dataURL) => {
     const [header, data] = dataURL.split(",");
@@ -126,7 +138,7 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
       handleSubmitApplicationReq(temp);
     }
   };
-  console.log("awsedrfgth", selectedESignTypeStyle);
+
   const handleSubmitApplicationReq = async (data) => {
     let temp = {
       schemaId: basicForm?.forms?.[0]?.schemaId,
@@ -148,7 +160,8 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
         ErrorToaster("Unexpected Error Updating Application");
       });
   };
-
+  console.log(eSignTypeContent, eSignType);
+  console.log(eSignTypeContent, selectedESignTypeStyle);
   return (
     <Dialog
       isOpen={getIsOpen}
@@ -225,7 +238,9 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                 !isShowDrawCanvas ? () => setIsShowDrawCanvas(true) : () => {}
               }
             >
-              {eSignImg !== undefined && !isShowDrawCanvas ? (
+              {eSignImg !== undefined &&
+              !isShowDrawCanvas &&
+              basicForm?.forms?.[0]?.data !== null ? (
                 <div>
                   <img
                     src={eSignImg?.fileURL}
@@ -298,6 +313,7 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                     value={selectedESignTypeStyle}
                     onChange={(e) => {
                       setSelectedESignTypeStyle(e.target.value);
+                      console.log("sdtrgh", e.target.value);
                     }}
                     className={`${style.fullWidth}`}
                     firstOptionLabel={"Change Style"}
@@ -326,6 +342,7 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
               {/* )} */}
             </div>
           )}
+
           <div className={style.marginTop}>{children}</div>
           <div
             className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}
@@ -344,6 +361,7 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
               onClick={() => {
                 setIsContinue(true);
                 saveSignature();
+                handleNavigateToAcknowledgment();
               }}
             >
               ADOPT FOR e-SIGN
@@ -353,6 +371,6 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
       </div>
     </Dialog>
   );
-
+};
 
 export default ESignDialog;

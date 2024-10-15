@@ -9,8 +9,7 @@ const ESignature = ({
   showDatais = true,
   isInitial,
   basicForm,
-  selectedESignTypeStyle,
-  eSignType,
+  
 }) => {
   let eSignImg = getValueByPath(
     basicForm,
@@ -25,8 +24,8 @@ const ESignature = ({
     basicForm,
     "forms[0].data.setUpYourSignature.type.style"
   );
-  console.log("awsedrfgth", selectedESignTypeStyle);
-  console.log("text", eSignType);
+  console.log("style", eSignTypeContentStyle);
+  console.log("text", eSignTypeContent);
   return (
     <>
       <div className={style.signature}>
@@ -53,14 +52,14 @@ const ESignature = ({
                 alt="Signature"
                 className={style.eSignImg}
               />
-            ) : eSignTypeContent ? (
+            ) : (
               <span
                 // className={style.userName}
                 style={{ fontFamily: eSignTypeContentStyle }}
               >
-                {eSignType}
+                {eSignTypeContent || ""}
               </span>
-            ) : null}
+            )}
           </div>
         </div>
         <div className={style.signatureData}>
