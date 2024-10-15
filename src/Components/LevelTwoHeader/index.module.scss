@@ -1,3 +1,4 @@
+@import "../../index.scss";
 .spaceBetween {
   display: flex;
   justify-content: space-between;
@@ -80,7 +81,8 @@
   text-align: left;
   font: normal normal 600 13px/18px proxima-nova;
   letter-spacing: 0px;
-  color: #7165e3;
+  color: $primarycolor
+;
   text-transform: uppercase;
 }
 
@@ -107,7 +109,8 @@
   width: 50px;
   height: 30px;
   background: transparent 0% 0% no-repeat padding-box;
-  border: 1px solid #7165e3;
+  border: 1px solid $primarycolor
+;
   opacity: 1;
 }
 
@@ -157,9 +160,11 @@
 }
 
 .buttonStyle {
-  background-color: #7165e3;
+  background-color: $primarycolor
+;
   color: white;
-  border: 1px solid #7165e3;
+  border: 1px solid $primarycolor
+;
   height: 40px;
   width: 140px;
   margin-bottom: -20px;
@@ -169,13 +174,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #7165e3;
+  background-color: $primarycolor
+;
   padding: 5px;
-  box-shadow: 0px 3px 11px #7165e3;
+  box-shadow: 0px 3px 11px $primarycolor
+;
 }
 
 .textColurBlue {
-  color: #7165e3;
+  color: $primarycolor
+;
 }
 
 .borderNone {
@@ -183,7 +191,8 @@
 }
 
 .backgroundBlue {
-  background-color: #7165e3;
+  background-color: $primarycolor
+;
 }
 
 .textColorWhite {

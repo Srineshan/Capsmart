@@ -1,3 +1,4 @@
+@import "../../index.scss";
 .addManagerDialogBackground {
     background-color: white !important;
     padding: 20px 40px;
@@ -34,17 +35,17 @@
     text-align: left;
     font: normal normal bold 15px/13px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor;
 }
 
 .printStyle {
-    color: linear-gradient(#7165E3, #FF6562) !important;
+    color: linear-gradient($primarycolor, #FF6562) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
 
 .crossStyle {
-    color: linear-gradient(#7165E3, #FF6562) !important;
+    color: linear-gradient($primarycolor, #FF6562) !important;
     margin-bottom: 5px;
     margin-top: -5px;
     margin-right: -30px !important;
@@ -168,7 +169,7 @@
 
 .collapseBody {
     background: #EBECED 0% 0% no-repeat padding-box;
-    border: 1px solid #7165E3;
+    border: 1px solid $primarycolor;
     width: 100%;
     border-radius: 4px;
     margin-top: 5px;
@@ -177,7 +178,7 @@
 
 .collapseBody2 {
     background: #EBECED 0% 0% no-repeat padding-box;
-    border: 1px solid #7165E3;
+    border: 1px solid $primarycolor;
     height: 80px;
     width: 100%;
     border-radius: 4px;
@@ -216,7 +217,7 @@
 }
 
 .logFileBlueDot {
-    background: #7165E3 0% 0% no-repeat padding-box;
+    background: $primarycolor 0% 0% no-repeat padding-box;
     border: 1px solid #CFCFCF;
     height: 12px;
     width: 12px;
@@ -238,8 +239,8 @@
 .sendButton {
     width: 80px;
     height: 30px;
-    background: #7165E3 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 5px #7165E3;
+    background: $primarycolor 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 5px $primarycolor;
     border-radius: 8px;
     opacity: 1;
     border: none;
@@ -251,8 +252,8 @@
 .doneButton {
     width: 120px;
     height: 40px;
-    background: #7165E3 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 5px #7165E3;
+    background: $primarycolor 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 5px $primarycolor;
     border-radius: 8px;
     opacity: 1;
     border: none;
@@ -264,8 +265,8 @@
 .uploadButton {
     width: 120px;
     min-height: 40px;
-    background: #7165E3 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 5px #7165E3;
+    background: $primarycolor 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 5px $primarycolor;
     border-radius: 8px;
     opacity: 1;
     border: none;
@@ -317,7 +318,7 @@
 }
 
 .blue {
-    color: #7165E3;
+    color: $primarycolor;
 }
 
 .fullWidth {
@@ -369,7 +370,7 @@
     text-align: left;
     font: normal normal bold 16px/13px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor;
     text-transform: capitalize;
 }
 
@@ -421,7 +422,7 @@
     text-align: center;
     font: normal normal bold 18px/21px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor;
 }
 
 .subHeading {
@@ -460,7 +461,7 @@
     text-align: left;
     font: normal normal 600 15px/21px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor;
     text-transform: capitalize;
     padding-bottom: 10px;
     border-bottom: 2px solid #EBF2F7;
@@ -475,7 +476,7 @@
 
 .feedBackLogFooterStyle {
     margin: -15px -40px -20px -40px;
-    background: #7165E3 0% 0% no-repeat padding-box;
+    background: $primarycolor 0% 0% no-repeat padding-box;
     border-radius: 0 0 6px 6px !important;
 }
 
@@ -492,7 +493,7 @@
 }
 
 .headerPrintIcon {
-    color: #7165E3;
+    color: $primarycolor;
     float: right;
 }
 
@@ -505,7 +506,7 @@
 }
 
 .blue {
-    color: #7165E3;
+    color: $primarycolor;
 }
 
 .yellow {
@@ -571,7 +572,7 @@
 }
 
 .stepperImgStyle {
-    background: #7165E3 0% 0% no-repeat padding-box;
+    background: $primarycolor 0% 0% no-repeat padding-box;
     height: 55px;
     width: 55px;
     border-radius: 50%;

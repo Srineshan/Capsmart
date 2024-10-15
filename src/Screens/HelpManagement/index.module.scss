@@ -1,3 +1,4 @@
+@import "../../index.scss";
 body {
     background: #F8FCFF 0% 0% no-repeat padding-box;
     -ms-overflow-style: none !important;
@@ -209,7 +210,10 @@ body {
 }
 
 .blue {
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
 }
 
 .last30Style {
@@ -264,8 +268,14 @@ body {
 }
 
 .registeredButton {
-    background: #7165E3 0% 0% no-repeat padding-box !important;
-    border: 0.4000000059604645px solid #7165E3;
+    background: $primarycolor
+
+
+ 0% 0% no-repeat padding-box !important;
+    border: 0.4000000059604645px solid $primarycolor
+
+
+;
     border-radius: 6px;
     opacity: 0.75;
     color: white;
@@ -275,7 +285,10 @@ body {
 .normalButton {
     color: #52575D;
     background: #F5F5F8 0% 0% no-repeat padding-box !important;
-    border: 0.4000000059604645px solid #7165E3;
+    border: 0.4000000059604645px solid $primarycolor
+
+
+;
     border-radius: 6px;
     opacity: 0.75;
     font-weight: 600;
@@ -291,8 +304,14 @@ body {
 .contractButton {
     width: 124px;
     height: 40px;
-    background: #7165E3 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 5px #7165E3;
+    background: $primarycolor
+
+
+ 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 5px $primarycolor
+
+
+;
     border-radius: 8px;
     opacity: 1;
     border: none;
@@ -305,8 +324,14 @@ body {
 .tutorialButton {
     width: 200px;
     height: 40px;
-    background: #7165E3 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 5px #7165E3;
+    background: $primarycolor
+
+
+ 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 5px $primarycolor
+
+
+;
     border-radius: 8px;
     opacity: 1;
     border: none;
@@ -572,7 +597,10 @@ body {
     text-align: left;
     font: normal normal normal 11px/14px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
     opacity: 1;
     margin: 5px 0 0 10px;
 }
@@ -593,7 +621,10 @@ body {
     text-align: left;
     font: normal normal bold 15px/13px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
 }
 
 .videoSequenceHeadingStyle {
@@ -670,7 +701,10 @@ body {
 }
 
 .extentionBoxStyle {
-    border: 1px solid #7165E3;
+    border: 1px solid $primarycolor
+
+
+;
     border-radius: 8px;
     opacity: 1;
     height: 60vh;
@@ -680,7 +714,10 @@ body {
 }
 
 .faqBoxStyle {
-    border: 1px solid #7165E3;
+    border: 1px solid $primarycolor
+
+
+;
     border-radius: 8px;
     opacity: 1;
     width: 100%;
@@ -693,7 +730,10 @@ body {
 }
 
 .crossStyle {
-    color: linear-gradient(#7165E3, #FF6562) !important;
+    color: linear-gradient($primarycolor
+
+
+, #FF6562) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
@@ -751,13 +791,22 @@ select {
 
 .outlinedButton {
     background-color: white;
-    color: #7165E3;
-    border: 1px solid #7165E3;
+    color: $primarycolor
+
+
+;
+    border: 1px solid $primarycolor
+
+
+;
     height: 40px;
     width: 140px;
     border-radius: 10px;
     margin-bottom: -20px;
-    box-shadow: 0px 3px 11px #7165E3;
+    box-shadow: 0px 3px 11px $primarycolor
+
+
+;
 }
 
 .outlinedTransparentButton {
@@ -781,20 +830,35 @@ select {
 }
 
 .buttonStyle {
-    background-color: #7165E3;
+    background-color: $primarycolor
+
+
+;
     color: white;
-    border: 1px solid #7165E3;
+    border: 1px solid $primarycolor
+
+
+;
     height: 40px;
     width: 140px;
     border-radius: 10px;
     margin-bottom: -20px;
-    box-shadow: 0px 3px 11px #7165E3;
+    box-shadow: 0px 3px 11px $primarycolor
+
+
+;
 }
 
 .videoButtonStyle {
-    background-color: #7165E3;
+    background-color: $primarycolor
+
+
+;
     color: white;
-    border: 1px solid #7165E3;
+    border: 1px solid $primarycolor
+
+
+;
     height: 40px;
     width: 200px;
     border-radius: 20px;
@@ -802,9 +866,15 @@ select {
 }
 
 .videoButtonOutlinedStyle {
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
     background-color: white;
-    border: 1px solid #7165E3;
+    border: 1px solid $primarycolor
+
+
+;
     height: 40px;
     width: 200px;
     border-radius: 20px;
@@ -838,7 +908,10 @@ select {
 
 .uploadButtonStyle {
     background-color: #f1f2f3;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
     border: none;
     height: 30px;
     font-size: 12px;
@@ -946,7 +1019,10 @@ select {
 .collapseBody {
     border: 1px solid var(--unnamed-color-7165e3);
     background: #EBECED 0% 0% no-repeat padding-box;
-    border: 1px solid #7165E3;
+    border: 1px solid $primarycolor
+
+
+;
     min-height: 250px;
     width: 100%;
     border-radius: 4px;
@@ -956,7 +1032,10 @@ select {
 
 .collapseBody2 {
     background: #EBECED 0% 0% no-repeat padding-box;
-    border: 1px solid #7165E3;
+    border: 1px solid $primarycolor
+
+
+;
     height: 80px;
     width: 100%;
     border-radius: 4px;
@@ -995,7 +1074,10 @@ select {
 }
 
 .logFileBlueDot {
-    background: #7165E3 0% 0% no-repeat padding-box;
+    background: $primarycolor
+
+
+ 0% 0% no-repeat padding-box;
     border: 1px solid #CFCFCF;
     height: 12px;
     width: 12px;
@@ -1017,8 +1099,14 @@ select {
 .sendButton {
     width: 80px;
     height: 30px;
-    background: #7165E3 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 5px #7165E3;
+    background: $primarycolor
+
+
+ 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 5px $primarycolor
+
+
+;
     border-radius: 8px;
     opacity: 1;
     border: none;
@@ -1030,8 +1118,14 @@ select {
 .doneButton {
     width: 120px;
     height: 40px;
-    background: #7165E3 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 5px #7165E3;
+    background: $primarycolor
+
+
+ 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 5px $primarycolor
+
+
+;
     border-radius: 8px;
     opacity: 1;
     border: none;
@@ -1079,7 +1173,10 @@ select {
 }
 
 .commentButton {
-    background: #7165E3 0% 0% no-repeat padding-box;
+    background: $primarycolor
+
+
+ 0% 0% no-repeat padding-box;
     box-shadow: 0px 0px 6px #00000029;
     border: 0.6000000238418579px solid #575757;
     padding: 5px 15px;
@@ -1135,7 +1232,10 @@ select {
 
 .suggestionWhiteButton {
     background-color: white;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
     width: 80px;
     height: 30px;
     border: none;
@@ -1143,7 +1243,10 @@ select {
 }
 
 .suggestionBlueButton {
-    background-color: #7165E3;
+    background-color: $primarycolor
+
+
+;
     color: #fff;
     width: 80px;
     height: 30px;
@@ -1165,7 +1268,10 @@ select {
 }
 
 .blueCircle {
-    background: #7165E3 0% 0% no-repeat padding-box;
+    background: $primarycolor
+
+
+ 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #0000004D;
     height: 50px;
     width: 50px;
@@ -1194,7 +1300,10 @@ select {
 
 .blueChatPart {
     height: 30%;
-    background: #7165E3 0% 0% no-repeat padding-box;
+    background: $primarycolor
+
+
+ 0% 0% no-repeat padding-box;
     box-shadow: 0px 1px 4px #00000024;
     width: 100%;
     color: white !important;
@@ -1350,7 +1459,10 @@ select {
 }
 
 .newBadge {
-    background: #7165E3 0% 0% no-repeat padding-box;
+    background: $primarycolor
+
+
+ 0% 0% no-repeat padding-box;
     opacity: 0.79;
     color: white;
     height: 20px;
@@ -1366,8 +1478,14 @@ select {
 }
 
 .activeButton {
-    background: #7165E3 0% 0% no-repeat padding-box !important;
-    border: 0.4000000059604645px solid #7165E3;
+    background: $primarycolor
+
+
+ 0% 0% no-repeat padding-box !important;
+    border: 0.4000000059604645px solid $primarycolor
+
+
+;
     border-radius: 6px;
     opacity: 0.75;
     color: white;

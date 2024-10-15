@@ -1,3 +1,4 @@
+@import "../../index.scss";
 .applicationAssistanceCard {
     padding: 20px;
     background: #FFFFFF 0% 0% no-repeat padding-box;
@@ -69,7 +70,7 @@
     text-align: left;
     font: normal normal normal 10px/20px proxima-nova;
     letter-spacing: 1.92px;
-    color: #7165E3;
+    color: $primarycolor;
     text-transform: uppercase;
 }
 
@@ -87,7 +88,7 @@
 }
 
 .phoneIconBackground {
-    background: #7165E3 0% 0% no-repeat padding-box;
+    background: $primarycolor 0% 0% no-repeat padding-box;
     box-shadow: 0px 5px 20px #52575D4D;
     height: 48px !important;
     width: 48px;
@@ -132,5 +133,5 @@
 }
 
 .purpleText {
-    color: #7165E3 !important;
+    color:$primarycolor !important;
 }

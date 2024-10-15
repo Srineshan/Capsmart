@@ -1,5 +1,5 @@
 @import '../../styles/mixins.scss';
-
+@import "../../index.scss";
 .navbarStyle {
     top: 0px;
     left: 0px;
@@ -39,8 +39,10 @@
 }
 
 .activeMenuColor {
-    color: #7165E3;
-    border-bottom: 5px solid #7165E3;
+    color: $primarycolor
+;
+    border-bottom: 5px solid $primarycolor
+;
     padding-bottom: 3px;
     font: normal normal 600 15px/25px proxima-nova;
     margin-top: 27px;

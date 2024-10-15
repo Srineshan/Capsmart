@@ -201,35 +201,108 @@ const Step1 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
     console.log(getValueByPath(basicForm, 'basicDetails.departmentSpecialty.department'), fieldPaths)
     console.log('Metadata', metadata);
     return (
-        <div>
-            <div className={`${style.applicationScreenGrid} `}>
-                <div>
-                    <ProgressCard step={''} dataType={form1?.description} title={form1?.title} timeNumber={1} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
-                    <div className={`${style.applicationCardStyle}  ${style.marginTop}`}>
-                        {/* <CommonMailingAddress label={'Business Mailing Address*'} onChangeAddressLine1={() => { }} placeholderAddressLine1={'123 Street'} maxLengthAddressLine1={25} valueAddressLine1={''}
+      <div>
+        <div className={`${style.applicationScreenGrid} `}>
+          <div>
+            <ProgressCard
+              step={""}
+              dataType={form1?.description}
+              title={form1?.title}
+              timeNumber={1}
+              timeText={"Min"}
+              progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`}
+            />
+            <div
+              className={`${style.applicationCardStyle}  ${style.marginTop}`}
+            >
+              {/* <CommonMailingAddress label={'Business Mailing Address*'} onChangeAddressLine1={() => { }} placeholderAddressLine1={'123 Street'} maxLengthAddressLine1={25} valueAddressLine1={''}
                             onChangeAddressLine2={() => { }} placeholderAddressLine2={'Apartment 5'} maxLengthAddressLine2={25} valueAddressLine2={''} onChangeCity={() => { }} placeholderCity={'City'} maxLengthCity={25}
                             valueCity={''} onChangeState={() => { }} placeholderState={'Province'} maxLengthState={25} valueState={''} onChangeZipcode={() => { }} placeholderZipcode={'Zipcode'} maxLengthZipcode={15} valueZipcode={''} /> */}
-                        {form1 !== undefined && 'applicant' in form1?.properties && (
-                            <ApplicationFieldCard object={form1?.properties?.applicant} gridStyle={style.applicantGrid} baseKey={'applicant'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} getAllPath={getAllPath} getAllLabels={getAllLabels} warningFields={warningFields} />
-                        )}
-                        <CommonDivider />
-                        {form1 !== undefined && 'credentialingPrivilegeCategory' in form1?.properties && (
-                            <ApplicationFieldCard object={form1?.properties?.credentialingPrivilegeCategory} gridStyle={style.credentialingGrid} baseKey={'credentialingPrivilegeCategory'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} getAllPath={getAllPath} getAllLabels={getAllLabels} warningFields={warningFields} />
-                        )}
-                        <CommonDivider />
-                        {form1 !== undefined && 'departmentSpecialty' in form1?.properties && (
-                            <ApplicationFieldCard object={form1?.properties?.departmentSpecialty} gridStyle={style.twoCol} baseKey={'departmentSpecialty'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} getAllPath={getAllPath} getAllLabels={getAllLabels} warningFields={warningFields} />
-                        )}
-                        {form1 !== undefined && (getValueByPath(basicForm, 'basicDetails.departmentSpecialty.department') === form1.if.properties.departmentSpecialty.properties.department.const && form1.if.properties.departmentSpecialty.properties.specialty.enum?.includes(getValueByPath(basicForm, 'basicDetails.departmentSpecialty.specialty'))) && (
-                            form1 !== undefined && 'regionalCallResponsibilities' in form1?.properties && (
-                                <ApplicationFieldCard object={form1?.properties?.regionalCallResponsibilities} gridStyle={''} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} getAllPath={getAllPath} getAllLabels={getAllLabels} warningFields={warningFields} />
-                            )
-                        )}
-                        <CommonDivider />
-                        {form1 !== undefined && 'billingNumber' in form1?.properties && (
-                            <ApplicationFieldCard object={form1?.properties?.billingNumber} gridStyle={style.twoCol} baseKey={'billingNumber'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} getAllPath={getAllPath} getAllLabels={getAllLabels} warningFields={warningFields} />
-                        )}
-                        {/*<CommonDivider />
+              {form1 !== undefined && "applicant" in form1?.properties && (
+                <ApplicationFieldCard
+                  object={form1?.properties?.applicant}
+                  gridStyle={style.applicantGrid}
+                  baseKey={"applicant"}
+                  basicForm={basicForm}
+                  setBasicForm={setBasicForm}
+                  isBasicPath={true}
+                  getAllPath={getAllPath}
+                  getAllLabels={getAllLabels}
+                  warningFields={warningFields}
+                />
+              )}
+              <CommonDivider />
+              {form1 !== undefined &&
+                "credentialingPrivilegeCategory" in form1?.properties && (
+                  <ApplicationFieldCard
+                    object={form1?.properties?.credentialingPrivilegeCategory}
+                    gridStyle={style.credentialingGrid}
+                    baseKey={"credentialingPrivilegeCategory"}
+                    basicForm={basicForm}
+                    setBasicForm={setBasicForm}
+                    isBasicPath={true}
+                    getAllPath={getAllPath}
+                    getAllLabels={getAllLabels}
+                    warningFields={warningFields}
+                  />
+                )}
+              <CommonDivider />
+              {form1 !== undefined &&
+                "departmentSpecialty" in form1?.properties && (
+                  <ApplicationFieldCard
+                    object={form1?.properties?.departmentSpecialty}
+                    gridStyle={style.twoCol}
+                    baseKey={"departmentSpecialty"}
+                    basicForm={basicForm}
+                    setBasicForm={setBasicForm}
+                    isBasicPath={true}
+                    getAllPath={getAllPath}
+                    getAllLabels={getAllLabels}
+                    warningFields={warningFields}
+                  />
+                )}
+              {form1 !== undefined &&
+                getValueByPath(
+                  basicForm,
+                  "basicDetails.departmentSpecialty.department"
+                ) ===
+                  form1.if.properties.departmentSpecialty.properties.department
+                    .const &&
+                form1.if.properties.departmentSpecialty.properties.specialty.enum?.includes(
+                  getValueByPath(
+                    basicForm,
+                    "basicDetails.departmentSpecialty.specialty"
+                  )
+                ) &&
+                form1 !== undefined &&
+                "regionalCallResponsibilities" in form1?.properties && (
+                  <ApplicationFieldCard
+                    object={form1?.properties?.regionalCallResponsibilities}
+                    gridStyle={""}
+                    baseKey={"regionalCallResponsibilities"}
+                    basicForm={basicForm}
+                    setBasicForm={setBasicForm}
+                    isBasicPath={true}
+                    getAllPath={getAllPath}
+                    getAllLabels={getAllLabels}
+                    warningFields={warningFields}
+                  />
+                )}
+              <CommonDivider />
+              {form1 !== undefined && "billingNumber" in form1?.properties && (
+                <ApplicationFieldCard
+                  object={form1?.properties?.billingNumber}
+                  gridStyle={style.twoCol}
+                  baseKey={"billingNumber"}
+                  basicForm={basicForm}
+                  setBasicForm={setBasicForm}
+                  isBasicPath={true}
+                  getAllPath={getAllPath}
+                  getAllLabels={getAllLabels}
+                  warningFields={warningFields}
+                />
+              )}
+              {/*<CommonDivider />
                      <div className={`${style.backgroundCard} ${style.marginTop}`}>
                         <div className={style.cardTitle}>Department / Speciality of Service</div>
                         <div className={style.fourCol}>
@@ -239,7 +312,7 @@ const Step1 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                                     <div className={style.siteDisplaySurgeryTextStyle}>Cardiothoracic Surgery</div>
                                     <div className={`${style.siteDisplaySiteTextStyle} ${style.marginTop10}`}>Cambridge Memorial Hospital </div>
                                 </div>
-                                <DeleteOutlineIcon sx={{ color: '#7165E3', cursor: 'pointer' }} />
+                                <DeleteOutlineIcon sx={{ color: '#0e5197', cursor: 'pointer' }} />
                             </div>
                              <div className={`${style.siteDisplayCard} ${style.siteDisplayGrid} ${style.marginTop}`}>
                                 <div>
@@ -247,7 +320,7 @@ const Step1 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                                     <div className={style.siteDisplaySurgeryTextStyle}>General Surgery</div>
                                     <div className={`${style.siteDisplaySiteTextStyle} ${style.marginTop10}`}>Cambridge Memorial Hospital </div>
                                 </div>
-                                <DeleteOutlineIcon sx={{ color: '#7165E3', cursor: 'pointer' }} />
+                                <DeleteOutlineIcon sx={{ color: '#0e5197', cursor: 'pointer' }} />
                             </div> 
                         </div>
                     </div>
@@ -256,35 +329,53 @@ const Step1 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                     <div className={style.marginTop}>
                         <CommonCheckBox checked={true} onChange={(e) => { }} label="I Have Verified the Information to be Correct, and would like to Proceed with my Application" />
                     </div> */}
-                    </div>
-                </div>
-                <div>
-                    <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                    <div className={style.twoColForButton}>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
-                    </div>
-                    {/* <div className={style.marginTop}>
+            </div>
+          </div>
+          <div>
+            <ApplicationAssistanceCard
+              user={"Neena Greenly"}
+              designation={"{Designation}"}
+              contactNumber={"{Contact Number}"}
+              email={"{Email}"}
+            />
+            <div
+              className={`${style.saveInProgress} ${style.marginTop}`}
+              onClick={() => getIsSaveInProgressOpen(true)}
+            >
+              SAVE IN PROGRESS
+            </div>
+            <div className={style.twoColForButton}>
+              <div
+                className={`${style.continue} ${style.marginTop10}`}
+                onClick={() => navigate(-1)}
+              >
+                BACK
+              </div>
+              <div
+                className={`${style.continue} ${style.marginTop10}`}
+                onClick={() => getMissingFields()}
+              >
+                CONTINUE
+              </div>
+            </div>
+            {/* <div className={style.marginTop}>
                             <ApplicationReferenceDocuments />
                         </div> */}
-                </div>
-            </div>
-            {
-                isOpen && (
-                    <AIAssistantDialog getIsOpen={getIsOpen} />
-                )
-            }
-            {
-                isSaveInProgressOpen && (
-                    <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
-                )
-            }
-            {showValidationDialog && (
-                <ValidationDialog getIsOpen={getIsValidationDialogOpen} labelList={warningFields} getSkipClicked={getSkipClicked} />
-            )}
-        </div >
-    )
+          </div>
+        </div>
+        {isOpen && <AIAssistantDialog getIsOpen={getIsOpen} />}
+        {isSaveInProgressOpen && (
+          <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
+        )}
+        {showValidationDialog && (
+          <ValidationDialog
+            getIsOpen={getIsValidationDialogOpen}
+            labelList={warningFields}
+            getSkipClicked={getSkipClicked}
+          />
+        )}
+      </div>
+    );
 }
 
 export default Step1;

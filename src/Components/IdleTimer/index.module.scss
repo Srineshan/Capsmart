@@ -1,3 +1,4 @@
+@import "../../index.scss";
 .deleteEcecutedContractDialogBackground {
     background-color: white;
     margin: -20px !important;
@@ -23,12 +24,12 @@
     text-align: left;
     font: normal normal bold 15px/13px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor;
 }
 
 
 .crossStyle {
-    color: linear-gradient(#7165E3, #FF6562) !important;
+    color: linear-gradient($primarycolor, #FF6562) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
@@ -52,7 +53,7 @@
 }
 
 .blueColor {
-    color: #7165E3;
+    color: $primarycolor;
 }
 
 .marginLeft20 {
@@ -66,9 +67,9 @@
 }
 
 .cloneButtonStyle {
-    background-color: #7165E3;
+    background-color: $primarycolor;
     color: white;
-    border: 1px solid #7165E3;
+    border: 1px solid $primarycolor;
     height: 30px;
     min-width: 80px;
     padding-left: 40px;

@@ -5,11 +5,11 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import style from './index.module.scss';
 
 const switchTheme = createTheme({
-    palette: {
-        primary: {
-            main: '#7165E3',
-        },
+  palette: {
+    primary: {
+      main: "#0e5197",
     },
+  },
 });
 
 const CommonSwitch = ({ checked, onChange, label, className, disabled, required, labelName }) => {

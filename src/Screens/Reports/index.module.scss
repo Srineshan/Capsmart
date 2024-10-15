@@ -1,3 +1,4 @@
+@import "../../index.scss";
 .margin20 {
     margin: 20px;
 }
@@ -169,7 +170,10 @@
     text-align: left;
     font: normal normal 600 16px/15px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
 }
 
 .scrollStyle {
@@ -249,7 +253,10 @@
     padding: 0 15px;
     font: normal normal medium 18px/23px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
     background-color: #d7d4f7;
     border-radius: 8px;
     display: flex;
@@ -274,7 +281,10 @@
 }
 
 .selectedStyle {
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
 }
 
 .statusStyle {
@@ -331,7 +341,10 @@
 }
 
 .blueCard {
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
     background-color: #d7d4f7;
 }
 
@@ -346,7 +359,10 @@
 }
 
 .blueText {
-    color: #7165E3 !important;
+    color: $primarycolor
+
+
+ !important;
 }
 
 .externalRecipientsMarginLeft {
@@ -359,13 +375,22 @@
 }
 
 .selectedTab {
-    background: #7165E30D 0% 0% no-repeat padding-box;
-    border: 1px solid #7165E3;
+    background: $primarycolor
+
+
+0D 0% 0% no-repeat padding-box;
+    border: 1px solid $primarycolor
+
+
+;
     border-radius: 16px 16px 0px 0px;
 }
 
 .selectedReportsTab {
-    border-bottom: 1px solid #7165E3;
+    border-bottom: 1px solid $primarycolor
+
+
+;
     padding-bottom: 15px;
 }
 
@@ -374,7 +399,10 @@
 }
 
 .borderBottomStyle {
-    border-bottom: 1px solid #7165E3;
+    border-bottom: 1px solid $primarycolor
+
+
+;
 }
 
 .borderBottomReportsStyle {
@@ -527,7 +555,10 @@
 }
 
 .primaryButtonStyle {
-    background: #7165E3 0% 0% no-repeat padding-box !important;
+    background: $primarycolor
+
+
+ 0% 0% no-repeat padding-box !important;
     border-radius: 6px;
     border: none;
     color: white !important;
@@ -572,11 +603,17 @@
     text-align: left;
     font: normal normal bold 15px/13px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
 }
 
 .crossStyle {
-    color: linear-gradient(#7165E3, #FF6562) !important;
+    color: linear-gradient($primarycolor
+
+
+, #FF6562) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
@@ -624,14 +661,20 @@
 .typographyStyle {
     font: normal normal 600 15px/13px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
 }
 
 .smallHeading {
     text-align: left;
     font: normal normal 600 15px/13px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
 }
 
 .radioTextStyle {
@@ -642,7 +685,10 @@
 }
 
 .saveStyle {
-    background: #7165E3 0% 0% no-repeat padding-box;
+    background: $primarycolor
+
+
+ 0% 0% no-repeat padding-box;
     border-radius: 6px;
     height: 30px;
     width: 100px;
@@ -718,8 +764,14 @@
 
 .cloneOutlinedButton {
     background-color: white;
-    color: #7165E3;
-    border: 1px solid #7165E3;
+    color: $primarycolor
+
+
+;
+    border: 1px solid $primarycolor
+
+
+;
     height: 30px;
     width: 200px;
     border-radius: 6px;
@@ -727,18 +779,30 @@
 }
 
 .cloneButtonStyle {
-    background-color: #7165E3;
+    background-color: $primarycolor
+
+
+;
     color: white;
-    border: 1px solid #7165E3;
+    border: 1px solid $primarycolor
+
+
+;
     height: 30px;
     width: 200px;
     border-radius: 6px;
 }
 
 .saveButtonStyle {
-    background-color: #7165E3;
+    background-color: $primarycolor
+
+
+;
     color: white;
-    border: 1px solid #7165E3;
+    border: 1px solid $primarycolor
+
+
+;
     height: 30px;
     width: 100px;
     border-radius: 6px;
@@ -785,7 +849,10 @@
     text-align: center;
     font: normal normal 600 32px/42px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
 }
 
 .reportIconStyle {
@@ -1390,7 +1457,10 @@
     height: 6px;
     width: 6px;
     border-radius: 50%;
-    background-color: #7165E3;
+    background-color: $primarycolor
+
+
+;
     margin-top: 8px;
 }
 
@@ -1558,11 +1628,17 @@
     text-align: center;
     font: normal normal bolder 35px/53px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
 }
 
 .timesheetsNotPaidTitleContainer {
-    background: #7165E3 0% 0% no-repeat padding-box;
+    background: $primarycolor
+
+
+ 0% 0% no-repeat padding-box;
     border-radius: 0px 0px 10px 10px;
     height: 40px;
     text-align: center;
@@ -1650,8 +1726,14 @@
 }
 
 .selectedPaymentTabStyle {
-    color: #7165E3;
-    border: 1px solid #7165E3;
+    color: $primarycolor
+
+
+;
+    border: 1px solid $primarycolor
+
+
+;
     background-color: #F1EFFC;
 }
 

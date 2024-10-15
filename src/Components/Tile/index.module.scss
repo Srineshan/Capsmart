@@ -1,4 +1,5 @@
 @import '../../styles/mixins.scss';
+@import "../../index.scss";
 
 .cardStyle {
     height: 115px;
@@ -137,7 +138,8 @@
 }
 
 .purple {
-    color: #7165E3 !important;
+    color: $primarycolor
+ !important;
 }
 
 .optionsStyle {
@@ -155,7 +157,8 @@
 }
 
 .smallTextSelected {
-    color: #7165E3;
+    color: $primarycolor
+;
 }
 
 .descriptionText {

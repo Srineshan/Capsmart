@@ -1,4 +1,5 @@
 @import "../../styles/mixins.scss";
+@import "../../index.scss";
 
 .adminRectangleBox {
   width: 100%;
@@ -283,7 +284,10 @@
 }
 
 .crossStyle {
-  color: linear-gradient(#7165e3, #ff6562) !important;
+  color: linear-gradient($primarycolor
+
+
+, #ff6562) !important;
   margin-bottom: 15px;
   cursor: pointer;
   position: absolute;
@@ -440,7 +444,10 @@
 }
 
 .dashboardCardColorOption3 {
-  color: #7165e3;
+  color: $primarycolor
+
+
+;
 }
 
 .dashboardCardColorOption4 {
@@ -533,7 +540,10 @@
 .addMoreTextStyle {
   font: normal normal medium 20px/34px proxima-nova;
   letter-spacing: 0px;
-  color: #7165e3;
+  color: $primarycolor
+
+
+;
   text-transform: uppercase;
 }
 
@@ -586,7 +596,10 @@
   width: 50px;
   height: 30px;
   background: transparent 0% 0% no-repeat padding-box;
-  border: 1px solid #7165e3;
+  border: 1px solid $primarycolor
+
+
+;
   opacity: 1;
 }
 
@@ -1143,7 +1156,10 @@
   text-align: left;
   font: normal normal normal 11px/14px proxima-nova;
   letter-spacing: 0px;
-  color: #7165e3;
+  color: $primarycolor
+
+
+;
   opacity: 1;
   margin: 5px 0 0 10px;
 }
@@ -1174,7 +1190,10 @@
   text-align: left;
   font: normal normal bold 18px/20px proxima-nova;
   letter-spacing: 0px;
-  color: #7165e3;
+  color: $primarycolor
+
+
+;
   text-transform: capitalize;
   opacity: 1;
 }
@@ -1183,7 +1202,10 @@
   text-align: left;
   font: normal normal bold 20px/18px proxima-nova;
   letter-spacing: 0px;
-  color: #7165e3;
+  color: $primarycolor
+
+
+;
   text-transform: capitalize;
 }
 
@@ -1229,13 +1251,19 @@
 }
 
 .dialogCrossStyle {
-  color: linear-gradient(#7165e3, #ff6562) !important;
+  color: linear-gradient($primarycolor
+
+
+, #ff6562) !important;
   margin-bottom: 15px;
   cursor: pointer;
 }
 
 .crossStyle {
-  color: linear-gradient(#7165e3, #ff6562) !important;
+  color: linear-gradient($primarycolor
+
+
+, #ff6562) !important;
   margin-bottom: 25px;
   cursor: pointer;
   position: absolute;
@@ -1286,7 +1314,10 @@
 
 .podHeader {
   background: #beb9f2 0% 0% no-repeat padding-box;
-  border: 0.4000000059604645px solid #7165e3;
+  border: 0.4000000059604645px solid $primarycolor
+
+
+;
   border-radius: 6px;
   height: 40px;
   width: 100%;
@@ -1318,7 +1349,10 @@
 }
 
 .activeRadioStyle {
-  background: #7165e3 0% 0% no-repeat padding-box;
+  background: $primarycolor
+
+
+ 0% 0% no-repeat padding-box;
   box-shadow: 0px 1px 3px #11111112;
   border-radius: 50%;
   height: 17px;
@@ -1345,7 +1379,10 @@
   text-align: center;
   font: normal normal 600 28px/34px proxima-nova;
   width: 50px;
-  color: #7165e3;
+  color: $primarycolor
+
+
+;
   text-transform: uppercase;
 }
 
@@ -1392,14 +1429,20 @@
   border: 1px solid #e9e9f0;
   border-radius: 4px;
   padding: 7px 10px;
-  color: #7165e3;
+  color: $primarycolor
+
+
+;
 }
 
 .addNewDataButton {
   background: #f0eeee 0% 0% no-repeat padding-box;
   border: 0.4000000059604645px solid #cecaf5;
   border-radius: 6px;
-  color: #7165e3;
+  color: $primarycolor
+
+
+;
   width: 100%;
   padding: 10px 0;
   text-align: center;
@@ -1427,7 +1470,10 @@
 }
 
 .nestedDataTextStyle:hover {
-  color: #7165e3;
+  color: $primarycolor
+
+
+;
 }
 
 .nestedCardReducedPadding {
@@ -1458,7 +1504,10 @@
 }
 
 .addStyle {
-  background: #7165e3 0% 0% no-repeat padding-box;
+  background: $primarycolor
+
+
+ 0% 0% no-repeat padding-box;
   box-shadow: 0px 0px 6px #00000029;
   border-radius: 8px;
   height: 33px;
@@ -1571,7 +1620,10 @@
   font-size: 14px;
   line-height: 1.25;
   background-color: #f1f2f3;
-  color: #7165e3;
+  color: $primarycolor
+
+
+;
   border: none;
   position: relative;
   top: 7px;
@@ -1579,7 +1631,10 @@
 
 .outlinedButton {
   background-color: white;
-  color: #7165e3;
+  color: $primarycolor
+
+
+;
   border: 1px solid #9c93eb;
   height: 40px;
   width: 140px;
@@ -1588,9 +1643,15 @@
 }
 
 .buttonStyle {
-  background-color: #7165e3;
+  background-color: $primarycolor
+
+
+;
   color: white;
-  border: 1px solid #7165e3;
+  border: 1px solid $primarycolor
+
+
+;
   height: 40px;
   width: 140px;
   margin-bottom: -20px;
@@ -1598,9 +1659,15 @@
 }
 
 .buttonStyle2 {
-  background-color: #7165e3;
+  background-color: $primarycolor
+
+
+;
   color: white;
-  border: 1px solid #7165e3;
+  border: 1px solid $primarycolor
+
+
+;
   font: normal normal bold 16px/17px proxima-nova;
   letter-spacing: 1.5px;
   height: 40px;
@@ -1612,9 +1679,15 @@
 }
 
 .buttonStyle3 {
-  background-color: #7165e3;
+  background-color: $primarycolor
+
+
+;
   color: white;
-  border: 1px solid #7165e3;
+  border: 1px solid $primarycolor
+
+
+;
   height: 40px;
   width: 140px;
   border-radius: 10px;
@@ -2159,7 +2232,10 @@
 
 .holidayScheduleHeader1 {
   background: #beb9f2 0% 0% no-repeat padding-box;
-  border: 0.4000000059604645px solid #7165e3;
+  border: 0.4000000059604645px solid $primarycolor
+
+
+;
   border-radius: 6px;
   opacity: 0.75;
   min-height: 50px;
@@ -2194,8 +2270,14 @@
 .customersAdminCardStyle2 {
   height: 70px;
   width: 80px;
-  background: #7165e3 0% 0% no-repeat padding-box;
-  box-shadow: 0px 3px 11px #7165e3;
+  background: $primarycolor
+
+
+ 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 11px $primarycolor
+
+
+;
   border-radius: 8px;
   opacity: 1;
   margin-top: 200px;
@@ -2218,8 +2300,14 @@
 .customersAdminCardStyle4 {
   height: 70px;
   width: 80px;
-  background: #7165e3 0% 0% no-repeat padding-box;
-  box-shadow: 0px 3px 11px #7165e3;
+  background: $primarycolor
+
+
+ 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 11px $primarycolor
+
+
+;
   border-radius: 8px;
   opacity: 1;
   margin-top: auto;
@@ -2863,7 +2951,10 @@
 }
 
 .labelTextAlignColor {
-  color: #7165e3;
+  color: $primarycolor
+
+
+;
 }
 
 .inputGroupText>input {
@@ -2900,7 +2991,10 @@
   width: 50px;
   height: 30px;
   background: transparent 0% 0% no-repeat padding-box;
-  border: 1px solid #7165e3;
+  border: 1px solid $primarycolor
+
+
+;
   opacity: 1;
 }
 
@@ -2994,7 +3088,7 @@
 
 .sideActiveBackground {
   background-color: #F2F1FD;
-  border: 1px solid #7165E3;
+  border: 1px solid #0e5197;
   opacity: 1;
 }
 
@@ -3188,7 +3282,10 @@
 }
 
 .backgroundBlue {
-  background-color: #7165e3;
+  background-color: $primarycolor
+
+
+;
 }
 
 .backgroundWhite {
@@ -3208,7 +3305,10 @@
 }
 
 .textColurBlue {
-  color: #7165e3;
+  color: $primarycolor
+
+
+;
 }
 
 .borderNone {
@@ -3233,7 +3333,10 @@
   width: 40px;
   height: 20px;
   background: transparent 0% 0% no-repeat padding-box;
-  border: 1px solid #7165e3;
+  border: 1px solid $primarycolor
+
+
+;
   opacity: 1;
 }
 
@@ -3249,7 +3352,10 @@
 }
 
 .departmentCrossStyle {
-  color: linear-gradient(#7165e3, #ff6562) !important;
+  color: linear-gradient($primarycolor
+
+
+, #ff6562) !important;
   cursor: pointer;
 }
 
@@ -3279,7 +3385,10 @@
 
 .dialogOutlinedButton {
   background-color: white;
-  color: #7165e3;
+  color: $primarycolor
+
+
+;
   border: 1px solid #9c93eb;
   height: 40px;
   width: 140px;
@@ -3288,9 +3397,15 @@
 }
 
 .dialogButtonStyle {
-  background-color: #7165e3;
+  background-color: $primarycolor
+
+
+;
   color: white;
-  border: 1px solid #7165e3;
+  border: 1px solid $primarycolor
+
+
+;
   height: 40px;
   width: 140px;
   margin-bottom: -20px;

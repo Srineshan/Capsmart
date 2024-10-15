@@ -1,4 +1,5 @@
 @import '../../styles/mixins.scss';
+@import "../../index.scss";
 
 body {
     -ms-overflow-style: none !important;
@@ -44,7 +45,10 @@ body {
 .headingStyle {
     font: normal normal bold 20px/25px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
     text-transform: capitalize;
 }
 
@@ -120,7 +124,10 @@ body {
     text-align: center;
     letter-spacing: 0px;
     font: normal normal normal 12px/17px proxima-nova;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
     opacity: 1;
     margin-top: 50px;
 }
@@ -186,7 +193,10 @@ body {
 .loginButton {
     height: 50px;
     width: 100%;
-    background-color: #7165E3;
+    background-color: $primarycolor
+
+
+;
     color: white;
     font: normal normal 600 20px/25px proxima-nova;
     border-radius: 6px;
@@ -198,7 +208,10 @@ body {
     text-align: center;
     font: normal normal 600 13px/18px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
 }
 
 .setPasswordBackground {
@@ -247,7 +260,10 @@ body {
     width: 40%;
     margin-left: 30%;
     height: 47vh;
-    box-shadow: 0px 3px 6px #7165E3C9;
+    box-shadow: 0px 3px 6px $primarycolor
+
+
+C9;
     border-radius: 8px;
     margin-top: 5%;
 }
@@ -295,7 +311,10 @@ body {
 
 .customerSetupText {
     font: normal normal 600 15px/28px proxima-nova;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
 }
 
 .welcomeAccountImgStyle {
@@ -325,7 +344,10 @@ body {
     text-align: left;
     font: normal normal 600 15px/30px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
 }
 
 .managerFieldGrid {
@@ -346,13 +368,19 @@ body {
 }
 
 .crossStyle {
-    color: linear-gradient(#7165E3, #FF6562) !important;
+    color: linear-gradient($primarycolor
+
+
+, #FF6562) !important;
     margin: 25px;
     cursor: pointer;
 }
 
 .crossStyleWelcomePage {
-    color: linear-gradient(#7165E3, #FF6562) !important;
+    color: linear-gradient($primarycolor
+
+
+, #FF6562) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
@@ -458,70 +486,88 @@ body {
 }
 
 .activeStepperStyle {
-    background-color: #7165E3 !important;
+    background-color: $primarycolor
+
+
+ !important;
 }
 
 .completedStepperStyle {
     background-color: white !important;
-    border: 2px solid #7165E3;
+    border: 2px solid $primarycolor
+
+
+;
 }
 
 .stepperDivider {
-    background: linear-gradient(to right, #7165E3 10%, #E9E9F0 10%) !important;
+    background: linear-gradient(to right, $primarycolor
+
+
+ 10%, #E9E9F0 10%) !important;
     height: 3px;
     width: 100%;
     margin-top: -70px;
 }
 
 .stepperDivider2 {
-    background: linear-gradient(to right, #7165E3 30%, #E9E9F0 30%) !important;
+    background: linear-gradient(to right, $primarycolor
+
+
+ 30%, #E9E9F0 30%) !important;
     height: 3px;
     width: 100%;
     margin-top: -70px;
 }
 
 .stepperDivider2grid4 {
-    background: linear-gradient(to right, #7165E3 35%, #E9E9F0 35%) !important;
+    background: linear-gradient(to right, $primarycolor
+
+
+ 35%, #E9E9F0 35%) !important;
     height: 3px;
     width: 100%;
     margin-top: -70px;
 }
 
 .stepperDivider3 {
-    background: linear-gradient(to right, #7165E3 50%, #E9E9F0 50%) !important;
-    // background: linear-gradient(to right,#7165E3 35%, #E9E9F0 35%) !important;
+    background: linear-gradient(to right, $primarycolor
+
+
+ 50%, #E9E9F0 50%) !important;
+    // background: linear-gradient(to right,$primarycolor35%, #E9E9F0 35%) !important;
     height: 3px;
     width: 100%;
     margin-top: -70px;
 }
 
 .stepperDivider4grid4 {
-    // background: linear-gradient(to right,#7165E3 70%, #E9E9F0 70%) !important;
-    background: linear-gradient(to right, #7165E3 60%, #E9E9F0 60%) !important;
+    // background: linear-gradient(to right,$primarycolor70%, #E9E9F0 70%) !important;
+    background: linear-gradient(to right, $primarycolor 60%, #E9E9F0 60%) !important;
     height: 3px;
     width: 100%;
     margin-top: -70px;
 }
 
 .stepperDivider4 {
-    background: linear-gradient(to right, #7165E3 70%, #E9E9F0 70%) !important;
-    // background: linear-gradient(to right,#7165E3 60%, #E9E9F0 60%) !important;
+    background: linear-gradient(to right, $primarycolor 70%, #E9E9F0 70%) !important;
+    // background: linear-gradient(to right,$primarycolor60%, #E9E9F0 60%) !important;
     height: 3px;
     width: 100%;
     margin-top: -70px;
 }
 
 .stepperDivider5 {
-    background: linear-gradient(to right, #7165E3 90%, #E9E9F0 90%) !important;
-    // background: linear-gradient(to right,#7165E3 85%, #E9E9F0 85%) !important;
+    background: linear-gradient(to right, $primarycolor 90%, #E9E9F0 90%) !important;
+    // background: linear-gradient(to right,$primarycolor85%, #E9E9F0 85%) !important;
     height: 3px;
     width: 100%;
     margin-top: -70px;
 }
 
 .stepperDivider5grid4 {
-    // background: linear-gradient(to right,#7165E3 90%, #E9E9F0 90%) !important;
-    background: linear-gradient(to right, #7165E3 85%, #E9E9F0 85%) !important;
+    // background: linear-gradient(to right,$primarycolor90%, #E9E9F0 90%) !important;
+    background: linear-gradient(to right, $primarycolor 85%, #E9E9F0 85%) !important;
     height: 3px;
     width: 100%;
     margin-top: -70px;
@@ -567,14 +613,20 @@ body {
 }
 
 .activeEntityTextColor {
-    color: #7165E3 !important;
+    color: $primarycolor
+
+
+ !important;
 }
 
 .heading {
     text-align: center;
     font: normal normal 600 20px/18px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
     margin-top: 30px;
 }
 
@@ -599,7 +651,10 @@ body {
 }
 
 .newContractFromCloneBoxStyle {
-    border: 1px solid #7165E3;
+    border: 1px solid $primarycolor
+
+
+;
     border-radius: 8px;
     opacity: 1;
     overflow: scroll;
@@ -651,7 +706,10 @@ body {
 }
 
 .addSymbolStyle {
-    background-color: #7165E3;
+    background-color: $primarycolor
+
+
+;
     color: white;
     font-size: 25px;
     box-shadow: 0px 0px 6px #00000029;
@@ -672,8 +730,14 @@ body {
 
 .outlinedButton {
     background-color: white;
-    color: #7165E3;
-    border: 1px solid #7165E3;
+    color: $primarycolor
+
+
+;
+    border: 1px solid $primarycolor
+
+
+;
     height: 40px;
     width: 180px;
     border-radius: 10px;
@@ -682,9 +746,15 @@ body {
 }
 
 .buttonStyle {
-    background-color: #7165E3;
+    background-color: $primarycolor
+
+
+;
     color: white;
-    border: 1px solid #7165E3;
+    border: 1px solid $primarycolor
+
+
+;
     height: 40px;
     width: 180px;
     border-radius: 10px;
@@ -729,7 +799,10 @@ body {
     cursor: pointer;
 
     span {
-        color: #7165E3;
+        color: $primarycolor
+
+
+;
         margin-right: 5px;
     }
 }
@@ -778,9 +851,15 @@ body {
 }
 
 .reqButton {
-    background-color: #7165E3;
+    background-color: $primarycolor
+
+
+;
     color: white;
-    border: 1px solid #7165E3;
+    border: 1px solid $primarycolor
+
+
+;
     height: 32px;
     width: 150px;
     border-radius: 10px;
@@ -795,7 +874,10 @@ body {
 
 .addMoreButton {
     color: white !important;
-    background-color: #7165E3;
+    background-color: $primarycolor
+
+
+;
     height: 32px;
     width: 130px;
     border: none;
@@ -813,7 +895,10 @@ body {
 }
 
 .selectedColor {
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
 }
 
 .cursorPointer {
@@ -1062,7 +1147,10 @@ body {
     text-align: left;
     font: normal normal bold 15px/13px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
 }
 
 .extensionBorder {
@@ -1078,19 +1166,37 @@ body {
 
 .cloneOutlinedButton {
     background-color: white;
-    color: #7165E3;
-    border: 1px solid #7165E3;
-    box-shadow: 0px 1px 5px #7165E3;
+    color: $primarycolor
+
+
+;
+    border: 1px solid $primarycolor
+
+
+;
+    box-shadow: 0px 1px 5px $primarycolor
+
+
+;
     height: 30px;
     width: 80px;
     border-radius: 10px;
 }
 
 .cloneButtonStyle {
-    background-color: #7165E3;
+    background-color: $primarycolor
+
+
+;
     color: white;
-    border: 1px solid #7165E3;
-    box-shadow: 0px 1px 5px #7165E3;
+    border: 1px solid $primarycolor
+
+
+;
+    box-shadow: 0px 1px 5px $primarycolor
+
+
+;
     height: 30px;
     width: 80px;
     border-radius: 10px;
@@ -1101,7 +1207,10 @@ body {
 }
 
 .alertCrossStyle {
-    color: linear-gradient(#7165E3, #FF6562) !important;
+    color: linear-gradient($primarycolor
+
+
+, #FF6562) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
@@ -1147,11 +1256,17 @@ body {
 .downloadBulkButtonStyle {
     background: #E6E6E6 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
-    border: 1px solid #7165E3;
+    border: 1px solid $primarycolor
+
+
+;
     border-radius: 6px;
     height: 40px;
     width: 100%;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
 }
 
 .downloadImageStyle {
@@ -1173,7 +1288,10 @@ body {
     text-decoration: underline;
     font: normal normal 600 14px/20px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
 }
 
 .reduceMarginTop {
@@ -1190,7 +1308,10 @@ body {
 
 .uploadButtonStyle {
     background-color: #f1f2f3;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
     border: none;
     height: 30px;
     font-size: 12px;
@@ -1535,7 +1656,10 @@ body {
 }
 
 .blue {
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
 }
 
 .next30Style {
@@ -1659,8 +1783,14 @@ body {
     width: 150px;
     height: 40px;
     box-shadow: 0px 3px 11px var(--unnamed-color-7165e3);
-    background: #7165E3 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 11px #7165E3;
+    background: $primarycolor
+
+
+ 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 11px $primarycolor
+
+
+;
     border-radius: 8px;
     opacity: 1;
     border: none;
@@ -1878,7 +2008,10 @@ body {
     height: 6px;
     width: 6px;
     border-radius: 50%;
-    background-color: #7165E3;
+    background-color: $primarycolor
+
+
+;
     margin-top: 8px;
 }
 
@@ -1935,7 +2068,10 @@ body {
     text-align: left;
     font: normal normal normal 11px/14px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
     opacity: 1;
     margin: 5px 0 0 10px;
 }
@@ -1968,8 +2104,14 @@ body {
 }
 
 .activeButton {
-    background: #7165E3 0% 0% no-repeat padding-box !important;
-    border: 0.4000000059604645px solid #7165E3;
+    background: $primarycolor
+
+
+ 0% 0% no-repeat padding-box !important;
+    border: 0.4000000059604645px solid $primarycolor
+
+
+;
     border-radius: 6px;
     opacity: 0.75;
     color: white;
@@ -1977,8 +2119,14 @@ body {
 }
 
 .registeredButton {
-    background: #7165E3 0% 0% no-repeat padding-box !important;
-    border: 0.4000000059604645px solid #7165E3;
+    background: $primarycolor
+
+
+ 0% 0% no-repeat padding-box !important;
+    border: 0.4000000059604645px solid $primarycolor
+
+
+;
     border-radius: 6px;
     opacity: 0.75;
     color: white;
@@ -2077,7 +2225,10 @@ body {
 }
 
 .extentionBoxStyle {
-    border: 1px solid #7165E3;
+    border: 1px solid $primarycolor
+
+
+;
     border-radius: 8px;
     opacity: 1;
     width: 100%;
@@ -2092,7 +2243,10 @@ body {
 }
 
 .crossStyle2 {
-    color: linear-gradient(#7165E3, #FF6562) !important;
+    color: linear-gradient($primarycolor
+
+
+, #FF6562) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
@@ -2124,14 +2278,20 @@ body {
     text-align: left;
     font: normal normal bold 25px/27px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
 }
 
 .smartTextStyle {
     text-align: left;
     font: normal normal normal 25px/27px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
 }
 
 .welcomePadding {
@@ -2157,7 +2317,10 @@ body {
     text-align: left;
     font: normal normal bold 20px/18px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
 }
 
 .welcomeBorder {
@@ -2179,7 +2342,10 @@ body {
 .nextButton {
     border-radius: 12px;
     opacity: 1;
-    background-color: #7165E3;
+    background-color: $primarycolor
+
+
+;
     color: white;
     border: none;
     height: 40px;
@@ -2275,7 +2441,10 @@ body {
     font-size: 14px;
     line-height: 1.25;
     background-color: #f1f2f3;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
     border: none;
     position: relative;
     top: 7px;
@@ -2348,7 +2517,10 @@ input[type="file"] {
 }
 
 .activateHeaderText {
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
     font: normal normal normal 25px/25px proxima-nova;
     letter-spacing: 0px;
 }
@@ -2453,7 +2625,10 @@ input[type="file"] {
 .getSSOIdHeaderBox {
     height: 80px;
     width: 100%;
-    background-color: #7165E3;
+    background-color: $primarycolor
+
+
+;
     border-radius: 6px 6px 0 0;
 }
 
@@ -2482,9 +2657,15 @@ input[type="file"] {
 }
 
 .newContractButtonStyle {
-    background-color: #7165E3;
+    background-color: $primarycolor
+
+
+;
     color: white;
-    border: 1px solid #7165E3;
+    border: 1px solid $primarycolor
+
+
+;
     height: 40px;
     width: 180px;
     border-radius: 10px;

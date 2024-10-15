@@ -715,7 +715,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
             ) : ''}
             {isLoading ?
               <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
-                <CircularProgress sx={{ color: "#7165E3" }} />
+                <CircularProgress sx={{ color: "#0e5197" }} />
               </div> :
               <div ref={componentRef}>
                 <div className={`${style.reduceMarginTop10} contractList`} ref={PDFRef}>

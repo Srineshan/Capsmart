@@ -1,3 +1,4 @@
+@import "../../index.scss";
 .referenceDocumentParentCard {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 5px 20px #52575D1A;
@@ -8,7 +9,7 @@
 
 .referenceDocumentCard {
     background: #F5F5F8 0% 0% no-repeat padding-box;
-    border: 0.4000000059604645px solid #7165E3;
+    border: 0.4000000059604645px solid $primarycolor;
     border-radius: 4px;
     opacity: 0.75;
     padding: 10px;

@@ -29,7 +29,7 @@ const ApplicationAssistanceCard = ({ user, designation, contactNumber, email }) 
                 <div className={style.fullWidth}>
                     <div className={style.spaceBetween}>
                         <div className={style.doYouHaveAQuestionStyle}>Do You Have A Question For Me?</div>
-                        <ChatBubbleOutlineOutlinedIcon sx={{ color: '#7165E3', float: 'right' }} />
+                        <ChatBubbleOutlineOutlinedIcon sx={{ color: '#0e5197', float: 'right' }} />
                     </div>
                 </div>
 

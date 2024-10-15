@@ -1,3 +1,4 @@
+@import "../../index.scss";
 .cloneDialog {
     height: 40%;
     width: 30% !important;
@@ -23,11 +24,11 @@
     text-align: left;
     font: normal normal bold 15px/13px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color:$primarycolor;
 }
 
 .crossStyle {
-    color: linear-gradient(#7165E3, #FF6562) !important;
+    color: linear-gradient($primarycolor, #FF6562) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
@@ -58,9 +59,9 @@
 
 .cloneOutlinedButton {
     background-color: white;
-    color: #7165E3;
-    border: 1px solid #7165E3;
-    box-shadow: 0px 1px 5px #7165E3;
+    color: $primarycolor;
+    border: 1px solid $primarycolor;
+    box-shadow: 0px 1px 5px $primarycolor;
     height: 30px;
     width: 80px;
     border-radius: 10px;
@@ -71,10 +72,10 @@
 }
 
 .cloneButtonStyle {
-    background-color: #7165E3;
+    background-color: $primarycolor;
     color: white;
-    border: 1px solid #7165E3;
-    box-shadow: 0px 1px 5px #7165E3;
+    border: 1px solid $primarycolor;
+    box-shadow: 0px 1px 5px $primarycolor;
     height: 30px;
     width: 80px;
     border-radius: 10px;

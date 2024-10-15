@@ -1,3 +1,4 @@
+@import "../../../index.scss";
 .marginTop {
     margin-top: 20px;
 }
@@ -19,19 +20,25 @@
 .saveInProgress {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
-    border: 0.5px solid #7165E3;
+    border: 0.5px solid $primarycolor
+
+;
     border-radius: 8px;
     text-align: center;
     font: normal normal bold 17px/30px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor
+
+;
     text-transform: uppercase;
     padding: 5px;
     cursor: pointer;
 }
 
 .continue {
-    background: #7165E3 0% 0% no-repeat padding-box;
+    background: $primarycolor
+
+ 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 8px;
     text-align: center;
@@ -58,7 +65,11 @@
 }
 
 .progressStyleBackground {
-    background: transparent linear-gradient(90deg, #7165E3 0%, #7165E3 4%, #E9E9F0 7%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(90deg, $primarycolor
+
+ 0%, $primarycolor
+
+ 4%, #E9E9F0 7%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
 }
 
 .titleText {
@@ -88,7 +99,9 @@
     text-align: center;
     font: normal normal 600 18px/36px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor
+
+;
     text-transform: capitalize;
 }
 
@@ -189,7 +202,9 @@
 .uploadTextStyle {
     text-align: center;
     font: normal normal 600 20px/28px proxima-nova;
-    color: #7165E3;
+    color: $primarycolor
+
+;
     text-transform: capitalize;
 }
 
@@ -250,7 +265,9 @@
 }
 
 .editOrUpdateESign {
-    color: #7165E3;
+    color: $primarycolor
+
+;
     font: normal normal 600 20px/26px proxima-nova;
     text-align: right;
     visibility: hidden;
@@ -342,7 +359,9 @@
 }
 
 .continueValidation {
-    background: #7165E3 0% 0% no-repeat padding-box;
+    background: $primarycolor
+
+ 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 8px;
     text-align: center;
@@ -358,12 +377,16 @@
 .saveInProgressValidation {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
-    border: 0.5px solid #7165E3;
+    border: 0.5px solid $primarycolor
+
+;
     border-radius: 8px;
     text-align: center;
     font: normal normal bold 17px/30px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor
+
+;
     text-transform: uppercase;
     padding: 5px;
     cursor: pointer;

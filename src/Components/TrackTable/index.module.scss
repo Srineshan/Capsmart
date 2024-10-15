@@ -1,6 +1,8 @@
+@import "../../index.scss";
 .trackTable {
     background: #FFFFFF 0% 0% no-repeat padding-box;
-    border: 1px solid #7165E3;
+    border: 1px solid $primarycolor
+;
     border-radius: 8px;
     width: 100%;
     padding: 15px;
@@ -56,7 +58,8 @@
 
 .headingStyle {
     font: normal normal bold 14px/19px proxima-nova;
-    color: #7165E3;
+    color: $primarycolor
+;
 }
 
 .columnHeading {
@@ -124,7 +127,8 @@
 
 .nteAmountCard {
     background: #F3F3F3 0% 0% no-repeat padding-box;
-    border: 1px solid #7165E3;
+    border: 1px solid $primarycolor
+;
     height: 35px;
     max-width: 90%;
     text-align: center;
@@ -161,7 +165,8 @@
 }
 
 .statusPopoverCard {
-    background: #7165E3 0% 0% no-repeat padding-box;
+    background: $primarycolor
+ 0% 0% no-repeat padding-box;
     border-radius: 3px;
     text-align: center;
     font: normal normal normal 11px/13px proxima-nova;
