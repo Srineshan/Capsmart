@@ -389,9 +389,8 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
 
         }
     }
-
     const getFields = () => {
-        if (selectedPrivilege !== "") {
+        if (selectedPrivilege !== "" && selectedPrivilegeForDisplay?.length !== 0) {
             console.log(selectedPrivilegeForDisplay, selectedAdditionalPrivilegeForDisplay, 'entered', selectedPrivilege, staffPrivilege?.filter(data => data?.id === selectedPrivilege), staffPrivilege)
             return (
                 <>
@@ -426,7 +425,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
 
                             )
                         }
-                        {selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.privilegesByCategories?.[0]?.privileges?.length !== 0 && (
+                        {selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.privilegesByCategories?.[0]?.privileges?.length !== 0 && selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.privilegesByCategories?.[0]?.privileges?.length !== undefined && (
                             <div className={style.twoCol}>
                                 <div
                                     onClick={() => handleSign('Core', 'Basic')}
@@ -455,7 +454,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
         {formSchema !== undefined && 'additionalInformationAndSupportingDocuments' in formSchema?.properties && (
             <ApplicationFieldCard object={formSchema?.properties?.additionalInformationAndSupportingDocuments} gridStyle={style.privilegeGrid} baseKey={'additionalInformationAndSupportingDocuments'} basicForm={basicForm} setBasicForm={setBasicForm} />
         )} */}
-                    {selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length !== 0 && (
+                    {selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length !== 0 && selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length !== undefined && (
                         <div className={style.padding}>
                             <div className={style.cardDescription}>{'The following privileges are restricted and require evidence of qualification and competence. Continued competence would be evaluated as that being acceptable to the Medical Consultant of the Program. Please signify your intention regarding each privilege by marking and sign below.'}</div>
 
@@ -677,7 +676,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                                                         }
                                                     </div>
                                                 ))}
-                                                {data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.[0]?.privileges?.length !== 0 && (
+                                                {data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.[0]?.privileges?.length !== 0 && data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.[0]?.privileges?.length !== undefined && (
                                                     <div className={style.twoCol}>
                                                         <div
                                                             onClick={() => { handleSign('Core', 'Additional', index) }}
@@ -697,7 +696,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                                                         </div>
                                                     </div>
                                                 )}
-                                                {data?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length !== 0 && (
+                                                {data?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length !== 0 && data?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length !== undefined && (
                                                     <>
                                                         <div className={`${style.cardDescription} ${style.marginTop}`}>{'The following privileges are restricted and require evidence of qualification and competence. Continued competence would be evaluated as that being acceptable to the Medical Consultant of the Program. Please signify your intention regarding each privilege by marking and sign below.'}</div>
                                                         {data?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.map((categories, categoriesIndex) => (
@@ -912,7 +911,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
 
                         </div>
                     )}
-                    {selectedPrivilege !== "" && (
+                    {(selectedPrivilege !== "" && selectedPrivilegeForDisplay?.length !== 0) && (
                         <>
                             <div className={`${style.marginTop} `}>
                                 <div className={`${style.alignCenter}`} onClick={() => setIsOpen(true)}>
