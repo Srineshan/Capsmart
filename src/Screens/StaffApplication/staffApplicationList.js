@@ -334,16 +334,16 @@ const StaffApplicationList = ({
 
   const getHandleSort = (value, sortBy) => {
     if (sortBy === 'ASCENDING') {
-        setSortField(value)
-        setSortValue('DESCENDING')
+      setSortField(value)
+      setSortValue('DESCENDING')
     } else if (sortBy === 'DESCENDING') {
-        setSortField(value)
-        setSortValue('ASCENDING')
+      setSortField('DEFAULT')
+      setSortValue('ASCENDING')
     } else if (sortBy === 'NONE') {
-        setSortField(value)
-        setSortValue('ASCENDING')
+      setSortField(value)
+      setSortValue('ASCENDING')
     }
-}
+  }
   console.log("rejectionTab", rejectionTab);
 
   const getRejectionData = async () => {
@@ -491,12 +491,12 @@ const StaffApplicationList = ({
       // department.push(
       //   data?.basicDetails?.departmentSpecialty?.department || "-"
       // );
-      docs.push(data?.documents?.uploadedCount|| "");
+      docs.push(data?.documents?.uploadedCount || "");
       // docsHoverText.push([
       //   "Immunization History Verification From PCP pending",
       // ]);
       const documentDetails = data?.documents?.documentDetails || [];
-      const docHoverTextArray = documentDetails.length > 0 ? documentDetails.map(doc => doc.documentType): ["-"];
+      const docHoverTextArray = documentDetails.length > 0 ? documentDetails.map(doc => doc.documentType) : ["-"];
       docsHoverText.push(docHoverTextArray);
       docsIcon.push(
         <TextSnippetOutlinedIcon
@@ -517,7 +517,7 @@ const StaffApplicationList = ({
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#52575D` }} />
       );
       const notesDetails = data?.notes || [];
-      const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes): ["-"];
+      const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes) : ["-"];
       // notesHoverText.push([
       //   "June 13 00:00, Nina Grealy",
       //   "Lorem ipsum dolor sit amet, consetetur sadipscing.",
@@ -1559,9 +1559,9 @@ const StaffApplicationList = ({
                               }></div>
                               <div
                                 className={style.marginLeft10}>
-                                  {/* {`${status?.basicDetail?.applicant?.name?.firstName} ${status.basicDetail.applicant.name.lastName}`} */}
-                                  {status?.basicDetail?.applicant?.name?.firstName.charAt(0).toUpperCase() + status?.basicDetail?.applicant?.name?.firstName.slice(1).toLowerCase()}, {status.basicDetail.applicant.name.lastName.toUpperCase()}
-                                  </div>
+                                {/* {`${status?.basicDetail?.applicant?.name?.firstName} ${status.basicDetail.applicant.name.lastName}`} */}
+                                {status?.basicDetail?.applicant?.name?.firstName.charAt(0).toUpperCase() + status?.basicDetail?.applicant?.name?.firstName.slice(1).toLowerCase()}, {status.basicDetail.applicant.name.lastName.toUpperCase()}
+                              </div>
 
                               {/* <span className={style.textStyleProgress}> ({status.providerType.serviceProviderType}) </span> */}
 
