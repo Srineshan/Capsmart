@@ -15,6 +15,8 @@ import { useNavigate } from 'react-router-dom';
 import PdfDoc from './../../../images/pdfDoc.png';
 import WordDoc from './../../../images/wordDoc.png';
 import ImgDoc from './../../../images/imgDoc.png';
+import { Dialog, Classes } from '@blueprintjs/core';
+import CrossPink from "./../../../images/crossPink.png";
 import FileLoading from './../../../images/fileLoading.GIF';
 import DeleteIcon from './../../../images/deleteHcRow.png';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
@@ -44,6 +46,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
     const [showFileDisplayDialog, setShowFileDisplayDialog] = useState(false);
     const [selectedFile, setselectedFile] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [isShowUploadValidation, setIsShowUploadValidation] = useState(false);
     let eSignTitle = getValueByPath(basicForm, 'forms[0].data.setUpYourSignature.title');
     let eSignInitial = getValueByPath(basicForm, 'forms[0].data.setUpYourSignature.initial')
     let showRedBorderForESign = ((eSignTitle === '' || eSignTitle === undefined) || (eSignInitial === '' || eSignInitial === undefined))
@@ -309,12 +312,28 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
 
     console.log(showRedBorderForESign, eSignInitial, eSignTitle)
 
-    const handleContinue = async () => {
+    const handleContinue = async (skip) => {
         if (tempValue?.table?.filter(data => data?.documentType === "")?.length !== 0) {
             ErrorToaster('Please select the missing document type for the uploaded documents')
         }
         else {
             setIsLoading(true);
+            let temp = {
+                schemaId: basicForm?.forms?.[0]?.schemaId,
+                data: basicForm?.forms?.[0]?.data,
+                unFilledFields: getMissingDocs()?.map(data => data?.document?.name),
+                acknowledged: skip === "skipped" ? false : true
+            }
+            await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[0]?.id}`, temp)
+                .then(response => {
+                    console.log(response)
+                    setBasicForm(response?.data)
+                    getPreApplication()
+                })
+                .catch((error) => {
+                    console.log(error)
+                    ErrorToaster("Unexpected Error Updating Application");
+                });
             if (tempValue?.table !== undefined) {
                 await PUT(`application-management-service/application/${applicationId}/addUploadedDocuments`, tempValue?.table)
                     .then(response => {
@@ -342,6 +361,18 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
     //         </div>
     //     )
     // }
+
+    const getMissingDocs = () => {
+        let temp = []
+        basicForm?.documentsRequired?.map((data, index) => {
+            if ((basicForm?.forms?.[0]?.data !== null && tempValue?.table?.filter(tableData => tableData?.documentType === data?.document?.name)?.length === 0 && data?.required)) {
+                temp.push(data)
+            }
+        })
+        return temp;
+    }
+
+    console.log(tempValue?.table?.filter(tableData => !tableData?.documentType?.includes(basicForm?.documentsRequired?.filter(data => data?.required)?.map(data => data?.document?.name))), 'checkconsole', tempValue?.table, basicForm?.documentsRequired?.filter(data => data?.required)?.map(data => data?.document?.name), getMissingDocs())
 
     return (
         <div>
@@ -454,9 +485,10 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
+                    <div className={`${style.saveInProgress} ${style.marginTop10} ${(basicForm?.forms?.[0]?.data !== null && getMissingDocs()?.length === 0) ? style.disabledButton : ''}`} onClick={(basicForm?.forms?.[0]?.data !== null && getMissingDocs()?.length === 0) ? () => { } : () => setIsShowUploadValidation(true)}>SKIP FOR NOW</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop10} ${((basicForm?.forms?.[0]?.data !== null && showRedBorderForESign) || (basicForm?.forms?.[0]?.data !== null && getMissingDocs()?.length !== 0)) ? style.disabledButton : ''}`} onClick={((basicForm?.forms?.[0]?.data !== null && showRedBorderForESign) || (basicForm?.forms?.[0]?.data !== null && getMissingDocs()?.length !== 0)) ? () => { } : () => handleContinue()}>CONTINUE</div>
                     </div>
                     {/* <div className={style.marginTop}>
                             <ApplicationReferenceDocuments />
@@ -475,6 +507,44 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
             {showFileDisplayDialog && (
                 <FileDisplayDialog getIsOpen={getIsShowFileDialog} file={selectedFile} />
             )}
+            <Dialog isOpen={isShowUploadValidation} onClose={() => setIsShowUploadValidation(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
+                <div>
+                    <div className={Classes.DIALOG_BODY}>
+                        <div className={style.spaceBetween}>
+                            <div className={style.heading}>You are missing some required documents</div>
+                            <div className={style.displayInRow}>
+                                <img
+                                    src={CrossPink}
+                                    alt="cross"
+                                    className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft} `}
+                                    onClick={() => { setIsShowUploadValidation(false) }}
+                                />
+                            </div>
+                        </div>
+                        <p className={`${style.description} ${style.marginTop}`}>You are missing documents that are required to proceed with this application. To ensure a complete & successful submission provide all of the required documents.</p>
+                        <div className={`${style.tableHeader} ${style.tableGridValidation} ${style.marginTop}`}>
+                            <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Document Type</div>
+                            <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Requirements</div>
+                        </div>
+                        {getMissingDocs()?.map((data, index) => (
+                            <div>
+                                <div className={`${style.requiredDocumentCard} ${style.tableGridValidation}  ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''}  ${style.marginTop5}`}>
+                                    <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
+                                        <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.document?.name}</div>
+                                        <InfoOutlinedIcon sx={{ fontSize: 14, marginLeft: '10px' }} className={style.info} />
+                                    </div>
+                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.required ? 'Required' : 'Recommended'}</div>
+                                </div>
+                            </div>
+                        ))}
+                        <div className={`${style.spaceBetween} ${style.marginTop}`}>
+                            <div className={`${style.saveInProgressValidation}`} onClick={() => { setIsShowUploadValidation(false); handleContinue('skipped'); }}>SKIP FOR NOW</div>
+                            <div className={`${style.continueValidation} ${style.marginLeft}`} onClick={() => { setIsShowUploadValidation(false); }}>CONTINUE UPLOADING</div>
+                        </div>
+                    </div>
+
+                </div>
+            </Dialog >
         </div >
     )
 }

@@ -14,15 +14,23 @@ export const Auth = () => {
 export const baseUrl = () => {
   let response = ''
   let hostname = window.location.hostname;
-  if (hostname?.split('.')?.length === 3 && hostname?.split('.')?.includes('doxonify')) {
-    response = 'https://acme-hospital.doxonify.ca';
-  } else if (hostname?.split('.')?.length === 3 && hostname?.split('.')?.includes('hapicaredev')) {
-    response = 'https://acm-hospital.hapicaredev.com';
-  } else if (hostname === 'localhost') {
+  console.log(window.location.origin, 'origin')
+  // if (hostname?.split('.')?.length === 3 && hostname?.split('.')?.includes('doxonify')) {
+  //   response = 'https://acme-hospital.doxonify.ca';
+  // } else if (hostname?.split('.')?.length === 3 && hostname?.split('.')?.includes('hapicaredev')) {
+  //   response = 'https://acm-hospital.hapicaredev.com';
+  // } else if (hostname === 'localhost') {
+  //   response = 'http://ec2-15-157-205-106.ca-central-1.compute.amazonaws.com';
+  // } else {
+  //   response = 'https://doxonify.ca';
+  // }
+
+  if (hostname === 'localhost') {
     response = 'http://ec2-15-157-205-106.ca-central-1.compute.amazonaws.com';
   } else {
-    response = 'https://doxonify.ca';
+    response = window.location.origin;
   }
+
   return response;
 }
 
