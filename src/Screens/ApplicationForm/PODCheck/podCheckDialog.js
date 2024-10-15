@@ -1,11 +1,18 @@
-
 import React from "react";
 import { Dialog } from "@mui/material";
 import AccessAlarmIcon from "@mui/icons-material/AccessAlarm";
 import style from "./index.module.scss";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
+
 import { Box, Typography, Button, Container, Paper, Grid } from "@mui/material";
 
-function podCheckDialog({ onClose }) {
+function PodCheckDialog({ onClose }) {
+  const navigate = useNavigate(); // Initialize useNavigate hook
+
+  const handleWrapUpClick = () => {
+    navigate("/applicationForm/acknowledgementReview"); // Redirect to the disclosures page
+  };
+
   return (
     <Dialog open onClose={onClose}>
       {/* <Box className={`${style.applicationstatusmodal}`}>
@@ -81,7 +88,12 @@ function podCheckDialog({ onClose }) {
               </Button>
             </Grid>
             <Grid item xs={6}>
-              <Button variant="contained" color="primary" fullWidth>
+              <Button
+                variant="contained"
+                color="primary"
+                fullWidth
+                onClick={handleWrapUpClick} // Attach the click handler
+              >
                 Let’s Wrap It Up!
               </Button>
             </Grid>
@@ -92,4 +104,4 @@ function podCheckDialog({ onClose }) {
   );
 }
 
-export default podCheckDialog;
+export default PodCheckDialog;

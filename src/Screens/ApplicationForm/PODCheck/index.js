@@ -15,7 +15,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import { ErrorToaster, SuccessToaster } from "../../../utils/toaster";
 import ApplicationHeader from "../../../Components/ApplicationHeader";
 import style from "./index.module.scss";
-import PodCheckDialog from "./podCheckDialog";
+import PodCheckDialog from "./PodCheckDialog";
 
 import AIAssistantDialog from "../../../Components/AIAssistantDialog";
 
@@ -36,9 +36,6 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
     getPreApplication();
   }, []);
 
-  // useEffect(() => {
-  //     getBasicForm()
-  // }, [])
 
   const getIsOpen = (value) => {
     setIsOpen(value);
