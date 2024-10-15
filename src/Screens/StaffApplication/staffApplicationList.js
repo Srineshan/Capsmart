@@ -306,11 +306,8 @@ const StaffApplicationList = ({
 
   useEffect(() => {
     getWorkflowUserData(selectedTab);
-  }, [selectedTab]);
-
-  useEffect(() => {
-    getWorkflowUserDataSort(selectedTab);
   }, [selectedTab,sortField, sortValue]);
+
 
   useEffect(() => {
     getRejectionData(rejectionTab);
@@ -323,7 +320,8 @@ const StaffApplicationList = ({
   const getWorkflowUserData = async () => {
     try {
       const response = await GET(
-        `application-management-service/application/workflowUser?tab=${selectedTab}`
+        // `application-management-service/application/workflowUser?tab=${selectedTab}`
+         `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}`
       );
       console.log("Application data", response?.data.applications);
       setTableData(response?.data?.applications);
@@ -334,20 +332,6 @@ const StaffApplicationList = ({
     }
   };
 
-  const getWorkflowUserDataSort = async () => {
-    try {
-      const response = await GET(
-        `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}`
-      //  `application-management-service/application/workflowUser?tab=${selectedTab}`
-      );
-      console.log("Application data", response?.data.applications);
-      setTableData(response?.data?.applications);
-      return response?.data.applications || [];
-    } catch (error) {
-      console.error("Error fetching applications:", error);
-      return [];
-    }
-  };
   const getHandleSort = (value, sortBy) => {
     if (sortBy === 'ASCENDING') {
         setSortField(value)
