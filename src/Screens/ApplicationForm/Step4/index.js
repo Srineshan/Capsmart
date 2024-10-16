@@ -15,6 +15,7 @@ import NoDataBox from '../../../Components/ReusableSmallComponents/noDataBox';
 
 const Step4 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
+    const [formSchemaWholeObject, setFormSchemaWholeObject] = useState();
     const [metadata, setMetadata] = useState([]);
     const [labels, setLabels] = useState([]);
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
@@ -60,6 +61,7 @@ const Step4 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                 `application-management-service/formSchema/${basicForm?.formSchemas?.[2]?.id}`
             );
             setFormSchema(form?.schema)
+            setFormSchemaWholeObject(form)
         }
     }
 
@@ -171,7 +173,7 @@ const Step4 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'certifications' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.certifications} applicationId={applicationId} gridStyle={style.licenseGrid} baseKey={'certifications'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} stepPath={`forms[2].data`} setIsEdited={getIsEdited} warningFields={warningFields}
+                            <ApplicationFieldCard object={formSchema?.properties?.certifications} applicationId={applicationId} gridStyle={style.licenseGrid} baseKey={'certifications'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} stepPath={`forms[2].data`} setIsEdited={getIsEdited} warningFields={warningFields} formSchema={formSchemaWholeObject}
                             // formId={basicForm?.forms?.[2]?.id}  getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid}
                             //     heading={'Information Requirement Alert'}
                             //     subHeading={'For this application you are required to provide information on all of the different Professional licenses & Board certification you have.'}

@@ -151,12 +151,22 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
         }));
         console.log(fileNameArray)
         try {
-            const response = await POST(`application-management-service/application/${applicationId}/files/bulk`, formData);
+            const response = await POST(`application-management-service/application/${applicationId}/files/bulk?isLLMRequired=${true}`, formData);
             SuccessToaster('File Uploaded Successfully');
             console.log(response?.data);
             event.map((data, index) => {
                 table.push({ documentType: response?.data[index]?.classification !== null ? response?.data[index]?.classification : '', fileSize: `${(data?.size / (1024 * 1024)).toFixed(2)} Mb`, fileURL: response?.data[index]?.fileURL, fileType: response?.data[index]?.fileType, fileUploaded: data?.name, requirement: response?.data[index]?.classification !== null ? basicForm?.documentsRequired?.filter(data => data?.document?.name === response?.data[index]?.classification)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data[index]?.valid, verified: response?.data[index]?.verified })
             })
+            for (let triggerIndex = 0; triggerIndex < event.length; triggerIndex++) {
+                try {
+                    if (response?.data[triggerIndex]?.classification !== null) {
+                        await PUT(`application-management-service/application/${applicationId}/form/updateData`, { documentType: response?.data[triggerIndex]?.classification !== null ? response?.data[triggerIndex]?.classification : '', fileSize: `${(event[triggerIndex]?.size / (1024 * 1024)).toFixed(2)} Mb`, fileURL: response?.data[triggerIndex]?.fileURL, fileType: response?.data[triggerIndex]?.fileType, fileUploaded: event[triggerIndex]?.name, requirement: response?.data[triggerIndex]?.classification !== null ? basicForm?.documentsRequired?.filter(data => data?.document?.name === response?.data[triggerIndex]?.classification)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data[triggerIndex]?.valid, verified: response?.data[triggerIndex]?.verified });
+                    }
+                    console.log(response);
+                } catch (error) {
+                    console.log(error);
+                }
+            }
             handleSubmitApplicationReq(table)
             setIsLoading(false);
             return response?.data;

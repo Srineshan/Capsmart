@@ -14,8 +14,9 @@ import ValidationDialog from '../../../Components/validationDialog';
 import style from './index.module.scss';
 import NoDataBox from '../../../Components/ReusableSmallComponents/noDataBox';
 
-const Step12 = ({ basicForm, setBasicForm, applicationId }) => {
+const Step12 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
+    const [formSchemaWholeObject, setFormSchemaWholeObject] = useState();
     const [metadata, setMetadata] = useState([]);
     const [labels, setLabels] = useState([]);
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
@@ -62,6 +63,7 @@ const Step12 = ({ basicForm, setBasicForm, applicationId }) => {
                 `application-management-service/formSchema/${basicForm?.formSchemas?.[9]?.id}`
             );
             setFormSchema(form?.schema)
+            setFormSchemaWholeObject(form)
         }
     }
 
@@ -104,6 +106,7 @@ const Step12 = ({ basicForm, setBasicForm, applicationId }) => {
                     console.log(response)
                     setBasicForm(response?.data)
                     SuccessToaster("Application Updated Successfully");
+                    getPreApplication()
                     if (sessionStorage.getItem('fromSummary') === "true") {
                         navigate(-1);
                     }
@@ -146,10 +149,10 @@ const Step12 = ({ basicForm, setBasicForm, applicationId }) => {
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'criminalData1' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.criminalData1} gridStyle={style.criminalHistoryGrid} baseKey={'criminalData1'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} collapsableQuestionCard={true} stepPath={`forms[9].data`} applicationId={applicationId} setIsEdited={getIsEdited} warningFields={warningFields} />
+                            <ApplicationFieldCard object={formSchema?.properties?.criminalData1} gridStyle={style.criminalHistoryGrid} baseKey={'criminalData1'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} collapsableQuestionCard={true} stepPath={`forms[9].data`} applicationId={applicationId} setIsEdited={getIsEdited} warningFields={warningFields} formSchema={formSchemaWholeObject} />
                         )}
                         {formSchema !== undefined && 'criminalData2' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.criminalData2} gridStyle={style.criminalHistoryGrid} baseKey={'criminalData2'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} collapsableQuestionCard={true} stepPath={`forms[9].data`} applicationId={applicationId} setIsEdited={getIsEdited} warningFields={warningFields} />
+                            <ApplicationFieldCard object={formSchema?.properties?.criminalData2} gridStyle={style.criminalHistoryGrid} baseKey={'criminalData2'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} collapsableQuestionCard={true} stepPath={`forms[9].data`} applicationId={applicationId} setIsEdited={getIsEdited} warningFields={warningFields} formSchema={formSchemaWholeObject} />
                         )}
                         {/* <NoDataBox
                             heading={'Information Requirement Alert'}

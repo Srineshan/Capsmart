@@ -13,8 +13,9 @@ import ValidationDialog from '../../../Components/validationDialog';
 
 import style from './index.module.scss';
 
-const Step13 = ({ basicForm, setBasicForm, applicationId }) => {
+const Step13 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
+    const [formSchemaWholeObject, setFormSchemaWholeObject] = useState();
     const [metadata, setMetadata] = useState([]);
     const [labels, setLabels] = useState([]);
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
@@ -61,6 +62,7 @@ const Step13 = ({ basicForm, setBasicForm, applicationId }) => {
                 `application-management-service/formSchema/${basicForm?.formSchemas?.[10]?.id}`
             );
             setFormSchema(form?.schema)
+            setFormSchemaWholeObject(form)
         }
     }
 
@@ -102,6 +104,7 @@ const Step13 = ({ basicForm, setBasicForm, applicationId }) => {
                     console.log(response)
                     setBasicForm(response?.data)
                     SuccessToaster("Application Updated Successfully");
+                    getPreApplication()
                     // navigate('/applicationForm/section1/acknowledgementStep1')
                     navigate('/applicationForm/podcheck')
 
@@ -148,7 +151,7 @@ const Step13 = ({ basicForm, setBasicForm, applicationId }) => {
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'impactingPractice' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.impactingPractice} gridStyle={style.criminalHistoryGrid} baseKey={'impactingPractice'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} collapsableQuestionCard={true} stepPath={`forms[10].data`} applicationId={applicationId} setIsEdited={getIsEdited} warningFields={warningFields} />
+                            <ApplicationFieldCard object={formSchema?.properties?.impactingPractice} gridStyle={style.criminalHistoryGrid} baseKey={'impactingPractice'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} collapsableQuestionCard={true} stepPath={`forms[10].data`} applicationId={applicationId} setIsEdited={getIsEdited} warningFields={warningFields} formSchema={formSchemaWholeObject} />
                         )}
                     </div>
                 </div>
