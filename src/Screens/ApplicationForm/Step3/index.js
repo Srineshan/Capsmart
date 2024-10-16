@@ -148,13 +148,18 @@ const Step3 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                 missingKeys.push(data)
             }
         })
+        if (!getValueByPath(basicForm, 'forms[1].data.contactAddress3.registeredBusinessAddress') && getValueByPath(basicForm, 'forms[1].data.contactAddress3.registeredBusinessAddress') !== undefined && getValueByPath(basicForm, 'forms[1].data.contactAddress3.registeredBusinessAddress') !== null) {
+            let registeredBusinessAddressKeys = ["forms[1].data.contactAddress3.business.businessName", "forms[1].data.contactAddress3.business.businessAddress.streetName", "forms[1].data.contactAddress3.business.businessAddress.pinCode", "forms[1].data.contactAddress3.business.businessAddress.city", "forms[1].data.contactAddress3.business.businessAddress.province", "forms[1].data.contactAddress3.business.businessPhone", "forms[1].data.contactAddress3.business.businessWebsite"]
+            let temp = missingKeys?.filter(data => !registeredBusinessAddressKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        setWarningFields(missingKeys)
         if (missingKeys?.length !== 0) {
             setShowValidationDialog(true)
         } else {
             handleSubmitApplicationReq()
         }
-        setWarningFields(missingKeys)
-        console.log(keyValuePair, 'Metadata', missingKeys)
+        console.log(keyValuePair, 'Metadata', missingKeys, getValueByPath(basicForm, 'forms[1].data.contactAddress3.registeredBusinessAddress'))
     }
 
 

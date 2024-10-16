@@ -31,6 +31,8 @@ export const baseUrl = () => {
     response = window.location.origin;
   }
 
+  // response = `http://${hostname}:8000`;
+
   return response;
 }
 

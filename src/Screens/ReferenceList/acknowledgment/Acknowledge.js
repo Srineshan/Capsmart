@@ -278,9 +278,8 @@ const Acknowledge = () => {
             />
           </div>
           <div
-            className={`${
-              isExpanded ? style.bigCardGrid : style.smallCardGrid
-            }`}
+            className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid
+              }`}
           >
             <ApplicantSideBar
               applicantType={applicantTypeList?.map(

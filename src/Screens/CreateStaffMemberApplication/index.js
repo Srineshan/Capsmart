@@ -12,6 +12,8 @@ import SendEmailFromStaffManagerConfirmationDialog from '../../Components/sendEm
 import jwt from 'jwt-decode';
 import Cookie from "universal-cookie";
 import { useNavigate } from 'react-router-dom';
+import { getValueByPath } from '../../utils/formatting';
+import ValidationDialog from '../../Components/validationDialog';
 
 const CreateStaffMemberApplication = () => {
     let cookie = new Cookie();
@@ -24,6 +26,10 @@ const CreateStaffMemberApplication = () => {
     const [applicationId, setApplicationId] = useState('');
     const [basicFormForDocuments, setBasicFormForDocuments] = useState()
     const [requiredDocumentList, setRequiredDocumentList] = useState();
+    const [metadata, setMetadata] = useState([]);
+    const [labels, setLabels] = useState([]);
+    const [warningFields, setWarningFields] = useState([]);
+    const [showValidationDialog, setShowValidationDialog] = useState(false);
     const [basicForm, setBasicForm] = useState(
         {
             "applicant": {
@@ -145,6 +151,54 @@ const CreateStaffMemberApplication = () => {
     }
     console.log(requiredDocumentList)
 
+    const getSkipClicked = (value) => {
+        if (value) {
+            handleSubmitApplicationReq()
+        }
+    }
+
+    const getAllPath = (data) => {
+        let temp = metadata;
+        if (!temp?.includes(data)) {
+            console.log(temp, data, 'Metadata')
+            temp.push(data);
+        }
+        setMetadata(temp);
+    }
+
+    const getAllLabels = (data) => {
+        let tempLabels = labels;
+        if (!tempLabels?.includes(data)) {
+            console.log(tempLabels, data, 'Metadata')
+            tempLabels.push(data);
+        }
+        setLabels(tempLabels);
+    }
+
+    const getMissingFields = () => {
+        let missingKeys = [];
+        let keyValuePair = [];
+        metadata?.map((data, index) => {
+            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index] })
+        })
+        keyValuePair?.map(data => {
+            if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
+                missingKeys.push(data)
+            }
+        })
+        if (missingKeys?.length !== 0) {
+            setShowValidationDialog(true)
+        } else {
+            handleSubmitApplicationReq()
+        }
+        setWarningFields(missingKeys)
+        console.log(keyValuePair, 'Metadata', missingKeys)
+    }
+
+    const getIsValidationDialogOpen = (value) => {
+        setShowValidationDialog(value);
+    }
+
     const getPreApplication = async () => {
         const { data: basicForm } = await GET(
             `application-management-service/application/${applicationId}`
@@ -249,13 +303,13 @@ const CreateStaffMemberApplication = () => {
                 {!isNextpage ? (
                     <>
                         {form !== undefined && 'applicant' in form?.properties && (
-                            <ApplicationFieldCard object={form?.properties?.applicant} gridStyle={style.applicantGrid} baseKey={'applicant'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+                            <ApplicationFieldCard object={form?.properties?.applicant} gridStyle={style.applicantGrid} baseKey={'applicant'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} getAllPath={getAllPath} getAllLabels={getAllLabels} warningFields={warningFields} />
                         )}
                         {form !== undefined && 'credentialingPrivilegeCategory' in form?.properties && (
-                            <ApplicationFieldCard object={form?.properties?.credentialingPrivilegeCategory} gridStyle={style.credentialingGrid} baseKey={'credentialingPrivilegeCategory'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+                            <ApplicationFieldCard object={form?.properties?.credentialingPrivilegeCategory} gridStyle={style.credentialingGrid} baseKey={'credentialingPrivilegeCategory'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} getAllPath={getAllPath} getAllLabels={getAllLabels} warningFields={warningFields} />
                         )}
                         {form !== undefined && 'departmentSpecialty' in form?.properties && (
-                            <ApplicationFieldCard object={form?.properties?.departmentSpecialty} gridStyle={style.appointmentGrid} baseKey={'departmentSpecialty'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+                            <ApplicationFieldCard object={form?.properties?.departmentSpecialty} gridStyle={style.appointmentGrid} baseKey={'departmentSpecialty'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} getAllPath={getAllPath} getAllLabels={getAllLabels} warningFields={warningFields} />
                         )}
                         {/* {form !== undefined && 'regionalCallResponsibilities' in form?.properties && (
                                 <ApplicationFieldCard object={form?.properties?.regionalCallResponsibilities} gridStyle={style.regionalCallGrid} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
@@ -265,7 +319,7 @@ const CreateStaffMemberApplication = () => {
                             <div className={style.displayInRow}>
                                 <div className={style.displayInRow}>
                                     <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => window.location.reload()}>DISCARD</div>
-                                    <div className={`${style.continue} ${style.marginTop} ${style.marginLeft}`} onClick={() => handleSubmitApplicationReq()}>CONTINUE</div>
+                                    <div className={`${style.continue} ${style.marginTop} ${style.marginLeft}`} onClick={() => getMissingFields()}>CONTINUE</div>
                                 </div>
                             </div>
                         </div>
@@ -389,6 +443,9 @@ const CreateStaffMemberApplication = () => {
             </div>
             {isShowMailSendDialog && (
                 <SendEmailFromStaffManagerConfirmationDialog getIsOpen={getShowMailSendDialog} basicForm={basicForm} />
+            )}
+            {showValidationDialog && (
+                <ValidationDialog getIsOpen={getIsValidationDialogOpen} labelList={warningFields} getSkipClicked={getSkipClicked} />
             )}
         </div>
     )
