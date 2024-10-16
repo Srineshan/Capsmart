@@ -10,7 +10,7 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { GET, PUT, POST } from '../../dataSaver';
+import { GET, PUT, POST, DELETE } from '../../dataSaver';
 import { useNavigate } from 'react-router-dom';
 import PdfDoc from './../../../images/pdfDoc.png';
 import WordDoc from './../../../images/wordDoc.png';
@@ -135,7 +135,6 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
 
     const changeHandler = async (event) => {
         setIsLoading(true);
-        console.log(event)
         setFiles(event);
         console.log(event, 'Test');
         let table = tempValue.table !== undefined ? tempValue.table : []
@@ -170,6 +169,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
     };
 
     const handleChange = async (value, index) => {
+        setIsLoading(true)
         console.log(tempValue?.table, value, index, '142')
         let temp = tempValue?.table;
         let tempDocumentData = {
@@ -200,6 +200,14 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
             temp[index].requirement = basicForm?.documentsRequired?.filter(data => data?.document?.name === value)?.[0]?.required ? 'Required' : 'Recommended';
         }
         console.log(temp)
+        await PUT(`application-management-service/application/${applicationId}/form/updateData`, temp[index])
+            .then(response => {
+                console.log(response)
+                setIsLoading(false)
+            })
+            .catch((error) => {
+                console.log(error)
+            });
         handleSubmitApplicationReq(temp)
     }
 
@@ -290,10 +298,17 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
         handleSubmitApplicationReq(temp)
     };
 
-    const handleDelete = (data) => {
+    const handleDelete = async (data) => {
         let temp = tempValue?.table;
         temp = temp.filter(obj => !isEqual(obj, data))
-        console.log(temp)
+        console.log(temp, data)
+        await DELETE(`application-management-service/application/${applicationId}/files`, [data])
+            .then((response) => {
+                SuccessToaster("File Deleted Successfully");
+            })
+            .catch((error) => {
+                ErrorToaster("Unexpected Error Deleting File");
+            });
         handleSubmitApplicationReq(temp)
     }
 
