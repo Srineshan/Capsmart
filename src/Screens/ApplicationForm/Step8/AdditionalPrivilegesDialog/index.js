@@ -34,7 +34,7 @@ const AdditionalPrivileges = ({ getIsOpen, primaryPrivilege, getSelectedPrivileg
     let name = `${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `;
     const [currentDate, setCurrentDate] = useState(format(new Date(), 'dd-MM-yyyy'));
     const [encryptedText, setEncryptedText] = useState(CryptoJS.AES.encrypt(name + dateTime, publicKey).toString());
-    console.log('staffPrivilege', staffPrivilege)
+    console.log('staffPrivilege', staffPrivilege, selectedPrivilegeForDisplay)
 
     useEffect(() => {
         getStaffPrivilege();
@@ -209,7 +209,7 @@ const AdditionalPrivileges = ({ getIsOpen, primaryPrivilege, getSelectedPrivileg
                                     // checked={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
                                     // onChange={(e) => handleChange(fieldKey, e.target.checked, baseKey)} label={`${fieldData.label}${(isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) && '*'}`}
                                     /></div> */}
-                                    <div className={`${style.itemLeft} `}>{categories?.category === null ? '' : categories?.category}</div>
+                                    <div className={`${style.itemLeft} `}><strong>{categories?.category === null ? '' : categories?.category}</strong></div>
                                 </div>
                                 <>
                                     {
@@ -249,7 +249,7 @@ const AdditionalPrivileges = ({ getIsOpen, primaryPrivilege, getSelectedPrivileg
                             </div>
                         </div>
                     )} */}
-                    {staffPrivilege?.filter(data => data?.id === selectedPrivilege)?.length !== 0 && staffPrivilege?.filter(data => data?.id === selectedPrivilege)[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length !== 0 && (
+                    {staffPrivilege?.filter(data => data?.id === selectedPrivilege)?.length !== 0 && staffPrivilege?.filter(data => data?.id === selectedPrivilege)[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length !== 0 && staffPrivilege?.filter(data => data?.id === selectedPrivilege)[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length !== undefined && (
                         <div className={style.marginTop40}>
                             <div className={style.applicationCardStyle}>
                                 <div className={style.marginTop}>
@@ -397,7 +397,7 @@ const AdditionalPrivileges = ({ getIsOpen, primaryPrivilege, getSelectedPrivileg
                     )}
 
                     <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
-                        <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getSelectedPrivilegeList(selectedPrivilegeForDisplay); getIsOpen(false); }}>ADD</div>
+                        <div className={`${style.continue} ${style.marginLeft}`} onClick={selectedPrivilegeForDisplay?.length !== 0 ? () => { getSelectedPrivilegeList(selectedPrivilegeForDisplay); getIsOpen(false); } : () => { getIsOpen(false); }}>ADD</div>
                     </div>
                 </div>
 

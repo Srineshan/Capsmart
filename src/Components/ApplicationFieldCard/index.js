@@ -709,7 +709,8 @@ const ApplicationFieldCard = ({
                         ? parentData.required?.includes(fieldKey)
                         : false)) &&
                 getAllPath &&
-                getAllLabels
+                getAllLabels &&
+                fieldData.fieldType !== 'switchbutton'
             ) {
                 if (baseKey?.split('.')[0] === 'contactAddress1' || baseKey?.split('.')[0] === 'contactAddress2' || baseKey?.split('.')[0] === 'contactAddress3') {
                     getAllPath(`${basicpath}.${baseKey}.${fieldKey}`);

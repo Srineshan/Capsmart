@@ -350,9 +350,9 @@ const LoginDialog = ({ getIsOpen, days }) => {
     //           <div className={style.createYourAccountSectionPadding}>
     //             <div className={style.heading}>Create Your Account</div>
     //             <div className={style.createAccountHelpText}>
-    //               CHM uses capsmart for to processing new staff member
+    //               CHM uses CAPSmart for to processing new staff member
     //               applications and reappointments. you can Register as a user
-    //               with CapSmart and avail its benefits
+    //               with CAPSmart and avail its benefits
     //             </div>
     //             <div className={style.marginTop}>
     //               <div className={style.extentionLableStyle}>
