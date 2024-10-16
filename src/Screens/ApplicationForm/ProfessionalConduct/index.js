@@ -6,7 +6,7 @@ import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
 import { GET, PUT } from '../../dataSaver';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 import ValidationDialog from '../../../Components/validationDialog';
@@ -20,13 +20,19 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId }) => {
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
     const [showValidationDialog, setShowValidationDialog] = useState(false);
     const [warningFields, setWarningFields] = useState([]);
+    const { section, step } = useParams()
+    const [formIndex, setFormIndex] = useState();
     const navigate = useNavigate()
     const [isEdited, setIsEdited] = useState(false);
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
         }
-    }, [basicForm])
+    }, [basicForm, formIndex])
+
+    useEffect(() => {
+        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
+    }, [basicForm, step])
 
     const getIsValidationDialogOpen = (value) => {
         setShowValidationDialog(value);
@@ -55,9 +61,9 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId }) => {
     }
 
     const getFormSchema = async () => {
-        if (basicForm?.formSchemas?.[8]?.id !== undefined) {
+        if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
             const { data: form } = await GET(
-                `application-management-service/formSchema/${basicForm?.formSchemas?.[8]?.id}`
+                `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
             );
             setFormSchema(form?.schema)
         }
@@ -92,12 +98,12 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId }) => {
     const handleSubmitApplicationReq = async (data) => {
         if (isEdited) {
             let temp = {
-                schemaId: basicForm?.forms?.[8]?.schemaId,
-                data: basicForm?.forms?.[8]?.data,
+                schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+                data: basicForm?.forms?.[formIndex]?.data,
                 unFilledFields: warningFields?.map(data => data?.label),
                 acknowledged: data === "skipped" ? false : true
             }
-            await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[8]?.id}`, temp)
+            await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
                 .then(response => {
                     console.log(response)
                     setBasicForm(response?.data)
@@ -106,7 +112,7 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId }) => {
                         navigate(-1);
                     }
                     else {
-                        navigate('/applicationForm/section1/step12')
+                        navigate(`/applicationForm/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
 
                     }
                 })
@@ -119,7 +125,7 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId }) => {
                 navigate(-1);
             }
             else {
-                navigate('/applicationForm/section1/step12')
+                navigate(`/applicationForm/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
 
             }
         }
@@ -144,10 +150,10 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId }) => {
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'conductDisclosure1' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.conductDisclosure1} gridStyle={style.conductGrid} baseKey={'conductDisclosure1'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} collapsableQuestionCard={true} stepPath={`forms[8].data`} applicationId={applicationId} setIsEdited={getIsEdited} warningFields={warningFields} />
+                            <ApplicationFieldCard object={formSchema?.properties?.conductDisclosure1} gridStyle={style.conductGrid} baseKey={'conductDisclosure1'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} collapsableQuestionCard={true} stepPath={`forms[${formIndex}].data`} applicationId={applicationId} setIsEdited={getIsEdited} warningFields={warningFields} />
                         )}
                         {formSchema !== undefined && 'conductDisclosure2' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.conductDisclosure2} gridStyle={style.conductGrid} baseKey={'conductDisclosure2'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} collapsableQuestionCard={true} stepPath={`forms[8].data`} applicationId={applicationId} setIsEdited={getIsEdited} warningFields={warningFields} />
+                            <ApplicationFieldCard object={formSchema?.properties?.conductDisclosure2} gridStyle={style.conductGrid} baseKey={'conductDisclosure2'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} collapsableQuestionCard={true} stepPath={`forms[${formIndex}].data`} applicationId={applicationId} setIsEdited={getIsEdited} warningFields={warningFields} />
                         )}
                     </div>
                 </div>

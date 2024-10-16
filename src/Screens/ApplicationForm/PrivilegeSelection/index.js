@@ -7,7 +7,7 @@ import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
 import { DELETE, GET, POST } from '../../dataSaver';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Icon } from '@blueprintjs/core';
 import { format } from 'date-fns';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
@@ -52,6 +52,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId }) => {
     const [applicationData, setApplicationData] = useState();
     const [openIndex, setOpenIndex] = useState();
     const [selectedPrivilegeData, setSelectedprivilegeData] = useState([]);
+    const { section, step } = useParams()
+    const [formIndex, setFormIndex] = useState();
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -75,7 +77,11 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId }) => {
         }
         setSelectedAdditionalPrivilegeForDisplay(basicForm?.privileges?.additionalPrivileges)
         setSelectedPrivilegeForDisplay(basicForm?.privileges?.obligatedPrivileges)
-    }, [basicForm])
+    }, [basicForm, formIndex])
+
+    useEffect(() => {
+        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
+    }, [basicForm, step])
 
     const getSelectedPrivilegeList = (value) => {
         let temp = selectedAdditionalPrivilegeForDisplay;
@@ -93,9 +99,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId }) => {
     console.log(selectedAdditionalPrivilegeForDisplay)
 
     const getFormSchema = async () => {
-        if (basicForm?.formSchemas?.[6]?.id !== undefined) {
+        if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
             const { data: form } = await GET(
-                `application-management-service/formSchema/${basicForm?.formSchemas?.[6]?.id}`
+                `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
             );
             setFormSchema(form?.schema)
         }
@@ -181,7 +187,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId }) => {
                 navigate(-1);
             }
             else {
-                navigate('/applicationForm/section1/step10')
+                navigate(`/applicationForm/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
 
             }
         }

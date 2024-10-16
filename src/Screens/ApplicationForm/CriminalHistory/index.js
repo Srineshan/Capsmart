@@ -6,7 +6,7 @@ import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
 import { GET, PUT } from '../../dataSaver';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 import ValidationDialog from '../../../Components/validationDialog';
@@ -22,12 +22,18 @@ const CriminalHistory = ({ basicForm, setBasicForm, applicationId }) => {
     const [showValidationDialog, setShowValidationDialog] = useState(false);
     const [warningFields, setWarningFields] = useState([]);
     const [isEdited, setIsEdited] = useState(false);
+    const { section, step } = useParams()
+    const [formIndex, setFormIndex] = useState();
     const navigate = useNavigate()
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
         }
-    }, [basicForm])
+    }, [basicForm, formIndex])
+
+    useEffect(() => {
+        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
+    }, [basicForm, step])
 
     const getIsValidationDialogOpen = (value) => {
         setShowValidationDialog(value);
@@ -57,9 +63,9 @@ const CriminalHistory = ({ basicForm, setBasicForm, applicationId }) => {
 
 
     const getFormSchema = async () => {
-        if (basicForm?.formSchemas?.[9]?.id !== undefined) {
+        if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
             const { data: form } = await GET(
-                `application-management-service/formSchema/${basicForm?.formSchemas?.[9]?.id}`
+                `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
             );
             setFormSchema(form?.schema)
         }
@@ -94,12 +100,12 @@ const CriminalHistory = ({ basicForm, setBasicForm, applicationId }) => {
     const handleSubmitApplicationReq = async (data) => {
         if (isEdited) {
             let temp = {
-                schemaId: basicForm?.forms?.[9]?.schemaId,
-                data: basicForm?.forms?.[9]?.data,
+                schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+                data: basicForm?.forms?.[formIndex]?.data,
                 unFilledFields: warningFields?.map(data => data?.label),
                 acknowledged: data === "skipped" ? false : true
             }
-            await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[9]?.id}`, temp)
+            await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
                 .then(response => {
                     console.log(response)
                     setBasicForm(response?.data)
@@ -108,7 +114,7 @@ const CriminalHistory = ({ basicForm, setBasicForm, applicationId }) => {
                         navigate(-1);
                     }
                     else {
-                        navigate('/applicationForm/section1/step13')
+                        navigate(`/applicationForm/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
 
                     }
                 })
@@ -121,7 +127,7 @@ const CriminalHistory = ({ basicForm, setBasicForm, applicationId }) => {
                 navigate(-1);
             }
             else {
-                navigate('/applicationForm/section1/step13')
+                navigate(`/applicationForm/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
 
             }
         }
@@ -146,10 +152,10 @@ const CriminalHistory = ({ basicForm, setBasicForm, applicationId }) => {
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'criminalData1' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.criminalData1} gridStyle={style.criminalHistoryGrid} baseKey={'criminalData1'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} collapsableQuestionCard={true} stepPath={`forms[9].data`} applicationId={applicationId} setIsEdited={getIsEdited} warningFields={warningFields} />
+                            <ApplicationFieldCard object={formSchema?.properties?.criminalData1} gridStyle={style.criminalHistoryGrid} baseKey={'criminalData1'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} collapsableQuestionCard={true} stepPath={`forms[${formIndex}].data`} applicationId={applicationId} setIsEdited={getIsEdited} warningFields={warningFields} />
                         )}
                         {formSchema !== undefined && 'criminalData2' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.criminalData2} gridStyle={style.criminalHistoryGrid} baseKey={'criminalData2'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} collapsableQuestionCard={true} stepPath={`forms[9].data`} applicationId={applicationId} setIsEdited={getIsEdited} warningFields={warningFields} />
+                            <ApplicationFieldCard object={formSchema?.properties?.criminalData2} gridStyle={style.criminalHistoryGrid} baseKey={'criminalData2'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} collapsableQuestionCard={true} stepPath={`forms[${formIndex}].data`} applicationId={applicationId} setIsEdited={getIsEdited} warningFields={warningFields} />
                         )}
                         {/* <NoDataBox
                             heading={'Information Requirement Alert'}

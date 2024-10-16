@@ -6,7 +6,7 @@ import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
 import { GET, POST, PUT } from '../../dataSaver';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 import ValidationDialog from '../../../Components/validationDialog';
@@ -23,12 +23,18 @@ const References = ({ basicForm, setBasicForm, applicationId, getPreApplication 
     const [warningFields, setWarningFields] = useState([]);
     const [isAddMore, setIsAddMore] = useState(false)
     const [isAddMore2, setIsAddMore2] = useState(false)
+    const { section, step } = useParams()
+    const [formIndex, setFormIndex] = useState();
     const navigate = useNavigate()
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
         }
-    }, [basicForm])
+    }, [basicForm, formIndex])
+
+    useEffect(() => {
+        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
+    }, [basicForm, step])
 
 
     useEffect(() => {
@@ -76,9 +82,9 @@ const References = ({ basicForm, setBasicForm, applicationId, getPreApplication 
 
 
     const getFormSchema = async () => {
-        if (basicForm?.formSchemas?.[7]?.id !== undefined) {
+        if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
             const { data: form } = await GET(
-                `application-management-service/formSchema/${basicForm?.formSchemas?.[7]?.id}`
+                `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
             );
             setFormSchema(form?.schema)
         }
@@ -132,9 +138,9 @@ const References = ({ basicForm, setBasicForm, applicationId, getPreApplication 
 
     const handleSubmitApplicationReq = async (data) => {
         let missingFields = []
-        let emptyStringCheckedObject = removeEmptyStrings(data?.forms?.[7]?.data);
+        let emptyStringCheckedObject = removeEmptyStrings(data?.forms?.[formIndex]?.data);
         let tempValidation = {
-            schemaId: data?.forms?.[7]?.schemaId,
+            schemaId: data?.forms?.[formIndex]?.schemaId,
             data: emptyStringCheckedObject,
         }
         await POST(`application-management-service/application/validateForm`, tempValidation)
@@ -146,12 +152,12 @@ const References = ({ basicForm, setBasicForm, applicationId, getPreApplication 
                 console.log(error)
             })
         let temp = {
-            schemaId: data?.forms?.[7]?.schemaId,
-            data: data?.forms?.[7]?.data,
+            schemaId: data?.forms?.[formIndex]?.schemaId,
+            data: data?.forms?.[formIndex]?.data,
             unFilledFields: missingFields,
             acknowledged: missingFields?.length !== 0 ? false : true
         }
-        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[7]?.id}`, temp)
+        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
             .then(response => {
                 console.log(response)
                 SuccessToaster("Application Updated Successfully");
@@ -168,7 +174,7 @@ const References = ({ basicForm, setBasicForm, applicationId, getPreApplication 
             navigate(-1);
         }
         else {
-            navigate('/applicationForm/section1/step11')
+            navigate(`/applicationForm/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
         }
     }
 
@@ -188,11 +194,11 @@ const References = ({ basicForm, setBasicForm, applicationId, getPreApplication 
                 <div>
                     <div className={style.applicationCardStyle}>
                         {formSchema !== undefined && 'references' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.references} gridStyle={style.twoCol} baseKey={'references'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[7]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields} getMissingFields={getMissingFields} showValidationDialog={showValidationDialog} setShowValidationDialog={setShowValidationDialog} isAddMore={isAddMore} setIsAddMore={setIsAddMore} />
+                            <ApplicationFieldCard object={formSchema?.properties?.references} gridStyle={style.twoCol} baseKey={'references'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[formIndex]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields} getMissingFields={getMissingFields} showValidationDialog={showValidationDialog} setShowValidationDialog={setShowValidationDialog} isAddMore={isAddMore} setIsAddMore={setIsAddMore} />
                         )}
                         <CommonDivider />
                         {formSchema !== undefined && 'privilegeReferences' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.privilegeReferences} gridStyle={style.twoCol} baseKey={'privilegeReferences'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[7]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields} getMissingFields={getMissingFields} showValidationDialog={showValidationDialog2} setShowValidationDialog={setShowValidationDialog2} isAddMore={isAddMore2} setIsAddMore={setIsAddMore2} />
+                            <ApplicationFieldCard object={formSchema?.properties?.privilegeReferences} gridStyle={style.twoCol} baseKey={'privilegeReferences'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[formIndex]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields} getMissingFields={getMissingFields} showValidationDialog={showValidationDialog2} setShowValidationDialog={setShowValidationDialog2} isAddMore={isAddMore2} setIsAddMore={setIsAddMore2} />
                         )}
                     </div>
                 </div>

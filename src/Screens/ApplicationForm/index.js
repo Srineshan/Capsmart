@@ -26,7 +26,7 @@ import Step9 from './Step9';
 import References from './References';
 import ProfessionalConduct from './ProfessionalConduct';
 import CriminalHistory from './CriminalHistory';
-import Step13 from './MedicalHistory';
+import MedicalHistory from './MedicalHistory';
 import Step14 from './Step14';
 import Step15 from './Step15';
 import ApplicantAcknowledgement from './ApplicantAcknowledgement';
@@ -127,8 +127,8 @@ const ApplicationForm = () => {
                 return <ProfessionalConduct basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'CriminalHistory':
                 return <CriminalHistory basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
-            case 'step13':
-                return <Step13 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
+            case 'MedicalHistory':
+                return <MedicalHistory basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'step14':
                 return <Step14 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'step15':
