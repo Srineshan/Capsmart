@@ -342,7 +342,7 @@ body {
 }
 
 .tableHeader {
-    background: #BEB9F2 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     height: 50px;
     width: 96%;
     margin-left: 2%;
@@ -354,7 +354,7 @@ body {
 }
 
 .tableHeader2 {
-    background: #BEB9F2 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     height: 50px;
     width: 96%;
     margin-left: 2%;
@@ -366,7 +366,7 @@ body {
 }
 
 .tableHeader3 {
-    background: #BEB9F2 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     height: 50px;
     width: 96%;
     margin-left: 2%;
@@ -378,7 +378,7 @@ body {
 }
 
 .tableHeader4 {
-    background: #BEB9F2 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     height: 50px;
     width: 96%;
     margin-left: 2%;
@@ -390,7 +390,7 @@ body {
 }
 
 .tableHeader5 {
-    background: #BEB9F2 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     height: 50px;
     width: 96%;
     margin-left: 2%;
@@ -402,7 +402,7 @@ body {
 }
 
 .tableHeaderFAQ {
-    background: #BEB9F2 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     height: 50px;
     width: 96%;
     margin-left: 2%;
@@ -414,7 +414,7 @@ body {
 }
 
 .tableHeaderFAQSuggestion {
-    background: #BEB9F2 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     height: 50px;
     width: 96%;
     margin-left: 2%;
@@ -501,7 +501,7 @@ body {
     width: 100px;
     object-fit: cover;
     margin: 10px;
-    border: 3px solid #BEB9F2;
+    border: 3px solid $secondarycolor;
 }
 
 .tableHeaderFontStyle {

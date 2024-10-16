@@ -362,7 +362,7 @@ body::-webkit-scrollbar {
 }
 
 .documentPageHeader {
-  background: #beb9f2 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   height: 50px;
   width: 96%;
   margin-left: 2%;
@@ -373,7 +373,7 @@ body::-webkit-scrollbar {
 }
 
 .documentPageHeaderWithoutSite {
-  background: #beb9f2 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   height: 50px;
   width: 96%;
   margin-left: 2%;
@@ -778,19 +778,13 @@ body::-webkit-scrollbar {
 }
 
 .crossStyle {
-  color: linear-gradient($primarycolor
-
-
-, #ff6562) !important;
+  color: linear-gradient($primarycolor, #ff6562) !important;
   margin-bottom: 15px;
   cursor: pointer;
 }
 
 .newContractCrossStyle {
-  color: linear-gradient($primarycolor
-
-
-, #ff6562) !important;
+  color: linear-gradient($primarycolor, #ff6562) !important;
   cursor: pointer;
   margin-top: -10px;
   margin-right: -20px;
@@ -2565,7 +2559,7 @@ input[type="number"] {
 }
 
 .tableHeader {
-  background: #beb9f2 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   min-height: 50px;
   width: 100%;
   border-radius: 6px;

@@ -867,7 +867,7 @@ body::-webkit-scrollbar {
 }
 
 .documentPageHeader {
-    background: #beb9f2 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     height: 50px;
     width: 96%;
     margin-left: 2%;
@@ -878,7 +878,7 @@ body::-webkit-scrollbar {
 }
 
 .documentPageHeaderWithoutSite {
-    background: #beb9f2 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     height: 50px;
     width: 96%;
     margin-left: 2%;
@@ -3216,7 +3216,7 @@ input[type="number"] {
 }
 
 .tableHeader {
-    background: #beb9f2 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     min-height: 50px;
     width: 100%;
     border-radius: 6px;

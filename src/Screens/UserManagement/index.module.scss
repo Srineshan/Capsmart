@@ -420,7 +420,7 @@ body {
 }
 
 .tableHeader {
-    background: #BEB9F2 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     height: 50px;
     width: 96%;
     margin-left: 2%;
@@ -470,7 +470,7 @@ body {
 }
 
 .documentPageHeader {
-    background: #BEB9F2 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     height: 50px;
     width: 96%;
     margin-left: 2%;
@@ -842,7 +842,7 @@ body {
 }
 
 .welcomeMessage {
-    background: #BEB9F2 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     opacity: 0.4;
     text-align: left;
     font: normal normal 300 13px/15px proxima-nova;
@@ -1320,7 +1320,7 @@ select {
 }
 
 .completedEntityCardStyle {
-    background-color: #BEB9F2;
+    background-color: $secondarycolor;
     color: black;
     font-weight: 600 !important;
     display: grid;
