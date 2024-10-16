@@ -257,7 +257,7 @@
 
 
 ;
-    background-color: #d7d4f7;
+    background-color: $secondarycolor;
     border-radius: 8px;
     display: flex;
     justify-content: center;
@@ -345,7 +345,7 @@
 
 
 ;
-    background-color: #d7d4f7;
+    background-color: $secondarycolor;
 }
 
 .redCard {
@@ -427,7 +427,7 @@
 
 .blueBorderStyle {
     height: 1px;
-    background: #d7d4f7 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     margin: 0 20px;
 }
 
@@ -439,12 +439,12 @@
 
 .headerBorderStyle {
     height: 1px;
-    background: #d7d4f7 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
 }
 
 .mildBorderStyle {
     height: 1px;
-    background: #ebe9fb 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
 }
 
 .taskTableGrid {
@@ -1390,7 +1390,7 @@
 }
 
 .complianceRightCardStyle {
-    background-color: #ebe9fb;
+    background-color: $secondarycolor;
     padding: 20px;
     display: flex;
     align-items: center;

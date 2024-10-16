@@ -81,7 +81,7 @@ const TasksAndAlerts = () => {
                       isLabelVisible={false}
                       height="5px"
                       bgColor="#948BEA"
-                      baseBgColor="#ebe9fb"
+                      baseBgColor="#d2e7f9"
                       className={style.progressMargin}
                     />
                   </div>

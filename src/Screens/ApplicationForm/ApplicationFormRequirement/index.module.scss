@@ -74,7 +74,7 @@
 
 .requiredDocumentCard {
     background: #F5F5F8 0% 0% no-repeat padding-box;
-    border: 0.4000000059604645px solid #d7d4f7;
+    border: 0.4000000059604645px solid $secondarycolor;
     border-radius: 4px;
     padding: 10px 15px;
 }
@@ -117,7 +117,7 @@
 }
 
 .tableHeader {
-    background: #d7d4f7 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     border: 0.4000000059604645px solid #c3bef3;
     border-radius: 6px;
     padding: 10px 20px;

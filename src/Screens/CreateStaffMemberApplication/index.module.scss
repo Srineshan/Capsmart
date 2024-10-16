@@ -226,7 +226,7 @@
 
 .siteDisplayCard {
     background: #EFEEFC 0% 0% no-repeat padding-box;
-    border: 0.4000000059604645px solid #d7d4f7;
+    border: 0.4000000059604645px solid $secondarycolor;
     border-radius: 6px;
     padding: 10px;
 }
@@ -273,11 +273,11 @@
 }
 
 .tableData {
-    background: #ebe9fb 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     min-height: 50px;
     width: 100%;
     margin-top: 3px;
-    border: 0.4000000059604645px solid #ebe9fb;
+    border: 0.4000000059604645px solid $secondarycolor;
     border-radius: 2px;
     padding: 10px 20px;
 }

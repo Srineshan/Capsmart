@@ -1,5 +1,6 @@
+@import "../../index.scss";
 .helpCard {
-    background: #d7d4f7 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     box-shadow: 0px 8px 16px #100A4833;
     border: 0.800000011920929px solid #c4bef3;
     border-radius: 9px;

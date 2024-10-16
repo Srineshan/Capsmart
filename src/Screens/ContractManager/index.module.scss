@@ -605,7 +605,7 @@ body::-webkit-scrollbar {
 }
 
 .welcomeMessage {
-  background: #ebe9fb 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   text-align: left;
   font: normal normal 300 13px/15px proxima-nova;
   letter-spacing: 0.9px;
@@ -1086,7 +1086,7 @@ select {
 
 .otherContractsButton {
   background: #f5f5f8 0% 0% no-repeat padding-box;
-  border: 0.4000000059604645px solid #d7d4f7;
+  border: 0.4000000059604645px solid $secondarycolor;
   border-radius: 6px;
   height: 40px;
   min-width: 140px;
@@ -1098,7 +1098,7 @@ select {
 
 
  0% 0% no-repeat padding-box;
-  border: 0.4000000059604645px solid #d7d4f7;
+  border: 0.4000000059604645px solid $secondarycolor;
   color: #fff;
   border-radius: 6px;
   height: 40px;
@@ -1237,7 +1237,7 @@ select {
 }
 
 .completedEntityCardStyle {
-  background-color: #d7d4f7;
+  background-color: $secondarycolor;
   color: black;
   font-weight: 600 !important;
   display: grid;
@@ -1547,10 +1547,10 @@ select {
 }
 
 .documentCard {
-  background-color: #ebe9fb;
+  background-color: $secondarycolor;
   padding: 10px 5px 5px 5px !important;
   border-radius: 6px;
-  border: 1px solid #d7d4f7;
+  border: 1px solid $secondarycolor;
 }
 
 .documentGrid {
@@ -1825,7 +1825,7 @@ select {
 }
 
 .selectedTimesheetButton {
-  background: #d7d4f7 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
 }
 
 .timeSheetBoxStyle {
@@ -2128,7 +2128,7 @@ input[type="file"] {
 }
 
 .selectedAdministrativeCardStyle {
-  background-color: #ebe9fb;
+  background-color: $secondarycolor;
   margin: 0 -20px;
   padding: 0 20px;
 }
@@ -2245,7 +2245,7 @@ input[type="file"] {
 }
 
 .selectedOptionstyle {
-  background: #ebe9fb 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
 }
 
 .contractScrollStyle {
