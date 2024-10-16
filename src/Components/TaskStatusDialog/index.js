@@ -144,6 +144,7 @@ const TaskStatusDialog = ({ getIsOpen }) => {
           <div className={`${style.dialogBody}`}>
             {task?.map((taskData, index) => {
               const isNotCompleted = taskData?.taskStatus === "NOT_COMPLETED";
+              const isInProgress = taskData?.taskStatus === "INPROGRESS";
               const showSelect =
                 taskData?.taskAction === "TASK_STATUS_UPDATE_ONLY" ||
                 taskData?.taskAction === "SEND_NON_CAPSMART_FORM_INTERNAL_SOURCE_URL";
@@ -158,6 +159,8 @@ const TaskStatusDialog = ({ getIsOpen }) => {
                 >
                   {isNotCompleted ? (
                     <WarningIcon className={style.warning} />
+                  ) : isInProgress ?(
+                    <WarningIcon className={style.progress} />
                   ) : (
                     <TaskAltIcon className={style.correcticon} />
                   )}

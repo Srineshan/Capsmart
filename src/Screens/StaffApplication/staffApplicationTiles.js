@@ -36,7 +36,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
   useEffect(() => {
     console.log("userRoleeeeeee" + userRole);
     
-    if (userRole === 'Staff Manager' || userRole === 'Chief of Staff') {
+    if (userRole === 'Staff Manager' || userRole === 'Chief Of Staff') {
       getSelectedTab('applicantsToProcess');
     } else if (userRole === 'Department Head') {
       getSelectedTab('level-2');
@@ -73,7 +73,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
     }
   return (
     <div className={`${style.tabs}`}>
-      {(userRole?.includes('Staff Manager') || userRole?.includes('Chief of Staff')) && (
+      {(userRole?.includes('Staff Manager') || userRole?.includes('Chief Of Staff')) && (
       <TileApplication
         selectedTab={selectedTab}
         getSelectedTab={getSelectedTab}
@@ -82,7 +82,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
         currentTile="applicantsToProcess"
       />
       )}
-      {(userRole?.includes('Staff Manager') || userRole?.includes('Chief of Staff') || userRole?.includes('Department Head')) && (
+      {(userRole?.includes('Staff Manager') || userRole?.includes('Chief Of Staff') || userRole?.includes('Department Head')) && (
       <TileApplication
         selectedTab={selectedTab}
         getSelectedTab={getSelectedTab}
@@ -91,7 +91,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
         currentTile="level-2"
       />
      )}
-     {(userRole?.includes('Staff Manager') || userRole?.includes('Chief of Staff') || userRole?.includes('Credentialing Committee')) && (
+     {(userRole?.includes('Staff Manager') || userRole?.includes('Chief Of Staff') || userRole?.includes('Credentialing Committee')) && (
       <TileApplication
         selectedTab={selectedTab}
         getSelectedTab={getSelectedTab}
@@ -100,7 +100,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
         currentTile="level-1"
       />
      )}
-       {(userRole?.includes('Staff Manager') || userRole?.includes('Chief of Staff') || userRole?.includes('Credentialing Committee')  || userRole?.includes('Advisory Committee') || userRole?.includes('Board')) && (
+       {(userRole?.includes('Staff Manager') || userRole?.includes('Chief Of Staff') || userRole?.includes('Credentialing Committee')  || userRole?.includes('Advisory Committee') || userRole?.includes('Board')) && (
       <TileApplication
         selectedTab={selectedTab}
         getSelectedTab={getSelectedTab}
@@ -109,7 +109,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
         currentTile="mac"
       />
      )}
-        {(userRole?.includes('Staff Manager')  || userRole?.includes('Chief of Staff')  || userRole?.includes('Credentialing Committee')  || userRole?.includes('Board')) && (
+        {(userRole?.includes('Staff Manager')  || userRole?.includes('Chief Of Staff')  || userRole?.includes('Credentialing Committee')  || userRole?.includes('Board')) && (
       <TileApplication
         selectedTab={selectedTab}
         getSelectedTab={getSelectedTab}

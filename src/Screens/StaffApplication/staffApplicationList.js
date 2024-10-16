@@ -40,7 +40,7 @@ const StaffApplicationList = ({
   const PDFRef = createRef();
   const navigate = useNavigate();
   const componentRef = useRef(null);
-
+  // const [applicationId, setApplicationId] = useState(sessionStorage.getItem('applicationId'));
   const [rejectionTab, setRejectionTab] = useState("rejected");
   const [requestAppointment, setRequestAppointment] = useState(null);
   const [sentCompletion, setSentCompletion] = useState(null);
@@ -273,12 +273,23 @@ const StaffApplicationList = ({
     false,
     false,
   ];
-
+  // const [form, setForm] = useState();
   const [isPrintClicked, setIsPrintClicked] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
   const [showApplicationRejectionDialog, setShowApplicationRejectionDialog] =
     useState(false);
   const [showCheckListDialog, setShowCheckListDialog] = useState(false);
+
+  // useEffect(() => {
+  //   getPreApplication();
+  // }, [])
+
+  // const getPreApplication = async () => {
+  //   const { data: basicForm } = await GET(
+  //     `application-management-service/application/${applicationId}`
+  //   );
+  //   setForm(basicForm)
+  // }
 
   const getApplicationRejectionDialog = (value) => {
     setShowApplicationRejectionDialog(value);
@@ -297,6 +308,66 @@ const StaffApplicationList = ({
     getActiveApplicationTask(true);
     sessionStorage.setItem("applicationId", data?.id);
   };
+
+ const onClickMoveToNextFunction = (data) => {
+    getApplicationMoveToNext(data?.id);
+    sessionStorage.setItem("applicationId", data?.id);
+  };
+
+  const onClickStartTheWorkFlowFunction = (data) => {
+    getApplicationStart(data?.id);
+    sessionStorage.setItem("applicationId", data?.id);
+  };
+
+  const getApplicationStart = async (id) => { 
+    await PUT(`application-management-service/application/${id}/workflow/start`)
+      .then(response => {
+        console.log('successfullllllll')
+        window.location.reload();
+      })  
+      .catch((error) => {
+        console.log("errorrrrrrrrr")
+      });
+      // getPreApplication();
+  }
+  const getApplicationMoveToNext = async (id) => {
+    let role;
+    let notes;
+
+    if(selectedTab === 'level-2') {
+      role = "Department Head";
+      notes = "Send"
+    } else if (selectedTab === 'level-1') {
+      role = "Credentialing Committee";
+      notes = "Send"
+    } else if (selectedTab === 'mac') {
+      role = "Advisory Committee";
+      notes = "Send"
+    } else if (selectedTab === 'bod') {
+      role = "Board";
+      notes = "Send"
+    } else {
+      role = "Chief Of Staff";
+      notes = "Send"
+    }
+  
+    let temp = {
+      role: role,
+      notes : notes
+    };
+  
+    const isDelegate = selectedTab === 'level-1' || selectedTab === 'mac' || selectedTab === 'bod' ? true : false;
+    const requestData = isDelegate === true ? temp : {};
+    await PUT(`application-management-service/application/${id}/workflow/move?isDelegate=${isDelegate}`,requestData)
+      .then(response => {
+        console.log('successfull')
+        window.location.reload();
+      })  
+      .catch((error) => {
+        console.log(error)
+      });
+      // getPreApplication();
+  }
 
   useEffect(() => {
     getSentConfirmationCount();
@@ -491,18 +562,26 @@ const StaffApplicationList = ({
       // department.push(
       //   data?.basicDetails?.departmentSpecialty?.department || "-"
       // );
-      docs.push(data?.documents?.uploadedCount || "");
+      docs.push(data?.documents?.verifiedCount + "/" + data?.documents?.uploadedCount  || "");
       // docsHoverText.push([
       //   "Immunization History Verification From PCP pending",
       // ]);
       const documentDetails = data?.documents?.documentDetails || [];
       const docHoverTextArray = documentDetails.length > 0 ? documentDetails.map(doc => doc.documentType) : ["-"];
       docsHoverText.push(docHoverTextArray);
-      docsIcon.push(
-        <TextSnippetOutlinedIcon
-          style={{ fontSize: 20, color: `#52575D` }}
-        />
-      );
+      // docsIcon.push(
+      //   <TextSnippetOutlinedIcon
+      //     style={{ fontSize: 20, color: `#52575D` }}
+      //   />
+      // );
+
+      if (data?.documents?.verifiedCount === data?.documents?.uploadedCount) {
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#00C07F` }}/>);
+      } else if (data?.documents?.verifiedCount === 0) {
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#94979A` }}/>);
+      } else {
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FEC106` }}/>);
+      }
       // dataStatus.push(data?.dataStatus || "green");
       // dataStatus.push(data?.dataStatus === "REVIEW_INPROGRESS"
       //   ? "yellow"
@@ -524,9 +603,9 @@ const StaffApplicationList = ({
       // ]);
       notesHoverText.push(notesHoverTextArray);
 
-      if (data?.tasks.completedCount === data?.tasks.totalCount) {
+      if (data?.tasks?.completedCount === data?.tasks?.totalCount) {
         taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#00C07F` }}/>);
-      } else if (data?.tasks.completedCount === 0) {
+      } else if (data?.tasks?.completedCount === 0) {
         taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#94979A` }}/>);
       } else {
         taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#FEC106` }}/>);
@@ -1135,16 +1214,15 @@ const StaffApplicationList = ({
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyFunction,
     },
-    // {
-    //   data: "Send for Cred Comm Review",
-    //   requiredValue: "boolean",
-    //   onClick: "",
-    // },
+    {
+      data: "Send for Cred Comm Review",
+      requiredValue: "boolean",
+      onClick: onClickStartTheWorkFlowFunction,
+    },
     {
       data: "Applicant Processing Tasks",
       requiredValue: "boolean",
       onClick: onClickProcessingTaskFunction,
-      //  onClick: onClickViewAndVerifyFunction,
     },
     {
       data: "Request For Clarification",
@@ -1199,6 +1277,11 @@ const StaffApplicationList = ({
     // { data: "From Applicant", requiredValue: "boolean", onClick: "" },
     // { data: "From Internal Approver", requiredValue: "boolean", onClick: "" },
     // { data: "From Institution", requiredValue: "boolean", onClick: "" },
+    {
+      data: "Send for Cred Comm Review",
+      requiredValue: "boolean",
+      onClick: onClickMoveToNextFunction,
+    },
     { data: "Review & Approve", requiredValue: "boolean", onClick: "" },
     { data: "Move to MAC", requiredValue: "boolean", onClick: "" },
     {
@@ -1224,7 +1307,7 @@ const StaffApplicationList = ({
     //   onClick: onClickViewAndVerifyFunction,
     // },
     // {
-    //   data: "Send for Committee Review",
+    //   data: "Send for board Review",
     //   requiredValue: "boolean",
     //   onClick: "",
     // },
@@ -1233,7 +1316,7 @@ const StaffApplicationList = ({
     //   requiredValue: "boolean",
     //   onClick: "",
     // },
-    { data: "Move to BOD", requiredValue: "boolean", onClick: "" },
+    { data: "Move to BOD", requiredValue: "boolean", onClick: onClickMoveToNextFunction, },
     {
       data: "Request For Clarification",
       requiredValue: "boolean",

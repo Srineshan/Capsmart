@@ -361,28 +361,34 @@ const NewActiveApplication = ({
   }
 
   const handleApplicationAccept = async () => {
-    // let role;
+    let role;
+    let notes;
 
-    // if (form?.completedWorkflows) {
-    //   if (selectedTab === 'level-1') {
-    //     role = form?.completedWorkflows[1]?.role;
-    //   } else if (selectedTab === 'mac') {
-    //     role = form?.completedWorkflows[2]?.role;
-    //   } else if (selectedTab === 'bod') {
-    //     role = form?.completedWorkflows[3]?.role;
-    //   }
-    // } else {
-    //   console.error("completedWorkflows is null or undefined");
-    //   return;
-    // }
-    let temp = {
-      // role:role,
-      // role: form?.completedWorkflows[1]?.role,
-      notes: form?.notes,
+    if(selectedTab === 'level-2') {
+      role = "Department Head";
+      notes = "Send"
+    } else if  (selectedTab === 'level-1') {
+      role = "Credentialing Committee";
+      notes = "Send"
+    } else if (selectedTab === 'mac') {
+      role = "Advisory Committee";
+      notes = "Send"
+    } else if (selectedTab === 'bod') {
+      role = "Board";
+      notes = "Send"
+    } else {
+      role = "Chief Of Staff";
+      notes = "Send"
     }
-    const isDelegate = selectedTab === 'level-1' || selectedTab === 'mac' || selectedTab === 'bod' ? true : false;
+  
+    let temp = {
+      role  : role,
+      notes : notes
+    };
+
+    const isDelegate = selectedTab === 'level-2' || selectedTab === 'level-1' || selectedTab === 'mac' || selectedTab === 'bod' ? true : false;
     const requestData = isDelegate === true ? temp : {};
-    await PUT(`application-management-service/application/${applicationId}/workflow/complete/APPROVED?isDelegate=${isDelegate}`,requestData)
+    await PUT(`application-management-service/application/${applicationId}/workflow/complete/APPROVED?isDelegate=${isDelegate}`, requestData)
       .then(response => {
         console.log('success')
         onClose()
