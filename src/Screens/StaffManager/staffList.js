@@ -265,7 +265,7 @@ const StaffList = ({ isLoading, getSelectedApplicant, selectedApplicant, getActi
                   <SearchOutlinedIcon
                     sx={{
                       fontSize: isPrintClicked ? 20 : 25,
-                      color: isPrintClicked ? "#fff" : "#857AEF",
+                      color: isPrintClicked ? "#fff" : "#0e5197",
                     }}
                   />
                 </div>
@@ -277,7 +277,7 @@ const StaffList = ({ isLoading, getSelectedApplicant, selectedApplicant, getActi
                   <PrintOutlinedIcon
                     sx={{
                       fontSize: isPrintClicked ? 20 : 25,
-                      color: isPrintClicked ? "#fff" : "#857AEF",
+                      color: isPrintClicked ? "#fff" : "#0e5197",
                     }}
                   />
                 </div>
@@ -289,7 +289,7 @@ const StaffList = ({ isLoading, getSelectedApplicant, selectedApplicant, getActi
                   <FilterAltOutlinedIcon
                     sx={{
                       fontSize: isPrintClicked ? 20 : 25,
-                      color: isPrintClicked ? "#fff" : "#857AEF",
+                      color: isPrintClicked ? "#fff" : "#0e5197",
                     }}
                   />
                 </div>

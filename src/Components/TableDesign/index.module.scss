@@ -83,7 +83,7 @@
     height: 12px;
     width: 12px;
     border-radius: 50%;
-    background-color: #948BEA;
+    background-color: $primarycolor;
 }
 
 .yellowDotStyle {
@@ -104,7 +104,7 @@
     height: 12px;
     width: 12px;
     border-radius: 50%;
-    background-color: #D0D0EC;
+    background-color:$secondarycolor;
 }
 
 .tableDataFontStyle {
@@ -187,13 +187,13 @@
 }
 
 .actionsCard {
-    background: #857AEF 0% 0% no-repeat padding-box;
+    background: $primarycolor 0% 0% no-repeat padding-box;
     border: none;
     border-radius: 4px;
 }
 
 .multipleOptionsCard {
-    background: #857AEF 0% 0% no-repeat padding-box;
+    background: $primarycolor 0% 0% no-repeat padding-box;
     border: none;
 }
 
@@ -257,7 +257,7 @@
 }
 
 .noContractsBox {
-    border: 2px dashed #c4bef3;
+    border: 2px dashed $secondarycolor;
     padding: 20px;
     height: 180px;
     margin: 50px;

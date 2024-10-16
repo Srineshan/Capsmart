@@ -47,7 +47,7 @@
 .cardLeftStyle {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 5px 20px #52575D29;
-    border: 0.4000000059604645px solid #E0E1FB;
+    border: 0.4000000059604645px solid $secondarycolor;
     border-radius: 12px;
     opacity: 1;
 }
@@ -359,7 +359,7 @@ body::-webkit-scrollbar {
 .overAllCardStyle {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 5px 20px #52575D29;
-    border: 0.4000000059604645px solid #E0E1FB;
+    border: 0.4000000059604645px solid $secondarycolor;
     border-radius: 12px;
     opacity: 1;
 }
@@ -524,7 +524,7 @@ body::-webkit-scrollbar {
 }
 
 .multipleOptionsCard {
-    background: #857AEF 0% 0% no-repeat padding-box;
+    background: $primarycolor 0% 0% no-repeat padding-box;
     border: none;
 }
 
@@ -586,7 +586,7 @@ body::-webkit-scrollbar {
     text-align: right;
     font: normal normal normal 10px/9px proxima-nova;
     letter-spacing: 0px;
-    color: #382DA5;
+    color:$primarycolor;
     margin-top: 5px;
 }
 
@@ -2760,7 +2760,7 @@ input[type="file"] {
 }
 
 .blueChip {
-    background: #dbd8fa 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     color: $primarycolor
 ;
 }
@@ -2827,7 +2827,7 @@ input[type="file"] {
 }
 
 .dialogAdditionalDetailBoxStyle {
-    background: #dbd8fa 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     border: 2px solid #ebf2f7;
     border-radius: 2px;
     padding: 15px;
@@ -2850,7 +2850,7 @@ input[type="file"] {
 }
 
 .actionsCard {
-    background: #857aef 0% 0% no-repeat padding-box;
+    background: $primarycolor 0% 0% no-repeat padding-box;
     border: none;
     border-radius: 4px;
 }
@@ -3042,7 +3042,7 @@ input[type="number"] {
 }
 
 .siteDeptFieldCard {
-    background: #dbd8fa 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     border: 1px solid #e9e9f0;
     border-radius: 4px;
     width: 100%;
@@ -3744,7 +3744,7 @@ input[type="number"] {
     /* UI Properties */
     height: 65px;
     background: transparent linear-gradient(174deg, $primarycolor
- 0%, #5F52D8 47%, $primarycolor
+ 0%, $primarycolor 47%, $primarycolor
  100%) 0% 0% no-repeat padding-box;
     box-shadow: 0px 10px 20px #130D4B1F;
     border-radius: 20px;
@@ -3787,7 +3787,7 @@ input[type="number"] {
     background: $primarycolor
  0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 11px #52575D1A;
-    border: 0.4000000059604645px solid #382DA5;
+    border: 0.4000000059604645px solid $primarycolor;
     border-radius: 4px 4px 0px 0px;
 }
 

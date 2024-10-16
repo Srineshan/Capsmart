@@ -596,8 +596,8 @@ const TrackYourContracts = () => {
                                                 ))}
                                             </Select>
                                         </FormControl>
-                                        {/* <PrintOutlinedIcon sx={{ color: '#857AEF' }} />
-                                    <DownloadIcon sx={{ color: '#857AEF' }} /> */}
+                                        {/* <PrintOutlinedIcon sx={{ color: '#0e5197' }} />
+                                    <DownloadIcon sx={{ color: '#0e5197' }} /> */}
                                     </div>
                                 </div>
                                 <div className={`${style.trackTableBackgroudcard} ${style.marginTop20}`}>

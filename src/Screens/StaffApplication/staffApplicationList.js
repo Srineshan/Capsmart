@@ -1500,7 +1500,7 @@ const StaffApplicationList = ({
                 <SearchOutlinedIcon
                   sx={{
                     fontSize: isPrintClicked ? 20 : 25,
-                    color: isPrintClicked ? "#fff" : "#857AEF",
+                    color: isPrintClicked ? "#fff" : "#0e5197",
                   }}
                 />
               </div>
@@ -1511,7 +1511,7 @@ const StaffApplicationList = ({
                 <PrintOutlinedIcon
                   sx={{
                     fontSize: isPrintClicked ? 20 : 25,
-                    color: isPrintClicked ? "#fff" : "#857AEF",
+                    color: isPrintClicked ? "#fff" : "#0e5197",
                   }}
                   onClick={handlePrintClick}
                 />

@@ -471,7 +471,7 @@
 .industriesCardStyle {
   background: #efeefc 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000045;
-  border: 0.4000000059604645px solid #beb8f9;
+  border: 0.4000000059604645px solid $secondarycolor;
   border-radius: 6px;
   cursor: pointer;
   height: 70px;
@@ -481,7 +481,7 @@
 }
 
 .selectedIndustriesBackground {
-  background-color: #d3d0f6 !important;
+  background-color: $secondarycolor !important;
   color: black !important;
 }
 
@@ -501,7 +501,7 @@
 .industriesCardTextStyle2 {
   background: #efeefc 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
-  border: 0.4000000059604645px solid #beb8f9;
+  border: 0.4000000059604645px solid $secondarycolor;
   border-radius: 6px;
   font: normal normal bold 27px/55px proxima-nova;
   letter-spacing: 0px;
@@ -643,7 +643,7 @@
 }
 
 .tableHeaderCountryList {
-  background: #afa9ef 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   font-weight: medium;
   height: 55px;
   width: 100%;
@@ -655,7 +655,7 @@
 }
 
 .tableHeaderIndustriesEntity {
-  background: #afa9ef 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   font-weight: medium;
   height: 55px;
   width: 100%;
@@ -667,7 +667,7 @@
 }
 
 .tableHeaderSuffixByIndustries {
-  background: #afa9ef 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   font-weight: medium;
   //margin-left: 50px;
   height: 55px;
@@ -680,7 +680,7 @@
 }
 
 .tableHeaderDepartment {
-  background: #afa9ef 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   font-weight: medium;
   //margin-left: 50px;
   height: 55px;
@@ -693,7 +693,7 @@
 }
 
 .tableHeaderTerminationReasons {
-  background: #afa9ef 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   font-weight: medium;
   height: 55px;
   width: 100%;
@@ -786,7 +786,7 @@
 }
 
 .stateListHeader {
-  background: #d3d0f6 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   font-weight: normal;
   min-height: 50px;
   width: 100%;
@@ -799,7 +799,7 @@
 }
 
 .healthCareIndustriesHeader {
-  background: #d3d0f6 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   font-weight: normal;
   min-height: 50px;
   width: 100%;
@@ -812,7 +812,7 @@
 }
 
 .holidayFolderHeader {
-  background: #d3d0f6 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   font-weight: normal;
   height: 45px;
   width: 99.5%;
@@ -825,7 +825,7 @@
 }
 
 .contractedServiceHeader {
-  background: #afa9ef 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   font-weight: medium;
   height: 55px;
   width: 65vw;
@@ -838,7 +838,7 @@
 }
 
 .terminationHeader {
-  background: #d3d0f6 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   font-weight: normal;
   height: 45px;
   width: 100%;
@@ -851,7 +851,7 @@
 }
 
 .contractedServiceProvidersHeader {
-  background: #d3d0f6 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   font-weight: normal;
   height: 45px;
   width: 100%;
@@ -864,7 +864,7 @@
 }
 
 .terminationHeader2 {
-  background: #d3d0f6 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   font-weight: normal;
   height: 45px;
   width: 98%;
@@ -1010,11 +1010,11 @@
 }
 
 .proofLayer3Card {
-  background: #d3d0f6 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   min-height: 50px;
   width: 100%;
   border-radius: 10px;
-  border: 1px solid #d3d0f6;
+  border: 1px solid $secondarycolor;
   display: grid;
   margin-top: 5px;
   align-items: center;
@@ -1060,7 +1060,7 @@
 }
 
 .tableHeaderDocumentUpload {
-  background: #afa9ef 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   font-weight: medium;
   //margin-left: 50px;
   height: 55px;
@@ -1109,7 +1109,7 @@
 }
 
 .healthCareTableDataColor3 {
-  background-color: #d3d0f6;
+  background-color: $secondarycolor;
 }
 
 .tableDataFontStyle {
@@ -1284,7 +1284,7 @@
 }
 
 .addHealthCareBoxStyle {
-  border: 1px solid #d4d0fb;
+  border: 1px solid $primarycolor;
   border-radius: 8px;
   width: 100%;
   margin-top: 20px;
@@ -1292,7 +1292,7 @@
 }
 
 .addHealthCareBoxStyle1 {
-  border: 1px solid #d4d0fb;
+  border: 1px solid $primarycolor;
   border-radius: 8px;
   width: 100%;
   margin-top: 20px;
@@ -1300,14 +1300,14 @@
 }
 
 .addIndustryBoxStyle {
-  border: 1px solid #d4d0fb;
+  border: 1px solid $primarycolor;
   border-radius: 8px;
   width: 100%;
   padding: 20px;
 }
 
 .podHealthCareBoxStyle {
-  border: 1px solid #d4d0fb;
+  border: 1px solid $primarycolor;
   border-radius: 8px;
   width: 100%;
 }
@@ -1635,7 +1635,7 @@
 
 
 ;
-  border: 1px solid #9c93eb;
+  border: 1px solid $primarycolor;
   height: 40px;
   width: 140px;
   margin-bottom: -20px;
@@ -1797,7 +1797,7 @@
 .healthCareListCardStyle {
   background: #efeefc 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #bfbfbf;
-  border: 0.4000000059604645px solid #beb8f9;
+  border: 0.4000000059604645px solid $secondarycolor;
   border-radius: 3px;
   height: 60px;
   padding: 0 20px;
@@ -1810,7 +1810,7 @@
 }
 
 .HealthCareListBackground2 {
-  background: #d3d0f6 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   font: normal normal bold 18px/25px proxima-nova;
 }
 
@@ -1859,7 +1859,7 @@
 }
 
 .boardCertificationSideRows2 {
-  background: #a097f5 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   font-weight: normal;
   min-height: 50px;
   width: 92.5%;
@@ -1872,7 +1872,7 @@
 }
 
 .boardCertificationSideRows1 {
-  background: #a097f5 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   font-weight: normal;
   min-height: 50px;
   width: 90%;
@@ -1885,7 +1885,7 @@
 }
 
 .boardCertificationSideRows2 {
-  background: #a097f5 0% 0% no-repeat padding-box;
+  background: #78b6ed 0% 0% no-repeat padding-box;
   font-weight: normal;
   min-height: 50px;
   width: 90%;
@@ -1898,7 +1898,7 @@
 }
 
 .ContractedServiceProviderHeaderInsideContainer {
-  background: #a097f5 0% 0% no-repeat padding-box;
+  background: $primarycolor 0% 0% no-repeat padding-box;
   font-weight: normal;
   min-height: 50px;
   border-radius: 6px;
@@ -1910,7 +1910,7 @@
 }
 
 .ContractedServiceProviderHeaderInsideContainer1 {
-  background: #a097f5 0% 0% no-repeat padding-box;
+  background: $primarycolor 0% 0% no-repeat padding-box;
   font-weight: normal;
   height: 50px;
   border-radius: 6px;
@@ -1974,7 +1974,7 @@
   font-weight: normal;
   min-height: 50px;
   width: 83%;
-  border: 0.4000000059604645px solid #887ee7af;
+  border: 0.4000000059604645px solid $primarycolor;
   opacity: 1;
   border-radius: 6px;
   margin-top: 1%;
@@ -1995,13 +1995,13 @@
 }
 
 .terminationReasonBackground1 {
-  background: #887ee7af 0% 0% no-repeat padding-box;
+  background: $primarycolor 0% 0% no-repeat padding-box;
   display: grid;
   grid-template-columns: 10% 85% 3%;
 }
 
 .terminationReasonBackground2 {
-  background: #d3d0f6 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   display: grid;
   grid-template-columns: 10% 85% 3%;
 }
@@ -2019,7 +2019,7 @@
 }
 
 .boardCertificationBackground1 {
-  background: #d3d0f6 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   display: grid;
   grid-template-columns: 7% 80% 10%;
 }
@@ -2115,7 +2115,7 @@
 }
 
 .tableHeaderFuntionalTitles {
-  background: #afa9ef 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   font-weight: medium;
   height: 45px;
   width: 100%;
@@ -2143,7 +2143,7 @@
 }
 
 .tableHeaderTwoColumnsfrontRear {
-  background: #afa9ef 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   font-weight: medium;
   height: 55px;
   width: 100%;
@@ -2323,7 +2323,7 @@
   font-weight: normal;
   min-height: 50px;
   width: 90%;
-  border: 0.4000000059604645px solid #887ee7af;
+  border: 0.4000000059604645px solid $primarycolor;
   border-radius: 6px;
   opacity: 0.75;
   margin-top: 3px;
@@ -2338,7 +2338,7 @@
   font-weight: normal;
   min-height: 50px;
   width: 87%;
-  border: 0.4000000059604645px solid #887ee7af;
+  border: 0.4000000059604645px solid $primarycolor;
   border-radius: 6px;
   opacity: 0.75;
   border-radius: 6px;
@@ -2354,7 +2354,7 @@
   font-weight: normal;
   min-height: 50px;
   width: 95%;
-  border: 0.4000000059604645px solid #887ee7af;
+  border: 0.4000000059604645px solid $primarycolor;
   border-radius: 6px;
   opacity: 0.75;
   border-radius: 6px;
@@ -2369,7 +2369,7 @@
   font-weight: normal;
   min-height: 50px;
   width: 87%;
-  border: 0.4000000059604645px solid #887ee7af;
+  border: 0.4000000059604645px solid $primarycolor;
   border-radius: 6px;
   opacity: 0.75;
   border-radius: 6px;
@@ -2385,7 +2385,7 @@
   font-weight: normal;
   min-height: 50px;
   width: 87%;
-  border: 0.4000000059604645px solid #887ee7af;
+  border: 0.4000000059604645px solid $primarycolor;
   border-radius: 6px;
   opacity: 0.75;
   border-radius: 6px;
@@ -2400,7 +2400,7 @@
   font-weight: normal;
   min-height: 50px;
   width: 87%;
-  border: 0.4000000059604645px solid #887ee7af;
+  border: 0.4000000059604645px solid $primarycolor;
   border-radius: 6px;
   opacity: 0.75;
   border-radius: 6px;
@@ -2416,7 +2416,7 @@
   font-weight: normal;
   min-height: 50px;
   width: 90%;
-  border: 0.4000000059604645px solid #887ee7af;
+  border: 0.4000000059604645px solid $primarycolor;
   border-radius: 6px;
   opacity: 0.75;
   border-radius: 6px;
@@ -2432,7 +2432,7 @@
   font-weight: normal;
   min-height: 50px;
   width: 87%;
-  border: 0.4000000059604645px solid #887ee7af;
+  border: 0.4000000059604645px solid $primarycolor;
   border-radius: 6px;
   opacity: 0.75;
   border-radius: 6px;
@@ -2448,7 +2448,7 @@
   font-weight: normal;
   min-height: 50px;
   width: 87%;
-  border: 0.4000000059604645px solid #887ee7af;
+  border: 0.4000000059604645px solid $primarycolor;
   border-radius: 6px;
   opacity: 0.75;
   border-radius: 6px;
@@ -2475,7 +2475,7 @@
 }
 
 .customersAdminSideRows2 {
-  background: #cecaf5 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   border: 0.4000000059604645px solid #c3bff3;
   opacity: 0.88;
   font-weight: normal;
@@ -2490,15 +2490,15 @@
 }
 
 .customersAdminBackground1 {
-  background: #c3bff3 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
 }
 
 .customersAdminBackground2 {
-  background: #efeefc 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
 }
 
 .customersAdminBackground3 {
-  background: #f5f5f8 0% 0% no-repeat padding-box;
+  background:$secondarycolor 0% 0% no-repeat padding-box;
 }
 
 .customersAdminTableFontStyle {
@@ -2528,7 +2528,7 @@
 }
 
 .customersAdminTableHeader1 {
-  background: #d3d0f6 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   font-weight: normal;
   height: 47px;
   width: 100%;
@@ -2541,7 +2541,7 @@
 }
 
 .customerAdminEntityHeader {
-  background: #a097f5 0% 0% no-repeat padding-box;
+  background: $primarycolor 0% 0% no-repeat padding-box;
   font-weight: medium;
   height: 55px;
   width: 100%;
@@ -2553,7 +2553,7 @@
 }
 
 .customListHeaderTermiantion {
-  background: #a097f5 0% 0% no-repeat padding-box;
+  background: #78b6ed 0% 0% no-repeat padding-box;
   font-weight: medium;
   height: 55px;
   width: 100%;
@@ -2566,7 +2566,7 @@
 }
 
 .customListHeaderTermiantionLevel2 {
-  background: #a097f5 0% 0% no-repeat padding-box;
+  background: #78b6ed 0% 0% no-repeat padding-box;
   font-weight: medium;
   height: 55px;
   width: 95%;
@@ -2580,7 +2580,7 @@
 }
 
 .customListHeaderForCostCenter {
-  background: #cecaf5 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   font-weight: medium;
   height: 55px;
   width: 95%;
@@ -2619,7 +2619,7 @@
 }
 
 .customerAdminTableHeader2 {
-  background: #d3d0f6 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   font-weight: normal;
   min-height: 50px;
   width: 93%;
@@ -2633,7 +2633,7 @@
 }
 
 .customTerminationPrimaryReason {
-  background: #d3d0f6 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   font-weight: normal;
   min-height: 50px;
   width: 93%;
@@ -2716,7 +2716,7 @@
 
 .holidayScheduleHeader2 {
   background: $secondarycolor 0% 0% no-repeat padding-box;
-  border: 0.4000000059604645px solid #9c93eb;
+  border: 0.4000000059604645px solid $primarycolor;
   border-radius: 6px;
   display: grid;
   align-items: center;
@@ -2798,7 +2798,7 @@
   position: relative;
   margin-bottom: 16px;
   padding: 16px;
-  background: #d3d0f6 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   box-shadow: 0px 10px 20px rgb(196 200 208 / 40%);
   border-radius: 8px;
   border: 0.200000003px solid rgba(196, 200, 208, 0.4);
@@ -2854,13 +2854,13 @@
 }
 
 .HealthCareListBackground3 {
-  background: #afa9ef 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   display: grid;
   grid-template-columns: 12% 78% 10% 5%;
 }
 
 .HealthCareListBackground4 {
-  background: #d3d0f6 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   display: grid;
   grid-template-columns: 12% 78% 10% 5%;
 }
@@ -2883,7 +2883,7 @@
 .healthCareListCardStyle2 {
   background: #f5f5f8 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #bfbfbf;
-  border: 0.4000000059604645px solid #beb8f9;
+  border: 0.4000000059604645px solid $secondarycolor;
   border-radius: 3px;
   height: 60px;
   padding: 0 20px;
@@ -3087,8 +3087,8 @@
 }
 
 .sideActiveBackground {
-  background-color: #F2F1FD;
-  border: 1px solid #0e5197;
+  background-color: $secondarycolor;
+  border: 1px solid $primarycolor;
   opacity: 1;
 }
 
@@ -3155,7 +3155,7 @@
 }
 
 .applicantHeader {
-  background-color: #d2d0f5;
+  background-color: $secondarycolor;
   text-align: left;
   font: normal normal 600 17px/21px proxima-nova;
   letter-spacing: 0px;
@@ -3389,7 +3389,7 @@
 
 
 ;
-  border: 1px solid #9c93eb;
+  border: 1px solid $primarycolor ;
   height: 40px;
   width: 140px;
   margin-bottom: -20px;
@@ -3530,13 +3530,13 @@
 }
 
 .saveAddMoreButton {
-  background-color: #6644d0;
+  background-color:$primarycolor ;
   border: none;
   color: #ffffff;
   margin-left: 10px;
 
   &:hover {
-    background-color: #5637b0;
+    background-color:$primarycolor;
   }
 }
 

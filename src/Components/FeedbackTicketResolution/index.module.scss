@@ -137,7 +137,7 @@
 }
 
 .dashedBorder {
-    border: 2px dashed #948BEA;
+    border: 2px dashed $primarycolor;
     padding: 5px;
 }
 
@@ -157,7 +157,7 @@
 
 .collapseHeader {
     background: #C3BFF3 0% 0% no-repeat padding-box;
-    border: 1px solid #9B95E3;
+    border: 1px solid $primarycolor;
     width: 100%;
     max-height: 40px;
     display: flex;

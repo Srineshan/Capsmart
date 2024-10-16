@@ -451,7 +451,7 @@ body::-webkit-scrollbar {
 }
 
 .multipleOptionsCard {
-  background: #857AEF 0% 0% no-repeat padding-box;
+  background: $primarycolor 0% 0% no-repeat padding-box;
   border: none;
 }
 
@@ -2897,7 +2897,7 @@ input[type="file"] {
 }
 
 .actionsCard {
-  background: #857aef 0% 0% no-repeat padding-box;
+  background: $primarycolor 0% 0% no-repeat padding-box;
   border: none;
   border-radius: 4px;
 }
@@ -3270,10 +3270,7 @@ input[type="number"] {
 
 .addServiceCountStyle {
   background: #ffffff 0% 0% no-repeat padding-box;
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   height: 15px;
   width: 15px;
   position: absolute;
@@ -3799,10 +3796,7 @@ input[type="number"] {
 .applicationButton {
   /* UI Properties */
   height: 65px;
-  background: transparent linear-gradient(174deg, $primarycolor
-
-
- 0%, #5F52D8 47%, $primarycolor
+  background: transparent linear-gradient(174deg, $primarycolor 0%, $primarycolor 47%, $primarycolor
 
 
  100%) 0% 0% no-repeat padding-box;
@@ -3849,7 +3843,7 @@ input[type="number"] {
 
  0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 11px #52575D1A;
-  border: 0.4000000059604645px solid #382DA5;
+  border: 0.4000000059604645px solid $primarycolor;
   border-radius: 4px 4px 0px 0px;
 }
 
@@ -4213,14 +4207,14 @@ input[type="number"] {
 }
 
 .borderStyleTiles {
-  border: 2px solid #382DA5;
+  border: 2px solid $secondarycolor;
 
 }
 
 .selectedNewApplicantBackground {
-  background: #382DA5 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 11px #52575D1A;
-  border: 0.4000000059604645px solid #382DA5;
+  border: 0.4000000059604645px solid $secondarycolor;
   border-radius: 4px 4px 0px 0px;
   opacity: 1;
 }
