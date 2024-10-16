@@ -319,7 +319,7 @@ const ApplicationFieldCard = ({
     let department = getValueByPath(basicForm, 'basicDetails.departmentSpecialty.department');
     console.log(isMailingAddressSameAsHomeAddress, isBusinessAddressSameAsHomeAddressOrMailingAddress)
     useEffect(() => {
-        if (isMailingAddressSameAsHomeAddress !== undefined && isMailingAddressSameAsHomeAddress !== null && !isPOD) {
+        if (isMailingAddressSameAsHomeAddress !== undefined && isMailingAddressSameAsHomeAddress !== null && !isPOD && (baseKey?.split('.')[0] === 'contactAddress1' || baseKey?.split('.')[0] === 'contactAddress2' || baseKey?.split('.')[0] === 'contactAddress3')) {
             setBasicForm(prevData => {
                 let tempBasicForm = { ...prevData };
                 if (tempBasicForm?.forms[1]?.data?.contactAddress2?.mailingAddress === undefined) {
@@ -344,7 +344,7 @@ const ApplicationFieldCard = ({
     }, [isMailingAddressSameAsHomeAddress]);
 
     useEffect(() => {
-        if (isBusinessAddressSameAsHomeAddressOrMailingAddress !== undefined && isBusinessAddressSameAsHomeAddressOrMailingAddress !== null && !isPOD) {
+        if (isBusinessAddressSameAsHomeAddressOrMailingAddress !== undefined && isBusinessAddressSameAsHomeAddressOrMailingAddress !== null && !isPOD && (baseKey?.split('.')[0] === 'contactAddress1' || baseKey?.split('.')[0] === 'contactAddress2' || baseKey?.split('.')[0] === 'contactAddress3')) {
             setBasicForm(prevData => {
                 let tempContactAddress3 = { ...prevData };
                 if (tempContactAddress3?.forms[1]?.data?.contactAddress3?.business === undefined) {
@@ -381,7 +381,7 @@ const ApplicationFieldCard = ({
     }, [isBusinessAddressSameAsHomeAddressOrMailingAddress]);
 
     useEffect(() => {
-        if (registeredBusinessAddress !== undefined && registeredBusinessAddress !== null && !registeredBusinessAddress && !isPOD) {
+        if (registeredBusinessAddress !== undefined && registeredBusinessAddress !== null && !registeredBusinessAddress && !isPOD && (baseKey?.split('.')[0] === 'contactAddress1' || baseKey?.split('.')[0] === 'contactAddress2' || baseKey?.split('.')[0] === 'contactAddress3')) {
             setBasicForm(prevData => {
                 let tempContactAddress3 = { ...prevData };
                 if (tempContactAddress3?.forms[1]?.data?.contactAddress3?.business === undefined) {
@@ -432,7 +432,7 @@ const ApplicationFieldCard = ({
                 console.log("Error fetching data");
             }
         }
-        if (isHomeAddressPincodeEntered !== undefined && isHomeAddressPincodeEntered !== null && isHomeAddressPincodeEntered?.length >= 7 && !isPOD) {
+        if (isHomeAddressPincodeEntered !== undefined && isHomeAddressPincodeEntered !== null && isHomeAddressPincodeEntered?.length >= 7 && !isPOD && (baseKey?.split('.')[0] === 'contactAddress1' || baseKey?.split('.')[0] === 'contactAddress2' || baseKey?.split('.')[0] === 'contactAddress3')) {
             if (validateCanadianPostalCode(isHomeAddressPincodeEntered)) {
                 fetchData()
             } else {
@@ -461,7 +461,7 @@ const ApplicationFieldCard = ({
                 console.log("Error fetching data");
             }
         }
-        if (isMailingAddressPincodeEntered !== undefined && isMailingAddressPincodeEntered !== null && isMailingAddressPincodeEntered?.length >= 7 && !isPOD) {
+        if (isMailingAddressPincodeEntered !== undefined && isMailingAddressPincodeEntered !== null && isMailingAddressPincodeEntered?.length >= 7 && !isPOD && (baseKey?.split('.')[0] === 'contactAddress1' || baseKey?.split('.')[0] === 'contactAddress2' || baseKey?.split('.')[0] === 'contactAddress3')) {
             if (validateCanadianPostalCode(isMailingAddressPincodeEntered)) {
                 fetchData()
             } else {
@@ -490,7 +490,7 @@ const ApplicationFieldCard = ({
                 console.log("Error fetching data");
             }
         }
-        if (isBusinessAddressPincodeEntered !== undefined && isBusinessAddressPincodeEntered !== null && isBusinessAddressPincodeEntered?.length >= 7 && !isPOD) {
+        if (isBusinessAddressPincodeEntered !== undefined && isBusinessAddressPincodeEntered !== null && isBusinessAddressPincodeEntered?.length >= 7 && !isPOD && (baseKey?.split('.')[0] === 'contactAddress1' || baseKey?.split('.')[0] === 'contactAddress2' || baseKey?.split('.')[0] === 'contactAddress3')) {
             if (validateCanadianPostalCode(isBusinessAddressPincodeEntered)) {
                 fetchData()
             } else {

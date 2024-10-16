@@ -15,8 +15,8 @@ import { format } from 'date-fns';
 import { SuccessToaster, ErrorToaster } from '../../../utils/toaster';
 import ESignature from '../../../Components/ESignature';
 
-const DisabilitiesAct = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApplication, applicationId }) => {
-    const [isChecked, setIsChecked] = useState(true);
+const ConfidentialityAgreement = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApplication, applicationId }) => {
+    const [isChecked, setIsChecked] = useState(false);
     const navigate = useNavigate()
     const targetRef = useRef();
     const [isSigned, setIsSigned] = useState(false);
@@ -40,23 +40,23 @@ const DisabilitiesAct = ({ acknowledgementForm, dateFormat, name, basicForm, get
         if (basicForm && !formSchema) {
             getFormSchema()
         }
-        // setIsChecked(basicForm?.forms?.[19]?.acknowledged);
-        // setEncryptedText(basicForm?.forms?.[19]?.esign?.esign)
-        setSignText(basicForm?.forms?.[19]?.acknowledged ? basicForm?.forms?.[19]?.esign?.esign : '');
-        setIsSigned((basicForm?.forms?.[19]?.esign?.esign !== undefined && basicForm?.forms?.[19]?.acknowledged) ? true : false);
-        // setDecryptedText(CryptoJS.AES.decrypt(basicForm?.forms?.[19]?.esign?.esign, publicKey).toString(CryptoJS.enc.Utf8))
+        setIsChecked(basicForm?.forms?.[16]?.acknowledged);
+        // setEncryptedText(basicForm?.forms?.[16]?.esign?.esign)
+        setSignText(basicForm?.forms?.[16]?.acknowledged ? basicForm?.forms?.[16]?.esign?.esign : '');
+        setIsSigned((basicForm?.forms?.[16]?.esign?.esign !== undefined && basicForm?.forms?.[16]?.acknowledged) ? true : false);
+        // setDecryptedText(CryptoJS.AES.decrypt(basicForm?.forms?.[16]?.esign?.esign, publicKey).toString(CryptoJS.enc.Utf8))
     }, [basicForm])
 
     useEffect(() => {
-        if (basicForm?.forms?.[19]?.id !== undefined) {
+        if (basicForm?.forms?.[16]?.id !== undefined) {
             getRenderedContent()
         }
-    }, [basicForm?.forms?.[19]?.id])
+    }, [basicForm?.forms?.[16]?.id])
 
     const getFormSchema = async () => {
-        if (basicForm?.formSchemas?.[19]?.id !== undefined) {
+        if (basicForm?.formSchemas?.[16]?.id !== undefined) {
             const { data: form } = await GET(
-                `application-management-service/formSchema/${basicForm?.formSchemas?.[19]?.id}`
+                `application-management-service/formSchema/${basicForm?.formSchemas?.[16]?.id}`
             );
             setFormSchema(form)
         }
@@ -64,7 +64,7 @@ const DisabilitiesAct = ({ acknowledgementForm, dateFormat, name, basicForm, get
 
     const getRenderedContent = async () => {
         const { data: content } = await GET(
-            `application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[19]?.id}/render`
+            `application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[16]?.id}/render`
         );
         setFormContent(content)
     }
@@ -72,7 +72,7 @@ const DisabilitiesAct = ({ acknowledgementForm, dateFormat, name, basicForm, get
     const addNewDocument = async (file) => {
         console.log(file, file?.name, 'Test')
         let fileName = {
-            "fileName": 'ontariansWithDisabilities.pdf'
+            "fileName": 'statement.pdf'
         };
         const formData = new FormData();
 
@@ -94,7 +94,7 @@ const DisabilitiesAct = ({ acknowledgementForm, dateFormat, name, basicForm, get
             }
 
             try {
-                const response = await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[19]?.id}/addFileToForm`, uploadedFile);
+                const response = await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[16]?.id}/addFileToForm`, uploadedFile);
                 console.log(response?.data);
                 return response?.data;
             } catch (error) {
@@ -138,12 +138,12 @@ const DisabilitiesAct = ({ acknowledgementForm, dateFormat, name, basicForm, get
     const handleSubmitApplicationReq = async () => {
         if (isSigned) {
             let temp = {
-                schemaId: basicForm?.forms?.[19]?.schemaId,
-                data: !isEdited ? basicForm?.forms?.[19]?.data : { esignDate: isChecked ? name + " " + currentDate : '' },
+                schemaId: basicForm?.forms?.[16]?.schemaId,
+                data: !isEdited ? basicForm?.forms?.[16]?.data : { esignDate: isChecked ? name + " " + currentDate : '' },
                 acknowledged: isChecked,
                 esign: { esign: isChecked ? encryptedText : '', name: isChecked ? name : '', signedDate: isChecked ? currentDate : '' }
             }
-            await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[19]?.id}`, temp)
+            await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[16]?.id}`, temp)
                 .then(response => {
                     console.log(response)
                     getPreApplication()
@@ -154,7 +154,7 @@ const DisabilitiesAct = ({ acknowledgementForm, dateFormat, name, basicForm, get
                         navigate(-1);
                     }
                     else {
-                        navigate('/applicationForm/applicationacknowledgement')
+                        navigate('/applicationForm/section1/acknowledgementStep7')
                     }
                 })
                 .catch((error) => {
@@ -166,14 +166,22 @@ const DisabilitiesAct = ({ acknowledgementForm, dateFormat, name, basicForm, get
             if (sessionStorage.getItem('fromSummary') === 'true') {
                 navigate(-1);
             } else {
-                navigate('/applicationForm/applicationacknowledgement')
+                navigate('/applicationForm/section1/acknowledgementStep7')
             }
         }
     }
+    const handleContinue = () => {
+        if (sessionStorage.getItem('fromSummary') === 'true') {
+            navigate(-1);
+        } else {
+            navigate('/applicationForm/section1/acknowledgementStep7')
+        }
+    }
+
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 12'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={42} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                <ProgressCard step={'STEP 6'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={36} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
@@ -217,15 +225,11 @@ const DisabilitiesAct = ({ acknowledgementForm, dateFormat, name, basicForm, get
                                 <div className={style.verticalAlignCenter}>
                                     <div className={style.displayInRow}>
                                         <div className={style.dateTitle}>Date: </div>
-                                        <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? (basicForm?.forms?.[19]?.esign?.signedDate !== '' && basicForm?.forms?.[19]?.esign?.signedDate !== undefined) ? basicForm?.forms?.[19]?.esign?.signedDate : currentDate : ""}</div>
+                                        <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? (basicForm?.forms?.[16]?.esign?.signedDate !== '' && basicForm?.forms?.[16]?.esign?.signedDate !== undefined) ? basicForm?.forms?.[16]?.esign?.signedDate : currentDate : ""}</div>
                                     </div>
                                 </div>
                             </div>
                         )}
-                        <div
-                            className={`${style.leftAlign} ${style.marginTop} ${style.descriptionStyle}`}
-                            dangerouslySetInnerHTML={{ __html: formSchema?.content1?.content }}
-                        />
                     </div>
                 </div>
                 <div>
@@ -241,4 +245,4 @@ const DisabilitiesAct = ({ acknowledgementForm, dateFormat, name, basicForm, get
     )
 }
 
-export default DisabilitiesAct;
+export default ConfidentialityAgreement;
