@@ -79,8 +79,7 @@
 }
 
 .continue {
-    background: $primarycolor
- 0% 0% no-repeat padding-box;
+    background: $primarycolor 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 8px;
     text-align: center;
@@ -119,9 +118,7 @@
 }
 
 .progressStyleBackground {
-    background: transparent linear-gradient(90deg, $primarycolor
- 0%, $primarycolor
- 2%, #E9E9F0 5%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(90deg, $primarycolor 0%, $primarycolor 2%, #E9E9F0 5%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
 }
 
 .siteDisplayCard {
