@@ -246,6 +246,7 @@ const CreateStaffMemberApplication = () => {
   };
 
   const handleSubmitApplicationReq = async () => {
+    setIsLoading(true);
     let data = basicForm;
     data.providerType = {
       id: "6398687f95164c0bb67ff4b2",
@@ -266,10 +267,12 @@ const CreateStaffMemberApplication = () => {
           setApplicationId(response?.data?.id);
           SuccessToaster("Staff Member Application Created Successfully");
           setIsNextPage(true);
+          setIsLoading(false);
         })
         .catch((error) => {
           console.log(error);
           ErrorToaster("Unexpected Error Creating Staff Member Application");
+          setIsLoading(false);
         });
     } else {
       await PUT(
@@ -282,11 +285,13 @@ const CreateStaffMemberApplication = () => {
           SuccessToaster("Staff Member Application Updated Successfully");
           if (!isNextpage) {
             setIsNextPage(true);
+            setIsLoading(false);
           }
         })
         .catch((error) => {
           console.log(error);
           ErrorToaster("Unexpected Error Updating Staff Member Application");
+          setIsLoading(false);
         });
     }
   };
@@ -313,6 +318,7 @@ const CreateStaffMemberApplication = () => {
   const handleCloseClick = () => {
     navigate("/applications");
   };
+
   return (
     <>
       {isLoading && (
