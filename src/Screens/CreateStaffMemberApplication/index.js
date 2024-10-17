@@ -14,7 +14,7 @@ import Cookie from "universal-cookie";
 import { useNavigate } from "react-router-dom";
 import { getValueByPath } from "../../utils/formatting";
 import ValidationDialog from "../../Components/validationDialog";
-import FileLoading from "../../images/file.png";
+import FileLoading from "../../images/fileLoading.GIF";
 
 const CreateStaffMemberApplication = () => {
   let cookie = new Cookie();
