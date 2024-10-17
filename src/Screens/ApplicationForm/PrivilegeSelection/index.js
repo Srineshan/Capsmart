@@ -55,7 +55,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId }) => {
     const { section, step } = useParams()
     const [formIndex, setFormIndex] = useState();
     const navigate = useNavigate()
-
+    const [navigateURL, setNavigateURL] = useState();
     useEffect(() => {
         getApplication();
     }, [])
@@ -74,6 +74,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId }) => {
         }
         if (basicForm?.privileges?.obligatedPrivileges?.[0]?.id) {
             setSelectedPrivilege(basicForm?.privileges?.obligatedPrivileges?.[0]?.id)
+        }
+        if (basicForm !== undefined && formIndex !== undefined) {
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? '/applicationForm/Form/PODCheck' : `/applicationForm/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
         }
         setSelectedAdditionalPrivilegeForDisplay(basicForm?.privileges?.additionalPrivileges)
         setSelectedPrivilegeForDisplay(basicForm?.privileges?.obligatedPrivileges)
@@ -187,7 +190,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId }) => {
                 navigate(-1);
             }
             else {
-                navigate(`/applicationForm/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
+                navigate(navigateURL)
 
             }
         }

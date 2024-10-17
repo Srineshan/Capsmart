@@ -5,7 +5,7 @@ import ApplicationAssistanceCard from '../../../Components/ApplicationAssistance
 import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import logo from "../../../images/cambridgeHospital.png";
 import { GET, PUT, POST } from '../../dataSaver';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import html2pdf from "html2pdf.js";
 import CryptoJS from 'crypto-js';
 import style from './index.module.scss';
@@ -37,6 +37,9 @@ const CodeOfConduct = ({ acknowledgementForm, dateFormat, name, basicForm, getPr
     const [isEdited, setIsEdited] = useState(false);
     const [formSchema, setFormSchema] = useState();
     const [formContent, setFormContent] = useState();
+    const [navigateURL, setNavigateURL] = useState();
+    const { section, step } = useParams()
+    const [formIndex, setFormIndex] = useState();
     const [signText, setSignText] = useState(name + " " + currentDate);
     const [initialArray, setInitialArray] = useState([])
 
@@ -52,30 +55,37 @@ const CodeOfConduct = ({ acknowledgementForm, dateFormat, name, basicForm, getPr
         if (basicForm && !formSchema) {
             getFormSchema()
         }
-        setIsChecked(basicForm?.forms?.[15]?.acknowledged);
-        // setEncryptedText(basicForm?.forms?.[15]?.esign?.esign)
-        setInitialArray(basicForm?.forms?.[15]?.data ? basicForm?.forms?.[15]?.data?.initials : []);
-        setSignText(basicForm?.forms?.[15]?.acknowledged ? basicForm?.forms?.[15]?.esign?.esign : '');
-        setIsSigned((basicForm?.forms?.[15]?.esign?.esign !== undefined && basicForm?.forms?.[15]?.acknowledged) ? true : false);
-        // setDecryptedText(CryptoJS.AES.decrypt(basicForm?.forms?.[15]?.esign?.esign, publicKey).toString(CryptoJS.enc.Utf8))
-    }, [basicForm])
+        setIsChecked(basicForm?.forms?.[formIndex]?.acknowledged);
+        // setEncryptedText(basicForm?.forms?.[formIndex]?.esign?.esign)
+        setInitialArray(basicForm?.forms?.[formIndex]?.data ? basicForm?.forms?.[formIndex]?.data?.initials : []);
+        setSignText(basicForm?.forms?.[formIndex]?.acknowledged ? basicForm?.forms?.[formIndex]?.esign?.esign : '');
+        setIsSigned((basicForm?.forms?.[formIndex]?.esign?.esign !== undefined && basicForm?.forms?.[formIndex]?.acknowledged) ? true : false);
+        // setDecryptedText(CryptoJS.AES.decrypt(basicForm?.forms?.[formIndex]?.esign?.esign, publicKey).toString(CryptoJS.enc.Utf8))
+        if (basicForm !== undefined && formIndex !== undefined) {
+            setNavigateURL((basicForm?.forms?.length === (formIndex + 1)) ? '/applicationForm/Acknowledgement/AcknowledgementCheck' : `/applicationForm/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
+        }
+    }, [basicForm, formIndex])
 
     useEffect(() => {
-        if (basicForm?.forms?.[15]?.id !== undefined) {
+        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
+    }, [basicForm, step])
+
+    useEffect(() => {
+        if (basicForm?.forms?.[formIndex]?.id !== undefined) {
             getRenderedContent()
         }
-    }, [basicForm?.forms?.[15]?.id])
+    }, [basicForm?.forms?.[formIndex]?.id])
 
     const getFormSchema = async () => {
         const { data: form } = await GET(
-            `application-management-service/formSchema/${basicForm?.formSchemas?.[15]?.id}`
+            `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
         );
         setFormSchema(form)
     }
 
     const getRenderedContent = async () => {
         const { data: content } = await GET(
-            `application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[15]?.id}/render`
+            `application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}/render`
         );
         setFormContent(content)
     }
@@ -105,7 +115,7 @@ const CodeOfConduct = ({ acknowledgementForm, dateFormat, name, basicForm, getPr
             }
 
             try {
-                const response = await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[15]?.id}/addFileToForm`, uploadedFile);
+                const response = await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}/addFileToForm`, uploadedFile);
                 console.log(response?.data);
                 return response?.data;
             } catch (error) {
@@ -141,12 +151,12 @@ const CodeOfConduct = ({ acknowledgementForm, dateFormat, name, basicForm, getPr
     const handleSubmitApplicationReq = async () => {
         if (isSigned) {
             let temp = {
-                schemaId: basicForm?.forms?.[15]?.schemaId,
+                schemaId: basicForm?.forms?.[formIndex]?.schemaId,
                 data: { initials: initialArray },
                 acknowledged: isSigned,
                 esign: { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
             }
-            await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[15]?.id}`, temp)
+            await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
                 .then(response => {
                     console.log(response)
                     getPreApplication()
@@ -156,7 +166,7 @@ const CodeOfConduct = ({ acknowledgementForm, dateFormat, name, basicForm, getPr
                         navigate(-1);
                     }
                     else {
-                        navigate('/applicationForm/section1/acknowledgementStep6')
+                        navigate(navigateURL)
                     }
                 })
                 .catch((error) => {
@@ -168,7 +178,7 @@ const CodeOfConduct = ({ acknowledgementForm, dateFormat, name, basicForm, getPr
             if (sessionStorage.getItem('fromSummary') === 'true') {
                 navigate(-1);
             } else {
-                navigate('/applicationForm/section1/acknowledgementStep6')
+                navigate(navigateURL)
             }
         }
     }

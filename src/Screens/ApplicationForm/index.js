@@ -40,10 +40,12 @@ import PoliceVulnerableCheck from './PoliceVulnerableCheck';
 import ApplicationAcknowledgementStep9 from './AcknowledgementStep9';
 import ApplicationAcknowledgementStep10 from './AcknowledgementStep10';
 import ApplicationAcknowledgementStep11 from './AcknowledgementStep11';
-import DisabilitiesAct from './AcknowledgementStep12';
+import DisabilitiesAct from './DisabilitiesAct';
 import PACSAdminStep1 from './PACSAdminStep1';
 import PACSAdminStep6 from './PACSAdminStep6';
 import LoginDialog from '../../Components/LoginDialog';
+import PODCheck from './PODCheck';
+import AcknowledgementCheck from './AcknowledgementCheck';
 
 
 const ApplicationForm = () => {
@@ -169,6 +171,10 @@ const ApplicationForm = () => {
             //     return <PACSAdminStep5 />;
             case 'pacsAdminStep6':
                 return <PACSAdminStep6 />;
+            case 'PODCheck':
+                return <PODCheck basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
+            case 'AcknowledgementCheck':
+                return <AcknowledgementCheck basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             default:
                 return <div>Step not found</div>;
         }

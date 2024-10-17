@@ -23,10 +23,14 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId }) => {
     const [isEdited, setIsEdited] = useState(false);
     const { section, step } = useParams()
     const [formIndex, setFormIndex] = useState();
+    const [navigateURL, setNavigateURL] = useState();
     const navigate = useNavigate()
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
+        }
+        if (basicForm !== undefined && formIndex !== undefined) {
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? '/applicationForm/Form/PODCheck' : `/applicationForm/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
         }
     }, [basicForm, formIndex])
 
@@ -108,7 +112,7 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId }) => {
                     console.log(response)
                     setBasicForm(response?.data)
                     SuccessToaster("Application Updated Successfully");
-                    navigate('/applicationForm/podcheck')
+                    navigate(navigateURL)
 
                 })
                 .catch((error) => {
@@ -116,7 +120,7 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId }) => {
                     ErrorToaster("Unexpected Error Updating Application");
                 });
         } else {
-            navigate('/applicationForm/podcheck')
+            navigate(navigateURL)
         }
     }
 

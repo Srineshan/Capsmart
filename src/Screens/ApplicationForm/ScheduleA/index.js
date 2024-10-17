@@ -5,7 +5,7 @@ import ApplicationAssistanceCard from '../../../Components/ApplicationAssistance
 import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import logo from "../../../images/cambridgeHospital.png";
 import { GET, PUT, POST } from '../../dataSaver';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import html2pdf from "html2pdf.js";
 import CryptoJS from 'crypto-js';
 import style from './index.module.scss';
@@ -29,6 +29,9 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
     const [isEdited, setIsEdited] = useState(false);
     const [formSchema, setFormSchema] = useState();
     const [formContent, setFormContent] = useState();
+    const [navigateURL, setNavigateURL] = useState();
+    const { section, step } = useParams()
+    const [formIndex, setFormIndex] = useState();
     const [signText, setSignText] = useState(name + " " + currentDate);
     let questionsArray = [
         'Nature of treatments / consultations that are relevant to the Applicant’s ability to practice medicine.',
@@ -39,21 +42,28 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
         if (basicForm && !formSchema) {
             getFormSchema()
         }
-        setIsChecked(basicForm?.forms?.[12]?.acknowledged);
-        // setEncryptedText(basicForm?.forms?.[12]?.esign?.esign)
-        setSignText(basicForm?.forms?.[12]?.acknowledged ? basicForm?.forms?.[12]?.esign?.esign : '');
-        setIsSigned((basicForm?.forms?.[12]?.esign?.esign !== undefined && basicForm?.forms?.[12]?.acknowledged) ? true : false);
-        // setDecryptedText(CryptoJS.AES.decrypt(basicForm?.forms?.[12]?.esign?.esign, publicKey).toString(CryptoJS.enc.Utf8))
-    }, [basicForm])
+        setIsChecked(basicForm?.forms?.[formIndex]?.acknowledged);
+        // setEncryptedText(basicForm?.forms?.[formIndex]?.esign?.esign)
+        setSignText(basicForm?.forms?.[formIndex]?.acknowledged ? basicForm?.forms?.[formIndex]?.esign?.esign : '');
+        setIsSigned((basicForm?.forms?.[formIndex]?.esign?.esign !== undefined && basicForm?.forms?.[formIndex]?.acknowledged) ? true : false);
+        // setDecryptedText(CryptoJS.AES.decrypt(basicForm?.forms?.[formIndex]?.esign?.esign, publicKey).toString(CryptoJS.enc.Utf8))
+        if (basicForm !== undefined && formIndex !== undefined) {
+            setNavigateURL((basicForm?.forms?.length === (formIndex + 1)) ? '/applicationForm/Acknowledgement/AcknowledgementCheck' : `/applicationForm/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
+        }
+    }, [basicForm, formIndex])
+
+    useEffect(() => {
+        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
+    }, [basicForm, step])
 
     useEffect(() => {
         getRenderedContent()
     }, [formSchema])
 
     const getFormSchema = async () => {
-        if (basicForm?.formSchemas?.[12]?.id !== undefined) {
+        if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
             const { data: form } = await GET(
-                `application-management-service/formSchema/${basicForm?.formSchemas?.[12]?.id}`
+                `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
             );
             setFormSchema(form)
         }
@@ -61,7 +71,7 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
 
     const getRenderedContent = async () => {
         const { data: content } = await GET(
-            `application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[12]?.id}/render`
+            `application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}/render`
         );
         setFormContent(content)
     }
@@ -91,7 +101,7 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
             }
 
             try {
-                const response = await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[12]?.id}/addFileToForm`, uploadedFile);
+                const response = await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}/addFileToForm`, uploadedFile);
                 console.log(response?.data);
                 return response?.data;
             } catch (error) {
@@ -135,12 +145,12 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
     const handleSubmitApplicationReq = async () => {
         if (isSigned) {
             let temp = {
-                schemaId: basicForm?.forms?.[12]?.schemaId,
-                data: !isEdited ? basicForm?.forms?.[12]?.data : { esignDate: isChecked ? name + " " + currentDate : '' },
+                schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+                data: !isEdited ? basicForm?.forms?.[formIndex]?.data : { esignDate: isChecked ? name + " " + currentDate : '' },
                 acknowledged: isChecked,
                 esign: { esign: isChecked ? encryptedText : '', name: isChecked ? name : '', signedDate: isChecked ? currentDate : '' }
             }
-            await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[12]?.id}`, temp)
+            await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
                 .then(response => {
                     console.log(response)
                     getPreApplication()
@@ -150,7 +160,7 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
                     if (sessionStorage.getItem('fromSummary') === 'true') {
                         navigate(-1);
                     } else {
-                        navigate('/applicationForm/section1/acknowledgementStep3')
+                        navigate(navigateURL)
                     }
                 })
                 .catch((error) => {
@@ -162,7 +172,7 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
             if (sessionStorage.getItem('fromSummary') === 'true') {
                 navigate(-1);
             } else {
-                navigate('/applicationForm/section1/acknowledgementStep3')
+                navigate(navigateURL)
             }
         }
     }
@@ -171,7 +181,7 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
         if (sessionStorage.getItem('fromSummary') === 'true') {
             navigate(-1);
         } else {
-            navigate('/applicationForm/section1/acknowledgementStep3')
+            navigate(navigateURL)
         }
     }
 
@@ -222,7 +232,7 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
                                 <div className={style.verticalAlignCenter}>
                                     <div className={style.displayInRow}>
                                         <div className={style.dateTitle}>Date: </div>
-                                        <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? (basicForm?.forms?.[12]?.esign?.signedDate !== '' && basicForm?.forms?.[12]?.esign?.signedDate !== undefined) ? basicForm?.forms?.[12]?.esign?.signedDate : currentDate : ""}</div>
+                                        <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? (basicForm?.forms?.[formIndex]?.esign?.signedDate !== '' && basicForm?.forms?.[formIndex]?.esign?.signedDate !== undefined) ? basicForm?.forms?.[formIndex]?.esign?.signedDate : currentDate : ""}</div>
                                     </div>
                                 </div>
                             </div>

@@ -54,9 +54,13 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     let showRedBorderForESign = ((eSignTitle === '' || eSignTitle === undefined) || (eSignInitial === '' || eSignInitial === undefined))
     let tempValue = basicForm?.forms?.[formIndex]?.data === null ? { setUpYourSignature: {}, table: [] } : basicForm?.forms?.[formIndex]?.data;
     const navigate = useNavigate()
+    const [navigateURL, setNavigateURL] = useState();
     useEffect(() => {
         if (basicForm) {
             getFormSchema()
+        }
+        if (basicForm !== undefined && formIndex !== undefined) {
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? '/applicationForm/Form/PODCheck' : `/applicationForm/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
         }
     }, [basicForm, formIndex])
 
@@ -356,7 +360,10 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             }
             if (sessionStorage.getItem('fromSummary') === "true") {
                 navigate(-1);
-            } else { navigate(`/applicationForm/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`) }
+            } else {
+                console.log(navigateURL, 'url')
+                navigate(navigateURL)
+            }
             setIsLoading(false);
         }
     }

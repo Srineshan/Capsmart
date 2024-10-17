@@ -5,7 +5,7 @@ import ApplicationAssistanceCard from '../../../Components/ApplicationAssistance
 import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import logo from "../../../images/cambridgeHospital.png";
 import { GET, PUT, POST } from '../../dataSaver';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import html2pdf from "html2pdf.js";
 import CryptoJS from 'crypto-js';
 import style from './index.module.scss';
@@ -28,6 +28,9 @@ const PoliceVulnerableCheck = ({ acknowledgementForm, dateFormat, name, basicFor
     const [isEdited, setIsEdited] = useState(false);
     const [formSchema, setFormSchema] = useState();
     const [formContent, setFormContent] = useState();
+    const [navigateURL, setNavigateURL] = useState();
+    const { section, step } = useParams()
+    const [formIndex, setFormIndex] = useState();
     const [signText, setSignText] = useState(name + " " + currentDate);
 
     useEffect(() => {
@@ -40,23 +43,30 @@ const PoliceVulnerableCheck = ({ acknowledgementForm, dateFormat, name, basicFor
         if (basicForm && !formSchema) {
             getFormSchema()
         }
-        setIsChecked(basicForm?.forms?.[14]?.acknowledged);
-        // setEncryptedText(basicForm?.forms?.[14]?.esign?.esign)
-        setSignText(basicForm?.forms?.[14]?.acknowledged ? basicForm?.forms?.[14]?.esign?.esign : '');
-        setIsSigned((basicForm?.forms?.[14]?.esign?.esign !== undefined && basicForm?.forms?.[14]?.acknowledged) ? true : false);
-        // setDecryptedText(CryptoJS.AES.decrypt(basicForm?.forms?.[14]?.esign?.esign, publicKey).toString(CryptoJS.enc.Utf8))
-    }, [basicForm])
+        setIsChecked(basicForm?.forms?.[formIndex]?.acknowledged);
+        // setEncryptedText(basicForm?.forms?.[formIndex]?.esign?.esign)
+        setSignText(basicForm?.forms?.[formIndex]?.acknowledged ? basicForm?.forms?.[formIndex]?.esign?.esign : '');
+        setIsSigned((basicForm?.forms?.[formIndex]?.esign?.esign !== undefined && basicForm?.forms?.[formIndex]?.acknowledged) ? true : false);
+        // setDecryptedText(CryptoJS.AES.decrypt(basicForm?.forms?.[formIndex]?.esign?.esign, publicKey).toString(CryptoJS.enc.Utf8))
+        if (basicForm !== undefined && formIndex !== undefined) {
+            setNavigateURL((basicForm?.forms?.length === (formIndex + 1)) ? '/applicationForm/Acknowledgement/AcknowledgementCheck' : `/applicationForm/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
+        }
+    }, [basicForm, formIndex])
 
     useEffect(() => {
-        if (basicForm?.forms?.[14]?.id !== undefined) {
+        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
+    }, [basicForm, step])
+
+    useEffect(() => {
+        if (basicForm?.forms?.[formIndex]?.id !== undefined) {
             getRenderedContent()
         }
-    }, [basicForm?.forms?.[14]?.id])
+    }, [basicForm?.forms?.[formIndex]?.id])
 
     const getFormSchema = async () => {
-        if (basicForm?.formSchemas?.[14]?.id !== undefined) {
+        if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
             const { data: form } = await GET(
-                `application-management-service/formSchema/${basicForm?.formSchemas?.[14]?.id}`
+                `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
             );
             setFormSchema(form)
         }
@@ -64,7 +74,7 @@ const PoliceVulnerableCheck = ({ acknowledgementForm, dateFormat, name, basicFor
 
     const getRenderedContent = async () => {
         const { data: content } = await GET(
-            `application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[14]?.id}/render`
+            `application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}/render`
         );
         setFormContent(content)
     }
@@ -94,7 +104,7 @@ const PoliceVulnerableCheck = ({ acknowledgementForm, dateFormat, name, basicFor
             }
 
             try {
-                const response = await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[14]?.id}/addFileToForm`, uploadedFile);
+                const response = await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}/addFileToForm`, uploadedFile);
                 console.log(response?.data);
                 return response?.data;
             } catch (error) {
@@ -137,12 +147,12 @@ const PoliceVulnerableCheck = ({ acknowledgementForm, dateFormat, name, basicFor
 
     const handleSubmitApplicationReq = async () => {
         let temp = {
-            schemaId: basicForm?.forms?.[14]?.schemaId,
-            data: !isEdited ? basicForm?.forms?.[14]?.data : { esignDate: isChecked && formSchema?.esignatureRequired ? name + " " + currentDate : '' },
+            schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+            data: !isEdited ? basicForm?.forms?.[formIndex]?.data : { esignDate: isChecked && formSchema?.esignatureRequired ? name + " " + currentDate : '' },
             acknowledged: !formSchema?.esignatureRequired ? true : isChecked,
             esign: { esign: isChecked && formSchema?.esignatureRequired ? encryptedText : '', name: isChecked && formSchema?.esignatureRequired ? name : '', signedDate: isChecked && formSchema?.esignatureRequired ? currentDate : '' }
         }
-        await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[14]?.id}`, temp)
+        await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
             .then(response => {
                 console.log(response)
                 getPreApplication()
@@ -156,7 +166,7 @@ const PoliceVulnerableCheck = ({ acknowledgementForm, dateFormat, name, basicFor
         if (sessionStorage.getItem('fromSummary') === 'true') {
             navigate(-1);
         } else {
-            navigate('/applicationForm/section1/acknowledgementStep4')
+            navigate(navigateURL)
         }
     }
 
@@ -164,7 +174,7 @@ const PoliceVulnerableCheck = ({ acknowledgementForm, dateFormat, name, basicFor
         if (sessionStorage.getItem('fromSummary') === 'true') {
             navigate(-1);
         } else {
-            navigate('/applicationForm/section1/acknowledgementStep6')
+            navigate(navigateURL)
         }
     }
 
@@ -215,7 +225,7 @@ const PoliceVulnerableCheck = ({ acknowledgementForm, dateFormat, name, basicFor
                                 <div className={style.verticalAlignCenter}>
                                     <div className={style.displayInRow}>
                                         <div className={style.dateTitle}>Date: </div>
-                                        <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? (basicForm?.forms?.[14]?.esign?.signedDate !== '' && basicForm?.forms?.[14]?.esign?.signedDate !== undefined) ? basicForm?.forms?.[14]?.esign?.signedDate : currentDate : ""}</div>
+                                        <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? (basicForm?.forms?.[formIndex]?.esign?.signedDate !== '' && basicForm?.forms?.[formIndex]?.esign?.signedDate !== undefined) ? basicForm?.forms?.[formIndex]?.esign?.signedDate : currentDate : ""}</div>
                                     </div>
                                 </div>
                             </div>

@@ -24,9 +24,13 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId }) => {
     const [formIndex, setFormIndex] = useState();
     const navigate = useNavigate()
     const [isEdited, setIsEdited] = useState(false);
+    const [navigateURL, setNavigateURL] = useState();
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
+        }
+        if (basicForm !== undefined && formIndex !== undefined) {
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? '/applicationForm/Form/PODCheck' : `/applicationForm/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
         }
     }, [basicForm, formIndex])
 
@@ -112,7 +116,7 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId }) => {
                         navigate(-1);
                     }
                     else {
-                        navigate(`/applicationForm/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
+                        navigate(navigateURL)
 
                     }
                 })
@@ -125,7 +129,7 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId }) => {
                 navigate(-1);
             }
             else {
-                navigate(`/applicationForm/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
+                navigate(navigateURL)
 
             }
         }
