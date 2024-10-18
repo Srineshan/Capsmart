@@ -9,7 +9,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
     credentialingCommittee: 0,
     mac: 0,
     bod: 0,
-    'level-1' :0,
+    'level-1': 0,
   });
 
   // const [selectedTab, setSelectedTab] = useState('applicantsToProcess');
@@ -44,7 +44,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
       <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="MAC" tileCount={counts?.mac} currentTile="mac" />
       <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="BOD" tileCount={counts?.bod} currentTile="bod" />
       <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Clarifications" tileCount={counts?.clarificationsRequired} currentTile="clarificationsRequired" />
-      <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Rejected/Declined" tileCount={counts?.rejected} currentTile="rejected" />
+      {/* <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Rejected/Declined" tileCount={counts?.rejected} currentTile="rejected" /> */}
     </div>
   )
 }
