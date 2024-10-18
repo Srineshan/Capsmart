@@ -816,7 +816,7 @@ body::-webkit-scrollbar {
 
 .applicantStaffGrid {
   display: grid;
-  grid-template-columns: 2% 16% 8% 19% 6% 6% 6% 10% 14% 6%;
+  grid-template-columns: 2% 13% 12% 19% 6% 5% 5% 10% 14% 6%;
   grid-gap: 1%;
 }
 
@@ -826,21 +826,28 @@ body::-webkit-scrollbar {
   grid-gap: 1%;
 }
 
+.departmentHeadStaffGrid {
+  display: grid;
+  grid-template-columns: 2% 16% 8% 19% 6% 6% 6% 10% 14% 6%;
+  grid-gap: 1%;
+}
+
+
 .applicationStaffGrid {
   display: grid;
-  grid-template-columns: 2% 16% 9% 17% 6% 5% 5% 13% 13% 6%;
+  grid-template-columns: 2% 14% 12% 17% 6% 5% 5% 11% 15% 6%;
   grid-gap: 1%;
 }
 
 .macStaffGrid {
   display: grid;
-  grid-template-columns: 14% 8% 16% 13% 13% 10% 13% 7%;
+  grid-template-columns: 14% 12% 14% 13% 13% 10% 13% 7%;
   grid-gap: 1%;
 }
 
 .bodStaffGrid {
   display: grid;
-  grid-template-columns: 15% 8% 20% 18% 10% 16% 7%;
+  grid-template-columns: 13% 12% 20% 18% 10% 16% 7%;
   grid-gap: 1%;
 }
 
@@ -3993,4 +4000,73 @@ input[type="number"] {
 .pagebreak:nth-child(even) {
     background-color: #ffffff;
 }
+}
+
+.tableHeaderStyleCred {
+  align-content: center;
+}
+
+.tableHeaderGridStyle {
+  display: grid;
+  grid-template-columns: 6% 45% 12% 12% 12% 8%;
+  grid-gap: 10px;
+}
+
+.tableHeaderGridStyleCred {
+  display: grid;
+  grid-template-columns:93% 10%;
+  grid-gap: 10px;
+}
+
+.tableHeaderTextStyleCred {
+  text-align: left;
+  margin-left: 20px;
+  font: normal normal bold 16px/22px proxima-nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  opacity: 1;
+  text-transform: capitalize;
+}
+
+.tableDataFontStyleCred {
+  font: normal normal normal 16px/20px proxima-nova;
+  margin-left: 20px;
+  letter-spacing: 0px;
+  color: #52575d;
+  text-align: left;
+}
+
+.tableHeaderGridStyleFormCred {
+  display: grid;
+  grid-template-columns: 77% 16% 4%;
+  grid-gap: 1%;
+}
+
+.buttonCardStyleCred {
+  background: var(---ffffff) 0% 0% no-repeat padding-box;
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 5px 20px #52575D4D;
+  border-radius: 12px;
+  opacity: 1;
+}
+
+.buttonTextStyleCred {
+  text-align: center;
+  font: normal normal normal 18px/22px Proxima Nova;
+  letter-spacing: 0px;
+  color: #171338;
+  opacity: 1;
+  padding: 10px;
+}
+
+.overallStatus{
+  color: var(--unnamed-color-52575d);
+text-align: left;
+font: normal normal bold 20px Proxima Nova;
+letter-spacing: 0px;
+color: #52575D;
+text-transform: capitalize;
+opacity: 1;
+padding-left: 20px;
+padding-top: 20px;
 }

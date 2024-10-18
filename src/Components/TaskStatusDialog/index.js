@@ -73,7 +73,8 @@ const TaskStatusDialog = ({ getIsOpen }) => {
     await POST(`application-management-service/application/${id}/task/${taskId}/execute`, data)
       .then(response => {
         SuccessToaster('Task Update Successfully');
-        console.log(response?.data)
+        console.log(response?.data);
+        window.location.reload();
       })
       .catch(error => {
         ErrorToaster('Task Update Failed');
@@ -135,14 +136,15 @@ const TaskStatusDialog = ({ getIsOpen }) => {
                 }
               </span>
             </div>
-            <div className={`${style.referenceFont} ${style.marginRight30}`}>
+            {/* <div className={`${style.referenceFont} ${style.marginRight30}`}>
               IT Reference info
               <ContentCopyIcon className={`${style.copyicon}`} />
-            </div>
+            </div> */}
           </div>
           <div className={`${style.dialogBody}`}>
             {task?.map((taskData, index) => {
               const isNotCompleted = taskData?.taskStatus === "NOT_COMPLETED";
+              const isInProgress = taskData?.taskStatus === "INPROGRESS";
               const showSelect =
                 taskData?.taskAction === "TASK_STATUS_UPDATE_ONLY" ||
                 taskData?.taskAction === "SEND_NON_CAPSMART_FORM_INTERNAL_SOURCE_URL";
@@ -157,6 +159,8 @@ const TaskStatusDialog = ({ getIsOpen }) => {
                 >
                   {isNotCompleted ? (
                     <WarningIcon className={style.warning} />
+                  ) : isInProgress ?(
+                    <WarningIcon className={style.progress} />
                   ) : (
                     <TaskAltIcon className={style.correcticon} />
                   )}

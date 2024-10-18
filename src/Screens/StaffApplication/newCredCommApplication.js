@@ -31,7 +31,7 @@ import CommonDivider from '../../Components/CommonFields/CommonDivider';
 import ESignature from "../../Components/ESignature";
 
 
-const NewActiveApplication = ({
+const NewCredCommApplication = ({
   contracts,
   getNewContract,
   contractType,
@@ -42,11 +42,13 @@ const NewActiveApplication = ({
   method,
   isEditable,
   selectedTab,
-  getActiveApplicationView
+  getCredCommApplicationView,
+  approveView 
 }) => {
   console.log('contract Type', contractType)
   const [applicationId, setApplicationId] = useState(sessionStorage.getItem('applicationId'));
   const [form, setForm] = useState();
+  const [form2, setForm2] = useState();
   const contractStatus = sessionStorage.getItem("Selected Contract Status");
   const [selectContractInfo, setSelectContractInfo] = useState(contractType?.value);
   const [deleteExecutedContractDialog, setDeleteExecutedContractDialog] =
@@ -80,6 +82,7 @@ const NewActiveApplication = ({
     fieldName: "",
     empty: false,
   });
+  
   const [selectedFileURL, setSelectedFileURL] = useState("");
   const [priorContractId, setPriorContractId] = useState("");
   const [showAlert, setShowAlert] = useState(false);
@@ -206,6 +209,7 @@ const NewActiveApplication = ({
       setFormSchema(form?.schema)
     }
   }
+   
 
   const getTabDataStatus = () => {
     // let temp = validateTabs(contractSelected?.id);
@@ -308,6 +312,27 @@ const NewActiveApplication = ({
     getPreApplication();
   }
 
+  useEffect(() => {
+    approveView();
+  }, []);
+
+//   const approveView = async () => {
+//     const roleMap = {
+//         'level-2': "Department Head",
+//         'level-1': "Credentialing Committee",
+//         'mac': "Advisory Committee",
+//         'bod': "Board"
+//       };
+
+//       const role = roleMap[selectedTab] || "Credentialing Committee";
+
+//         const { data: basicApproval } = await GET(
+//           `application-management-service/application/${applicationId}/approvalRequiredForms?role=${role}`
+//         );
+//         setForm2(basicApproval)  
+//         console.log("basicApproval" + JSON.stringify(form2));     
+//   }
+
   const handleStepsVerify = async (formId) => {
     await PUT(`application-management-service/application/${applicationId}/form/${formId}/APPROVED`)
       .then(response => {
@@ -360,6 +385,8 @@ const NewActiveApplication = ({
     getPreApplication();
   }
 
+
+
   const handleApplicationAccept = async () => {
     let role;
     let notes;
@@ -380,6 +407,7 @@ const NewActiveApplication = ({
       role = "Chief Of Staff";
       notes = "Send"
     }
+  console.log("selectedtabbbbbbbb"+toString.selectedTab);
   
     let temp = {
       role  : role,
@@ -510,7 +538,7 @@ const NewActiveApplication = ({
   };
 
   const onClose = () => {
-    getActiveApplicationView(false);
+    getCredCommApplicationView(false);
   };
 
   const renderFieldsBasedOnStep = (data) => {
@@ -806,7 +834,7 @@ const NewActiveApplication = ({
           />
         </div>
         <div className={style.grid2}>
-          <div className={style.grid5and1}>
+          <div>
             <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
               <div className={`${style.spaceBetween}`}>
                 <div className={`${style.displayInRow}`} >
@@ -829,14 +857,18 @@ const NewActiveApplication = ({
                 </div>
                 <div className={`${style.displayInRow} ${style.marginRight20}`}>
                   <div className={`${style.displayInCol} `}>
-                    {/* <div className={`${style.marginTop15} `}>
+                    <div className={`${style.marginTop15} `}>
                       <span className={`${style.rightAlignTextStyle}`}>Proposed Start Date:</span>
-                      <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>{}</span>
+                      <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>DD/MM/YYYY</span>
                     </div> 
                     <div className={`${style.marginTop15}`}>
                       <span className={`${style.rightAlignTextStyle}`}>Application Created On:</span>
-                      <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>{format(new Date(form?.createdDate, 'dd/mm/YYYY'))}</span>
-                    </div>*/}
+                      <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>DD/MM/YYYY</span>
+                    </div>
+                    <div className={`${style.marginTop15}`}>
+                      <span className={`${style.rightAlignTextStyle}`}>Application Submitted:</span>
+                      <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>DD/MM/YYYY</span>
+                    </div>
                     <div className={`${style.marginTop15}`}>
                       <span className={`${style.rightAlignTextStyle}`}>Days To Complete:</span>
                       <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>15</span>
@@ -845,10 +877,10 @@ const NewActiveApplication = ({
                 </div>
               </div>
             </div>
-            <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}  ${style.marginTop20} ${style.statusCardHeight} ${style.displayInCol}`}>
+            {/* <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}  ${style.marginTop20} ${style.statusCardHeight} ${style.displayInCol}`}>
               <div className={`${style.greyBigDotStyle} ${style.marginCenter} `}></div>
               <div className={`${style.greyDotTextStyle}`}>Overall Verification & Acceptance Status</div>
-            </div>
+            </div> */}
           </div>
 
           <div>
@@ -860,9 +892,17 @@ const NewActiveApplication = ({
                 <div className={`${style.buttonTextStyle} ${style.alignCenter}`} onClick={() => { setShowApplicationDeclineDialog(true) }}>REJECT</div>
               </div>
             </div>
+            {/* <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
+              <div className={`${style.buttonCardStyleCred} ${style.cursorPointer}`}>
+                <div className={`${style.buttonTextStyleCred} ${style.alignCenter}`}> Ongoing <br></br> Chief of Staff / Deputy Review and Approval</div>
+              </div>
+              <div className={`${style.buttonCardStyleCred} ${style.cursorPointer}`}>
+                <div className={`${style.buttonTextStyleCred} ${style.alignCenter}`}> Pending <br></br> Credentialing Commiitte Review & Approval</div>
+              </div>
+            </div> */}
             <div className={`${style.marginTop20}`}>
               <div className={`${style.bigButtonStyle} ${style.cursorPointer} `}>
-                <div className={`${style.bigButtonTextStyle} ${style.alignCenter}`} onClick={handleApplicationAccept}>ACCEPT APPLICATION</div>
+                <div className={`${style.bigButtonTextStyle} ${style.alignCenter}`} onClick={handleApplicationAccept}>APPROVE APPLICANT</div>
               </div>
             </div>
           </div>
@@ -872,14 +912,21 @@ const NewActiveApplication = ({
 
             {/* //Table */}
             <div>
-              <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle} `}>
-                <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                <div className= {`${style.tableHeaderGridStyleCred}`}>
+                <div className={`${style.overallStatus}`}>Overall Status Of Application</div>
+                <div className={`${style.greenDotStyle} ${style.marginTop20} ${style.cursorPointer}`} 
+                onClick={approveView}
+                ></div>
+                </div>
+                
+              <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyleCred} `}>
+                {/* <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                   <div className={`${style.marginLeft30} ${style.tableHeaderTextStyle}`}></div>
-                </div>
+                </div> */}
                 <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                  <div className={`${style.tableHeaderTextStyle}`}>Required Data & POD Verification</div>
+                  <div className={`${style.tableHeaderTextStyleCred}`}> POD Verification Check </div>
                 </div>
-                <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                {/* <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                   <div className={`${style.tableHeaderTextStyle}`}
                     aria-owns={open ? 'mouse-over-popover' : undefined}
                     aria-haspopup="true"
@@ -961,19 +1008,19 @@ const NewActiveApplication = ({
                       </div>
                     </Popover>
                   </div>
-                </div>
-                <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                </div> */}
+                {/* <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                   <div className={`${style.tableHeaderTextStyle}`}>Documents</div>
-                </div>
+                </div> */}
               </div>
               <div>
                 <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === 0) ? style.tableDataStyle1 : style.tableDataStyle}`}>
-                  <div className={` ${(expand?.status && expand?.index === 0) ? style.tableHeaderGridStyleForm : style.tableHeaderGridStyle} ${style.marginTop10}`}>
-                    <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                  <div className={` ${(expand?.status && expand?.index === 0) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred} ${style.marginTop10}`}>
+                    {/* <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                       <div className={`${style.marginLeft10} ${style.justifySpaceAround} ${form?.basicInformationStatus ? style.greenDotStyle : style.greyDotStyle}`}></div>
-                    </div>
+                    </div> */}
                     <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                      <div className={`${(expand?.status && expand?.index === 0) ? style.tableHeaderTextStyle : style.tableDataFontStyle1}`}>Applicant Profile Information</div>
+                      <div className={`${(expand?.status && expand?.index === 0) ? style.tableHeaderTextStyleCred : style.tableDataFontStyleCred}`}>Applicant Profile Information</div>
                     </div>
                     {/* {(expand?.status && expand?.index === 0) ? <div className={`${style.greenButton}  `}> <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Verified</div>
                     </div> : <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
@@ -996,29 +1043,30 @@ const NewActiveApplication = ({
                       </div>
                       : ''
                     } */}
+
                     {(expand?.status && expand?.index === 0) ? (
                       <>
                         {!form?.basicInformationStatus ? (
                           <div className={`${style.purpleButton} ${style.cursorPointer} `}>
-                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleVerify()}>Verify</div>
+                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleVerify()}>Approve</div>
                           </div>
                         ) : (
                           <div className={`${style.greenButton}  ${style.cursorPointer} `}>
-                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Verified</div>
+                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Approved</div>
                           </div>
                         )}
                       </>
                     ) : (
                       <>
-                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                        {/* <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                           <div className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}></div>
-                        </div>
-                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                        </div> */}
+                        {/* <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                           <div className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}></div>
-                        </div>
-                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                        </div> */}
+                        {/* <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                           <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>-</div>
-                        </div>
+                        </div> */}
                       </>
                     )}
 
@@ -1062,38 +1110,43 @@ const NewActiveApplication = ({
                   form?.formSchemas?.filter(data => (data?.formCategory === 'Form' || data?.formCategory === 'Disclosure') && data?.schemaCategory !== "UploadYourDoc")?.map((data, index) => (
 
                     <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === index + 1) ? style.tableDataStyle1 : style.tableDataStyle}`}>
-                      <div className={` ${expand?.index === index + 1 ? style.tableHeaderGridStyleForm : style.tableHeaderGridStyle} ${style.marginTop10}`}>
-                        <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                      <div className={` ${expand?.index === index + 1 ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred} ${style.marginTop10}`}>
+                        {/* <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                           <div className={`${style.marginLeft10} ${style.justifySpaceAround} ${form?.forms[index]?.status !== "APPROVED" ? style.greyDotStyle : style.greenDotStyle}`}></div>
-                        </div>
+                        </div> */}
                         <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                          <div className={`${style.tableDataFontStyle1}`}>{data?.description}</div>
+                          <div className={`${style.tableDataFontStyleCred}`}>{data?.description}</div>
                         </div>
-                        {expand?.status && expand?.index === index + 1 ? (
-                          <>
-                            {form?.forms[index]?.status !== "APPROVED" ? (
-                              <div className={`${style.purpleButton} ${style.cursorPointer} `}>
-                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleStepsVerify(form?.forms[index]?.id)}>Verify</div>
-                              </div>
-                            ) : (
-                              <div className={`${style.greenButton}  ${style.cursorPointer} `}>
-                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Verified</div>
-                              </div>
+                       
+                        {expand?.status && expand?.index === index + 1 && (
+                            <>
+                                {form2?.filter(
+                                (newData) =>{console.log("newData.schema:", newData.schemaId);
+                                    console.log("data.id:", data.id);
+                                   return newData.schemaId === data.id}
+                                )[0]?.approvalRequired === true ? (
+                                <>
+                                    {form?.forms[index]?.status !== "APPROVED" ? (
+                                    <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                        <div
+                                        className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                        onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                        >
+                                        Approve
+                                        </div>
+                                    </div>
+                                    ) : (
+                                    <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                        Approved
+                                        </div>
+                                    </div>
+                                    )}
+                                </>
+                                ) : (""
+                                )}
+                            </>
                             )}
-                          </>
-                        ) : (
-                          <>
-                            <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                              <div className={`${style.marginLeft10}${style.justifySpaceAround} ${form?.forms[index]?.status !== "APPROVED" ? style.greyDotStyle : style.greenDotStyle}`}></div>
-                            </div>
-                            <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                              <div className={`${style.marginLeft10}${style.justifySpaceAround} ${form?.forms[index]?.status !== "APPROVED" ? style.greyDotStyle : style.greenDotStyle}`}></div>
-                            </div>
-                            <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                              <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>{form?.forms?.filter((formData, formIndex) => formIndex === index)?.map(data => data?.uploadedFiles?.length || 0)}</div>
-                            </div>
-                          </>
-                        )}
                         <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                           <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
                             {
@@ -1114,32 +1167,32 @@ const NewActiveApplication = ({
               </div>
 
               <div>
-                <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle1} `}>
+                <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderStyleCred} `}>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                     <div className={`${style.marginLeft10} ${style.tableHeaderTextStyle}`}></div>
                   </div>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                    <div className={`${style.tableHeaderTextStyle}`}>Requested Form Completeness Check</div>
+                    <div className={`${style.tableHeaderTextStyleCred}`}>Requested Form Completeness Check</div>
                   </div>
                 </div>
                 {form?.formSchemas?.filter(data => data?.formCategory === 'Acknowledgement')?.map((data, index) => (
                   <div className={` ${style.marginTop5} ${(expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? style.tableDataStyle1 : style.tableDataStyle}`}>
-                    <div className={` ${style.marginTop10} ${(expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? style.tableHeaderGridStyleForm : style.tableHeaderGridStyle1}`}>
-                      <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                    <div className={` ${style.marginTop10} ${(expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred}`}>
+                      {/* <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                         <div className={`${style.marginLeft10} ${style.justifySpaceAround} ${form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.status !== "APPROVED" ? style.greyDotStyle : style.greenDotStyle}`}></div>
-                      </div>
+                      </div> */}
                       <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                        <div className={`${style.tableDataFontStyle1}`}>{data?.description}</div>
+                        <div className={`${style.tableDataFontStyleCred}`}>{data?.description}</div>
                       </div>
                       {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
                         <>
                           {form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.status !== "APPROVED" ? (
                             <div className={`${style.purpleButton} ${style.cursorPointer} `}>
-                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleStepsVerify(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.id)}>Verify</div>
+                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleStepsVerify(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.id)}>Approve</div>
                             </div>
                           ) : (
                             <div className={`${style.greenButton}  ${style.cursorPointer} `}>
-                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Verified</div>
+                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Approved</div>
                             </div>
                           )}
                         </>
@@ -1352,4 +1405,4 @@ const NewActiveApplication = ({
   );
 };
 
-export default NewActiveApplication;
+export default NewCredCommApplication;
