@@ -533,7 +533,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                                                                 <div className={style.marginTop10}>
                                                                     <div className={`${style.uploadButton}`}>
                                                                         <div className={style.uploadGrid}>
-                                                                            {privileges?.file !== undefined ? (
+                                                                            {(privileges?.file !== undefined && privileges?.file !== null) ? (
                                                                                 <img src={VerifiedImage} alt="" className={`${style.imgIcon} `} />
                                                                             ) : (
                                                                                 <img src={ToBeVerifiedImage} alt="" className={style.imgIcon} />
@@ -768,7 +768,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                                                                                         <div className={style.marginTop10}>
                                                                                             <div className={`${style.uploadButton}`}>
                                                                                                 <div className={style.uploadGrid}>
-                                                                                                    {privileges?.file !== undefined ? (
+                                                                                                    {(privileges?.file !== undefined && privileges?.file !== null) ? (
                                                                                                         <img src={VerifiedImage} alt="" className={`${style.imgIcon}`} />
                                                                                                     ) : (
                                                                                                         <img src={ToBeVerifiedImage} alt="" className={style.imgIcon} />

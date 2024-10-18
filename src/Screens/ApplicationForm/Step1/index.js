@@ -158,7 +158,6 @@ const Step1 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
       let temp = missingKeys?.filter(data => !['basicDetails.departmentSpecialty.specialty']?.includes(data?.key));
       missingKeys = temp;
     }
-    console.log(missingKeys)
     if (missingKeys?.length !== 0) {
       setShowValidationDialog(true)
     } else {

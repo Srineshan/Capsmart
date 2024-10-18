@@ -21,6 +21,7 @@ const CreateStaffMemberApplication = () => {
     const navigate = useNavigate();
     const user = jwt(userDetails);
     const [form, setForm] = useState();
+    const [formSchemaWholeObject, setFormSchemaWholeObject] = useState();
     const [isNextpage, setIsNextPage] = useState(false);
     const [isShowMailSendDialog, setIsShowMailSendDialog] = useState(false);
     const [applicationId, setApplicationId] = useState('');
@@ -186,6 +187,10 @@ const CreateStaffMemberApplication = () => {
                 missingKeys.push(data)
             }
         })
+        if (!formSchemaWholeObject?.schema?.properties?.departmentSpecialty?.dependencies?.department?.oneOf?.map(data => data?.properties?.department?.enum[0])?.includes(getValueByPath(basicForm, 'basicDetails.departmentSpecialty.department'))) {
+            let temp = missingKeys?.filter(data => !['basicDetails.departmentSpecialty.specialty']?.includes(data?.key));
+            missingKeys = temp;
+        }
         if (missingKeys?.length !== 0) {
             setShowValidationDialog(true)
         } else {
@@ -221,6 +226,7 @@ const CreateStaffMemberApplication = () => {
                 delete temp.properties.applicant.properties['curriculumVitae']
             }
             setForm(form?.schema)
+            setFormSchemaWholeObject(form)
             // } else {
             //     const { data: form } = await GET(
             //         `application-management-service/formSchema/${basicForm?.generalSchemas?.[2]?.id}`
@@ -303,13 +309,13 @@ const CreateStaffMemberApplication = () => {
                 {!isNextpage ? (
                     <>
                         {form !== undefined && 'applicant' in form?.properties && (
-                            <ApplicationFieldCard object={form?.properties?.applicant} gridStyle={style.applicantGrid} baseKey={'applicant'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} getAllPath={getAllPath} getAllLabels={getAllLabels} warningFields={warningFields} />
+                            <ApplicationFieldCard object={form?.properties?.applicant} gridStyle={style.applicantGrid} baseKey={'applicant'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} getAllPath={getAllPath} getAllLabels={getAllLabels} warningFields={warningFields} formSchema={formSchemaWholeObject} />
                         )}
                         {form !== undefined && 'credentialingPrivilegeCategory' in form?.properties && (
-                            <ApplicationFieldCard object={form?.properties?.credentialingPrivilegeCategory} gridStyle={style.credentialingGrid} baseKey={'credentialingPrivilegeCategory'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} getAllPath={getAllPath} getAllLabels={getAllLabels} warningFields={warningFields} />
+                            <ApplicationFieldCard object={form?.properties?.credentialingPrivilegeCategory} gridStyle={style.credentialingGrid} baseKey={'credentialingPrivilegeCategory'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} getAllPath={getAllPath} getAllLabels={getAllLabels} warningFields={warningFields} formSchema={formSchemaWholeObject} />
                         )}
                         {form !== undefined && 'departmentSpecialty' in form?.properties && (
-                            <ApplicationFieldCard object={form?.properties?.departmentSpecialty} gridStyle={style.appointmentGrid} baseKey={'departmentSpecialty'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} getAllPath={getAllPath} getAllLabels={getAllLabels} warningFields={warningFields} />
+                            <ApplicationFieldCard object={form?.properties?.departmentSpecialty} gridStyle={style.appointmentGrid} baseKey={'departmentSpecialty'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} getAllPath={getAllPath} getAllLabels={getAllLabels} warningFields={warningFields} formSchema={formSchemaWholeObject} />
                         )}
                         {/* {form !== undefined && 'regionalCallResponsibilities' in form?.properties && (
                                 <ApplicationFieldCard object={form?.properties?.regionalCallResponsibilities} gridStyle={style.regionalCallGrid} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
