@@ -15,8 +15,8 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
     credentialingCommittee: 0,
     mac: 0,
     bod: 0,
-    'level-1' :0,
-    'level-2' :0,
+    'level-1': 0,
+    'level-2': 0,
   });
 
   // const [selectedTab, setSelectedTab] = useState('applicantsToProcess');
@@ -35,7 +35,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
 
   useEffect(() => {
     console.log("userRoleeeeeee" + userRole);
-    
+
     if (userRole === 'Staff Manager' || userRole === 'Chief Of Staff') {
       getSelectedTab('applicantsToProcess');
     } else if (userRole === 'Department Head') {
@@ -54,33 +54,33 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
   }, []);
 
 
-      // const handleTileClick = (tile) => {
-      //   setSelectedTab(tile);
-      //   if (getSelectedTab) {
-      //     getSelectedTab(tile);
-      //   }
-      // };
+  // const handleTileClick = (tile) => {
+  //   setSelectedTab(tile);
+  //   if (getSelectedTab) {
+  //     getSelectedTab(tile);
+  //   }
+  // };
 
-        useEffect(() => {
-          setUserDetails();
-      }, [user?.id])
+  useEffect(() => {
+    setUserDetails();
+  }, [user?.id])
 
-    const setUserDetails = async () => {
-        const { data: userData } = await GET(`user-management-service/user/${user?.id}`);
-        console.log("userdataaaa" + JSON.stringify(userData))
-        sessionStorage.setItem('user', JSON.stringify(userData))
-        setUserRole(userData?.roles?.map((data) => data?.roleName));  
-    }
+  const setUserDetails = async () => {
+    const { data: userData } = await GET(`user-management-service/user/${user?.id}`);
+    console.log("userdataaaa" + JSON.stringify(userData))
+    sessionStorage.setItem('user', JSON.stringify(userData))
+    setUserRole(userData?.roles?.map((data) => data?.roleName));
+  }
   return (
     <div className={`${style.tabs}`}>
       {(userRole?.includes('Staff Manager') || userRole?.includes('Chief Of Staff')) && (
-      <TileApplication
-        selectedTab={selectedTab}
-        getSelectedTab={getSelectedTab}
-        tileLabel="Applicants to Verify"
-        tileCount={counts?.applicantsToProcess}
-        currentTile="applicantsToProcess"
-      />
+        <TileApplication
+          selectedTab={selectedTab}
+          getSelectedTab={getSelectedTab}
+          tileLabel="Applicants to Verify"
+          tileCount={counts?.applicantsToProcess}
+          currentTile="applicantsToProcess"
+        />
       )}
       {/* {(userRole?.includes('Staff Manager') || userRole?.includes('Chief Of Staff') || userRole?.includes('Department Head')) && (
       <TileApplication
@@ -91,40 +91,40 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
         currentTile="level-2"
       />
      )} */}
-     {(userRole?.includes('Staff Manager') || userRole?.includes('Chief Of Staff') || userRole?.includes('Credentialing Committee')) && (
-      <TileApplication
-        selectedTab={selectedTab}
-        getSelectedTab={getSelectedTab}
-        tileLabel="Cred. Comm."
-        tileCount={counts['level-1']}
-        currentTile="level-1"
-      />
-     )}
-       {(userRole?.includes('Staff Manager') || userRole?.includes('Chief Of Staff') || userRole?.includes('Credentialing Committee')  || userRole?.includes('Advisory Committee')) && (
-      <TileApplication
-        selectedTab={selectedTab}
-        getSelectedTab={getSelectedTab}
-        tileLabel="MAC"
-        tileCount={counts?.mac}
-        currentTile="mac"
-      />
-     )}
-        {(userRole?.includes('Staff Manager')  || userRole?.includes('Chief Of Staff')  || userRole?.includes('Credentialing Committee') || userRole?.includes('Advisory Committee') || userRole?.includes('Board')) && (
-      <TileApplication
-        selectedTab={selectedTab}
-        getSelectedTab={getSelectedTab}
-        tileLabel="BOD"
-        tileCount={counts?.bod}
-        currentTile="bod"
-      />
-     )}
+      {(userRole?.includes('Staff Manager') || userRole?.includes('Chief Of Staff') || userRole?.includes('Credentialing Committee')) && (
+        <TileApplication
+          selectedTab={selectedTab}
+          getSelectedTab={getSelectedTab}
+          tileLabel="Cred. Comm."
+          tileCount={counts['level-1']}
+          currentTile="level-1"
+        />
+      )}
+      {(userRole?.includes('Staff Manager') || userRole?.includes('Chief Of Staff') || userRole?.includes('Credentialing Committee') || userRole?.includes('Advisory Committee')) && (
+        <TileApplication
+          selectedTab={selectedTab}
+          getSelectedTab={getSelectedTab}
+          tileLabel="MAC"
+          tileCount={counts?.mac}
+          currentTile="mac"
+        />
+      )}
+      {(userRole?.includes('Staff Manager') || userRole?.includes('Chief Of Staff') || userRole?.includes('Credentialing Committee') || userRole?.includes('Advisory Committee') || userRole?.includes('Board')) && (
+        <TileApplication
+          selectedTab={selectedTab}
+          getSelectedTab={getSelectedTab}
+          tileLabel="BOD"
+          tileCount={counts?.bod}
+          currentTile="bod"
+        />
+      )}
       <TileApplication
         selectedTab={selectedTab}
         getSelectedTab={getSelectedTab}
         tileLabel="Clarifications"
         tileCount={counts?.clarificationsRequired}
         currentTile="clarificationsRequired"
-      /> 
+      />
     </div>
   )
 }

@@ -38,11 +38,11 @@ const Notes = () => {
     }
 
     const theme = createTheme({
-        palette: {
-            primary: {
-                main: '#7165E3',
-            },
+      palette: {
+        primary: {
+          main: "#0e5197",
         },
+      },
     });
 
     const handleSave = () => {

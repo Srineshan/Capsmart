@@ -378,7 +378,7 @@ const ReleaseNotes = ({ getSelectedHelp }) => {
                                         </div>
                                         <div className={style.displayInRow}>
                                             <p className={style.feedbackFontStyle}>Updated On 01-06-2022 23:34</p>
-                                            <Icon icon="chevron-up" color='#7165E3' className={style.marginLeft20} />
+                                            <Icon icon="chevron-up" color='#0e5197' className={style.marginLeft20} />
                                         </div>
                                     </div>
                                     <div className={style.collapseBody}>
@@ -444,7 +444,7 @@ const ReleaseNotes = ({ getSelectedHelp }) => {
                                     <div className={`${style.collapseHeader} ${style.marginTop20} ${style.spaceBetween}`}>
                                         <p className={style.collapseHeaderText}>Log File Reference</p>
                                         <div className={style.reduceTop10}>
-                                            <Icon icon="chevron-up" color='#7165E3' className={style.marginLeft20} />
+                                            <Icon icon="chevron-up" color='#0e5197' className={style.marginLeft20} />
                                         </div>
                                     </div>
                                     <div className={style.collapseBody2}>
@@ -462,7 +462,7 @@ const ReleaseNotes = ({ getSelectedHelp }) => {
                                     </div>
                                     <div className={`${style.collapseHeader} ${style.marginTop20} ${style.spaceBetween}`}>
                                         <p className={style.collapseHeaderText}>Comments</p>
-                                        <Icon icon="chevron-up" color='#7165E3' className={style.marginLeft20} />
+                                        <Icon icon="chevron-up" color='#0e5197' className={style.marginLeft20} />
                                     </div>
                                     <div className={style.collapseBody}>
                                         <div className={style.displayInRow}>
@@ -798,7 +798,7 @@ const ReleaseNotes = ({ getSelectedHelp }) => {
                                         </div>
                                         <div className={style.displayInRow}>
                                             <p className={style.feedbackFontStyle}>Updated On 01-06-2022 23:34</p>
-                                            <Icon icon="chevron-up" color='#7165E3' className={style.marginLeft20} />
+                                            <Icon icon="chevron-up" color='#0e5197' className={style.marginLeft20} />
                                         </div>
                                     </div>
                                     <div className={style.collapseBody}>
@@ -864,7 +864,7 @@ const ReleaseNotes = ({ getSelectedHelp }) => {
                                     <div className={`${style.collapseHeader} ${style.marginTop20} ${style.spaceBetween}`}>
                                         <p className={style.collapseHeaderText}>Log File Reference</p>
                                         <div className={style.reduceTop10}>
-                                            <Icon icon="chevron-up" color='#7165E3' className={style.marginLeft20} />
+                                            <Icon icon="chevron-up" color='#0e5197' className={style.marginLeft20} />
                                         </div>
                                     </div>
                                     <div className={style.collapseBody2}>
@@ -882,7 +882,7 @@ const ReleaseNotes = ({ getSelectedHelp }) => {
                                     </div>
                                     <div className={`${style.collapseHeader} ${style.marginTop20} ${style.spaceBetween}`}>
                                         <p className={style.collapseHeaderText}>Comments</p>
-                                        <Icon icon="chevron-up" color='#7165E3' className={style.marginLeft20} />
+                                        <Icon icon="chevron-up" color='#0e5197' className={style.marginLeft20} />
                                     </div>
                                     <div className={style.collapseBody}>
                                         <div className={style.displayInRow}>

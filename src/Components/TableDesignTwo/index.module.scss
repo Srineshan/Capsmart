@@ -1,9 +1,10 @@
+@import "../../index.scss";
 .tableHeader {
-    background: #ebe9fb 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     min-height: 48px;
     width: 100%;
     // margin-left: 2%;
-    border: 0.4000000059604645px solid #ebe9fb;
+    border: 0.4000000059604645px solid $secondarycolor;
     border-radius: 2px;
     padding: 10px 20px;
 }
@@ -62,7 +63,7 @@
     width: 100%;
     // margin-left: 2%;
     margin-top: 3px;
-    border: 0.4000000059604645px solid #ebe9fb;
+    border: 0.4000000059604645px solid $secondarycolor;
     border-radius: 2px;
     padding: 10px 20px;
 }
@@ -103,7 +104,7 @@
     height: 12px;
     width: 12px;
     border-radius: 50%;
-    background-color: #948BEA;
+    background-color: $primarycolor;
 }
 
 .yellowDotStyle {
@@ -209,13 +210,13 @@
 }
 
 .actionsCard {
-    background: #857AEF 0% 0% no-repeat padding-box;
+    background: $primarycolor 0% 0% no-repeat padding-box;
     border: none;
     border-radius: 4px;
 }
 
 .multipleOptionsCard {
-    background: #857AEF 0% 0% no-repeat padding-box;
+    background: $primarycolor 0% 0% no-repeat padding-box;
     border: none;
 }
 
@@ -242,12 +243,13 @@
     display: flex;
     align-items: center;
     background: #F5F9FC 0% 0% no-repeat padding-box;
-    color: #7165E3;
+    color: $primarycolor
+;
 }
 
 .dividerStyle {
     height: 1px;
-    border-bottom: 1px solid #BEB9F2;
+    border-bottom: 1px solid $secondarycolor;
 }
 
 .popoverStyle>* {
@@ -256,8 +258,10 @@
 
 .specificActionCard:hover {
     background: #F5F9FC 0% 0% no-repeat padding-box;
-    color: #7165E3;
-    border: 1px solid #7165E3;
+    color: $primarycolor
+;
+    border: 1px solid $primarycolor
+;
     border-radius: 4px;
 }
 
@@ -281,7 +285,7 @@
 }
 
 .noContractsBox {
-    border: 2px dashed #c4bef3;
+    border: 2px dashed $secondarycolor;
     padding: 20px;
     height: 180px;
     margin: 50px;
@@ -329,7 +333,8 @@
 }
 
 .addStyle {
-    background: #7165E3 0% 0% no-repeat padding-box;
+    background: $primarycolor
+ 0% 0% no-repeat padding-box;
     box-shadow: 0px 0px 6px #00000029;
     border-radius: 8px;
     height: 33px;

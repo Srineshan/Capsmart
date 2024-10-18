@@ -60,9 +60,10 @@ const NewFAQPost = ({getNewFAQPostDialog}) => {
                 </div>
                 <div className={`${style.floatRight} ${style.textAreaIconPositions}`}>
                     <div className={style.displayInRow}>
-                        <Icon icon="link" color="#7165E3" size={18} className={style.marginRight20} />
-                        <Icon icon="media" color="#7165E3" size={18} className={style.marginRight20} />
-                        <Icon icon="paperclip" color="#7165E3" size={18} className={style.marginRight20} />
+                            <Icon icon="link" color="
+                        " size={18} className={style.marginRight20} />
+                        <Icon icon="media" color="#0e5197" size={18} className={style.marginRight20} />
+                        <Icon icon="paperclip" color="#0e5197" size={18} className={style.marginRight20} />
                     </div>
                 </div>
             </div>

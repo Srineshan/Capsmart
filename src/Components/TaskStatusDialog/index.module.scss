@@ -1,9 +1,11 @@
 
+@import "../../index.scss";
 .heading {
   text-align: left;
   font: normal normal bold 24px Proxima Nova;
   letter-spacing: 0px;
-  color: #7165E3;
+  color: $primarycolor
+;
   text-transform: capitalize;
   opacity: 1;
 }
@@ -70,7 +72,8 @@
 }
 
 .Resend{
-  color: #7165E3;
+  color: $primarycolor
+;
   font: normal normal bold 14px Proxima Nova;
   text-align: right;
   border: none;
@@ -172,7 +175,8 @@
   // font-size: normal 10px;
   font: normal normal normal 5px !important;
   letter-spacing: 0.9px;
-  color: #7165E3;
+  color: $primarycolor
+;
   opacity: 1;
   margin-top: 5px;
   margin-left: 5px;
@@ -202,7 +206,8 @@ opacity: 1;
 text-decoration: underline;
 font: normal normal normal 12px Proxima Nova;
 cursor: pointer;
-color: #7165E3;
+color: $primarycolor
+;
 opacity: 1;
 margin-top: 5px;
 }

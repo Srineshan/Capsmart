@@ -1,3 +1,4 @@
+@import "../../index.scss";
 .progressCard {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 5px 20px #52575D4D;
@@ -43,7 +44,8 @@
 .hourNumberStyle {
     font: normal normal bold 25px/25px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor
+;
     text-shadow: 2px 6px 12px #382DA514;
     opacity: 1;
 }
@@ -52,7 +54,8 @@
     text-align: right;
     font: normal normal normal 17px/20px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor
+;
     text-shadow: 2px 6px 12px #382DA514;
     text-transform: capitalize;
     opacity: 1;
@@ -95,7 +98,9 @@
 .progressStyle {
     height: 10px;
     width: 100%;
-    background: transparent linear-gradient(90deg, #7165E3 0%, #7165E3 10%, #E9E9F0 11%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(90deg, $primarycolor
+ 0%, $primarycolor
+ 10%, #E9E9F0 11%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
     opacity: 1;
 }
 

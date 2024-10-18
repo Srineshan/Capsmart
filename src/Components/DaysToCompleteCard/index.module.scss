@@ -1,5 +1,6 @@
+@import "../../index.scss";
 .daysToCompleteCard {
-    background: #7165E3 0% 0% no-repeat padding-box;
+    background: $primarycolor 0% 0% no-repeat padding-box;
     box-shadow: 0px 5px 20px #52575D4D;
     border-radius: 12px;
     padding: 20px;

@@ -1,5 +1,5 @@
 @import '../../styles/mixins.scss';
-
+@import "../../index.scss";
 .cardStyle {
     height: 50px;
     background: #FFFFFF 0% 0% no-repeat padding-box;
@@ -37,8 +37,10 @@
 }
 
 .selectedContractBackground {
-    background-color: #7165E3;
-    border: 0.4px solid #7165E3;
+    background-color: $primarycolor
+;
+    border: 0.4px solid $primarycolor
+;
     border-radius: 0.4px;
     border-radius: 4px 4px 0px 0px;
 }
@@ -82,9 +84,11 @@
 }
 
 .selectedApplicantBackground {
-    background: #7165E3 0% 0% no-repeat padding-box;
+    background: $primarycolor
+ 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 11px #52575D1A;
-    border: 0.4000000059604645px solid #7165E3;
+    border: 0.4000000059604645px solid $primarycolor
+;
     border-radius: 4px 4px 0px 0px;
     opacity: 1;
 }
@@ -169,7 +173,8 @@
 }
 
 .purple {
-    color: #7165E3 !important;
+    color: $primarycolor
+ !important;
 }
 
 .optionsStyle {
@@ -187,7 +192,8 @@
 }
 
 .smallTextSelected {
-    color: #7165E3;
+    color: $primarycolor
+;
 }
 
 .descriptionText {
@@ -215,7 +221,7 @@
 }
 
 .defaultSmallNumber {
-    background-color: #d7d4f7;
+    background-color: $secondarycolor;
 }
 
 .verticalAlignCenter {
@@ -333,9 +339,9 @@
   }
 
   .selectedNewApplicantBackground {
-    background: #382DA5 0% 0% no-repeat padding-box;
+    background: $primarycolor 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 11px #52575D1A;
-    border: 0.4000000059604645px solid #382DA5;
+    border: 0.4000000059604645px solid $primarycolor;
     border-radius: 4px 4px 0px 0px;
     opacity: 1;
   }

@@ -1,3 +1,4 @@
+@import "../../index.scss";
 .welcomeDialog {
     height: 75%;
     width: 65% !important;
@@ -9,7 +10,7 @@
 }
 
 .loginDialogBackground {
-    background: #7165E3 0% 0% no-repeat padding-box;
+    background: $primarycolor 0% 0% no-repeat padding-box;
     padding: 20px 40px 0px 40px;
     border-radius: 20px !important;
 }
@@ -42,7 +43,7 @@
     text-align: left;
     font: normal normal normal 27px/40px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor;
 }
 
 .bold {
@@ -80,7 +81,7 @@
     text-align: center;
     font: normal normal bold 40px/62px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor;
 }
 
 .descriptionStyle {
@@ -123,7 +124,7 @@
 }
 
 .daysToCompleteCard {
-    // background: #7165E3 0% 0% no-repeat padding-box;
+    // background: $primarycolor 0% 0% no-repeat padding-box;
     // box-shadow: 0px 5px 20px #52575D4D;
     // border-radius: 12px;
     // margin: 0 -40px;
@@ -154,7 +155,7 @@
     text-decoration: underline;
     font: normal normal bold 14px/30px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color:$primarycolor;
 }
 
 .continue {
@@ -164,7 +165,7 @@
     text-align: center;
     font: normal normal bold 17px/30px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor;
     text-transform: uppercase;
     padding: 5px;
     cursor: pointer;
@@ -194,7 +195,7 @@
 }
 
 .descriptionContainer {
-    background: #ebe9fb 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     border-radius: 16px;
     width: 80%;
     padding: 80px 60px;
@@ -240,7 +241,7 @@
 }
 
 .featureTextHighlight {
-    color: #7165E3;
+    color:$primarycolor;
 }
 
 .withOrWithoutText {
@@ -263,7 +264,7 @@
 
 .advantagesCard {
     background: #F5F5F8 0% 0% no-repeat padding-box;
-    border: 0.4000000059604645px solid #7165E3;
+    border: 0.4000000059604645px solid $primarycolor;
     border-radius: 4px;
     opacity: 0.75;
     padding: 20px;

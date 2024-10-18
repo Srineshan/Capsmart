@@ -6,6 +6,7 @@
 //     font-style: normal;
 // } */
 
+@import"../../index.scss";
 .ql-editor {
     font: normal normal normal 23px/26px Proxima Nova;
     font-size: 15px;
@@ -184,19 +185,19 @@
 }
 
 #toolbar {
-    background-color: #e8e7fe;
+    background-color: #d2e7f9;
     display: flex;
     justify-content: space-evenly;
 }
 
 #toolbar2 {
-    background-color: #e8e7fe;
+    background-color: #d2e7f9;
     display: flex;
     justify-content: space-evenly;
 }
 
 #toolbar3 {
-    background-color: #e8e7fe;
+    background-color: #d2e7f9;
     display: flex;
     justify-content: space-evenly;
 }

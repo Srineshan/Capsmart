@@ -241,7 +241,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
                                                             position: "relative",
                                                             mt: "10px",
                                                             "&::before": {
-                                                                backgroundColor: "#857AEF",
+                                                                backgroundColor: "#0e5197",
                                                                 content: '""',
                                                                 display: "block",
                                                                 position: "absolute",
@@ -300,7 +300,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
                                                             position: "relative",
                                                             mt: "10px",
                                                             "&::before": {
-                                                                backgroundColor: "#857AEF",
+                                                                backgroundColor: "#0e5197",
                                                                 content: '""',
                                                                 display: "block",
                                                                 position: "absolute",
@@ -356,7 +356,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
                                                                 position: "relative",
                                                                 mt: "10px",
                                                                 "&::before": {
-                                                                    backgroundColor: "#857AEF",
+                                                                    backgroundColor: "#0e5197",
                                                                     content: '""',
                                                                     display: "block",
                                                                     position: "absolute",

@@ -336,14 +336,14 @@ const CreateStaffMemberApplication = () => {
                                             <div className={style.siteDisplaySiteTextStyle}>Cambridge Memorial Hospital </div>
                                             <div className={style.siteDisplayDepartmentTextStyle}>Department of Surgery (Cardiothoracic Surgery)</div>
                                         </div>
-                                        <DeleteOutlineIcon sx={{ color: '#7165E3', cursor: 'pointer' }} />
+                                        <DeleteOutlineIcon sx={{ color: '#0e5197', cursor: 'pointer' }} />
                                     </div>
                                     <div className={`${style.siteDisplayCard} ${style.siteDisplayGrid} ${style.marginTop}`}>
                                         <div>
                                             <div className={style.siteDisplaySiteTextStyle}>Cambridge Memorial Hospital </div>
                                             <div className={style.siteDisplayDepartmentTextStyle}>Department of Surgery (General Surgery)</div>
                                         </div>
-                                        <DeleteOutlineIcon sx={{ color: '#7165E3', cursor: 'pointer' }} />
+                                        <DeleteOutlineIcon sx={{ color: '#0e5197', cursor: 'pointer' }} />
                                     </div>
                                 </div>
                             </div>
@@ -413,14 +413,14 @@ const CreateStaffMemberApplication = () => {
                                             <div className={style.siteDisplaySiteTextStyle}>Cambridge Memorial Hospital </div>
                                             <div className={style.siteDisplayDepartmentTextStyle}>Department of Surgery (Cardiothoracic Surgery)</div>
                                         </div>
-                                        <DeleteOutlineIcon sx={{ color: '#7165E3', cursor: 'pointer' }} />
+                                        <DeleteOutlineIcon sx={{ color: '#0e5197', cursor: 'pointer' }} />
                                     </div>
                                     <div className={`${style.siteDisplayCard} ${style.siteDisplayGrid} ${style.marginTop}`}>
                                         <div>
                                             <div className={style.siteDisplaySiteTextStyle}>Cambridge Memorial Hospital </div>
                                             <div className={style.siteDisplayDepartmentTextStyle}>Department of Surgery (General Surgery)</div>
                                         </div>
-                                        <DeleteOutlineIcon sx={{ color: '#7165E3', cursor: 'pointer' }} />
+                                        <DeleteOutlineIcon sx={{ color: '#0e5197', cursor: 'pointer' }} />
                                     </div>
                                 </div>
                             </div>
