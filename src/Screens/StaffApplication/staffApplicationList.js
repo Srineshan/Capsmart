@@ -36,6 +36,7 @@ const StaffApplicationList = ({
   selectedTab,
   getActiveApplicationView,
   getActiveApplicationTask,
+  getCredCommApplicationView
 }) => {
   const PDFRef = createRef();
   const navigate = useNavigate();
@@ -54,7 +55,7 @@ const StaffApplicationList = ({
     applicationsRejected: 0,
     applicationsApprovedButDenied: 0,
   });
-
+  const [form2, setForm2] = useState();
   const [tableData, setTableData] = useState([]);
   const [rejectionListData, setRejectionListData] = useState([]);
   const [sortField, setSortField] = useState('DEFAULT');
@@ -66,7 +67,7 @@ const StaffApplicationList = ({
     "Applicant ID",
     "Applicant Type",
     // "Department",
-    "DOCS",
+    "DOCs",
     // "Data & Disclosures",
     "CRs",
     "Notes",
@@ -304,6 +305,11 @@ const StaffApplicationList = ({
     getActiveApplicationView(true);
     sessionStorage.setItem("applicationId", data?.id);
   };
+  const onClickViewAndApproveCredCommFunction = (data) => {
+    getCredCommApplicationView(true);
+    approveView(data?.id)
+    sessionStorage.setItem("applicationId", data?.id);
+  };
   const onClickProcessingTaskFunction = (data) => {
     getActiveApplicationTask(true);
     sessionStorage.setItem("applicationId", data?.id);
@@ -367,6 +373,28 @@ const StaffApplicationList = ({
         console.log(error)
       });
       // getPreApplication();
+  }
+
+  const approveView = async (id) => {
+    let role;
+
+    if(selectedTab === 'level-2') {
+      role = "Department Head";
+    } else if (selectedTab === 'level-1') {
+      role = "Credentialing Committee";
+    } else if (selectedTab === 'mac') {
+      role = "Advisory Committee";
+    } else if (selectedTab === 'bod') {
+      role = "Board";
+    } else {
+      role = "Chief Of Staff";
+    }
+
+        const { data: basicApproval } = await GET(
+          `application-management-service/application/${id}/approvalRequiredForms?role=${role}`
+        );
+        setForm2(basicApproval)  
+        console.log("basicApprovalllllllllllll" + JSON.stringify(form2));     
   }
 
   useEffect(() => {
@@ -1277,11 +1305,13 @@ const StaffApplicationList = ({
     // { data: "From Applicant", requiredValue: "boolean", onClick: "" },
     // { data: "From Internal Approver", requiredValue: "boolean", onClick: "" },
     // { data: "From Institution", requiredValue: "boolean", onClick: "" },
-    {
-      data: "Send for Cred Comm Review",
-      requiredValue: "boolean",
-      onClick: onClickMoveToNextFunction,
-    },
+    // {
+    //   data: "Send for Cred Comm Review",
+    //   requiredValue: "boolean",
+    //   onClick: onClickMoveToNextFunction,
+    // },
+    // { data: "Review & Approve", requiredValue: "boolean", onClick: onClickViewAndApproveCredCommFunction },
+    // { data: "Move to MAC", requiredValue: "boolean", onClick: onClickMoveToNextFunction },
     { data: "Review & Approve", requiredValue: "boolean", onClick: "" },
     { data: "Move to MAC", requiredValue: "boolean", onClick: "" },
     {

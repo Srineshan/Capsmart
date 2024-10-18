@@ -82,7 +82,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
         currentTile="applicantsToProcess"
       />
       )}
-      {(userRole?.includes('Staff Manager') || userRole?.includes('Chief Of Staff') || userRole?.includes('Department Head')) && (
+      {/* {(userRole?.includes('Staff Manager') || userRole?.includes('Chief Of Staff') || userRole?.includes('Department Head')) && (
       <TileApplication
         selectedTab={selectedTab}
         getSelectedTab={getSelectedTab}
@@ -90,7 +90,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
         tileCount={counts['level-2']}
         currentTile="level-2"
       />
-     )}
+     )} */}
      {(userRole?.includes('Staff Manager') || userRole?.includes('Chief Of Staff') || userRole?.includes('Credentialing Committee')) && (
       <TileApplication
         selectedTab={selectedTab}
@@ -100,7 +100,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
         currentTile="level-1"
       />
      )}
-       {(userRole?.includes('Staff Manager') || userRole?.includes('Chief Of Staff') || userRole?.includes('Credentialing Committee')  || userRole?.includes('Advisory Committee') || userRole?.includes('Board')) && (
+       {(userRole?.includes('Staff Manager') || userRole?.includes('Chief Of Staff') || userRole?.includes('Credentialing Committee')  || userRole?.includes('Advisory Committee')) && (
       <TileApplication
         selectedTab={selectedTab}
         getSelectedTab={getSelectedTab}
@@ -109,7 +109,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
         currentTile="mac"
       />
      )}
-        {(userRole?.includes('Staff Manager')  || userRole?.includes('Chief Of Staff')  || userRole?.includes('Credentialing Committee')  || userRole?.includes('Board')) && (
+        {(userRole?.includes('Staff Manager')  || userRole?.includes('Chief Of Staff')  || userRole?.includes('Credentialing Committee') || userRole?.includes('Advisory Committee') || userRole?.includes('Board')) && (
       <TileApplication
         selectedTab={selectedTab}
         getSelectedTab={getSelectedTab}
