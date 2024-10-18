@@ -373,7 +373,8 @@ const Step8 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                     .privileges[privilegesIndex].response = value;
             } else if (key === 'notes') {
                 if (temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories[categoriesIndex]
-                    .privileges[privilegesIndex].notes === undefined) {
+                    .privileges[privilegesIndex].notes === undefined || temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories[categoriesIndex]
+                        .privileges[privilegesIndex].notes === null) {
                     temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories[categoriesIndex]
                         .privileges[privilegesIndex].notes = {}
                 }
@@ -496,7 +497,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                                                                 <div className={style.marginTop}>
                                                                     <CKEditor
                                                                         editor={ClassicEditor}
-                                                                        data={privileges?.notes?.notes || null}
+                                                                        data={privileges?.notes?.notes || ''}
                                                                         onChange={(event, editor) => {
                                                                             const data = editor.getData();
                                                                             handleRestrictedSelection(index, categoriesIndex, privilegesIndex, data, 'notes');
@@ -731,7 +732,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                                                                                         <div className={style.marginTop}>
                                                                                             <CKEditor
                                                                                                 editor={ClassicEditor}
-                                                                                                data={privileges?.notes?.notes || null}
+                                                                                                data={privileges?.notes?.notes || ''}
                                                                                                 onChange={(event, editor) => {
                                                                                                     const data = editor.getData();
                                                                                                     handleAdditionalRestrictedSelection(index, categoriesIndex, privilegesIndex, data, 'notes');

@@ -284,7 +284,7 @@ const AdditionalPrivileges = ({ getIsOpen, primaryPrivilege, getSelectedPrivileg
                                                                             <div className={style.marginTop}>
                                                                                 <CKEditor
                                                                                     editor={ClassicEditor}
-                                                                                    data={privileges?.notes?.notes || null}
+                                                                                    data={privileges?.notes?.notes || ''}
                                                                                     onChange={(event, editor) => {
                                                                                         const data = editor.getData();
                                                                                         handleAdditionalRestrictedSelection(index, categoriesIndex, privilegesIndex, data, 'notes');

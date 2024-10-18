@@ -417,15 +417,18 @@ const ApplicationFieldCard = ({
         }
     }, [registeredBusinessAddress]);
 
-    // useEffect(() => {
-    //     if (department !== undefined && department !== null && !isPOD) {
-    //         setBasicForm(prevData => {
-    //             let tempData = { ...prevData };
-    //             tempData.basicDetails.departmentSpecialty.specialty = '';
-    //             return tempData;
-    //         });
-    //     }
-    // }, [department]);
+    useEffect(() => {
+        if (department !== undefined && department !== null && !isPOD) {
+            setBasicForm(prevData => {
+                let tempData = { ...prevData };
+                if ((!formSchema?.schema?.properties?.departmentSpecialty?.dependencies?.department?.oneOf?.map(data => data?.properties?.department?.enum[0])?.includes(tempData.basicDetails.departmentSpecialty.department) ||
+                    !(formSchema?.schema?.properties?.departmentSpecialty?.dependencies?.department?.oneOf?.map(data => data?.properties?.department?.enum[0])?.includes(tempData.basicDetails.departmentSpecialty.department) && formSchema?.schema?.properties?.departmentSpecialty?.dependencies?.department?.oneOf?.filter(data => data?.properties?.department?.enum[0] === tempData.basicDetails.departmentSpecialty.department)[0]?.properties?.specialty?.enum?.includes(tempData.basicDetails.departmentSpecialty.specialty))) && formSchema !== undefined) {
+                    tempData.basicDetails.departmentSpecialty.specialty = '';
+                }
+                return tempData;
+            });
+        }
+    }, [department, formSchema]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -1858,7 +1861,7 @@ const ApplicationFieldCard = ({
             delete basicForm[baseKey];
             delete basicForm.undefined;
             setBasicForm(temp);
-            if (type === 'close' || skip === 'skipped') {
+            if ((type === 'close' || skip === 'skipped') && !isPOD) {
                 setIsAddMore(false);
             }
             getIsSubmitClicked(true, temp, skip);
@@ -1957,7 +1960,9 @@ const ApplicationFieldCard = ({
     const handleEdit = (data) => {
         setIsTableEdit(true);
         console.log(stepPath, basicForm);
-        setIsAddMore(true);
+        if (!isPOD) {
+            setIsAddMore(true);
+        }
         setBasicForm((prevData) => {
             const temp = { ...prevData };
             temp[stepPath] = {};
