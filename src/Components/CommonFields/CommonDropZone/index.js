@@ -22,7 +22,13 @@ const CommonDropZone = ({ title, description, changeHandler, files, accept }) =>
         <Dropzone
             style={dropzoneStyle}
             onDrop={(acceptedFiles) => changeHandler(acceptedFiles)}
-            accept={accept}
+            accept={{
+                'image/jpeg': [],
+                'image/png': [],
+                'image/jpg': [],
+                'application/pdf': []
+            }}
+
         >
             {({ getRootProps, getInputProps }) => (
                 <section>

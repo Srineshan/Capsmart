@@ -29,14 +29,14 @@ const TaskStatusDialog = ({ getIsOpen }) => {
 
   const handleChange = (taskId, event, label) => {
     const status = event.target.value;
-    console.log("status"+ status);
-    console.log("label"+ typeof label);
-    
+    console.log("status" + status);
+    console.log("label" + typeof label);
+
     setSelectedOption((prevState) => ({
       ...prevState,
       [taskId]: status,
     }));
-    
+
     tasksendapplication(taskId, status, label);
   };
 
@@ -73,7 +73,8 @@ const TaskStatusDialog = ({ getIsOpen }) => {
     await POST(`application-management-service/application/${id}/task/${taskId}/execute`, data)
       .then(response => {
         SuccessToaster('Task Update Successfully');
-        console.log(response?.data)
+        console.log(response?.data);
+        window.location.reload();
       })
       .catch(error => {
         ErrorToaster('Task Update Failed');
@@ -118,91 +119,94 @@ const TaskStatusDialog = ({ getIsOpen }) => {
             </div>
           </div>
           <div ref={componentRef} className={`${style.pagebreak}`}>
-          <div className={`${style.spaceBetween}`}>
-            <div className={`${style.fontstyle} ${style.marginTop10}`}>
-              {/* {formDetails?.basicDetails?.applicant?.name?.firstName},{" "}
+            <div className={`${style.spaceBetween}`}>
+              <div className={`${style.fontstyle} ${style.marginTop10}`}>
+                {/* {formDetails?.basicDetails?.applicant?.name?.firstName},{" "}
               {formDetails?.basicDetails?.applicant?.name?.lastName}{" "} */}
-              {formDetails?.basicDetails?.applicant?.name?.firstName
-                ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() + 
+                {formDetails?.basicDetails?.applicant?.name?.firstName
+                  ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
                   formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
-                : ""}{", "}
-              {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{" "}
-              <span className={`${style.fontstyleassociate}`}>
-                {formDetails?.basicDetails?.applicant?.applicantType} |{" "}
-                {
-                  formDetails?.basicDetails?.credentialingPrivilegeCategory
-                    ?.credentialingCategory
-                }
-              </span>
-            </div>
-            <div className={`${style.referenceFont} ${style.marginRight30}`}>
+                  : ""}{", "}
+                {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{" "}
+                <span className={`${style.fontstyleassociate}`}>
+                  {formDetails?.basicDetails?.applicant?.applicantType} |{" "}
+                  {
+                    formDetails?.basicDetails?.credentialingPrivilegeCategory
+                      ?.credentialingCategory
+                  }
+                </span>
+              </div>
+              {/* <div className={`${style.referenceFont} ${style.marginRight30}`}>
               IT Reference info
               <ContentCopyIcon className={`${style.copyicon}`} />
+            </div> */}
             </div>
-          </div>
-          <div className={`${style.dialogBody}`}>
-            {task?.map((taskData, index) => {
-              const isNotCompleted = taskData?.taskStatus === "NOT_COMPLETED";
-              const showSelect =
-                taskData?.taskAction === "TASK_STATUS_UPDATE_ONLY" ||
-                taskData?.taskAction === "SEND_NON_CAPSMART_FORM_INTERNAL_SOURCE_URL";
-              const formattedDate = format(
-                new Date(taskData?.lastModifiedDate),
-                "MMM dd, yyyy"
-              );
-              return (
-                <div
-                  key={index}
-                  className={`${style.gridContainer} ${style.shadowdown} ${style.marginTop}`}
-                >
-                  {isNotCompleted ? (
-                    <WarningIcon className={style.warning} />
-                  ) : (
-                    <TaskAltIcon className={style.correcticon} />
-                  )}
-                  <div className={style.task}>{taskData?.taskName}
-                  {taskData?.taskName === 'Logistics Form for IT' && <div className={style.requestForm} onClick={() => window.open(taskData?.formLink?.url, '_blank')}>{taskData?.formLink?.urlLabel?.text}</div>}
-                  </div>
-                  <div>
-                    {showSelect ? (
-                      <div className={style.sentstatus}>
-                        Status
-                        <div>
-                        <CommonSelectField
+            <div className={`${style.dialogBody}`}>
+              {task?.map((taskData, index) => {
+                const isNotCompleted = taskData?.taskStatus === "NOT_COMPLETED";
+                const isInProgress = taskData?.taskStatus === "INPROGRESS";
+                const showSelect =
+                  taskData?.taskAction === "TASK_STATUS_UPDATE_ONLY" ||
+                  taskData?.taskAction === "SEND_NON_CAPSMART_FORM_INTERNAL_SOURCE_URL";
+                const formattedDate = format(
+                  new Date(taskData?.lastModifiedDate),
+                  "MMM dd, yyyy"
+                );
+                return (
+                  <div
+                    key={index}
+                    className={`${style.gridContainer} ${style.shadowdown} ${style.marginTop}`}
+                  >
+                    {isNotCompleted ? (
+                      <WarningIcon className={style.warning} />
+                    ) : isInProgress ? (
+                      <WarningIcon className={style.progress} />
+                    ) : (
+                      <TaskAltIcon className={style.correcticon} />
+                    )}
+                    <div className={style.task}>{taskData?.taskName}
+                      {taskData?.taskName === 'Logistics Form for IT' && <div className={style.requestForm} onClick={() => window.open(taskData?.formLink?.url, '_blank')}>{taskData?.formLink?.urlLabel?.text}</div>}
+                    </div>
+                    <div>
+                      {showSelect ? (
+                        <div className={style.sentstatus}>
+                          Status
+                          <div>
+                            <CommonSelectField
                               value={selectedOption[taskData.id] || taskData?.taskUpdateStatus?.status}
-                              onChange={(e) => handleChange(taskData.id, e ,taskData?.statusLabels?.filter((data) => e.target.value === data.status)?.map((statusLabel) => statusLabel?.label)?.[0])}
+                              onChange={(e) => handleChange(taskData.id, e, taskData?.statusLabels?.filter((data) => e.target.value === data.status)?.map((statusLabel) => statusLabel?.label)?.[0])}
                               className={`${style.fullWidth}`}
                               valueList={taskData?.statusLabels.map((statusLabel) => `${statusLabel?.status}`)}
                               labelList={taskData?.statusLabels.map((statusLabel) => `${statusLabel?.label}`)}
                               disabledList={taskData?.statusLabels.map(() => false)}
-                          />
+                            />
+                          </div>
                         </div>
-                      </div>
-                    ) : (
-                      <div className={style.sentto}>
-                        {isNotCompleted ? "Ready To Send" : `${taskData?.activityExecutionPromptLabel?.text} on ${formattedDate}`}
-                      </div>
-                    )}
+                      ) : (
+                        <div className={style.sentto}>
+                          {isNotCompleted ? "Ready To Send" : `${taskData?.activityExecutionPromptLabel?.text} on ${formattedDate}`}
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      {showSelect ? (
+                        <div className={style.date}>
+                          Last updated on
+                          <div>{formattedDate}</div>
+                        </div>
+                      ) : (
+                        <div
+                          className={style.Resend}
+                          onClick={() => tasksendapplication(taskData?.id, taskData?.statusLabels?.status, taskData?.statusLabels?.label)}
+                        >
+                          {isNotCompleted ? taskData?.activityExecutionPromptLabel?.text : "Resend"}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div>
-                    {showSelect ? (
-                      <div className={style.date}>
-                        Last updated on
-                        <div>{formattedDate}</div>
-                      </div>
-                    ) : (
-                      <div
-                        className={style.Resend}
-                        onClick={() => tasksendapplication(taskData?.id, taskData?.statusLabels?.status, taskData?.statusLabels?.label)}
-                      >
-                        {isNotCompleted ? taskData?.activityExecutionPromptLabel?.text : "Resend"}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>

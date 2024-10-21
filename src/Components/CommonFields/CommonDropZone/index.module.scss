@@ -1,7 +1,8 @@
+@import "../../../index.scss";
 .uploadTextStyle {
     text-align: center;
     font: normal normal 600 20px/28px proxima-nova;
-    color: #7165E3;
+    color: $primarycolor;
     text-transform: capitalize;
 }
 
@@ -17,7 +18,7 @@
 
 .uploadBorderStyle {
     background: #F5F5F8 0% 0% no-repeat padding-box;
-    border: 2px dashed #d7d4f7;
+    border: 2px dashed $secondarycolor;
     border-radius: 4px;
     padding: 10px;
 }

@@ -302,7 +302,10 @@ const Profile = () => {
                         {/* <div className={style.helpText}>In addition to Google log-in, you can also log in using email and password.</div> */}
                         {/* <div className={`${style.spaceBetween} ${style.marginTop50}`}>
                             <div className={`${style.headingStyle}`}>Password</div>
-                            <BorderColorOutlinedIcon style={{ color: '#7165E3', fontSize: 14 }} className={style.cursorPointer} />
+                            <BorderColorOutlinedIcon style={{ color: '#0e5197
+
+
+', fontSize: 14 }} className={style.cursorPointer} />
                         </div> */}
                         {/* <div className={`${style.infoBox} ${style.marginTop}`}>
                             <div className={style.infoTextStyle}>

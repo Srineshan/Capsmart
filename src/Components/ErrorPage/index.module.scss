@@ -1,3 +1,4 @@
+@import "../../index.scss";
 .errorBackgroundCard {
     background-color: #1a1a1a;
     height: 100vh;
@@ -23,7 +24,7 @@
     display: flex;
     justify-content: center;
     font: normal normal bolder 124px/130px proxima-nova;
-    color: #7165E3;
+    color:$primarycolor;
 }
 
 .fullWidth {
@@ -85,7 +86,7 @@
 
 .colouredButton {
     color: white;
-    background-color: #7165E3;
+    background-color:$primarycolor;
 }
 
 .whiteButton {
@@ -104,7 +105,7 @@
 }
 
 .errorBorder {
-    background: #7165E3 0% 0% no-repeat padding-box;
+    background: $primarycolor 0% 0% no-repeat padding-box;
     height: 4px;
     width: 50%;
 }

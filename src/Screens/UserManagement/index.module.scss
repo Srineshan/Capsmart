@@ -1,3 +1,4 @@
+@import "../../index.scss";
 body {
     background: #F8FCFF 0% 0% no-repeat padding-box;
     -ms-overflow-style: none !important;
@@ -101,7 +102,7 @@ body {
 }
 
 .openCardStyle {
-    background-color: #ebe9fb;
+    background-color: $secondarycolor;
     width: 100%;
     height: 100%;
 }
@@ -220,7 +221,10 @@ body {
 }
 
 .blue {
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
 }
 
 .activeUserDotColor {
@@ -333,8 +337,14 @@ body {
 }
 
 .registeredButton {
-    background: #7165E3 0% 0% no-repeat padding-box !important;
-    border: 0.4000000059604645px solid #7165E3;
+    background: $primarycolor
+
+
+ 0% 0% no-repeat padding-box !important;
+    border: 0.4000000059604645px solid $primarycolor
+
+
+;
     border-radius: 6px;
     opacity: 0.75;
     color: white;
@@ -356,11 +366,17 @@ body {
 }
 
 .unblockButton {
-    border: 1px solid #7165E3;
+    border: 1px solid $primarycolor
+
+
+;
     opacity: 1;
     height: 30px;
     width: 100px;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
     border-radius: 6px;
     margin-top: 3px;
 }
@@ -382,8 +398,14 @@ body {
 .contractButton {
     width: 124px;
     height: 40px;
-    background: #7165E3 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 5px #7165E3;
+    background: $primarycolor
+
+
+ 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 5px $primarycolor
+
+
+;
     border-radius: 8px;
     opacity: 1;
     border: none;
@@ -398,7 +420,7 @@ body {
 }
 
 .tableHeader {
-    background: #BEB9F2 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     height: 50px;
     width: 96%;
     margin-left: 2%;
@@ -410,7 +432,7 @@ body {
 }
 
 .alternativeBackgroundColor {
-    background-color: #ebe9fb !important;
+    background-color: $secondarycolor !important;
 }
 
 .userInfoGrid {
@@ -425,7 +447,7 @@ body {
 }
 
 .divideStyle {
-    background: #ebe9fb 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     height: 3px;
     width: 96%;
     margin: 0 20px;
@@ -448,7 +470,7 @@ body {
 }
 
 .documentPageHeader {
-    background: #BEB9F2 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     height: 50px;
     width: 96%;
     margin-left: 2%;
@@ -676,7 +698,10 @@ body {
     text-align: left;
     font: normal normal normal 11px/14px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
     opacity: 1;
     margin: 5px 0 0 10px;
 }
@@ -697,14 +722,20 @@ body {
     text-align: left;
     font: normal normal bold 20px/18px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
 }
 
 .extensionStyle {
     text-align: left;
     font: normal normal bold 15px/13px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
 }
 
 .extensionBorder {
@@ -759,7 +790,10 @@ body {
 }
 
 .addSymbolStyle {
-    background-color: #7165E3;
+    background-color: $primarycolor
+
+
+;
     color: white;
     font-size: 25px;
     box-shadow: 0px 0px 6px #00000029;
@@ -808,7 +842,7 @@ body {
 }
 
 .welcomeMessage {
-    background: #BEB9F2 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     opacity: 0.4;
     text-align: left;
     font: normal normal 300 13px/15px proxima-nova;
@@ -879,7 +913,10 @@ body {
 }
 
 .extentionBoxStyle {
-    border: 1px solid #7165E3;
+    border: 1px solid $primarycolor
+
+
+;
     border-radius: 8px;
     opacity: 1;
     height: 60vh;
@@ -894,7 +931,10 @@ body {
 }
 
 .serviceBoxStyle {
-    border: 1px solid #7165E3;
+    border: 1px solid $primarycolor
+
+
+;
     border-radius: 8px;
     opacity: 1;
     height: 60vh;
@@ -905,7 +945,10 @@ body {
 }
 
 .deleteDraftBoxStyle {
-    border: 1px solid #7165E3;
+    border: 1px solid $primarycolor
+
+
+;
     border-radius: 8px;
     opacity: 1;
     height: 20vh;
@@ -915,7 +958,10 @@ body {
 }
 
 .newContractFromCloneBoxStyle {
-    border: 1px solid #7165E3;
+    border: 1px solid $primarycolor
+
+
+;
     border-radius: 8px;
     opacity: 1;
     height: calc(100vh - 160px);
@@ -944,13 +990,19 @@ body {
 }
 
 .crossStyle {
-    color: linear-gradient(#7165E3, #FF6562) !important;
+    color: linear-gradient($primarycolor
+
+
+, #FF6562) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
 
 .trashStyle {
-    color: linear-gradient(#7165E3, #FF6562) !important;
+    color: linear-gradient($primarycolor
+
+
+, #FF6562) !important;
     cursor: pointer;
     position: relative;
     bottom: -20px;
@@ -1018,7 +1070,10 @@ select {
 .contractCards:hover {
     background:
         linear-gradient(white, white) padding-box,
-        linear-gradient(to bottom, #7165E3, #FF6562) border-box;
+        linear-gradient(to bottom, $primarycolor
+
+
+, #FF6562) border-box;
     border-radius: 20px;
     border: 2px solid transparent;
 }
@@ -1049,7 +1104,10 @@ select {
 .selectedContractCard {
     background:
         linear-gradient(white, white) padding-box,
-        linear-gradient(to bottom, #7165E3, #FF6562) border-box;
+        linear-gradient(to bottom, $primarycolor
+
+
+, #FF6562) border-box;
     border-radius: 20px;
     border: 2px solid transparent;
 }
@@ -1065,7 +1123,10 @@ select {
 .nextButton {
     border-radius: 12px;
     opacity: 1;
-    background-color: #7165E3;
+    background-color: $primarycolor
+
+
+;
     color: white;
     border: none;
     height: 40px;
@@ -1110,41 +1171,77 @@ select {
 
 .outlinedButton {
     background-color: white;
-    color: #7165E3;
-    border: 1px solid #7165E3;
+    color: $primarycolor
+
+
+;
+    border: 1px solid $primarycolor
+
+
+;
     height: 40px;
     width: 140px;
     border-radius: 10px;
     margin-bottom: -20px;
-    box-shadow: 0px 3px 11px #7165E3;
+    box-shadow: 0px 3px 11px $primarycolor
+
+
+;
 }
 
 .cloneOutlinedButton {
     background-color: white;
-    color: #7165E3;
-    border: 1px solid #7165E3;
-    box-shadow: 0px 1px 5px #7165E3;
+    color: $primarycolor
+
+
+;
+    border: 1px solid $primarycolor
+
+
+;
+    box-shadow: 0px 1px 5px $primarycolor
+
+
+;
     height: 30px;
     width: 80px;
     border-radius: 6px;
 }
 
 .buttonStyle {
-    background-color: #7165E3;
+    background-color: $primarycolor
+
+
+;
     color: white;
-    border: 1px solid #7165E3;
+    border: 1px solid $primarycolor
+
+
+;
     height: 40px;
     width: 140px;
     border-radius: 10px;
     margin-bottom: -20px;
-    box-shadow: 0px 3px 11px #7165E3;
+    box-shadow: 0px 3px 11px $primarycolor
+
+
+;
 }
 
 .cloneButtonStyle {
-    background-color: #7165E3;
+    background-color: $primarycolor
+
+
+;
     color: white;
-    border: 1px solid #7165E3;
-    box-shadow: 0px 1px 5px #7165E3;
+    border: 1px solid $primarycolor
+
+
+;
+    box-shadow: 0px 1px 5px $primarycolor
+
+
+;
     height: 30px;
     width: 80px;
     border-radius: 6px;
@@ -1223,7 +1320,7 @@ select {
 }
 
 .completedEntityCardStyle {
-    background-color: #BEB9F2;
+    background-color: $secondarycolor;
     color: black;
     font-weight: 600 !important;
     display: grid;
@@ -1246,12 +1343,21 @@ select {
 }
 
 .selectedContractEntityStyle {
-    border: 1px solid #7165E3;
-    color: #7165E3;
+    border: 1px solid $primarycolor
+
+
+;
+    color: $primarycolor
+
+
+;
 }
 
 .selectedColor {
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
 }
 
 .smallHeadingStyle {
@@ -1259,7 +1365,10 @@ select {
     font: normal normal 600 17px/16px proxima-nova;
     letter-spacing: 0px;
     line-height: 20px;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
     opacity: 1;
 }
 
@@ -1302,7 +1411,10 @@ select {
 }
 
 .blueColor {
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
 }
 
 .selectFieldWidth {
@@ -1321,7 +1433,10 @@ select {
 
 .uploadButtonStyle {
     background-color: #f1f2f3;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
     border: none;
     height: 30px;
     font-size: 12px;
@@ -1330,7 +1445,10 @@ select {
 
 .chooseFileStyle {
     background-color: #f1f2f3;
-    color: #7165E3;
+    color: $primarycolor
+
+
+;
     border: none;
     height: 30px;
     font-size: 12px;
@@ -1364,7 +1482,10 @@ select {
 }
 
 .proofBorder {
-    border: 1px solid #7165E3;
+    border: 1px solid $primarycolor
+
+
+;
     border-radius: 8px;
     opacity: 1;
     overflow: scroll;

@@ -1112,7 +1112,7 @@ const ProcedureReading = ({
               />
 
               {/* <div className={`${style.verticalAlignCenter} ${style.flexCenter} ${style.cursorPointer}`}>
-                                    <EditIcon style={{ color: "#7165E3" }} />
+                                    <EditIcon style={{ color: "#0e5197" }} />
                                 </div>
                                 <div className={`${style.verticalAlignCenter} ${style.flexCenter} ${style.cursorPointer}`}>
                                     <CloseIcon style={{ color: "#FF6562" }} />

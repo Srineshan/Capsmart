@@ -967,7 +967,7 @@ const ContractIdTermLimitIndividual = ({
           <div className={`${style.documentGrid}`}>
             <a href={fullyExecutedContractData?.[i]?.fileURL} target="_blank">
               <Tooltip title={'Preview'} arrow>
-                <ArticleOutlinedIcon sx={{ color: '#b0a9ef', fontSize: 35 }} />
+                <ArticleOutlinedIcon sx={{ color: '#0e5197', fontSize: 35 }} />
               </Tooltip>
             </a>
             <div className={style.marginTop}>

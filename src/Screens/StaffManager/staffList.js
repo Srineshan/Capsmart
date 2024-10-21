@@ -144,13 +144,16 @@ const StaffList = ({ isLoading, getSelectedApplicant, selectedApplicant, getActi
       <div className={isExpanded ? style.bigCardGrid : style.smallCardGrid}>
         <div>
           <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
-
-            <div className={`${style.cardStyle} ${style.bigCalendarLeftCardWidth}`}>
+            <div
+              className={`${style.cardStyle} ${style.bigCalendarLeftCardWidth}`}
+            >
               <div>
-                <div className={`${style.headingNameStyle} ${style.marginRight10}`}>
+                <div
+                  className={`${style.headingNameStyle} ${style.marginRight10}`}
+                >
                   FIND STAFF / APPLICANT
                 </div>
-                <div className={`${style.marginTop20}`}  >
+                <div className={`${style.marginTop20}`}>
                   <div className={`${style.displayInRow} ${style.padding}`}>
                     <TextField
                       type="text"
@@ -158,8 +161,16 @@ const StaffList = ({ isLoading, getSelectedApplicant, selectedApplicant, getActi
                       placeholder="Placeholder"
                       id="outlined-basic"
                       InputProps={{
-                        startAdornment: <InputAdornment position="start">Enter Name to Start</InputAdornment>,
-                        endAdornment: <InputAdornment position="end" >type ahead of all staff/apps</InputAdornment>,
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            Enter Name to Start
+                          </InputAdornment>
+                        ),
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            type ahead of all staff/apps
+                          </InputAdornment>
+                        ),
                       }}
                     />
                   </div>
@@ -167,73 +178,136 @@ const StaffList = ({ isLoading, getSelectedApplicant, selectedApplicant, getActi
               </div>
             </div>
 
-            <div className={`${style.bigCardStyle} ${style.padding20} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
+            <div
+              className={`${style.bigCardStyle} ${style.padding20} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}
+            >
               <div className={`${style.displayInRow} `}>
                 <span className={style.notificationHeading}>
-                  <img className={style.notificationIcon} src={NotificationsIcon} alt="" />
+                  <img
+                    className={style.notificationIcon}
+                    src={NotificationsIcon}
+                    alt=""
+                  />
                   <div className={style.notificationCount}>2</div>
                 </span>
-                <div className={`${style.headingNameStyle} ${style.marginTop10} ${style.marginLeft10}`}>
+                <div
+                  className={`${style.headingNameStyle} ${style.marginTop10} ${style.marginLeft10}`}
+                >
                   <span>ALERTS</span>
                 </div>
               </div>
               <div className={`${style.displayInCol}`}>
                 <div className={`${style.spaceBetween} ${style.marginTop}`}>
-                  <div className={`${style.userNameStyle}${style.alignCenter}`}>New Alert Title
+                  <div className={`${style.userNameStyle}${style.alignCenter}`}>
+                    New Alert Title
                   </div>
                   <span className={style.topRightTextStyle}>5 mins ago</span>
                 </div>
-                <p className={style.paragraphNameStyle}>Lorem ipsum dolor sit amet, consectetur adipisicing elit. At, repudiandae!</p>
+                <p className={style.paragraphNameStyle}>
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. At,
+                  repudiandae!
+                </p>
               </div>
 
-              <div className={`${style.dividerStyle} ${style.marginTop20} ${style.marginBottom20}`}></div>
+              <div
+                className={`${style.dividerStyle} ${style.marginTop20} ${style.marginBottom20}`}
+              ></div>
               <div className={`${style.displayInCol}`}>
                 <div className={`${style.spaceBetween} ${style.marginTop}`}>
-                  <div className={`${style.userNameStyle}${style.alignCenter}`}>New Alert Title
+                  <div className={`${style.userNameStyle}${style.alignCenter}`}>
+                    New Alert Title
                   </div>
                   <span className={style.topRightTextStyle}>5 mins ago</span>
                 </div>
-                <p className={style.paragraphNameStyle}>Lorem ipsum dolor sit amet, consectetur adipisicing elit. At, repudiandae!</p>
+                <p className={style.paragraphNameStyle}>
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. At,
+                  repudiandae!
+                </p>
               </div>
             </div>
           </SideBar>
         </div>
         <div>
-          <StaffTiles getSelectedApplicant={getSelectedApplicant} selectedApplicant={selectedApplicant}
-            metadata={metadata} />
+          <StaffTiles
+            getSelectedApplicant={getSelectedApplicant}
+            selectedApplicant={selectedApplicant}
+            metadata={metadata}
+          />
           <div className={`${style.bigCardStyle} ${style.marginTop20}`}>
             <div className={`${style.spaceBetween} ${style.marginLeftRight20}`}>
               <div className={`${style.displayInRow} ${style.marginTop10}`}>
-                {selectedApplicant === 'activestaffs' ? (
+                {selectedApplicant === "activestaffs" ? (
                   <>
-                    <div className={`${style.headingForStaffs} ${style.bottomTextStyle}`}>ACTIVE STAFF ITEMS TO ADDRESS</div>
+                    <div
+                      className={`${style.headingForStaffs} ${style.bottomTextStyle}`}
+                    >
+                      ACTIVE STAFF ITEMS TO ADDRESS
+                    </div>
                   </>
                 ) : (
                   <>
-                    <div className={`${style.headingForStaffs} ${style.bottomTextStyle}`} >{selectedApplicant}</div>
+                    <div
+                      className={`${style.headingForStaffs} ${style.bottomTextStyle}`}
+                    >
+                      {selectedApplicant}
+                    </div>
                   </>
                 )}
               </div>
-              <div className={`${style.displayInRow} ${style.marginTop10} ${style.marginLeft} ${style.verticalAlignCenter}`}>
-                <div className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft}`} >
-                  <SearchOutlinedIcon sx={{ fontSize: isPrintClicked ? 20 : 25, color: isPrintClicked ? '#fff' : '#857AEF' }} />
+              <div
+                className={`${style.displayInRow} ${style.marginTop10} ${style.marginLeft} ${style.verticalAlignCenter}`}
+              >
+                <div
+                  className={`${isPrintClicked && style.addStyle} ${
+                    style.alignCenter
+                  } ${style.cursorPointer} ${style.marginLeft}`}
+                >
+                  <SearchOutlinedIcon
+                    sx={{
+                      fontSize: isPrintClicked ? 20 : 25,
+                      color: isPrintClicked ? "#fff" : "#0e5197",
+                    }}
+                  />
                 </div>
-                <div className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft}`} >
-                  <PrintOutlinedIcon sx={{ fontSize: isPrintClicked ? 20 : 25, color: isPrintClicked ? '#fff' : '#857AEF' }} />
+                <div
+                  className={`${isPrintClicked && style.addStyle} ${
+                    style.alignCenter
+                  } ${style.cursorPointer} ${style.marginLeft}`}
+                >
+                  <PrintOutlinedIcon
+                    sx={{
+                      fontSize: isPrintClicked ? 20 : 25,
+                      color: isPrintClicked ? "#fff" : "#0e5197",
+                    }}
+                  />
                 </div>
-                <div className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft}`} >
-                  <FilterAltOutlinedIcon sx={{ fontSize: isPrintClicked ? 20 : 25, color: isPrintClicked ? '#fff' : '#857AEF' }} />
+                <div
+                  className={`${isPrintClicked && style.addStyle} ${
+                    style.alignCenter
+                  } ${style.cursorPointer} ${style.marginLeft}`}
+                >
+                  <FilterAltOutlinedIcon
+                    sx={{
+                      fontSize: isPrintClicked ? 20 : 25,
+                      color: isPrintClicked ? "#fff" : "#0e5197",
+                    }}
+                  />
                 </div>
-
               </div>
             </div>
 
-            {isLoading ?
-              <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
-                <CircularProgress sx={{ color: "#7165E3" }} />
-              </div> :
+            {isLoading ? (
+              <div
+                className={`${style.verticalAlignCenter} ${style.justifyCenter}`}
+              >
+                <CircularProgress sx={{ color: "#0e5197" }} />
+              </div>
+            ) : (
               <div ref={componentRef}>
-                <div className={`${style.reduceMarginTop10} ${style.margin20} staffList`} ref={PDFRef}>
+                <div
+                  className={`${style.reduceMarginTop10} ${style.margin20} staffList`}
+                  ref={PDFRef}
+                >
                   <TableTwo
                     tableHeaderValues={tableHeaderValues}
                     tableDataValues={tableDataValues}
@@ -242,30 +316,43 @@ const StaffList = ({ isLoading, getSelectedApplicant, selectedApplicant, getActi
                     actions={actions}
                     scrollStyle={style.contractScrollStyle}
                     tableSortValues={tableSortValues}
-                    heading={'There are no contracts for you to manage'}
-                    subHeading={'To add a new contract click on'}
-                    onClickText={'Click To View A Short Tutorial On How To Add A Contract'}
-                    buttonComponent={<div className={`${style.addStyle} ${style.alignCenter} ${style.marginLeft20}`}>
-                      <AddCircleOutlineIcon sx={{ fontSize: 20, color: 'white' }} />
-                    </div>}
-                    onClickFunction={() => { }}
+                    heading={"There are no contracts for you to manage"}
+                    subHeading={"To add a new contract click on"}
+                    onClickText={
+                      "Click To View A Short Tutorial On How To Add A Contract"
+                    }
+                    buttonComponent={
+                      <div
+                        className={`${style.addStyle} ${style.alignCenter} ${style.marginLeft20}`}
+                      >
+                        <AddCircleOutlineIcon
+                          sx={{ fontSize: 20, color: "white" }}
+                        />
+                      </div>
+                    }
+                    onClickFunction={() => {}}
                   />
                 </div>
               </div>
-            }
+            )}
           </div>
         </div>
-      </div >
+      </div>
       <div className={style.spaceBetween}>
         <div className={`${style.displayInRow}`}>
-          <p className={`${style.poweredBy} ${style.marginTop10}`}>Powered by -</p>
-          <img src={TimeSmartLogo} alt="footer" className={`${style.footerIconStyle} ${style.marginLeft10}`} />
+          <p className={`${style.poweredBy} ${style.marginTop10}`}>
+            Powered by -
+          </p>
+          <img
+            src={TimeSmartLogo}
+            alt="footer"
+            className={`${style.footerIconStyle} ${style.marginLeft10}`}
+          />
         </div>
         <p className={style.poweredBy}>© {new Date().getFullYear()} CAPSmart</p>
       </div>
-
-    </div >
-  )
+    </div>
+  );
 }
 
 export default StaffList;

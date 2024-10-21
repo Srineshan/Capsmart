@@ -1,3 +1,4 @@
+@import "../../index.scss";
 .backgroundCard {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 5px 20px #52575D29;
@@ -54,16 +55,16 @@
 }
 
 .addButton {
-    border: 0.5px solid #7165E3;
+    border: 0.5px solid $primarycolor;
     border-radius: 12px;
     width: 130px;
-    color: #7165E3;
+    color: $primarycolor;
     font: normal normal bold 20px/40px proxima-nova;
     cursor: pointer;
 }
 
 .addMoreButton {
-    background: #7165E3 0% 0% no-repeat padding-box;
+    background: $primarycolor 0% 0% no-repeat padding-box;
     border-radius: 12px;
     padding: 15px;
     color: #fff;
@@ -75,9 +76,9 @@
 .addMoreButtonOutlined {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     border-radius: 12px;
-    border: 1px solid #7165E3;
+    border: 1px solid $primarycolor;
     padding: 15px;
-    color: #7165E3;
+    color: $primarycolor;
     min-width: 180px;
     font: normal normal bold 15px/15px proxima-nova;
     cursor: pointer;
@@ -90,7 +91,7 @@
 
 .uploadButton {
     background: #F5F5F8 0% 0% no-repeat padding-box;
-    border: 0.4000000059604645px solid #d7d4f7;
+    border: 0.4000000059604645px solid $secondarycolor;
     border-radius: 4px;
     padding: 5px 10px;
 }
@@ -138,7 +139,7 @@
 
 .siteDisplayCard {
     background: #EFEEFC 0% 0% no-repeat padding-box;
-    border: 0.4000000059604645px solid #d7d4f7;
+    border: 0.4000000059604645px solid $secondarycolor;
     border-radius: 6px;
     padding: 10px;
 }
@@ -164,7 +165,7 @@
 
 .addMoreBorder {
     background: #FFFFFF 0% 0% no-repeat padding-box;
-    border: 1px solid #c4bef3;
+    border: 1px solid $secondarycolor;
     border-radius: 8px;
 }
 

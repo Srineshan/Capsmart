@@ -471,15 +471,15 @@ const HelpHome = () => {
                         <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => setShowVideoConnectingDialog(false)} />
                     </div>
                     <div className={style.spaceBetween}>
-                        <DesktopWindowsIcon style={{ fontSize: 80, color: '#7165E3' }} className={style.marginTop10} />
+                        <DesktopWindowsIcon style={{ fontSize: 80, color: '#0e5197' }} className={style.marginTop10} />
                         <div className={`${style.displayInRow} ${style.verticalCenter}`}>
-                            <FiberManualRecordIcon style={{ color: '#7165E3', fontSize: 12 }} className={`${style.marginTop40}`} />
-                            <FiberManualRecordOutlinedIcon style={{ color: '#7165E3', fontSize: 12 }} className={`${style.marginTop40}`} />
-                            <FiberManualRecordOutlinedIcon style={{ color: '#7165E3', fontSize: 12 }} className={`${style.marginTop40}`} />
-                            <FiberManualRecordOutlinedIcon style={{ color: '#7165E3', fontSize: 12 }} className={`${style.marginTop40}`} />
-                            <FiberManualRecordOutlinedIcon style={{ color: '#7165E3', fontSize: 12 }} className={`${style.marginTop40}`} />
+                            <FiberManualRecordIcon style={{ color: '#0e5197', fontSize: 12 }} className={`${style.marginTop40}`} />
+                            <FiberManualRecordOutlinedIcon style={{ color: '#0e5197', fontSize: 12 }} className={`${style.marginTop40}`} />
+                            <FiberManualRecordOutlinedIcon style={{ color: '#0e5197', fontSize: 12 }} className={`${style.marginTop40}`} />
+                            <FiberManualRecordOutlinedIcon style={{ color: '#0e5197', fontSize: 12 }} className={`${style.marginTop40}`} />
+                            <FiberManualRecordOutlinedIcon style={{ color: '#0e5197', fontSize: 12 }} className={`${style.marginTop40}`} />
                         </div>
-                        <DesktopWindowsIcon style={{ fontSize: 80, color: '#7165E3' }} className={style.marginTop10} />
+                        <DesktopWindowsIcon style={{ fontSize: 80, color: '#0e5197' }} className={style.marginTop10} />
                     </div>
                     <div>
                         <div className={`${style.displayInCol} ${style.marginTop20} ${style.alignCenter}`}>

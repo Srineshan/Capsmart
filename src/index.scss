@@ -1,231 +1,296 @@
-// @import '~@blueprintjs/core/src/blueprint.scss';
-// @import "~@blueprintjs/popover2/lib/css/blueprint-popover2.css";
-// @import '~@blueprintjs/icons/lib/css/blueprint-icons.css';
-// @import '~@blueprintjs/datetime/src/blueprint-datetime.scss';
-// @import '~normalize.css';
+/* 
+@import '~@blueprintjs/core/src/blueprint.scss';
+@import "~@blueprintjs/popover2/lib/css/blueprint-popover2.css";
+@import '~@blueprintjs/icons/lib/css/blueprint-icons.css';
+@import '~@blueprintjs/datetime/src/blueprint-datetime.scss';
+@import '~normalize.css';
+*/
+
+/* 
+html,
+body,
+#root {
+  height: 100%;
+}
+*/
+
+/* 
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
+    'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+*/
+
+/* 
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+*/
+
+/* 
+// Overrides
+.bp3-card {
+  border: none;
+  box-shadow: $default-box-shadow;
+  box-shadow: 0 2.8px 2.2px rgba(220, 220, 220, 0.034), 0 6.7px 5.3px rgba(220, 220, 220, 0.048),
+    0 12.5px 10px rgba(220, 220, 220, 0.06), 0 22.3px 17.9px rgba(220, 220, 220, 0.072),
+    0 41.8px 33.4px rgba(220, 220, 220, 0.086), 0 100px 80px rgba(220, 220, 220, 0.12);
+  overflow: scroll;
+  overflow: auto;
+}
+*/
+
+/* 
+.bp3-popover {
+  box-shadow: $default-box-shadow;
+}
+*/
+
+/* 
+table {
+  table-layout: fixed;
+}
+table.rbc-agenda-table {
+  table-layout: initial;
+}
+*/
+
+/* 
+td {
+  vertical-align: middle !important;
+}
+*/
+
+/* 
+a {
+  color: $primary;
+  &:hover {
+    color: $primary-dark;
+  }
+}
+*/
+
+/* 
+.bp3-button:not(.DayPicker-NavButton) {
+  min-width: 80px;
+}
+*/
+
+/* 
+.bp3-breadcrumbs > li::after {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M10.71 7.29l-4-4a1.003 1.003 0 00-1.42 1.42L8.59 8 5.3 11.29c-.19.18-.3.43-.3.71a1.003 1.003 0 001.71.71l4-4c.18-.18.29-.43.29-.71 0-.28-.11-.53-.29-.71z' fill='%23AEAECA'/%3E%3C/svg%3E");
+}
+*/
+
+/* 
+.bp3-control.bp3-checkbox input:checked ~ .bp3-control-indicator:before {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M12 5c-.28 0-.53.11-.71.29L7 9.59l-2.29-2.3a1.003 1.003 0 0 0-1.42 1.42l3 3c.18.18.43.29.71.29s.53-.11.71-.29l5-5A1.003 1.003 0 0 0 12 5z' fill='rgba(255,255,255,1)'/%3E%3C/svg%3E");
+}
+*/
+
+/* 
+.bp3-control {
+  margin-bottom: 0;
+}
+*/
+
+/* 
+.breadcrumb {
+  margin: 0;
+  color: $muted-text;
+}
+.breadcrumb_link {
+  cursor: pointer;
+  &:hover {
+    color: $heading-color;
+  }
+}
+*/
+
+/* 
+.bp3-portal {
+  z-index: 9999;
+}
+.bp3-dialog {
+  background: $background;
+  border-radius: 5px;
+}
+*/
+
+/* 
+.bp3-tab:focus {
+  outline: none;
+}
+*/
+
+/* 
+.bp3-control .bp3-large .bp3-checkbox:focus {
+  outline: none;
+}
+*/
+
+/* 
+#nprogress .bar {
+  background: $primary;
+  height: 4px;
+}
+#nprogress .spinner-icon {
+  width: 24px;
+  height: 24px;
+}
+*/
+
+/* 
+// Custom common CSS
+.dot {
+  border-radius: 10px;
+  width: 16px;
+  height: 4px;
+  display: inline-block;
+  margin: 3px;
+}
+.dotRed {
+  background: $red2;
+}
+.dotGreen {
+  background: $green2;
+}
+.dotBlue {
+  background: $primary;
+}
+.dotOrange {
+  background: $orange2;
+}
+*/
+
+/* 
+.gradientCard {
+  background: $blue-gradient;
+  color: white;
+  h4 {
+    color: white;
+  }
+}
+*/
+
+/* 
+// react big calendar override
+.rbc-calendar {
+  min-height: 600px;
+}
+*/
+
+/* 
+//Image carousal override
+.carousel .slide img {
+  max-width: max-content;
+}
+*/
+
+/* 
+textarea {
+  min-width: 250px;
+}
+*/
+
+/* 
+select {
+  line-height: 1.3;
+  padding: 0.6em 1.4em 0.5em 0.8em;
+  box-sizing: border-box;
+  margin: 0;
+  border: 1px solid #aaa;
+  border-radius: 0.5em;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: #fff;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C/svg%3E'),
+    linear-gradient(to bottom, #ffffff 0%, #f5f4f4 100%);
+  background-repeat: no-repeat, repeat;
+  background-position: right 0.7em top 50%, 0 0;
+  background-size: 0.65em auto, 100%;
+  &:focus{
+    outline: none;
+  }
+  &.fullwidth {
+    min-width: 250px;
+  }
+}
+*/
+
+/* 
+.CustomFileUploadButton {
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  display: block;
+  padding: 10px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: 200ms ease-in-out all;
+  font-weight: 500;
+  line-height: 9;
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+}
+*/
+
+/* 
+.button_container {
+  display: flex;
+  justify-content: flex-end;
+  & > button {
+    margin-left: 10px;
+  }
+}
+*/
+
+/* 
+.flexHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  h5 {
+    margin: 0;
+  }
+}
+*/
+
+/* 
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+*/
+
+/* 
+.toast-container {
+  z-index: 9999;
+}
+.bp3-toast-container{
+  z-index: 999999;
+}
+*/
+
+/* 
+input[type="checkbox"] {
+  display: none;
+}
+*/
+
+/* 
+button {
+  box-shadow: none !important;
+}*/
 
 
-// html,
-// body,
-// #root {
-//   height: 100%;
-// }
 
-// body {
-//   margin: 0;
-//   padding: 0;
-//   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
-//     'Droid Sans', 'Helvetica Neue', sans-serif;
-//   -webkit-font-smoothing: antialiased;
-//   -moz-osx-font-smoothing: grayscale;
-// }
-
-// code {
-//   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
-// }
-
-// // Overrides
-
-// .bp3-card {
-//   border: none;
-//   box-shadow: $default-box-shadow;
-//   box-shadow: 0 2.8px 2.2px rgba(220, 220, 220, 0.034), 0 6.7px 5.3px rgba(220, 220, 220, 0.048),
-//     0 12.5px 10px rgba(220, 220, 220, 0.06), 0 22.3px 17.9px rgba(220, 220, 220, 0.072),
-//     0 41.8px 33.4px rgba(220, 220, 220, 0.086), 0 100px 80px rgba(220, 220, 220, 0.12);
-//   overflow: scroll;
-//   overflow: auto;
-// }
-
-// .bp3-popover {
-//   box-shadow: $default-box-shadow;
-// }
-
-// table {
-//   table-layout: fixed;
-// }
-// table.rbc-agenda-table {
-//   table-layout: initial;
-// }
-
-// td {
-//   vertical-align: middle !important;
-// }
-
-// a {
-//   color: $primary;
-//   &:hover {
-//     color: $primary-dark;
-//   }
-// }
-
-// .bp3-button:not(.DayPicker-NavButton) {
-//   // box-shadow: inset $bottom-box-shadow !important;
-//   min-width: 80px;
-// }
-
-// .bp3-breadcrumbs > li::after {
-//   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M10.71 7.29l-4-4a1.003 1.003 0 00-1.42 1.42L8.59 8 5.3 11.29c-.19.18-.3.43-.3.71a1.003 1.003 0 001.71.71l4-4c.18-.18.29-.43.29-.71 0-.28-.11-.53-.29-.71z' fill='%23AEAECA'/%3E%3C/svg%3E");
-// }
-// .bp3-control.bp3-checkbox input:checked ~ .bp3-control-indicator:before {
-//   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M12 5c-.28 0-.53.11-.71.29L7 9.59l-2.29-2.3a1.003 1.003 0 0 0-1.42 1.42l3 3c.18.18.43.29.71.29s.53-.11.71-.29l5-5A1.003 1.003 0 0 0 12 5z' fill='rgba(255,255,255,1)'/%3E%3C/svg%3E");
-// }
-// .bp3-control {
-//   margin-bottom: 0;
-// }
-// .breadcrumb {
-//   margin: 0;
-//   color: $muted-text;
-// }
-// .breadcrumb_link {
-//   cursor: pointer;
-//   &:hover {
-//     color: $heading-color;
-//   }
-// }
-
-// .bp3-portal {
-//   z-index: 9999;
-// }
-// .bp3-dialog {
-//   background: $background;
-//   border-radius: 5px;
-// }
-
-// .bp3-tab:focus {
-//   outline: none;
-// }
-
-// .bp3-control .bp3-large .bp3-checkbox:focus {
-//   outline: none;
-// }
-
-// #nprogress .bar {
-//   background: $primary;
-//   height: 4px;
-// }
-// #nprogress .spinner-icon {
-//   width: 24px;
-//   height: 24px;
-// }
-
-// // Custom common CSS
-// .dot {
-//   border-radius: 10px;
-//   width: 16px;
-//   height: 4px;
-//   display: inline-block;
-//   margin: 3px;
-// }
-// .dotRed {
-//   background: $red2;
-// }
-// .dotGreen {
-//   background: $green2;
-// }
-// .dotBlue {
-//   background: $primary;
-// }
-// .dotOrange {
-//   background: $orange2;
-// }
-
-// .gradientCard {
-//   background: $blue-gradient;
-//   color: white;
-//   h4 {
-//     color: white;
-//   }
-// }
-
-// // react big calendar override
-// .rbc-calendar {
-//   min-height: 600px;
-// }
-
-// //Image carousal override
-// .carousel .slide img {
-//   max-width: max-content;
-// }
-
-// textarea {
-//   min-width: 250px;
-// }
-
-// select {
-//   line-height: 1.3;
-//   padding: 0.6em 1.4em 0.5em 0.8em;
-//   box-sizing: border-box;
-//   margin: 0;
-//   border: 1px solid #aaa;
-//   border-radius: 0.5em;
-//   -moz-appearance: none;
-//   -webkit-appearance: none;
-//   appearance: none;
-//   background-color: #fff;
-//   background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'),
-//     linear-gradient(to bottom, #ffffff 0%, #f5f4f4 100%);
-//   background-repeat: no-repeat, repeat;
-//   background-position: right 0.7em top 50%, 0 0;
-//   background-size: 0.65em auto, 100%;
-//   &:focus{
-//     outline: none;
-//   }
-//   &.fullwidth {
-//     min-width: 250px;
-//   }
-// }
-
-// .CustomFileUploadButton {
-//   cursor: pointer;
-//   width: 100%;
-//   height: 100%;
-//   display: block;
-//   padding: 10px;
-//   position: absolute;
-//   top: 0;
-//   left: 0;
-//   transition: 200ms ease-in-out all;
-//   font-weight: 500;
-//   line-height: 9;
-//   &:hover {
-//     background-color: rgba(255, 255, 255, 0.5);
-//   }
-// }
-
-// .button_container {
-//   display: flex;
-//   justify-content: flex-end;
-//   & > button {
-//     margin-left: 10px;
-//   }
-// }
-
-// .flexHeader {
-//   display: flex;
-//   justify-content: space-between;
-//   align-items: center;
-//   margin-bottom: 10px;
-//   h5 {
-//     margin: 0;
-//   }
-// }
-
-// * {
-//   -webkit-tap-highlight-color: transparent;
-// }
-
-// .toast-container {
-//   z-index: 9999;
-// }
-
-// .bp3-toast-container{
-//   z-index: 999999;
-// }
-
-// input[type="checkbox"] {
-//   display: none;
-// }
-
-// button{
-//   box-shadow: none !important;
-// }
+$primarycolor: #173790;
+$secondarycolor: #E2E6F1;

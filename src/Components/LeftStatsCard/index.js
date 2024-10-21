@@ -274,9 +274,15 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
                         <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                             <div className={`${style.clearText} ${contractFilter?.contractTypeCount?.filter(data => data?.selected)?.length !== 0 ? style.purpleText : ''}`} onClick={() => clearFilter('contractTypeCount')}>Clear </div>
                             {!contractTypeFilter ? (
-                                <AddIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setContractTypeFilter(!contractTypeFilter)} />
+                                <AddIcon sx={{ fontSize: 20, color: '#0e5197
+
+
+', cursor: 'pointer' }} onClick={() => setContractTypeFilter(!contractTypeFilter)} />
                             ) : (
-                                <RemoveIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setContractTypeFilter(!contractTypeFilter)} />
+                                <RemoveIcon sx={{ fontSize: 20, color: '#0e5197
+
+
+', cursor: 'pointer' }} onClick={() => setContractTypeFilter(!contractTypeFilter)} />
                             )}
                         </div>
                     </div>
@@ -303,9 +309,15 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
                         <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                             <div className={`${style.clearText} ${contractFilter?.compensationPolicyCount?.filter(data => data?.selected)?.length !== 0 ? style.purpleText : ''}`} onClick={() => clearFilter('compensationPolicyCount')}>Clear </div>
                             {!compensationPolicyFilter ? (
-                                <AddIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setCompensationPolicyFilter(!compensationPolicyFilter)} />
+                                <AddIcon sx={{ fontSize: 20, color: '#0e5197
+
+
+', cursor: 'pointer' }} onClick={() => setCompensationPolicyFilter(!compensationPolicyFilter)} />
                             ) : (
-                                <RemoveIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setCompensationPolicyFilter(!compensationPolicyFilter)} />
+                                <RemoveIcon sx={{ fontSize: 20, color: '#0e5197
+
+
+', cursor: 'pointer' }} onClick={() => setCompensationPolicyFilter(!compensationPolicyFilter)} />
                             )}
                         </div>
                     </div>
@@ -324,9 +336,15 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
                         <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                             <div className={`${style.clearText} ${contractFilter?.contractPolicyTypeCount?.filter(data => data?.selected)?.length !== 0 ? style.purpleText : ''}`} onClick={() => clearFilter('contractPolicyTypeCount')}>Clear </div>
                             {!contractPolicyTypeFilter ? (
-                                <AddIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setContractPolicyTypeFilter(!contractPolicyTypeFilter)} />
+                                <AddIcon sx={{ fontSize: 20, color: '#0e5197
+
+
+', cursor: 'pointer' }} onClick={() => setContractPolicyTypeFilter(!contractPolicyTypeFilter)} />
                             ) : (
-                                <RemoveIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setContractPolicyTypeFilter(!contractPolicyTypeFilter)} />
+                                <RemoveIcon sx={{ fontSize: 20, color: '#0e5197
+
+
+', cursor: 'pointer' }} onClick={() => setContractPolicyTypeFilter(!contractPolicyTypeFilter)} />
                             )}
                         </div>
                     </div>
@@ -345,9 +363,15 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
                         <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                             <div className={`${style.clearText} ${contractFilter?.contractManagers?.filter(data => data?.selected)?.length !== 0 ? style.purpleText : ''}`} onClick={() => clearFilter('contractManagers')}>Clear </div>
                             {!contractManagersFilter ? (
-                                <AddIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setContractManagersFilter(!contractManagersFilter)} />
+                                <AddIcon sx={{ fontSize: 20, color: '#0e5197
+
+
+', cursor: 'pointer' }} onClick={() => setContractManagersFilter(!contractManagersFilter)} />
                             ) : (
-                                <RemoveIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setContractManagersFilter(!contractManagersFilter)} />
+                                <RemoveIcon sx={{ fontSize: 20, color: '#0e5197
+
+
+', cursor: 'pointer' }} onClick={() => setContractManagersFilter(!contractManagersFilter)} />
                             )}
                         </div>
                     </div>
@@ -366,9 +390,15 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
                         <div className={`${style.displayInRow}  ${style.verticalAlignCenter}`}>
                             <div className={`${style.clearText} ${contractFilter?.contractId !== '' ? style.purpleText : ''}`} onClick={() => setContractFilter({ ...contractFilter, contractId: '' })}>Clear </div>
                             {!contractIdFilter ? (
-                                <AddIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setContractIdFilter(!contractIdFilter)} />
+                                <AddIcon sx={{ fontSize: 20, color: '#0e5197
+
+
+', cursor: 'pointer' }} onClick={() => setContractIdFilter(!contractIdFilter)} />
                             ) : (
-                                <RemoveIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setContractIdFilter(!contractIdFilter)} />
+                                <RemoveIcon sx={{ fontSize: 20, color: '#0e5197
+
+
+', cursor: 'pointer' }} onClick={() => setContractIdFilter(!contractIdFilter)} />
                             )}
                         </div>
                     </div>
@@ -390,9 +420,15 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
                         <div className={`${style.displayInRow}  ${style.verticalAlignCenter}`}>
                             <div className={`${style.clearText} ${contractFilter?.contractExpireInDays !== 0 ? style.purpleText : ''}`} onClick={() => setContractFilter({ ...contractFilter, contractExpireInDays: 0 })}>Clear </div>
                             {!contractExpireInDaysFilter ? (
-                                <AddIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setContractExpireInDaysFilter(!contractExpireInDaysFilter)} />
+                                <AddIcon sx={{ fontSize: 20, color: '#0e5197
+
+
+', cursor: 'pointer' }} onClick={() => setContractExpireInDaysFilter(!contractExpireInDaysFilter)} />
                             ) : (
-                                <RemoveIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setContractExpireInDaysFilter(!contractExpireInDaysFilter)} />
+                                <RemoveIcon sx={{ fontSize: 20, color: '#0e5197
+
+
+', cursor: 'pointer' }} onClick={() => setContractExpireInDaysFilter(!contractExpireInDaysFilter)} />
                             )}
                         </div>
                     </div>
@@ -413,9 +449,15 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
                         <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                             <div className={`${style.clearText} ${(contractFilter?.numberOfContract?.min !== 0 || contractFilter?.numberOfContract?.max !== 0) ? style.purpleText : ''}`} onClick={() => setContractFilter({ ...contractFilter, numberOfContract: { min: 0, max: 0 } })}>Clear </div>
                             {!numberOfContractFilter ? (
-                                <AddIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setNumberOfContractFilter(!numberOfContractFilter)} />
+                                <AddIcon sx={{ fontSize: 20, color: '#0e5197
+
+
+', cursor: 'pointer' }} onClick={() => setNumberOfContractFilter(!numberOfContractFilter)} />
                             ) : (
-                                <RemoveIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setNumberOfContractFilter(!numberOfContractFilter)} />
+                                <RemoveIcon sx={{ fontSize: 20, color: '#0e5197
+
+
+', cursor: 'pointer' }} onClick={() => setNumberOfContractFilter(!numberOfContractFilter)} />
                             )}
                         </div>
                     </div>
@@ -448,7 +490,10 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
                                     </div>
                                 </div>
                                 <ProgressBar completed={contractFilter?.numberOfContract?.max < contractFilter?.numberOfContract?.min ? contractFilter?.numberOfContract?.min : contractFilter?.numberOfContract?.max}
-                                    isLabelVisible={false} height='5px' bgColor='#7165E3' baseBgColor="#BCBCBC" className={style.marginTop20} />
+                                    isLabelVisible={false} height='5px' bgColor='#0e5197
+
+
+' baseBgColor="#BCBCBC" className={style.marginTop20} />
                             </>
                         )}
                     </div>
@@ -458,9 +503,15 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
                         <div className={`${style.displayInRow}  ${style.verticalAlignCenter}`}>
                             <div className={`${style.clearText} ${(contractFilter?.contractTimeCommitment?.to !== null || contractFilter?.contractTimeCommitment?.from !== null) ? style.purpleText : ''}`} onClick={() => setContractFilter({ ...contractFilter, contractTimeCommitment: { from: null, to: null } })}>Clear </div>
                             {!contractTimeCommitmentFilter ? (
-                                <AddIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setContractTimeCommitmentFilter(!contractTimeCommitmentFilter)} />
+                                <AddIcon sx={{ fontSize: 20, color: '#0e5197
+
+
+', cursor: 'pointer' }} onClick={() => setContractTimeCommitmentFilter(!contractTimeCommitmentFilter)} />
                             ) : (
-                                <RemoveIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setContractTimeCommitmentFilter(!contractTimeCommitmentFilter)} />
+                                <RemoveIcon sx={{ fontSize: 20, color: '#0e5197
+
+
+', cursor: 'pointer' }} onClick={() => setContractTimeCommitmentFilter(!contractTimeCommitmentFilter)} />
                             )}
                         </div>
                     </div>

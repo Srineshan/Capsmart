@@ -76,68 +76,145 @@ const CompleteApplicationRequest = () => {
     }
 
     return (
-        <div className={style.screenBackground}>
-            <ApplicationHeader title={'New Appointment Request'} />
-            <div className={style.screenPadding}>
-                {!isNextpage ? (
-                    <>
-                        <TextForHelp title={'TEXT FOR HELP'} description={'help lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus quam nec tellus dictum, vitae ultrices urna porttitor. donec commodo tellus dapibus semper mattis. aenean ut massa vitae tortor consequat tristique. etiam eget condimentum sapien. morbi est ante, sagittis ac rhoncus eget, faucibus ut felis. pellentesque iaculis aliquam massa. lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus quam nec tellus dictum.'} />
-                        {form !== undefined && 'applicant' in form?.properties && (
-                            <ApplicationFieldCard object={form?.properties?.applicant} gridStyle={style.threeCol} baseKey={'applicant'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
-                        )}
-                        {form !== undefined && 'service' in form?.properties && (
-                            <ApplicationFieldCard object={form?.properties?.service} gridStyle={style.twoCol} baseKey={'service'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
-                        )}
-                        <div className={style.spaceBetween}>
-                            <div></div>
-                            <div className={style.displayInRow}>
-                                <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
-                                <div className={`${style.continue} ${style.marginTop} ${style.marginLeft}`} onClick={() => handleSubmitApplicationReq()}>Next</div>
-                            </div>
+      <div className={style.screenBackground}>
+        <ApplicationHeader title={"New Appointment Request"} />
+        <div className={style.screenPadding}>
+          {!isNextpage ? (
+            <>
+              <TextForHelp
+                title={"TEXT FOR HELP"}
+                description={
+                  "help lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus quam nec tellus dictum, vitae ultrices urna porttitor. donec commodo tellus dapibus semper mattis. aenean ut massa vitae tortor consequat tristique. etiam eget condimentum sapien. morbi est ante, sagittis ac rhoncus eget, faucibus ut felis. pellentesque iaculis aliquam massa. lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus quam nec tellus dictum."
+                }
+              />
+              {form !== undefined && "applicant" in form?.properties && (
+                <ApplicationFieldCard
+                  object={form?.properties?.applicant}
+                  gridStyle={style.threeCol}
+                  baseKey={"applicant"}
+                  basicForm={basicForm}
+                  setBasicForm={setBasicForm}
+                  isBasicPath={true}
+                />
+              )}
+              {form !== undefined && "service" in form?.properties && (
+                <ApplicationFieldCard
+                  object={form?.properties?.service}
+                  gridStyle={style.twoCol}
+                  baseKey={"service"}
+                  basicForm={basicForm}
+                  setBasicForm={setBasicForm}
+                  isBasicPath={true}
+                />
+              )}
+              <div className={style.spaceBetween}>
+                <div></div>
+                <div className={style.displayInRow}>
+                  <div className={`${style.saveInProgress} ${style.marginTop}`}>
+                    SAVE IN PROGRESS
+                  </div>
+                  <div
+                    className={`${style.continue} ${style.marginTop} ${style.marginLeft}`}
+                    onClick={() => handleSubmitApplicationReq()}
+                  >
+                    Next
+                  </div>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              {form !== undefined && "sites" in form?.properties && (
+                <div className={style.siteCardGrid}>
+                  <ApplicationFieldCard
+                    object={form?.properties?.sites}
+                    gridStyle={style.siteGrid}
+                    baseKey={"sites"}
+                    basicForm={basicForm}
+                    setBasicForm={setBasicForm}
+                    isBasicPath={true}
+                    showAdd={true}
+                  />
+                  <div className={`${style.backgroundCard} ${style.marginTop}`}>
+                    <div className={style.cardTitle}>Added Sites</div>
+                    <div
+                      className={`${style.siteDisplayCard} ${style.siteDisplayGrid} ${style.marginTop}`}
+                    >
+                      <div>
+                        <div className={style.siteDisplaySiteTextStyle}>
+                          Cambridge Memorial Hospital{" "}
                         </div>
-                    </>
-                ) : (
-                    <>
-                        {form !== undefined && 'sites' in form?.properties && (
-                            <div className={style.siteCardGrid}>
-                                <ApplicationFieldCard object={form?.properties?.sites} gridStyle={style.siteGrid} baseKey={'sites'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} showAdd={true} />
-                                <div className={`${style.backgroundCard} ${style.marginTop}`}>
-                                    <div className={style.cardTitle}>Added Sites</div>
-                                    <div className={`${style.siteDisplayCard} ${style.siteDisplayGrid} ${style.marginTop}`}>
-                                        <div>
-                                            <div className={style.siteDisplaySiteTextStyle}>Cambridge Memorial Hospital </div>
-                                            <div className={style.siteDisplayDepartmentTextStyle}>Department of Surgery (Cardiothoracic Surgery)</div>
-                                        </div>
-                                        <DeleteOutlineIcon sx={{ color: '#7165E3', cursor: 'pointer' }} />
-                                    </div>
-                                    <div className={`${style.siteDisplayCard} ${style.siteDisplayGrid} ${style.marginTop}`}>
-                                        <div>
-                                            <div className={style.siteDisplaySiteTextStyle}>Cambridge Memorial Hospital </div>
-                                            <div className={style.siteDisplayDepartmentTextStyle}>Department of Surgery (General Surgery)</div>
-                                        </div>
-                                        <DeleteOutlineIcon sx={{ color: '#7165E3', cursor: 'pointer' }} />
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                        {form !== undefined && 'natureOfPractice' in form?.properties && (
-                            <ApplicationFieldCard object={form?.properties?.natureOfPractice} gridStyle={style.natureOfPracticeGrid} baseKey={'natureOfPractice'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
-                        )}
-                        {form !== undefined && 'regionalCallResponsibilities' in form?.properties && (
-                            <ApplicationFieldCard object={form?.properties?.regionalCallResponsibilities} gridStyle={style.jobInterviewGrid} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
-                        )}
-                        <div className={style.spaceBetween}>
-                            <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => setIsNextPage(false)}>BACK</div>
-                            <div className={style.displayInRow}>
-                                <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
-                                <div className={`${style.continue} ${style.marginTop} ${style.marginLeft}`} onClick={() => handleSubmitApplicationReq()}>VERIFY & CONTINUE</div>
-                            </div>
+                        <div className={style.siteDisplayDepartmentTextStyle}>
+                          Department of Surgery (Cardiothoracic Surgery)
                         </div>
-                    </>
+                      </div>
+                      <DeleteOutlineIcon
+                        sx={{ color: "#0e5197", cursor: "pointer" }}
+                      />
+                    </div>
+                    <div
+                      className={`${style.siteDisplayCard} ${style.siteDisplayGrid} ${style.marginTop}`}
+                    >
+                      <div>
+                        <div className={style.siteDisplaySiteTextStyle}>
+                          Cambridge Memorial Hospital{" "}
+                        </div>
+                        <div className={style.siteDisplayDepartmentTextStyle}>
+                          Department of Surgery (General Surgery)
+                        </div>
+                      </div>
+                      <DeleteOutlineIcon
+                        sx={{ color: "#0e5197", cursor: "pointer" }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+              {form !== undefined && "natureOfPractice" in form?.properties && (
+                <ApplicationFieldCard
+                  object={form?.properties?.natureOfPractice}
+                  gridStyle={style.natureOfPracticeGrid}
+                  baseKey={"natureOfPractice"}
+                  basicForm={basicForm}
+                  setBasicForm={setBasicForm}
+                  isBasicPath={true}
+                />
+              )}
+              {form !== undefined &&
+                "regionalCallResponsibilities" in form?.properties && (
+                  <ApplicationFieldCard
+                    object={form?.properties?.regionalCallResponsibilities}
+                    gridStyle={style.jobInterviewGrid}
+                    baseKey={"regionalCallResponsibilities"}
+                    basicForm={basicForm}
+                    setBasicForm={setBasicForm}
+                    isBasicPath={true}
+                  />
                 )}
-            </div>
+              <div className={style.spaceBetween}>
+                <div
+                  className={`${style.saveInProgress} ${style.marginTop}`}
+                  onClick={() => setIsNextPage(false)}
+                >
+                  BACK
+                </div>
+                <div className={style.displayInRow}>
+                  <div className={`${style.saveInProgress} ${style.marginTop}`}>
+                    SAVE IN PROGRESS
+                  </div>
+                  <div
+                    className={`${style.continue} ${style.marginTop} ${style.marginLeft}`}
+                    onClick={() => handleSubmitApplicationReq()}
+                  >
+                    VERIFY & CONTINUE
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
         </div>
-    )
+      </div>
+    );
 }
 
 export default CompleteApplicationRequest;

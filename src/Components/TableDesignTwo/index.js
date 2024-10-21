@@ -60,13 +60,15 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
         APPLICANT_TYPE: 'Applicant Type',
         CREATED_DATE: 'created date',
         LAST_UPDATED: 'Last Updated',
+        APPLICANT_ID: 'Applicant ID'
     }
 
     const availableSortValueEnum = {
         'Applicant Name': 'APPLICANT_NAME',
         'Applicant Type': 'APPLICANT_TYPE',
         'created date': 'CREATED_DATE',
-        'Last Updated': 'LAST_UPDATED'
+        'Last Updated': 'LAST_UPDATED',
+        'Applicant ID' : 'APPLICANT_ID'
     }
 
     const handleClick = (event) => {
@@ -239,7 +241,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
                                                             position: "relative",
                                                             mt: "10px",
                                                             "&::before": {
-                                                                backgroundColor: "#857AEF",
+                                                                backgroundColor: "#0e5197",
                                                                 content: '""',
                                                                 display: "block",
                                                                 position: "absolute",
@@ -298,7 +300,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
                                                             position: "relative",
                                                             mt: "10px",
                                                             "&::before": {
-                                                                backgroundColor: "#857AEF",
+                                                                backgroundColor: "#0e5197",
                                                                 content: '""',
                                                                 display: "block",
                                                                 position: "absolute",
@@ -354,7 +356,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
                                                                 position: "relative",
                                                                 mt: "10px",
                                                                 "&::before": {
-                                                                    backgroundColor: "#857AEF",
+                                                                    backgroundColor: "#0e5197",
                                                                     content: '""',
                                                                     display: "block",
                                                                     position: "absolute",

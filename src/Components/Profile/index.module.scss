@@ -1,3 +1,4 @@
+@import "../../index.scss";
 .margin20 {
     margin: 20px;
 }
@@ -52,7 +53,8 @@
 }
 
 .profileImgStyle {
-    border: 2px solid #7165E3;
+    border: 2px solid $primarycolor
+;
     height: 100px;
     width: 100px;
     border-radius: 50%;
@@ -61,7 +63,8 @@
 .headingStyle {
     text-align: left;
     font: normal normal 600 16px/16px proxima-nova;
-    color: #7165E3;
+    color: $primarycolor
+;
     text-transform: capitalize;
 }
 
@@ -104,17 +107,20 @@
 }
 
 .outlinedButton {
-    border: 1px solid #7165E3;
+    border: 1px solid $primarycolor
+;
     border-radius: 4px;
     max-height: 35px;
     width: 160px;
     background-color: transparent;
-    color: #7165E3;
+    color: $primarycolor
+;
     font: normal normal normal 12px/14px proxima-nova;
 }
 
 .normalButton {
-    background: #7165E3 0% 0% no-repeat padding-box;
+    background: $primarycolor
+ 0% 0% no-repeat padding-box;
     border-radius: 4px;
     border: none;
     color: white;
@@ -165,7 +171,8 @@
 }
 
 .blueText {
-    color: #7165E3;
+    color: $primarycolor
+;
 }
 
 .uploadBox {

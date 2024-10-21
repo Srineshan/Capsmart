@@ -1,4 +1,5 @@
 @import "../../styles/mixins.scss";
+@import "../../index.scss";
 
 body {
   background: #f8fcff 0% 0% no-repeat padding-box;
@@ -121,7 +122,10 @@ body::-webkit-scrollbar {
 
 /* When the radio button is checked, add a blue background */
 .container input:checked~.checkmark {
-  background-color: #7165E3;
+  background-color: $primarycolor
+
+
+;
 }
 
 /* Create the indicator (the dot/circle - hidden when not checked) */
@@ -358,7 +362,7 @@ body::-webkit-scrollbar {
 }
 
 .documentPageHeader {
-  background: #beb9f2 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   height: 50px;
   width: 96%;
   margin-left: 2%;
@@ -369,7 +373,7 @@ body::-webkit-scrollbar {
 }
 
 .documentPageHeaderWithoutSite {
-  background: #beb9f2 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   height: 50px;
   width: 96%;
   margin-left: 2%;
@@ -470,7 +474,10 @@ body::-webkit-scrollbar {
   text-align: left;
   font: normal normal normal 11px/14px proxima-nova;
   letter-spacing: 0px;
-  color: #7165e3;
+  color: $primarycolor
+
+
+;
   opacity: 1;
   margin: 5px 0 0 10px;
 }
@@ -491,14 +498,20 @@ body::-webkit-scrollbar {
   text-align: left;
   font: normal normal bold 20px/18px proxima-nova;
   letter-spacing: 0px;
-  color: #7165e3;
+  color: $primarycolor
+
+
+;
 }
 
 .extensionStyle {
   text-align: left;
   font: normal normal bold 15px/13px proxima-nova;
   letter-spacing: 0px;
-  color: #7165e3;
+  color: $primarycolor
+
+
+;
 }
 
 .extensionBorder {
@@ -536,7 +549,10 @@ body::-webkit-scrollbar {
   // color: rgba(143, 153, 168, 0.5);
   // background-color: #f1f2f3;
   color: white !important;
-  background-color: #7165e3;
+  background-color: $primarycolor
+
+
+;
   height: 32px;
   min-width: 130px;
   border: none;
@@ -589,7 +605,7 @@ body::-webkit-scrollbar {
 }
 
 .welcomeMessage {
-  background: #ebe9fb 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   text-align: left;
   font: normal normal 300 13px/15px proxima-nova;
   letter-spacing: 0.9px;
@@ -671,7 +687,10 @@ body::-webkit-scrollbar {
 }
 
 .extentionBoxStyle {
-  border: 1px solid #7165e3;
+  border: 1px solid $primarycolor
+
+
+;
   border-radius: 8px;
   opacity: 1;
   width: 100%;
@@ -679,7 +698,10 @@ body::-webkit-scrollbar {
 }
 
 .serviceBoxStyle {
-  border: 1px solid #7165e3;
+  border: 1px solid $primarycolor
+
+
+;
   border-radius: 8px;
   opacity: 1;
   height: 60vh;
@@ -690,7 +712,10 @@ body::-webkit-scrollbar {
 }
 
 .deleteDraftBoxStyle {
-  border: 1px solid #7165e3;
+  border: 1px solid $primarycolor
+
+
+;
   border-radius: 8px;
   opacity: 1;
   height: 20vh;
@@ -700,7 +725,10 @@ body::-webkit-scrollbar {
 }
 
 .newContractFromCloneBoxStyle {
-  border: 1px solid #7165e3;
+  border: 1px solid $primarycolor
+
+
+;
   border-radius: 8px;
   opacity: 1;
   // height: calc(100vh - 160px);
@@ -750,13 +778,13 @@ body::-webkit-scrollbar {
 }
 
 .crossStyle {
-  color: linear-gradient(#7165e3, #ff6562) !important;
+  color: linear-gradient($primarycolor, #ff6562) !important;
   margin-bottom: 15px;
   cursor: pointer;
 }
 
 .newContractCrossStyle {
-  color: linear-gradient(#7165e3, #ff6562) !important;
+  color: linear-gradient($primarycolor, #ff6562) !important;
   cursor: pointer;
   margin-top: -10px;
   margin-right: -20px;
@@ -825,7 +853,10 @@ select {
 
 .contractCards:hover {
   background: linear-gradient(white, white) padding-box,
-    linear-gradient(to bottom, #7165e3, #ff6562) border-box;
+    linear-gradient(to bottom, $primarycolor
+
+
+, #ff6562) border-box;
   border-radius: 20px;
   border: 2px solid transparent;
 }
@@ -848,7 +879,10 @@ select {
 
 .selectedContractCard {
   background: linear-gradient(white, white) padding-box,
-    linear-gradient(to bottom, #7165e3, #ff6562) border-box;
+    linear-gradient(to bottom, $primarycolor
+
+
+, #ff6562) border-box;
   border-radius: 20px;
   border: 2px solid transparent;
 }
@@ -864,7 +898,10 @@ select {
 .nextButton {
   border-radius: 12px;
   opacity: 1;
-  background-color: #7165e3;
+  background-color: $primarycolor
+
+
+;
   color: white;
   border: none;
   height: 40px;
@@ -937,19 +974,34 @@ select {
 
 .outlinedButton {
   background-color: white;
-  color: #7165e3;
-  border: 1px solid #7165e3;
+  color: $primarycolor
+
+
+;
+  border: 1px solid $primarycolor
+
+
+;
   height: 40px;
   width: 140px;
   border-radius: 10px;
   margin-bottom: -20px;
-  box-shadow: 0px 3px 11px #7165e3;
+  box-shadow: 0px 3px 11px $primarycolor
+
+
+;
 }
 
 .newContractOutlinedButton {
   background-color: white;
-  color: #7165e3;
-  border: 1px solid #7165e3;
+  color: $primarycolor
+
+
+;
+  border: 1px solid $primarycolor
+
+
+;
   height: 40px;
   width: 180px;
   border-radius: 10px;
@@ -958,8 +1010,14 @@ select {
 
 .cloneOutlinedButton {
   background-color: white;
-  color: #7165e3;
-  border: 1px solid #7165e3;
+  color: $primarycolor
+
+
+;
+  border: 1px solid $primarycolor
+
+
+;
   height: 30px;
   min-width: 80px;
   padding-left: 40px;
@@ -968,20 +1026,35 @@ select {
 }
 
 .buttonStyle {
-  background-color: #7165e3;
+  background-color: $primarycolor
+
+
+;
   color: white;
-  border: 1px solid #7165e3;
+  border: 1px solid $primarycolor
+
+
+;
   height: 40px;
   width: 140px;
   border-radius: 10px;
   margin-bottom: -20px;
-  box-shadow: 0px 3px 11px #7165e3;
+  box-shadow: 0px 3px 11px $primarycolor
+
+
+;
 }
 
 .newContractButtonStyle {
-  background-color: #7165e3;
+  background-color: $primarycolor
+
+
+;
   color: white;
-  border: 1px solid #7165e3;
+  border: 1px solid $primarycolor
+
+
+;
   height: 40px;
   width: 180px;
   border-radius: 10px;
@@ -989,9 +1062,15 @@ select {
 }
 
 .cloneButtonStyle {
-  background-color: #7165e3;
+  background-color: $primarycolor
+
+
+;
   color: white;
-  border: 1px solid #7165e3;
+  border: 1px solid $primarycolor
+
+
+;
   height: 30px;
   min-width: 80px;
   padding-left: 40px;
@@ -1001,7 +1080,7 @@ select {
 
 .otherContractsButton {
   background: #f5f5f8 0% 0% no-repeat padding-box;
-  border: 0.4000000059604645px solid #d7d4f7;
+  border: 0.4000000059604645px solid $secondarycolor;
   border-radius: 6px;
   height: 40px;
   min-width: 140px;
@@ -1009,8 +1088,11 @@ select {
 }
 
 .myActiveContractsButton {
-  background: #7165e3 0% 0% no-repeat padding-box;
-  border: 0.4000000059604645px solid #d7d4f7;
+  background: $primarycolor
+
+
+ 0% 0% no-repeat padding-box;
+  border: 0.4000000059604645px solid $secondarycolor;
   color: #fff;
   border-radius: 6px;
   height: 40px;
@@ -1019,9 +1101,15 @@ select {
 }
 
 .timesheetNextButtonStyle {
-  background-color: #7165e3;
+  background-color: $primarycolor
+
+
+;
   color: white;
-  border: 1px solid #7165e3;
+  border: 1px solid $primarycolor
+
+
+;
   height: 35px;
   width: 120px;
   border-radius: 6px;
@@ -1143,7 +1231,7 @@ select {
 }
 
 .completedEntityCardStyle {
-  background-color: #d7d4f7;
+  background-color: $secondarycolor;
   color: black;
   font-weight: 600 !important;
   display: grid;
@@ -1185,12 +1273,21 @@ select {
 }
 
 .selectedContractEntityStyle {
-  border: 1px solid #7165e3;
-  color: #7165e3;
+  border: 1px solid $primarycolor
+
+
+;
+  color: $primarycolor
+
+
+;
 }
 
 .selectedColor {
-  color: #7165e3;
+  color: $primarycolor
+
+
+;
 }
 
 .smallHeadingStyle {
@@ -1198,7 +1295,10 @@ select {
   font: normal normal 600 17px/16px proxima-nova;
   letter-spacing: 0px;
   line-height: 20px;
-  color: #7165e3;
+  color: $primarycolor
+
+
+;
   opacity: 1;
 }
 
@@ -1248,7 +1348,10 @@ select {
 }
 
 .blueColor {
-  color: #7165e3;
+  color: $primarycolor
+
+
+;
 }
 
 .selectFieldWidth {
@@ -1438,10 +1541,10 @@ select {
 }
 
 .documentCard {
-  background-color: #ebe9fb;
+  background-color: $secondarycolor;
   padding: 10px 5px 5px 5px !important;
   border-radius: 6px;
-  border: 1px solid #d7d4f7;
+  border: 1px solid $secondarycolor;
 }
 
 .documentGrid {
@@ -1473,7 +1576,10 @@ select {
 }
 
 .proofBorder {
-  border: 1px solid #7165e3;
+  border: 1px solid $primarycolor
+
+
+;
   border-radius: 8px;
   overflow: scroll;
   margin-top: 10px;
@@ -1703,18 +1809,24 @@ select {
 
 .timesheetButtonStyle {
   background: #ebf2f7 0% 0% no-repeat padding-box;
-  border: 1px solid #7165e3;
+  border: 1px solid $primarycolor
+
+
+;
   border-radius: 6px 6px 0px 0px;
   min-width: 180px;
   height: 40px;
 }
 
 .selectedTimesheetButton {
-  background: #d7d4f7 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
 }
 
 .timeSheetBoxStyle {
-  border: 1px solid #7165e3;
+  border: 1px solid $primarycolor
+
+
+;
   border-radius: 0px 6px 0px 0px;
   opacity: 1;
   height: calc(100vh - 160px);
@@ -1758,7 +1870,10 @@ input[type="file"] {
   font-size: 14px;
   line-height: 1.25;
   background-color: #f1f2f3;
-  color: #7165e3;
+  color: $primarycolor
+
+
+;
   border: none;
   position: relative;
   top: 7px;
@@ -1789,7 +1904,10 @@ input[type="file"] {
 
 .purpleTitle {
   font: normal 15px/13px proxima-nova;
-  color: #7165e3;
+  color: $primarycolor
+
+
+;
   font-size: 15px;
   text-align: left;
   min-width: 100vw;
@@ -1805,7 +1923,10 @@ input[type="file"] {
 
 .popUpHeading {
   font: bold 18px/15px proxima-nova;
-  color: #7165e3;
+  color: $primarycolor
+
+
+;
 }
 
 .popUpHeaderBlock {
@@ -1852,7 +1973,10 @@ input[type="file"] {
 }
 
 .addStyle {
-  background: #7165e3 0% 0% no-repeat padding-box;
+  background: $primarycolor
+
+
+ 0% 0% no-repeat padding-box;
   box-shadow: 0px 0px 6px #00000029;
   border-radius: 8px;
   height: 33px;
@@ -1860,7 +1984,10 @@ input[type="file"] {
 }
 
 .addSmallStyle {
-  background: #7165e3 0% 0% no-repeat padding-box;
+  background: $primarycolor
+
+
+ 0% 0% no-repeat padding-box;
   box-shadow: 0px 0px 6px #00000029;
   border-radius: 4px;
   height: 23px;
@@ -1874,7 +2001,10 @@ input[type="file"] {
 }
 
 .addAddonServiceButton {
-  background: #7165e3 0% 0% no-repeat padding-box;
+  background: $primarycolor
+
+
+ 0% 0% no-repeat padding-box;
   box-shadow: 0px 0px 6px #00000029;
   border-radius: 6px;
   font: normal normal medium 20px/27px proxima-nova;
@@ -1885,7 +2015,10 @@ input[type="file"] {
 }
 
 .addCptCodeButton {
-  background: #7165e3 0% 0% no-repeat padding-box;
+  background: $primarycolor
+
+
+ 0% 0% no-repeat padding-box;
   box-shadow: 0px 0px 6px #00000029;
   border-radius: 6px;
   font: normal normal bolder 14px/18px proxima-nova;
@@ -1906,8 +2039,14 @@ input[type="file"] {
 }
 
 .addonAddBox {
-  border: 1px solid #7165e3;
-  box-shadow: 0px 1px 6px #7165e3;
+  border: 1px solid $primarycolor
+
+
+;
+  box-shadow: 0px 1px 6px $primarycolor
+
+
+;
   border-radius: 8px;
   padding: 20px 10px;
 }
@@ -1926,7 +2065,10 @@ input[type="file"] {
 .additionalDetailsSelected {
   background: #dbd8fa 0% 0% no-repeat padding-box;
   box-shadow: 0px 1px 4px #0000001f;
-  border: 0.30000001192092896px solid #7165e3;
+  border: 0.30000001192092896px solid $primarycolor
+
+
+;
 }
 
 .additionalDetailsTextStyle {
@@ -1960,7 +2102,10 @@ input[type="file"] {
 
 .blueChip {
   background: #dbd8fa 0% 0% no-repeat padding-box;
-  color: #7165e3;
+  color: $primarycolor
+
+
+;
 }
 
 .redChip {
@@ -1977,7 +2122,7 @@ input[type="file"] {
 }
 
 .selectedAdministrativeCardStyle {
-  background-color: #ebe9fb;
+  background-color: $secondarycolor;
   margin: 0 -20px;
   padding: 0 20px;
 }
@@ -2004,7 +2149,10 @@ input[type="file"] {
   text-align: left;
   font: normal normal medium 13px/18px proxima-nova;
   letter-spacing: 0px;
-  color: #7165e3;
+  color: $primarycolor
+
+
+;
 }
 
 .disabledOpacity {
@@ -2012,7 +2160,7 @@ input[type="file"] {
 }
 
 .actionsCard {
-  background: #857aef 0% 0% no-repeat padding-box;
+  background: $primarycolor 0% 0% no-repeat padding-box;
   border: none;
   border-radius: 4px;
 }
@@ -2027,8 +2175,14 @@ input[type="file"] {
 
 .specificActionCard:hover {
   background: #f5f9fc 0% 0% no-repeat padding-box;
-  color: #7165e3;
-  border: 1px solid #7165e3;
+  color: $primarycolor
+
+
+;
+  border: 1px solid $primarycolor
+
+
+;
   border-radius: 4px;
 }
 
@@ -2085,7 +2239,7 @@ input[type="file"] {
 }
 
 .selectedOptionstyle {
-  background: #ebe9fb 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
 }
 
 .contractScrollStyle {
@@ -2141,7 +2295,10 @@ input[type="file"] {
 
 .popUpPreImplementationHeading {
   font: bold 15px/15px proxima-nova;
-  color: #7165e3;
+  color: $primarycolor
+
+
+;
 }
 
 .popUpPreImplementationSubHeading {
@@ -2151,7 +2308,10 @@ input[type="file"] {
 
 .popUpPreImplementationTitle {
   font: bold 13px/15px proxima-nova;
-  color: #7165e3;
+  color: $primarycolor
+
+
+;
 }
 
 .preImplementationGrid {
@@ -2181,7 +2341,10 @@ input[type="number"] {
   text-align: left;
   font: normal normal normal 14px/14px proxima-nova;
   letter-spacing: 0px;
-  color: #7165e3;
+  color: $primarycolor
+
+
+;
   text-transform: uppercase;
 }
 
@@ -2189,7 +2352,10 @@ input[type="number"] {
   text-align: center;
   font: normal normal normal 12px/12px proxima-nova;
   letter-spacing: 0px;
-  color: #7165e3;
+  color: $primarycolor
+
+
+;
   text-transform: capitalize;
 }
 
@@ -2367,7 +2533,10 @@ input[type="number"] {
 
 .addServiceCountStyle {
   background: #ffffff 0% 0% no-repeat padding-box;
-  border: 1px solid #7165e3;
+  border: 1px solid $primarycolor
+
+
+;
   height: 15px;
   width: 15px;
   position: absolute;
@@ -2390,7 +2559,7 @@ input[type="number"] {
 }
 
 .tableHeader {
-  background: #beb9f2 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   min-height: 50px;
   width: 100%;
   border-radius: 6px;
@@ -2465,13 +2634,19 @@ input[type="number"] {
 }
 
 .selectedDay {
-  background: #7165e3 0% 0% no-repeat padding-box;
+  background: $primarycolor
+
+
+ 0% 0% no-repeat padding-box;
   color: white;
 }
 
 .dateNotSet {
   font: normal normal 600 23px/30px proxima-nova;
-  color: #7165e3;
+  color: $primarycolor
+
+
+;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
@@ -2511,7 +2686,10 @@ input[type="number"] {
 .moveToDraftHeaderBox {
   height: 80px;
   width: 100%;
-  background-color: #7165e3;
+  background-color: $primarycolor
+
+
+;
   border-radius: 6px 6px 0 0;
 }
 
@@ -2560,7 +2738,10 @@ input[type="number"] {
   text-align: left;
   font: normal normal 600 15px/23px proxima-nova;
   letter-spacing: 0px;
-  color: #7165E3;
+  color: $primarycolor
+
+
+;
   text-transform: uppercase;
 }
 
@@ -2568,7 +2749,10 @@ input[type="number"] {
   text-align: left;
   font: normal normal normal 12px/23px proxima-nova;
   letter-spacing: 0px;
-  color: #7165E3;
+  color: $primarycolor
+
+
+;
   text-transform: capitalize;
   opacity: 0.88;
 }
@@ -2591,7 +2775,10 @@ input[type="number"] {
 
 .trackPeriodCard {
   background: #F1EFFC 0% 0% no-repeat padding-box;
-  border: 1px solid #7165E3;
+  border: 1px solid $primarycolor
+
+
+;
   border-radius: 8px;
   height: 60px;
 }
@@ -2599,18 +2786,27 @@ input[type="number"] {
 .trackPeriodOptionsCard {
   background: #F1EFFC 0% 0% no-repeat padding-box;
   height: 40px;
-  border: 1px solid #7165E3;
+  border: 1px solid $primarycolor
+
+
+;
   border-top: 0;
   padding-left: 20px;
 }
 
 .trackPeriodOptionsCard:hover {
   background: #F1EFFC 0% 0% no-repeat padding-box;
-  border: 1px solid #7165E3;
+  border: 1px solid $primarycolor
+
+
+;
 }
 
 // .intervalPeriodBorder {
-//   border: 1px solid #7165E3;
+//   border: 1px solid $primarycolor
+
+
+;
 //   border-top: 0px;
 //   border-bottom: 0px;
 //   border-radius: 8px;
@@ -2759,8 +2955,14 @@ input[type="number"] {
 }
 
 .selectedPaymentTabStyle {
-  color: #7165E3;
-  border: 1px solid #7165E3;
+  color: $primarycolor
+
+
+;
+  border: 1px solid $primarycolor
+
+
+;
   background-color: #F1EFFC;
 }
 
