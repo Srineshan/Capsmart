@@ -43,12 +43,12 @@ const NewCredCommApplication = ({
   isEditable,
   selectedTab,
   getCredCommApplicationView,
-  approveView 
+//   approveView 
 }) => {
   console.log('contract Type', contractType)
   const [applicationId, setApplicationId] = useState(sessionStorage.getItem('applicationId'));
   const [form, setForm] = useState();
-  const [form2, setForm2] = useState();
+  const [credApproval, setCredApproval] = useState();
   const contractStatus = sessionStorage.getItem("Selected Contract Status");
   const [selectContractInfo, setSelectContractInfo] = useState(contractType?.value);
   const [deleteExecutedContractDialog, setDeleteExecutedContractDialog] =
@@ -192,6 +192,10 @@ const NewCredCommApplication = ({
     }
   }, [contractSelected])
 
+  useEffect(() => {
+    approveView();
+  }, []);
+
   const getPrevContractData = async () => {
     const { data: contractData } = await GET(
       `contract-managment-service/contracts/${contractSelected?.contractDetail?.priorContractRefId?.id}/contractDetail`
@@ -312,26 +316,28 @@ const NewCredCommApplication = ({
     getPreApplication();
   }
 
-  useEffect(() => {
-    approveView();
-  }, []);
+ 
 
-//   const approveView = async () => {
-//     const roleMap = {
-//         'level-2': "Department Head",
-//         'level-1': "Credentialing Committee",
-//         'mac': "Advisory Committee",
-//         'bod': "Board"
-//       };
+  const approveView = async () => {
+    const roleMap = {
+        'level-2': "Department Head",
+        'level-1': "Credentialing Committee",
+        'mac': "Advisory Committee",
+        'bod': "Board"
+      };
+      console.log("roleMap" + roleMap);
+      
 
-//       const role = roleMap[selectedTab] || "Credentialing Committee";
+      const role = roleMap[selectedTab];
+      console.log("roleeeeee1" + role);
+      
 
-//         const { data: basicApproval } = await GET(
-//           `application-management-service/application/${applicationId}/approvalRequiredForms?role=${role}`
-//         );
-//         setForm2(basicApproval)  
-//         console.log("basicApproval" + JSON.stringify(form2));     
-//   }
+        const { data: basicApproval } = await GET(
+          `application-management-service/application/${applicationId}/approvalRequiredForms?role=${role}`
+        );
+        setCredApproval(basicApproval)  
+        console.log("basicApproval" + JSON.stringify(credApproval));     
+  }
 
   const handleStepsVerify = async (formId) => {
     await PUT(`application-management-service/application/${applicationId}/form/${formId}/APPROVED`)
@@ -915,7 +921,7 @@ const NewCredCommApplication = ({
                 <div className= {`${style.tableHeaderGridStyleCred}`}>
                 <div className={`${style.overallStatus}`}>Overall Status Of Application</div>
                 <div className={`${style.greenDotStyle} ${style.marginTop20} ${style.cursorPointer}`} 
-                onClick={approveView}
+                // onClick={approveView}
                 ></div>
                 </div>
                 
@@ -1120,10 +1126,11 @@ const NewCredCommApplication = ({
                        
                         {expand?.status && expand?.index === index + 1 && (
                             <>
-                                {form2?.filter(
+                                {credApproval?.filter(
                                 (newData) =>{console.log("newData.schema:", newData.schemaId);
                                     console.log("data.id:", data.id);
-                                   return newData.schemaId === data.id}
+                                   return newData.schemaId === data.id
+                                }
                                 )[0]?.approvalRequired === true ? (
                                 <>
                                     {form?.forms[index]?.status !== "APPROVED" ? (

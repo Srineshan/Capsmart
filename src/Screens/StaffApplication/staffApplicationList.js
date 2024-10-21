@@ -36,7 +36,8 @@ const StaffApplicationList = ({
   selectedTab,
   getActiveApplicationView,
   getActiveApplicationTask,
-  getCredCommApplicationView
+  getCredCommApplicationView,
+  getTitleCounts
 }) => {
   const PDFRef = createRef();
   const navigate = useNavigate();
@@ -55,11 +56,12 @@ const StaffApplicationList = ({
     applicationsRejected: 0,
     applicationsApprovedButDenied: 0,
   });
-  const [form2, setForm2] = useState();
   const [tableData, setTableData] = useState([]);
   const [rejectionListData, setRejectionListData] = useState([]);
   const [sortField, setSortField] = useState('DEFAULT');
   const [sortValue, setSortValue] = useState('ASCENDING');
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
 
   const applicantHeaderValues = [
     "",
@@ -280,6 +282,15 @@ const StaffApplicationList = ({
   const [showApplicationRejectionDialog, setShowApplicationRejectionDialog] =
     useState(false);
   const [showCheckListDialog, setShowCheckListDialog] = useState(false);
+  const [reFetchMetaData, setReFetchMetaData] = useState(false)
+  // const [counts, setCounts] = useState({
+  //   chiefOfStaff: 0,
+  //   credentialingCommittee: 0,
+  //   mac: 0,
+  //   bod: 0,
+  //   'level-1' :0,
+  //   'level-2' :0,
+  // });
 
   // useEffect(() => {
   //   getPreApplication();
@@ -291,6 +302,10 @@ const StaffApplicationList = ({
   //   );
   //   setForm(basicForm)
   // }
+
+  const getReFetchMetaData = (value) => {
+    setReFetchMetaData(value);
+}
 
   const getApplicationRejectionDialog = (value) => {
     setShowApplicationRejectionDialog(value);
@@ -307,7 +322,6 @@ const StaffApplicationList = ({
   };
   const onClickViewAndApproveCredCommFunction = (data) => {
     getCredCommApplicationView(true);
-    approveView(data?.id)
     sessionStorage.setItem("applicationId", data?.id);
   };
   const onClickProcessingTaskFunction = (data) => {
@@ -325,11 +339,26 @@ const StaffApplicationList = ({
     sessionStorage.setItem("applicationId", data?.id);
   };
 
+  
+
+  
+  // const getTitleCounts = async () => {
+  //   await GET('application-management-service/application/workflowUser/meta')
+  //     .then(response => {
+  //       setCounts(response?.data);
+  //       var str = JSON.stringify(response?.data);
+  //       console.log("titlesssss" + str)
+  //     })
+  //     .catch(error => {
+  //       console.log('error', error);
+  //     })
+  // };
   const getApplicationStart = async (id) => { 
     await PUT(`application-management-service/application/${id}/workflow/start`)
       .then(response => {
         console.log('successfullllllll')
-        window.location.reload();
+        getWorkflowUserData();
+        getTitleCounts();
       })  
       .catch((error) => {
         console.log("errorrrrrrrrr")
@@ -367,7 +396,8 @@ const StaffApplicationList = ({
     await PUT(`application-management-service/application/${id}/workflow/move?isDelegate=${isDelegate}`,requestData)
       .then(response => {
         console.log('successfull')
-        window.location.reload();
+        getWorkflowUserData();
+        setReFetchMetaData(true)
       })  
       .catch((error) => {
         console.log(error)
@@ -375,28 +405,7 @@ const StaffApplicationList = ({
       // getPreApplication();
   }
 
-  const approveView = async (id) => {
-    let role;
-
-    if(selectedTab === 'level-2') {
-      role = "Department Head";
-    } else if (selectedTab === 'level-1') {
-      role = "Credentialing Committee";
-    } else if (selectedTab === 'mac') {
-      role = "Advisory Committee";
-    } else if (selectedTab === 'bod') {
-      role = "Board";
-    } else {
-      role = "Chief Of Staff";
-    }
-
-        const { data: basicApproval } = await GET(
-          `application-management-service/application/${id}/approvalRequiredForms?role=${role}`
-        );
-        setForm2(basicApproval)  
-        console.log("basicApprovalllllllllllll" + JSON.stringify(form2));     
-  }
-
+  
   useEffect(() => {
     getSentConfirmationCount();
     // getRequestAppointmentCount();
@@ -405,7 +414,7 @@ const StaffApplicationList = ({
 
   useEffect(() => {
     getWorkflowUserData(selectedTab);
-  }, [selectedTab,sortField, sortValue]);
+  }, [selectedTab,sortField, sortValue,page]);
 
 
   useEffect(() => {
@@ -420,7 +429,7 @@ const StaffApplicationList = ({
     try {
       const response = await GET(
         // `application-management-service/application/workflowUser?tab=${selectedTab}`
-         `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}`
+         `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&offset=${page-1}&limit=${10}`
       );
       console.log("Application data", response?.data.applications);
       setTableData(response?.data?.applications);
@@ -1310,10 +1319,10 @@ const StaffApplicationList = ({
     //   requiredValue: "boolean",
     //   onClick: onClickMoveToNextFunction,
     // },
-    // { data: "Review & Approve", requiredValue: "boolean", onClick: onClickViewAndApproveCredCommFunction },
-    // { data: "Move to MAC", requiredValue: "boolean", onClick: onClickMoveToNextFunction },
-    { data: "Review & Approve", requiredValue: "boolean", onClick: "" },
-    { data: "Move to MAC", requiredValue: "boolean", onClick: "" },
+    { data: "Review & Approve", requiredValue: "boolean", onClick: onClickViewAndApproveCredCommFunction },
+    { data: "Move to MAC", requiredValue: "boolean", onClick: onClickMoveToNextFunction },
+    // { data: "Review & Approve", requiredValue: "boolean", onClick: "" },
+    // { data: "Move to MAC", requiredValue: "boolean", onClick: "" },
     {
       data: "Request For Clarification",
       requiredValue: "boolean",
@@ -1373,7 +1382,7 @@ const StaffApplicationList = ({
     //   requiredValue: "boolean",
     //   onClick: "",
     // },
-    { data: "BOD Approval Status", requiredValue: "boolean", onClick: "" },
+    { data: "BOD Approval Status", requiredValue: "boolean", onClick: onClickMoveToNextFunction },
     { data: "Print Summary For BOD", requiredValue: "boolean", onClick: "" },
     { data: "Applicant Processing Tasks", requiredValue: "boolean", onClick: "" },
   ];
@@ -1814,6 +1823,8 @@ const StaffApplicationList = ({
             <StaffApplicationTiles
               getSelectedTab={getSelectedTab}
               selectedTab={selectedTab}
+              reFetchMetaData={reFetchMetaData}
+              getReFetchMetadata = {getReFetchMetaData}
             />
 
             <div className={`${style.spaceBetween} ${style.marginLeft} `}>

@@ -8,7 +8,7 @@ import ValidationDialog from '../../Components/validationDialog';
 import TaskStatusDialog from '../../Components/TaskStatusDialog';
 
 const StaffApplication = () => {
-    const [selectedTab, setSelectedTab] = useState('applicantsToProcess');
+    const [selectedTab, setSelectedTab] = useState('');
     const [activeApplicationView, setActiveApplicationView] = useState(false);
     const [credCommApplicationView, setCredCommApplicationView] = useState(false);
     const [activeApplicationTask, setActiveApplicationTask] = useState(false);

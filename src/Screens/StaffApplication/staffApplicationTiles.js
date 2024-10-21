@@ -5,11 +5,11 @@ import { GET } from './../../Screens/dataSaver';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 
-const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
+const StaffApplicationTiles = ({ getSelectedTab, selectedTab,reFetchMetaData,getReFetchMetaData }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const user = jwt(userDetails);
-  const [userRole, setUserRole] = useState('');
+  const [userRole, setUserRole] = useState('Credentialing Committee');
   const [counts, setCounts] = useState({
     chiefOfStaff: 0,
     credentialingCommittee: 0,
@@ -27,11 +27,18 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
         setCounts(response?.data);
         var str = JSON.stringify(response?.data);
         console.log("titlesssss" + str)
+        getReFetchMetaData(false)
       })
       .catch(error => {
         console.log('error', error);
       })
   };
+
+  useEffect(() =>{
+    if(reFetchMetaData === true){
+      getTitleCounts();
+    }
+  },[reFetchMetaData] )
 
   useEffect(() => {
     console.log("userRoleeeeeee" + userRole);
@@ -61,16 +68,17 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
       //   }
       // };
 
-        useEffect(() => {
-          setUserDetails();
-      }, [user?.id])
+    //     useEffect(() => {
+    //       setUserDetails();
+    //   }, [user?.id])
 
-    const setUserDetails = async () => {
-        const { data: userData } = await GET(`user-management-service/user/${user?.id}`);
-        console.log("userdataaaa" + JSON.stringify(userData))
-        sessionStorage.setItem('user', JSON.stringify(userData))
-        setUserRole(userData?.roles?.map((data) => data?.roleName));  
-    }
+    // const setUserDetails = async () => {
+    //     const { data: userData } = await GET(`user-management-service/user/${user?.id}`);
+    //     console.log("userdataaaa" + JSON.stringify(userData))
+    //     sessionStorage.setItem('user', JSON.stringify(userData))
+    //     setUserRole(userData?.roles?.map((data) => data?.roleName));  
+    // }
+
   return (
     <div className={`${style.tabs}`}>
       {(userRole?.includes('Staff Manager') || userRole?.includes('Chief Of Staff')) && (
@@ -86,7 +94,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
       <TileApplication
         selectedTab={selectedTab}
         getSelectedTab={getSelectedTab}
-        tileLabel="Department Head"
+        tileLabel={userRole?.includes('Department Head') ? "Applicants to Verify" : "Cred. Comm."}
         tileCount={counts['level-2']}
         currentTile="level-2"
       />
@@ -95,7 +103,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
       <TileApplication
         selectedTab={selectedTab}
         getSelectedTab={getSelectedTab}
-        tileLabel="Cred. Comm."
+        tileLabel={userRole?.includes('Credentialing Committee') ? "Applicants to Verify" : "Cred. Comm."}
         tileCount={counts['level-1']}
         currentTile="level-1"
       />
@@ -104,7 +112,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
       <TileApplication
         selectedTab={selectedTab}
         getSelectedTab={getSelectedTab}
-        tileLabel="MAC"
+        tileLabel={userRole?.includes('Advisory Committee') ? "Applicants to Verify" : "MAC"}
         tileCount={counts?.mac}
         currentTile="mac"
       />
@@ -113,7 +121,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
       <TileApplication
         selectedTab={selectedTab}
         getSelectedTab={getSelectedTab}
-        tileLabel="BOD"
+        tileLabel={userRole?.includes('Board') ? "Applicants to Verify" : "BOD"}
         tileCount={counts?.bod}
         currentTile="bod"
       />
