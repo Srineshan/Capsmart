@@ -1,3 +1,4 @@
+@import "../../index.scss";
 .welcomeDialog {
     height: 75%;
     width: 65% !important;
@@ -9,7 +10,8 @@
 }
 
 .loginDialogBackground {
-    background: #7165E3 0% 0% no-repeat padding-box !important;
+    background: $primarycolor
+ 0% 0% no-repeat padding-box !important;
     padding: 20px 40px 0px 40px;
     border-radius: 20px !important;
 }
@@ -36,7 +38,8 @@
     text-align: left;
     font: normal normal normal 25px/40px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor
+;
 }
 
 .bold {
@@ -74,7 +77,8 @@
     text-align: center;
     font: normal normal bold 40px/62px proxima-nova;
     letter-spacing: 0px;
-    color: #7165E3;
+    color: $primarycolor
+;
 }
 
 .descriptionStyle {
@@ -107,7 +111,7 @@
 }
 
 .daysToCompleteCard {
-    // background: #7165E3 0% 0% no-repeat padding-box;
+    // background: $primarycolor 0% 0% no-repeat padding-box;
     // box-shadow: 0px 5px 20px #52575D4D;
     // border-radius: 12px;
     // margin: 0 -40px;
@@ -138,11 +142,12 @@
     text-decoration: underline;
     font: normal normal bold 14px/30px proxima-nova;
     letter-spacing: 0px;
-    color: #2b16e4;
+    color:$primarycolor;
 }
 
 .continue {
-    background: #7165E3 0% 0% no-repeat padding-box;
+    background: $primarycolor
+ 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 8px;
     text-align: center;
@@ -173,7 +178,7 @@
 }
 
 .descriptionContainer {
-    background: #ebe9fb 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     border-radius: 16px;
     width: 80%;
     padding: 80px 60px;
@@ -272,7 +277,8 @@
     width: 40%;
     max-width: 700px !important;
     margin: 0 auto;
-    box-shadow: 0 20px 0px #7165E3 !important;
+    box-shadow: 0 20px 0px $primarycolor
+ !important;
     border-radius: 15px !important;
 }
 

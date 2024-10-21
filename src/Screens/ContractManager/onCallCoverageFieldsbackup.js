@@ -2503,7 +2503,7 @@ const OnCallCoverageFieldsBackup = ({
                     <TaskAltIcon
                       sx={{
                         color: additionalDetailsValue?.includes(data)
-                          ? "#7165E3"
+                          ? "#0e5197"
                           : "#E4E4E4",
                       }}
                     />
@@ -2532,7 +2532,7 @@ const OnCallCoverageFieldsBackup = ({
                       >
                         {CPTCode.map((name) => (
                           <MenuItem key={name} value={name?.description}>
-                            <Checkbox checked={CPTCode?.map(data => data?.description)?.includes(name?.description)} style={{ color: '#7165E3' }} />
+                            <Checkbox checked={CPTCode?.map(data => data?.description)?.includes(name?.description)} style={{ color: '#0e5197' }} />
                             <ListItemText primary={name?.description} />
                           </MenuItem>
                         ))}

@@ -1,3 +1,4 @@
+@import "../../index.scss";
 .bigCardStyle {
     height: calc(100vh - 255px);
     overflow: scroll;
@@ -83,7 +84,7 @@
 .filterHeading {
     text-align: left;
     font: normal normal bold 14px/14px proxima-nova;
-    color: #7165E3;
+    color: $primarycolor;
     text-transform: uppercase;
 }
 
@@ -148,7 +149,7 @@
 }
 
 .purpleText {
-    color: #7165E3;
+    color: $primarycolor;
 }
 
 .textAlignLeft {

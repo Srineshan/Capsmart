@@ -436,10 +436,11 @@ const SiteUsers = ({ getActiveStep }) => {
               </div>
             </div>
             <p
-              className={`${isSuperAdminAccess
-                ? style.entityTextColor
-                : style.entityTextColor4grid
-                } ${style.activeEntityTextColor}`}
+              className={`${
+                isSuperAdminAccess
+                  ? style.entityTextColor
+                  : style.entityTextColor4grid
+              } ${style.activeEntityTextColor}`}
             >
               ENTITY SETUP
             </p>
@@ -457,10 +458,11 @@ const SiteUsers = ({ getActiveStep }) => {
               </div>
             </div>
             <p
-              className={`${isSuperAdminAccess
-                ? style.entityTextColor
-                : style.entityTextColor4grid
-                } ${style.activeEntityTextColor}`}
+              className={`${
+                isSuperAdminAccess
+                  ? style.entityTextColor
+                  : style.entityTextColor4grid
+              } ${style.activeEntityTextColor}`}
             >
               SITES FOR APP USE
             </p>
@@ -479,10 +481,11 @@ const SiteUsers = ({ getActiveStep }) => {
                 </div>
               </div>
               <p
-                className={`${isSuperAdminAccess
-                  ? style.entityTextColor
-                  : style.entityTextColor4grid
-                  } ${style.activeEntityTextColor}`}
+                className={`${
+                  isSuperAdminAccess
+                    ? style.entityTextColor
+                    : style.entityTextColor4grid
+                } ${style.activeEntityTextColor}`}
               >
                 ENTITY SYSTEM ADMIN
               </p>
@@ -501,10 +504,11 @@ const SiteUsers = ({ getActiveStep }) => {
               </div>
             </div>
             <p
-              className={`${isSuperAdminAccess
-                ? style.entityTextColor
-                : style.entityTextColor4grid
-                } ${style.activeEntityTextColor}`}
+              className={`${
+                isSuperAdminAccess
+                  ? style.entityTextColor
+                  : style.entityTextColor4grid
+              } ${style.activeEntityTextColor}`}
             >
               APP USERS
             </p>
@@ -732,7 +736,7 @@ const SiteUsers = ({ getActiveStep }) => {
                               checked={selectedRoles
                                 ?.map((data) => data?.id)
                                 ?.includes(option?.id)}
-                              style={{ color: "#7165E3" }}
+                              style={{ color: "#0e5197" }}
                             />
                           </ListItemIcon>
                           <ListItemText primary={option?.roleName} />

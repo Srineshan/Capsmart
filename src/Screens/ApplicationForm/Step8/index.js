@@ -6,7 +6,7 @@ import ApplicationAssistanceCard from '../../../Components/ApplicationAssistance
 import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
-import { DELETE, GET, POST } from '../../dataSaver';
+import { DELETE, GET, POST, PUT } from '../../dataSaver';
 import { useNavigate } from 'react-router-dom';
 import { Icon } from '@blueprintjs/core';
 import { format } from 'date-fns';
@@ -30,11 +30,12 @@ import ESignature from '../../../Components/ESignature';
 import CommonRadio from '../../../Components/CommonFields/CommonRadio';
 import AlertDialog from '../../../Components/AlertDialog';
 
-const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
+const Step8 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) => {
     const [isSigned, setIsSigned] = useState(false);
     const [isRestrictedSigned, setIsRestrictedSigned] = useState(false);
     const [isAdditionalSigned, setIsAdditionalSigned] = useState(false);
     const [formSchema, setFormSchema] = useState();
+    const [formSchemaWholeObject, setFormSchemaWholeObject] = useState();
     const [staffPrivilege, setStaffPrivilege] = useState([]);
     const [selectedPrivilege, setSelectedPrivilege] = useState('');
     const [selectedPrivilegeForDisplay, setSelectedPrivilegeForDisplay] = useState([]);
@@ -98,6 +99,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                 `application-management-service/formSchema/${basicForm?.formSchemas?.[6]?.id}`
             );
             setFormSchema(form?.schema)
+            setFormSchemaWholeObject(form)
         }
     }
 
@@ -136,8 +138,16 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
             }));
             formData.append('documents', file);
             try {
-                const response = await POST(`application-management-service/application/${applicationId}/files`, formData);
+                const response = await POST(`application-management-service/application/${applicationId}/files?isLLMRequired=${formSchemaWholeObject?.requiredDocuments?.length !== 0 ? true : false}&schemaId=${formSchemaWholeObject?.id}`, formData);
                 SuccessToaster('File Uploaded Successfully');
+                try {
+                    if (response?.data?.classification !== null && formSchemaWholeObject?.requiredDocuments?.length !== 0) {
+                        await PUT(`application-management-service/application/${applicationId}/form/updateData`, { documentType: response?.data?.classification !== null ? response?.data?.classification : '', fileSize: `${(file?.size / (1024 * 1024)).toFixed(2)} Mb`, fileURL: response?.data?.fileURL, fileType: response?.data?.fileType, fileUploaded: file?.name, requirement: response?.data?.classification !== null ? basicForm?.documentsRequired?.filter(data => data?.document?.name === response?.data?.classification)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data?.valid, verified: response?.data?.verified });
+                    }
+                    console.log(response);
+                } catch (error) {
+                    console.log(error);
+                }
                 console.log(response?.data);
                 return response?.data;
             } catch (error) {
@@ -172,6 +182,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
             .then((response) => {
                 SuccessToaster("Application Updated Successfully");
                 // SuccessToaster('Error Logged Successfully');
+                getPreApplication()
             })
             .catch((error) => {
                 ErrorToaster("Unexpected Error Updating Application");
@@ -362,7 +373,8 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                     .privileges[privilegesIndex].response = value;
             } else if (key === 'notes') {
                 if (temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories[categoriesIndex]
-                    .privileges[privilegesIndex].notes === undefined) {
+                    .privileges[privilegesIndex].notes === undefined || temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories[categoriesIndex]
+                        .privileges[privilegesIndex].notes === null) {
                     temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories[categoriesIndex]
                         .privileges[privilegesIndex].notes = {}
                 }
@@ -485,7 +497,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                                                                 <div className={style.marginTop}>
                                                                     <CKEditor
                                                                         editor={ClassicEditor}
-                                                                        data={privileges?.notes?.notes || null}
+                                                                        data={privileges?.notes?.notes || ''}
                                                                         onChange={(event, editor) => {
                                                                             const data = editor.getData();
                                                                             handleRestrictedSelection(index, categoriesIndex, privilegesIndex, data, 'notes');
@@ -521,7 +533,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                                                                 <div className={style.marginTop10}>
                                                                     <div className={`${style.uploadButton}`}>
                                                                         <div className={style.uploadGrid}>
-                                                                            {privileges?.file !== undefined ? (
+                                                                            {(privileges?.file !== undefined && privileges?.file !== null) ? (
                                                                                 <img src={VerifiedImage} alt="" className={`${style.imgIcon} `} />
                                                                             ) : (
                                                                                 <img src={ToBeVerifiedImage} alt="" className={style.imgIcon} />
@@ -720,7 +732,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                                                                                         <div className={style.marginTop}>
                                                                                             <CKEditor
                                                                                                 editor={ClassicEditor}
-                                                                                                data={privileges?.notes?.notes || null}
+                                                                                                data={privileges?.notes?.notes || ''}
                                                                                                 onChange={(event, editor) => {
                                                                                                     const data = editor.getData();
                                                                                                     handleAdditionalRestrictedSelection(index, categoriesIndex, privilegesIndex, data, 'notes');
@@ -756,7 +768,7 @@ const Step8 = ({ basicForm, setBasicForm, applicationId }) => {
                                                                                         <div className={style.marginTop10}>
                                                                                             <div className={`${style.uploadButton}`}>
                                                                                                 <div className={style.uploadGrid}>
-                                                                                                    {privileges?.file !== undefined ? (
+                                                                                                    {(privileges?.file !== undefined && privileges?.file !== null) ? (
                                                                                                         <img src={VerifiedImage} alt="" className={`${style.imgIcon}`} />
                                                                                                     ) : (
                                                                                                         <img src={ToBeVerifiedImage} alt="" className={style.imgIcon} />

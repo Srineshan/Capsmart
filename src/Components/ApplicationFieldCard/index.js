@@ -23,7 +23,7 @@ import { TextArea } from '@blueprintjs/core';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import CommonDivider from '../CommonFields/CommonDivider';
-import { POST, GET } from '../../Screens/dataSaver';
+import { POST, GET, PUT } from '../../Screens/dataSaver';
 import DatalistInput, { useComboboxControls } from "react-datalist-input";
 import "react-datalist-input/dist/styles.css";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -67,7 +67,8 @@ const ApplicationFieldCard = ({
     showValidationDialog,
     setShowValidationDialog,
     isAddMore,
-    setIsAddMore
+    setIsAddMore,
+    formSchema
 }) => {
     const [calendarStart, setCalendarStart] = useState(false);
     const { section, step } = useParams();
@@ -153,9 +154,19 @@ const ApplicationFieldCard = ({
         console.log(fileNameArray);
         try {
             const response = await POST(
-                `application-management-service/application/${applicationId}/files/bulk`,
+                `application-management-service/application/${applicationId}/files/bulk?isLLMRequired=${formSchema?.requiredDocuments?.length !== 0 ? true : false}&schemaId=${formSchema?.id}`,
                 formData
             );
+            for (let triggerIndex = 0; triggerIndex < event.length; triggerIndex++) {
+                try {
+                    if (response?.data[triggerIndex]?.classification !== null && formSchema?.requiredDocuments?.length !== 0) {
+                        await PUT(`application-management-service/application/${applicationId}/form/updateData`, { documentType: response?.data[triggerIndex]?.classification !== null ? response?.data[triggerIndex]?.classification : '', fileSize: `${(event[triggerIndex]?.size / (1024 * 1024)).toFixed(2)} Mb`, fileURL: response?.data[triggerIndex]?.fileURL, fileType: response?.data[triggerIndex]?.fileType, fileUploaded: event[triggerIndex]?.name, requirement: response?.data[triggerIndex]?.classification !== null ? basicForm?.documentsRequired?.filter(data => data?.document?.name === response?.data[triggerIndex]?.classification)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data[triggerIndex]?.valid, verified: response?.data[triggerIndex]?.verified });
+                    }
+                    console.log(response);
+                } catch (error) {
+                    console.log(error);
+                }
+            }
             console.log(response, 'response');
             if (response?.data) {
                 SuccessToaster("File Uploaded Successfully");
@@ -406,15 +417,18 @@ const ApplicationFieldCard = ({
         }
     }, [registeredBusinessAddress]);
 
-    // useEffect(() => {
-    //     if (department !== undefined && department !== null && !isPOD) {
-    //         setBasicForm(prevData => {
-    //             let tempData = { ...prevData };
-    //             tempData.basicDetails.departmentSpecialty.specialty = '';
-    //             return tempData;
-    //         });
-    //     }
-    // }, [department]);
+    useEffect(() => {
+        if (department !== undefined && department !== null && !isPOD) {
+            setBasicForm(prevData => {
+                let tempData = { ...prevData };
+                if ((!formSchema?.schema?.properties?.departmentSpecialty?.dependencies?.department?.oneOf?.map(data => data?.properties?.department?.enum[0])?.includes(tempData.basicDetails.departmentSpecialty.department) ||
+                    !(formSchema?.schema?.properties?.departmentSpecialty?.dependencies?.department?.oneOf?.map(data => data?.properties?.department?.enum[0])?.includes(tempData.basicDetails.departmentSpecialty.department) && formSchema?.schema?.properties?.departmentSpecialty?.dependencies?.department?.oneOf?.filter(data => data?.properties?.department?.enum[0] === tempData.basicDetails.departmentSpecialty.department)[0]?.properties?.specialty?.enum?.includes(tempData.basicDetails.departmentSpecialty.specialty))) && formSchema !== undefined) {
+                    tempData.basicDetails.departmentSpecialty.specialty = '';
+                }
+                return tempData;
+            });
+        }
+    }, [department, formSchema]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -573,8 +587,16 @@ const ApplicationFieldCard = ({
             //         ErrorToaster('File Upload Failed');
             //     })
             try {
-                const response = await POST(`application-management-service/application/${applicationId}/files`, formData);
+                const response = await POST(`application-management-service/application/${applicationId}/files?isLLMRequired=${formSchema?.requiredDocuments?.length !== 0 ? true : false}&schemaId=${formSchema?.id}`, formData);
                 SuccessToaster('File Uploaded Successfully');
+                try {
+                    if (response?.data?.classification !== null && formSchema?.requiredDocuments?.length !== 0) {
+                        await PUT(`application-management-service/application/${applicationId}/form/updateData`, { documentType: response?.data?.classification !== null ? response?.data?.classification : '', fileSize: `${(file?.size / (1024 * 1024)).toFixed(2)} Mb`, fileURL: response?.data?.fileURL, fileType: response?.data?.fileType, fileUploaded: file?.name, requirement: response?.data?.classification !== null ? basicForm?.documentsRequired?.filter(data => data?.document?.name === response?.data?.classification)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data?.valid, verified: response?.data?.verified });
+                    }
+                    console.log(response);
+                } catch (error) {
+                    console.log(error);
+                }
                 console.log(response?.data);
                 return response?.data;
             } catch (error) {
@@ -1839,7 +1861,7 @@ const ApplicationFieldCard = ({
             delete basicForm[baseKey];
             delete basicForm.undefined;
             setBasicForm(temp);
-            if (type === 'close' || skip === 'skipped') {
+            if ((type === 'close' || skip === 'skipped') && !isPOD) {
                 setIsAddMore(false);
             }
             getIsSubmitClicked(true, temp, skip);
@@ -1938,7 +1960,9 @@ const ApplicationFieldCard = ({
     const handleEdit = (data) => {
         setIsTableEdit(true);
         console.log(stepPath, basicForm);
-        setIsAddMore(true);
+        if (!isPOD) {
+            setIsAddMore(true);
+        }
         setBasicForm((prevData) => {
             const temp = { ...prevData };
             temp[stepPath] = {};

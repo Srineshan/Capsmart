@@ -1,3 +1,5 @@
+
+@import"../../../index.scss";
 .CommonCheckBoxStyle{
     display: grid;
     place-content: center;
@@ -24,7 +26,7 @@
     height: 13px;
     transform: scale(0);
     transition: 120ms transform ease-in-out;
-    box-shadow: inset 1em 1em #9A90F8;
+    box-shadow: inset 1em 1em  $primarycolor;
   }
   
   .CheckedBefore:checked::before {

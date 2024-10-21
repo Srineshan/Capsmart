@@ -556,7 +556,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                     //     </>
                                 }
 
-                                {metadata?.selectedActivities?.map(selectedActivity => selectedActivity?.activity)?.includes(data?.activity) && <EditOutlinedIcon style={{ color: '#7165E3' }} onClick={() => {
+                                {metadata?.selectedActivities?.map(selectedActivity => selectedActivity?.activity)?.includes(data?.activity) && <EditOutlinedIcon style={{ color: '#0e5197' }} onClick={() => {
                                     setEditAdminActivitySelected(true);
                                     let adminActivity = metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities)[0];
                                     setAdminActivity({
@@ -649,7 +649,10 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                         </div>
                         <div className={`${style.displayInRow} ${style.administrativeCardStyle} ${style.verticalAlignCenter} ${style.selectedAdministrativeCardStyle}`}>
                             <FormGroup>
-                                <FormControlLabel control={<Checkbox />}  label={<Typography variant="body2" color="#7165E3">Administrative & Business Reports Creation</Typography>} />
+                                <FormControlLabel control={<Checkbox />}  label={<Typography variant="body2" color="#0e5197
+
+
+">Administrative & Business Reports Creation</Typography>} />
                             </FormGroup>
                             <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>
                             <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>
@@ -666,7 +669,10 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                         </div>
                         <div className={`${style.displayInRow} ${style.administrativeCardStyle} ${style.verticalAlignCenter} ${style.selectedAdministrativeCardStyle}`}>
                             <FormGroup>
-                                <FormControlLabel control={<Checkbox />}  label={<Typography variant="body2" color="#7165E3">Corrective Action Plan Participation</Typography>} />
+                                <FormControlLabel control={<Checkbox />}  label={<Typography variant="body2" color="#0e5197
+
+
+">Corrective Action Plan Participation</Typography>} />
                             </FormGroup>
                         </div>
                         <div className={`${style.displayInRow} ${style.administrativeCardStyle} ${style.verticalAlignCenter}`}>

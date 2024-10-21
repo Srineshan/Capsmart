@@ -184,19 +184,19 @@
 }
 
 #toolbar {
-    background-color: #e8e7fe;
+    background-color: #d2e7f9;
     display: flex;
     justify-content: space-evenly;
 }
 
 #toolbar2 {
-    background-color: #e8e7fe;
+    background-color: #d2e7f9;
     display: flex;
     justify-content: space-evenly;
 }
 
 #toolbar3 {
-    background-color: #e8e7fe;
+    background-color:#d2e7f9;
     display: flex;
     justify-content: space-evenly;
 }
@@ -224,7 +224,7 @@
 }
 
 .modal-content {
-    background-color: #b1acfb;
+    background-color: #0e5197;
     /* The modal background color */
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
     padding: 20px;

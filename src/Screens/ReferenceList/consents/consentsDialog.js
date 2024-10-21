@@ -22,10 +22,10 @@ import CommonInputField from "../../../Components/CommonFields/CommonInputField"
 const useStyles = makeStyles({
   switch: {
     "& .Mui-checked": {
-      color: "#7165e3",
+      color: "#0e5197",
     },
     "& .MuiSwitch-track": {
-      backgroundColor: "#7165e3 !important",
+      backgroundColor: "#0e5197 !important",
     },
   },
 });

@@ -21,26 +21,39 @@ const CommonRadio = ({ onChange, className, value, radioValue, label, required }
         },
     });
     return (
-        <ThemeProvider theme={theme}>
-            <FormControl>
-                <RadioGroup
-                    row className={className}
-                    value={value}
-                    onChange={onChange}
-                    sx={{ color: '#52575D' }}
-                >
-                    {radioValue?.map((data, index) => (
-                        <FormControlLabel value={data}
-                            control={<Radio sx={{ color: '#B3B8BD', '&.Mui-checked': { color: '#7165E3' } }} size='small' disabled={contractStatus === "ACTIVE" ? true : false} />}
-                            label={label[index]} componentsProps={{ typography: { variant: 'subtitle2' } }} />
-                    ))}
-                </RadioGroup>
-                {/* <div>
+      <ThemeProvider theme={theme}>
+        <FormControl>
+          <RadioGroup
+            row
+            className={className}
+            value={value}
+            onChange={onChange}
+            sx={{ color: "#52575D" }}
+          >
+            {radioValue?.map((data, index) => (
+              <FormControlLabel
+                value={data}
+                control={
+                  <Radio
+                    sx={{
+                      color: "#B3B8BD",
+                      "&.Mui-checked": { color: "#0e5197" },
+                    }}
+                    size="small"
+                    disabled={contractStatus === "ACTIVE" ? true : false}
+                  />
+                }
+                label={label[index]}
+                componentsProps={{ typography: { variant: "subtitle2" } }}
+              />
+            ))}
+          </RadioGroup>
+          {/* <div>
                     {warningCheck ? (<div className={`${style.helperText} ${required ? style.errorColor : style.warningColor}`}>Could not find data</div>) : ''}
                 </div> */}
-            </FormControl>
-        </ThemeProvider>
-    )
+        </FormControl>
+      </ThemeProvider>
+    );
 }
 
 export default CommonRadio;

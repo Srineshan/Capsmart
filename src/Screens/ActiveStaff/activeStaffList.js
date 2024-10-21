@@ -287,9 +287,15 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getActiveAppl
                 </div>
                 <div className={`${style.marginLeft10} `} >
                   {!showCardAppointment ? (
-                    <AddIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setShowCardAppointment(!showCardAppointment)} />
+                    <AddIcon sx={{ fontSize: 20, color: '#0e5197
+
+
+', cursor: 'pointer' }} onClick={() => setShowCardAppointment(!showCardAppointment)} />
                   ) : (
-                    <RemoveIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setShowCardAppointment(!showCardAppointment)} />
+                    <RemoveIcon sx={{ fontSize: 20, color: '#0e5197
+
+
+', cursor: 'pointer' }} onClick={() => setShowCardAppointment(!showCardAppointment)} />
                   )}
                 </div>
               </div>
@@ -305,7 +311,10 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getActiveAppl
                           border: "0.4px solid #14B15A",
                           color: "#14B15A"
                         }}> +1 Day</span> </p> <span>
-                        <PermIdentityIcon sx={{ fontSize: 20, color: '#7165E3', marginRight: "5px" }} />
+                        <PermIdentityIcon sx={{ fontSize: 20, color: '#0e5197
+
+
+', marginRight: "5px" }} />
                       </span>
                     </div>
                   </div>
@@ -319,7 +328,10 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getActiveAppl
                           border: "0.4px solid #FEC106",
                           color: "#FEC106"
                         }}> +1 Day</span> </p> <span>
-                        <PublicIcon sx={{ fontSize: 20, color: '#7165E3', marginRight: "5px" }} />
+                        <PublicIcon sx={{ fontSize: 20, color: '#0e5197
+
+
+', marginRight: "5px" }} />
                       </span>
                     </div>
                   </div>
@@ -333,7 +345,10 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getActiveAppl
                           border: "0.4px solid #F94848",
                           color: "#F94848"
                         }}> +1 Day</span> </p> <span>
-                        <PublicIcon sx={{ fontSize: 20, color: '#7165E3', marginRight: "5px" }} />
+                        <PublicIcon sx={{ fontSize: 20, color: '#0e5197
+
+
+', marginRight: "5px" }} />
                       </span>
                     </div>
                   </div>
@@ -348,9 +363,15 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getActiveAppl
                 </div>
                 <div className={`${style.marginLeft10} `} >
                   {!showCardCompletion ? (
-                    <AddIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setShowCardCompletion(!showCardCompletion)} />
+                    <AddIcon sx={{ fontSize: 20, color: '#0e5197
+
+
+', cursor: 'pointer' }} onClick={() => setShowCardCompletion(!showCardCompletion)} />
                   ) : (
-                    <RemoveIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setShowCardCompletion(!showCardCompletion)} />
+                    <RemoveIcon sx={{ fontSize: 20, color: '#0e5197
+
+
+', cursor: 'pointer' }} onClick={() => setShowCardCompletion(!showCardCompletion)} />
                   )}
                 </div>
               </div>
@@ -364,7 +385,10 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getActiveAppl
                           <div className={style.marginLeft10}>Jane DOE</div> <span className={style.textStyleProgress}> (Nurse) </span></div>
                         <p className={style.progressTopText}>Due in 15 Days</p>
                       </div>
-                      <ProgressBar completed={6} isLabelVisible={false} height='5px' bgColor='#7165E3' baseBgColor="#E9E9F0" className={style.marginLeft20} />
+                      <ProgressBar completed={6} isLabelVisible={false} height='5px' bgColor='#0e5197
+
+
+' baseBgColor="#E9E9F0" className={style.marginLeft20} />
                       <div className={style.progressBottomText}>95% remaining</div>
                     </div>
                   </div>
@@ -378,7 +402,10 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getActiveAppl
                           <div className={style.marginLeft10}>Jane DOE</div> <span className={style.textStyleProgress}> (Nurse) </span></div>
                         <p className={style.progressTopText}>Due in 2 Days</p>
                       </div>
-                      <ProgressBar completed={100} isLabelVisible={false} height='5px' bgColor='#7165E3' baseBgColor="#E9E9F0" className={style.marginLeft20} />
+                      <ProgressBar completed={100} isLabelVisible={false} height='5px' bgColor='#0e5197
+
+
+' baseBgColor="#E9E9F0" className={style.marginLeft20} />
                       <div className={style.progressBottomText}>0% remaining</div>
                     </div>
                   </div>
@@ -392,7 +419,10 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getActiveAppl
                           <div className={style.marginLeft10}>Kate SLATE</div> <span className={style.textStyleProgress}> (Doctor) </span></div>
                         <p className={style.progressTopText}>Due in 7 Days</p>
                       </div>
-                      <ProgressBar completed={60} isLabelVisible={false} height='5px' bgColor='#7165E3' baseBgColor="#E9E9F0" className={style.marginLeft20} />
+                      <ProgressBar completed={60} isLabelVisible={false} height='5px' bgColor='#0e5197
+
+
+' baseBgColor="#E9E9F0" className={style.marginLeft20} />
                       <div className={style.progressBottomText}>40% remaining</div>
                     </div>
                   </div>
@@ -407,9 +437,15 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getActiveAppl
                 </div>
                 <div className={`${style.marginLeft10} `} >
                   {!showCardDetails ? (
-                    <AddIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setShowCardDetails(!showCardDetails)} />
+                    <AddIcon sx={{ fontSize: 20, color: '#0e5197
+
+
+', cursor: 'pointer' }} onClick={() => setShowCardDetails(!showCardDetails)} />
                   ) : (
-                    <RemoveIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setShowCardDetails(!showCardDetails)} />
+                    <RemoveIcon sx={{ fontSize: 20, color: '#0e5197
+
+
+', cursor: 'pointer' }} onClick={() => setShowCardDetails(!showCardDetails)} />
                   )}
                 </div>
               </div>
@@ -441,10 +477,10 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getActiveAppl
 
             <div className={`${style.spaceBetween} ${style.marginLeft} `}>
               <div className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`} >
-                <SearchOutlinedIcon sx={{ fontSize: isPrintClicked ? 20 : 25, color: isPrintClicked ? '#fff' : '#857AEF' }} />
+                <SearchOutlinedIcon sx={{ fontSize: isPrintClicked ? 20 : 25, color: isPrintClicked ? '#fff' : '#0e5197' }} />
               </div>
               <div className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginRight}`} >
-                <PrintOutlinedIcon sx={{ fontSize: isPrintClicked ? 20 : 25, color: isPrintClicked ? '#fff' : '#857AEF' }} />
+                <PrintOutlinedIcon sx={{ fontSize: isPrintClicked ? 20 : 25, color: isPrintClicked ? '#fff' : '#0e5197' }} />
               </div>
 
             </div>
@@ -453,7 +489,7 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getActiveAppl
           <div className={`${style.bigCardStyle}`}>
             {isLoading ?
               <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
-                <CircularProgress sx={{ color: "#7165E3" }} />
+                <CircularProgress sx={{ color: "#0e5197" }} />
               </div> :
               <div ref={componentRef}>
                 <div className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`} ref={PDFRef}>

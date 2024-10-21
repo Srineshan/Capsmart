@@ -9,14 +9,14 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab,reFetchMetaData,get
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const user = jwt(userDetails);
-  const [userRole, setUserRole] = useState('Credentialing Committee');
+  const [userRole, setUserRole] = useState('');
   const [counts, setCounts] = useState({
     chiefOfStaff: 0,
     credentialingCommittee: 0,
     mac: 0,
     bod: 0,
-    'level-1' :0,
-    'level-2' :0,
+    'level-1': 0,
+    'level-2': 0,
   });
 
   // const [selectedTab, setSelectedTab] = useState('applicantsToProcess');
@@ -42,7 +42,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab,reFetchMetaData,get
 
   useEffect(() => {
     console.log("userRoleeeeeee" + userRole);
-    
+
     if (userRole === 'Staff Manager' || userRole === 'Chief Of Staff') {
       getSelectedTab('applicantsToProcess');
     } else if (userRole === 'Department Head') {
@@ -61,34 +61,33 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab,reFetchMetaData,get
   }, []);
 
 
-      // const handleTileClick = (tile) => {
-      //   setSelectedTab(tile);
-      //   if (getSelectedTab) {
-      //     getSelectedTab(tile);
-      //   }
-      // };
+  // const handleTileClick = (tile) => {
+  //   setSelectedTab(tile);
+  //   if (getSelectedTab) {
+  //     getSelectedTab(tile);
+  //   }
+  // };
 
-    //     useEffect(() => {
-    //       setUserDetails();
-    //   }, [user?.id])
+  useEffect(() => {
+    setUserDetails();
+  }, [user?.id])
 
-    // const setUserDetails = async () => {
-    //     const { data: userData } = await GET(`user-management-service/user/${user?.id}`);
-    //     console.log("userdataaaa" + JSON.stringify(userData))
-    //     sessionStorage.setItem('user', JSON.stringify(userData))
-    //     setUserRole(userData?.roles?.map((data) => data?.roleName));  
-    // }
-
+  const setUserDetails = async () => {
+    const { data: userData } = await GET(`user-management-service/user/${user?.id}`);
+    console.log("userdataaaa" + JSON.stringify(userData))
+    sessionStorage.setItem('user', JSON.stringify(userData))
+    setUserRole(userData?.roles?.map((data) => data?.roleName));
+  }
   return (
     <div className={`${style.tabs}`}>
       {(userRole?.includes('Staff Manager') || userRole?.includes('Chief Of Staff')) && (
-      <TileApplication
-        selectedTab={selectedTab}
-        getSelectedTab={getSelectedTab}
-        tileLabel="Applicants to Verify"
-        tileCount={counts?.applicantsToProcess}
-        currentTile="applicantsToProcess"
-      />
+        <TileApplication
+          selectedTab={selectedTab}
+          getSelectedTab={getSelectedTab}
+          tileLabel="Applicants to Verify"
+          tileCount={counts?.applicantsToProcess}
+          currentTile="applicantsToProcess"
+        />
       )}
       {/* {(userRole?.includes('Staff Manager') || userRole?.includes('Chief Of Staff') || userRole?.includes('Department Head')) && (
       <TileApplication
@@ -132,7 +131,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab,reFetchMetaData,get
         tileLabel="Clarifications"
         tileCount={counts?.clarificationsRequired}
         currentTile="clarificationsRequired"
-      /> 
+      />
     </div>
   )
 }

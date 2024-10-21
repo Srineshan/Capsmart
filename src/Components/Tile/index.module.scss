@@ -1,4 +1,5 @@
 @import '../../styles/mixins.scss';
+@import "../../index.scss";
 
 .cardStyle {
     height: 115px;
@@ -23,7 +24,7 @@
 }
 
 .selectedContractBackground {
-    background-color: #e8e7fe;
+    background-color: $secondarycolor;
     border: 1px solid #d1cefd;
 }
 
@@ -137,7 +138,8 @@
 }
 
 .purple {
-    color: #7165E3 !important;
+    color: $primarycolor
+ !important;
 }
 
 .optionsStyle {
@@ -155,7 +157,8 @@
 }
 
 .smallTextSelected {
-    color: #7165E3;
+    color: $primarycolor
+;
 }
 
 .descriptionText {
@@ -182,7 +185,7 @@
 }
 
 .defaultSmallNumber {
-    background-color: #d7d4f7;
+    background-color: $secondarycolor;
 }
 
 .verticalAlignCenter {
@@ -222,12 +225,12 @@
 }
 
 .clickableText {
-    color: blue;
+    color:$primarycolor;
     text-decoration: underline;
     cursor: pointer;
 }
 
 .clickableText:hover {
-    color: darkblue;
+    color: $primarycolor;
     text-decoration: underline;
 }

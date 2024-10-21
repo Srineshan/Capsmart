@@ -1567,9 +1567,9 @@ const StaffApplicationList = ({
                 </div>
                 <div className={`${style.marginLeft10} `} >
                   {!showCardAppointment ? (
-                    <AddIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setShowCardAppointment(!showCardAppointment)} />
+                    <AddIcon sx={{ fontSize: 20, color: '#0e5197', cursor: 'pointer' }} onClick={() => setShowCardAppointment(!showCardAppointment)} />
                   ) : (
-                    <RemoveIcon sx={{ fontSize: 20, color: '#7165E3', cursor: 'pointer' }} onClick={() => setShowCardAppointment(!showCardAppointment)} />
+                    <RemoveIcon sx={{ fontSize: 20, color: '#0e5197', cursor: 'pointer' }} onClick={() => setShowCardAppointment(!showCardAppointment)} />
                   )}
                 </div>
               </div>
@@ -1585,7 +1585,7 @@ const StaffApplicationList = ({
                           border: "0.4px solid #14B15A",
                           color: "#14B15A"
                         }}> +1 Day</span> </p> <span>
-                        <PermIdentityIcon sx={{ fontSize: 20, color: '#7165E3', marginRight: "5px" }} />
+                        <PermIdentityIcon sx={{ fontSize: 20, color: '#0e5197', marginRight: "5px" }} />
                       </span>
                     </div>
                   </div>
@@ -1599,7 +1599,7 @@ const StaffApplicationList = ({
                           border: "0.4px solid #FEC106",
                           color: "#FEC106"
                         }}> +1 Day</span> </p> <span>
-                        <PublicIcon sx={{ fontSize: 20, color: '#7165E3', marginRight: "5px" }} />
+                        <PublicIcon sx={{ fontSize: 20, color: '#0e5197', marginRight: "5px" }} />
                       </span>
                     </div>
                   </div>
@@ -1613,7 +1613,7 @@ const StaffApplicationList = ({
                           border: "0.4px solid #F94848",
                           color: "#F94848"
                         }}> +1 Day</span> </p> <span>
-                        <PublicIcon sx={{ fontSize: 20, color: '#7165E3', marginRight: "5px" }} />
+                        <PublicIcon sx={{ fontSize: 20, color: '#0e5197', marginRight: "5px" }} />
                       </span>
                     </div>
                   </div>
@@ -1640,12 +1640,12 @@ const StaffApplicationList = ({
                 <div className={`${style.marginLeft10} `}>
                   {!showCardCompletion ? (
                     <AddIcon
-                      sx={{ fontSize: 20, color: "#7165E3", cursor: "pointer" }}
+                      sx={{ fontSize: 20, color: "#0e5197", cursor: "pointer" }}
                       onClick={() => setShowCardCompletion(!showCardCompletion)}
                     />
                   ) : (
                     <RemoveIcon
-                      sx={{ fontSize: 20, color: "#7165E3", cursor: "pointer" }}
+                      sx={{ fontSize: 20, color: "#0e5197", cursor: "pointer" }}
                       onClick={() => setShowCardCompletion(!showCardCompletion)}
                     />
                   )}
@@ -1714,7 +1714,7 @@ const StaffApplicationList = ({
                             }
                             isLabelVisible={false}
                             height="5px"
-                            bgColor="#7165E3"
+                            bgColor="#0e5197"
                             baseBgColor="#E9E9F0"
                             className={style.marginLeft20}
                           />
@@ -1764,12 +1764,12 @@ const StaffApplicationList = ({
                 <div className={`${style.marginLeft10} `}>
                   {!showCardDetails ? (
                     <AddIcon
-                      sx={{ fontSize: 20, color: "#7165E3", cursor: "pointer" }}
+                      sx={{ fontSize: 20, color: "#0e5197", cursor: "pointer" }}
                       onClick={() => setShowCardDetails(!showCardDetails)}
                     />
                   ) : (
                     <RemoveIcon
-                      sx={{ fontSize: 20, color: "#7165E3", cursor: "pointer" }}
+                      sx={{ fontSize: 20, color: "#0e5197", cursor: "pointer" }}
                       onClick={() => setShowCardDetails(!showCardDetails)}
                     />
                   )}
@@ -1835,7 +1835,7 @@ const StaffApplicationList = ({
                 <SearchOutlinedIcon
                   sx={{
                     fontSize: isPrintClicked ? 20 : 25,
-                    color: isPrintClicked ? "#fff" : "#857AEF",
+                    color: isPrintClicked ? "#fff" : "#0e5197",
                   }}
                 />
               </div>
@@ -1846,7 +1846,7 @@ const StaffApplicationList = ({
                 <PrintOutlinedIcon
                   sx={{
                     fontSize: isPrintClicked ? 20 : 25,
-                    color: isPrintClicked ? "#fff" : "#857AEF",
+                    color: isPrintClicked ? "#fff" : "#0e5197",
                   }}
                   onClick={handlePrintClick}
                 />
@@ -1859,7 +1859,7 @@ const StaffApplicationList = ({
               <div
                 className={`${style.verticalAlignCenter} ${style.justifyCenter}`}
               >
-                <CircularProgress sx={{ color: "#7165E3" }} />
+                <CircularProgress sx={{ color: "#0e5197" }} />
               </div>
             ) : (
               <div ref={componentRef} className={`${style.pagebreak}`}>

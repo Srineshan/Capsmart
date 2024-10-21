@@ -284,7 +284,7 @@ const AdditionalPrivileges = ({ getIsOpen, primaryPrivilege, getSelectedPrivileg
                                                                             <div className={style.marginTop}>
                                                                                 <CKEditor
                                                                                     editor={ClassicEditor}
-                                                                                    data={privileges?.notes?.notes || null}
+                                                                                    data={privileges?.notes?.notes || ''}
                                                                                     onChange={(event, editor) => {
                                                                                         const data = editor.getData();
                                                                                         handleAdditionalRestrictedSelection(index, categoriesIndex, privilegesIndex, data, 'notes');
@@ -320,7 +320,7 @@ const AdditionalPrivileges = ({ getIsOpen, primaryPrivilege, getSelectedPrivileg
                                                                             <div className={style.marginTop10}>
                                                                                 <div className={`${style.uploadButton}`}>
                                                                                     <div className={style.uploadGrid}>
-                                                                                        {privileges?.file !== undefined ? (
+                                                                                        {(privileges?.file !== undefined && privileges?.file !== null) ? (
                                                                                             <img src={VerifiedImage} alt="" className={`${style.imgIcon} ${style.cursorPointer}`} />
                                                                                         ) : (
                                                                                             <img src={ToBeVerifiedImage} alt="" className={style.imgIcon} />

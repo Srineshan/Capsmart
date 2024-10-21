@@ -1,3 +1,4 @@
+@import "../../index.scss";
 .displayInRow {
     display: flex;
     flex-direction: row;
@@ -35,7 +36,8 @@
 }
 
 .crossStyle {
-    color: linear-gradient(#7165E3, #FF6562) !important;
+    color: linear-gradient($primarycolor
+, #FF6562) !important;
     margin-bottom: 25px;
     cursor: pointer;
     position: absolute;
