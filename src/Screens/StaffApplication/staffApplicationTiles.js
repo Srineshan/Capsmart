@@ -1,58 +1,57 @@
-import React, { useState, useEffect } from 'react';
-import TileApplication from '../../Components/TileApplication';
-import style from './index.module.scss';
-import { GET } from './../../Screens/dataSaver';
-import Cookie from 'universal-cookie';
-import jwt from 'jwt-decode';
+import React, { useState, useEffect } from "react";
+import TileApplication from "../../Components/TileApplication";
+import style from "./index.module.scss";
+import { GET } from "./../../Screens/dataSaver";
+import Cookie from "universal-cookie";
+import jwt from "jwt-decode";
 
 const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
   let cookie = new Cookie();
-  let userDetails = cookie.get('user');
+  let userDetails = cookie.get("user");
   const user = jwt(userDetails);
-  const [userRole, setUserRole] = useState('');
+  const [userRole, setUserRole] = useState("");
   const [counts, setCounts] = useState({
     chiefOfStaff: 0,
     credentialingCommittee: 0,
     mac: 0,
     bod: 0,
-    'level-1': 0,
-    'level-2': 0,
+    "level-1": 0,
+    "level-2": 0,
   });
 
   // const [selectedTab, setSelectedTab] = useState('applicantsToProcess');
 
   const getTitleCounts = async () => {
-    await GET('application-management-service/application/workflowUser/meta')
-      .then(response => {
+    await GET("application-management-service/application/workflowUser/meta")
+      .then((response) => {
         setCounts(response?.data);
         var str = JSON.stringify(response?.data);
-        console.log("titlesssss" + str)
+        console.log("titlesssss" + str);
       })
-      .catch(error => {
-        console.log('error', error);
-      })
+      .catch((error) => {
+        console.log("error", error);
+      });
   };
 
   useEffect(() => {
     console.log("userRoleeeeeee" + userRole);
 
-    if (userRole === 'Staff Manager' || userRole === 'Chief Of Staff') {
-      getSelectedTab('applicantsToProcess');
-    } else if (userRole === 'Department Head') {
-      getSelectedTab('level-2');
-    } else if (userRole === 'Credentialing Committee') {
-      getSelectedTab('level-1');
-    } else if (userRole === 'Advisory Committee') {
-      getSelectedTab('mac');
-    } else if (userRole === 'Board') {
-      getSelectedTab('bod');
+    if (userRole === "Staff Manager" || userRole === "Chief Of Staff") {
+      getSelectedTab("applicantsToProcess");
+    } else if (userRole === "Department Head") {
+      getSelectedTab("level-2");
+    } else if (userRole === "Credentialing Committee") {
+      getSelectedTab("level-1");
+    } else if (userRole === "Advisory Committee") {
+      getSelectedTab("mac");
+    } else if (userRole === "Board") {
+      getSelectedTab("bod");
     }
   }, [userRole]);
 
   useEffect(() => {
     getTitleCounts();
   }, []);
-
 
   // const handleTileClick = (tile) => {
   //   setSelectedTab(tile);
@@ -63,17 +62,20 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
 
   useEffect(() => {
     setUserDetails();
-  }, [user?.id])
+  }, [user?.id]);
 
   const setUserDetails = async () => {
-    const { data: userData } = await GET(`user-management-service/user/${user?.id}`);
-    console.log("userdataaaa" + JSON.stringify(userData))
-    sessionStorage.setItem('user', JSON.stringify(userData))
+    const { data: userData } = await GET(
+      `user-management-service/user/${user?.id}`
+    );
+    console.log("userdataaaa" + JSON.stringify(userData));
+    sessionStorage.setItem("user", JSON.stringify(userData));
     setUserRole(userData?.roles?.map((data) => data?.roleName));
-  }
+  };
   return (
     <div className={`${style.tabs}`}>
-      {(userRole?.includes('Staff Manager') || userRole?.includes('Chief Of Staff')) && (
+      {(userRole?.includes("Staff Manager") ||
+        userRole?.includes("Chief Of Staff")) && (
         <TileApplication
           selectedTab={selectedTab}
           getSelectedTab={getSelectedTab}
@@ -91,16 +93,21 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
         currentTile="level-2"
       />
      )} */}
-      {(userRole?.includes('Staff Manager') || userRole?.includes('Chief Of Staff') || userRole?.includes('Credentialing Committee')) && (
+      {(userRole?.includes("Staff Manager") ||
+        userRole?.includes("Chief Of Staff") ||
+        userRole?.includes("Credentialing Committee")) && (
         <TileApplication
           selectedTab={selectedTab}
           getSelectedTab={getSelectedTab}
           tileLabel="Cred. Comm."
-          tileCount={counts['level-1']}
+          // tileCount={counts['level-1']}
           currentTile="level-1"
         />
       )}
-      {(userRole?.includes('Staff Manager') || userRole?.includes('Chief Of Staff') || userRole?.includes('Credentialing Committee') || userRole?.includes('Advisory Committee')) && (
+      {(userRole?.includes("Staff Manager") ||
+        userRole?.includes("Chief Of Staff") ||
+        userRole?.includes("Credentialing Committee") ||
+        userRole?.includes("Advisory Committee")) && (
         <TileApplication
           selectedTab={selectedTab}
           getSelectedTab={getSelectedTab}
@@ -109,7 +116,11 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
           currentTile="mac"
         />
       )}
-      {(userRole?.includes('Staff Manager') || userRole?.includes('Chief Of Staff') || userRole?.includes('Credentialing Committee') || userRole?.includes('Advisory Committee') || userRole?.includes('Board')) && (
+      {(userRole?.includes("Staff Manager") ||
+        userRole?.includes("Chief Of Staff") ||
+        userRole?.includes("Credentialing Committee") ||
+        userRole?.includes("Advisory Committee") ||
+        userRole?.includes("Board")) && (
         <TileApplication
           selectedTab={selectedTab}
           getSelectedTab={getSelectedTab}
@@ -126,7 +137,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
         currentTile="clarificationsRequired"
       />
     </div>
-  )
-}
+  );
+};
 
 export default StaffApplicationTiles;
