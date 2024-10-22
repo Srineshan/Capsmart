@@ -252,14 +252,18 @@ const CreateStaffMemberApplication = () => {
         if (applicationId === '') {
             await POST('application-management-service/application', data)
                 .then(response => {
-                    console.log(response)
-                    setBasicForm(response?.data)
-                    setApplicationId(response?.data?.id)
-                    SuccessToaster("Staff Member Application Created Successfully");
-                    setIsNextPage(true);
+                    console.log(response, 'applicationResponse')
+                    if (response?.response?.status === 409) {
+                        ErrorToaster("Email ID already exists");
+                    } else {
+                        setBasicForm(response?.data)
+                        setApplicationId(response?.data?.id)
+                        SuccessToaster("Staff Member Applicationnnnnn Created Successfully");
+                        setIsNextPage(true);
+                    }
                 })
                 .catch((error) => {
-                    console.log(error)
+                    console.log(error, 'applicationResponse')
                     ErrorToaster("Unexpected Error Creating Staff Member Application");
                 });
         } else {
