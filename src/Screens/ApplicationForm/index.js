@@ -28,7 +28,7 @@ import ProfessionalConduct from './ProfessionalConduct';
 import CriminalHistory from './CriminalHistory';
 import MedicalHistory from './MedicalHistory';
 import Step14 from './Step14';
-import Step15 from './Step15';
+import Immunization from './Immunization';
 import ApplicantAcknowledgement from './ApplicantAcknowledgement';
 import ScheduleA from './ScheduleA';
 import ScheduleB from './ScheduleB';
@@ -120,21 +120,21 @@ const ApplicationForm = () => {
             case 'WorkExperience':
                 return <WorkExperience basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'PrivilegeSelection':
-                return <PrivilegeSelection basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
+                return <PrivilegeSelection basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'step9':
-                return <Step9 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
+                return <Step9 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'References':
                 return <References basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'ProfessionalConduct':
-                return <ProfessionalConduct basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
+                return <ProfessionalConduct basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'CriminalHistory':
-                return <CriminalHistory basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
+                return <CriminalHistory basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'MedicalHistory':
-                return <MedicalHistory basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
+                return <MedicalHistory basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'step14':
-                return <Step14 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
-            case 'step15':
-                return <Step15 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
+                return <Step14 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+            case 'Immunization':
+                return <Immunization basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'ApplicantAcknowledgement':
                 return <ApplicantAcknowledgement acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
             case 'ScheduleA':
