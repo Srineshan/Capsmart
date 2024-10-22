@@ -1,0 +1,200 @@
+@import "../../../index.scss";
+
+.marginTop {
+    margin-top: 20px;
+}
+
+.marginLeft {
+    margin-left: 20px;
+}
+
+.marginTop10 {
+    margin-top: 10px;
+}
+
+.applicationScreenGrid {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    grid-gap: 20px;
+}
+
+
+.cardTitle {
+    text-align: left;
+    font: normal normal 600 17px/28px proxima-nova;
+    letter-spacing: 0px;
+    color: #52575D;
+    text-transform: capitalize;
+}
+
+.saveInProgress {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #00000029;
+    border: 0.5px solid $primarycolor;
+    border-radius: 8px;
+    text-align: center;
+    font: normal normal bold 17px/30px proxima-nova;
+    letter-spacing: 0px;
+    color: $primarycolor;
+    text-transform: uppercase;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.continue {
+    background: $primarycolor 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #00000029;
+    border-radius: 8px;
+    text-align: center;
+    font: normal normal bold 17px/30px proxima-nova;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.applicationCardStyle {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 5px 20px #52575D4D;
+    border-radius: 20px;
+    border: 0.4000000059604645px solid #e5e6e6;
+    padding: 10px 20px 20px 20px;
+}
+
+.twoCol {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.twoColForButton {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.fourCol {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.progressStyle {
+    height: 10px;
+    width: 100%;
+    border-radius: 2px;
+}
+
+.progressStyleBackground {
+    background: transparent linear-gradient(90deg, $primarycolor 0%, $primarycolor 2%, #E9E9F0 5%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+}
+
+.siteDisplayCard {
+    background: #EFEEFC 0% 0% no-repeat padding-box;
+    border: 0.4000000059604645px solid $secondarycolor;
+    border-radius: 6px;
+    padding: 10px;
+}
+
+.siteDisplayGrid {
+    display: grid;
+    grid-template-columns: 93% 6%;
+    gap: 1%;
+}
+
+.siteDisplaySiteTextStyle {
+    text-align: left;
+    font: normal normal bold 13px/20px proxima-nova;
+    color: #52575D;
+}
+
+.siteDisplayDepartmentTextStyle {
+    text-align: left;
+    font: normal normal bold 12px/24px proxima-nova;
+    letter-spacing: 0px;
+    color: #52575D99;
+}
+
+.siteDisplaySurgeryTextStyle {
+    text-align: left;
+    font: normal normal bold 10px/24px proxima-nova;
+    letter-spacing: 0px;
+}
+
+.credentialingGrid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 10px;
+}
+
+.credentialingGrid> :nth-child(1) {
+    grid-column: span 5;
+}
+
+.credentialingGrid> :nth-child(2) {
+    grid-column: span 2;
+}
+
+.credentialingGrid> :nth-child(3) {
+    grid-column: span 2;
+}
+
+.applicantGrid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+}
+
+.applicantGrid> :nth-child(1) {
+    grid-column: span 2;
+}
+
+.applicantGrid> :nth-child(2) {
+    grid-column: span 2;
+}
+
+.applicantGrid> :nth-child(3) {
+    grid-column: span 2;
+}
+
+.applicantGrid> :nth-child(4) {
+    grid-column: span 2;
+}
+
+.applicantGrid> :nth-child(5) {
+    grid-column: span 2;
+}
+
+.yesButton {
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    border-radius: 10px;
+    width: 152px;
+    color: $primarycolor;
+    height: 40px;
+    border: 1px solid $primarycolor;
+}
+
+.noButton {
+    background: $primarycolor 0% 0% no-repeat padding-box;
+    border-radius: 10px;
+    width: 152px;
+    color: $secondarycolor;
+    height: 40px;
+}
+
+.displayInRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.verticalAlignCenter {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.justifyCenter {
+    display: flex;
+    justify-content: center;
+}
