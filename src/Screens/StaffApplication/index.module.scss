@@ -109,10 +109,7 @@ body::-webkit-scrollbar {
   width: 270px;
   background: #FFFFFF 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
-  border: 0.5px solid $primarycolor
-
-
-;
+  border: 0.5px solid $primarycolor;
   border-radius: 8px;
   opacity: 1;
 }
@@ -4325,4 +4322,93 @@ text-transform: capitalize;
 opacity: 1;
 padding-left: 20px;
 padding-top: 20px;
+}
+
+.bigButtonStyle1 {
+  height: 50px;
+  /* UI Properties */
+  background: $primarycolor
+
+
+ 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border-radius: 8px;
+  opacity: 1;
+  margin-top: 20px;
+}
+
+.statusCard{
+  background: var(---ffffff) 0% 0% no-repeat padding-box;
+  border: 0.4px solid var(--unnamed-color-e9e9f0);
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 5px 20px #52575D29;
+  border: 0.4000000059604645px solid #E9E9F0;
+  border-radius: 12px;
+  opacity: 1;
+  height: 15%;
+}
+
+.statusCardTextStyle1{
+  color: var(--unnamed-color-52575d);
+  text-align: left;
+  font: normal normal bold 23px/26px Proxima Nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  opacity: 1;
+  margin-left: 10px;
+  margin-bottom: 10px;
+}
+
+.statusStartTextStyle{
+  text-align: center;
+  font: normal normal bold 28px/34px Proxima Nova;
+  letter-spacing: 0px;
+  color: #94979A;
+  text-transform: capitalize;
+  opacity: 1;
+}
+
+.statusRoleTextStyle{
+  text-align: center;
+  font: normal normal bold 16px/26px Proxima Nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.dateWidth{
+  padding: 5px 10px;
+}
+
+.buttonCardStyle2 {
+  height: 50px;
+  width: 400px;
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border: 0.5px solid $primarycolor;
+  border-radius: 8px;
+  opacity: 1;
+  margin: auto;
+}
+
+.bigButtonStyle2 {
+  height: 50px;
+  width: 400px;
+  /* UI Properties */
+  background: $primarycolor
+ 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border-radius: 8px;
+  opacity: 1;
+  margin: auto;
+}
+
+.cardLeftStyle1 {
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 5px 20px #52575D29;
+  border: 0.4000000059604645px solid #E0E1FB;
+  border-radius: 12px;
+  opacity: 1;
+  height: 300px;
 }

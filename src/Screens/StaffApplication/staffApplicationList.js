@@ -320,10 +320,10 @@ const StaffApplicationList = ({
     getActiveApplicationView(true);
     sessionStorage.setItem("applicationId", data?.id);
   };
-  const onClickViewAndApproveCredCommFunction = (data) => {
-    getCredCommApplicationView(true);
-    sessionStorage.setItem("applicationId", data?.id);
-  };
+  // const onClickViewAndApproveCredCommFunction = (data) => {
+  //   getCredCommApplicationView(true);
+  //   sessionStorage.setItem("applicationId", data?.id);
+  // };
   const onClickProcessingTaskFunction = (data) => {
     getActiveApplicationTask(true);
     sessionStorage.setItem("applicationId", data?.id);
@@ -1319,7 +1319,7 @@ const StaffApplicationList = ({
     //   requiredValue: "boolean",
     //   onClick: onClickMoveToNextFunction,
     // },
-    { data: "Review & Approve", requiredValue: "boolean", onClick: onClickViewAndApproveCredCommFunction },
+    { data: "Review & Approve", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction },
     { data: "Move to MAC", requiredValue: "boolean", onClick: onClickMoveToNextFunction },
     // { data: "Review & Approve", requiredValue: "boolean", onClick: "" },
     // { data: "Move to MAC", requiredValue: "boolean", onClick: "" },

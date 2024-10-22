@@ -8,7 +8,7 @@ import ValidationDialog from '../../Components/validationDialog';
 import TaskStatusDialog from '../../Components/TaskStatusDialog';
 
 const StaffApplication = () => {
-    const [selectedTab, setSelectedTab] = useState('');
+    const [selectedTab, setSelectedTab] = useState('applicantsToProcess');
     const [activeApplicationView, setActiveApplicationView] = useState(false);
     const [credCommApplicationView, setCredCommApplicationView] = useState(false);
     const [activeApplicationTask, setActiveApplicationTask] = useState(false);
@@ -33,7 +33,7 @@ const StaffApplication = () => {
     return (
         <>
             {activeApplicationView ? (
-                <NewActiveApplication getActiveApplicationView={getActiveApplicationView} />
+                <NewActiveApplication getSelectedTab={getSelectedTab} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} />
             ) : credCommApplicationView ? (
                 <NewCredCommApplication getSelectedTab={getSelectedTab} selectedTab={selectedTab} getCredCommApplicationView={getCredCommApplicationView} />
             ) : (

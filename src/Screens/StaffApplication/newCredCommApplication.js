@@ -840,7 +840,7 @@ const NewCredCommApplication = ({
           />
         </div>
         <div className={style.grid2}>
-          <div>
+          <div className={style.grid5and1}>
             <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
               <div className={`${style.spaceBetween}`}>
                 <div className={`${style.displayInRow}`} >
@@ -863,7 +863,7 @@ const NewCredCommApplication = ({
                 </div>
                 <div className={`${style.displayInRow} ${style.marginRight20}`}>
                   <div className={`${style.displayInCol} `}>
-                    <div className={`${style.marginTop15} `}>
+                    {/* <div className={`${style.marginTop15} `}>
                       <span className={`${style.rightAlignTextStyle}`}>Proposed Start Date:</span>
                       <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>DD/MM/YYYY</span>
                     </div> 
@@ -874,7 +874,7 @@ const NewCredCommApplication = ({
                     <div className={`${style.marginTop15}`}>
                       <span className={`${style.rightAlignTextStyle}`}>Application Submitted:</span>
                       <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>DD/MM/YYYY</span>
-                    </div>
+                    </div> */}
                     <div className={`${style.marginTop15}`}>
                       <span className={`${style.rightAlignTextStyle}`}>Days To Complete:</span>
                       <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>15</span>
@@ -883,10 +883,10 @@ const NewCredCommApplication = ({
                 </div>
               </div>
             </div>
-            {/* <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}  ${style.marginTop20} ${style.statusCardHeight} ${style.displayInCol}`}>
+            <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}  ${style.marginTop20} ${style.statusCardHeight} ${style.displayInCol}`}>
               <div className={`${style.greyBigDotStyle} ${style.marginCenter} `}></div>
               <div className={`${style.greyDotTextStyle}`}>Overall Verification & Acceptance Status</div>
-            </div> */}
+            </div>
           </div>
 
           <div>
@@ -918,12 +918,12 @@ const NewCredCommApplication = ({
 
             {/* //Table */}
             <div>
-                <div className= {`${style.tableHeaderGridStyleCred}`}>
+                {/* <div className= {`${style.tableHeaderGridStyleCred}`}>
                 <div className={`${style.overallStatus}`}>Overall Status Of Application</div>
                 <div className={`${style.greenDotStyle} ${style.marginTop20} ${style.cursorPointer}`} 
                 // onClick={approveView}
                 ></div>
-                </div>
+                </div> */}
                 
               <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyleCred} `}>
                 {/* <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
