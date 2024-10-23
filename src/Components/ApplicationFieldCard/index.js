@@ -1416,7 +1416,7 @@ const ApplicationFieldCard = ({
                                     : object.required?.includes(fieldKey) ||
                                     (parentData !== null
                                         ? parentData.required?.includes(fieldKey)
-                                        : false)) && "*"
+                                        : false)) ? "*" : ''
                                     }`}
                             />
                         );
