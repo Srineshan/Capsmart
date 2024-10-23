@@ -7,7 +7,7 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import CommonCheckBox from '../../../Components/CommonFields/CommonCheckBox';
 import { GET, PUT } from '../../dataSaver';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 
 import style from './index.module.scss';
@@ -16,11 +16,12 @@ import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 import ValidationDialog from '../../../Components/validationDialog';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
 
-const DemographicData = ({ basicForm, setBasicForm, applicationId, getPreApplication }) => {
+const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
     const [formSchemaWholeObject, setFormSchemaWholeObject] = useState();
     const [form2, setForm2] = useState();
     const navigate = useNavigate()
+    const { applicationId, section, step } = useParams();
     const [isOpen, setIsOpen] = useState(true);
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
     const [fieldPaths, setFieldPaths] = useState([]);
@@ -29,9 +30,19 @@ const DemographicData = ({ basicForm, setBasicForm, applicationId, getPreApplica
     const [warningFields, setWarningFields] = useState([]);
     const [showValidationDialog, setShowValidationDialog] = useState(false);
     const [showDemographicInfo, setShowDemographicInfo] = useState(false);
+    const [showContactInfo, setShowContactInfo] = useState(false);
+    const [viewDemographicInfo, setViewDemographicInfo] = useState(false);
+    const [viewContactInfo, setViewContactInfo] = useState(false);
+    const [isDemographicInfoEdited, setIsDemographicInfoEdited] = useState(false);
+    const [isContactInfoEdited, setIsContactInfoEdited] = useState(false);
+    const [formIndex, setFormIndex] = useState();
     useEffect(() => {
         getBasicForm()
-    }, [])
+    }, [formIndex])
+
+    useEffect(() => {
+        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
+    }, [basicForm, step])
 
     const getIsOpen = (value) => {
         setIsOpen(value);
@@ -64,80 +75,22 @@ const DemographicData = ({ basicForm, setBasicForm, applicationId, getPreApplica
     }
 
     const getBasicForm = async () => {
-        const { data: basicForm } = await GET(
-            `application-management-service/application/basicForm`
-        );
-        if (basicForm) {
+        // const { data: basicForm } = await GET(
+        //     `application-management-service/application/basicForm`
+        // );
+        if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
             const { data: formSchema } = await GET(
-                `application-management-service/formSchema/${basicForm?.generalSchemas?.[1]?.id}`
+                `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
             );
-            let temp = formSchema?.schema;
-            if (temp.properties.applicant.properties !== null) {
-                delete temp.properties.applicant.properties['applicantType']
-                delete temp.properties.applicant.properties['startDate']
-            }
+            // let temp = formSchema?.schema;
+            // if (temp.properties.applicant.properties !== null) {
+            //     delete temp.properties.applicant.properties['applicantType']
+            //     delete temp.properties.applicant.properties['startDate']
+            // }
             setFormSchema(formSchema?.schema)
             setFormSchemaWholeObject(formSchema)
         }
     }
-
-    // const validateSchema = (schema, formData) => {
-    //     let errors = {};
-
-    //     // Function to validate individual fields based on schema
-    //     const validateField = (key, fieldSchema, value) => {
-    //         // Check if field is required
-    //         console.log(key, fieldSchema, value, 'validationCheck')
-    //         if (schema.required && schema.required.includes(key) && !value) {
-    //             errors[key] = `${key} is required.`;
-    //         }
-
-    //         // Validate field type
-    //         if (fieldSchema.type && typeof value !== fieldSchema.type) {
-    //             errors[key] = `${key} must be of type ${fieldSchema.type}.`;
-    //         }
-
-    //         // Validate minimum and maximum values (for numeric fields)
-    //         if (fieldSchema.minimum && value < fieldSchema.minimum) {
-    //             errors[key] = `${key} must be greater than or equal to ${fieldSchema.minimum}.`;
-    //         }
-    //         if (fieldSchema.maximum && value > fieldSchema.maximum) {
-    //             errors[key] = `${key} must be less than or equal to ${fieldSchema.maximum}.`;
-    //         }
-
-    //         // Validate enum (if the value must match one from a list)
-    //         if (fieldSchema.enum && !fieldSchema.enum.includes(value)) {
-    //             errors[key] = `${key} must be one of ${fieldSchema.enum.join(', ')}.`;
-    //         }
-
-    //         // Validate format (e.g., email)
-    //         if (fieldSchema.format === 'email' && !/^\S+@\S+\.\S+$/.test(value)) {
-    //             errors[key] = `${key} must be a valid email address.`;
-    //         }
-    //     };
-
-    //     // Recursive function to traverse the schema
-    //     const traverseSchema = (schema, data, parentKey = "") => {
-    //         console.log(schema, data, parentKey = "", 'validationCheck')
-    //         for (let key in schema.properties) {
-    //             console.log(key, 'validationCheck')
-    //             const fieldSchema = schema.properties[key];
-    //             const fieldPath = parentKey ? `${parentKey}.${key}` : key;
-    //             const value = data[fieldPath];
-    //             console.log(fieldPath, 'validationCheck')
-    //             if (fieldSchema.type === "object" && fieldSchema.properties) {
-    //                 traverseSchema(fieldSchema, value || {}, fieldPath);
-    //             } else {
-    //                 validateField(fieldPath, fieldSchema, value);
-    //             }
-    //         }
-    //     };
-
-    //     // Start traversing the schema
-    //     traverseSchema(schema, formData);
-
-    //     return errors;
-    // };
 
     const getSkipClicked = (value) => {
         if (value) {
@@ -180,16 +133,46 @@ const DemographicData = ({ basicForm, setBasicForm, applicationId, getPreApplica
                 setBasicForm(response?.data)
                 SuccessToaster("Staff Member Application Updated Successfully");
                 getPreApplication();
-                if (sessionStorage.getItem('fromSummary') === "true") {
-                    navigate(-1);
-                } else {
-                    navigate('/applicationForm/section1/step2')
-                }
+                // if (sessionStorage.getItem('fromSummary') === "true") {
+                //     navigate(-1);
+                // } else {
+                //     navigate('/applicationForm/section1/step2')
+                // }
             })
             .catch((error) => {
                 console.log(error)
                 ErrorToaster("Unexpected Error Updating Staff Member Application");
             });
+    }
+
+    const handleContactAddressSubmit = async (skip) => {
+        let temp = {
+            schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+            data: basicForm?.forms?.[formIndex]?.data,
+            unFilledFields: warningFields?.map(data => data?.label),
+            acknowledged: skip === "skipped" ? false : true
+        }
+        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
+            .then(response => {
+                console.log(response)
+                setBasicForm(response?.data)
+                SuccessToaster("Application Updated Successfully");
+                getPreApplication()
+            })
+            .catch((error) => {
+                console.log(error)
+                ErrorToaster("Unexpected Error Updating Application");
+            });
+        // let addressData = applicantProfile;
+        // addressData.contactAddress2 = basicForm?.forms?.[formIndex]?.data.contactAddress2 !== undefined ? basicForm?.forms?.[formIndex]?.data.contactAddress2 : null
+        // addressData.contactAddress3 = basicForm?.forms?.[formIndex]?.data.contactAddress3 !== undefined ? basicForm?.forms?.[formIndex]?.data.contactAddress3 : null
+        // await PUT(`application-management-service/application/${applicationId}/profile`, addressData)
+        //     .then(response => {
+        //         console.log(response)
+        //     })
+        //     .catch((error) => {
+        //         console.log(error)
+        //     });
     }
 
     const addPath = (newPath) => {
@@ -199,6 +182,26 @@ const DemographicData = ({ basicForm, setBasicForm, applicationId, getPreApplica
             return Array.from(updatedPaths);
         });
     };
+
+    const getIsSubmitClicked = (value, data, skip) => {
+        if (value) {
+            handleSubmitApplicationReq()
+        }
+    }
+
+    const getIsSubmitClickedForContact = (value, data, skip) => {
+        if (value) {
+            handleContactAddressSubmit()
+        }
+    }
+
+    const handleContinue = () => {
+        if (sessionStorage.getItem('fromSummary') === "true") {
+            navigate(-1);
+        } else {
+            navigate(`/reappointmentApplicationForm/${applicationId}/section1/PrivilegeSelection`)
+        }
+    }
 
     const getValueByPath = (obj, path) => {
         const keys = path.split(/[\.\[\]]+/).filter(Boolean);
@@ -222,126 +225,67 @@ const DemographicData = ({ basicForm, setBasicForm, applicationId, getPreApplica
                     />
 
                     {formSchema !== undefined && "applicant" in formSchema?.properties && (
-                        <>
-                            {showDemographicInfo && (
-                                <ApplicationFieldCard
-                                    object={formSchema?.properties?.applicant}
-                                    gridStyle={style.applicantGrid}
-                                    baseKey={"applicant"}
-                                    basicForm={basicForm}
-                                    setBasicForm={setBasicForm}
-                                    isBasicPath={true}
-                                    getAllPath={getAllPath}
-                                    getAllLabels={getAllLabels}
-                                    warningFields={warningFields}
-                                    formSchema={formSchemaWholeObject}
-                                />
-                            )}
+                        <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
+                            {/* {showDemographicInfo && ( */}
+                            <ApplicationFieldCard
+                                object={formSchema?.properties?.applicant}
+                                gridStyle={style.applicantGrid}
+                                baseKey={"applicant"}
+                                basicForm={basicForm}
+                                setBasicForm={setBasicForm}
+                                isBasicPath={true}
+                                isEdited={isDemographicInfoEdited}
+                                setIsEdited={setIsDemographicInfoEdited}
+                                getAllPath={getAllPath}
+                                getAllLabels={getAllLabels}
+                                getIsSubmitClicked={getIsSubmitClicked}
+                                warningFields={warningFields}
+                                formSchema={formSchemaWholeObject}
+                                isReappointment={true}
+                                dataChangedObject={formSchema?.properties?.isDemographicDataChanged}
+                                isChanged={showDemographicInfo}
+                                setIsChanged={setShowDemographicInfo}
+                                isView={viewDemographicInfo}
+                                setIsView={setViewDemographicInfo}
+                            />
+                            {/* )}
                             <div className={style.displayInRow}>
                                 <div className={`${style.yesButton}`}><div className={`${style.verticalAlignCenter} ${style.justifyCenter}`} onClick={() => setShowDemographicInfo(true)}>YES</div></div>
                                 <div className={`${style.noButton} ${style.marginLeft}`}><div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>NO</div></div>
-                            </div>
-                        </>
-                    )}
-                    {formSchema !== undefined &&
-                        "credentialingPrivilegeCategory" in formSchema?.properties && (
-                            <ApplicationFieldCard
-                                object={formSchema?.properties?.credentialingPrivilegeCategory}
-                                gridStyle={style.credentialingGrid}
-                                baseKey={"credentialingPrivilegeCategory"}
-                                basicForm={basicForm}
-                                setBasicForm={setBasicForm}
-                                isBasicPath={true}
-                                getAllPath={getAllPath}
-                                getAllLabels={getAllLabels}
-                                warningFields={warningFields}
-                                formSchema={formSchemaWholeObject}
-                            />
-                        )}
-                    {formSchema !== undefined &&
-                        "departmentSpecialty" in formSchema?.properties && (
-                            <ApplicationFieldCard
-                                object={formSchema?.properties?.departmentSpecialty}
-                                gridStyle={style.twoCol}
-                                baseKey={"departmentSpecialty"}
-                                basicForm={basicForm}
-                                setBasicForm={setBasicForm}
-                                isBasicPath={true}
-                                getAllPath={getAllPath}
-                                getAllLabels={getAllLabels}
-                                warningFields={warningFields}
-                                formSchema={formSchemaWholeObject}
-                            />
-                        )}
-                    {formSchema !== undefined &&
-                        getValueByPath(
-                            basicForm,
-                            "basicDetails.departmentSpecialty.department"
-                        ) ===
-                        formSchema.if.properties.departmentSpecialty.properties.department
-                            .const &&
-                        formSchema.if.properties.departmentSpecialty.properties.specialty.enum?.includes(
-                            getValueByPath(
-                                basicForm,
-                                "basicDetails.departmentSpecialty.specialty"
-                            )
-                        ) &&
-                        formSchema !== undefined &&
-                        "regionalCallResponsibilities" in formSchema?.properties && (
-                            <ApplicationFieldCard
-                                object={formSchema?.properties?.regionalCallResponsibilities}
-                                gridStyle={""}
-                                baseKey={"regionalCallResponsibilities"}
-                                basicForm={basicForm}
-                                setBasicForm={setBasicForm}
-                                isBasicPath={true}
-                                getAllPath={getAllPath}
-                                getAllLabels={getAllLabels}
-                                warningFields={warningFields}
-                                formSchema={formSchemaWholeObject}
-                            />
-                        )}
-                    {formSchema !== undefined && "billingNumber" in formSchema?.properties && (
-                        <ApplicationFieldCard
-                            object={formSchema?.properties?.billingNumber}
-                            gridStyle={style.twoCol}
-                            baseKey={"billingNumber"}
-                            basicForm={basicForm}
-                            setBasicForm={setBasicForm}
-                            isBasicPath={true}
-                            getAllPath={getAllPath}
-                            getAllLabels={getAllLabels}
-                            warningFields={warningFields}
-                            formSchema={formSchemaWholeObject}
-                        />
-                    )}
-                    {/*<CommonDivider />
-                     <div className={`${style.backgroundCard} ${style.marginTop}`}>
-                        <div className={style.cardTitle}>Department / Speciality of Service</div>
-                        <div className={style.fourCol}>
-                            <div className={`${style.siteDisplayCard} ${style.siteDisplayGrid} ${style.marginTop}`}>
-                                <div>
-                                    <div className={style.siteDisplayDepartmentTextStyle}>Department of Surgery </div>
-                                    <div className={style.siteDisplaySurgeryTextStyle}>Cardiothoracic Surgery</div>
-                                    <div className={`${style.siteDisplaySiteTextStyle} ${style.marginTop10}`}>Cambridge Memorial Hospital </div>
-                                </div>
-                                <DeleteOutlineIcon sx={{ color: '#0e5197', cursor: 'pointer' }} />
-                            </div>
-                             <div className={`${style.siteDisplayCard} ${style.siteDisplayGrid} ${style.marginTop}`}>
-                                <div>
-                                    <div className={style.siteDisplayDepartmentTextStyle}>Department of Surgery </div>
-                                    <div className={style.siteDisplaySurgeryTextStyle}>General Surgery</div>
-                                    <div className={`${style.siteDisplaySiteTextStyle} ${style.marginTop10}`}>Cambridge Memorial Hospital </div>
-                                </div>
-                                <DeleteOutlineIcon sx={{ color: '#0e5197', cursor: 'pointer' }} />
-                            </div> 
+                            </div> */}
                         </div>
-                    </div>
-                    <CommonDivider />
-
-                    <div className={style.marginTop}>
-                        <CommonCheckBox checked={true} onChange={(e) => { }} label="I Have Verified the Information to be Correct, and would like to Proceed with my Application" />
-                    </div> */}
+                    )}
+                    {formSchema !== undefined && "contactAddress1" in formSchema?.properties && (
+                        <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
+                            {/* {showDemographicInfo && ( */}
+                            <ApplicationFieldCard
+                                object={formSchema?.properties?.contactAddress1}
+                                gridStyle={style.homeMailingAddressGrid}
+                                baseKey={"contactAddress1"}
+                                basicForm={basicForm}
+                                setBasicForm={setBasicForm}
+                                stepPath={`forms[${formIndex}].data`}
+                                isEdited={isContactInfoEdited}
+                                setIsEdited={setIsContactInfoEdited}
+                                getAllPath={getAllPath}
+                                getAllLabels={getAllLabels}
+                                getIsSubmitClicked={getIsSubmitClickedForContact}
+                                warningFields={warningFields}
+                                formSchema={formSchemaWholeObject}
+                                isReappointment={true}
+                                dataChangedObject={formSchema?.properties?.isAddressChanged}
+                                isChanged={showContactInfo}
+                                setIsChanged={setShowContactInfo}
+                                isView={viewContactInfo}
+                                setIsView={setViewContactInfo}
+                            />
+                            {/* )}
+                            <div className={style.displayInRow}>
+                                <div className={`${style.yesButton}`}><div className={`${style.verticalAlignCenter} ${style.justifyCenter}`} onClick={() => setShowDemographicInfo(true)}>YES</div></div>
+                                <div className={`${style.noButton} ${style.marginLeft}`}><div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>NO</div></div>
+                            </div> */}
+                        </div>
+                    )}
                 </div>
                 <div>
                     <ApplicationAssistanceCard
@@ -373,7 +317,7 @@ const DemographicData = ({ basicForm, setBasicForm, applicationId, getPreApplica
                         </div>
                         <div
                             className={`${style.continue} ${style.marginTop10}`}
-                            onClick={() => getMissingFields()}
+                            onClick={() => handleContinue()}
                         >
                             CONTINUE
                         </div>

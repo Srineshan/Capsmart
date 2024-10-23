@@ -30,8 +30,8 @@ const Applicant = () => {
         if (applicationForm?.length > 0) {
             console.log('Inside UseEffect', applicationForm);
             cookies.remove('entityId', { path: '/' })
-            cookies.set('entityId', applicationForm?.[0]?.tenant?.id, { path: '/' });
-            navigate(`/applicationForm/${applicationForm?.[0]?.id}`);
+            cookies.set('entityId', applicationForm?.[applicationForm?.length - 1]?.tenant?.id, { path: '/' });
+            navigate(applicationForm?.[applicationForm?.length - 1]?.creationType === 'REAPPOINTMENT' ? `/reappointmentApplicationForm/${applicationForm?.[applicationForm?.length - 1]?.id}/section1/DemographicData` : `/applicationForm/${applicationForm?.[applicationForm?.length - 1]?.id}`);
         }
     }, [applicationForm, applicationForm?.length])
 

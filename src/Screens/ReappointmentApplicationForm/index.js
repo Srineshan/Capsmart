@@ -6,14 +6,16 @@ import style from './index.module.scss';
 import { useParams } from 'react-router-dom';
 import ApplicationHeader from '../../Components/ApplicationHeader';
 import DemographicData from './DemographicData';
+import PrivilegeSelection from './PrivilegeSelection';
+import ProfessionalConduct from './ProfessionalConduct';
 
 const ReappointmentApplicationForm = () => {
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const user = jwt(userDetails);
-    const { section, step } = useParams();
+    const { applicationId, section, step } = useParams();
     const [basicForm, setBasicForm] = useState({})
-    const applicationId = sessionStorage.getItem('applicationId')
+    // const applicationId = sessionStorage.getItem('applicationId')
     const [isOpen, setIsOpen] = useState(true);
     const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
     const getIsOpen = (value) => {
@@ -50,6 +52,10 @@ const ReappointmentApplicationForm = () => {
         switch (step) {
             case 'DemographicData':
                 return <DemographicData basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+            case 'PrivilegeSelection':
+                return <PrivilegeSelection basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+            case 'ProfessionalConduct':
+                return <ProfessionalConduct basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             default:
                 return <div>Step not found</div>;
         }
