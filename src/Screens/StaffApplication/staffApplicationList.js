@@ -36,7 +36,8 @@ const StaffApplicationList = ({
   selectedTab,
   getActiveApplicationView,
   getActiveApplicationTask,
-  getCredCommApplicationView
+  getCredCommApplicationView,
+  getTitleCounts
 }) => {
   const PDFRef = createRef();
   const navigate = useNavigate();
@@ -280,6 +281,7 @@ const StaffApplicationList = ({
   const [showApplicationRejectionDialog, setShowApplicationRejectionDialog] =
     useState(false);
   const [showCheckListDialog, setShowCheckListDialog] = useState(false);
+  const [reFetchMetaData, setReFetchMetaData] = useState(false)
 
   // useEffect(() => {
   //   getPreApplication();
@@ -291,6 +293,11 @@ const StaffApplicationList = ({
   //   );
   //   setForm(basicForm)
   // }
+
+  const getReFetchMetaData = (value) => {
+    setReFetchMetaData(value);
+}
+
 
   const getApplicationRejectionDialog = (value) => {
     setShowApplicationRejectionDialog(value);
@@ -325,11 +332,17 @@ const StaffApplicationList = ({
     sessionStorage.setItem("applicationId", data?.id);
   };
 
+  const onClickMoveToActiveStaffFunction = (data) => {
+    ActiveStaffApplication(data?.id)
+    sessionStorage.setItem("applicationId", data?.id);
+  };
+
   const getApplicationStart = async (id) => { 
     await PUT(`application-management-service/application/${id}/workflow/start`)
       .then(response => {
         console.log('successfullllllll')
-        window.location.reload();
+        getWorkflowUserData();
+        getTitleCounts();
       })  
       .catch((error) => {
         console.log("errorrrrrrrrr")
@@ -367,7 +380,8 @@ const StaffApplicationList = ({
     await PUT(`application-management-service/application/${id}/workflow/move?isDelegate=${isDelegate}`,requestData)
       .then(response => {
         console.log('successfull')
-        window.location.reload();
+        getWorkflowUserData();
+        getTitleCounts();
       })  
       .catch((error) => {
         console.log(error)
@@ -395,6 +409,22 @@ const StaffApplicationList = ({
         );
         setForm2(basicApproval)  
         console.log("basicApprovalllllllllllll" + JSON.stringify(form2));     
+  }
+
+  const ActiveStaffApplication = async (id) => {
+    await POST(`application-management-service/application/${id}/appointStaff`)
+      .then(response => {
+        // SuccessToaster('Reappoint Application Send as Email Successfully');
+        console.log(response?.data);
+        getWorkflowUserData();
+        getTitleCounts();
+        // window.location.reload();
+      })
+      .catch(error => {
+        // ErrorToaster('Sending Email is Failed');
+        console.log(error);
+        
+      })
   }
 
   useEffect(() => {
@@ -430,6 +460,8 @@ const StaffApplicationList = ({
       return [];
     }
   };
+
+  console.log("0000000000000000000000"+tableData);
 
   const getHandleSort = (value, sortBy) => {
     if (sortBy === 'ASCENDING') {
@@ -1419,15 +1451,13 @@ const StaffApplicationList = ({
     {
       data: "Add as active staff",
       requiredValue: "boolean",
-      onClick: () => {
-        setShowCheckListDialog(true);
-      },
+      onClick: onClickMoveToActiveStaffFunction
     },
-    {
-      data: "Send follow up disclosures",
-      requiredValue: "boolean",
-      onClick: () => { },
-    },
+    // {
+    //   data: "Send follow up disclosures",
+    //   requiredValue: "boolean",
+    //   onClick: () => { },
+    // },
   ];
 
   const reappointmentActionsData = [];
@@ -1447,8 +1477,8 @@ const StaffApplicationList = ({
               ? macHeaderValues
               : selectedTab === "bod"
                 ? bodHeaderValues
-                : selectedTab === "clarifications"
-                  ? clarificationHeaderValues
+                : selectedTab === "clarificationsRequired"
+                  ? applicantHeaderValues
                   : selectedTab === "rejected"
                     ? rejectedHeaderValues
                     // :[];
@@ -1466,8 +1496,8 @@ const StaffApplicationList = ({
               ? macColSortValues
               : selectedTab === "bod"
                 ? bodColSortValues
-                : selectedTab === "clarifications"
-                  ? clarificationColSortValues
+                : selectedTab === "clarificationsRequired"
+                  ? applicantColSortValues
                   : selectedTab === "rejected"
                     ? rejectedColSortValues
                     // :[];
@@ -1485,8 +1515,8 @@ const StaffApplicationList = ({
               ? getMacValues()
               : selectedTab === "bod"
                 ? getBodValues()
-                : selectedTab === "clarifications"
-                  ? getClarificationValues()
+                : selectedTab === "clarificationsRequired"
+                  ? getApplicantValues()
                   : selectedTab === "rejected"
                     ? getRejectedValues()
                     // :[];
@@ -1504,14 +1534,14 @@ const StaffApplicationList = ({
               ? macActionsData
               : selectedTab === "bod"
                 ? bodActionsData
-                : selectedTab === "clarifications"
-                  ? clarificationActionsData
+                : selectedTab === "clarificationsRequired"
+                  ? applicantActionsData
                   : selectedTab === "rejected"
                     ? rejectedActionsData
                     // :[];
 
-                    // : approvedActionsData;
-                    : applicantActionsData;
+                    : approvedActionsData;
+                    // : applicantActionsData;
   let gridStyle =
     selectedTab === "applicantsToProcess"
       ? style.applicantStaffGrid
@@ -1523,8 +1553,8 @@ const StaffApplicationList = ({
           ? style.macStaffGrid
           : selectedTab === "bod"
             ? style.bodStaffGrid
-            : selectedTab === "clarifications"
-              ? style.clarificationStaffGrid
+            : selectedTab === "clarificationsRequired"
+              ? style.applicantStaffGrid
               : selectedTab === "rejected"
                 ? style.rejectedStaffGrid
                 // :[];
@@ -1814,6 +1844,9 @@ const StaffApplicationList = ({
             <StaffApplicationTiles
               getSelectedTab={getSelectedTab}
               selectedTab={selectedTab}
+              reFetchMetaData={reFetchMetaData}
+              getReFetchMetadata = {getReFetchMetaData}
+
             />
 
             <div className={`${style.spaceBetween} ${style.marginLeft} `}>

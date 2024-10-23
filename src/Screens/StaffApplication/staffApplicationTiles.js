@@ -5,7 +5,7 @@ import { GET } from './../../Screens/dataSaver';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 
-const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
+const StaffApplicationTiles = ({ getSelectedTab, selectedTab,reFetchMetaData,getReFetchMetaData }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const user = jwt(userDetails);
@@ -17,6 +17,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
     bod: 0,
     'level-1': 0,
     'level-2': 0,
+    approved: 0,
   });
 
   // const [selectedTab, setSelectedTab] = useState('applicantsToProcess');
@@ -25,8 +26,10 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
     await GET('application-management-service/application/workflowUser/meta')
       .then(response => {
         setCounts(response?.data);
+        console.log("-----------------"+response?.data);
         var str = JSON.stringify(response?.data);
         console.log("titlesssss" + str)
+        getReFetchMetaData(false)
       })
       .catch(error => {
         console.log('error', error);
@@ -52,6 +55,12 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
   useEffect(() => {
     getTitleCounts();
   }, []);
+  useEffect(() =>{
+    if(reFetchMetaData === true){
+      getTitleCounts();
+    }
+  },[reFetchMetaData] )
+
 
 
   // const handleTileClick = (tile) => {
@@ -124,6 +133,13 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab }) => {
         tileLabel="Clarifications"
         tileCount={counts?.clarificationsRequired}
         currentTile="clarificationsRequired"
+      />
+       <TileApplication
+        selectedTab={selectedTab}
+        getSelectedTab={getSelectedTab}
+        tileLabel="Approved"
+        tileCount={counts?.approved}
+        currentTile="approved"
       />
     </div>
   )

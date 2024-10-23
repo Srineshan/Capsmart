@@ -3,7 +3,7 @@ import Navbar from '../../Components/Navbar';
 import ActiveStaffList from './activeStaffList';
 
 const ActiveStaff = () => {
-    const [selectedTab, setSelectedTab] = useState('permanentStaff');
+    const [selectedTab, setSelectedTab] = useState('PERMANENT');
     const [isLoading, setIsLoading] = useState(false);
 
     const getSelectedTab = (value) => {
@@ -11,6 +11,7 @@ const ActiveStaff = () => {
     }
 
     return (
+        <>
         <Fragment>
             <Navbar />
             <ActiveStaffList
@@ -19,6 +20,7 @@ const ActiveStaff = () => {
                 selectedTab={selectedTab}
             />
         </Fragment>
+        </>
     )
 }
 
