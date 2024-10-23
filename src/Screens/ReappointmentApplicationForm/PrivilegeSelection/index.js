@@ -29,6 +29,7 @@ import CommonSelectField from '../../../Components/CommonFields/CommonSelectFiel
 import ESignature from '../../../Components/ESignature';
 import CommonRadio from '../../../Components/CommonFields/CommonRadio';
 import AlertDialog from '../../../Components/AlertDialog';
+import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
 
 const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [isSigned, setIsSigned] = useState(false);
@@ -623,7 +624,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 6'} title={'Details of request for privileges'} dataType={'Step 7'} timeNumber={20} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                <ReappointmentProgressCard step={'STEP 6'} title={formSchema?.title} dataType={formSchema?.description} timeNumber={20} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>

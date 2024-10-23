@@ -30,6 +30,10 @@ const ReappointmentApplicationForm = () => {
         setUserDetails();
     }, [user?.id])
 
+    useEffect(() => {
+        sessionStorage.setItem('applicationId', applicationId)
+    }, [applicationId])
+
     const setUserDetails = async () => {
         const { data: userData } = await GET(`user-management-service/user/${user?.id}`);
         console.log(userData)

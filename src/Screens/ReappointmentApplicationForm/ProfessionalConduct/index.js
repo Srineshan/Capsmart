@@ -13,6 +13,7 @@ import ValidationDialog from '../../../Components/validationDialog';
 
 import style from './index.module.scss';
 import WelcomeCard from '../../../Components/WelcomeCard';
+import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
 
 const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
@@ -148,7 +149,7 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 11'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={22} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                <ReappointmentProgressCard step={'STEP 11'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={22} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
