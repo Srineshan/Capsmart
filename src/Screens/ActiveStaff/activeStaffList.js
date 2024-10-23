@@ -3,7 +3,7 @@ import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 import NoteAltOutlinedIcon from '@mui/icons-material/NoteAltOutlined';
 import TimeSmartLogo from './../../images/timeSmartAI-logo-withoutbg.png';
-import StaffApplicationTiles from './activeStaffTiles';
+import ActionStaffTiles from './activeStaffTiles';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -52,9 +52,9 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
   const approvedHeaderValues = ["", "Applicant Name", "Type", "Notes", "Last Updated On", ""];
   
 
-  const permanentColSortValues = [false,true, true, false, false, , false, true , false];
-  const locumColSortValues = [false, true, true, false, false, false,false,false,true,false];
-  const temporaryStaffColSortValues = [true, true, false, false, false, true];
+  const permanentColSortValues = [false,false, false, false, false, , false, false , false];
+  const locumColSortValues = [false, false, false, false, false, false,false,false,false,false];
+  const temporaryStaffColSortValues = [false, false, false, false, false, false];
   const approvedColSortValues = [false, false, false, false, false, false, false, false, false];
  
 
@@ -85,7 +85,7 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
 
   useEffect(() => {
     getActiveUserData(selectedTab);
-  }, [selectedTab,sortField, sortValue]);
+  }, [selectedTab]);
 
   const getReFetchMetaData = (value) => {
     setReFetchMetaData(value);
@@ -97,11 +97,11 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
         SuccessToaster('Reappoint Application Send as Email Successfully');
         console.log(response?.data);
         getActiveUserData();
+        setReFetchMetaData(true);
         getTitleCounts();
-        // window.location.reload();
       })
       .catch(error => {
-        ErrorToaster('Sending Email is Failed');
+        console.log(error)
       })
   }
 
@@ -120,8 +120,6 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
       return [];
     }
   };
-  console.log("0000000000000000000000"+tableData);
-  
 
   const getHandleSort = (value, sortBy) => {
     if (sortBy === 'ASCENDING') {
@@ -888,7 +886,7 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
           </div>
 
           <div className={`${style.spaceBetween} ${style.marginTop20} ${style.marginLeft30} `}>
-            <StaffApplicationTiles getSelectedTab={getSelectedTab} selectedTab={selectedTab} reFetchMetaData={reFetchMetaData} getReFetchMetadata = {getReFetchMetaData} />
+            <ActionStaffTiles getSelectedTab={getSelectedTab} selectedTab={selectedTab} reFetchMetaData={reFetchMetaData} getReFetchMetadata = {getReFetchMetaData} />
 
             <div className={`${style.spaceBetween} ${style.marginLeft} `}>
               <div className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`} >
