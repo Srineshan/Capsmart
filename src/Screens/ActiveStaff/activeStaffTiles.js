@@ -3,7 +3,7 @@ import TileApplication from '../../Components/TileApplication';
 import style from './index.module.scss';
 import { GET } from './../../Screens/dataSaver';
 
-const ActiveStaffTiles = ({ getSelectedTab, selectedTab,reFetchMetaData,getReFetchMetaData }) => {
+const ActiveStaffTiles = ({ getSelectedTab, selectedTab,reFetchMetaData,setReFetchMetaData }) => {
   const [counts, setCounts] = useState({
     LOCUM : 0,
     PERMANENT : 0,
@@ -26,7 +26,7 @@ const ActiveStaffTiles = ({ getSelectedTab, selectedTab,reFetchMetaData,getReFet
         setCounts(response?.data);
         var str = JSON.stringify(response?.data);
         console.log("titlesssss" + str)
-        getReFetchMetaData(false)
+        setReFetchMetaData(false)
       })
       .catch(error => {
         console.log('errorrrrrrrrrrrrrrrr', error);
