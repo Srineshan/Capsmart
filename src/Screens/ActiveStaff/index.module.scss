@@ -692,23 +692,42 @@ body::-webkit-scrollbar {
   grid-gap: 10px;
 }
 
+// .applicantStaffGrid {
+//   display: grid;
+//   grid-template-columns: 5% 11% 15% 15% 5% 12% 12% 12%;
+//   grid-gap: 10px;
+// }
+
 .applicantStaffGrid {
   display: grid;
-  grid-template-columns: 5% 11% 15% 15% 5% 12% 12% 12%;
-  grid-gap: 10px;
+  grid-template-columns: 2% 13% 12% 19% 6% 5% 5% 10% 14% 6%;
+  grid-gap: 1%;
 }
+
+// .locumStaffGrid {
+//   display: grid;
+//   grid-template-columns: 5% 11% 15% 15% 5% 12% 12% 12%;
+//   grid-gap: 10px;
+// }
 
 .locumStaffGrid {
   display: grid;
-  grid-template-columns: 5% 11% 15% 15% 5% 12% 12% 12%;
+  grid-template-columns: 2% 14% 12% 17% 6% 5% 5% 11% 15% 6%;
+  grid-gap: 1%;
+}
+
+.permanentStaffGrid {
+  display: grid;
+  grid-template-columns: 2% 18% 15% 12% 10% 8% 8% 11% 11% 5%;
   grid-gap: 10px;
 }
 
-.applicationStaffGrid {
+.temporaryStaffGrid {
   display: grid;
-  grid-template-columns: 2% 18% 15% 12% 8% 5% 5% 11% 11% 5%;
-  grid-gap: 10px;
+  grid-template-columns: 14% 12% 14% 20% 13% 15% 15%;
+  grid-gap: 1%;
 }
+
 
 .clarificationStaffGrid {
   display: grid;
