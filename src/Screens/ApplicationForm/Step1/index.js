@@ -33,6 +33,8 @@ const Step1 = ({
   const [labels, setLabels] = useState([]);
   const [warningFields, setWarningFields] = useState([]);
   const [showValidationDialog, setShowValidationDialog] = useState(false);
+
+  console.log("basicForm", basicForm);
   useEffect(() => {
     getBasicForm();
   }, []);
@@ -95,26 +97,23 @@ const Step1 = ({
     let missingKeys = [];
     let keyValuePair = [];
     metadata?.map((data, index) => {
-      console.log("datasssss", data);
       keyValuePair.push({
         key: data,
         value: getValueByPath(basicForm, data),
         label: labels[index],
       });
     });
+    const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/; // Example for formatted phone number
+
     keyValuePair?.map((data) => {
-      console.log("datasssss", data);
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/; // Example for formatted phone number
       if (
         data?.value === "" ||
         data?.value === null ||
         data?.value === undefined ||
         data?.value === 0 ||
         (data?.key === "basicDetails.applicant.email.officialEmail" &&
-          !emailRegex.test(data?.value)) ||
-        (data?.key === "basicDetails.applicant.cellPhone" &&
-          !phoneRegex.test(data?.value))
+          !emailRegex.test(data?.value))
       ) {
         if (
           data.key === "basicDetails.applicant.email.officialEmail" &&
@@ -135,9 +134,14 @@ const Step1 = ({
           }));
         }
         if (
-          data.key === "basicDetails.applicant.cellPhone" &&
-          !phoneRegex.test(data.value)
+          basicForm.basicDetails.applicant.cellPhone &&
+          !phoneRegex.test(basicForm.basicDetails.applicant.cellPhone)
         ) {
+          missingKeys.push({
+            key: "basicDetails.applicant.cellPhone",
+            label: "Cell Phone",
+            error: "Invalid phone number format",
+          });
           setBasicForm((prevForm) => ({
             ...prevForm,
             basicDetails: {
@@ -231,7 +235,6 @@ const Step1 = ({
     getValueByPath(basicForm, "basicDetails.departmentSpecialty.department"),
     fieldPaths
   );
-  console.log("Metadata", metadata);
   return (
     <div>
       <div className={`${style.applicationScreenGrid} `}>
