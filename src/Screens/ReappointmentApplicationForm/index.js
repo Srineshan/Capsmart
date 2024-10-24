@@ -8,6 +8,7 @@ import ApplicationHeader from '../../Components/ApplicationHeader';
 import DemographicData from './DemographicData';
 import PrivilegeSelection from './PrivilegeSelection';
 import ProfessionalConduct from './ProfessionalConduct';
+import ApplicantAcknowledgement from './ApplicantAcknowledgement';
 
 const ReappointmentApplicationForm = () => {
     let cookie = new Cookie();
@@ -60,6 +61,8 @@ const ReappointmentApplicationForm = () => {
                 return <PrivilegeSelection basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'ProfessionalConduct':
                 return <ProfessionalConduct basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+            case 'ApplicantAcknowledgement':
+                return <ApplicantAcknowledgement dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
             default:
                 return <div>Step not found</div>;
         }

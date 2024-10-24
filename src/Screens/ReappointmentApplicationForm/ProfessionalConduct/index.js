@@ -114,26 +114,24 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
                     setBasicForm(response?.data)
                     SuccessToaster("Application Updated Successfully");
                     getPreApplication();
-                    // if (sessionStorage.getItem('fromSummary') === "true") {
-                    //     navigate(-1);
-                    // }
-                    // else {
-                    //     navigate('/applicationForm/section1/step12')
-
-                    // }
+                    if (sessionStorage.getItem('fromSummary') === "true") {
+                        navigate(-1);
+                    }
+                    else {
+                        navigate(`/reappointmentApplicationForm/${applicationId}/section1/ApplicantAcknowledgement`)
+                    }
                 })
                 .catch((error) => {
                     console.log(error)
                     ErrorToaster("Unexpected Error Updating Application");
                 });
         } else {
-            // if (sessionStorage.getItem('fromSummary') === "true") {
-            //     navigate(-1);
-            // }
-            // else {
-            //     navigate('/applicationForm/section1/step12')
-
-            // }
+            if (sessionStorage.getItem('fromSummary') === "true") {
+                navigate(-1);
+            }
+            else {
+                navigate(`/reappointmentApplicationForm/${applicationId}/section1/ApplicantAcknowledgement`)
+            }
         }
     }
 
