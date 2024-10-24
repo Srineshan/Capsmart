@@ -39,6 +39,7 @@ const CommonDateField = ({ onChange, value, InputProps, onOpen, onClose, open, r
                         // error={warningCheck}
                         >
                             <DesktopDatePicker
+                                inputFormat="dd/MM/yyyy"
                                 value={value}
                                 onChange={onChange}
                                 InputProps={InputProps}
