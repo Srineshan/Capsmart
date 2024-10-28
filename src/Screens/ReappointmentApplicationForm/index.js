@@ -8,6 +8,8 @@ import ApplicationHeader from '../../Components/ApplicationHeader';
 import DemographicData from './DemographicData';
 import PrivilegeSelection from './PrivilegeSelection';
 import ProfessionalConduct from './ProfessionalConduct';
+import UploadYourDoc from './UploadYourDoc';
+import { logout } from '../../utils/auth';
 
 const ReappointmentApplicationForm = () => {
     let cookie = new Cookie();
@@ -60,6 +62,8 @@ const ReappointmentApplicationForm = () => {
                 return <PrivilegeSelection basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'ProfessionalConduct':
                 return <ProfessionalConduct basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+            case 'UploadYourDoc':
+                return <UploadYourDoc basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             default:
                 return <div>Step not found</div>;
         }
@@ -69,7 +73,7 @@ const ReappointmentApplicationForm = () => {
 
     return (
         <div className={style.screenBackground}>
-            <ApplicationHeader title={`Reappointment Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'} ${(basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory !== null && basicForm?.basicDetails?.credentialingPrivilegeCategory !== null) ? basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory : ''}`} />
+            <ApplicationHeader title={`Reappointment Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'} ${(basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory !== null && basicForm?.basicDetails?.credentialingPrivilegeCategory !== null) ? basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory : ''}`} close={true} closeClick={logout} />
             <div className={style.screenPadding}>
                 {StepDisplay()}
             </div>

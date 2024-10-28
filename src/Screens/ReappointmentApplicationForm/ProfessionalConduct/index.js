@@ -27,9 +27,13 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
     const [isEdited, setIsEdited] = useState(false);
     const [formIndex, setFormIndex] = useState();
     const { applicationId, section, step } = useParams();
+    const [navigateURL, setNavigateURL] = useState();
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
+        }
+        if (basicForm !== undefined && formIndex !== undefined) {
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/PODCheck` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
         }
     }, [basicForm, formIndex])
 
@@ -114,26 +118,26 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
                     setBasicForm(response?.data)
                     SuccessToaster("Application Updated Successfully");
                     getPreApplication();
-                    // if (sessionStorage.getItem('fromSummary') === "true") {
-                    //     navigate(-1);
-                    // }
-                    // else {
-                    //     navigate('/applicationForm/section1/step12')
+                    if (sessionStorage.getItem('fromSummary') === "true") {
+                        navigate(-1);
+                    }
+                    else {
+                        navigate(navigateURL)
 
-                    // }
+                    }
                 })
                 .catch((error) => {
                     console.log(error)
                     ErrorToaster("Unexpected Error Updating Application");
                 });
         } else {
-            // if (sessionStorage.getItem('fromSummary') === "true") {
-            //     navigate(-1);
-            // }
-            // else {
-            //     navigate('/applicationForm/section1/step12')
+            if (sessionStorage.getItem('fromSummary') === "true") {
+                navigate(-1);
+            }
+            else {
+                navigate(navigateURL)
 
-            // }
+            }
         }
     }
 

@@ -80,16 +80,17 @@ const ReappointmentApplicationFormRequirement = () => {
     }
 
     const handleSubmitApplicationReq = async (data) => {
-        await PUT(`application-management-service/application/${applicationId}`, basicForm)
-            .then(response => {
-                console.log(response)
-                navigate('/applicationForm/section1/step1')
-                SuccessToaster("Application Updated Successfully");
-            })
-            .catch((error) => {
-                console.log(error)
-                ErrorToaster("Unexpected Error Updating Application");
-            });
+        // await PUT(`application-management-service/application/${applicationId}`, basicForm)
+        //     .then(response => {
+        //         console.log(response)
+        //         navigate('/applicationForm/section1/step1')
+        //         SuccessToaster("Application Updated Successfully");
+        //     })
+        //     .catch((error) => {
+        //         console.log(error)
+        //         ErrorToaster("Unexpected Error Updating Application");
+        //     });
+        navigate(`/reappointmentApplicationForm/${applicationId}/Form/UploadYourDoc`)
     }
 
     // const calculateRemainingDays = (createdDate, totalDays) => {

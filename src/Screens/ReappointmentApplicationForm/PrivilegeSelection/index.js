@@ -57,6 +57,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [selectedPrivilegeData, setSelectedprivilegeData] = useState([]);
     const navigate = useNavigate()
     const [formIndex, setFormIndex] = useState();
+    const [navigateURL, setNavigateURL] = useState();
     useEffect(() => {
         getApplication();
     }, [])
@@ -78,6 +79,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
         }
         setSelectedAdditionalPrivilegeForDisplay(basicForm?.privileges?.additionalPrivileges)
         setSelectedPrivilegeForDisplay(basicForm?.privileges?.obligatedPrivileges)
+        if (basicForm !== undefined && formIndex !== undefined) {
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/PODCheck` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
+        }
     }, [basicForm, formIndex])
 
     useEffect(() => {
@@ -198,7 +202,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                 navigate(-1);
             }
             else {
-                navigate(`/reappointmentApplicationForm/${applicationId}/section1/ProfessionalConduct`)
+                navigate(navigateURL)
 
             }
         }
