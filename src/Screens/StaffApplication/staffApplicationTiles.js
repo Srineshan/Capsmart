@@ -5,126 +5,111 @@ import { GET } from './../../Screens/dataSaver';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 
-const StaffApplicationTiles = ({ getSelectedTab, selectedTab,reFetchMetaData,getReFetchMetaData }) => {
-  let cookie = new Cookie();
-  let userDetails = cookie.get('user');
+const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, getReFetchMetaData }) => {
+  const cookie = new Cookie();
+  const userDetails = cookie.get('user');
   const user = jwt(userDetails);
   const [userRole, setUserRole] = useState('');
   const [counts, setCounts] = useState({
-    chiefOfStaff: 0,
-    credentialingCommittee: 0,
-    mac: 0,
-    bod: 0,
     'level-1': 0,
     'level-2': 0,
+    'level-3': 0,
+    'level-4': 0,
+    'level-5': 0,
+    clarificationsRequired: 0,
   });
-
-  // const [selectedTab, setSelectedTab] = useState('applicantsToProcess');
-
-  const getTitleCounts = async () => {
-    await GET('application-management-service/application/workflowUser/meta')
-      .then(response => {
-        setCounts(response?.data);
-        var str = JSON.stringify(response?.data);
-        console.log("titlesssss" + str)
-        getReFetchMetaData(false)
-      })
-      .catch(error => {
-        console.log('error', error);
-      })
-  };
-
-  useEffect(() =>{
-    if(reFetchMetaData === true){
-      getTitleCounts();
-    }
-  },[reFetchMetaData] )
-
-  useEffect(() => {
-    console.log("userRoleeeeeee" + userRole);
-
-    if (userRole === 'Staff Manager' || userRole === 'Chief Of Staff') {
-      getSelectedTab('applicantsToProcess');
-    } else if (userRole === 'Department Head') {
-      getSelectedTab('level-2');
-    } else if (userRole === 'Credentialing Committee') {
-      getSelectedTab('level-1');
-    } else if (userRole === 'Advisory Committee') {
-      getSelectedTab('mac');
-    } else if (userRole === 'Board') {
-      getSelectedTab('bod');
-    }
-  }, [userRole]);
+  const [userFlow, setUserFlow] = useState('');
+  const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
+  const applicationId = "66dc44ec788741fedc982b01";
 
   useEffect(() => {
     getTitleCounts();
+    setUserDetails();
+    getUserRoleType();
   }, []);
 
-
-  // const handleTileClick = (tile) => {
-  //   setSelectedTab(tile);
-  //   if (getSelectedTab) {
-  //     getSelectedTab(tile);
-  //   }
-  // };
-
-  useEffect(() => {
-    setUserDetails();
-  }, [user?.id])
+  const getTitleCounts = async () => {
+    try {
+      const response = await GET('application-management-service/application/workflowUser/meta');
+      setCounts(response?.data);
+      getReFetchMetaData(false);
+    } catch (error) {
+      console.error('Error fetching title counts', error);
+    }
+  };
 
   const setUserDetails = async () => {
-    const { data: userData } = await GET(`user-management-service/user/${user?.id}`);
-    console.log("userdataaaa" + JSON.stringify(userData))
-    sessionStorage.setItem('user', JSON.stringify(userData))
-    setUserRole(userData?.roles?.map((data) => data?.roleName));
-  }
+    try {
+      const { data: userData } = await GET(`user-management-service/user/${user?.id}`);
+      sessionStorage.setItem('user', JSON.stringify(userData));
+      setUserRole(userData?.roles?.map((data) => data?.roleName));
+    } catch (error) {
+      console.error('Error fetching user details', error);
+    }
+  };
+
+  const getUserRoleType = async () => {
+    try {
+      const response = await GET(`application-management-service/applicantType/approvalFlow?applicantTypeId=${applicationId}`);
+      setUserFlow(response?.data?.approvalFlowMap);
+      console.log("flowssss", JSON.stringify(response?.data?.approvalFlowMap));
+    } catch (error) {
+      console.error('Error fetching user role type', error);
+    }
+  };
+
+  useEffect(() => {
+    if (reFetchMetaData === true) {
+      getTitleCounts();
+    }
+  }, [reFetchMetaData]);
+
+  useEffect(() => {
+    const UserFlowType = userFlow?.workflow || [];
+    
+    // Determine if the user is a manager or chief
+    const isManagerOrChief = userRole.includes("Staff Manager") || userRole.includes("Chief Of Staff");
+    
+    // Calculate currentRoleIndex based on userFlowArray
+    const newCurrentRoleIndex = isManagerOrChief
+      ? 0 
+      : Object.entries(UserFlowType).findIndex(([key, value]) => {
+          const details = value.flowDetails;
+          return (
+            details &&
+            details.some((detail) => {
+              return detail.role && userRole.includes(detail.role.roleName);
+            })
+          );
+      });
+    
+    setCurrentRoleIndex(newCurrentRoleIndex);
+  
+  }, [userFlow, userRole]);
+  
+  console.log("currentRoleIndex" + currentRoleIndex);
+
+  const UserFlowType = userFlow?.workflow || [];
+
+  const userFlowArray = Object.entries(UserFlowType).map(([key, value], index) => ({
+    label: currentRoleIndex === index ? "Applicant to verify" : value.tabDisplayName,
+    count: counts[`level-${key}`],
+    level: `level-${key}`,
+  }));
+  
+
   return (
     <div className={`${style.tabs}`}>
-      {(userRole?.includes('Staff Manager') || userRole?.includes('Chief Of Staff')) && (
+      {userFlowArray.slice(currentRoleIndex).map(tile => (
         <TileApplication
+          key={tile.level}
           selectedTab={selectedTab}
           getSelectedTab={getSelectedTab}
-          tileLabel="Applicants to Verify"
-          tileCount={counts?.applicantsToProcess}
-          currentTile="applicantsToProcess"
+          tileLabel={tile.label}
+          tileCount={tile.count}
+          currentTile={tile.level}
         />
-      )}
-      {/* {(userRole?.includes('Staff Manager') || userRole?.includes('Chief Of Staff') || userRole?.includes('Department Head')) && (
-      <TileApplication
-        selectedTab={selectedTab}
-        getSelectedTab={getSelectedTab}
-        tileLabel={userRole?.includes('Department Head') ? "Applicants to Verify" : "Cred. Comm."}
-        tileCount={counts['level-2']}
-        currentTile="level-2"
-      />
-     )} */}
-     {(userRole?.includes('Staff Manager') || userRole?.includes('Chief Of Staff') || userRole?.includes('Credentialing Committee')) && (
-      <TileApplication
-        selectedTab={selectedTab}
-        getSelectedTab={getSelectedTab}
-        tileLabel={userRole?.includes('Credentialing Committee') ? "Applicants to Verify" : "Cred. Comm."}
-        tileCount={counts['level-1']}
-        currentTile="level-1"
-      />
-     )}
-       {(userRole?.includes('Staff Manager') || userRole?.includes('Chief Of Staff') || userRole?.includes('Credentialing Committee')  || userRole?.includes('Advisory Committee')) && (
-      <TileApplication
-        selectedTab={selectedTab}
-        getSelectedTab={getSelectedTab}
-        tileLabel={userRole?.includes('Advisory Committee') ? "Applicants to Verify" : "MAC"}
-        tileCount={counts?.mac}
-        currentTile="mac"
-      />
-     )}
-        {(userRole?.includes('Staff Manager')  || userRole?.includes('Chief Of Staff')  || userRole?.includes('Credentialing Committee') || userRole?.includes('Advisory Committee') || userRole?.includes('Board')) && (
-      <TileApplication
-        selectedTab={selectedTab}
-        getSelectedTab={getSelectedTab}
-        tileLabel={userRole?.includes('Board') ? "Applicants to Verify" : "BOD"}
-        tileCount={counts?.bod}
-        currentTile="bod"
-      />
-     )}
+      ))}
       <TileApplication
         selectedTab={selectedTab}
         getSelectedTab={getSelectedTab}
@@ -133,7 +118,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab,reFetchMetaData,get
         currentTile="clarificationsRequired"
       />
     </div>
-  )
-}
+  );
+};
 
 export default StaffApplicationTiles;

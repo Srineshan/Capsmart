@@ -2824,6 +2824,7 @@ input[type="file"] {
   border: 0.4000000059604645px solid #E0E1FB;
   border-radius: 12px;
   opacity: 1;
+  height: auto;
 }
 
 .marginLeftRight10 {
@@ -4267,7 +4268,13 @@ input[type="number"] {
 
 .tableHeaderGridStyleCred {
   display: grid;
-  grid-template-columns:93% 10%;
+  grid-template-columns:75% 15% 10%;
+  grid-gap: 10px;
+}
+
+.tableHeaderGridStyleCred1 {
+  display: grid;
+  grid-template-columns:91% 7%;
   grid-gap: 10px;
 }
 
@@ -4345,7 +4352,7 @@ padding-top: 20px;
   border: 0.4000000059604645px solid #E9E9F0;
   border-radius: 12px;
   opacity: 1;
-  height: 15%;
+  height: 20%;
 }
 
 .statusCardTextStyle1{
@@ -4410,5 +4417,134 @@ padding-top: 20px;
   border: 0.4000000059604645px solid #E0E1FB;
   border-radius: 12px;
   opacity: 1;
-  height: 300px;
+  height: fit-content;
+  margin-bottom: -350px;
+}
+
+.referenceCardStyle{
+  
+
+  border: 1px solid var(---7165e3);
+  background: #DBD8FA 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 18px #0F0B3129;
+  border: 1px solid #173790;
+  border-radius: 8px;
+  opacity: 0.9;
+  width: 90%;
+  margin: auto;
+  padding: 10px;
+  
+}
+
+.sideHeadingFontStyle{
+  text-align: left;
+  font: normal normal bold 18px/22px proxima-nova;
+  letter-spacing: 0px;
+  color: #1D2437;
+  opacity: 1;
+  text-transform: capitalize;
+}
+
+.sideHeadingRefFrontStyle{
+  text-align: left;
+  font: italic normal medium 14px/22px Proxima Nova;
+  letter-spacing: 0px;
+  color: #1D2437;
+  text-transform: capitalize;
+  opacity: 0.6;
+}
+
+.gridGap {
+  display: grid;
+  grid-template-columns: 5% 90%;
+  gap: 10px;
+}
+
+.gridGap1{
+  display: grid;
+  grid-template-columns: 5% 75% 5%;
+  gap: 10px;
+  margin-top: 10px;
+  align-items: center;
+  // justify-content: space-between;
+}
+
+.buttonCenter{
+  align-self: start;
+  margin-top: 5px;
+  margin-left: 5px;
+}
+
+.viewButton{
+
+  border: 1px solid var(---7165e3);
+  background: #DBD8FA 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 18px #0F0B3129;
+  border: 1px solid #173790;
+  border-radius: 8px;
+  opacity: 0.5;
+  width: 60px;
+}
+
+.viewTextStyle{
+
+  text-align: center;
+  font: normal normal 600 16px/34px Proxima Nova;
+  letter-spacing: 0px;
+  color: #362B9F;
+  text-transform: capitalize;
+  opacity: 1;
+}
+
+.gridGap3{
+  display: grid;
+  grid-template-columns: 5% 85% 5%;
+  gap: 10px;
+  // margin-top: 10px;
+  align-items: center;
+  // justify-content: space-between;
+}
+
+.clarificationCardStyle{
+  
+
+  background: #E9E9F04D 0% 0% no-repeat padding-box;
+  box-shadow: 0px 5px 20px #52575D14;
+  border: 0.4000000059604645px solid #CBCBE3;
+  border-radius: 8px;
+  opacity: 1;
+  width: 90%;
+  margin: auto;
+  padding: 10px;
+  
+}
+
+.assessInCred{
+  background: #FFEFEF 0% 0% no-repeat padding-box;
+border: 0.4000000059604645px solid #FF6562;
+border-radius: 12px;
+opacity: 1;
+}
+
+.assessTextStyle{
+  text-align: center;
+  font: normal normal bold 16px/26px Proxima Nova;
+  letter-spacing: 0px;
+  color: #FF6562;
+  opacity: 1;
+}
+
+.approvedButtonStyle{
+  background: #14B15A1A 0% 0% no-repeat padding-box;
+border: 0.4000000059604645px solid #14B15A;
+border-radius: 12px;
+opacity: 1;
+}
+
+.ApprovedTextStyle{
+  text-align: center;
+  font: normal normal bold 16px/26px Proxima Nova;
+  letter-spacing: 0px;
+  color: #14B15A;
+  opacity: 1;
 }

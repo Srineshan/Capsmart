@@ -34,6 +34,7 @@ import jwt from 'jwt-decode';
 import CommonDateField from "../../Components/CommonFields/CommonDateField";
 import { add, format, isValid, parse, sub } from 'date-fns';
 import TextField from "@mui/material/TextField";
+import CommonDropZone from '../../Components/CommonFields/CommonDropZone';
 
 const NewActiveApplication = ({
   contracts,
@@ -47,6 +48,7 @@ const NewActiveApplication = ({
   isEditable,
   selectedTab,
   getActiveApplicationView,
+  getApprovalNotesCommentBox,
   renderInput
 }) => {
   console.log("contract Type", contractType);
@@ -96,6 +98,14 @@ const NewActiveApplication = ({
     useState(false);
   const [isTabsValid, setIsTabsValid] = useState([]);
   const [expand, setExpand] = useState({ status: false, index: 0 });
+  // const [isExpanded, setIsExpanded] = useState(false);
+  // const [isExpanded2, setIsExpanded2] = useState(false);
+  // const [isExpanded3, setIsExpanded3] = useState(false);
+  const [expandStates, setExpandStates] = useState({
+    section1: false,
+    section2: false,
+    section3: false,
+  });
   const [expandAcknowledgement, setExpandAcknowledgement] = useState({
     status: false,
     index: 0,
@@ -113,6 +123,8 @@ const NewActiveApplication = ({
   const [credApproval, setCredApproval] = useState();
   const [calendarStart, setCalendarStart] = useState(false);
   const [calendarEnd, setCalendarEnd] = useState(false);
+  const [files, setFiles] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
@@ -298,6 +310,8 @@ const NewActiveApplication = ({
     }
   };
 
+  
+
   const helpText = async () => {
     const { data: data } = await GET(
       `contract-managment-service/helpText?tabName=${encodeURIComponent(
@@ -469,11 +483,11 @@ const NewActiveApplication = ({
 
   const approveView = async () => {
     const roleMap = {
-        'applicantsToProcess': "Chief Of Staff",
+        'level-1': "Chief Of Staff",
         'level-2': "Department Head",
-        'level-1': "Credentialing Committee",
-        'mac': "Advisory Committee",
-        'bod': "Board"
+        'level-3': "Credentialing Committee",
+        'level-4': "Advisory Committee",
+        'level-5': "Board"
       };
       console.log("roleMap" + roleMap);
       
@@ -489,6 +503,9 @@ const NewActiveApplication = ({
         console.log("basicApproval" + JSON.stringify(credApproval));     
   }
 
+  const onClickApprovalFunction = () => {
+    getApprovalNotesCommentBox(true);
+  };
   
 
   const handleApplicationAccept = async () => {
@@ -546,6 +563,51 @@ const NewActiveApplication = ({
     setAddOn(value);
   };
 
+//   const changeHandler = async (event) => {
+//     setIsLoading(true);
+//     setFiles(event);
+//     console.log(event, 'Test');
+//     let table = tempValue.table !== undefined ? tempValue.table : []
+
+//     const formData = new FormData();
+//     let fileNameArray = [];
+//     event?.forEach(file => {
+//         fileNameArray.push({ "fileName": file?.name });
+//         formData.append('documents', file); // Append each file individually
+//     });
+
+//     formData.append('files', new Blob([JSON.stringify(fileNameArray)], {
+//         type: "application/json"
+//     }));
+//     console.log(fileNameArray)
+//     try {
+//         const response = await POST(`application-management-service/application/${applicationId}/files/bulk?isLLMRequired=${true}`, formData);
+//         SuccessToaster('File Uploaded Successfully');
+//         console.log(response?.data);
+//         event.map((data, index) => {
+//             table.push({ documentType: response?.data[index]?.classification !== null ? response?.data[index]?.classification : '', fileSize: `${(data?.size / (1024 * 1024)).toFixed(2)} Mb`, fileURL: response?.data[index]?.fileURL, fileType: response?.data[index]?.fileType, fileUploaded: data?.name, requirement: response?.data[index]?.classification !== null ? basicForm?.documentsRequired?.filter(data => data?.document?.name === response?.data[index]?.classification)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data[index]?.valid, verified: response?.data[index]?.verified })
+//         })
+//         for (let triggerIndex = 0; triggerIndex < event.length; triggerIndex++) {
+//             try {
+//                 if (response?.data[triggerIndex]?.classification !== null) {
+//                     await PUT(`application-management-service/application/${applicationId}/form/updateData`, { documentType: response?.data[triggerIndex]?.classification !== null ? response?.data[triggerIndex]?.classification : '', fileSize: `${(event[triggerIndex]?.size / (1024 * 1024)).toFixed(2)} Mb`, fileURL: response?.data[triggerIndex]?.fileURL, fileType: response?.data[triggerIndex]?.fileType, fileUploaded: event[triggerIndex]?.name, requirement: response?.data[triggerIndex]?.classification !== null ? basicForm?.documentsRequired?.filter(data => data?.document?.name === response?.data[triggerIndex]?.classification)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data[triggerIndex]?.valid, verified: response?.data[triggerIndex]?.verified });
+//                 }
+//                 console.log(response);
+//             } catch (error) {
+//                 console.log(error);
+//             }
+//         }
+//         handleSubmitApplicationReq(table)
+//         setIsLoading(false);
+//         return response?.data;
+//     } catch (error) {
+//         ErrorToaster('File Upload Failed');
+//         console.error(error);
+//         setIsLoading(false);
+//         return null;
+//     }
+// };
+
   const getValueByPath = (obj, path) => {
     const keys = path.split(/[\.\[\]]+/).filter(Boolean);
     console.log(
@@ -561,6 +623,25 @@ const NewActiveApplication = ({
       (acc, key) => acc && acc[isNaN(key) ? key : Number(key)],
       form
     );
+  };
+
+  // const toggleExpand = () => {
+  //   setIsExpanded(!isExpanded);
+  // };
+
+  // const toggleExpand2 = () => {
+  //   setIsExpanded2(!isExpanded2);
+  // };
+
+  // const toggleExpand3 = () => {
+  //   setIsExpanded3(!isExpanded3);
+  // };
+
+  const toggleExpand = (section) => {
+    setExpandStates((prevStates) => ({
+      ...prevStates,
+      [section]: !prevStates[section],
+    }));
   };
 
   const getShowAlert = (value, type = "cross") => {
@@ -614,6 +695,8 @@ const NewActiveApplication = ({
   const getCurrentPage = (value) => {
     setCurrentPage(value);
   };
+
+  
 
   const getFileFields = (value) => {
     console.log(value);
@@ -1442,14 +1525,6 @@ const NewActiveApplication = ({
                 </div>
                 <div className={`${style.displayInRow} ${style.marginRight20}`}>
                   <div className={`${style.displayInCol} `}>
-                    {/* <div className={`${style.marginTop15} `}>
-                      <span className={`${style.rightAlignTextStyle}`}>Proposed Start Date:</span>
-                      <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>{}</span>
-                    </div> 
-                    <div className={`${style.marginTop15}`}>
-                      <span className={`${style.rightAlignTextStyle}`}>Application Created On:</span>
-                      <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>{format(new Date(form?.createdDate, 'dd/mm/YYYY'))}</span>
-                    </div>*/}
                     <div className={`${style.marginTop15}`}>
                       <span className={`${style.rightAlignTextStyle}`}>
                         Days To Complete:
@@ -1552,6 +1627,124 @@ const NewActiveApplication = ({
                   </div>
                   </> 
             </div>
+            )  : userRole.includes('Board') ? (
+              <div className={`${style.cardLeftStyle1} ${style.marginTop20}`}>
+              <div className={`${style.displayInRow}${style.marginTop20}`}>
+                <div
+                  className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
+                >
+                  <span className={`${style.tableHeaderHeadingTextStyle}`}>
+                   BOD Approval Date
+                  </span>
+                </div>
+                <CommonDateField
+                      className={style.dateWidth}
+                      open={calendarStart}
+                      onOpen={() => setCalendarStart(true)}
+                      onClose={() => setCalendarStart(false)}
+                      minDate={sub(new Date(), { years: 3 })}
+                      maxDate={add(new Date(), { months: 6 })}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          // onClick={() => setCalendarStart(true)}
+                          inputProps={{
+                            ...params.inputProps,
+                            placeholder: "Start Date",
+                          }}
+                        />
+                      )}
+                      />
+              </div>
+              <div className={style.marginBottom20}></div>
+              <div className={`${style.displayInRow}${style.marginTop20}`}>
+                <div
+                  className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
+                >
+                  <span className={`${style.tableHeaderHeadingTextStyle}`}>
+                  Reappointment Credentialing Application Creation Date
+                  </span>
+                </div>
+                <CommonDateField
+                      className={style.dateWidth}
+                      open={calendarStart}
+                      onOpen={() => setCalendarStart(true)}
+                      onClose={() => setCalendarStart(false)}
+                      minDate={sub(new Date(), { years: 3 })}
+                      maxDate={add(new Date(), { months: 6 })}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          // onClick={() => setCalendarStart(true)}
+                          inputProps={{
+                            ...params.inputProps,
+                            placeholder: "Start Date",
+                          }}
+                        />
+                      )}
+                      />
+              </div>
+              {/* <div
+                  className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
+                >
+                  <span className={`${style.tableHeaderHeadingTextStyle}`}>
+                  Upload Privilege request Approval from BOD
+                  </span>
+                </div> */}
+                {/* <div className={`${style.twoCol} ${style.marginTop}`}>
+                <CommonDropZone
+                  title={"Upload Your Documents"}
+                  description={
+                    "Upload your files or drag & drop from your file cabinet (Computer / Online Drive)"
+                  }
+                  // changeHandler={changeHandler}
+                  files={files}
+                />
+                <CommonDropZone
+                  title={"Upload A Photo"}
+                  description={
+                    "Click a picture of the document with your camera and Upload or Upload from your photo gallery."
+                  }
+                  // changeHandler={changeHandler}
+                  files={files}
+                  accept="image/*"
+                />
+              </div> */}
+              <>
+              <div
+                  className={`${style.bigButtonStyle2} ${style.cursorPointer}`}
+                >
+                  <div
+                    className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}
+                    // onClick={handleApplicationAccept}
+                  >
+                    SAVE & VIEW CHECKLIST
+                  </div>
+                  <div className={`${style.marginTop20} ${style.marginBottom20}`}></div>
+                  </div>
+                   <div
+                 className={`${style.buttonCardStyle2} ${style.cursorPointer} ${style.marginTop20}`}
+                >
+                  <div
+                    className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                    // onClick={handleApplicationAccept}
+                  >
+                    REJECT
+                  </div>
+                  </div>
+                  <div
+                  className={`${style.bigButtonStyle2} ${style.cursorPointer}`}
+                >
+                  <div
+                    className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}
+                    // onClick={handleApplicationAccept}
+                  >
+                    BOD APPROVED
+                  </div>
+                  <div className={style.marginBottom20}></div>
+                  </div>
+                  </> 
+            </div>
             ) : null
             }
             {/* // <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
@@ -1582,7 +1775,7 @@ const NewActiveApplication = ({
                  >
                   <div
                     className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                    onClick={handleApplicationAccept}
+                    onClick={onClickApprovalFunction}
                   >
                     VERIFY FOR DEPT. HEAD
                   </div>
@@ -1594,7 +1787,7 @@ const NewActiveApplication = ({
                 >
                   <div
                     className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                    onClick={handleApplicationAccept}
+                    onClick={onClickApprovalFunction}
                   >
                     APPROVE APPLICANT
                   </div>
@@ -1604,7 +1797,7 @@ const NewActiveApplication = ({
                 >
                   <div
                     className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                    onClick={handleApplicationAccept}
+                    onClick={onClickApprovalFunction}
                   >
                     OVERRIDE FOR TEMPORARY PRIVILEGES
                   </div>
@@ -1616,7 +1809,7 @@ const NewActiveApplication = ({
                 >
                   <div
                     className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                    onClick={handleApplicationAccept}
+                    onClick={onClickApprovalFunction}
                   >
                     NOT READY FOR MAC
                   </div>
@@ -2428,7 +2621,7 @@ const NewActiveApplication = ({
                 ></div>
                 </div> */}
                 
-              <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyleCred} `}>
+              <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyleCred1} `}>
                 {/* <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                   <div className={`${style.marginLeft30} ${style.tableHeaderTextStyle}`}></div>
                 </div> */}
@@ -2524,7 +2717,7 @@ const NewActiveApplication = ({
               </div>
               <div>
                 <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === 0) ? style.tableDataStyle1 : style.tableDataStyle}`}>
-                  <div className={` ${(expand?.status && expand?.index === 0) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred} ${style.marginTop10}`}>
+                  <div className={` ${(expand?.status && expand?.index === 0) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred1} ${style.marginTop10}`}>
                     {/* <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                       <div className={`${style.marginLeft10} ${style.justifySpaceAround} ${form?.basicInformationStatus ? style.greenDotStyle : style.greyDotStyle}`}></div>
                     </div> */}
@@ -2626,7 +2819,15 @@ const NewActiveApplication = ({
                         <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                           <div className={`${style.tableDataFontStyleCred}`}>{data?.description}</div>
                         </div>
-                       
+                        {!(expand?.status && expand?.index === index + 1) && (
+                          <>
+                            {form?.forms[index]?.status === "APPROVED" ? (
+                              <div className={`${style.approvedButtonStyle} ${style.ApprovedTextStyle}`}>Approved</div>
+                            ) : (
+                              <div className={`${style.assessInCred} ${style.assessTextStyle}`}>4 to Assess</div>
+                            )}
+                          </>
+                        )}
                         {expand?.status && expand?.index === index + 1 && (
                             <>
                                 {credApproval?.filter(
@@ -2687,7 +2888,7 @@ const NewActiveApplication = ({
                 </div>
                 {form?.formSchemas?.filter(data => data?.formCategory === 'Acknowledgement')?.map((data, index) => (
                   <div className={` ${style.marginTop5} ${(expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? style.tableDataStyle1 : style.tableDataStyle}`}>
-                    <div className={` ${style.marginTop10} ${(expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred}`}>
+                    <div className={` ${style.marginTop10} ${(expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred1}`}>
                       {/* <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                         <div className={`${style.marginLeft10} ${style.justifySpaceAround} ${form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.status !== "APPROVED" ? style.greyDotStyle : style.greenDotStyle}`}></div>
                       </div> */}
@@ -2781,8 +2982,8 @@ const NewActiveApplication = ({
              </div>
            </div> */}
            {userRole.includes('Staff Manager') || userRole.includes('Chief Of Staff') ||userRole.includes('Credentialing Committee') ? (
-<>
-<div className={style.cardLeftStyle}>
+            <>
+            <div className={style.cardLeftStyle}>
               <div className={`${style.displayInRow}${style.marginTop20}`}>
                 <div
                   className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
@@ -2833,18 +3034,56 @@ const NewActiveApplication = ({
                     className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                   >
                     <div
-                      className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                      className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section1")}
                     >
-                      <RemoveIcon
-                        sx={{
-                          fontSize: 20,
-                          color: "#94979A",
-                          cursor: "pointer",
-                        }}
-                      />
+                    {expandStates.section1 ? (
+                          <RemoveIcon
+                            sx={{
+                              fontSize: 20,
+                              color: "#94979A",
+                              cursor: "pointer",
+                            }}
+                          />
+                        ) : (
+                          <AddIcon
+                            sx={{
+                              fontSize: 20,
+                              color: "#94979A",
+                              cursor: "pointer",
+                            }}
+                          />
+                        )}
                     </div>
                   </div>
                 </div>
+                {expandStates.section1 && (
+                  <>
+                  <div  className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}>
+                  <div>Proof of Qualifications</div>
+                  <RemoveIcon
+                            sx={{
+                              fontSize: 20,
+                              color: "#94979A",
+                              cursor: "pointer",
+                            }}
+                          />
+                  </div>
+                  <div className={`${style.marginBottom20} ${style.clarificationCardStyle}`}>
+                    <div className={`${style.gridGap3}`}>
+                      <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
+                      <div className={`${style.sideHeadingFontStyle}`}>Queen's University Clarification Title To Address</div>
+                      {/* <div className={`${style.viewTextStyle} ${style.viewButton}`}>view</div> */}
+                      <AddIcon
+                            sx={{
+                              fontSize: 20,
+                              color: "#94979A",
+                              cursor: "pointer",
+                            }}
+                          />
+                    </div>
+                  </div>
+                 </>
+                  )}
               </div>
               
               {/* <div className={`${style.displayInRow}${style.marginTop20}`}>
@@ -2940,18 +3179,48 @@ const NewActiveApplication = ({
                     className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                   >
                     <div
-                      className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                      className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section2")}
                     >
-                      <RemoveIcon
-                        sx={{
-                          fontSize: 20,
-                          color: "#94979A",
-                          cursor: "pointer",
-                        }}
-                      />
+                    {expandStates.section2 ? (
+                          <RemoveIcon
+                            sx={{
+                              fontSize: 20,
+                              color: "#94979A",
+                              cursor: "pointer",
+                            }}
+                          />
+                        ) : (
+                          <AddIcon
+                            sx={{
+                              fontSize: 20,
+                              color: "#94979A",
+                              cursor: "pointer",
+                            }}
+                          />
+                        )}
                     </div>
                   </div>
                 </div>
+                {expandStates.section2  && (
+                  <>
+                  <div className={`${style.marginBottom20} ${style.referenceCardStyle}`}>
+                    {/* Content to show when expanded */}
+                    <div className={`${style.gridGap}`}>
+                      <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
+                       <div>
+                         <div className={`${style.sideHeadingFontStyle}`}>Professional Reference Name For Special Priv.</div>
+                         <div className={`${style.sideHeadingRefFrontStyle}`}>Reference Questionnaire Sent On Oct 11, 2024</div>
+                         <CommonDivider />
+                       </div>
+                    </div>
+                    <div className={`${style.gridGap1}`}>
+                      <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
+                      <div className={`${style.sideHeadingFontStyle}`}>Marked As Favourable By Dept. Head On Oct 12, 2024</div>
+                      <div className={`${style.viewTextStyle} ${style.viewButton}`}>view</div>   
+                    </div>
+                  </div>
+                  </>
+                  )}
               </div>
               <div className={style.marginBottom20}></div>
             </div>
@@ -2967,22 +3236,46 @@ const NewActiveApplication = ({
                     className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                   >
                     <div
-                      className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                      className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section3")}
                     >
-                      <RemoveIcon
-                        sx={{
-                          fontSize: 20,
-                          color: "#94979A",
-                          cursor: "pointer",
-                        }}
-                      />
+                    {expandStates.section3 ? (
+                          <RemoveIcon
+                            sx={{
+                              fontSize: 20,
+                              color: "#94979A",
+                              cursor: "pointer",
+                            }}
+                          />
+                        ) : (
+                          <AddIcon
+                            sx={{
+                              fontSize: 20,
+                              color: "#94979A",
+                              cursor: "pointer",
+                            }}
+                          />
+                        )}
                     </div>
                   </div>
                 </div>
+                {expandStates.section3 && (
+                  <>
+                  <div className={`${style.marginBottom20} ${style.referenceCardStyle}`}>
+                    {/* Content to show when expanded */}
+                    <div className={`${style.gridGap}`}>
+                      <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
+                       <div>
+                         <div className={`${style.sideHeadingFontStyle}`}>Immunization History</div>
+                         <div className={`${style.sideHeadingRefFrontStyle}`}>Approved By Safety & Wellness On Oct 11, 2024</div>
+                       </div>
+                    </div>
+                  </div>
+                  </>
+                  )}
               </div>
               <div className={style.marginBottom20}></div>
             </div>
-</>
+           </>
            ): null}
             {/* <div className={style.cardLeftStyle}>
               <div className={`${style.displayInRow}${style.marginTop20}`}>
@@ -3281,5 +3574,4 @@ const NewActiveApplication = ({
     </>
   );
 };
-
 export default NewActiveApplication;

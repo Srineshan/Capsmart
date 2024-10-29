@@ -36,7 +36,7 @@ const StaffApplicationList = ({
   selectedTab,
   getActiveApplicationView,
   getActiveApplicationTask,
-  getCredCommApplicationView,
+  getNotesCommentBox,
   getTitleCounts
 }) => {
   const PDFRef = createRef();
@@ -318,6 +318,7 @@ const StaffApplicationList = ({
 
   const onClickViewAndVerifyFunction = (data) => {
     getActiveApplicationView(true);
+    getNotesCommentBox(true);
     sessionStorage.setItem("applicationId", data?.id);
   };
   // const onClickViewAndApproveCredCommFunction = (data) => {
@@ -337,9 +338,7 @@ const StaffApplicationList = ({
   const onClickStartTheWorkFlowFunction = (data) => {
     getApplicationStart(data?.id);
     sessionStorage.setItem("applicationId", data?.id);
-  };
-
-  
+  }; 
 
   
   // const getTitleCounts = async () => {
@@ -358,6 +357,7 @@ const StaffApplicationList = ({
       .then(response => {
         console.log('successfullllllll')
         getWorkflowUserData();
+        setReFetchMetaData(true);
         getTitleCounts();
       })  
       .catch((error) => {
@@ -372,13 +372,13 @@ const StaffApplicationList = ({
     if(selectedTab === 'level-2') {
       role = "Department Head";
       notes = "Send"
-    } else if (selectedTab === 'level-1') {
+    } else if (selectedTab === 'level-3') {
       role = "Credentialing Committee";
       notes = "Send"
-    } else if (selectedTab === 'mac') {
+    } else if (selectedTab === 'level-4') {
       role = "Advisory Committee";
       notes = "Send"
-    } else if (selectedTab === 'bod') {
+    } else if (selectedTab === 'level-5') {
       role = "Board";
       notes = "Send"
     } else {
@@ -429,7 +429,7 @@ const StaffApplicationList = ({
     try {
       const response = await GET(
         // `application-management-service/application/workflowUser?tab=${selectedTab}`
-         `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&offset=${page-1}&limit=${10}`
+         `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}`
       );
       console.log("Application data", response?.data.applications);
       setTableData(response?.data?.applications);
@@ -1320,9 +1320,9 @@ const StaffApplicationList = ({
     //   onClick: onClickMoveToNextFunction,
     // },
     { data: "Review & Approve", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction },
-    { data: "Move to MAC", requiredValue: "boolean", onClick: onClickMoveToNextFunction },
+    // { data: "Move to MAC", requiredValue: "boolean", onClick: onClickMoveToNextFunction },
     // { data: "Review & Approve", requiredValue: "boolean", onClick: "" },
-    // { data: "Move to MAC", requiredValue: "boolean", onClick: "" },
+    { data: "Move to MAC", requiredValue: "boolean", onClick: "" },
     {
       data: "Request For Clarification",
       requiredValue: "boolean",
@@ -1355,7 +1355,8 @@ const StaffApplicationList = ({
     //   requiredValue: "boolean",
     //   onClick: "",
     // },
-    { data: "Move to BOD", requiredValue: "boolean", onClick: onClickMoveToNextFunction, },
+    // { data: "Move to BOD", requiredValue: "boolean", onClick: onClickMoveToNextFunction, },
+    { data: "Move to BOD", requiredValue: "boolean", onClick: "" },
     {
       data: "Request For Clarification",
       requiredValue: "boolean",
@@ -1382,7 +1383,8 @@ const StaffApplicationList = ({
     //   requiredValue: "boolean",
     //   onClick: "",
     // },
-    { data: "BOD Approval Status", requiredValue: "boolean", onClick: onClickMoveToNextFunction },
+    // { data: "BOD Approval Status", requiredValue: "boolean", onClick: onClickMoveToNextFunction },
+    { data: "BOD Approval Status", requiredValue: "boolean", onClick: "" },
     { data: "Print Summary For BOD", requiredValue: "boolean", onClick: "" },
     { data: "Applicant Processing Tasks", requiredValue: "boolean", onClick: "" },
   ];
@@ -1446,17 +1448,17 @@ const StaffApplicationList = ({
   };
 
   let tableHeaderValues =
-    selectedTab === "applicantsToProcess"
+    selectedTab === "level-1"
       ? applicantHeaderValues
         : selectedTab === "level-2"
           ? departmentHeadHeaderValues
-           : selectedTab === "level-1"
+           : selectedTab === "level-3"
             ? applicationHeaderValues
-            : selectedTab === "mac"
+            : selectedTab === "level-4"
               ? macHeaderValues
-              : selectedTab === "bod"
+              : selectedTab === "level-5"
                 ? bodHeaderValues
-                : selectedTab === "clarifications"
+                : selectedTab === "clarificationsRequired"
                   ? clarificationHeaderValues
                   : selectedTab === "rejected"
                     ? rejectedHeaderValues
@@ -1465,17 +1467,17 @@ const StaffApplicationList = ({
                     // : approvedHeaderValues;
                   : applicantHeaderValues;
   let tableSortValues =
-    selectedTab === "applicantsToProcess"
+    selectedTab === "level-1"
       ? applicantColSortValues
         :  selectedTab === "level-2"
          ? departmentHeadColSortValues
-          : selectedTab === "level-1"
+          : selectedTab === "level-3"
             ? applicationColSortValues
-            : selectedTab === "mac"
+            : selectedTab === "level-4"
               ? macColSortValues
-              : selectedTab === "bod"
+              : selectedTab === "level-5"
                 ? bodColSortValues
-                : selectedTab === "clarifications"
+                : selectedTab === "clarificationsRequired"
                   ? clarificationColSortValues
                   : selectedTab === "rejected"
                     ? rejectedColSortValues
@@ -1484,17 +1486,17 @@ const StaffApplicationList = ({
                     // : approvedColSortValues;
                     : applicantColSortValues;
   let tableDataValues =
-    selectedTab === "applicantsToProcess"
+    selectedTab === "level-1"
       ? getApplicantValues()
        :selectedTab === "level-2"
         ? getDepartmentHeadValues()
-          : selectedTab === "level-1"
+          : selectedTab === "level-3"
             ? getApplicationValues()
-            : selectedTab === "mac"
+            : selectedTab === "level-4"
               ? getMacValues()
-              : selectedTab === "bod"
+              : selectedTab === "level-5"
                 ? getBodValues()
-                : selectedTab === "clarifications"
+                : selectedTab === "clarificationsRequired"
                   ? getClarificationValues()
                   : selectedTab === "rejected"
                     ? getRejectedValues()
@@ -1503,17 +1505,17 @@ const StaffApplicationList = ({
                     // : getApprovedValues();
                     : getApplicantValues();
   let actions =
-    selectedTab === "applicantsToProcess"
+    selectedTab === "level-1"
       ? applicantActionsData
        : selectedTab === "level-2"
         ? departmentHeadActionsData
-          : selectedTab === "level-1"
+          : selectedTab === "level-3"
             ? applicationActionsData
-            : selectedTab === "mac"
+            : selectedTab === "level-4"
               ? macActionsData
-              : selectedTab === "bod"
+              : selectedTab === "level-5"
                 ? bodActionsData
-                : selectedTab === "clarifications"
+                : selectedTab === "clarificationsRequired"
                   ? clarificationActionsData
                   : selectedTab === "rejected"
                     ? rejectedActionsData
@@ -1522,17 +1524,17 @@ const StaffApplicationList = ({
                     // : approvedActionsData;
                     : applicantActionsData;
   let gridStyle =
-    selectedTab === "applicantsToProcess"
+    selectedTab === "level-1"
       ? style.applicantStaffGrid
       :selectedTab === "level-2"
       ? style.departmentHeadStaffGrid
-      : selectedTab === "level-1"
+      : selectedTab === "level-3"
         ? style.applicationStaffGrid
-        : selectedTab === "mac"
+        : selectedTab === "level-4"
           ? style.macStaffGrid
-          : selectedTab === "bod"
+          : selectedTab === "level-5"
             ? style.bodStaffGrid
-            : selectedTab === "clarifications"
+            : selectedTab === "clarificationsRequired"
               ? style.clarificationStaffGrid
               : selectedTab === "rejected"
                 ? style.rejectedStaffGrid
@@ -1679,10 +1681,9 @@ const StaffApplicationList = ({
                                 status?.remainingCompletionPercentage === 100 ? style.greyDotStyle :
                                 style.yellowDotStyle
                               }></div>
-                              <div
-                                className={style.marginLeft10}>
+                              <div className={style.marginLeft10}>
                                 {/* {`${status?.basicDetail?.applicant?.name?.firstName} ${status.basicDetail.applicant.name.lastName}`} */}
-                                {status?.basicDetail?.applicant?.name?.firstName.charAt(0).toUpperCase() + status?.basicDetail?.applicant?.name?.firstName.slice(1).toLowerCase()}, {status.basicDetail.applicant.name.lastName.toUpperCase()}
+                                {status?.basicDetail?.applicant?.name?.firstName.charAt(0).toUpperCase() + status?.basicDetail?.applicant?.name?.firstName.slice(1).toLowerCase()}, {status?.basicDetail?.applicant?.name?.lastName.toUpperCase()}
                               </div>
 
                               {/* <span className={style.textStyleProgress}> ({status.providerType.serviceProviderType}) </span> */}

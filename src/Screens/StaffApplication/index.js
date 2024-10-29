@@ -6,12 +6,16 @@ import NewCredCommApplication from './newCredCommApplication';
 import { Dialog, Classes } from '@blueprintjs/core';
 import ValidationDialog from '../../Components/validationDialog';
 import TaskStatusDialog from '../../Components/TaskStatusDialog';
+import NotesCommentDialog from '../../Components/NotesCommentDialog';
+import ApprovalWithNotesDialog from '../../Components/ApprovalWithNotesDialog';
 
 const StaffApplication = () => {
-    const [selectedTab, setSelectedTab] = useState('applicantsToProcess');
+    const [selectedTab, setSelectedTab] = useState('level-1');
     const [activeApplicationView, setActiveApplicationView] = useState(false);
     const [credCommApplicationView, setCredCommApplicationView] = useState(false);
     const [activeApplicationTask, setActiveApplicationTask] = useState(false);
+    const [notesCommentsBox, setNotesCommentBox] = useState(false);
+    const [approvalnotesCommentsBox, setApprovalNotesCommentBox] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
     const getSelectedTab = (value) => {
@@ -30,10 +34,18 @@ const StaffApplication = () => {
         setActiveApplicationTask(value);
     }
 
+    const getNotesCommentBox = (value) => {
+        setNotesCommentBox(value);
+    }
+
+    const getApprovalNotesCommentBox = (value) => {
+        setApprovalNotesCommentBox(value);
+    }
+
     return (
         <>
             {activeApplicationView ? (
-                <NewActiveApplication getSelectedTab={getSelectedTab} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} />
+                <NewActiveApplication getSelectedTab={getSelectedTab} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} getApprovalNotesCommentBox={getApprovalNotesCommentBox} />
             ) : credCommApplicationView ? (
                 <NewCredCommApplication getSelectedTab={getSelectedTab} selectedTab={selectedTab} getCredCommApplicationView={getCredCommApplicationView} />
             ) : (
@@ -46,11 +58,19 @@ const StaffApplication = () => {
                       getActiveApplicationView={getActiveApplicationView}
                       getActiveApplicationTask={getActiveApplicationTask}
                       getCredCommApplicationView={getCredCommApplicationView}
+                      getNotesCommentBox={getNotesCommentBox}
+                      getApprovalNotesCommentBox={getApprovalNotesCommentBox}
                   />
               </Fragment>
           )}
            {activeApplicationTask && (
                 <TaskStatusDialog getIsOpen={getActiveApplicationTask}/>
+            )}
+              {notesCommentsBox && (
+                <NotesCommentDialog getIsOpen={getNotesCommentBox}/>
+            )}
+              {approvalnotesCommentsBox && (
+                <ApprovalWithNotesDialog getIsOpen={getApprovalNotesCommentBox}/>
             )}
         </>
       )
