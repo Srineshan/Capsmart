@@ -36,9 +36,15 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [isDemographicInfoEdited, setIsDemographicInfoEdited] = useState(false);
     const [isContactInfoEdited, setIsContactInfoEdited] = useState(false);
     const [formIndex, setFormIndex] = useState();
+    const [navigateURL, setNavigateURL] = useState();
     useEffect(() => {
-        getBasicForm()
-    }, [formIndex])
+        if (basicForm && !formSchema) {
+            getBasicForm()
+        }
+        if (basicForm !== undefined && formIndex !== undefined) {
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/PODCheck` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
+        }
+    }, [basicForm, formIndex])
 
     useEffect(() => {
         setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
@@ -199,7 +205,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         if (sessionStorage.getItem('fromSummary') === "true") {
             navigate(-1);
         } else {
-            navigate(`/reappointmentApplicationForm/${applicationId}/section1/PrivilegeSelection`)
+            navigate(navigateURL)
         }
     }
 

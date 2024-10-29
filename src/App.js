@@ -257,6 +257,9 @@ const ReappointmentApplicationForm = React.lazy(() => import("./Screens/Reappoin
 const ApplicationFormRequirement = React.lazy(() =>
   import("./Screens/ApplicationForm/ApplicationFormRequirement")
 );
+const ReappointmentApplicationFormRequirement = React.lazy(() =>
+  import("./Screens/ReappointmentApplicationForm/ReappointmentApplicationFormRequirement")
+);
 const ApplicationRequest = React.lazy(() =>
   import("./Screens/ApplicationRequest")
 );
@@ -929,6 +932,10 @@ const App = ({ props }) => {
               <Route
                 path="/applicationForm/:applicationId"
                 element={<ApplicationFormRequirement />}
+              />
+              <Route
+                path="/reappointmentApplicationForm/:applicationId"
+                element={<ReappointmentApplicationFormRequirement />}
               />
               <Route
                 path="/applicationRequest"

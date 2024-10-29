@@ -14,8 +14,9 @@ import ValidationDialog from '../../../Components/validationDialog';
 import style from './index.module.scss';
 import WelcomeCard from '../../../Components/WelcomeCard';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
+import { format } from 'date-fns';
 
-const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => {
+const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
     const [formSchemaWholeObject, setFormSchemaWholeObject] = useState();
     const [metadata, setMetadata] = useState([]);
@@ -28,11 +29,15 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
     const [formIndex, setFormIndex] = useState();
     const { applicationId, section, step } = useParams();
     const [navigateURL, setNavigateURL] = useState();
+    const [yesOrNo, setYesOrNo] = useState('');
+    const [updatedDate, setUpdatedDate] = useState('');
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
+            setYesOrNo(basicForm?.forms?.[formIndex]?.data?.yesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.yesOrNo : '');
+            setUpdatedDate(basicForm?.forms?.[formIndex]?.data?.updatedDate !== undefined ? basicForm?.forms?.[formIndex]?.data?.updatedDate : '');
             setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/PODCheck` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
         }
     }, [basicForm, formIndex])
@@ -105,40 +110,40 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
     }
 
     const handleSubmitApplicationReq = async (data) => {
-        if (isEdited) {
-            let temp = {
-                schemaId: basicForm?.forms?.[formIndex]?.schemaId,
-                data: basicForm?.forms?.[formIndex]?.data,
-                unFilledFields: warningFields?.map(data => data?.label),
-                acknowledged: data === "skipped" ? false : true
-            }
-            await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
-                .then(response => {
-                    console.log(response)
-                    setBasicForm(response?.data)
-                    SuccessToaster("Application Updated Successfully");
-                    getPreApplication();
-                    if (sessionStorage.getItem('fromSummary') === "true") {
-                        navigate(-1);
-                    }
-                    else {
-                        navigate(navigateURL)
-
-                    }
-                })
-                .catch((error) => {
-                    console.log(error)
-                    ErrorToaster("Unexpected Error Updating Application");
-                });
-        } else {
-            if (sessionStorage.getItem('fromSummary') === "true") {
-                navigate(-1);
-            }
-            else {
-                navigate(navigateURL)
-
-            }
+        // if (isEdited) {
+        let temp = {
+            schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+            data: { yesOrNo: yesOrNo, updatedDate: updatedDate },
+            unFilledFields: warningFields?.map(data => data?.label),
+            acknowledged: data === "skipped" ? false : true
         }
+        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
+            .then(response => {
+                console.log(response)
+                setBasicForm(response?.data)
+                SuccessToaster("Application Updated Successfully");
+                getPreApplication();
+                if (sessionStorage.getItem('fromSummary') === "true") {
+                    navigate(-1);
+                }
+                else {
+                    navigate(navigateURL)
+
+                }
+            })
+            .catch((error) => {
+                console.log(error)
+                ErrorToaster("Unexpected Error Updating Application");
+            });
+        // } else {
+        //     if (sessionStorage.getItem('fromSummary') === "true") {
+        //         navigate(-1);
+        //     }
+        //     else {
+        //         navigate(navigateURL)
+
+        //     }
+        // }
     }
 
     const getValueByPath = (obj, path) => {
@@ -158,14 +163,41 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
-                    <WelcomeCard title={'To the best of your knowledge, provide an update regarding the disclosures required'}
-                        description={'Any information you provide will be kept strictly confidential. If you answer "Yes" to any of the disclosures below, it does not necessarily mean that you will be denied privileges. As required, please provide explanations and any supporting documents.'} />
-                    <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
-                        {formSchema !== undefined && 'conductDisclosure1' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.conductDisclosure1} gridStyle={style.conductGrid} baseKey={'conductDisclosure1'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} collapsableQuestionCard={true} stepPath={`forms[${formIndex}].data`} applicationId={applicationId} setIsEdited={getIsEdited} warningFields={warningFields} formSchema={formSchemaWholeObject} />
-                        )}
-                        {formSchema !== undefined && 'conductDisclosure2' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.conductDisclosure2} gridStyle={style.conductGrid} baseKey={'conductDisclosure2'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} collapsableQuestionCard={true} stepPath={`forms[${formIndex}].data`} applicationId={applicationId} setIsEdited={getIsEdited} warningFields={warningFields} formSchema={formSchemaWholeObject} />
+                    <div className={`${style.applicationCardStyle}`}>
+                        <div className={style.cardTitle}>
+                            Have you completed all of the CMH assigned LMS Modules for your reappointment?
+                        </div>
+                        {yesOrNo === '' ? (
+                            <div
+                                className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
+                            >
+                                <div
+                                    className={`${style.reappointmentButtonOutlined}`}
+                                    onClick={() => { setYesOrNo('Yes'); setUpdatedDate(format(new Date(), 'yyyy-MM-dd')) }}
+                                >
+                                    Yes
+                                </div>
+                                <div
+                                    className={`${style.reappointmentButton} ${style.marginLeft}`}
+                                    onClick={() => { setYesOrNo('No'); setUpdatedDate(format(new Date(), 'yyyy-MM-dd')) }}
+                                >
+                                    NO
+                                </div>
+                            </div>
+                        ) : (
+                            <>
+                                <div className={`${style.markedAsText} ${style.marginTop}`}><strong>Marked as {yesOrNo}</strong> on {format(new Date(), "MMM dd, yyyy")}</div>
+                                <div
+                                    className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
+                                >
+                                    <div
+                                        className={`${style.reappointmentButtonEdit}`}
+                                        onClick={() => setYesOrNo('')}
+                                    >
+                                        Edit
+                                    </div>
+                                </div>
+                            </>
                         )}
                     </div>
                 </div>
@@ -193,4 +225,4 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
     )
 }
 
-export default ProfessionalConduct;
+export default LMSModules;

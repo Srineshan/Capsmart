@@ -15,7 +15,7 @@ import style from './index.module.scss';
 import WelcomeCard from '../../../Components/WelcomeCard';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
 
-const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => {
+const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
     const [formSchemaWholeObject, setFormSchemaWholeObject] = useState();
     const [metadata, setMetadata] = useState([]);
@@ -150,6 +150,8 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
     const getIsEdited = (value) => {
         setIsEdited(value)
     }
+
+    console.log(formIndex, 'index')
     return (
         <div>
             <div className={style.applicationScreenGrid}>
@@ -161,11 +163,11 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
                     <WelcomeCard title={'To the best of your knowledge, provide an update regarding the disclosures required'}
                         description={'Any information you provide will be kept strictly confidential. If you answer "Yes" to any of the disclosures below, it does not necessarily mean that you will be denied privileges. As required, please provide explanations and any supporting documents.'} />
                     <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
-                        {formSchema !== undefined && 'conductDisclosure1' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.conductDisclosure1} gridStyle={style.conductGrid} baseKey={'conductDisclosure1'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} collapsableQuestionCard={true} stepPath={`forms[${formIndex}].data`} applicationId={applicationId} setIsEdited={getIsEdited} warningFields={warningFields} formSchema={formSchemaWholeObject} />
+                        {formSchema !== undefined && 'criminalData1' in formSchema?.properties && (
+                            <ApplicationFieldCard object={formSchema?.properties?.criminalData1} gridStyle={style.criminalHistoryGrid} baseKey={'criminalData1'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} collapsableQuestionCard={true} stepPath={`forms[${formIndex}].data`} applicationId={applicationId} setIsEdited={getIsEdited} warningFields={warningFields} formSchema={formSchemaWholeObject} />
                         )}
-                        {formSchema !== undefined && 'conductDisclosure2' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.conductDisclosure2} gridStyle={style.conductGrid} baseKey={'conductDisclosure2'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} collapsableQuestionCard={true} stepPath={`forms[${formIndex}].data`} applicationId={applicationId} setIsEdited={getIsEdited} warningFields={warningFields} formSchema={formSchemaWholeObject} />
+                        {formSchema !== undefined && 'criminalData2' in formSchema?.properties && (
+                            <ApplicationFieldCard object={formSchema?.properties?.criminalData2} gridStyle={style.criminalHistoryGrid} baseKey={'criminalData2'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} collapsableQuestionCard={true} stepPath={`forms[${formIndex}].data`} applicationId={applicationId} setIsEdited={getIsEdited} warningFields={warningFields} formSchema={formSchemaWholeObject} />
                         )}
                     </div>
                 </div>
@@ -193,4 +195,4 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
     )
 }
 
-export default ProfessionalConduct;
+export default CriminalHistory;

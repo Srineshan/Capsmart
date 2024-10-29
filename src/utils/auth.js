@@ -1,5 +1,7 @@
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
+import { PUT } from '../Screens/dataSaver';
+import { ErrorToaster } from './toaster';
 
 export const Auth = () => {
   let cookie = new Cookie();
@@ -74,3 +76,19 @@ export const GetRoles = () => {
   }
   return roles;
 }
+
+export const logout = async () => {
+  const cookies = new Cookie();
+  await PUT(`logout`, null)
+    .then((response) => {
+      const logouturi = response.headers["location"] || "";
+      cookies.remove("user", { path: "/" });
+      cookies.remove("entityId", { path: "/" });
+      if (logouturi) {
+        window.location.href = logouturi;
+      }
+    })
+    .catch((error) => {
+      ErrorToaster("Unexpected Error");
+    });
+};
