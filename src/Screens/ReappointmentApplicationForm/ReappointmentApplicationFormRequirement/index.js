@@ -20,6 +20,7 @@ import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import Cookie from "universal-cookie";
 import { differenceInDays } from 'date-fns';
+import { logout } from '../../../utils/auth';
 
 const ReappointmentApplicationFormRequirement = () => {
     let cookie = new Cookie();
@@ -106,7 +107,7 @@ const ReappointmentApplicationFormRequirement = () => {
 
     return (
         <div className={style.screenBackground}>
-            <ApplicationHeader title={`New ${basicForm?.basicDetails?.applicant?.applicantType !== undefined ? basicForm?.basicDetails?.applicant?.applicantType : '{Applicant Type}'} Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'}`} />
+            <ApplicationHeader title={`Reappointment Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={logout} />
             <div className={style.screenPadding}>
                 <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                     <div>
