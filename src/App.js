@@ -253,8 +253,12 @@ const Thankyou = React.lazy(() =>
   import("./Screens/SuperAdminDashboard/thankyou")
 );
 const ApplicationForm = React.lazy(() => import("./Screens/ApplicationForm"));
+const ReappointmentApplicationForm = React.lazy(() => import("./Screens/ReappointmentApplicationForm"));
 const ApplicationFormRequirement = React.lazy(() =>
   import("./Screens/ApplicationForm/ApplicationFormRequirement")
+);
+const ReappointmentApplicationFormRequirement = React.lazy(() =>
+  import("./Screens/ReappointmentApplicationForm/ReappointmentApplicationFormRequirement")
 );
 const ApplicationRequest = React.lazy(() =>
   import("./Screens/ApplicationRequest")
@@ -922,8 +926,16 @@ const App = ({ props }) => {
                 element={<ApplicationForm />}
               />
               <Route
+                path="/reappointmentApplicationForm/:applicationId/:section/:step"
+                element={<ReappointmentApplicationForm />}
+              />
+              <Route
                 path="/applicationForm/:applicationId"
                 element={<ApplicationFormRequirement />}
+              />
+              <Route
+                path="/reappointmentApplicationForm/:applicationId"
+                element={<ReappointmentApplicationFormRequirement />}
               />
               <Route
                 path="/applicationRequest"

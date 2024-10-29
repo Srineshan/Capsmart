@@ -340,18 +340,11 @@ const StaffApplicationList = ({
     sessionStorage.setItem("applicationId", data?.id);
   }; 
 
-  
-  // const getTitleCounts = async () => {
-  //   await GET('application-management-service/application/workflowUser/meta')
-  //     .then(response => {
-  //       setCounts(response?.data);
-  //       var str = JSON.stringify(response?.data);
-  //       console.log("titlesssss" + str)
-  //     })
-  //     .catch(error => {
-  //       console.log('error', error);
-  //     })
-  // };
+  const onClickMoveToActiveStaffFunction = (data) => {
+    ActiveStaffApplication(data?.id)
+    sessionStorage.setItem("applicationId", data?.id);
+  };
+
   const getApplicationStart = async (id) => { 
     await PUT(`application-management-service/application/${id}/workflow/start`)
       .then(response => {
@@ -405,7 +398,44 @@ const StaffApplicationList = ({
       // getPreApplication();
   }
 
-  
+  const approveView = async (id) => {
+    let role;
+
+    if(selectedTab === 'level-2') {
+      role = "Department Head";
+    } else if (selectedTab === 'level-1') {
+      role = "Credentialing Committee";
+    } else if (selectedTab === 'mac') {
+      role = "Advisory Committee";
+    } else if (selectedTab === 'bod') {
+      role = "Board";
+    } else {
+      role = "Chief Of Staff";
+    }
+
+        const { data: basicApproval } = await GET(
+          `application-management-service/application/${id}/approvalRequiredForms?role=${role}`
+        );
+        setForm2(basicApproval)  
+        console.log("basicApprovalllllllllllll" + JSON.stringify(form2));     
+  }
+
+  const ActiveStaffApplication = async (id) => {
+    await POST(`application-management-service/application/${id}/appointStaff`)
+      .then(response => {
+        // SuccessToaster('Reappoint Application Send as Email Successfully');
+        console.log(response?.data);
+        getWorkflowUserData();
+        getTitleCounts();
+        // window.location.reload();
+      })
+      .catch(error => {
+        // ErrorToaster('Sending Email is Failed');
+        console.log(error);
+        
+      })
+  }
+
   useEffect(() => {
     getSentConfirmationCount();
     // getRequestAppointmentCount();
@@ -439,6 +469,8 @@ const StaffApplicationList = ({
       return [];
     }
   };
+
+  console.log("0000000000000000000000"+tableData);
 
   const getHandleSort = (value, sortBy) => {
     if (sortBy === 'ASCENDING') {
@@ -1430,15 +1462,13 @@ const StaffApplicationList = ({
     {
       data: "Add as active staff",
       requiredValue: "boolean",
-      onClick: () => {
-        setShowCheckListDialog(true);
-      },
+      onClick: onClickMoveToActiveStaffFunction
     },
-    {
-      data: "Send follow up disclosures",
-      requiredValue: "boolean",
-      onClick: () => { },
-    },
+    // {
+    //   data: "Send follow up disclosures",
+    //   requiredValue: "boolean",
+    //   onClick: () => { },
+    // },
   ];
 
   const reappointmentActionsData = [];
@@ -1521,8 +1551,8 @@ const StaffApplicationList = ({
                     ? rejectedActionsData
                     // :[];
 
-                    // : approvedActionsData;
-                    : applicantActionsData;
+                    : approvedActionsData;
+                    // : applicantActionsData;
   let gridStyle =
     selectedTab === "level-1"
       ? style.applicantStaffGrid

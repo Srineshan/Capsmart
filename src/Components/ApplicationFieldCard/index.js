@@ -68,7 +68,14 @@ const ApplicationFieldCard = ({
     setShowValidationDialog,
     isAddMore,
     setIsAddMore,
-    formSchema
+    formSchema,
+    isReappointment,
+    dataChangedObject,
+    isChanged,
+    setIsChanged,
+    isView,
+    setIsView,
+    isEdited
 }) => {
     const [calendarStart, setCalendarStart] = useState(false);
     const { section, step } = useParams();
@@ -223,7 +230,7 @@ const ApplicationFieldCard = ({
 
     const handleChange = (path, value, basePath, basePath2, basePath3) => {
         console.log(path, value, basePath, baseKey, "Check");
-        if (stepPath !== undefined) {
+        if (stepPath !== undefined || isReappointment) {
             setIsEdited(true);
         }
         setBasicForm((prevData) => {
@@ -1409,7 +1416,7 @@ const ApplicationFieldCard = ({
                                     : object.required?.includes(fieldKey) ||
                                     (parentData !== null
                                         ? parentData.required?.includes(fieldKey)
-                                        : false)) && "*"
+                                        : false)) ? "*" : ''
                                     }`}
                             />
                         );
@@ -1488,10 +1495,10 @@ const ApplicationFieldCard = ({
                     } else {
                         console.log(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`), 'filecheck')
                         return (
-                            <div>
+                            <div key={fieldKey}>
                                 <div className={`${style.uploadButton}`}>
                                     <div className={style.uploadGrid}>
-                                        {getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) !== undefined ? (
+                                        {(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) !== undefined && getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) !== null && getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) !== '' && getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileURL !== null) ? (
                                             <img src={VerifiedImage} alt="" className={`${style.imgIcon} ${style.cursorPointer}`}
                                             //  onClick={window.open(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileURL, '_blank')}
                                             />
@@ -1879,6 +1886,12 @@ const ApplicationFieldCard = ({
         }
     };
 
+    const handleReappointmentUpdate = (type, skip) => {
+        delete basicForm[baseKey];
+        delete basicForm.undefined;
+        getIsSubmitClicked(true);
+    };
+
     const isValidDateString = (dateString) => {
         if (typeof dateString !== "string") {
             return false;
@@ -2010,16 +2023,22 @@ const ApplicationFieldCard = ({
                 </div>
             )}
             <div
-                className={`${window.location.pathname.includes("applicationForm") || isPOD
+                className={`${window.location.pathname.includes("applicationForm") || window.location.pathname.includes("reappointmentApplicationForm") || isPOD
                     ? ""
                     : style.backgroundCard
                     } ${style.marginTop}`}
                 key={baseKey}>
-                <div className={style.cardTitle}>{object?.label}</div>
-                {object?.description !== null && (
-                    <div className={`${style.addMoreDescriptionText} ${style.marginTop10}`}>
-                        {object?.description}
-                    </div>
+                {!isReappointment ? (
+                    <>
+                        <div className={style.cardTitle}>{object?.label}</div>
+                        {object?.description !== null && (
+                            <div className={`${style.addMoreDescriptionText} ${style.marginTop10}`}>
+                                {object?.description}
+                            </div>
+                        )}
+                    </>
+                ) : (
+                    <div className={style.cardTitle}>{dataChangedObject?.label}</div>
                 )}
                 {addMoreType && !collapsableQuestionCard ? (
                     <div>
@@ -2139,6 +2158,89 @@ const ApplicationFieldCard = ({
                                 </>
                             )}
                         </div>
+                    </div>
+                ) : isReappointment ? (
+                    <div>
+                        {!isPOD && (
+                            <div className={`${style.marginTop}`}>
+                                {isChanged ? (
+                                    <div className={`${style.reappointmentCard} ${style.padding20}`}>
+                                        <div
+                                            className={style.addMoreText}
+                                            dangerouslySetInnerHTML={{ __html: object?.items?.label }}
+                                        />
+                                        <div className={`${gridStyle} ${style.marginTop}`}>
+                                            {object?.type === "object"
+                                                ? renderObjectFields(object, object?.properties)
+                                                : object?.type === "array"
+                                                    ? renderObjectFields(object, object?.items?.properties)
+                                                    : renderObjectFields(object, object?.properties)}
+                                        </div>
+                                        {!isView ? (
+                                            <div
+                                                className={`${style.displayInRowRev} ${style.marginTop}`}
+                                            >
+                                                <div className={style.marginLeft}>
+                                                    <div
+                                                        className={`${style.reappointmentButton} ${isEdited ? '' : style.disabledButtonLook}`}
+                                                        onClick={isEdited ? () => {
+                                                            setIsChanged(false); handleReappointmentUpdate()
+                                                        } : () => { }}
+                                                    >
+                                                        UPDATE
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <div
+                                                        className={`${style.reappointmentButtonOutlined}`}
+                                                        onClick={() => {
+                                                            setIsChanged(false)
+                                                        }}
+                                                    >
+                                                        CANCEL
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div
+                                                className={`${style.displayInRowRev} ${style.marginTop}`}
+                                            >
+                                                <div>
+                                                    <div
+                                                        className={`${style.reappointmentButton}`}
+                                                        onClick={() => {
+                                                            setIsChanged(false); setIsView(false);
+                                                        }}
+                                                    >
+                                                        CLOSE
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div className={`${style.viewMyInfoText} ${style.cursorPointer}`} onClick={() => { setIsChanged(true); setIsView(true) }}>View my information on file</div>
+                                        <div
+                                            className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                        >
+                                            <div
+                                                className={`${style.reappointmentButtonOutlined}`}
+                                                onClick={() => setIsChanged(true)}
+                                            >
+                                                Yes
+                                            </div>
+                                            <div
+                                                className={`${style.reappointmentButton} ${style.marginLeft}`}
+                                                onClick={() => setIsChanged(false)}
+                                            >
+                                                NO
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        )}
                     </div>
                 ) : (
                     <div

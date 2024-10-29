@@ -27,6 +27,12 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
     setUserDetails();
     getUserRoleType();
   }, []);
+  useEffect(() =>{
+    if(reFetchMetaData === true){
+      getTitleCounts();
+    }
+  },[reFetchMetaData] )
+
 
   const getTitleCounts = async () => {
     try {
@@ -116,6 +122,13 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
         tileLabel="Clarifications"
         tileCount={counts?.clarificationsRequired}
         currentTile="clarificationsRequired"
+      />
+       <TileApplication
+        selectedTab={selectedTab}
+        getSelectedTab={getSelectedTab}
+        tileLabel="Approved"
+        tileCount={counts?.approved}
+        currentTile="approved"
       />
     </div>
   );
