@@ -758,7 +758,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                                     {selectedPrivilegesForDisplayMultiple?.map(data => data?.id)?.includes(data?.id) ? (
                                                         <img src={DeleteIcon} alt="" className={`${style.docTypeImgStyle} ${style.marginLeft}`} onClick={() => { handleDeleteSelectedPrrivilege(data?.id) }} />
                                                     ) : (
-                                                        <div onClick={() => { setShowPrivileges(true); handleChange(data?.id) }}><CheckBoxOutlineBlankSharpIcon sx={{ fontSize: 15, color: '#000000' }} /></div>
+                                                        <div onClick={() => { setShowPrivileges(true); handleChange(data?.id) }}><CheckBoxOutlineBlankSharpIcon sx={{ fontSize: 20, color: '#000000' }} /></div>
                                                     )}
                                                 </div>
                                                 {(index !== staffPrivilege?.length - 1) && (

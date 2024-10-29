@@ -2,7 +2,7 @@ import React, { useState, useEffect, createRef, useCallback, useRef } from 'reac
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 import NoteAltOutlinedIcon from '@mui/icons-material/NoteAltOutlined';
-import TimeSmartLogo from './../../images/timeSmartAI-logo-withoutbg.png';
+import CapSmartTransparent from './../../images/capSmartTransparent.png';
 import ActionStaffTiles from './activeStaffTiles';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
@@ -46,17 +46,17 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
   const [sortField, setSortField] = useState('DEFAULT');
   const [sortValue, setSortValue] = useState('ASCENDING');
 
-  const permanentHeaderValues = ["", "Applicant Name","Applicant ID", "Applicant Type", "Docs","CRs","Notes", "Last Updated", "Action"];
-  const locumHeaderValues = ["", "Applicant Name","Applicant ID", "Applicant Type", "CR", "COS", "CC","CC Date", "Last Updated", "Action"];
-  const temporaryStaffHeaderValues = [ "Applicant Name","Applicant ID", "Applicant Type", "CC Approval", "COS Approval", "Last Updated"];
+  const permanentHeaderValues = ["", "Applicant Name", "Applicant ID", "Applicant Type", "Docs", "CRs", "Notes", "Last Updated", "Action"];
+  const locumHeaderValues = ["", "Applicant Name", "Applicant ID", "Applicant Type", "CR", "COS", "CC", "CC Date", "Last Updated", "Action"];
+  const temporaryStaffHeaderValues = ["Applicant Name", "Applicant ID", "Applicant Type", "CC Approval", "COS Approval", "Last Updated"];
   const approvedHeaderValues = ["", "Applicant Name", "Type", "Notes", "Last Updated On", ""];
-  
 
-  const permanentColSortValues = [false,false, false, false, false, , false, false , false];
-  const locumColSortValues = [false, false, false, false, false, false,false,false,false,false];
+
+  const permanentColSortValues = [false, false, false, false, false, , false, false, false];
+  const locumColSortValues = [false, false, false, false, false, false, false, false, false, false];
   const temporaryStaffColSortValues = [false, false, false, false, false, false];
   const approvedColSortValues = [false, false, false, false, false, false, false, false, false];
- 
+
 
   const [isPrintClicked, setIsPrintClicked] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
@@ -89,7 +89,7 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
 
   const getReFetchMetaData = (value) => {
     setReFetchMetaData(value);
-}
+  }
 
   const reappointmentApplication = async (id) => {
     await POST(`application-management-service/staff/${id}/reappoint`)
@@ -110,7 +110,7 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
       const response = await GET(
         // `application-management-service/application/workflowUser?tab=${selectedTab}`
         //  `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=REAPPOINTMENT`
-      `application-management-service/staff?type=${selectedTab}&status=ACTIVE`
+        `application-management-service/staff?type=${selectedTab}&status=ACTIVE`
       );
       console.log("Application data", response?.data);
       setTableData(response?.data);
@@ -208,7 +208,7 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
   let createdOn = [];
   let approvedNotes = [];
   let taskListStatus = [];
-  let  taskListDotColor = [];
+  let taskListDotColor = [];
   let cr = [];
   let cos = [];
   let cc = [];
@@ -341,7 +341,7 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
       // } else {
       //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FEC106` }}/>);
       // }
-      docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FEC106` }}/>);
+      docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FEC106` }} />);
       // dataStatus.push(data?.dataStatus || "green");
       // dataStatus.push(data?.dataStatus === "REVIEW_INPROGRESS"
       //   ? "yellow"
@@ -468,7 +468,7 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
       // boardStatus.push(data?.boardStatus || "green");
       // ceoStatus.push(data?.ceoStatus || "grey");
       // cr.push(data?.clarificationRequiredFor || "-");
-      cr.push( "-");
+      cr.push("-");
       // cr.push(data?.logs[data.logs.length - 1]?.role)
       // cos.push(data?.boardStatus || "green");
       // cos.push(data?.logs[data.logs.length - 1].workflowAction === "SUBMITTED"
@@ -556,7 +556,7 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
         `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
         " "
       );
-      applicantId.push(data?.displayId || "123" );
+      applicantId.push(data?.displayId || "123");
       applicantType.push(data?.providerType?.serviceProviderType || "Dentist");
       ccapproval.push(data?.ccapproval || "05/05/2024");
       // ccapproval.push(
@@ -635,7 +635,7 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
   }
 
   const permanentActionsData = [
-    { 'data': 'Create Re-appointment Application', 'requiredValue': 'boolean', onClick: onClickReappointmentFunction },
+    { 'data': 'Create Reappointment Application', 'requiredValue': 'boolean', onClick: onClickReappointmentFunction },
     // { 'data': 'Send for Committee Review', 'requiredValue': 'boolean', "onClick": '' },
     // { 'data': 'Send Reminder for Required Documents', 'requiredValue': 'boolean', "onClick": '' },
     // { 'data': 'Request for Clarification', 'requiredValue': 'boolean', "onClick": '' },
@@ -650,7 +650,7 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
   ]
 
   const locumActionsData = [
-    { 'data': 'Create Re-appointment Application', 'requiredValue': 'boolean', onClick: onClickReappointmentFunction },
+    { 'data': 'Create Reappointment Application', 'requiredValue': 'boolean', onClick: onClickReappointmentFunction },
     // { 'data': 'Send for Committee Review', 'requiredValue': 'boolean', "onClick": '' },
     // { 'data': 'Send Reminder for Required Documents', 'requiredValue': 'boolean', "onClick": '' },
     // { 'data': 'Request for Clarification', 'requiredValue': 'boolean', "onClick": '' },
@@ -663,21 +663,21 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
   }
 
   let tableHeaderValues = selectedTab === 'PERMANENT' ? permanentHeaderValues : selectedTab === 'LOCUM' ? locumHeaderValues : selectedTab === 'PROVISIONAL' ? temporaryStaffHeaderValues : approvedHeaderValues;
-  let tableSortValues = selectedTab === 'PERMANENT' ? permanentColSortValues : selectedTab === 'LOCUM' ? locumColSortValues :  selectedTab === 'PROVISIONAL' ? temporaryStaffColSortValues : approvedColSortValues;
+  let tableSortValues = selectedTab === 'PERMANENT' ? permanentColSortValues : selectedTab === 'LOCUM' ? locumColSortValues : selectedTab === 'PROVISIONAL' ? temporaryStaffColSortValues : approvedColSortValues;
   // let tableDataValues = selectedTab !== 'applicantsToProcess' ? getApplicantValues() : selectedTab === 'level-1' ? getApplicationValues() : selectedTab === 'level-1' ? getApplicationValues() : getApplicationValues();
   let tableDataValues =
     selectedTab === "PERMANENT"
       ? getPermanentValues()
-          : selectedTab === "LOCUM"
-            ? getLocumValues()
-            : selectedTab === "PROVISIONAL"
-            ? getTemporaryStaffValues()
-                    // :[];
+      : selectedTab === "LOCUM"
+        ? getLocumValues()
+        : selectedTab === "PROVISIONAL"
+          ? getTemporaryStaffValues()
+          // :[];
 
-                    // : getApprovedValues();
-                    : getPermanentValues();
+          // : getApprovedValues();
+          : getPermanentValues();
   let actions = selectedTab === 'PERMANENT' ? permanentActionsData : selectedTab === 'LOCUM' ? locumActionsData : selectedTab === 'PROVISIONAL' ? locumActionsData : approvedActionsData;
-  let gridStyle = selectedTab === 'PERMANENT' ? style.permanentStaffGrid : selectedTab === 'LOCUM' ? style.locumStaffGrid :  selectedTab === 'PROVISIONAL' ? style.temporaryStaffGrid : style.approvedStaffGrid;
+  let gridStyle = selectedTab === 'PERMANENT' ? style.permanentStaffGrid : selectedTab === 'LOCUM' ? style.locumStaffGrid : selectedTab === 'PROVISIONAL' ? style.temporaryStaffGrid : style.approvedStaffGrid;
 
   return (
     <div className={style.margin20}>
@@ -886,7 +886,7 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
           </div>
 
           <div className={`${style.spaceBetween} ${style.marginTop20} ${style.marginLeft30} `}>
-            <ActionStaffTiles getSelectedTab={getSelectedTab} selectedTab={selectedTab} reFetchMetaData={reFetchMetaData} getReFetchMetadata = {getReFetchMetaData} />
+            <ActionStaffTiles getSelectedTab={getSelectedTab} selectedTab={selectedTab} reFetchMetaData={reFetchMetaData} getReFetchMetadata={getReFetchMetaData} />
 
             <div className={`${style.spaceBetween} ${style.marginLeft} `}>
               <div className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`} >
@@ -927,8 +927,8 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
       </div >
       <div className={style.spaceBetween}>
         <div className={`${style.displayInRow}`}>
-          <p className={`${style.poweredBy} ${style.marginTop10}`}>Powered by - CAPSmart</p>
-          {/* <img src={TimeSmartLogo} alt="footer" className={`${style.footerIconStyle} ${style.marginLeft10}`} /> */}
+          <p className={`${style.poweredBy} ${style.marginTop10}`}>Powered by</p>
+          <img src={CapSmartTransparent} alt="footer" className={`${style.footerIconStyle} ${style.marginLeft10}`} />
         </div>
         <p className={style.poweredBy}>© {new Date().getFullYear()} CAPSmart</p>
       </div>

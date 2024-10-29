@@ -200,20 +200,12 @@ const LoginDialog = ({ getIsOpen, days }) => {
     >
       <div>
         <div className={style.whiteBackground}>
-          <div className={style.alignCenter}>
-            {/* <div></div> */}
+          {/* <div className={style.alignCenter}>
             <p className={style.loginHeaderText}>
               <span className={style.bold}>CAP</span>Smart
             </p>
-            {/* <img
-              src={CrossPink}
-              alt="cross"
-              className={`${style.crossStyle} ${style.cursorPointer} `}
-              onClick={() => {
-                getIsOpen(false);
-              }}
-            /> */}
-          </div>
+          </div> */}
+          <img src={'https://capsmart-dev.s3.ca-central-1.amazonaws.com/capsmart+logo-01.png'} alt="CAPSmart Logo" className={`${style.CAPSmartLogo}`} />
           <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
           <div className={style.welcomeText}>Welcome!</div>
           <div className={`${style.descriptionStyle} ${style.marginTop10}`}>

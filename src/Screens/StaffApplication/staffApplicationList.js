@@ -8,7 +8,7 @@ import React, {
 import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import TextSnippetOutlinedIcon from "@mui/icons-material/TextSnippetOutlined";
 import NoteAltOutlinedIcon from "@mui/icons-material/NoteAltOutlined";
-import TimeSmartLogo from "./../../images/timeSmartAI-logo-withoutbg.png";
+import CapSmartTransparent from "./../../images/capSmartTransparent.png";
 import StaffApplicationTiles from "./staffApplicationTiles";
 import StaffApplicationTopTiles from "./staffApplicationTopTiles";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -296,7 +296,7 @@ const StaffApplicationList = ({
 
   const getReFetchMetaData = (value) => {
     setReFetchMetaData(value);
-}
+  }
 
 
   const getApplicationRejectionDialog = (value) => {
@@ -322,7 +322,7 @@ const StaffApplicationList = ({
     sessionStorage.setItem("applicationId", data?.id);
   };
 
- const onClickMoveToNextFunction = (data) => {
+  const onClickMoveToNextFunction = (data) => {
     getApplicationMoveToNext(data?.id);
     sessionStorage.setItem("applicationId", data?.id);
   };
@@ -337,23 +337,23 @@ const StaffApplicationList = ({
     sessionStorage.setItem("applicationId", data?.id);
   };
 
-  const getApplicationStart = async (id) => { 
+  const getApplicationStart = async (id) => {
     await PUT(`application-management-service/application/${id}/workflow/start`)
       .then(response => {
         console.log('successfullllllll')
         getWorkflowUserData();
         getTitleCounts();
-      })  
+      })
       .catch((error) => {
         console.log("errorrrrrrrrr")
       });
-      // getPreApplication();
+    // getPreApplication();
   }
   const getApplicationMoveToNext = async (id) => {
     let role;
     let notes;
 
-    if(selectedTab === 'level-2') {
+    if (selectedTab === 'level-2') {
       role = "Department Head";
       notes = "Send"
     } else if (selectedTab === 'level-1') {
@@ -369,30 +369,30 @@ const StaffApplicationList = ({
       role = "Chief Of Staff";
       notes = "Send"
     }
-  
+
     let temp = {
       role: role,
-      notes : notes
+      notes: notes
     };
-  
+
     const isDelegate = selectedTab === 'level-1' || selectedTab === 'mac' || selectedTab === 'bod' ? true : false;
     const requestData = isDelegate === true ? temp : {};
-    await PUT(`application-management-service/application/${id}/workflow/move?isDelegate=${isDelegate}`,requestData)
+    await PUT(`application-management-service/application/${id}/workflow/move?isDelegate=${isDelegate}`, requestData)
       .then(response => {
         console.log('successfull')
         getWorkflowUserData();
         getTitleCounts();
-      })  
+      })
       .catch((error) => {
         console.log(error)
       });
-      // getPreApplication();
+    // getPreApplication();
   }
 
   const approveView = async (id) => {
     let role;
 
-    if(selectedTab === 'level-2') {
+    if (selectedTab === 'level-2') {
       role = "Department Head";
     } else if (selectedTab === 'level-1') {
       role = "Credentialing Committee";
@@ -404,11 +404,11 @@ const StaffApplicationList = ({
       role = "Chief Of Staff";
     }
 
-        const { data: basicApproval } = await GET(
-          `application-management-service/application/${id}/approvalRequiredForms?role=${role}`
-        );
-        setForm2(basicApproval)  
-        console.log("basicApprovalllllllllllll" + JSON.stringify(form2));     
+    const { data: basicApproval } = await GET(
+      `application-management-service/application/${id}/approvalRequiredForms?role=${role}`
+    );
+    setForm2(basicApproval)
+    console.log("basicApprovalllllllllllll" + JSON.stringify(form2));
   }
 
   const ActiveStaffApplication = async (id) => {
@@ -423,7 +423,7 @@ const StaffApplicationList = ({
       .catch(error => {
         // ErrorToaster('Sending Email is Failed');
         console.log(error);
-        
+
       })
   }
 
@@ -435,7 +435,7 @@ const StaffApplicationList = ({
 
   useEffect(() => {
     getWorkflowUserData(selectedTab);
-  }, [selectedTab,sortField, sortValue]);
+  }, [selectedTab, sortField, sortValue]);
 
 
   useEffect(() => {
@@ -450,7 +450,7 @@ const StaffApplicationList = ({
     try {
       const response = await GET(
         // `application-management-service/application/workflowUser?tab=${selectedTab}`
-         `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}`
+        `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}`
       );
       console.log("Application data", response?.data.applications);
       setTableData(response?.data?.applications);
@@ -461,7 +461,7 @@ const StaffApplicationList = ({
     }
   };
 
-  console.log("0000000000000000000000"+tableData);
+  console.log("0000000000000000000000" + tableData);
 
   const getHandleSort = (value, sortBy) => {
     if (sortBy === 'ASCENDING') {
@@ -579,7 +579,7 @@ const StaffApplicationList = ({
   let ref = [];
   let taskListStatus = [];
   let macapproval = [];
-  let  taskListDotColor = [];
+  let taskListDotColor = [];
   let ccdate = [];
 
   const getApplicantValues = () => {
@@ -622,7 +622,7 @@ const StaffApplicationList = ({
       // department.push(
       //   data?.basicDetails?.departmentSpecialty?.department || "-"
       // );
-      docs.push(data?.documents?.verifiedCount + "/" + data?.documents?.uploadedCount  || "");
+      docs.push(data?.documents?.verifiedCount + "/" + data?.documents?.uploadedCount || "");
       // docsHoverText.push([
       //   "Immunization History Verification From PCP pending",
       // ]);
@@ -636,11 +636,11 @@ const StaffApplicationList = ({
       // );
 
       if (data?.documents?.verifiedCount === data?.documents?.uploadedCount) {
-        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#00C07F` }}/>);
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#00C07F` }} />);
       } else if (data?.documents?.verifiedCount === 0) {
-        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#94979A` }}/>);
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#94979A` }} />);
       } else {
-        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FEC106` }}/>);
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FEC106` }} />);
       }
       // dataStatus.push(data?.dataStatus || "green");
       // dataStatus.push(data?.dataStatus === "REVIEW_INPROGRESS"
@@ -664,11 +664,11 @@ const StaffApplicationList = ({
       notesHoverText.push(notesHoverTextArray);
 
       if (data?.tasks?.completedCount === data?.tasks?.totalCount) {
-        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#00C07F` }}/>);
+        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#00C07F` }} />);
       } else if (data?.tasks?.completedCount === 0) {
-        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#94979A` }}/>);
+        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#94979A` }} />);
       } else {
-        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#FEC106` }}/>);
+        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#FEC106` }} />);
       }
 
       taskListStatus.push(data?.tasks.completedCount + "/" + data?.tasks.totalCount);
@@ -712,9 +712,11 @@ const StaffApplicationList = ({
         isShowHoverText: true,
         icon: notesIcon,
       },
-      { type: "iconWithCount",
-         value: taskListStatus ,
-         icon: taskListDotColor },
+      {
+        type: "iconWithCount",
+        value: taskListStatus,
+        icon: taskListDotColor
+      },
       // { type: "dot", value: taskListDotColor, tooltipValue: dotTooltipValues },
       {
         type: "iconWithCount",
@@ -766,12 +768,12 @@ const StaffApplicationList = ({
       // department.push(
       //   data?.basicDetails?.departmentSpecialty?.department || "-"
       // );
-      docs.push(data?.documents?.uploadedCount|| "");
+      docs.push(data?.documents?.uploadedCount || "");
       // docsHoverText.push([
       //   "Immunization History Verification From PCP pending",
       // ]);
       const documentDetails = data?.documents?.documentDetails || [];
-      const docHoverTextArray = documentDetails.length > 0 ? documentDetails.map(doc => doc.documentType): ["-"];
+      const docHoverTextArray = documentDetails.length > 0 ? documentDetails.map(doc => doc.documentType) : ["-"];
       docsHoverText.push(docHoverTextArray);
       docsIcon.push(
         <TextSnippetOutlinedIcon
@@ -792,7 +794,7 @@ const StaffApplicationList = ({
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#52575D` }} />
       );
       const notesDetails = data?.notes || [];
-      const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes): ["-"];
+      const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes) : ["-"];
       // notesHoverText.push([
       //   "June 13 00:00, Nina Grealy",
       //   "Lorem ipsum dolor sit amet, consetetur sadipscing.",
@@ -800,11 +802,11 @@ const StaffApplicationList = ({
       notesHoverText.push(notesHoverTextArray);
 
       if (data?.tasks.completedCount === data?.tasks.totalCount) {
-        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#00C07F` }}/>);
+        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#00C07F` }} />);
       } else if (data?.tasks.completedCount === 0) {
-        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#94979A` }}/>);
+        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#94979A` }} />);
       } else {
-        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#FEC106` }}/>);
+        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#FEC106` }} />);
       }
 
       taskListStatus.push(data?.tasks.completedCount + "/" + data?.tasks.totalCount);
@@ -848,9 +850,11 @@ const StaffApplicationList = ({
         isShowHoverText: true,
         icon: notesIcon,
       },
-      { type: "iconWithCount",
-         value: taskListStatus ,
-         icon: taskListDotColor },
+      {
+        type: "iconWithCount",
+        value: taskListStatus,
+        icon: taskListDotColor
+      },
       // { type: "dot", value: taskListDotColor, tooltipValue: dotTooltipValues },
       {
         type: "iconWithCount",
@@ -1469,98 +1473,98 @@ const StaffApplicationList = ({
   let tableHeaderValues =
     selectedTab === "applicantsToProcess"
       ? applicantHeaderValues
-        : selectedTab === "level-2"
-          ? departmentHeadHeaderValues
-           : selectedTab === "level-1"
-            ? applicationHeaderValues
-            : selectedTab === "mac"
-              ? macHeaderValues
-              : selectedTab === "bod"
-                ? bodHeaderValues
-                : selectedTab === "clarificationsRequired"
-                  ? applicantHeaderValues
-                  : selectedTab === "rejected"
-                    ? rejectedHeaderValues
-                    // :[];
+      : selectedTab === "level-2"
+        ? departmentHeadHeaderValues
+        : selectedTab === "level-1"
+          ? applicationHeaderValues
+          : selectedTab === "mac"
+            ? macHeaderValues
+            : selectedTab === "bod"
+              ? bodHeaderValues
+              : selectedTab === "clarificationsRequired"
+                ? applicantHeaderValues
+                : selectedTab === "rejected"
+                  ? rejectedHeaderValues
+                  // :[];
 
-                    // : approvedHeaderValues;
+                  // : approvedHeaderValues;
                   : applicantHeaderValues;
   let tableSortValues =
     selectedTab === "applicantsToProcess"
       ? applicantColSortValues
-        :  selectedTab === "level-2"
-         ? departmentHeadColSortValues
-          : selectedTab === "level-1"
-            ? applicationColSortValues
-            : selectedTab === "mac"
-              ? macColSortValues
-              : selectedTab === "bod"
-                ? bodColSortValues
-                : selectedTab === "clarificationsRequired"
-                  ? applicantColSortValues
-                  : selectedTab === "rejected"
-                    ? rejectedColSortValues
-                    // :[];
+      : selectedTab === "level-2"
+        ? departmentHeadColSortValues
+        : selectedTab === "level-1"
+          ? applicationColSortValues
+          : selectedTab === "mac"
+            ? macColSortValues
+            : selectedTab === "bod"
+              ? bodColSortValues
+              : selectedTab === "clarificationsRequired"
+                ? applicantColSortValues
+                : selectedTab === "rejected"
+                  ? rejectedColSortValues
+                  // :[];
 
-                    // : approvedColSortValues;
-                    : applicantColSortValues;
+                  // : approvedColSortValues;
+                  : applicantColSortValues;
   let tableDataValues =
     selectedTab === "applicantsToProcess"
       ? getApplicantValues()
-       :selectedTab === "level-2"
+      : selectedTab === "level-2"
         ? getDepartmentHeadValues()
-          : selectedTab === "level-1"
-            ? getApplicationValues()
-            : selectedTab === "mac"
-              ? getMacValues()
-              : selectedTab === "bod"
-                ? getBodValues()
-                : selectedTab === "clarificationsRequired"
-                  ? getApplicantValues()
-                  : selectedTab === "rejected"
-                    ? getRejectedValues()
-                    // :[];
+        : selectedTab === "level-1"
+          ? getApplicationValues()
+          : selectedTab === "mac"
+            ? getMacValues()
+            : selectedTab === "bod"
+              ? getBodValues()
+              : selectedTab === "clarificationsRequired"
+                ? getApplicantValues()
+                : selectedTab === "rejected"
+                  ? getRejectedValues()
+                  // :[];
 
-                    // : getApprovedValues();
-                    : getApplicantValues();
+                  // : getApprovedValues();
+                  : getApplicantValues();
   let actions =
     selectedTab === "applicantsToProcess"
       ? applicantActionsData
-       : selectedTab === "level-2"
+      : selectedTab === "level-2"
         ? departmentHeadActionsData
-          : selectedTab === "level-1"
-            ? applicationActionsData
-            : selectedTab === "mac"
-              ? macActionsData
-              : selectedTab === "bod"
-                ? bodActionsData
-                : selectedTab === "clarificationsRequired"
-                  ? applicantActionsData
-                  : selectedTab === "rejected"
-                    ? rejectedActionsData
-                    // :[];
+        : selectedTab === "level-1"
+          ? applicationActionsData
+          : selectedTab === "mac"
+            ? macActionsData
+            : selectedTab === "bod"
+              ? bodActionsData
+              : selectedTab === "clarificationsRequired"
+                ? applicantActionsData
+                : selectedTab === "rejected"
+                  ? rejectedActionsData
+                  // :[];
 
-                    : approvedActionsData;
-                    // : applicantActionsData;
+                  : approvedActionsData;
+  // : applicantActionsData;
   let gridStyle =
     selectedTab === "applicantsToProcess"
       ? style.applicantStaffGrid
-      :selectedTab === "level-2"
-      ? style.departmentHeadStaffGrid
-      : selectedTab === "level-1"
-        ? style.applicationStaffGrid
-        : selectedTab === "mac"
-          ? style.macStaffGrid
-          : selectedTab === "bod"
-            ? style.bodStaffGrid
-            : selectedTab === "clarificationsRequired"
-              ? style.applicantStaffGrid
-              : selectedTab === "rejected"
-                ? style.rejectedStaffGrid
-                // :[];
+      : selectedTab === "level-2"
+        ? style.departmentHeadStaffGrid
+        : selectedTab === "level-1"
+          ? style.applicationStaffGrid
+          : selectedTab === "mac"
+            ? style.macStaffGrid
+            : selectedTab === "bod"
+              ? style.bodStaffGrid
+              : selectedTab === "clarificationsRequired"
+                ? style.applicantStaffGrid
+                : selectedTab === "rejected"
+                  ? style.rejectedStaffGrid
+                  // :[];
 
-                // : style.approvedStaffGrid;
-                : style.applicantStaffGrid;
+                  // : style.approvedStaffGrid;
+                  : style.applicantStaffGrid;
 
   return (
     <div className={style.margin20}>
@@ -1693,12 +1697,12 @@ const StaffApplicationList = ({
                         <div className={style.progressbarStyle}>
                           <div className={style.spaceBetween}>
                             <div className={style.statisticsProgress}>
-                            {/* <div className={status?.remainingCompletionPercentage === 0 ? style.greenDotStyle : status?.remainingCompletionPercentage === 100 ? style.greyDotStyle : status?.dueStatus === "PastDue" ? style.redDotStyle : style.yellowDotStyle}></div> */}
-                            <div className={
+                              {/* <div className={status?.remainingCompletionPercentage === 0 ? style.greenDotStyle : status?.remainingCompletionPercentage === 100 ? style.greyDotStyle : status?.dueStatus === "PastDue" ? style.redDotStyle : style.yellowDotStyle}></div> */}
+                              <div className={
                                 status?.dueStatus === "PastDue" ? style.redDotStyle :
-                                status?.remainingCompletionPercentage === 0 ? style.greenDotStyle :
-                                status?.remainingCompletionPercentage === 100 ? style.greyDotStyle :
-                                style.yellowDotStyle
+                                  status?.remainingCompletionPercentage === 0 ? style.greenDotStyle :
+                                    status?.remainingCompletionPercentage === 100 ? style.greyDotStyle :
+                                      style.yellowDotStyle
                               }></div>
                               <div
                                 className={style.marginLeft10}>
@@ -1752,8 +1756,8 @@ const StaffApplicationList = ({
                               Due in {status.dueDays} Days{" "}
                             </p> */}
                             <p className={style.progressTopText}>
-                              {status?.dueStatus === "Due" 
-                                ? `Due in ${status.dueDays} Days` 
+                              {status?.dueStatus === "Due"
+                                ? `Due in ${status.dueDays} Days`
                                 : `${status.dueDays} days past due`}
                             </p>
                           </div>
@@ -1845,7 +1849,7 @@ const StaffApplicationList = ({
               getSelectedTab={getSelectedTab}
               selectedTab={selectedTab}
               reFetchMetaData={reFetchMetaData}
-              getReFetchMetadata = {getReFetchMetaData}
+              getReFetchMetadata={getReFetchMetaData}
 
             />
 
@@ -1911,9 +1915,9 @@ const StaffApplicationList = ({
       <div className={style.spaceBetween}>
         <div className={`${style.displayInRow}`}>
           <p className={`${style.poweredBy} ${style.marginTop10}`}>
-            Powered by - CAPSmart
+            Powered by
           </p>
-          {/* <img src={TimeSmartLogo} alt="footer" className={`${style.footerIconStyle} ${style.marginLeft10}`} /> */}
+          <img src={CapSmartTransparent} alt="footer" className={`${style.footerIconStyle} ${style.marginLeft10}`} />
         </div>
         <p className={style.poweredBy}>© {new Date().getFullYear()} CAPSmart</p>
       </div>

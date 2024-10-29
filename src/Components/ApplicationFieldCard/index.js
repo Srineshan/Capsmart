@@ -1348,7 +1348,7 @@ const ApplicationFieldCard = ({
                     return (
                         <div className={`${style.disclosureGrid} ${style.verticalAlignCenter}`}>
                             <div className={style.displayInRow}>
-                                <div className={`${style.lableRadioSerialNumberStyle}`}>{fieldData.serialNumber !== null ? `${fieldData.serialNumber}, ` : ''}</div>
+                                <div className={`${style.lableRadioSerialNumberStyle}`}>{fieldData.serialNumber !== null ? `${fieldData.serialNumber}. ` : ''}</div>
                                 <div className={`${style.lableRadioStyle} ${fieldData.serialNumber !== null ? style.marginLeft10 : ''} ${fieldData.label !== null ? style.marginRight : ''}`}>{fieldData.label}{(isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) && '*'}</div>
                             </div>
                             <CommonRadio
@@ -2222,7 +2222,7 @@ const ApplicationFieldCard = ({
                                     <>
                                         <div className={`${style.viewMyInfoText} ${style.cursorPointer}`} onClick={() => { setIsChanged(true); setIsView(true) }}>View my information on file</div>
                                         <div
-                                            className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                            className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                                         >
                                             <div
                                                 className={`${style.reappointmentButtonOutlined}`}
