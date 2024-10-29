@@ -25,28 +25,19 @@
 .saveInProgress {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
-    border: 0.5px solid $primarycolor
-
-
-;
+    border: 0.5px solid $primarycolor;
     border-radius: 8px;
     text-align: center;
     font: normal normal bold 17px/30px proxima-nova;
     letter-spacing: 0px;
-    color: $primarycolor
-
-
-;
+    color: $primarycolor;
     text-transform: uppercase;
     padding: 5px;
     cursor: pointer;
 }
 
 .continue {
-    background: $primarycolor
-
-
- 0% 0% no-repeat padding-box;
+    background: $primarycolor 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 8px;
     text-align: center;
@@ -82,6 +73,11 @@
     cursor: not-allowed;
 }
 
+.disabledButton {
+    cursor: not-allowed;
+    opacity: 0.4;
+}
+
 .twoColForButton {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -91,6 +87,11 @@
 .displayInRow {
     display: flex;
     flex-direction: row;
+}
+
+.displayInRowRev {
+    display: flex;
+    flex-direction: row-reverse;
 }
 
 .floatRight {
@@ -159,13 +160,7 @@
 }
 
 .progressStyleBackground {
-    background: transparent linear-gradient(90deg, $primarycolor
-
-
- 0%, $primarycolor
-
-
- 27%, #E9E9F0 30%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(90deg, $primarycolor 0%, $primarycolor 27%, #E9E9F0 30%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
 }
 
 .siteDisplayCard {
@@ -349,23 +344,14 @@
 
 
 .bigButtonStyle {
-    background-color: $primarycolor
-
-
-;
+    background-color: $primarycolor;
     color: white;
-    border: 1px solid $primarycolor
-
-
-;
+    border: 1px solid $primarycolor;
     height: 40px;
     width: 500px;
     border-radius: 10px;
     margin-bottom: -20px;
-    box-shadow: 0px 3px 11px $primarycolor
-
-
-;
+    box-shadow: 0px 3px 11px $primarycolor;
 }
 
 .dateTitle {
@@ -387,10 +373,7 @@
     text-decoration: underline;
     font: normal normal bold 20px/26px proxima-nova;
     letter-spacing: 0px;
-    color: $primarycolor
-
-
-;
+    color: $primarycolor;
 }
 
 .spaceBetween {
@@ -417,4 +400,105 @@
 
 .leftAlign {
     text-align: left;
+}
+
+.privilegeCard {
+    background: #14358F0A 0% 0% no-repeat padding-box;
+    box-shadow: 0px 0px 8px #040B2014;
+    border: 0.4000000059604645px solid #5087D9;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.privilegeHeading {
+    text-align: left;
+    font: normal normal medium 18px/24px proxima-nova;
+    letter-spacing: 0px;
+    color: #1D2437;
+}
+
+.privilegeTitleStyle {
+    text-align: left;
+    text-decoration: underline;
+    font: normal normal bold 18px/24px proxima-nova;
+    letter-spacing: 0px;
+    color: $primarycolor;
+}
+
+.privilegeWarningPart {
+    background: #FF555514 0% 0% no-repeat padding-box;
+    border: 1px solid #FF5555;
+    border-radius: 4px;
+    padding: 10px;
+}
+
+.privilegeWarningText {
+    text-align: left;
+    font: normal normal medium 20px/32px proxima-nova;
+    letter-spacing: 0px;
+    color: #1D2437;
+}
+
+.reappointmentButton {
+    background: $primarycolor 0% 0% no-repeat padding-box;
+    border-radius: 8px;
+    padding: 10px 15px;
+    color: #fff;
+    min-width: 120px !important;
+    font: normal normal bold 15px/15px proxima-nova;
+    cursor: pointer;
+}
+
+.reappointmentButtonOutlined {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    border-radius: 8px;
+    border: 1px solid $primarycolor;
+    padding: 10px 15px;
+    color: $primarycolor;
+    min-width: 120px;
+    font: normal normal bold 15px/15px proxima-nova;
+    cursor: pointer;
+}
+
+.privilegeConfirmationGrid {
+    display: grid;
+    grid-template-columns: 3% 89% 5%;
+    gap: 1%;
+}
+
+.iconBackgroundColor {
+    background-color: #52575D;
+    border-radius: 4px;
+    height: 20px;
+    width: 20px;
+}
+
+.iconBackgroundColorSelected {
+    background-color: #26C600;
+    border-radius: 4px;
+    height: 20px;
+    width: 20px;
+}
+
+.justifyCenter {
+    display: flex;
+    justify-content: center;
+}
+
+.heading {
+    text-align: left;
+    font: normal normal bold 20px/28px proxima-nova;
+    color: $primarycolor;
+    text-transform: capitalize;
+}
+
+.eSignDialogBackground {
+    background: #ffffff 0% 0% no-repeat padding-box;
+    padding: 20px 40px 0px 40px;
+    border-radius: 20px !important;
+}
+
+.eSignDialog {
+    height: 75%;
+    width: 60% !important;
 }

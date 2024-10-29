@@ -10,6 +10,12 @@ import PrivilegeSelection from './PrivilegeSelection';
 import ProfessionalConduct from './ProfessionalConduct';
 import UploadYourDoc from './UploadYourDoc';
 import { logout } from '../../utils/auth';
+import MedicalHistory from './MedicalHistory';
+import CriminalHistory from './CriminalHistory';
+import LMSModules from './LMSModules';
+import HospitalCoverage from './HospitalCoverage';
+import MRP from './MRP';
+import PrescribeSuboxone from './PrescribeSuboxone';
 
 const ReappointmentApplicationForm = () => {
     let cookie = new Cookie();
@@ -62,10 +68,23 @@ const ReappointmentApplicationForm = () => {
                 return <PrivilegeSelection basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'ProfessionalConduct':
                 return <ProfessionalConduct basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+            case 'MedicalHistory':
+                return <MedicalHistory basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+            case 'CriminalHistory':
+                return <CriminalHistory basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'UploadYourDoc':
                 return <UploadYourDoc basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+            case 'LMS':
+                return <LMSModules basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />
+            case 'MRP':
+                return <MRP basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />
+            case 'HOSPITAL_COVERAGE':
+                return <HospitalCoverage basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />
+            case 'SUBOXONE':
+                return <PrescribeSuboxone basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />
             default:
-                return <div>Step not found</div>;
+                return <LMSModules basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />
+            // return <div>Step not found</div>;
         }
     };
 
