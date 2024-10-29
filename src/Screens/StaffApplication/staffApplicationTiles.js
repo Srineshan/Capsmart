@@ -123,13 +123,6 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
         tileCount={counts?.clarificationsRequired}
         currentTile="clarificationsRequired"
       />
-       <TileApplication
-        selectedTab={selectedTab}
-        getSelectedTab={getSelectedTab}
-        tileLabel="Approved"
-        tileCount={counts?.approved}
-        currentTile="approved"
-      />
     </div>
   );
 };

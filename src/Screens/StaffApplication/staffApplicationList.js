@@ -398,27 +398,27 @@ const StaffApplicationList = ({
       // getPreApplication();
   }
 
-  const approveView = async (id) => {
-    let role;
+  // const approveView = async (id) => {
+  //   let role;
 
-    if(selectedTab === 'level-2') {
-      role = "Department Head";
-    } else if (selectedTab === 'level-1') {
-      role = "Credentialing Committee";
-    } else if (selectedTab === 'mac') {
-      role = "Advisory Committee";
-    } else if (selectedTab === 'bod') {
-      role = "Board";
-    } else {
-      role = "Chief Of Staff";
-    }
+  //   if(selectedTab === 'level-2') {
+  //     role = "Department Head";
+  //   } else if (selectedTab === 'level-1') {
+  //     role = "Credentialing Committee";
+  //   } else if (selectedTab === 'mac') {
+  //     role = "Advisory Committee";
+  //   } else if (selectedTab === 'bod') {
+  //     role = "Board";
+  //   } else {
+  //     role = "Chief Of Staff";
+  //   }
 
-        const { data: basicApproval } = await GET(
-          `application-management-service/application/${id}/approvalRequiredForms?role=${role}`
-        );
-        setForm2(basicApproval)  
-        console.log("basicApprovalllllllllllll" + JSON.stringify(form2));     
-  }
+  //       const { data: basicApproval } = await GET(
+  //         `application-management-service/application/${id}/approvalRequiredForms?role=${role}`
+  //       );
+  //       setForm2(basicApproval)  
+  //       console.log("basicApprovalllllllllllll" + JSON.stringify(form2));     
+  // }
 
   const ActiveStaffApplication = async (id) => {
     await POST(`application-management-service/application/${id}/appointStaff`)
@@ -1489,7 +1489,7 @@ const StaffApplicationList = ({
               : selectedTab === "level-5"
                 ? bodHeaderValues
                 : selectedTab === "clarificationsRequired"
-                  ? clarificationHeaderValues
+                  ? applicantHeaderValues
                   : selectedTab === "rejected"
                     ? rejectedHeaderValues
                     // :[];
@@ -1508,7 +1508,7 @@ const StaffApplicationList = ({
               : selectedTab === "level-5"
                 ? bodColSortValues
                 : selectedTab === "clarificationsRequired"
-                  ? clarificationColSortValues
+                  ? applicantColSortValues
                   : selectedTab === "rejected"
                     ? rejectedColSortValues
                     // :[];
@@ -1527,7 +1527,7 @@ const StaffApplicationList = ({
               : selectedTab === "level-5"
                 ? getBodValues()
                 : selectedTab === "clarificationsRequired"
-                  ? getClarificationValues()
+                  ? getApplicantValues()
                   : selectedTab === "rejected"
                     ? getRejectedValues()
                     // :[];
@@ -1565,7 +1565,7 @@ const StaffApplicationList = ({
           : selectedTab === "level-5"
             ? style.bodStaffGrid
             : selectedTab === "clarificationsRequired"
-              ? style.clarificationStaffGrid
+              ? style.applicantStaffGrid
               : selectedTab === "rejected"
                 ? style.rejectedStaffGrid
                 // :[];
