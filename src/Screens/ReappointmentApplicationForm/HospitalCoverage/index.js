@@ -39,7 +39,7 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
         if (basicForm !== undefined && formIndex !== undefined) {
             setWhoCovers(basicForm?.forms?.[formIndex]?.data?.whoCovers !== undefined ? basicForm?.forms?.[formIndex]?.data?.whoCovers : '');
             setWhoCoversObstetrics(basicForm?.forms?.[formIndex]?.data?.whoCoversObstetrics !== undefined ? basicForm?.forms?.[formIndex]?.data?.whoCoversObstetrics : '');
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/PODCheck` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/ApplicantAcknowledgement` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
         }
     }, [basicForm, formIndex])
 

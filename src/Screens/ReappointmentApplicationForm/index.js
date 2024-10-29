@@ -86,8 +86,8 @@ const ReappointmentApplicationForm = () => {
             case 'ApplicantAcknowledgement':
                 return <ApplicantAcknowledgement dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
             default:
-                return <LMSModules basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />
-            // return <div>Step not found</div>;
+                // return <LMSModules basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />
+                return <div>Step not found</div>;
         }
     };
 
@@ -95,7 +95,7 @@ const ReappointmentApplicationForm = () => {
 
     return (
         <div className={style.screenBackground}>
-            <ApplicationHeader title={`Reappointment Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'} ${(basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory !== null && basicForm?.basicDetails?.credentialingPrivilegeCategory !== null) ? basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory : ''}`} close={true} closeClick={logout} />
+            <ApplicationHeader title={`Reappointment Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={logout} />
             <div className={style.screenPadding}>
                 {StepDisplay()}
             </div>

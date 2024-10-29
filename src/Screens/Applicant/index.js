@@ -31,7 +31,7 @@ const Applicant = () => {
             console.log('Inside UseEffect', applicationForm);
             cookies.remove('entityId', { path: '/' })
             cookies.set('entityId', applicationForm?.[applicationForm?.length - 1]?.tenant?.id, { path: '/' });
-            navigate(applicationForm?.[applicationForm?.length - 1]?.creationType === 'REAPPOINTMENT' ? `/reappointmentApplicationForm/${applicationForm?.[applicationForm?.length - 1]?.id}/section1/DemographicData` : `/applicationForm/${applicationForm?.[applicationForm?.length - 1]?.id}`);
+            navigate(applicationForm?.[applicationForm?.length - 1]?.creationType === 'REAPPOINTMENT' ? `/reappointmentApplicationForm/${applicationForm?.[applicationForm?.length - 1]?.id}` : `/applicationForm/${applicationForm?.[applicationForm?.length - 1]?.id}`);
         }
     }, [applicationForm, applicationForm?.length])
 

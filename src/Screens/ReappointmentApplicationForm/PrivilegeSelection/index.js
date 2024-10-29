@@ -95,6 +95,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
             setSelectedPrivilege(basicForm?.privileges?.obligatedPrivileges?.[0]?.id)
         }
         setSelectedAdditionalPrivilegeForDisplay(basicForm?.privileges?.additionalPrivileges)
+        setSelectedPrivilegesForDisplayMultiple(basicForm?.privileges?.obligatedPrivileges)
         setSelectedPrivilegeForDisplay(basicForm?.privileges?.obligatedPrivileges)
         if (basicForm !== undefined && formIndex !== undefined) {
             setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/PODCheck` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
@@ -203,7 +204,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
 
     const handleSubmit = async () => {
         let temp = {
-            obligatedPrivileges: selectedPrivilegeForDisplay,
+            obligatedPrivileges: selectedPrivilegesForDisplayMultiple,
             additionalPrivileges: selectedAdditionalPrivilegeForDisplay
         }
         console.log('data', temp)
@@ -215,21 +216,24 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
             .catch((error) => {
                 ErrorToaster("Unexpected Error Updating Application");
             });
+        if (isPrivilegeCategoryChanging) {
+            let data = basicForm;
+            data.basicDetails.credentialingPrivilegeCategory.credentialingCategory = privilegeCategories?.filter(data => data?.id === selectedPrivilegeCategory)[0]?.category
+            data.basicDetails.departmentSpecialty.department = departmentList?.filter(data => data?.id === selectedDepartment)[0]?.departmentName?.name
+            console.log(data)
+            await PUT(`application-management-service/application/${applicationId}`, data)
+                .then(response => {
+                    console.log(response)
+                    setBasicForm(response?.data)
+                    SuccessToaster("Staff Member Application Updated Successfully");
+                    getPreApplication();
+                })
+                .catch((error) => {
+                    console.log(error)
+                    ErrorToaster("Unexpected Error Updating Staff Member Application");
+                });
+        }
 
-                let data = basicForm;
-                console.log(data)
-                await PUT(`application-management-service/application/${applicationId}`, data)
-                    .then(response => {
-                        console.log(response)
-                        setBasicForm(response?.data)
-                        SuccessToaster("Staff Member Application Updated Successfully");
-                        getPreApplication();
-                    })
-                    .catch((error) => {
-                        console.log(error)
-                        ErrorToaster("Unexpected Error Updating Staff Member Application");
-                    });
-            
     }
 
     const handleContinue = async () => {
@@ -429,6 +433,11 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
             return temp;
         });
         getFields();
+    }
+
+    const handleDeleteSelectedPrrivilege = (id) => {
+        let filteredData = selectedPrivilegesForDisplayMultiple?.filter(data => data?.id !== id)
+        setSelectedPrivilegesForDisplayMultiple(filteredData)
     }
 
     const handleCollapse = (value, index) => {
@@ -747,9 +756,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                                     )}
                                                     <div className={style.privilegeHeading}>{data?.privilegeSetTitle}</div>
                                                     {selectedPrivilegesForDisplayMultiple?.map(data => data?.id)?.includes(data?.id) ? (
-                                                        <img src={DeleteIcon} alt="" className={`${style.docTypeImgStyle} ${style.marginLeft}`} onClick={() => { }} />
+                                                        <img src={DeleteIcon} alt="" className={`${style.docTypeImgStyle} ${style.marginLeft}`} onClick={() => { handleDeleteSelectedPrrivilege(data?.id) }} />
                                                     ) : (
-                                                        <div onClick={() => { setShowPrivileges(true); handleChange(data?.id) }}><CheckBoxOutlineBlankSharpIcon sx={{ fontSize: 15, color: '#000000' }} /></div>
+                                                        <div onClick={() => { setShowPrivileges(true); handleChange(data?.id) }}><CheckBoxOutlineBlankSharpIcon sx={{ fontSize: 20, color: '#000000' }} /></div>
                                                     )}
                                                 </div>
                                                 {(index !== staffPrivilege?.length - 1) && (
@@ -1032,8 +1041,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                             className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop10}`}
                         >
                             <div
-                                className={`${style.reappointmentButton} ${style.marginLeft} ${(((selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.esign !== null && selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.esign !== undefined) || selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.length === 0 || selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length === 0 && selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length !== undefined) && selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.esign !== null && selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.esign !== undefined) ? '' : style.disabledButton}`}
-                                onClick={(((selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.esign !== null && selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.esign !== undefined) || selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.length === 0 || selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length === 0 && selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length !== undefined) && selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.esign !== null && selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.esign !== undefined) ? () => { setShowPrivileges(false); handleSelectedPrivilegesForDisplayMultiple(selectedPrivilegeForDisplay[0]) } : () => { }}
+                                className={`${style.reappointmentButton} ${style.marginLeft} ${(((selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.esign !== null && selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.esign !== undefined) || selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.length === 0 || selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length === 0 && selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length !== undefined) && ((selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.esign !== null && selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.esign !== undefined) || selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.privilegesByCategories?.length === 0 || selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.privilegesByCategories?.[0]?.privileges?.length === 0 && selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.privilegesByCategories?.[0]?.privileges?.length !== undefined)) ? '' : style.disabledButton}`}
+                                onClick={(((selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.esign !== null && selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.esign !== undefined) || selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.length === 0 || selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length === 0 && selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length !== undefined) && ((selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.esign !== null && selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.esign !== undefined) || selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.privilegesByCategories?.length === 0 || selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.privilegesByCategories?.[0]?.privileges?.length === 0 && selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.privilegesByCategories?.[0]?.privileges?.length !== undefined)) ? () => { setShowPrivileges(false); handleSelectedPrivilegesForDisplayMultiple(selectedPrivilegeForDisplay[0]) } : () => { }}
                             >
                                 CONTINUE
                             </div>
