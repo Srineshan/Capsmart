@@ -33,6 +33,7 @@ import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import { getValueByPath } from '../../../utils/formatting';
 import FileDisplayDialog from '../../../Components/fileDisplayDialog';
+import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
 
 const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplication }) => {
     const { section, step } = useParams()
@@ -423,7 +424,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             )}
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
-                    <ProgressCard
+                    <ReappointmentProgressCard
                         step={""}
                         dataType={formSchema?.description}
                         title={formSchema?.title}
@@ -639,7 +640,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                     <div className={`${style.saveInProgress} ${style.marginTop}`}>
                         SAVE IN PROGRESS
                     </div>
-                    <div
+                    {/* <div
                         className={`${style.saveInProgress} ${style.marginTop10} ${basicForm?.forms?.[formIndex]?.data !== null &&
                             getMissingDocs()?.length === 0
                             ? style.disabledButton
@@ -653,7 +654,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         }
                     >
                         SKIP FOR NOW
-                    </div>
+                    </div> */}
                     <div className={style.twoColForButton}>
                         <div
                             className={`${style.continue} ${style.marginTop10}`}
@@ -662,20 +663,15 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                             BACK
                         </div>
                         <div
-                            className={`${style.continue} ${style.marginTop10} ${(basicForm?.forms?.[formIndex]?.data !== null &&
-                                showRedBorderForESign) ||
-                                (basicForm?.forms?.[formIndex]?.data !== null &&
-                                    getMissingDocs()?.length !== 0)
-                                ? style.disabledButton
-                                : ""
-                                }`}
+                            className={`${style.continue} ${style.marginTop10}`}
                             onClick={
-                                (basicForm?.forms?.[formIndex]?.data !== null &&
-                                    showRedBorderForESign) ||
-                                    (basicForm?.forms?.[formIndex]?.data !== null &&
-                                        getMissingDocs()?.length !== 0)
-                                    ? () => { }
-                                    : () => handleContinue()
+                                // (basicForm?.forms?.[formIndex]?.data !== null &&
+                                //     showRedBorderForESign) ||
+                                //     (basicForm?.forms?.[formIndex]?.data !== null &&
+                                //         getMissingDocs()?.length !== 0)
+                                //     ? () => { }
+                                //     : 
+                                () => handleContinue()
                             }
                         >
                             CONTINUE
