@@ -1376,11 +1376,11 @@ const StaffApplicationList = ({
   ];
 
   const macActionsData = [
-    // {
-    //   data: "View & Verify",
-    //   requiredValue: "boolean",
-    //   onClick: onClickViewAndVerifyFunction,
-    // },
+    {
+      data: "View & Verify",
+      requiredValue: "boolean",
+      onClick: onClickViewAndVerifyFunction,
+    },
     // {
     //   data: "Send for board Review",
     //   requiredValue: "boolean",
@@ -1404,11 +1404,11 @@ const StaffApplicationList = ({
   ];
 
   const bodActionsData = [
-    // {
-    //   data: "View & Verify",
-    //   requiredValue: "boolean",
-    //   onClick: onClickViewAndVerifyFunction,
-    // },
+    {
+      data: "View & Verify",
+      requiredValue: "boolean",
+      onClick: onClickViewAndVerifyFunction,
+    },
     // {
     //   data: "Send for Committee Review",
     //   requiredValue: "boolean",

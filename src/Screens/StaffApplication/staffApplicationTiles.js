@@ -10,6 +10,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
   const userDetails = cookie.get('user');
   const user = jwt(userDetails);
   const [userRole, setUserRole] = useState('');
+  const [initialTabSet, setInitialTabSet] = useState(false);
   const [counts, setCounts] = useState({
     'level-1': 0,
     'level-2': 0,
@@ -69,11 +70,11 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
       getTitleCounts();
     }
   }, [reFetchMetaData]);
-
+  
   useEffect(() => {
     const UserFlowType = userFlow?.workflow || [];
     
-    // Determine if the user is a manager or chief
+    // Determine if the user is a  staff manager or chief of staff
     const isManagerOrChief = userRole.includes("Staff Manager") || userRole.includes("Chief Of Staff");
     
     // Calculate currentRoleIndex based on userFlowArray
@@ -88,20 +89,31 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
             })
           );
       });
+      if (userRole.length > 0 && !initialTabSet) {
+        const initialTab = isManagerOrChief
+          ? 'level-1'
+          : `level-${Object.keys(UserFlowType)[newCurrentRoleIndex]}`;
+        getSelectedTab(initialTab);
+        setInitialTabSet(true); // Set the initial tab
+      }
     
     setCurrentRoleIndex(newCurrentRoleIndex);
   
-  }, [userFlow, userRole]);
+  }, [userFlow, userRole,getSelectedTab, initialTabSet]);
   
   console.log("currentRoleIndex" + currentRoleIndex);
 
   const UserFlowType = userFlow?.workflow || [];
 
   const userFlowArray = Object.entries(UserFlowType).map(([key, value], index) => ({
-    label: currentRoleIndex === index ? "Applicant to verify" : value.tabDisplayName,
+    label: currentRoleIndex === index ? "Applicants to Verify" : value.tabDisplayName,
     count: counts[`level-${key}`],
     level: `level-${key}`,
   }));
+
+  const handleTabClick = (tab) => {
+    getSelectedTab(tab);
+  };
   
 
   return (
@@ -110,7 +122,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
         <TileApplication
           key={tile.level}
           selectedTab={selectedTab}
-          getSelectedTab={getSelectedTab}
+          getSelectedTab={handleTabClick}
           tileLabel={tile.label}
           tileCount={tile.count}
           currentTile={tile.level}
@@ -118,7 +130,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
       ))}
       <TileApplication
         selectedTab={selectedTab}
-        getSelectedTab={getSelectedTab}
+        getSelectedTab={handleTabClick}
         tileLabel="Clarifications"
         tileCount={counts?.clarificationsRequired}
         currentTile="clarificationsRequired"
