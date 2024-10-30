@@ -9,12 +9,13 @@ import CommonCheckBox from '../../../Components/CommonFields/CommonCheckBox';
 import { GET, PUT } from '../../dataSaver';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
-
+import JourneyStep1 from './../../../images/journeyStep1.png';
 import style from './index.module.scss';
 import AIAssistantDialog from '../../../Components/AIAssistantDialog';
 import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 import ValidationDialog from '../../../Components/validationDialog';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
+import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
 
 const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
@@ -37,6 +38,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [isContactInfoEdited, setIsContactInfoEdited] = useState(false);
     const [formIndex, setFormIndex] = useState();
     const [navigateURL, setNavigateURL] = useState();
+    const [showJourneyDialog, setShowJourneyDialog] = useState(false);
     useEffect(() => {
         if (basicForm && !formSchema) {
             getBasicForm()
@@ -52,6 +54,10 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
 
     const getIsOpen = (value) => {
         setIsOpen(value);
+    }
+
+    const getIsShowReappointmentJourneyDialog = (value) => {
+        setShowJourneyDialog(value);
     }
 
     const getIsValidationDialogOpen = (value) => {
@@ -323,7 +329,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                         </div>
                         <div
                             className={`${style.continue} ${style.marginTop10}`}
-                            onClick={() => handleContinue()}
+                            onClick={() => setShowJourneyDialog(true)}
                         >
                             CONTINUE
                         </div>
@@ -343,6 +349,9 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                     labelList={warningFields}
                     getSkipClicked={getSkipClicked}
                 />
+            )}
+            {showJourneyDialog && (
+                <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Great Start! You're On Your Way.`} img={JourneyStep1} formIndex={formIndex} basicForm={basicForm} continueClick={handleContinue} />
             )}
         </div>
     );
