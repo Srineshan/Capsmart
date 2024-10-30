@@ -10,11 +10,12 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 import ValidationDialog from '../../../Components/validationDialog';
-
+import JourneyStep6 from './../../../images/journeyStep6.png';
 import style from './index.module.scss';
 import WelcomeCard from '../../../Components/WelcomeCard';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
 import { format } from 'date-fns';
+import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
 
 const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
@@ -31,6 +32,7 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [navigateURL, setNavigateURL] = useState();
     const [yesOrNo, setYesOrNo] = useState('');
     const [updatedDate, setUpdatedDate] = useState('');
+    const [showJourneyDialog, setShowJourneyDialog] = useState(false);
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
@@ -67,6 +69,10 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
             tempLabels.push(data);
         }
         setLabels(tempLabels);
+    }
+
+    const getIsShowReappointmentJourneyDialog = (value) => {
+        setShowJourneyDialog(value);
     }
 
     const getIsSaveInProgressOpen = (value) => {
@@ -206,7 +212,7 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
                     <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div>
                     </div>
                     {/* <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
@@ -220,6 +226,9 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
             }
             {showValidationDialog && (
                 <ValidationDialog getIsOpen={getIsValidationDialogOpen} labelList={warningFields} getSkipClicked={getSkipClicked} />
+            )}
+            {showJourneyDialog && (
+                <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Almost There! Don't Give Up Now`} img={JourneyStep6} formIndex={formIndex} basicForm={basicForm} continueClick={getMissingFields} />
             )}
         </div>
     )

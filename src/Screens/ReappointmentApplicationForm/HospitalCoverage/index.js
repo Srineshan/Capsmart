@@ -10,12 +10,13 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 import ValidationDialog from '../../../Components/validationDialog';
-
+import JourneyStep9 from './../../../images/journeyStep9.png';
 import style from './index.module.scss';
 import WelcomeCard from '../../../Components/WelcomeCard';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
 import CommonTextField from '../../../Components/CommonFields/CommonTextField';
 import { TextArea } from '@blueprintjs/core';
+import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
 
 const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
@@ -32,6 +33,7 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [navigateURL, setNavigateURL] = useState();
     const [whoCovers, setWhoCovers] = useState('');
     const [whoCoversObstetrics, setWhoCoversObstetrics] = useState('');
+    const [showJourneyDialog, setShowJourneyDialog] = useState(false);
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
@@ -72,6 +74,10 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
 
     const getIsSaveInProgressOpen = (value) => {
         setIsSaveInProgressOpen(value);
+    }
+
+    const getIsShowReappointmentJourneyDialog = (value) => {
+        setShowJourneyDialog(value);
     }
 
     const getFormSchema = async () => {
@@ -198,7 +204,7 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
                     <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div>
                     </div>
                     {/* <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
@@ -212,6 +218,9 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
             }
             {showValidationDialog && (
                 <ValidationDialog getIsOpen={getIsValidationDialogOpen} labelList={warningFields} getSkipClicked={getSkipClicked} />
+            )}
+            {showJourneyDialog && (
+                <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`One Last Push! You Can Do It.`} img={JourneyStep9} formIndex={formIndex} basicForm={basicForm} continueClick={getMissingFields} />
             )}
         </div>
     )

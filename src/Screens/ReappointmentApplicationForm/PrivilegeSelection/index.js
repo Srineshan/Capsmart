@@ -23,6 +23,7 @@ import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 import DatalistInput, { useComboboxControls } from "react-datalist-input";
 import CryptoJS from 'crypto-js';
 import style from './index.module.scss';
+import JourneyStep2 from './../../../images/journeyStep2.png';
 import DeleteIcon from './../../../images/deleteHcRow.png';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
@@ -34,6 +35,7 @@ import ESignature from '../../../Components/ESignature';
 import CommonRadio from '../../../Components/CommonFields/CommonRadio';
 import AlertDialog from '../../../Components/AlertDialog';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
+import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
 
 const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [isSigned, setIsSigned] = useState(false);
@@ -68,7 +70,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formIndex, setFormIndex] = useState();
     const [navigateURL, setNavigateURL] = useState();
     const [showPrivileges, setShowPrivileges] = useState(false);
+    const [isEdit, setIsEdit] = useState(false);
     const [selectedPrivilegesForDisplayMultiple, setSelectedPrivilegesForDisplayMultiple] = useState([]);
+    const [showJourneyDialog, setShowJourneyDialog] = useState(false);
     useEffect(() => {
         getApplication();
         getPrivilegeCategory();
@@ -162,6 +166,10 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
             `entity-service/department`
         );
         setDepartmentList(department);
+    }
+
+    const getIsShowReappointmentJourneyDialog = (value) => {
+        setShowJourneyDialog(value);
     }
 
     const startsWithVowel = (str) => /^[aeiouAEIOU]/.test(str);
@@ -695,22 +703,40 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                             Do you to want to keep your current privilege Category?
                         </div>
                         {!isPrivilegeCategoryChanging && (
-                            <div
-                                className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
-                            >
-                                <div
-                                    className={`${style.reappointmentButtonOutlined}`}
-                                    onClick={() => setIsPrivilegeCategoryChanging(false)}
-                                >
-                                    Yes
-                                </div>
-                                <div
-                                    className={`${style.reappointmentButton} ${style.marginLeft}`}
-                                    onClick={() => setIsPrivilegeCategoryChanging(true)}
-                                >
-                                    NO
-                                </div>
-                            </div>
+                            <>
+                                {isEdit ? (
+                                    <div
+                                        className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
+                                    >
+                                        <div
+                                            className={`${style.reappointmentButtonOutlined}`}
+                                            onClick={() => setIsEdit(false)}
+                                        >
+                                            Yes
+                                        </div>
+                                        <div
+                                            className={`${style.reappointmentButton} ${style.marginLeft}`}
+                                            onClick={() => setIsPrivilegeCategoryChanging(true)}
+                                        >
+                                            NO
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div className={`${style.markedAsText} ${style.marginTop}`}><strong>Marked as Yes</strong> </div>
+                                        <div
+                                            className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
+                                        >
+                                            <div
+                                                className={`${style.reappointmentButtonEdit}`}
+                                                onClick={() => setIsEdit(true)}
+                                            >
+                                                Edit
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+                            </>
                         )}
                         {isPrivilegeCategoryChanging && (
                             <div className={`${style.privilegeCard} ${style.marginTop}`}>
@@ -1015,7 +1041,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                     <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div>
                     </div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
@@ -1050,6 +1076,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                     </div>
                 </div>
             </Dialog>
+            {showJourneyDialog && (
+                <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Leveling Up! Keep Up The Good Work.`} img={JourneyStep2} formIndex={formIndex} basicForm={basicForm} continueClick={handleContinue} />
+            )}
             {isAlertOpen && <AlertDialog isOpen={isAlertOpen} getIsOpen={getIsAlertOpen} title={'Are you sure?'} description={'Do you want to really change the privilege set?'} />}
             {isOpen && <AdditionalPrivilegesDialog getIsOpen={getIsOpen} primaryPrivilege={selectedPrivilege} getSelectedPrivilegeList={getSelectedPrivilegeList} basicForm={basicForm} selectedAdditionalPrivilegeForEdit={selectedAdditionalPrivilegeForEdit} applicationId={applicationId} />}
         </div >
