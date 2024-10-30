@@ -15,9 +15,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import PdfDoc from './../../../images/pdfDoc.png';
 import WordDoc from './../../../images/wordDoc.png';
 import ImgDoc from './../../../images/imgDoc.png';
+import JourneyStep1 from './../../../images/journeyStep1.png';
 import { Dialog, Classes } from '@blueprintjs/core';
 import CrossPink from "./../../../images/crossPink.png";
-import FileLoading from './../../../images/fileLoading.GIF';
+import FileLoading from './../../../images/fileLoading.gif';
 import DeleteIcon from './../../../images/deleteHcRow.png';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
@@ -34,6 +35,7 @@ import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import { getValueByPath } from '../../../utils/formatting';
 import FileDisplayDialog from '../../../Components/fileDisplayDialog';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
+import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
 
 const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplication }) => {
     const { section, step } = useParams()
@@ -56,6 +58,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     let tempValue = basicForm?.forms?.[formIndex]?.data === null ? { setUpYourSignature: {}, table: [] } : basicForm?.forms?.[formIndex]?.data;
     const navigate = useNavigate()
     const [navigateURL, setNavigateURL] = useState();
+    const [showJourneyDialog, setShowJourneyDialog] = useState(false);
     useEffect(() => {
         if (basicForm) {
             getFormSchema()
@@ -83,6 +86,10 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
 
     const getIsShowFileDialog = (value) => {
         setShowFileDisplayDialog(value);
+    }
+
+    const getIsShowReappointmentJourneyDialog = (value) => {
+        setShowJourneyDialog(value);
     }
 
     const handleFileUpload = async (e, id) => {
@@ -671,7 +678,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                 //         getMissingDocs()?.length !== 0)
                                 //     ? () => { }
                                 //     : 
-                                () => handleContinue()
+                                () => setShowJourneyDialog(true)
                             }
                         >
                             CONTINUE
@@ -710,6 +717,9 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                     getIsOpen={getIsShowFileDialog}
                     file={selectedFile}
                 />
+            )}
+            {showJourneyDialog && (
+                <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`You've Started Your Reappointment Journey. Let's See How Long It Takes You!`} img={JourneyStep1} formIndex={formIndex} basicForm={basicForm} continueClick={handleContinue} />
             )}
             <Dialog
                 isOpen={isShowUploadValidation}

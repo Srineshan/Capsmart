@@ -10,10 +10,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 import ValidationDialog from '../../../Components/validationDialog';
-
+import JourneyStep3 from './../../../images/journeyStep3.png';
 import style from './index.module.scss';
 import WelcomeCard from '../../../Components/WelcomeCard';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
+import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
 
 const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
@@ -28,6 +29,7 @@ const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formIndex, setFormIndex] = useState();
     const { applicationId, section, step } = useParams();
     const [navigateURL, setNavigateURL] = useState();
+    const [showJourneyDialog, setShowJourneyDialog] = useState(false);
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
@@ -76,6 +78,10 @@ const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
             setFormSchema(form?.schema)
             setFormSchemaWholeObject(form)
         }
+    }
+
+    const getIsShowReappointmentJourneyDialog = (value) => {
+        setShowJourneyDialog(value);
     }
 
     const getSkipClicked = (value) => {
@@ -176,7 +182,7 @@ const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                     <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div>
                     </div>
                     {/* <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
@@ -190,6 +196,9 @@ const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
             }
             {showValidationDialog && (
                 <ValidationDialog getIsOpen={getIsValidationDialogOpen} labelList={warningFields} getSkipClicked={getSkipClicked} />
+            )}
+            {showJourneyDialog && (
+                <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Great Job So Far! You're On The Right Track.`} img={JourneyStep3} formIndex={formIndex} basicForm={basicForm} continueClick={getMissingFields} />
             )}
         </div>
     )

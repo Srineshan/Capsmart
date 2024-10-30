@@ -3,6 +3,7 @@ import ApplicationUserCard from '../../../Components/ApplicationUserCard';
 import ApplicationAssistanceCard from '../../../Components/ApplicationAssistanceCard';
 import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import logo from "../../../images/cambridgeHospital.png";
+import JourneyStep10 from './../../../images/journeyStep10.png';
 import { GET, PUT, POST } from '../../dataSaver';
 import { useNavigate, useParams } from 'react-router-dom';
 import html2pdf from "html2pdf.js";
@@ -14,6 +15,7 @@ import { format } from 'date-fns';
 import { SuccessToaster, ErrorToaster } from '../../../utils/toaster';
 import ESignature from '../../../Components/ESignature';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
+import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
 
 const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApplication }) => {
     const [isChecked, setIsChecked] = useState(false);
@@ -31,6 +33,7 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
     const [signText, setSignText] = useState(name + " " + currentDate);
     const [formIndex, setFormIndex] = useState();
     const { applicationId, section, step } = useParams();
+    const [showJourneyDialog, setShowJourneyDialog] = useState(false);
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
@@ -64,6 +67,10 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
             `application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}/render`
         );
         setFormContent(content)
+    }
+
+    const getIsShowReappointmentJourneyDialog = (value) => {
+        setShowJourneyDialog(value);
     }
 
     const addNewDocument = async (file) => {
@@ -228,9 +235,12 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
                     <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleDownload()}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()} >CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)} >CONTINUE</div>
                     </div>
                 </div>
+                {showJourneyDialog && (
+                    <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Mission Accomplished! You're A Champion`} img={JourneyStep10} formIndex={formIndex} basicForm={basicForm} continueClick={handleSubmitApplicationReq} />
+                )}
             </div>
         </div>
     )

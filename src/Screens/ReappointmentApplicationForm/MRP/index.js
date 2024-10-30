@@ -11,10 +11,11 @@ import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 import ValidationDialog from '../../../Components/validationDialog';
 import { format } from 'date-fns';
-
+import JourneyStep8 from './../../../images/journeyStep8.png';
 import style from './index.module.scss';
 import WelcomeCard from '../../../Components/WelcomeCard';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
+import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
 
 const MRP = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
@@ -31,6 +32,7 @@ const MRP = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [navigateURL, setNavigateURL] = useState();
     const [yesOrNo, setYesOrNo] = useState('');
     const [updatedDate, setUpdatedDate] = useState('');
+    const [showJourneyDialog, setShowJourneyDialog] = useState(false);
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
@@ -67,6 +69,10 @@ const MRP = ({ basicForm, setBasicForm, getPreApplication }) => {
             tempLabels.push(data);
         }
         setLabels(tempLabels);
+    }
+
+    const getIsShowReappointmentJourneyDialog = (value) => {
+        setShowJourneyDialog(value);
     }
 
     const getIsSaveInProgressOpen = (value) => {
@@ -206,7 +212,7 @@ const MRP = ({ basicForm, setBasicForm, getPreApplication }) => {
                     <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div>
                     </div>
                     {/* <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
@@ -220,6 +226,9 @@ const MRP = ({ basicForm, setBasicForm, getPreApplication }) => {
             }
             {showValidationDialog && (
                 <ValidationDialog getIsOpen={getIsValidationDialogOpen} labelList={warningFields} getSkipClicked={getSkipClicked} />
+            )}
+            {showJourneyDialog && (
+                <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`You're Almost At The Finish Line. Keep Going!`} img={JourneyStep8} formIndex={formIndex} basicForm={basicForm} continueClick={getMissingFields} />
             )}
         </div>
     )

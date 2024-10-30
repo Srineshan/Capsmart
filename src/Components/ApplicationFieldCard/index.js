@@ -15,7 +15,7 @@ import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import CheckIcon from '@mui/icons-material/Check';
 import VerifiedImage from "../../images/verifiedImage.png";
 import ToBeVerifiedImage from "../../images/toBeVerifiedImage.png";
-import FileLoading from '../../images/fileLoading.GIF';
+import FileLoading from '../../images/fileLoading.gif';
 import DeleteIcon from '../../images/deleteHcRow.png';
 import style from './index.module.scss';
 import CommonCheckBox from '../CommonFields/CommonCheckBox';
