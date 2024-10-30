@@ -594,9 +594,9 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
               >
                 <div
                   className={`${style.uploadBorderStyle} ${basicForm?.forms?.[0]?.data !== null &&
-                      showRedBorderForESign
-                      ? style.redBorder
-                      : ""
+                    showRedBorderForESign
+                    ? style.redBorder
+                    : ""
                     }`}
                 >
                   <p className={style.uploadTextStyle}>
@@ -628,9 +628,9 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
           </div>
           <div
             className={`${style.saveInProgress} ${style.marginTop10} ${basicForm?.forms?.[0]?.data !== null &&
-                getMissingDocs()?.length === 0
-                ? style.disabledButton
-                : ""
+              getMissingDocs()?.length === 0
+              ? style.disabledButton
+              : ""
               }`}
             onClick={
               basicForm?.forms?.[0]?.data !== null &&
@@ -650,11 +650,11 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
             </div>
             <div
               className={`${style.continue} ${style.marginTop10} ${(basicForm?.forms?.[0]?.data !== null &&
-                  showRedBorderForESign) ||
-                  (basicForm?.forms?.[0]?.data !== null &&
-                    getMissingDocs()?.length !== 0)
-                  ? style.disabledButton
-                  : ""
+                showRedBorderForESign) ||
+                (basicForm?.forms?.[0]?.data !== null &&
+                  getMissingDocs()?.length !== 0)
+                ? style.disabledButton
+                : ""
                 }`}
               onClick={
                 (basicForm?.forms?.[0]?.data !== null &&
