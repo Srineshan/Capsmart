@@ -1319,9 +1319,9 @@ const StaffApplicationList = ({
     //   onClick: "",
     // },
     {
-      data: "Applicant Processing Tasks",
+      data: "Move To Cred Comm for Review",
       requiredValue: "boolean",
-      onClick: onClickProcessingTaskFunction,
+      onClick: onClickMoveToNextFunction,
       //  onClick: onClickViewAndVerifyFunction,
     },
     {
@@ -1419,8 +1419,8 @@ const StaffApplicationList = ({
     //   requiredValue: "boolean",
     //   onClick: "",
     // },
-    // { data: "BOD Approval Status", requiredValue: "boolean", onClick: onClickMoveToNextFunction },
-    { data: "BOD Approval Status", requiredValue: "boolean", onClick: "" },
+    { data: "BOD Approval Status", requiredValue: "boolean", onClick: onClickMoveToNextFunction },
+    // { data: "BOD Approval Status", requiredValue: "boolean", onClick: "" },
     { data: "Print Summary For BOD", requiredValue: "boolean", onClick: "" },
     { data: "Applicant Processing Tasks", requiredValue: "boolean", onClick: "" },
   ];
