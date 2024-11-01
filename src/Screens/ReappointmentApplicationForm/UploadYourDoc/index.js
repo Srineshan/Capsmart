@@ -395,7 +395,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     console.log(showRedBorderForESign, eSignInitial, eSignTitle)
 
     const handleContinue = async (skip) => {
-        if (tempValue?.table?.filter(data => data?.documentType === "")?.length !== 0) {
+        if (tempValue?.table?.filter(data => data?.documentType === "")?.length !== 0 && tempValue?.table !== undefined) {
             ErrorToaster('Please select the missing document type for the uploaded documents')
         }
         else {
