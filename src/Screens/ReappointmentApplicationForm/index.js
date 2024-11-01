@@ -17,6 +17,7 @@ import HospitalCoverage from './HospitalCoverage';
 import MRP from './MRP';
 import PrescribeSuboxone from './PrescribeSuboxone';
 import ApplicantAcknowledgement from './ApplicantAcknowledgement';
+import AdditionalPrivilegeSelection from './AdditionalPrivilegeSelection';
 
 const ReappointmentApplicationForm = () => {
     let cookie = new Cookie();
@@ -67,6 +68,8 @@ const ReappointmentApplicationForm = () => {
                 return <DemographicData basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'PrivilegeSelection':
                 return <PrivilegeSelection basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+            case 'AdditionalPrivilegeSelection':
+                return <AdditionalPrivilegeSelection basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'ProfessionalConduct':
                 return <ProfessionalConduct basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'MedicalHistory':

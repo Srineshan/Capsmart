@@ -36,6 +36,7 @@ import { getValueByPath } from '../../../utils/formatting';
 import FileDisplayDialog from '../../../Components/fileDisplayDialog';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
 import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
+import ESignConfirmationDialog from '../../../Components/ESignConfirmation';
 
 const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplication }) => {
     const { section, step } = useParams()
@@ -43,7 +44,9 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     const fileInputRef = useRef(null);
     const [isEdited, setIsEdited] = useState(false);
     const [openCategoryIndex, setOpenCategoryIndex] = useState(-1);
+    const [applicantProfile, setApplicantProfile] = useState();
     const [isShowESignDialog, setIsShowESignDialog] = useState(false);
+    const [isShowESignConfirmationDialog, setIsShowESignConfirmationDialog] = useState(false);
     const [files, setFiles] = useState([]);
     const [isCollapsableCard, setIsCollapsableCard] = useState(true);
     const [replaceFileIndex, setReplaceFileIndex] = useState(-1);
@@ -72,6 +75,17 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
         setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
     }, [basicForm, step])
 
+    useEffect(() => {
+        getApplicantProfile()
+    }, [applicationId])
+
+    const getApplicantProfile = async () => {
+        const { data: profile } = await GET(
+            `application-management-service/application/${applicationId}/profile`
+        );
+        setApplicantProfile(profile)
+    }
+
 
     const getFormSchema = async () => {
         const { data: form } = await GET(
@@ -82,6 +96,30 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
 
     const getIsOpen = (value) => {
         setIsShowESignDialog(value);
+    }
+
+    const getIsOpenESignConfirmation = (value) => {
+        setIsShowESignConfirmationDialog(value);
+    }
+
+    const updateFunc = () => {
+        setIsShowESignDialog(true);
+    }
+
+    const confirmESign = async () => {
+        let data = applicantProfile;
+        data.signature.updated = true
+        console.log(data)
+        await PUT(`application-management-service/application/${applicationId}/profile`, data)
+            .then(response => {
+                console.log(response)
+                SuccessToaster("Staff Member Application Updated Successfully");
+                getPreApplication();
+            })
+            .catch((error) => {
+                console.log(error)
+                ErrorToaster("Unexpected Error Updating Staff Member Application");
+            });
     }
 
     const getIsShowFileDialog = (value) => {
@@ -589,8 +627,8 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                             onChange={handleFileChange}
                             style={{ display: "none" }} // Hide the actual file input
                         />
-                        {basicForm?.forms?.[formIndex]?.data !== null &&
-                            !showRedBorderForESign ? (
+                        {((basicForm?.forms?.[formIndex]?.data !== null &&
+                            !showRedBorderForESign) || basicForm?.applicant?.signature?.updated) ? (
                             <div
                                 className={`${style.setupCompleteCard} ${style.setupCompleteGrid} ${style.cursorPointer} ${style.marginTop}`}
                                 onClick={() => setIsShowESignDialog(true)}
@@ -611,7 +649,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         ) : (
                             <div
                                 className={style.marginTop}
-                                onClick={() => setIsShowESignDialog(true)}
+                                onClick={() => setIsShowESignConfirmationDialog(true)}
                             >
                                 <div
                                     className={`${style.uploadBorderStyle} ${basicForm?.forms?.[formIndex]?.data !== null &&
@@ -697,6 +735,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                     applicationId={applicationId}
                     basicForm={basicForm}
                     setBasicForm={setBasicForm}
+                    getPreApplication={getPreApplication}
                 >
                     {formSchema !== undefined &&
                         "setUpYourSignature" in formSchema?.properties && (
@@ -711,6 +750,18 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                             />
                         )}
                 </ESignDialog>
+            )}
+            {isShowESignConfirmationDialog && (
+                <ESignConfirmationDialog
+                    getIsOpen={getIsOpenESignConfirmation}
+                    tempValue={tempValue}
+                    baseKey={"setUpYourSignature"}
+                    applicationId={applicationId}
+                    basicForm={basicForm}
+                    setBasicForm={setBasicForm}
+                    updateFunc={updateFunc}
+                    confirmFunc={confirmESign}
+                />
             )}
             {showFileDisplayDialog && (
                 <FileDisplayDialog
