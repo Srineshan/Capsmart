@@ -22,12 +22,31 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
     let eSignTypeContentStyle = getValueByPath(basicForm, 'forms[0].data.setUpYourSignature.type.style');
     const [selectedESignTypeStyle, setSelectedESignTypeStyle] = useState(eSignTypeContentStyle !== undefined ? eSignTypeContentStyle : 'calgary-script-ot');
     const [eSignType, setESignType] = useState(eSignTypeContent !== undefined ? eSignTypeContent : '');
+    const [signatureData, setSignatureData] = useState(null);
+    
+
     console.log(eSignTypeContent, eSignType)
     const clearSignature = () => {
         if (isShowDrawCanvas) {
             sigCanvas.current.clear();
         }
     };
+   
+
+      const handleSignatureEnd = () => {
+
+        const dataURL = sigCanvas.current.getTrimmedCanvas().toDataURL('image/png');
+        console.log("aaaaa",dataURL);
+        
+        setSignatureData(dataURL); // Store the signature data in state
+    };
+
+  useEffect(() => {
+      if (signatureData && sigCanvas.current && selectedESignFormat === 'DRAW') {
+             sigCanvas.current.clear();
+            sigCanvas.current.fromDataURL(signatureData); // Update canvas with stored signature data
+        }
+    }, [ selectedESignFormat]);
 
     useEffect(() => {
         if (contentRef.current && contentRef.current.innerHTML !== eSignType && eSignType !== null) {
@@ -184,7 +203,8 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                                         // width: 500,
                                         // height: 200,
                                         className: style.signatureCanvas
-                                    }}
+                                            }}
+                                            onEnd={handleSignatureEnd}
                                 />
 
                             )}

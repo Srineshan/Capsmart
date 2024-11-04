@@ -327,7 +327,8 @@ const ApplicationFieldCard = ({
         traverse(obj);
         return result;
     };
-
+     let isprivilegeReferences = getValueByPath(basicForm,isTableEdit? "undefined.privilegeReferences.address.pinCode": "privilegeReferences.address.pinCode" );
+  let isreferences = getValueByPath(basicForm,isTableEdit ? "undefined.references.address.pinCode" : "references.address.pinCode");
     let isMailingAddressSameAsHomeAddress = getValueByPath(basicForm, 'forms[1].data.contactAddress2.isMailingAddressSameAsHomeAddress');
     let isBusinessAddressSameAsHomeAddressOrMailingAddress = getValueByPath(basicForm, 'forms[1].data.contactAddress3.isBusinessAddressSameAsHomeAddressOrMailingAddress');
     let isHomeAddressPincodeEntered = getValueByPath(basicForm, 'forms[1].data.contactAddress1.homeAddress.pinCode');
@@ -335,7 +336,99 @@ const ApplicationFieldCard = ({
     let isBusinessAddressPincodeEntered = getValueByPath(basicForm, 'forms[1].data.contactAddress3.business.businessAddress.pinCode');
     let registeredBusinessAddress = getValueByPath(basicForm, 'forms[1].data.contactAddress3.registeredBusinessAddress');
     let department = getValueByPath(basicForm, 'basicDetails.departmentSpecialty.department');
-    console.log(isMailingAddressSameAsHomeAddress, isBusinessAddressSameAsHomeAddressOrMailingAddress)
+  console.log(isMailingAddressSameAsHomeAddress, isBusinessAddressSameAsHomeAddressOrMailingAddress)
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `https://geocoder.ca/${isprivilegeReferences}?json=1`
+        );
+
+        let data = response.data;
+        // console.log(data);
+        setBasicForm((prevData) => {
+          let tempContactAddress = { ...prevData };
+          tempContactAddress.privilegeReferences.address.city =
+            data?.standard?.city || "";
+          tempContactAddress.privilegeReferences.address.state =
+            data?.standard?.prov || "";
+          tempContactAddress.undefined.privilegeReferences.address.city =
+            data?.standard?.city || "";
+          tempContactAddress.undefined.privilegeReferences.address.state =
+            data?.standard?.prov || "";
+          return tempContactAddress;
+        });
+      } catch (error) {
+        // console.log("Error fetching data");
+      }
+    };
+
+    if (
+      isprivilegeReferences !== undefined &&
+      isprivilegeReferences !== null &&
+      isprivilegeReferences?.length >= 7 &&
+      !isPOD
+    ) {
+      console.log(
+        "canada pincode ",
+        validateCanadianPostalCode(isprivilegeReferences),
+        isprivilegeReferences
+      );
+
+      if (validateCanadianPostalCode(isprivilegeReferences)) {
+        fetchData();
+      } else {
+        setBasicForm((prevData) => {
+          let tempContactAddress = { ...prevData };
+          tempContactAddress.privilegeReferences.address.pinCode = "";
+
+          return tempContactAddress;
+        });
+      }
+    }
+  }, [isprivilegeReferences]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `https://geocoder.ca/${isreferences}?json=1`
+        );
+        let data = response.data;
+        console.log(data);
+        setBasicForm((prevData) => {
+          let tempContactAddress1 = { ...prevData };
+          tempContactAddress1.references.address.city =
+            data?.standard?.city || "";
+          tempContactAddress1.references.address.state =
+            data?.standard?.prov || "";
+          tempContactAddress1.undefined.references.address.city =
+            data?.standard?.city || "";
+          tempContactAddress1.undefined.references.address.state =
+            data?.standard?.prov || "";
+          return tempContactAddress1;
+        });
+      } catch (error) {
+        // console.log("Error fetching data");
+      }
+    };
+    if (
+      isreferences !== undefined &&
+      isreferences !== null &&
+      isreferences?.length >= 7 &&
+      !isPOD
+    ) {
+      if (validateCanadianPostalCode(isreferences)) {
+        fetchData();
+      } else {
+        setBasicForm((prevData) => {
+          let tempContactAddress1 = { ...prevData };
+          tempContactAddress1.references.address.pinCode = "";
+          return tempContactAddress1;
+        });
+      }
+    }
+  }, [isreferences]);
     useEffect(() => {
         if (isMailingAddressSameAsHomeAddress !== undefined && isMailingAddressSameAsHomeAddress !== null && !isPOD) {
             setBasicForm(prevData => {
@@ -2272,3 +2365,4 @@ const ApplicationFieldCard = ({
 };
 
 export default ApplicationFieldCard;
+
