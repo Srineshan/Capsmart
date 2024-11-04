@@ -13,37 +13,39 @@ import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import style from './index.module.scss'
-import Step1 from './Step1';
+import BasicInformation from './BasicInformation';
 import { useParams } from 'react-router-dom';
-import Step2 from './Step2';
-import Step3 from './Step3';
-import Step4 from './Step4';
-import Step5 from './Step5';
-import Step6 from './Step6';
-import Step7 from './Step7';
-import Step8 from './Step8';
+import UploadYourDoc from './UploadYourDoc';
+import ContactAddress from './ContactAddress';
+import Qualification from './Qualification';
+import MalpracticeInfo from './MalpracticeInfo';
+import Education from './Education';
+import WorkExperience from './WorkExperience';
+import PrivilegeSelection from './PrivilegeSelection';
 import Step9 from './Step9';
-import Step10 from './Step10';
-import Step11 from './Step11';
-import Step12 from './Step12';
-import Step13 from './Step13';
+import References from './References';
+import ProfessionalConduct from './ProfessionalConduct';
+import CriminalHistory from './CriminalHistory';
+import MedicalHistory from './MedicalHistory';
 import Step14 from './Step14';
-import Step15 from './Step15';
-import ApplicationAcknowledgementStep1 from './AcknowledgementStep1';
-import ApplicationAcknowledgementStep2 from './AcknowledgementStep2';
-import ApplicationAcknowledgementStep3 from './AcknowledgementStep3';
-import ApplicationAcknowledgementStep4 from './AcknowledgementStep4';
-import ApplicationAcknowledgementStep8 from './AcknowledgementStep8';
-import ApplicationAcknowledgementStep7 from './AcknowledgementStep7';
-import ApplicationAcknowledgementStep6 from './AcknowledgementStep6';
-import ApplicationAcknowledgementStep5 from './AcknowledgementStep5';
+import Immunization from './Immunization';
+import ApplicantAcknowledgement from './ApplicantAcknowledgement';
+import ScheduleA from './ScheduleA';
+import ScheduleB from './ScheduleB';
+import CodeOfConduct from './CodeOfConduct';
+import OffenceDeclaration from './OffenceDeclaration';
+import ConflictOfInterest from './ConflictOfInterest';
+import ConfidentialityAgreement from './ConfidentialityAgreement';
+import PoliceVulnerableCheck from './PoliceVulnerableCheck';
 import ApplicationAcknowledgementStep9 from './AcknowledgementStep9';
 import ApplicationAcknowledgementStep10 from './AcknowledgementStep10';
 import ApplicationAcknowledgementStep11 from './AcknowledgementStep11';
-import ApplicationAcknowledgementStep12 from './AcknowledgementStep12';
+import DisabilitiesAct from './DisabilitiesAct';
 import PACSAdminStep1 from './PACSAdminStep1';
 import PACSAdminStep6 from './PACSAdminStep6';
 import LoginDialog from '../../Components/LoginDialog';
+import PODCheck from './PODCheck';
+import AcknowledgementCheck from './AcknowledgementCheck';
 import { logout } from '../../utils/auth';
 
 
@@ -104,60 +106,60 @@ const ApplicationForm = () => {
 
     const StepDisplay = () => {
         switch (step) {
-            case 'step1':
-                return <Step1 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
-            case 'step2':
-                return <Step2 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
-            case 'step3':
-                return <Step3 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
-            case 'step4':
-                return <Step4 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
-            case 'step5':
-                return <Step5 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
-            case 'step6':
-                return <Step6 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
-            case 'step7':
-                return <Step7 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
-            case 'step8':
-                return <Step8 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+            case 'BasicInformation':
+                return <BasicInformation basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+            case 'UploadYourDoc':
+                return <UploadYourDoc basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+            case 'ContactAddress':
+                return <ContactAddress basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+            case 'Qualification':
+                return <Qualification basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+            case 'MalpracticeInfo':
+                return <MalpracticeInfo basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+            case 'Education':
+                return <Education basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+            case 'WorkExperience':
+                return <WorkExperience basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+            case 'PrivilegeSelection':
+                return <PrivilegeSelection basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'step9':
-                return <Step9 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
-            case 'step10':
-                return <Step10 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
-            case 'step11':
-                return <Step11 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
-            case 'step12':
-                return <Step12 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
-            case 'step13':
-                return <Step13 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+                return <Step9 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+            case 'References':
+                return <References basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+            case 'ProfessionalConduct':
+                return <ProfessionalConduct basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+            case 'CriminalHistory':
+                return <CriminalHistory basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+            case 'MedicalHistory':
+                return <MedicalHistory basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'step14':
-                return <Step14 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
-            case 'step15':
-                return <Step15 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
-            case 'acknowledgementStep1':
-                return <ApplicationAcknowledgementStep1 acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
-            case 'acknowledgementStep2':
-                return <ApplicationAcknowledgementStep2 acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
-            case 'acknowledgementStep3':
-                return <ApplicationAcknowledgementStep3 acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
-            case 'acknowledgementStep4':
-                return <ApplicationAcknowledgementStep4 acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
-            case 'acknowledgementStep5':
-                return <ApplicationAcknowledgementStep5 acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
-            case 'acknowledgementStep6':
-                return <ApplicationAcknowledgementStep6 acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
-            case 'acknowledgementStep7':
-                return <ApplicationAcknowledgementStep7 acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
-            case 'acknowledgementStep8':
-                return <ApplicationAcknowledgementStep8 acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
+                return <Step14 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+            case 'Immunization':
+                return <Immunization basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+            case 'ApplicantAcknowledgement':
+                return <ApplicantAcknowledgement acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
+            case 'ScheduleA':
+                return <ScheduleA acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
+            case 'ScheduleB':
+                return <ScheduleB acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
+            case 'CodeOfConduct':
+                return <CodeOfConduct acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
+            case 'PoliceVulnerableCheck':
+                return <PoliceVulnerableCheck acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
+            case 'ConfidentialityAgreement':
+                return <ConfidentialityAgreement acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
+            case 'ConflictOfInterest':
+                return <ConflictOfInterest acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
+            case 'OffenceDeclaration':
+                return <OffenceDeclaration acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
             case 'acknowledgementStep9':
                 return <ApplicationAcknowledgementStep9 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'acknowledgementStep10':
                 return <ApplicationAcknowledgementStep10 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'acknowledgementStep11':
                 return <ApplicationAcknowledgementStep11 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
-            case 'acknowledgementStep12':
-                return <ApplicationAcknowledgementStep12 acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
+            case 'DisabilitiesAct':
+                return <DisabilitiesAct acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
             case 'pacsAdminStep1':
                 return <PACSAdminStep1 />;
             // case 'pacsAdminStep2':
@@ -170,6 +172,10 @@ const ApplicationForm = () => {
             //     return <PACSAdminStep5 />;
             case 'pacsAdminStep6':
                 return <PACSAdminStep6 />;
+            case 'PODCheck':
+                return <PODCheck basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
+            case 'AcknowledgementCheck':
+                return <AcknowledgementCheck basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             default:
                 return <div>Step not found</div>;
         }

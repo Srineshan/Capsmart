@@ -35,7 +35,7 @@ const SendEmailFromStaffManagerConfirmationDialog = ({ getIsOpen, basicForm }) =
                                 className={`${style.mailEnvelopeStyle} ${style.marginTop10}`}
                             />
                         </div>
-                        <p className={`${style.emailSentText} ${style.marginTop}`}>{`Email Notification has been sent successfully to ${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName}`}</p>
+                        <p className={`${style.emailSentText} ${style.marginTop}`}>{`Email notification has been sent successfully to ${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName}`}</p>
                     </div>
 
                     <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>

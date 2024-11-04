@@ -49,13 +49,15 @@ const PdfViewer = ({ pdfurl, name, currentDate, initialArray, setInitialArray, i
         <div>
             {loading ? (
                 <p>Loading PDF...</p>
-            ) : error ? (
-                <p>Error: {error} Try refreshing your browser</p>
-            ) : (
-                pages.map((page, index) => (
-                    <PdfPage key={index} page={page} index={index} totalPages={pages.length} name={name} currentDate={currentDate} initialArray={initialArray} setInitialArray={setInitialArray} isSigned={isSigned} setIsSigned={setIsSigned} formData={formData} />
-                ))
-            )}
+            )
+                // : error ? (
+                //     <p>Error: {error} Try refreshing your browser</p>
+                // ) 
+                : (
+                    pages.map((page, index) => (
+                        <PdfPage key={index} page={page} index={index} totalPages={pages.length} name={name} currentDate={currentDate} initialArray={initialArray} setInitialArray={setInitialArray} isSigned={isSigned} setIsSigned={setIsSigned} formData={formData} />
+                    ))
+                )}
         </div>
     );
 };
