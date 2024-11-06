@@ -930,7 +930,7 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
           <p className={`${style.poweredBy} ${style.marginTop10}`}>Powered by</p>
           <img src={CapSmartTransparent} alt="footer" className={`${style.footerIconStyle} ${style.marginLeft10}`} />
         </div>
-        <p className={style.poweredBy}>© {new Date().getFullYear()} CAPSmart</p>
+        <p className={style.poweredBy}>© {new Date().getFullYear()} Hapicare</p>
       </div>
 
     </div >
