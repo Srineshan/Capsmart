@@ -3,19 +3,20 @@ import { Dialog, Classes, Icon, Intent, EditableText } from '@blueprintjs/core';
 import CrossPink from "../../images/crossPink.png";
 import Pencil from "../../images/pencil.png";
 import SignatureCanvas from 'react-signature-canvas';
-import { POST, PUT } from '../../Screens/dataSaver';
+import { POST, PUT, GET } from '../../Screens/dataSaver';
 import { ErrorToaster, SuccessToaster } from '../../utils/toaster';
 import style from './index.module.scss'
 import CommonSelectField from '../CommonFields/CommonSelectField';
 import { getValueByPath } from '../../utils/formatting';
 
-const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, basicForm, setBasicForm }) => {
+const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, basicForm, setBasicForm, getPreApplication }) => {
     const [isContinue, setIsContinue] = useState(false);
     const [selectedESignFormat, setSelectedESignFormat] = useState('DRAW');
     const [isShowDrawCanvas, setIsShowDrawCanvas] = useState(false);
     const [isShowType, setIsShowType] = useState(false);
     const sigCanvas = useRef({});
     const contentRef = useRef(null);
+    const [applicantProfile, setApplicantProfile] = useState();
     let eSignImg = getValueByPath(basicForm, 'forms[0].data.setUpYourSignature.file');
     let eSignTypeContent = getValueByPath(basicForm, 'forms[0].data.setUpYourSignature.type.text');
     let eSignTypeContentStyle = getValueByPath(basicForm, 'forms[0].data.setUpYourSignature.type.style');
@@ -33,6 +34,17 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
             contentRef.current.innerHTML = eSignType;
         }
     }, [eSignType, selectedESignFormat]);
+
+    useEffect(() => {
+        getApplicantProfile()
+    }, [applicationId])
+
+    const getApplicantProfile = async () => {
+        const { data: profile } = await GET(
+            `application-management-service/application/${applicationId}/profile`
+        );
+        setApplicantProfile(profile)
+    }
 
     // useEffect(() => {
     //     console.log(tempValue)
@@ -92,6 +104,15 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
             temp[baseKey].type.style = selectedESignTypeStyle;
             handleSubmitApplicationReq(temp)
         }
+        let data = applicantProfile;
+        data.signature.updated = true;
+        await PUT(`application-management-service/application/${applicationId}/profile`, data)
+            .then(response => {
+                console.log(response)
+            })
+            .catch((error) => {
+                console.log(error)
+            });
     };
 
     const handleSubmitApplicationReq = async (data) => {
@@ -104,6 +125,7 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
             .then(response => {
                 console.log(response)
                 setBasicForm(response?.data)
+                getPreApplication()
                 SuccessToaster("Application Updated Successfully");
                 getIsOpen(false)
             })
