@@ -69,7 +69,6 @@
 .spaceBetween {
     display: flex;
     justify-content: space-between;
-    flex-direction: row;
 }
 
 .spaceBetweenColumn {
@@ -347,6 +346,13 @@
     opacity: 1;
   }
 
-//   .center{
-//     align-self: center;
-//   }
+  .center{
+    align-self: end;
+    margin-top: -10px;
+  }
+
+  .flexspaceBetween {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+}

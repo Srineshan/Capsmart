@@ -120,7 +120,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat }) => {
   const handleApplicationApprove = async () => {
     try {
       const payload = {
-        role: userRole,
+        role: Array.isArray(userRole) ? userRole[0] : userRole,
         notes: userRoleComments,
       };
 
@@ -285,7 +285,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                 <div className={style.reviewButton}>APPROVE</div>
               </div> */}
                <div
-                className={`${style.reviewButtonStyle} ${style.reviewButtonStyle} ${style.cursorPointer}`}
+                className={`${style.reviewButtonStyle} ${style.cursorPointer}`}
                 onClick={handleApplicationApprove}
                 style={{ pointerEvents: isApproveEnabled ? 'auto' : 'none', opacity: isApproveEnabled ? 1 : 0.5 }}
               >

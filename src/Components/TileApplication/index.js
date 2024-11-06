@@ -3,7 +3,7 @@ import style from "./index.module.scss";
 import { extractNumbersFromString } from "../../utils/formatting";
 import { Tooltip } from "@mui/material";
 import ClearIcon from '@mui/icons-material/Clear';
-// import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 const TileApplication = ({
   selectedTab,
@@ -51,11 +51,16 @@ const TileApplication = ({
       <div className={`${style.spaceBetweenColumn} ${style.padding5}`}>
         <div>
           <div className={`${style.spaceBetween}  ${selectedTab === currentTile ? style.selectedApplicationText : style.headingForContracts}`}>{tileLabel}
-            <span className={`${style.countDesign} ${style.center}`}>{tileCount}</span>
-            {/* <Tooltip title={`${currentTile} ${tileCount}`}>
+            <span className={`${style.countDesign}`}>{tileCount}</span>
+            <Tooltip className={` ${style.center}`} title={`${currentTile} ${tileCount}`}>
               <InfoOutlinedIcon fontSize="small" className={style.center} />
-            </Tooltip> */}
+            </Tooltip>
           </div>
+          {/* <div>
+          <Tooltip className={` ${style.center}`} title={`${currentTile} ${tileCount}`}>
+              <InfoOutlinedIcon fontSize="small" className={style.center} />
+            </Tooltip>
+          </div> */}
         </div>
       </div>
     </div >

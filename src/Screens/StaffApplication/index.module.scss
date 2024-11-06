@@ -439,6 +439,26 @@ body::-webkit-scrollbar {
   opacity: 1;
 }
 
+.greenBigDotStyle {
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  background-color: #3eb426;
+  border: 6px solid #f3f5f74d;
+  color: #3eaf2c;
+  opacity: 1;
+}
+
+.yellowBigDotStyle {
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  background-color: #cedc4c;
+  border: 6px solid #f3f5f74d;
+  color: #b8c130;
+  opacity: 1;
+}
+
 .colorFileStyle {
   height: 25px !important;
   width: 25px !important;
@@ -808,15 +828,15 @@ body::-webkit-scrollbar {
   grid-gap: 10px;
 }
 
-.tableHeaderGridStyle {
-  display: grid;
-  grid-template-columns: 6% 45% 12% 12% 12% 8%;
-  grid-gap: 10px;
-}
+// .tableHeaderGridStyle {
+//   display: grid;
+//   grid-template-columns: 6% 45% 12% 12% 10% 8%;
+//   grid-gap: 10px;
+// }
 
 .tableHeaderGridStyleForm {
   display: grid;
-  grid-template-columns: 6% 77% 10% 4%;
+  grid-template-columns: 6% 66% 18% 10%;
   grid-gap: 1%;
 }
 
@@ -1398,6 +1418,22 @@ body::-webkit-scrollbar {
   opacity: 1;
 }
 
+.greenDotTextStyle {
+  text-align: left;
+  font: normal normal normal 13px/20px proxima-nova;
+  letter-spacing: 0px;
+  color: #4ca457;
+  opacity: 1;
+}
+
+.yellowDotTextStyle {
+  text-align: left;
+  font: normal normal normal 13px/20px proxima-nova;
+  letter-spacing: 0px;
+  color: #a7ba2b;
+  opacity: 1;
+}
+
 .emailTextBoldStyle {
   text-align: center;
   font: normal normal bold 17px/20px proxima-nova;
@@ -1724,6 +1760,7 @@ select {
   text-transform: uppercase;
   opacity: 1;
 }
+
 
 .newContractButtonStyle {
   background-color: $primarycolor
@@ -2832,7 +2869,7 @@ input[type="file"] {
 }
 
 .statusCardHeight {
-  height: calc(100% - 20px);
+  // height: calc(100% - 20px);
   padding: 20px;
 }
 
@@ -4262,7 +4299,7 @@ input[type="number"] {
 
 .tableHeaderGridStyle {
   display: grid;
-  grid-template-columns: 6% 45% 12% 12% 12% 8%;
+  grid-template-columns: 6% 45% 12% 12% 9% 8%;
   grid-gap: 10px;
 }
 
@@ -4390,7 +4427,7 @@ padding-top: 20px;
 
 .buttonCardStyle2 {
   height: 50px;
-  width: 400px;
+  width: 90%;
   background: #FFFFFF 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
   border: 0.5px solid $primarycolor;
@@ -4401,7 +4438,7 @@ padding-top: 20px;
 
 .bigButtonStyle2 {
   height: 50px;
-  width: 400px;
+  width: 90%;
   /* UI Properties */
   background: $primarycolor
  0% 0% no-repeat padding-box;
@@ -4411,14 +4448,35 @@ padding-top: 20px;
   margin: auto;
 }
 
-.cardLeftStyle1 {
+.bigButtonGreyStyle2 {
+  height: 50px;
+  width: 90%;
+  /* UI Properties */
+  background: #94979A 0% 0% no-repeat padding-box;
+  border-radius: 8px;
+  opacity: 1;
+  margin: auto;
+}
+
+// .cardLeftStyle1 {
+//   background: #FFFFFF 0% 0% no-repeat padding-box;
+//   box-shadow: 0px 5px 20px #52575D29;
+//   border: 0.4000000059604645px solid #E0E1FB;
+//   border-radius: 12px;
+//   opacity: 1;
+//   height: fit-content;
+//   margin-bottom: -350px;
+// }
+
+.cardLeftStyle2 {
   background: #FFFFFF 0% 0% no-repeat padding-box;
   box-shadow: 0px 5px 20px #52575D29;
   border: 0.4000000059604645px solid #E0E1FB;
   border-radius: 12px;
   opacity: 1;
   height: fit-content;
-  margin-bottom: -350px;
+  // margin-bottom: -700px;
+  padding-bottom: 30px;
 }
 
 .referenceCardStyle{
@@ -4547,4 +4605,84 @@ opacity: 1;
   letter-spacing: 0px;
   color: #14B15A;
   opacity: 1;
+}
+ .alignItem{
+  align-self: center;
+ }
+
+ .alignContent{
+ justify-content: center;
+ }
+
+ .docsIcon{
+  text-align: left;
+font: normal normal normal 20px/24px la-solid-900;
+letter-spacing: 0px;
+color: #173790;
+opacity: 1;
+ }
+
+ .my-custom-description {
+  text-align: center; /* or any other styles you want to override */
+  font: normal normal normal 16px/20px Arial, sans-serif; /* Customize as needed */
+  color: #000000; /* New color */
+  padding: 0 40px; /* Adjust padding */
+}
+
+.correcticon{
+  text-align: left;
+  font: normal normal normal 27px la-solid-900;
+  color: #14B15A;
+  opacity: 1;
+  place-self: center;
+}
+
+.checkListitem{
+  // color: var(--unnamed-color-52575d);
+text-align: left;
+font: italic normal medium 16px/24px Proxima Nova;
+letter-spacing: 0px;
+color: #52575D;
+opacity: 0.5;
+}
+
+.warning{
+  color: var(--unnamed-color-f94848);
+text-align: left;
+font: normal normal normal 27px la-solid-900;
+letter-spacing: 0px;
+color: #F94848;
+opacity: 1;
+}
+
+.uploadBorderStyle {
+  background: #F5F5F8 0% 0% no-repeat padding-box;
+  border: 2px dashed $secondarycolor;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+.uploadTextStyle {
+  text-align: center;
+  font: normal normal 600 20px/28px proxima-nova;
+  color: $primarycolor;
+  text-transform: capitalize;
+}
+
+.uploadDescriptionText {
+  text-align: center;
+  font: normal normal normal 14px/18px proxima-nova;
+  color: #52575D;
+  // padding: 0 80px;
+}
+
+.twoColFile {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 20px;
+  padding: 10px;
+}
+
+.paddingButton{
+padding: 10px;
 }
