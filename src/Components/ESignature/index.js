@@ -3,7 +3,7 @@ import ESignImg from "./../../images/eSign.png";
 import ESignEmptyImg from "./../../images/eSignEmpty.png";
 import style from './index.module.scss'
 
-const ESignature = ({ userName, currentDate, encData, showData, showDatais = true, isInitial }) => {
+const ESignature = ({ userName, currentDate, encData, showData, showDatais = true, isInitial, removePadding }) => {
     const [isClicked, setIsClicked] = useState(false);
     return (
         <>
@@ -25,7 +25,7 @@ const ESignature = ({ userName, currentDate, encData, showData, showDatais = tru
                     {!showData ? "" : (encData && encData.length > 0 ? `${encData.substring(0, 35)}.....` : "")}
                 </div>
             </div> */}
-            <div className={style.signature}>
+            <div className={removePadding ? style.signatureWithoutPadding : style.signature}>
                 <div className={style.text}>
                     <span>{isInitial ? 'Electronically Initialed by' : 'Electronically Signed by'}</span>
                 </div >

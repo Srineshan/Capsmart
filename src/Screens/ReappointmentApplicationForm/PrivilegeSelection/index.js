@@ -18,6 +18,7 @@ import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import PdfDoc from './../../../images/pdfDoc.png';
 import WordDoc from './../../../images/wordDoc.png';
 import CrossPink from "./../../../images/crossPink.png";
+import BlueSign from "./../../../images/blueSign.png";
 import ImgDoc from './../../../images/imgDoc.png';
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 import DatalistInput, { useComboboxControls } from "react-datalist-input";
@@ -784,7 +785,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                                     {selectedPrivilegesForDisplayMultiple?.map(data => data?.id)?.includes(data?.id) ? (
                                                         <img src={DeleteIcon} alt="" className={`${style.docTypeImgStyle} ${style.marginLeft}`} onClick={() => { handleDeleteSelectedPrrivilege(data?.id) }} />
                                                     ) : (
-                                                        <div onClick={() => { setShowPrivileges(true); handleChange(data?.id) }}><CheckBoxOutlineBlankSharpIcon sx={{ fontSize: 20, color: '#000000' }} /></div>
+                                                        <img src={BlueSign} alt="" className={`${style.docTypeImgStyle} ${style.marginLeft}`} onClick={() => { setShowPrivileges(true); handleChange(data?.id) }} />
                                                     )}
                                                 </div>
                                                 {(index !== staffPrivilege?.length - 1) && (
