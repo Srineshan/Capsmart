@@ -1334,7 +1334,7 @@ const StaffApplicationList = ({
 
   const departmentHeadActionsData = [
     {
-      data: "View & Verify",
+      data: userRole.includes("Staff Manager") ? "View" : "View & Verify",
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyFunction,
     },
@@ -1348,17 +1348,30 @@ const StaffApplicationList = ({
       requiredValue: "boolean",
       onClick: onClickMoveToNextFunction,
       //  onClick: onClickViewAndVerifyFunction,
+      hideForRoles: userRole,
     },
     {
       data: "Request For Clarification",
       requiredValue: "boolean",
       isParagraph: true,
+      hideForRoles: userRole,
     },
-    { data: "From Applicant", requiredValue: "boolean", onClick: "", isIndent: true },
-    { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true },
-    { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true },
+    { data: "From Applicant", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: userRole, },
+    { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: userRole, },
+    { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: userRole, },
   ];
 
+    // const updatedDepartmentHeadActionsData = departmentHeadActionsData.map((action) => {
+    //   if (action.data === "View & Verify" && userRole === "Staff Manager") {
+    //     return {
+    //       ...action,
+    //       data: "View"
+    //     };
+    //   }
+    //   return action;
+    // });
+    
+    // console.log("console.log(updatedDepartmentHeadActionsData);" + JSON.stringify (updatedDepartmentHeadActionsData));
 
   const applicationActionsData = [
     // { data: "View & Verify", requiredValue: "boolean", onClick: "" },
@@ -1380,24 +1393,26 @@ const StaffApplicationList = ({
     //   requiredValue: "boolean",
     //   onClick: onClickMoveToNextFunction,
     // },
-    { data: "Review & Approve", requiredValue: "boolean", onClick: onClickViewAndVerifyLevelFunction },
-    { data: "Move to MAC", requiredValue: "boolean", onClick: onClickMoveToNextFunction },
+    { data: userRole.includes("Staff Manager") ? "View" : "Review & Approve", requiredValue: "boolean", onClick: onClickViewAndVerifyLevelFunction },
+    { data: "Move to MAC", requiredValue: "boolean", onClick: onClickMoveToNextFunction, hideForRoles: userRole, },
     // { data: "Review & Approve", requiredValue: "boolean", onClick: "" },
     // { data: "Move to MAC", requiredValue: "boolean", onClick: "" },
     {
       data: "Request For Clarification",
       requiredValue: "boolean",
       isParagraph: true,
+      hideForRoles: userRole,
     },
     {
       data: `From ${userRole}`,
       requiredValue: "boolean",
       onClick: "",
-      isIndent: true
+      isIndent: true,
+      hideForRoles: userRole,
     },
-    { data: "From Applicant", requiredValue: "boolean", onClick: "", isIndent: true },
-    { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true },
-    { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true },
+    { data: "From Applicant", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: userRole, },
+    { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: userRole, },
+    { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: userRole, },
   ];
 
   const macActionsData = [

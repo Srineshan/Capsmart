@@ -16,6 +16,9 @@ import PODIcon from '../../images/PODIcon.png'
 import DataFieldIcon from '../../images/DataFieldIcon.png'
 import style from './index.module.scss';
 import CommonDivider from '../CommonFields/CommonDivider';
+// import { GET } from "../../Screens/dataSaver";
+// import Cookie from 'universal-cookie';
+// import jwt from 'jwt-decode';
 
 const useStyles = makeStyles(theme => ({
     popover: {
@@ -39,6 +42,10 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
     const [anchorElCountWithHover, setAnchorElCountWithHover] = useState(null);
     const openCountWithHover = Boolean(anchorElCountWithHover);
     const [anchorElTextWithHover, setAnchorElTextWithHover] = useState(null);
+    // const [userRole, setUserRole] = useState('');
+    // let cookie = new Cookie();
+    // let userDetails = cookie.get('user');
+    // const users = jwt(userDetails);
     const openTextWithHover = Boolean(anchorElTextWithHover);
     const open = Boolean(anchorEl);
     const [anchorElSite, setAnchorElSite] = useState(null);
@@ -142,6 +149,17 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
     };
 
     const classes = useStyles();
+
+    // useEffect(() => {
+    //     setUserDetails();
+    //   }, [users?.id])
+    
+    //   const setUserDetails = async () => {
+    //     const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
+    //     console.log("userdataaaa" + JSON.stringify(userData))
+    //     sessionStorage.setItem('user', JSON.stringify(userData))
+    //     setUserRole(userData?.roles?.map((data) => data?.roleName));
+    //   }
 
     function useOptionsHide(ref) {
         useEffect(() => {
@@ -507,15 +525,60 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
                                                             (<div className={`${style.specificActionCard} ${style.cursorPointer} ${actionsData?.isIndent ? style.marginLeft30 : ''}`} onClick={() => { actionsData?.onClick(data); handleClose() }} key={actionsIndex}>{actionsData?.data}</div>)
                                                         )}
                                                     </div> */}
-                                                    <div className={style.actionsCard} ref={menuRef}>
-                                                            {actions?.map((actionsData, actionsIndex) => actionsData?.isParagraph ? 
+                                                    {/* <div className={style.actionsCard} ref={menuRef}>
+                                                            {actions?.map((actionsData, actionsIndex) =>  actionsData?.isParagraph ? 
                                                                 ( <><div className={`${style.divider}`}></div><div className={`${style.isParagraph}` } key={actionsIndex}> {actionsData.data} </div></>
                                                                 ) : actionsData?.conditionToShow !== undefined ? (eval(actionsData?.conditionToShow) && 
                                                                 ( <div className={`${style.specificActionCard} ${style.cursorPointer} ${ actionsData?.isIndent ? style.marginLeft30 : "" }`} onClick={() => {actionsData?.onClick(data); handleClose() }} key={actionsIndex}> {actionsData?.data} </div>))
                                                                 : 
                                                                 (<div className={`${style.specificActionCard} ${style.cursorPointer} ${ actionsData?.isIndent ? style.marginLeft30 : "" }`} onClick={() => { actionsData?.onClick(data); handleClose() }} key={actionsIndex} > {actionsData?.data} </div>)
                                                             )}
-                                                    </div>
+                                                    </div> */}
+                                                    <div className={style.actionsCard} ref={menuRef}>
+                                                        {actions?.map((actionsData, actionsIndex) => {
+                                                            // Check if the action should be hidden for the current user's role
+                                                            if (actionsData.hideForRoles?.includes("Staff Manager")) {
+                                                            return null;
+                                                            }
+
+                                                            return actionsData?.isParagraph ? (
+                                                            <>
+                                                                <div className={`${style.divider}`}></div>
+                                                                <div className={`${style.isParagraph}`} key={actionsIndex}>
+                                                                {actionsData.data}
+                                                                </div>
+                                                            </>
+                                                            ) : actionsData?.conditionToShow !== undefined ? (
+                                                            eval(actionsData?.conditionToShow) && (
+                                                                <div
+                                                                className={`${style.specificActionCard} ${style.cursorPointer} ${
+                                                                    actionsData?.isIndent ? style.marginLeft30 : ""
+                                                                }`}
+                                                                onClick={() => {
+                                                                    actionsData?.onClick(data);
+                                                                    handleClose();
+                                                                }}
+                                                                key={actionsIndex}
+                                                                >
+                                                                {actionsData.data}
+                                                                </div>
+                                                            )
+                                                            ) : (
+                                                            <div
+                                                                className={`${style.specificActionCard} ${style.cursorPointer} ${
+                                                                actionsData?.isIndent ? style.marginLeft30 : ""
+                                                                }`}
+                                                                onClick={() => {
+                                                                actionsData?.onClick(data);
+                                                                handleClose();
+                                                                }}
+                                                                key={actionsIndex}
+                                                            >
+                                                                {actionsData.data}
+                                                            </div>
+                                                            );
+                                                        })}
+                                                        </div>
 
                                                 </Popover>
                                             )}

@@ -625,22 +625,22 @@ const NewActiveApplication = ({
   };
 
   const approveView = async () => {
-    const roleMap = {
-        'level-1': "Chief Of Staff",
-        'level-2': "Department Head",
-        'level-3': "Credentialing Committee",
-        'level-4': "Advisory Committee",
-        'level-5': "Board"
-      };
-      console.log("roleMap" + roleMap);
+    // const roleMap = {
+    //     'level-1': "Chief Of Staff",
+    //     'level-2': "Department Head",
+    //     'level-3': "Credentialing Committee",
+    //     'level-4': "Advisory Committee",
+    //     'level-5': "Board"
+    //   };
+    //   console.log("roleMap" + roleMap);
       
 
-      const role = roleMap[selectedTab];
-      console.log("roleeeeee1" + role);
+    //   const role = roleMap[selectedTab];
+    //   console.log("roleeeeee1" + role);
       
 
         const { data: basicApproval } = await GET(
-          `application-management-service/application/${applicationId}/approvalRequiredForms?role=${role}`
+          `application-management-service/application/${applicationId}/approvalRequiredForms?role=${userRole}`
         );
         setCredApproval(basicApproval)  
         console.log("basicApproval" + JSON.stringify(credApproval));     
