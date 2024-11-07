@@ -327,12 +327,13 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                         >
                             BACK
                         </div>
-                        <div
+                        {/* <div
                             className={`${style.continue} ${style.marginTop10}`}
                             onClick={() => setShowJourneyDialog(true)}
                         >
                             CONTINUE
-                        </div>
+                        </div> */}
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
                     </div>
                     {/* <div className={style.marginTop}>
                             <ApplicationReferenceDocuments />

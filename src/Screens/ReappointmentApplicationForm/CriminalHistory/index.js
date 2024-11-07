@@ -90,6 +90,16 @@ const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
         }
     }
 
+    const handleContinue = async () => {
+        if (sessionStorage.getItem('fromSummary') === "true") {
+            navigate(-1);
+        }
+        else {
+            navigate(navigateURL)
+
+        }
+    }
+
     const getMissingFields = () => {
         // let missingKeys = [];
         // let keyValuePair = [];
@@ -182,7 +192,8 @@ const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                     <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div>
+                        {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
+                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
                     </div>
                     {/* <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
