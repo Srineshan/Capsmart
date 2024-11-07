@@ -35,6 +35,11 @@ import ToBeVerifiedImage from "./../../../images/toBeVerifiedImage.png";
 import CommonSelectField from '../../../Components/CommonFields/CommonSelectField';
 import ESignature from '../../../Components/ESignature';
 import CommonRadio from '../../../Components/CommonFields/CommonRadio';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControl from '@mui/material/FormControl';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import AlertDialog from '../../../Components/AlertDialog';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
 import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
@@ -86,6 +91,16 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
     const title = sessionStorage.getItem('title')
     const [selectedPrivilegesForCourtesy, setSelectedPrivilegesForCourtesy] = useState('');
     const [prevHospitalName, setPrevHospitalName] = useState('');
+    const theme = createTheme({
+        palette: {
+            error: {
+                main: '#FF6562', // Customize your error color here
+            },
+            warning: {
+                main: '#f57c00', // Customize your error color here
+            },
+        },
+    });
     useEffect(() => {
         getApplication();
         getPrivilegeCategory();
@@ -845,7 +860,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                         {basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === "Courtesy with Admitting" ? (
                                             <div className={`${style.privilegeCard} ${style.marginTop10}`}>
                                                 <div className={style.marginTop}>
-                                                    <div className={`${style.lableStyle}`}>List the privileges you would like to request*</div>
+                                                    <div className={`${style.lableStyle}`}>List the Privileges you would like to request*</div>
                                                     <TextArea
                                                         value={selectedPrivilegesForCourtesy}
                                                         className={`${style.fullWidth} ${style.marginTop10}`}
@@ -945,8 +960,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                     // firstOptionLabel={''}
                                     // firstOptionValue={''}
                                     valueList={privilegeCategories?.map(data => data?.id)}
-                                    labelList={privilegeCategories?.map(data => data?.category)}
-                                    disabledList={privilegeCategories?.map(data => false)}
+                                    labelList={privilegeCategories?.map(data => data?.category === basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? `${data?.category} (Current Privilege Category)` : data?.category)}
+                                    disabledList={privilegeCategories?.map(data => data?.category === basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? true : false)}
                                     label={'What would you like to change your current Privilege Category to?'}
                                     required={false}
                                 />
@@ -995,7 +1010,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                             </>
                                         ) : (
                                             <div className={style.marginTop}>
-                                                <div className={`${style.lableStyle}`}>List the privileges you would like to request*</div>
+                                                <div className={`${style.lableStyle}`}>List the Privileges you would like to request*</div>
                                                 <TextArea
                                                     value={selectedPrivilegesForCourtesy}
                                                     className={`${style.fullWidth} ${style.marginTop10}`}
@@ -1017,13 +1032,53 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                                     Do you maintain privileges at any other hospital(s)?*
                                                 </div>
                                                 <div className={style.leftAlign}>
-                                                    <CommonRadio
+                                                    {/* <CommonRadio
                                                         className={style.leftAlign}
                                                         value={doYouHavePrivilegeAtAnyOtherHospital}
                                                         onChange={(e) => setDoYouHavePrivilegeAtAnyOtherHospital(e.target.value)}
                                                         radioValue={['No', 'Yes']}
                                                         label={['No', 'Yes']}
-                                                    />
+                                                    /> */}
+                                                    <ThemeProvider theme={theme}>
+                                                        <FormControl>
+                                                            <RadioGroup
+                                                                row
+                                                                className={style.leftAlign}
+                                                                value={doYouHavePrivilegeAtAnyOtherHospital}
+                                                                onChange={(e) => setDoYouHavePrivilegeAtAnyOtherHospital(e.target.value)}
+                                                                sx={{ color: "#52575D" }}
+                                                            >
+                                                                <FormControlLabel
+                                                                    value={'No'}
+                                                                    control={
+                                                                        <Radio
+                                                                            sx={{
+                                                                                color: "#B3B8BD",
+                                                                                "&.Mui-checked": { color: "#FF5555" },
+                                                                            }}
+                                                                            size="medium"
+                                                                        />
+                                                                    }
+                                                                    label={'No'}
+                                                                    componentsProps={{ typography: { variant: "subtitle1" } }}
+                                                                />
+                                                                <FormControlLabel
+                                                                    value={'Yes'}
+                                                                    control={
+                                                                        <Radio
+                                                                            sx={{
+                                                                                color: "#B3B8BD",
+                                                                                "&.Mui-checked": { color: "#1C8F00" },
+                                                                            }}
+                                                                            size="medium"
+                                                                        />
+                                                                    }
+                                                                    label={'Yes'}
+                                                                    componentsProps={{ typography: { variant: "subtitle1" } }}
+                                                                />
+                                                            </RadioGroup>
+                                                        </FormControl>
+                                                    </ThemeProvider>
                                                 </div>
                                             </div>
                                             <div>

@@ -8,6 +8,7 @@ import { CookiesProvider, Cookies } from 'react-cookie';
 import style from './index.module.scss';
 import jwt from 'jwt-decode';
 import CircularProgress from "@mui/material/CircularProgress";
+import LoadingScreen from '../../Components/LoadingScreen';
 const accessToken = Auth();
 
 const Applicant = () => {
@@ -65,7 +66,8 @@ const Applicant = () => {
             {
                 isLoading && (
                     <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
-                        <CircularProgress sx={{ color: "#0e5197" }} />
+                        {/* <CircularProgress sx={{ color: "#0e5197" }} /> */}
+                        <LoadingScreen />
                     </div>
                 )
             }

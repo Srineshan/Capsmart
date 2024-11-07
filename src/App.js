@@ -289,7 +289,7 @@ const App = ({ props }) => {
   // useEffect(() => {
   //   if (cookie.get('entityId') === undefined || cookie.get('entityId') === null) {
   //     getEntityId();
-  //   }
+  //   }  
   // }, [])
 
   // useEffect(() => {

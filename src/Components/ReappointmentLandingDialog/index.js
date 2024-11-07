@@ -362,7 +362,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
             {`You have opted to not continue with your reappointment application for recredentialing and continuation of privileges for Jan 1, 2025 to Dec 31, 2025 at ${title}.`}
           </div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
-            {`If we do not receive a completed reappointment application by ${format(new Date(basicForm?.expiryDate || null), 'MMM dd, yyyy')} your staff position as a ${basicForm?.basicDetails?.applicant?.applicantType} will be terminated.`}
+            {`If we do not receive a completed reappointment application by ${format(new Date(basicForm?.expiryDate || null), 'MMM dd, yyyy')} your staff position as a ${basicForm?.basicDetails?.applicant?.applicantType}, ${basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory}, will be terminated.`}
           </div>
           <div className={style.spaceBetween}>
             <div
