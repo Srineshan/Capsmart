@@ -15,7 +15,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import PdfDoc from './../../../images/pdfDoc.png';
 import WordDoc from './../../../images/wordDoc.png';
 import ImgDoc from './../../../images/imgDoc.png';
-import JourneyStep1 from './../../../images/journeyStep1.png';
+import JourneyStep2 from './../../../images/journeyStep2.png';
 import { Dialog, Classes } from '@blueprintjs/core';
 import CrossPink from "./../../../images/crossPink.png";
 import FileLoading from './../../../images/fileLoading.GIF';
@@ -770,7 +770,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                 />
             )}
             {showJourneyDialog && (
-                <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`You've Started Your Reappointment Journey. Let's See How Long It Takes You!`} img={JourneyStep1} formIndex={formIndex} basicForm={basicForm} continueClick={handleContinue} />
+                <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Leveling Up! Keep Up The Good Work.`} img={JourneyStep2} formIndex={formIndex} basicForm={basicForm} continueClick={handleContinue} />
             )}
             <Dialog
                 isOpen={isShowUploadValidation}

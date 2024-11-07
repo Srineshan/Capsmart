@@ -7,7 +7,7 @@ import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import FileLoading from './../../../images/fileLoading.GIF';
 import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
-import { Dialog, Classes } from '@blueprintjs/core';
+import { Dialog, Classes, TextArea } from '@blueprintjs/core';
 import { DELETE, GET, POST, PUT } from '../../dataSaver';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Icon } from '@blueprintjs/core';
@@ -24,7 +24,8 @@ import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 import DatalistInput, { useComboboxControls } from "react-datalist-input";
 import CryptoJS from 'crypto-js';
 import style from './index.module.scss';
-import JourneyStep2 from './../../../images/journeyStep2.png';
+import BlueSign from './../../../images/blueSign.png';
+import JourneyStep1 from './../../../images/journeyStep1.png';
 import DeleteIcon from './../../../images/deleteHcRow.png';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
@@ -37,6 +38,8 @@ import CommonRadio from '../../../Components/CommonFields/CommonRadio';
 import AlertDialog from '../../../Components/AlertDialog';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
 import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
+import CommonTextField from '../../../Components/CommonFields/CommonTextField';
+import PaymentDialog from '../../../Components/paymentDialog';
 
 const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [isSigned, setIsSigned] = useState(false);
@@ -78,8 +81,11 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [isEditPrivilege, setIsEditPrivilege] = useState(false);
     const [selectedPrivilegesForDisplayMultiple, setSelectedPrivilegesForDisplayMultiple] = useState([]);
     const [showJourneyDialog, setShowJourneyDialog] = useState(false);
+    const [showPaymentDialog, setShowPaymentDialog] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const title = sessionStorage.getItem('title')
+    const [selectedPrivilegesForCourtesy, setSelectedPrivilegesForCourtesy] = useState('');
+    const [prevHospitalName, setPrevHospitalName] = useState('');
     useEffect(() => {
         getApplication();
         getPrivilegeCategory();
@@ -179,6 +185,10 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
         setShowJourneyDialog(value);
     }
 
+    const getIsShowPaymentDialog = (value) => {
+        setShowPaymentDialog(value);
+    }
+
     const startsWithVowel = (str) => /^[aeiouAEIOU]/.test(str);
 
     const addNewDocument = async (file) => {
@@ -243,7 +253,30 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                     id: selectedPrivilegeCategoryAtPrevHospital,
                     name: privilegeCategories?.filter(data => data?.id === selectedPrivilegeCategoryAtPrevHospital)[0]?.category,
                     type: privilegeCategories?.filter(data => data?.id === selectedPrivilegeCategoryAtPrevHospital)[0]?.type
-                }
+                },
+                hospitalName: doYouHavePrivilegeAtAnyOtherHospital === "Yes" ? prevHospitalName : false,
+                privileges: doYouHavePrivilegeAtAnyOtherHospital === "Yes" ? selectedPrivilegesForCourtesy : false,
+            }
+            console.log(data)
+            await PUT(`application-management-service/application/${applicationId}`, data)
+                .then(response => {
+                    console.log(response)
+                    setBasicForm(response?.data)
+                    SuccessToaster("Staff Member Application Updated Successfully");
+                    getPreApplication();
+                })
+                .catch((error) => {
+                    console.log(error)
+                    ErrorToaster("Unexpected Error Updating Staff Member Application");
+                });
+        }
+        if (isPrivilegeSetChanging && basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === "Courtesy with Admitting") {
+            let data = basicForm;
+            data.basicDetails.existingCredentialingPrivilegeCategory = {
+                hasExistingPrivilege: data?.basicDetails?.existingCredentialingPrivilegeCategory?.hasExistingPrivilege,
+                credentialingPrivilegeCategory: data?.basicDetails?.existingCredentialingPrivilegeCategory?.credentialingPrivilegeCategory,
+                hospitalName: data?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalName,
+                privileges: selectedPrivilegesForCourtesy,
             }
             console.log(data)
             await PUT(`application-management-service/application/${applicationId}`, data)
@@ -724,17 +757,17 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                             ))}
                         </div>
                         <div className={`${style.cardTitle} ${style.marginTop}`}>
-                            Do you to want to keep your current privilege Category?
+                            Do you to want to keep your current privilege category?
                         </div>
                         {!isPrivilegeCategoryChanging && (
                             <>
-                                {isEdit ? (
+                                {!isEdit ? (
                                     <div
                                         className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                                     >
                                         <div
                                             className={`${style.reappointmentButtonOutlined}`}
-                                            onClick={() => setIsEdit(false)}
+                                            onClick={() => setIsEdit(true)}
                                         >
                                             Yes
                                         </div>
@@ -753,7 +786,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                         >
                                             <div
                                                 className={`${style.reappointmentButtonEdit}`}
-                                                onClick={() => setIsEdit(true)}
+                                                onClick={() => setIsEdit(false)}
                                             >
                                                 Edit
                                             </div>
@@ -762,7 +795,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                 )}
                             </>
                         )}
-                        {!isEdit && (
+                        {isEdit && (
                             <>
 
                                 {!isPrivilegeSetChanging && (
@@ -770,13 +803,13 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                         <div className={`${style.cardTitle} ${style.marginTop}`}>
                                             Would you like to keep the privilege set you have?
                                         </div>
-                                        {isEditPrivilege ? (
+                                        {!isEditPrivilege ? (
                                             <div
                                                 className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                                             >
                                                 <div
                                                     className={`${style.reappointmentButtonOutlined}`}
-                                                    onClick={() => setIsEditPrivilege(false)}
+                                                    onClick={() => setIsEditPrivilege(true)}
                                                 >
                                                     Yes
                                                 </div>
@@ -795,7 +828,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                                 >
                                                     <div
                                                         className={`${style.reappointmentButtonEdit}`}
-                                                        onClick={() => setIsEditPrivilege(true)}
+                                                        onClick={() => setIsEditPrivilege(false)}
                                                     >
                                                         Edit
                                                     </div>
@@ -809,63 +842,96 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                         <div className={`${style.cardTitle} ${style.marginTop}`}>
                                             What would you like to change your current Privilege Set to?
                                         </div>
-                                        <div className={`${style.privilegeCard} ${style.marginTop}`}>
-                                            <CommonSelectField
-                                                value={selectedDepartment}
-                                                onChange={(e) => setSelectedDepartment(e.target.value)}
-                                                className={style.fullWidth}
-                                                // firstOptionLabel={''}
-                                                // firstOptionValue={''}
-                                                valueList={departmentList?.map(data => data?.id)}
-                                                labelList={departmentList?.map(data => data?.departmentName?.name)}
-                                                disabledList={departmentList?.map(data => false)}
-                                                label={'Department / Division or Specialty'}
-                                                required={false}
-                                            />
-                                            {selectedDepartment !== '' && (
-                                                <>
-
-
-                                                    {staffPrivilege?.map((data, index) => (
-                                                        <>
-                                                            <div className={`${style.privilegeConfirmationGrid} ${style.marginTop}`}>
-                                                                {selectedPrivilegesForDisplayMultiple?.map(data => data?.id)?.includes(data?.id) ? (
-                                                                    <div className={`${style.iconBackgroundColorSelected} ${style.verticalAlignCenter} ${style.justifyCenter}`}><CheckCircleOutlineIcon sx={{ fontSize: 15, color: '#FFFFFF' }} /></div>
-                                                                ) : (
-                                                                    <div className={`${style.iconBackgroundColor} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 15, color: '#FFFFFF' }} /></div>
-                                                                )}
-                                                                <div className={style.privilegeHeading}>{data?.privilegeSetTitle}</div>
-                                                                {selectedPrivilegesForDisplayMultiple?.map(data => data?.id)?.includes(data?.id) ? (
-                                                                    <img src={DeleteIcon} alt="" className={`${style.docTypeImgStyle} ${style.marginLeft}`} onClick={() => { handleDeleteSelectedPrrivilege(data?.id) }} />
-                                                                ) : (
-                                                                    <div onClick={() => { setShowPrivileges(true); handleChange(data?.id) }}><CheckBoxOutlineBlankSharpIcon sx={{ fontSize: 20, color: '#000000' }} /></div>
-                                                                )}
-                                                            </div>
-                                                            {(index !== staffPrivilege?.length - 1) && (
-                                                                <CommonDivider />
-                                                            )}
-                                                        </>
-                                                    ))}
-                                                </>
-                                            )}
-
-                                            <div
-                                                className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}
-                                            >
-                                                <div
-                                                    className={`${style.reappointmentButton} ${style.marginLeft}`}
-                                                    onClick={() => { setIsPrivilegeSetChanging(false); handleSubmit(); setIsEditPrivilege(false) }}
-                                                >
-                                                    UPDATE
+                                        {basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === "Courtesy with Admitting" ? (
+                                            <div className={`${style.privilegeCard} ${style.marginTop10}`}>
+                                                <div className={style.marginTop}>
+                                                    <div className={`${style.lableStyle}`}>List the privileges you would like to request*</div>
+                                                    <TextArea
+                                                        value={selectedPrivilegesForCourtesy}
+                                                        className={`${style.fullWidth} ${style.marginTop10}`}
+                                                        onChange={(e) =>
+                                                            setSelectedPrivilegesForCourtesy(e.target.value)
+                                                        }
+                                                        placeholder={'Enter here'}
+                                                        rows={4}
+                                                    />
                                                 </div>
                                                 <div
-                                                    className={`${style.reappointmentButtonOutlined}`}
-                                                    onClick={() => setIsPrivilegeSetChanging(false)}
+                                                    className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}
                                                 >
-                                                    CANCEL
+                                                    <div
+                                                        className={`${style.reappointmentButton} ${style.marginLeft} ${(selectedPrivilegesForCourtesy !== "") ? '' : style.disabledButton}`}
+                                                        onClick={(selectedPrivilegesForCourtesy === "") ? () => { } : () => { setIsPrivilegeSetChanging(false); handleSubmit(); setIsEditPrivilege(false) }}
+                                                    >
+                                                        UPDATE
+                                                    </div>
+                                                    <div
+                                                        className={`${style.reappointmentButtonOutlined}`}
+                                                        onClick={() => setIsPrivilegeSetChanging(false)}
+                                                    >
+                                                        CANCEL
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        ) : (
+                                            <div className={`${style.privilegeCard} ${style.marginTop}`}>
+                                                <CommonSelectField
+                                                    value={selectedDepartment}
+                                                    onChange={(e) => setSelectedDepartment(e.target.value)}
+                                                    className={style.fullWidth}
+                                                    // firstOptionLabel={''}
+                                                    // firstOptionValue={''}
+                                                    valueList={departmentList?.map(data => data?.id)}
+                                                    labelList={departmentList?.map(data => data?.departmentName?.name)}
+                                                    disabledList={departmentList?.map(data => false)}
+                                                    label={'Department / Division or Specialty'}
+                                                    required={false}
+                                                />
+                                                {selectedDepartment !== '' && (
+                                                    <>
+
+
+                                                        {staffPrivilege?.map((data, index) => (
+                                                            <>
+                                                                <div className={`${style.privilegeConfirmationGrid} ${style.marginTop}`}>
+                                                                    {selectedPrivilegesForDisplayMultiple?.map(data => data?.id)?.includes(data?.id) ? (
+                                                                        <div className={`${style.iconBackgroundColorSelected} ${style.verticalAlignCenter} ${style.justifyCenter}`}><CheckCircleOutlineIcon sx={{ fontSize: 15, color: '#FFFFFF' }} /></div>
+                                                                    ) : (
+                                                                        <div className={`${style.iconBackgroundColor} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 15, color: '#FFFFFF' }} /></div>
+                                                                    )}
+                                                                    <div className={style.privilegeHeading}>{data?.privilegeSetTitle}</div>
+                                                                    {selectedPrivilegesForDisplayMultiple?.map(data => data?.id)?.includes(data?.id) ? (
+                                                                        <img src={DeleteIcon} alt="" className={`${style.docTypeImgStyle} ${style.marginLeft}`} onClick={() => { handleDeleteSelectedPrrivilege(data?.id) }} />
+                                                                    ) : (
+                                                                        <img src={BlueSign} alt="" className={`${style.docTypeImgStyle} ${style.marginLeft}`} onClick={() => { setShowPrivileges(true); handleChange(data?.id) }} />
+                                                                    )}
+                                                                </div>
+                                                                {(index !== staffPrivilege?.length - 1) && (
+                                                                    <CommonDivider />
+                                                                )}
+                                                            </>
+                                                        ))}
+                                                    </>
+                                                )}
+
+                                                <div
+                                                    className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}
+                                                >
+                                                    <div
+                                                        className={`${style.reappointmentButton} ${style.marginLeft}`}
+                                                        onClick={() => { setIsPrivilegeSetChanging(false); handleSubmit(); setIsEditPrivilege(false) }}
+                                                    >
+                                                        UPDATE
+                                                    </div>
+                                                    <div
+                                                        className={`${style.reappointmentButtonOutlined}`}
+                                                        onClick={() => setIsPrivilegeSetChanging(false)}
+                                                    >
+                                                        CANCEL
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
                                     </>
                                 )}
                             </>
@@ -904,26 +970,43 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                                 required={false}
                                             />
                                         </div>
-                                        {staffPrivilege?.map((data, index) => (
+                                        {privilegeCategories?.filter(data => data?.id === selectedPrivilegeCategory)[0]?.category !== "Courtesy with Admitting" ? (
                                             <>
-                                                <div className={`${style.privilegeConfirmationGrid} ${style.marginTop}`}>
-                                                    {selectedPrivilegesForDisplayMultiple?.map(data => data?.id)?.includes(data?.id) ? (
-                                                        <div className={`${style.iconBackgroundColorSelected} ${style.verticalAlignCenter} ${style.justifyCenter}`}><CheckCircleOutlineIcon sx={{ fontSize: 15, color: '#FFFFFF' }} /></div>
-                                                    ) : (
-                                                        <div className={`${style.iconBackgroundColor} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 15, color: '#FFFFFF' }} /></div>
-                                                    )}
-                                                    <div className={style.privilegeHeading}>{data?.privilegeSetTitle}</div>
-                                                    {selectedPrivilegesForDisplayMultiple?.map(data => data?.id)?.includes(data?.id) ? (
-                                                        <img src={DeleteIcon} alt="" className={`${style.docTypeImgStyle} ${style.marginLeft}`} onClick={() => { handleDeleteSelectedPrrivilege(data?.id) }} />
-                                                    ) : (
-                                                        <div onClick={() => { setShowPrivileges(true); handleChange(data?.id) }}><CheckBoxOutlineBlankSharpIcon sx={{ fontSize: 20, color: '#000000' }} /></div>
-                                                    )}
-                                                </div>
-                                                {(index !== staffPrivilege?.length - 1) && (
-                                                    <CommonDivider />
-                                                )}
+                                                {staffPrivilege?.map((data, index) => (
+                                                    <>
+                                                        <div className={`${style.privilegeConfirmationGrid} ${style.marginTop}`}>
+                                                            {selectedPrivilegesForDisplayMultiple?.map(data => data?.id)?.includes(data?.id) ? (
+                                                                <div className={`${style.iconBackgroundColorSelected} ${style.verticalAlignCenter} ${style.justifyCenter}`}><CheckCircleOutlineIcon sx={{ fontSize: 15, color: '#FFFFFF' }} /></div>
+                                                            ) : (
+                                                                <div className={`${style.iconBackgroundColor} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 15, color: '#FFFFFF' }} /></div>
+                                                            )}
+                                                            <div className={style.privilegeHeading}>{data?.privilegeSetTitle}</div>
+                                                            {selectedPrivilegesForDisplayMultiple?.map(data => data?.id)?.includes(data?.id) ? (
+                                                                <img src={DeleteIcon} alt="" className={`${style.docTypeImgStyle} ${style.marginLeft}`} onClick={() => { handleDeleteSelectedPrrivilege(data?.id) }} />
+                                                            ) : (
+                                                                <img src={BlueSign} alt="" className={`${style.docTypeImgStyle} ${style.marginLeft}`} onClick={() => { setShowPrivileges(true); handleChange(data?.id) }} />
+                                                            )}
+                                                        </div>
+                                                        {(index !== staffPrivilege?.length - 1) && (
+                                                            <CommonDivider />
+                                                        )}
+                                                    </>
+                                                ))}
                                             </>
-                                        ))}
+                                        ) : (
+                                            <div className={style.marginTop}>
+                                                <div className={`${style.lableStyle}`}>List the privileges you would like to request*</div>
+                                                <TextArea
+                                                    value={selectedPrivilegesForCourtesy}
+                                                    className={`${style.fullWidth} ${style.marginTop10}`}
+                                                    onChange={(e) =>
+                                                        setSelectedPrivilegesForCourtesy(e.target.value)
+                                                    }
+                                                    placeholder={'Enter here'}
+                                                    rows={4}
+                                                />
+                                            </div>
+                                        )}
                                     </>
                                 )}
                                 {privilegeCategories?.filter(data => data?.id === selectedPrivilegeCategory)[0]?.category === "Courtesy with Admitting" && (
@@ -952,20 +1035,35 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                             </div>
                                         </div>
                                         {doYouHavePrivilegeAtAnyOtherHospital === 'Yes' && (
-                                            <div className={style.marginTop}>
-                                                <CommonSelectField
-                                                    value={selectedPrivilegeCategoryAtPrevHospital}
-                                                    onChange={(e) => setSelectedPrivilegeCategoryAtPrevHospital(e.target.value)}
-                                                    className={style.fullWidth}
-                                                    // firstOptionLabel={''}
-                                                    // firstOptionValue={''}
-                                                    valueList={privilegeCategories?.filter(data => !['Courtesy with Admitting', 'Courtesy without Admitting']?.includes(data?.category))?.map(data => data?.id)}
-                                                    labelList={privilegeCategories?.filter(data => !['Courtesy with Admitting', 'Courtesy without Admitting']?.includes(data?.category))?.map(data => data?.category)}
-                                                    disabledList={privilegeCategories?.filter(data => !['Courtesy with Admitting', 'Courtesy without Admitting']?.includes(data?.category))?.map(data => false)}
-                                                    label={'Privilege Category you have at the other hospital'}
-                                                    required={false}
-                                                />
-                                            </div>
+                                            <>
+                                                <div className={style.marginTop}>
+                                                    <CommonTextField
+                                                        value={prevHospitalName}
+                                                        className={style.fullWidth}
+                                                        onChange={(e) =>
+                                                            setPrevHospitalName(e.target.value)
+                                                        }
+                                                        maxLength={50}
+                                                        placeholder={'Enter Hospital Name'}
+                                                        label={'Name of the other hospital'}
+                                                        required={true}
+                                                    />
+                                                </div>
+                                                <div className={style.marginTop}>
+                                                    <CommonSelectField
+                                                        value={selectedPrivilegeCategoryAtPrevHospital}
+                                                        onChange={(e) => setSelectedPrivilegeCategoryAtPrevHospital(e.target.value)}
+                                                        className={style.fullWidth}
+                                                        // firstOptionLabel={''}
+                                                        // firstOptionValue={''}
+                                                        valueList={privilegeCategories?.filter(data => !['Courtesy with Admitting', 'Courtesy without Admitting']?.includes(data?.category))?.map(data => data?.id)}
+                                                        labelList={privilegeCategories?.filter(data => !['Courtesy with Admitting', 'Courtesy without Admitting']?.includes(data?.category))?.map(data => data?.category)}
+                                                        disabledList={privilegeCategories?.filter(data => !['Courtesy with Admitting', 'Courtesy without Admitting']?.includes(data?.category))?.map(data => false)}
+                                                        label={'Privilege Category you have at the other hospital'}
+                                                        required={false}
+                                                    />
+                                                </div>
+                                            </>
                                         )}
                                     </>
                                 )}
@@ -973,8 +1071,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                     className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}
                                 >
                                     <div
-                                        className={`${style.reappointmentButton} ${style.marginLeft}`}
-                                        onClick={() => { setIsPrivilegeCategoryChanging(false); handleSubmit(); setIsEdit(false) }}
+                                        className={`${style.reappointmentButton} ${style.marginLeft} ${(selectedPrivilegeCategoryAtPrevHospital !== "" && prevHospitalName !== '') ? '' : style.disabledButton}`}
+                                        onClick={(selectedPrivilegeCategoryAtPrevHospital !== "" && prevHospitalName !== '') ? () => { setIsPrivilegeCategoryChanging(false); handleSubmit(); setIsEdit(false) } : () => { }}
                                     >
                                         UPDATE
                                     </div>
@@ -1216,7 +1314,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                     <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowPaymentDialog(true)}>CONTINUE</div>
+                        {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
                     </div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
@@ -1251,8 +1350,11 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                     </div>
                 </div>
             </Dialog>
+            {showPaymentDialog && (
+                <PaymentDialog getIsOpen={getIsShowPaymentDialog} continueClickFunc={handleContinue} />
+            )}
             {showJourneyDialog && (
-                <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Leveling Up! Keep Up The Good Work.`} img={JourneyStep2} formIndex={formIndex} basicForm={basicForm} continueClick={handleContinue} />
+                <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`You've Started Your Reappointment Journey. Let's See How Long It Takes You!`} img={JourneyStep1} formIndex={formIndex} basicForm={basicForm} continueClick={handleContinue} />
             )}
             {isAlertOpen && <AlertDialog isOpen={isAlertOpen} getIsOpen={getIsAlertOpen} title={'Are you sure?'} description={'Do you want to really change the privilege set?'} />}
             {isOpen && <AdditionalPrivilegesDialog getIsOpen={getIsOpen} primaryPrivilege={selectedPrivilege} getSelectedPrivilegeList={getSelectedPrivilegeList} basicForm={basicForm} selectedAdditionalPrivilegeForEdit={selectedAdditionalPrivilegeForEdit} applicationId={applicationId} />}

@@ -11,6 +11,11 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import "./login.css";
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControl from '@mui/material/FormControl';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CommonRadio from "../CommonFields/CommonRadio";
 import { logout } from "../../utils/auth";
 import { GET, PUT } from "../../Screens/dataSaver";
@@ -48,6 +53,17 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
     slidesToShow: 1,
     slidesToScroll: 1,
   };
+
+  const theme = createTheme({
+    palette: {
+      error: {
+        main: '#FF6562', // Customize your error color here
+      },
+      warning: {
+        main: '#f57c00', // Customize your error color here
+      },
+    },
+  });
 
   useEffect(() => {
     if (applicationId !== undefined) {
@@ -138,6 +154,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
       .then(response => {
         console.log(response)
         SuccessToaster("Application Terminated Successfully");
+        logout();
       })
       .catch((error) => {
         console.log(error)
@@ -185,10 +202,155 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
     );
   }
 
-  if (showAlert) {
-    return (
+  // if (showAlert) {
+  //   return (
+  //     <Dialog
+  //       isOpen={true}
+  //       onClose={() => getIsOpen(false)}
+  //       className={style.customWidth}
+  //       canOutsideClickClose={false}
+  //       canEscapeKeyClose={false}
+  //     >
+  //       <div>
+  //         <div className={style.alignCenter}><WarningAmberIcon sx={{ fontSize: 60, color: '#FF5555' }} /></div>
+  //         <div className={`${style.descriptionStyle} ${style.marginTop}`}>
+  //           {`You have opted to not continue with your reappointment application for recredentialing and continuation of privileges for Jan 1, 2025 to Dec 31, 2025 at ${title}.`}
+  //         </div>
+  //         <div className={`${style.descriptionStyle} ${style.marginTop}`}>
+  //           {`If we do not receive a completed reappointment application by ${format(new Date(basicForm?.expiryDate), 'MMM dd, yyyy')} your staff position as a ${basicForm?.basicDetails?.applicant?.applicantType} will be terminated.`}
+  //         </div>
+  //         <div className={style.spaceBetween}>
+  //           <div
+  //             className={`${style.saveInProgress} ${style.marginTop}`}
+  //             onClick={() => setShowAlert(false)}
+  //           >
+  //             CANCEL
+  //           </div>
+  //           <div
+  //             className={`${style.continue} ${style.marginTop}`}
+  //             onClick={() => { setShowLogoutAlert(true); handleTerminate() }}
+  //           >
+  //             OKAY
+  //           </div>
+  //         </div>
+
+  //       </div>
+  //     </Dialog>
+  //   );
+  // }
+
+  return !isContinue ? (
+    <>
       <Dialog
         isOpen={true}
+        onClose={() => getIsOpen(false)}
+        className={`${style.welcomeDialog} ${style.loginDialogBackground}`}
+        canOutsideClickClose={false}
+        canEscapeKeyClose={false}
+      >
+        <div>
+          <div className={style.whiteBackground}>
+            {/* <div className={style.alignCenter}>
+            <p className={style.loginHeaderText}>
+              <span className={style.bold}>CAP</span>Smart
+            </p>
+          </div> */}
+            <div className={style.spaceBetween}>
+              <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
+              <img src={'https://capsmart-dev.s3.ca-central-1.amazonaws.com/capsmart+logo-01.png'} alt="CAPSmart Logo" className={`${style.CAPSmartLogo}`} />
+            </div>
+            <br />
+            <div className={style.reappointmentGrid}>
+              <div>
+                <img src={ReappointmentLandingImage} alt="" className={style.reappointmentLandingImage} />
+              </div>
+              <div>
+                <div className={style.welcomeText}>Your Reappointment Application</div>
+                <div className={`${style.descriptionStyle} ${style.marginTop}`}>
+                  {title} has automated its credentialing & privileging business functions with CAPSmart, an AI solution for end to end credentialing and privileging activities.
+                </div>
+                <div className={`${style.descriptionStyle} ${style.marginTop}`}>
+                  Processing of your reappointment application will now be a less burdensome activity.
+                </div>
+                <div className={`${style.reappointmentCard} ${style.marginTop}`}>
+                  <div className={`${style.descriptionStyle}`}>
+                    For this reappointment cycle would you like to process your application.
+                  </div>
+                  {/* <CommonRadio
+                    className={style.leftAlign}
+                    value={processReappointment}
+                    onChange={(e) => setProcessReappointment(e.target.value)}
+                    radioValue={['No', 'Yes']}
+                    label={['No', 'Yes']}
+                  /> */}
+                  <ThemeProvider theme={theme}>
+                    <FormControl>
+                      <RadioGroup
+                        row
+                        className={style.leftAlign}
+                        value={processReappointment}
+                        onChange={(e) => setProcessReappointment(e.target.value)}
+                        sx={{ color: "#52575D" }}
+                      >
+                        <FormControlLabel
+                          value={'No'}
+                          control={
+                            <Radio
+                              sx={{
+                                color: "#B3B8BD",
+                                "&.Mui-checked": { color: "#FF5555" },
+                              }}
+                              size="large"
+                            />
+                          }
+                          label={'No'}
+                          componentsProps={{ typography: { variant: "subtitle1" } }}
+                        />
+                        <FormControlLabel
+                          value={'Yes'}
+                          control={
+                            <Radio
+                              sx={{
+                                color: "#B3B8BD",
+                                "&.Mui-checked": { color: "#1C8F00" },
+                              }}
+                              size="large"
+                            />
+                          }
+                          label={'Yes'}
+                          componentsProps={{ typography: { variant: "subtitle1" } }}
+                        />
+                      </RadioGroup>
+                    </FormControl>
+                  </ThemeProvider>
+                </div>
+                <div >
+                  <div
+                    className={`${style.continue} ${style.marginTop} ${processReappointment !== '' ? '' : style.disable}`}
+                    onClick={processReappointment !== '' ? () => {
+                      handleContinue();
+                    } : () => { }}
+                  >
+                    CONTINUE
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <div
+            className={`${style.daysToCompleteCard} ${style.marginTop} ${style.displayInRow} ${style.alignCenter}`}
+          >
+            <div className={`${style.verticalAlignCenter} ${style.alignCenter}`}>
+              <div className={style.textStyle}>{"YOU HAVE"}</div>
+              <div className={style.daysCountStyle}>{days || 30}</div>
+              <div className={`${style.textStyle}`}>{"DAYS TO COMPLETE"}</div>
+            </div>
+          </div>
+        </div>
+      </Dialog>
+      <Dialog
+        isOpen={showAlert}
         onClose={() => getIsOpen(false)}
         className={style.customWidth}
         canOutsideClickClose={false}
@@ -200,7 +362,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
             {`You have opted to not continue with your reappointment application for recredentialing and continuation of privileges for Jan 1, 2025 to Dec 31, 2025 at ${title}.`}
           </div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
-            {`If we do not receive a completed reappointment application by ${format(new Date(basicForm?.expiryDate), 'MMM dd, yyyy')} your staff position as a ${basicForm?.basicDetails?.applicant?.applicantType} will be terminated.`}
+            {`If we do not receive a completed reappointment application by ${format(new Date(basicForm?.expiryDate || null), 'MMM dd, yyyy')} your staff position as a ${basicForm?.basicDetails?.applicant?.applicantType} will be terminated.`}
           </div>
           <div className={style.spaceBetween}>
             <div
@@ -211,87 +373,15 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
             </div>
             <div
               className={`${style.continue} ${style.marginTop}`}
-              onClick={() => { setShowLogoutAlert(true); handleTerminate() }}
+              onClick={() => { handleTerminate() }}
             >
-              OKAY
+              OKAY & LOGOUT
             </div>
           </div>
 
         </div>
       </Dialog>
-    );
-  }
-
-  return !isContinue ? (
-    <Dialog
-      isOpen={true}
-      onClose={() => getIsOpen(false)}
-      className={`${style.welcomeDialog} ${style.loginDialogBackground}`}
-      canOutsideClickClose={false}
-      canEscapeKeyClose={false}
-    >
-      <div>
-        <div className={style.whiteBackground}>
-          {/* <div className={style.alignCenter}>
-            <p className={style.loginHeaderText}>
-              <span className={style.bold}>CAP</span>Smart
-            </p>
-          </div> */}
-          <div className={style.spaceBetween}>
-            <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
-            <img src={'https://capsmart-dev.s3.ca-central-1.amazonaws.com/capsmart+logo-01.png'} alt="CAPSmart Logo" className={`${style.CAPSmartLogo}`} />
-          </div>
-          <br />
-          <div className={style.reappointmentGrid}>
-            <div>
-              <img src={ReappointmentLandingImage} alt="" className={style.reappointmentLandingImage} />
-            </div>
-            <div>
-              <div className={style.welcomeText}>Your Reappointment Application</div>
-              <div className={`${style.descriptionStyle} ${style.marginTop}`}>
-                Cambridge Memorial Hospital has automated its credentialing & privileging business functions with CAPSmart, an AI solution for end to end credentialing and privileging activities.
-              </div>
-              <div className={`${style.descriptionStyle} ${style.marginTop}`}>
-                Processing of your reappointment application will now be a less burdensome activity.
-              </div>
-              <div className={`${style.reappointmentCard} ${style.marginTop}`}>
-                <div className={`${style.descriptionStyle}`}>
-                  For this reappointment cycle would you like to process your application.
-                </div>
-                <CommonRadio
-                  className={style.leftAlign}
-                  value={processReappointment}
-                  onChange={(e) => setProcessReappointment(e.target.value)}
-                  radioValue={['No', 'Yes']}
-                  label={['No', 'Yes']}
-                />
-              </div>
-              <div >
-                <div
-                  className={`${style.continue} ${style.marginTop} ${processReappointment !== '' ? '' : style.disable}`}
-                  onClick={processReappointment !== '' ? () => {
-                    handleContinue();
-                  } : () => { }}
-                >
-                  CONTINUE
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-        <div
-          className={`${style.daysToCompleteCard} ${style.marginTop} ${style.displayInRow} ${style.alignCenter}`}
-        >
-          <div className={`${style.verticalAlignCenter} ${style.alignCenter}`}>
-            <div className={style.textStyle}>{"YOU HAVE"}</div>
-            <div className={style.daysCountStyle}>{days || 30}</div>
-            <div className={`${style.textStyle}`}>{"DAYS TO COMPLETE"}</div>
-          </div>
-        </div>
-      </div>
-    </Dialog>
-
+    </>
   ) : ('')
 };
 

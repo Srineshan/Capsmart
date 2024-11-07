@@ -9,7 +9,7 @@ import CommonCheckBox from '../../../Components/CommonFields/CommonCheckBox';
 import { GET, PUT } from '../../dataSaver';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
-import JourneyStep1 from './../../../images/journeyStep1.png';
+import JourneyStep2 from './../../../images/journeyStep2.png';
 import style from './index.module.scss';
 import AIAssistantDialog from '../../../Components/AIAssistantDialog';
 import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
@@ -351,7 +351,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                 />
             )}
             {showJourneyDialog && (
-                <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Great Start! You're On Your Way.`} img={JourneyStep1} formIndex={formIndex} basicForm={basicForm} continueClick={handleContinue} />
+                <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Great Start! You're On Your Way.`} img={JourneyStep2} formIndex={formIndex} basicForm={basicForm} continueClick={handleContinue} />
             )}
         </div>
     );
