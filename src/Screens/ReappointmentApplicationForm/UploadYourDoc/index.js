@@ -707,7 +707,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         >
                             BACK
                         </div>
-                        <div
+                        {/* <div
                             className={`${style.continue} ${style.marginTop10}`}
                             onClick={
                                 // (basicForm?.forms?.[formIndex]?.data !== null &&
@@ -720,7 +720,8 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                             }
                         >
                             CONTINUE
-                        </div>
+                        </div> */}
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
                     </div>
                     {/* <div className={style.marginTop}>
                             <ApplicationReferenceDocuments />

@@ -6,7 +6,7 @@ import style from './index.module.scss'
 import { PUT } from '../../Screens/dataSaver';
 import { ErrorToaster } from '../../utils/toaster';
 
-const ApplicationSubmitDialog = ({ getIsOpen }) => {
+const ApplicationSubmitDialog = ({ getIsOpen,title,description }) => {
     const logout = async () => {
         const cookies = new Cookies();
         await PUT(`logout`, null)
@@ -27,7 +27,7 @@ const ApplicationSubmitDialog = ({ getIsOpen }) => {
             <div>
                 <div className={Classes.DIALOG_BODY}>
                     <div className={style.spaceBetween}>
-                        <div className={style.heading}>Application Submitted!</div>
+                        <div className={style.heading}>{title}</div>
                         <div className={style.displayInRow}>
                             <img
                                 src={CrossPink}
@@ -37,7 +37,7 @@ const ApplicationSubmitDialog = ({ getIsOpen }) => {
                             />
                         </div>
                     </div>
-                    <p className={`${style.description} ${style.marginTop}`}>Please note that the entire application process for full board approval may take up to 3 months to complete. The completed file will be forwarded to the credentials committee and medical advisory committee for review before being forwarded to the board of Cambridge Memorial Hospital for final consideration.</p>
+                    <p className={`${style.description} ${style.marginTop}`}>{description}</p>
                     <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
                         <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { logout(); }}>OKAY</div>
                     </div>

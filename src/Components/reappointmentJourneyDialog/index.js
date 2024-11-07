@@ -7,10 +7,19 @@ import { logout } from '../../utils/auth';
 import { POST } from '../../Screens/dataSaver';
 import { ErrorToaster, SuccessToaster } from '../../utils/toaster';
 import { useParams } from 'react-router-dom';
+import ApplicationSubmitDialog from '../../Components/ApplicationSubmitDialog';
 
 const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, img, continueClick }) => {
     const [isContinue, setIsContinue] = useState(false);
     const { applicationId, section, step } = useParams();
+    const [showSubmitDialog, setShowSubmitDialog] = useState(false);
+
+
+    const getIsShowSubmitDialog = (value) => {
+        setShowSubmitDialog(value);
+    }
+
+
     const handleSubmitApplication = async () => {
         await POST(`application-management-service/application/${applicationId}/submit`)
             .then(response => {
@@ -23,6 +32,7 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
             });
     }
     return (
+        <>
         <Dialog isOpen={getIsOpen} onClose={() => getIsOpen(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
             <div>
                 <div className={Classes.DIALOG_BODY}>
@@ -53,7 +63,8 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
                                 ) : (
                                     <div className={` ${style.displayInRow} ${style.marginTop}`}>
                                         <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); logout() }}>LOGOUT</div>
-                                        <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { continueClick(); handleSubmitApplication() }}>SUBMIT</div>
+                                        {/* <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { continueClick(); handleSubmitApplication() }}>SUBMIT</div> */}
+                                        <div className={`${style.continue} ${style.marginLeft}`} onClick={() => setShowSubmitDialog(true)}>SUBMIT</div>
                                     </div>
                                 )}
                             </div>
@@ -63,6 +74,11 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
 
             </div>
         </Dialog >
+
+        {showSubmitDialog && (
+                    <ApplicationSubmitDialog getIsOpen={getIsShowSubmitDialog} title={`Reappointment Application Submitted`} description={`Please note that the entire application process for full board approval may take up to 3 months to complete. The completed file will be forwarded to the credentials committee and medical advisory committee for review before being forwarded to the board of Cambridge Memorial Hospital for final consideration.`} />
+                )}
+        </>
     )
 }
 
