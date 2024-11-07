@@ -1,13 +1,21 @@
 import React, { useState } from 'react';
 import { Dialog, Classes } from '@blueprintjs/core';
 import CrossPink from "../../images/crossPink.png";
+import ThirdPartyDialog from '../../Components/ThirdPartyDialog';
 
 import style from './index.module.scss'
 
 const PaymentDialog = ({ getIsOpen, continueClickFunc }) => {
     const [isContinue, setIsContinue] = useState(false);
+    const [showThirdPartyDialog, setShowThirdPartyDialog] = useState(false);
+
+    const getIsShowThirdPartyDialog = (value) => {
+        setShowThirdPartyDialog(value);
+    }
+
 
     return (
+        <>
         <Dialog isOpen={getIsOpen} onClose={() => getIsOpen(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
             <div>
                 <div className={Classes.DIALOG_BODY}>
@@ -35,12 +43,17 @@ const PaymentDialog = ({ getIsOpen, continueClickFunc }) => {
                     <div className={`${style.description} ${style.marginTop}`}><strong>NOTE:</strong> Work in progress. Clicking continue button will not take to payment screen.</div>
                     <div className={`${style.spaceBetween} ${style.marginTop}`}>
                         <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>CANCEL</div>
-                        <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(false); continueClickFunc(); }}>CONTINUE</div>
+                        {/* <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(false); continueClickFunc(); }}>CONTINUE</div> */}
+                        <div className={`${style.continue} ${style.marginLeft}`} onClick={() => {getIsOpen(true); setShowThirdPartyDialog(true)}}>CONTINUE</div>
                     </div>
                 </div>
 
             </div>
         </Dialog >
+        {showThirdPartyDialog && (
+                <ThirdPartyDialog getIsOpen={getIsShowThirdPartyDialog} continueClick={continueClickFunc} />
+            )}
+        </>
     )
 }
 
