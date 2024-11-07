@@ -1067,22 +1067,41 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                         )}
                                     </>
                                 )}
-                                <div
-                                    className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}
-                                >
+                                {privilegeCategories?.filter(data => data?.id === selectedPrivilegeCategory)[0]?.category === "Courtesy with Admitting" ? (
                                     <div
-                                        className={`${style.reappointmentButton} ${style.marginLeft} ${(selectedPrivilegeCategoryAtPrevHospital !== "" && prevHospitalName !== '') ? '' : style.disabledButton}`}
-                                        onClick={(selectedPrivilegeCategoryAtPrevHospital !== "" && prevHospitalName !== '') ? () => { setIsPrivilegeCategoryChanging(false); handleSubmit(); setIsEdit(false) } : () => { }}
+                                        className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}
                                     >
-                                        UPDATE
+                                        <div
+                                            className={`${style.reappointmentButton} ${style.marginLeft} ${(selectedPrivilegeCategoryAtPrevHospital !== "" && prevHospitalName !== '') ? '' : style.disabledButton}`}
+                                            onClick={(selectedPrivilegeCategoryAtPrevHospital !== "" && prevHospitalName !== '') ? () => { setIsPrivilegeCategoryChanging(false); handleSubmit(); setIsEdit(false) } : () => { }}
+                                        >
+                                            UPDATE
+                                        </div>
+                                        <div
+                                            className={`${style.reappointmentButtonOutlined}`}
+                                            onClick={() => setIsPrivilegeCategoryChanging(false)}
+                                        >
+                                            CANCEL
+                                        </div>
                                     </div>
+                                ) : (
                                     <div
-                                        className={`${style.reappointmentButtonOutlined}`}
-                                        onClick={() => setIsPrivilegeCategoryChanging(false)}
+                                        className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}
                                     >
-                                        CANCEL
+                                        <div
+                                            className={`${style.reappointmentButton} ${style.marginLeft}`}
+                                            onClick={() => { setIsPrivilegeCategoryChanging(false); handleSubmit(); setIsEdit(false) }}
+                                        >
+                                            UPDATE
+                                        </div>
+                                        <div
+                                            className={`${style.reappointmentButtonOutlined}`}
+                                            onClick={() => setIsPrivilegeCategoryChanging(false)}
+                                        >
+                                            CANCEL
+                                        </div>
                                     </div>
-                                </div>
+                                )}
                             </div>
                         )}
                     </div>
