@@ -19,7 +19,6 @@ import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import PdfDoc from './../../../images/pdfDoc.png';
 import WordDoc from './../../../images/wordDoc.png';
 import CrossPink from "./../../../images/crossPink.png";
-import BlueSign from "./../../../images/blueSign.png";
 import ImgDoc from './../../../images/imgDoc.png';
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 import DatalistInput, { useComboboxControls } from "react-datalist-input";
