@@ -3,6 +3,7 @@ import { useUser } from "@descope/react-sdk";
 import DefaultUserAvatar from "./../../images/defaultUserLogo.jpg";
 import style from "./index.module.scss";
 import { GET } from "../../Screens/dataSaver";
+import { useParams } from "react-router-dom";
 
 const ApplicationUserCard = ({ user, applyingFor }) => {
   const userDetails = useUser();
@@ -10,9 +11,15 @@ const ApplicationUserCard = ({ user, applyingFor }) => {
   const [basicForm, setBasicForm] = useState({});
   const [profilePic, setProfilePic] = useState("");
   const applicationId = sessionStorage.getItem("applicationId");
+  const [formIndex, setFormIndex] = useState();
+  const { section, step } = useParams()
   useEffect(() => {
     getPreApplication();
   }, []);
+
+  useEffect(() => {
+    setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
+  }, [basicForm, step])
 
   const getPreApplication = async () => {
     const { data: basicForm } = await GET(
@@ -20,17 +27,17 @@ const ApplicationUserCard = ({ user, applyingFor }) => {
     );
     setBasicForm(basicForm);
     let profilePicData =
-      basicForm?.forms[0]?.data !== null && basicForm !== undefined
-        ? basicForm?.forms[0]?.data?.table
-            ?.filter(
-              (fileData) => fileData?.documentType === "Passport Size Photo"
-            )
-            ?.map((data) => data)
+      basicForm?.forms[formIndex]?.data !== null && basicForm !== undefined
+        ? basicForm?.forms[formIndex]?.data?.table
+          ?.filter(
+            (fileData) => fileData?.documentType === "Passport Size Photo"
+          )
+          ?.map((data) => data)
         : [];
     setProfilePic(
-      profilePicData?.length !== 0 ? profilePicData[0]?.fileURL : ""
+      (profilePicData?.length !== 0 && profilePicData !== undefined) ? profilePicData?.[0]?.fileURL : ""
     );
-    console.log(profilePicData, "pic");
+    console.log(profilePicData, "pic", profilePicData?.length !== 0);
   };
   return (
     <div className={`${style.applicationUserCard} ${style.profileGrid}`}>

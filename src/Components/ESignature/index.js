@@ -25,47 +25,73 @@ const ESignature = ({ userName, currentDate, encData, showData, showDatais = tru
   );
   console.log("style", eSignTypeContentStyle);
   console.log("text", eSignTypeContent);
+  // return (
+  //   <>
+  //     <div className={removePadding ? style.signatureWithoutPadding : style.signature}>
+  //       <div className={style.text}>
+  //         <span>
+  //           {isInitial
+  //             ? "Electronically Initialed by y"
+  //             : "Electronically Signed by"}
+  //         </span>
+  //       </div>
+  //       <div
+  //         className={`${style.boxContainer} ${showDatais ? style.border : ""}`}
+  //       >
+  //         <div className={style.userDetails}>
+  //           {!showData ? (
+  //             <span>
+  //               {isInitial
+  //                 ? "Click To Electronically Initial"
+  //                 : "Click To Electronically Sign"}
+  //             </span>
+  //           ) : eSignImg ? (
+  //             <img
+  //               src={eSignImg?.fileURL}
+  //               alt="Signature"
+  //               className={style.eSignImg}
+  //             />
+  //           ) : (
+  //             <span style={{ fontFamily: eSignTypeContentStyle }}>
+  //               {eSignTypeContent || ""}
+  //             </span>
+  //           )}
+  //         </div>
+  //       </div>
+  //       <div className={style.signatureData}>
+  //         {showData && encData && encData.length > 0
+  //           ? ` ${encData.substring(0, 35)}.....`
+  //           : ""}
+  //       </div>
+  //     </div>
+  //   </>
+  // );
   return (
     <>
-      <div className={removePadding ? style.signatureWithoutPadding : style.signature}>
+      <div className={style.signature}>
         <div className={style.text}>
-          <span>
-            {isInitial
-              ? "Electronically Initialed by y"
-              : "Electronically Signed by"}
-          </span>
-        </div>
-        <div
-          className={`${style.boxContainer} ${showDatais ? style.border : ""}`}
-        >
-          <div className={style.userDetails}>
+          <span>{isInitial ? 'Electronically Initialed by' : 'Electronically Signed by'}</span>
+        </div >
+        <div className={`${style.boxContainer} ${style.border}`} >
+          <div className={style.userDetails} >
             {!showData ? (
-              <span>
-                {isInitial
-                  ? "Click To Electronically Initial"
-                  : "Click To Electronically Sign"}
-              </span>
-            ) : eSignImg ? (
-              <img
-                src={eSignImg?.fileURL}
-                alt="Signature"
-                className={style.eSignImg}
-              />
+              <span> {isInitial ? 'Click To Electronically Initial' : 'Click To Electronically Sign'}</span>
             ) : (
-              <span style={{ fontFamily: eSignTypeContentStyle }}>
-                {eSignTypeContent || ""}
-              </span>
+              <span className={style.userName}>{userName}</span>
             )}
-          </div>
-        </div>
+          </div >
+        </div >
         <div className={style.signatureData}>
-          {showData && encData && encData.length > 0
-            ? ` ${encData.substring(0, 35)}.....`
+          {showData
+            ? encData && encData.length > 0
+              ? `${encData.substring(0, 25)}.....`
+              : ""
             : ""}
         </div>
-      </div>
+      </div >
     </>
-  );
+  )
+
 };
 
 
