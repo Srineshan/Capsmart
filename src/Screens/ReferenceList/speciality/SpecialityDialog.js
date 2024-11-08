@@ -180,6 +180,17 @@ const SpecialityDialog = ({
   };
 
   const SaveSubmitHandler = async (isSaveAndExit) => {
+    if (
+      !saveData ||
+      Object.keys(saveData).length === 0 ||
+      !isProofOfDocumentRequired ||
+      !isSpecialityRequired ||
+      !specialitySpecificationType
+    ) {
+      ErrorToaster("Please fill in all the required fields.");
+      return;
+    }
+
     var speciality = {
       ...saveData,
       proofOfDocumentationRequired: isProofOfDocumentRequired,

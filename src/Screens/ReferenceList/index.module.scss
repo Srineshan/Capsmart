@@ -19,6 +19,30 @@
 .top70 {
   top: 70%;
 }
+.dropzoneStyle {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  height: auto;
+  border-width: 2;
+  border-color: rgb(139, 136, 136);
+  background-color: #f5f5f8;
+  color: #484c51;
+}
+.completedIconStyle {
+  height: 25px;
+  width: 25px;
+  object-fit: contain;
+  // margin-top: 18px;
+}
+.completedIconStyle2 {
+  height: 18px;
+  width: 20px;
+  object-fit: contain;
+  margin-right: 10px;
+  margin-left: 10px;
+  // margin-top: 18px;
+}
 
 .headingStyle {
   display: flex;
@@ -702,6 +726,13 @@
   align-items: center;
   display: grid;
   grid-template-columns: 59% 16% 15% 10%;
+}
+
+.spanAlignment {
+  color: #7165e3;
+  text-decoration: underline;
+  cursor: pointer;
+  font: normal normal bold 16px/26px Proxima Nova;
 }
 
 .tableHeaderIndustriesFontStyle {
@@ -1555,6 +1586,20 @@
   color: #52575d;
   margin-top: 5px;
 }
+.entityLableStyle4 {
+  text-align: left;
+  font: normal normal normal 14px/20px proxima-nova;
+  letter-spacing: 0px;
+  color: #52575d;
+  margin-top: 5px;
+}
+.entityLableStyle3 {
+  text-align: left;
+  font: normal normal normal 13px/20px proxima-nova;
+  letter-spacing: 0px;
+  color: #52575d;
+  margin-top: 5px;
+}
 
 .entityLableStyle1 {
   text-align: left;
@@ -1562,6 +1607,11 @@
   letter-spacing: 0px;
   color: #52575d;
   opacity: 0.5;
+}
+.ApplicantStyle {
+  display: grid;
+  grid-template-columns: 7% 20% 10% 8% 12% 18% 18%;
+  gap: 1%;
 }
 
 .displayFlex {
@@ -2962,13 +3012,14 @@
 ;
 }
 
-.inputGroupText>input {
+.inputGroupText > input {
   text-align: center;
 }
 
 .selectDropdownInputBox {
   border-radius: 4px;
-  background: transparent url("../../images/arrowDown.png") 0% 0% no-repeat padding-box;
+  background: transparent url("../../images/arrowDown.png") 0% 0% no-repeat
+    padding-box;
   border: 1px solid #e9e9f0;
   background-position: right center;
   background-repeat: no-repeat;
@@ -2986,6 +3037,9 @@
 
 .headerStyle {
   align-items: center;
+}
+.grayRow {
+  background-color: gray;
 }
 
 .tagStyle {
@@ -3080,8 +3134,6 @@
   align-items: center;
 }
 
-
-
 .siteName {
   font: normal normal bold 15px/20px proxima-nova;
   color: #52575d;
@@ -3100,7 +3152,7 @@
 }
 
 .sideNonActiveBackground {
-  background-color: #EBEBEB;
+  background-color: #ebebeb;
   opacity: 0.8;
 }
 
@@ -3166,7 +3218,7 @@
   text-align: left;
   font: normal normal 600 17px/21px proxima-nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #52575d;
   text-transform: uppercase;
   height: 30px;
   padding: 10px 20px;
@@ -3180,8 +3232,11 @@
   width: 100px;
   text-align: center;
   padding: 15px 20px;
- 
+}
   
+.firstmaxWidth {
+  max-width: 200px;
+  padding: 10px 20px;
 }
 
 .twoColumn {
@@ -3189,12 +3244,12 @@
   padding: 10px;
 }
 
-.applicantItem>td {
+.applicantItem > td {
   vertical-align: middle;
   height: 30px;
 }
 
-.applicantItem>tr {
+.applicantItem > tr {
   vertical-align: middle;
   height: 30px;
 }
@@ -3208,7 +3263,7 @@
   border: 1px solid;
   font: normal normal normal 16px/30px proxima-nova;
   text-align: left;
-  color: #52575D;
+  color: #52575d;
   padding: 10px 20px;
 }
 
@@ -3219,6 +3274,19 @@
    padding: 10px;
    text-align: center;
  }
+.Department {
+  display: grid;
+  grid-template-columns: 15% 15% 20% 10% 10% 10% 20%;
+  /* Adjust these percentages based on your desired widths */
+  grid-gap: 10px;
+  /* This controls the gap between grid items */
+  padding: 10px;
+  /* Add some padding to ensure the content doesn't touch the edges */
+  background-color: #e0e0f8;
+  /* Adjust background to match your design */
+  text-align: center;
+  /* Center text in the columns */
+}
 
 .rightAligned {
   text-align: right;
@@ -3403,6 +3471,11 @@
 .validation {
   display: flex;
   align-items: center;
+  .bp4-control {
+    input:checked ~ .bp4-control-indicator {
+      background-color: #7165e3 !important;
+    }
+  }
 }
 
 .dialogOutlinedButton {
@@ -3520,11 +3593,11 @@
   border-radius: 50%;
 }
 
-.switch input:checked+.slider {
+.switch input:checked + .slider {
   background-color: #2196f3;
 }
 
-.switch input:checked+.slider:before {
+.switch input:checked + .slider:before {
   transform: translateX(20px);
 }
 
@@ -3617,11 +3690,11 @@
   border-radius: 50%;
 }
 
-input:checked+.slider {
+input:checked + .slider {
   background-color: #4caf50;
 }
 
-input:checked+.slider:before {
+input:checked + .slider:before {
   transform: translateX(14px);
 }
 
@@ -3774,6 +3847,12 @@ input:checked+.slider:before {
   justify-content: space-evenly;
   align-items: center;
 }
+.imageSpaceAlignment2 {
+  width: 25%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
 
 .fileUploadContainer {
   border: 2px dashed #ccc;
@@ -3787,6 +3866,15 @@ input:checked+.slider:before {
   margin: 0 auto;
   /* Center the container horizontally */
   position: relative;
+}
+
+.flexContainer {
+  display: flex;
+  justify-content: space-between;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); // Adjust shadow as needed
+  padding: 10px 20px; // Top and bottom padding, right and left padding
+  border-radius: 8px; // Adjust the radius as needed
+  background-color: #fff; // Optional: Add a background color if needed
 }
 
 .fileUploadLabel {
@@ -3849,54 +3937,45 @@ input:checked+.slider:before {
 //   text-transform: uppercase;
 // }
 
-
 .marginTop60 {
   margin-top: 60px;
 }
 .placeholderGap {
-  
   min-height: 190px;
 
   margin-top: 90px;
 }
 .Borderthick {
   border-top: 2px solid rgb(117, 94, 247);
-  
+
   width: 100%;
- 
+
   height: 20px;
-  
 }
 
-  
-  .displayIn {
-      display: flex;
+.displayIn {
+  display: flex;
 
-     gap:20px;
-      width: 100%;
-     
-    }
-  
-    .columnLayout {
-      display: flex;
-      flex-direction: column;
-      flex: 2;
-      width: 100%;
-      
-    }
-  
-    .entityLabelStyle {
-      font-size: 14px;
-      margin-bottom: 8px;
-    
-    }
-  
-    .marginLeft20 {
-      margin-left: 20px;
-    
-    }
-  
-    .inputField {
-      width: 100% !important;
-      
-    }
+  gap: 20px;
+  width: 100%;
+}
+
+.columnLayout {
+  display: flex;
+  flex-direction: column;
+  flex: 2;
+  width: 100%;
+}
+
+.entityLabelStyle {
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.marginLeft20 {
+  margin-left: 20px;
+}
+
+.inputField {
+  width: 100% !important;
+}
