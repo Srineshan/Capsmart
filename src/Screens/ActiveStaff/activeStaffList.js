@@ -46,7 +46,7 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
   const [sortField, setSortField] = useState('DEFAULT');
   const [sortValue, setSortValue] = useState('ASCENDING');
 
-  const permanentHeaderValues = ["", "Applicant Name", "Applicant ID", "Applicant Type", "Docs", "CRs", "Notes", "Last Updated", "Action"];
+  const permanentHeaderValues = ["", "Applicant Name", "Applicant ID", "Applicant Type", "Docs", "Notes", "Last Updated", "Action"];
   const locumHeaderValues = ["", "Applicant Name", "Applicant ID", "Applicant Type", "CR", "COS", "CC", "CC Date", "Last Updated", "Action"];
   const temporaryStaffHeaderValues = ["Applicant Name", "Applicant ID", "Applicant Type", "CC Approval", "COS Approval", "Last Updated"];
   const approvedHeaderValues = ["", "Applicant Name", "Type", "Notes", "Last Updated On", ""];
@@ -350,7 +350,7 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
       //   : "grey");
       // disclosures.push(data?.disclosures || '7/9');
       // crs.push(data?.clarificationRequiredFor || "-");
-      crs.push("-");
+      // crs.push("-");
       crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"]);
       // notes.push(data?.notes.length || "0");
       notes.push("0");
@@ -401,12 +401,12 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
       },
       // { type: "dot", value: dataStatus },
       // { "type": "iconWithCount", "value": disclosures, "hoverText": docsHoverText, 'isShowHoverText': true, "icon": docsIcon },
-      {
-        type: "countWithHover",
-        value: crs,
-        hoverText: crsHoverText,
-        isShowHoverText: true,
-      },
+      // {
+      //   type: "countWithHover",
+      //   value: crs,
+      //   hoverText: crsHoverText,
+      //   isShowHoverText: true,
+      // },
       {
         type: "iconWithCount",
         value: notes,
@@ -882,7 +882,7 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
         </div>
         <div>
           <div className={`${style.displayInRow} ${style.spaceBetween} ${style.headingForStaffs} ${style.bottomTextStyle}`}>
-            {`STAFF MANAGER > APPLICATIONS`}
+            {`STAFF MANAGER > ACTIVE STAFF`}
           </div>
 
           <div className={`${style.spaceBetween} ${style.marginTop20} ${style.marginLeft30} `}>
@@ -930,7 +930,7 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
           <p className={`${style.poweredBy} ${style.marginTop10}`}>Powered by</p>
           <img src={CapSmartTransparent} alt="footer" className={`${style.footerIconStyle} ${style.marginLeft10}`} />
         </div>
-        <p className={style.poweredBy}>© {new Date().getFullYear()} CAPSmart</p>
+        <p className={style.poweredBy}>© {new Date().getFullYear()} Hapicare</p>
       </div>
 
     </div >

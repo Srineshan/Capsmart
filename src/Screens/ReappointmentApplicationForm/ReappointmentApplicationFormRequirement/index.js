@@ -21,6 +21,7 @@ import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import Cookie from "universal-cookie";
 import { differenceInDays } from 'date-fns';
 import { logout } from '../../../utils/auth';
+import ReappointmentLandingDialog from '../../../Components/ReappointmentLandingDialog';
 
 const ReappointmentApplicationFormRequirement = () => {
     let cookie = new Cookie();
@@ -36,6 +37,15 @@ const ReappointmentApplicationFormRequirement = () => {
     sessionStorage.setItem('applicationId', applicationId)
 
     console.log(basicForm)
+
+    useEffect(() => {
+        const hasReloaded = sessionStorage.getItem('hasReloaded');
+
+        if (!hasReloaded) {
+            sessionStorage.setItem('hasReloaded', 'true');
+            window.location.reload();
+        }
+    }, []);
 
     useEffect(() => {
         // getBasicForm();
@@ -91,7 +101,7 @@ const ReappointmentApplicationFormRequirement = () => {
         //         console.log(error)
         //         ErrorToaster("Unexpected Error Updating Application");
         //     });
-        navigate(`/reappointmentApplicationForm/${applicationId}/Form/UploadYourDoc`)
+        navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[0]?.formCategory}/${basicForm?.forms[0]?.schemaCategory}`)
     }
 
     // const calculateRemainingDays = (createdDate, totalDays) => {
@@ -135,13 +145,13 @@ const ReappointmentApplicationFormRequirement = () => {
                                 </div>
                             ))}
                         </div>
-                        <div className={style.marginTop}>
+                        {/* <div className={style.marginTop}>
                             <WelcomeCard title={''} description={''} >
                                 {applicantTypeForm !== undefined && 'immunizationHistory' in applicantTypeForm?.properties && (
                                     <ApplicationFieldCard object={applicantTypeForm?.properties?.immunizationHistory} gridStyle={style.twoCol} baseKey={'immunizationHistory'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
                                 )}
                             </WelcomeCard>
-                        </div>
+                        </div> */}
                         {/* <div className={style.marginTop}>
                             <WelcomeCard title={''} description={''} >
                                 {applicantTypeForm !== undefined && 'fitTest' in applicantTypeForm?.properties && (
@@ -164,7 +174,7 @@ const ReappointmentApplicationFormRequirement = () => {
                 </div>
             </div>
             {!isAuthenticated && !isSessionLoading && (
-                <LoginDialog getIsOpen={getIsOpen} days={differenceInDays(new Date(basicForm?.expiryDate), new Date(basicForm?.createdDate))} />
+                <ReappointmentLandingDialog getIsOpen={getIsOpen} days={differenceInDays(new Date(basicForm?.expiryDate), new Date(basicForm?.createdDate))} />
             )}
         </div>
     )

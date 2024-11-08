@@ -29,6 +29,8 @@ import { GET, PUT, POST, TenantID } from "../dataSaver";
 import ReactToPrint, { useReactToPrint } from "react-to-print";
 import CheckListDialog from "./checkListDialog";
 import CircleIcon from '@mui/icons-material/Circle';
+import Cookie from 'universal-cookie';
+import jwt from 'jwt-decode';
 
 const StaffApplicationList = ({
   isLoading,
@@ -62,6 +64,10 @@ const StaffApplicationList = ({
   const [sortValue, setSortValue] = useState('ASCENDING');
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
+  let cookie = new Cookie();
+  let userDetails = cookie.get('user');
+  const users = jwt(userDetails);
+  const [userRole, setUserRole] = useState('');
 
   const applicantHeaderValues = [
     "",
@@ -303,6 +309,17 @@ const StaffApplicationList = ({
   //   setForm(basicForm)
   // }
 
+  useEffect(() => {
+    setUserDetails();
+  }, [users?.id])
+
+  const setUserDetails = async () => {
+    const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
+    console.log("userdataaaa" + JSON.stringify(userData))
+    sessionStorage.setItem('user', JSON.stringify(userData))
+    setUserRole(userData?.roles?.map((data) => data?.roleName));
+  }
+
   const getReFetchMetaData = (value) => {
     setReFetchMetaData(value);
   }
@@ -317,6 +334,11 @@ const StaffApplicationList = ({
   };
 
   const onClickViewAndVerifyFunction = (data) => {
+    getActiveApplicationView(true);
+    sessionStorage.setItem("applicationId", data?.id);
+  };
+
+  const onClickViewAndVerifyLevelFunction = (data) => {
     getActiveApplicationView(true);
     getNotesCommentBox(true);
     sessionStorage.setItem("applicationId", data?.id);
@@ -359,32 +381,32 @@ const StaffApplicationList = ({
     // getPreApplication();
   }
   const getApplicationMoveToNext = async (id) => {
-    let role;
+    // let role;
     let notes;
 
-    if (selectedTab === 'level-2') {
-      role = "Department Head";
-      notes = "Send"
-    } else if (selectedTab === 'level-3') {
-      role = "Credentialing Committee";
-      notes = "Send"
-    } else if (selectedTab === 'level-4') {
-      role = "Advisory Committee";
-      notes = "Send"
-    } else if (selectedTab === 'level-5') {
-      role = "Board";
-      notes = "Send"
-    } else {
-      role = "Chief Of Staff";
-      notes = "Send"
-    }
+    // if (selectedTab === 'level-2') {
+    //   role = "Department Head";
+    //   notes = "Send"
+    // } else if (selectedTab === 'level-3') {
+    //   role = "Credentialing Committee";
+    //   notes = "Send"
+    // } else if (selectedTab === 'level-4') {
+    //   role = "Advisory Committee";
+    //   notes = "Send"
+    // } else if (selectedTab === 'level-5') {
+    //   role = "Board";
+    //   notes = "Send"
+    // } else {
+    //   role = "Chief Of Staff";
+    //   notes = "Send"
+    // }
 
     let temp = {
-      role: role,
+      role: Array.isArray(userRole) ? userRole[0] : userRole,
       notes: notes
     };
 
-    const isDelegate = selectedTab === 'level-1' || selectedTab === 'mac' || selectedTab === 'bod' ? true : false;
+    const isDelegate = selectedTab === 'level-2' || selectedTab === 'level-3' || selectedTab === 'level-4' || selectedTab === 'level-5' ? true : false;
     const requestData = isDelegate === true ? temp : {};
     await PUT(`application-management-service/application/${id}/workflow/move?isDelegate=${isDelegate}`, requestData)
       .then(response => {
@@ -459,7 +481,7 @@ const StaffApplicationList = ({
     try {
       const response = await GET(
         // `application-management-service/application/workflowUser?tab=${selectedTab}`
-        `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}`
+        `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=NEW&limit=20`
       );
       console.log("Application data", response?.data.applications);
       setTableData(response?.data?.applications);
@@ -616,9 +638,9 @@ const StaffApplicationList = ({
 
     tableData?.map((data) => {
       dot.push(
-        data?.status === "SUBMITTED"
+        data?.currentLevelCompleted === false
           ? "yellow"
-          : data?.status === "APPROVED"
+          : data?.currentLevelCompleted === true
             ? "green"
             : "grey"
       );
@@ -762,12 +784,15 @@ const StaffApplicationList = ({
 
     tableData?.map((data) => {
       dot.push(
-        data?.status === "SUBMITTED"
+        data?.currentLevelCompleted == false
           ? "yellow"
-          : data?.status === "APPROVED"
+          : data?.currentLevelCompleted == true
             ? "green"
             : "grey"
       );
+
+      console.log("data?.currentLevelCompleted" + data?.currentLevelCompleted);
+      
       applicantName.push(
         `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
         " "
@@ -1287,11 +1312,11 @@ const StaffApplicationList = ({
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyFunction,
     },
-    {
-      data: "Send for Cred Comm Review",
-      requiredValue: "boolean",
-      onClick: onClickStartTheWorkFlowFunction,
-    },
+    // {
+    //   data: "Send for Dept Head Review",
+    //   requiredValue: "boolean",
+    //   onClick: onClickMoveToNextFunction,
+    // },
     {
       data: "Applicant Processing Tasks",
       requiredValue: "boolean",
@@ -1355,7 +1380,7 @@ const StaffApplicationList = ({
     //   requiredValue: "boolean",
     //   onClick: onClickMoveToNextFunction,
     // },
-    { data: "Review & Approve", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction },
+    { data: "Review & Approve", requiredValue: "boolean", onClick: onClickViewAndVerifyLevelFunction },
     { data: "Move to MAC", requiredValue: "boolean", onClick: onClickMoveToNextFunction },
     // { data: "Review & Approve", requiredValue: "boolean", onClick: "" },
     // { data: "Move to MAC", requiredValue: "boolean", onClick: "" },
@@ -1365,7 +1390,7 @@ const StaffApplicationList = ({
       isParagraph: true,
     },
     {
-      data: "From Staff Manager",
+      data: `From ${userRole}`,
       requiredValue: "boolean",
       onClick: "",
       isIndent: true
@@ -1419,8 +1444,8 @@ const StaffApplicationList = ({
     //   requiredValue: "boolean",
     //   onClick: "",
     // },
-    { data: "BOD Approval Status", requiredValue: "boolean", onClick: onClickMoveToNextFunction },
-    // { data: "BOD Approval Status", requiredValue: "boolean", onClick: "" },
+    // { data: "BOD Move Approval Status", requiredValue: "boolean", onClick: onClickMoveToNextFunction },
+    { data: "BOD Approval Status", requiredValue: "boolean", onClick: "" },
     { data: "Print Summary For BOD", requiredValue: "boolean", onClick: "" },
     { data: "Applicant Processing Tasks", requiredValue: "boolean", onClick: "" },
   ];
@@ -1928,7 +1953,7 @@ const StaffApplicationList = ({
           </p>
           <img src={CapSmartTransparent} alt="footer" className={`${style.footerIconStyle} ${style.marginLeft10}`} />
         </div>
-        <p className={style.poweredBy}>© {new Date().getFullYear()} CAPSmart</p>
+        <p className={style.poweredBy}>© {new Date().getFullYear()} Hapicare</p>
       </div>
 
       {showApplicationRejectionDialog && (

@@ -2,6 +2,7 @@ import React from 'react';
 import logo from "./../../images/cambridgeHospital.png";
 import CrossPink from "../../images/crossPink.png";
 import { useDescope } from '@descope/react-sdk';
+import CloseIcon from '@mui/icons-material/Close';
 import style from './index.module.scss';
 
 const ApplicationHeader = ({ title, close, closeClick }) => {
@@ -14,14 +15,16 @@ const ApplicationHeader = ({ title, close, closeClick }) => {
             <div className={`${style.headerGrid}`}>
                 <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
                 <div className={`${style.titleText} ${style.verticalAlignCenter}`}>{title}</div>
+                <div></div>
                 {close && (
                     <div className={style.verticalAlignCenter}>
-                        <img
+                        {/* <img
                             src={CrossPink}
                             alt="cross"
                             className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft20}`}
                             onClick={closeClick}
-                        />
+                        /> */}
+                        <CloseIcon sx={{ fontSize: 40, color: '#173790', cursor: 'pointer' }} onClick={closeClick} />
                     </div>
                 )}
             </div>

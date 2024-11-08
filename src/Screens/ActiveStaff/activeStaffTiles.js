@@ -36,7 +36,7 @@ const ActiveStaffTiles = ({ getSelectedTab, selectedTab,reFetchMetaData,setReFet
 
   return (
     <div className={`${style.tabs}`}>
-      <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Permanent" tileCount={counts?.PERMANENT} currentTile="PERMANENT" />
+      <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Full Time" tileCount={counts?.PERMANENT} currentTile="PERMANENT" />
       <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Locum Tennens" tileCount={counts?.LOCUM} currentTile="LOCUM" />
       <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Temporary" tileCount={counts?.PROVISIONAL} currentTile="PROVISIONAL" />
     </div>

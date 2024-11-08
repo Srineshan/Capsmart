@@ -37,7 +37,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
 
   const getTitleCounts = async () => {
     try {
-      const response = await GET('application-management-service/application/workflowUser/meta');
+      const response = await GET('application-management-service/application/workflowUser/meta?applicationCreationType=NEW');
       setCounts(response?.data);
       getReFetchMetaData(false);
     } catch (error) {
@@ -49,7 +49,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
     try {
       const { data: userData } = await GET(`user-management-service/user/${user?.id}`);
       sessionStorage.setItem('user', JSON.stringify(userData));
-      setUserRole(userData?.roles?.map((data) => data?.roleName));
+      setUserRole(userData?.roles?.map((data) => data?.roleName) || []);
     } catch (error) {
       console.error('Error fetching user details', error);
     }
@@ -75,17 +75,17 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
     const UserFlowType = userFlow?.workflow || [];
     
     // Determine if the user is a  staff manager or chief of staff
-    const isManagerOrChief = userRole.includes("Staff Manager") || userRole.includes("Chief Of Staff");
+    const isManagerOrChief = userRole?.includes("Staff Manager") || userRole?.includes("Chief Of Staff");
     
     // Calculate currentRoleIndex based on userFlowArray
     const newCurrentRoleIndex = isManagerOrChief
       ? 0 
       : Object.entries(UserFlowType).findIndex(([key, value]) => {
-          const details = value.flowDetails;
+          const details = value?.flowDetails;
           return (
             details &&
             details.some((detail) => {
-              return detail.role && userRole.includes(detail.role.roleName);
+              return detail?.role && userRole?.includes(detail?.role?.roleName);
             })
           );
       });
