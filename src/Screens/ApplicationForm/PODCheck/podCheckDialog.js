@@ -4,10 +4,17 @@ import AccessAlarmIcon from "@mui/icons-material/AccessAlarm";
 import Timer from "../../../images/Timer.png";
 import style from "./index.module.scss";
 import CrossPink from "../../../images/crossPink.png";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 import { Box, Typography, Button, Container, Paper, Grid } from "@mui/material";
 
-function podCheckDialog({ onClose }) {
+function PodCheckDialog({ onClose }) {
+  const navigate = useNavigate(); // Initialize useNavigate hook
+
+  const handleWrapUpClick = () => {
+    navigate("/applicationForm/acknowledgementReview"); // Redirect to the disclosures page
+  };
+
   return (
     <Dialog open onClose={onClose} className={style.applicationStatusModal}>
       <div className={style.applicationStatusModal}>
@@ -71,4 +78,4 @@ function podCheckDialog({ onClose }) {
   );
 }
 
-export default podCheckDialog;
+export default PodCheckDialog;
