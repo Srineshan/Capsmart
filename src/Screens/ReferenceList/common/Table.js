@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import RenewDark from "./../../../images/renewDark.png";
 import DeleteHcFolder from "./../../../images/deleteHcFolder.png";
 import EditHcFolder from "./../../../images/editHcRow.png";
+import ThreeDots from "./../../../images/threeDot.png";
 import style from "./../index.module.scss";
 import DragHandleIcon from "@mui/icons-material/DragHandle";
 import ProofOfDocumentDialog from "../proofOfDocument/proofOfDocumentDialog";
@@ -10,6 +11,7 @@ import ConsentsDialog from "../consents/consentsDialog";
 import AcknowledgmentDialog from "../acknowledgment/AcknowledgmentDialog";
 import DisclosureByIndustriesDialog from "../disclosureByIndustries/disclosureByIndustriesDialog";
 import { format } from "date-fns";
+import PrivilegeListDialog from "../privilegeListMaster/PrivilegesListDialog";
 
 const ReferenceListCommonTable = ({
   applicantTypes,
@@ -20,7 +22,10 @@ const ReferenceListCommonTable = ({
   handleClose,
   tileType,
   onEditClick,
+  gridStyle,
 }) => {
+  console.log("tileType", tileType);
+
   const [selectedApplicant, setSelectedApplicant] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -105,6 +110,15 @@ const ReferenceListCommonTable = ({
         console.error("Error deleting document:", error);
       }
     }
+    if (tileType === "PrivilegeListMaster") {
+      try {
+        await DELETE(`entity-service/privilegeMaster/${id}`);
+
+        console.log("Document deleted successfully");
+      } catch (error) {
+        console.error("Error deleting document:", error);
+      }
+    }
   };
 
   const isDateStamp = (str) => {
@@ -113,7 +127,7 @@ const ReferenceListCommonTable = ({
   };
 
   return (
-    <div className={style.applicantTableContainer}>
+    <div className={`${style.applicantTableContainer} `}>
       {/* {applicantNotice && (
         <div className={style.headerNotice}>
           <p> {applicantNotice}</p>
@@ -123,130 +137,186 @@ const ReferenceListCommonTable = ({
           <p> {"  next to the applicant type."}</p>
         </div>
       )} */}
-      <table className={style.applicantTable}>
+
+      <table className={`${style.applicantTable} `}>
         <thead>
-          <tr className={`${style.applicantHeader} `}>
+          <tr className={`${style.applicantHeader}`}>
             {tableHeadKeys &&
               tableHeadKeys.map((head, index) => (
                 <th
-                  className={`${index === 0 ? style.firstColumn : style.centerAligned
-                    } `}
+                  className={`${
+                    index === 0
+                      ? tileType === "PrivilegeListMaster" ||
+                        tileType === "PrivilegeListManager"
+                        ? style.firstColumnPrivilegeListMaster
+                        : style.firstColumn
+                      : style.centerAligned
+                  } ${gridStyle}`}
                   key={index}
                 >
                   {head}
                 </th>
               ))}
-
             <th></th>
           </tr>
         </thead>
+
         <tbody>
           {applicantTypes.length
             ? applicantTypes.map((applicant, index) => (
-              <React.Fragment key={applicant.id}>
-                <tr
-                  className={`${style.applicantItem} ${index % 2 === 0 ? "" : style.sideNonActiveBackground
+                <React.Fragment key={applicant.id}>
+                  <tr
+                    className={`${style.applicantItem} ${
+                      index % 2 === 0 ? "" : style.sideNonActiveBackground
                     }`}
-                >
-                  {tableDataKeys.map((key, keyIndex) => (
-                    <td
-                      key={keyIndex}
-                      className={`${keyIndex === 0
-                        ? style.leftAligned
-                        : style.centerAligned
-                        } ${keyIndex === 0 ? style.firstColumn : ""}`}
-                    >
-                      {tileType === "ApplicantType"
-                        ? key === "category"
-                          ? applicant.category
-                            ? applicant.category.category
-                            : "N/A"
-                          : key === "applicantType"
+                  >
+                    {tableDataKeys.map((key, keyIndex) => (
+                      <td
+                        key={keyIndex}
+                        className={`${
+                          keyIndex === 0
+                            ? tileType === "PrivilegeListMaster" ||
+                              tileType === "PrivilegeListManager"
+                              ? `${style.leftAligned} ${style.firstColumnPrivilegeListMaster}`
+                              : `${style.leftAligned} ${style.firstColumn}`
+                            : style.centerAligned
+                        }`}
+                      >
+                        {tileType === "ApplicantType"
+                          ? key === "category"
+                            ? applicant.category
+                              ? applicant.category.category
+                              : "N/A"
+                            : key === "applicantType"
                             ? applicant.applicantType
                               ? applicant.applicantType
                               : "N/A"
                             : key === "lastUpdated" ||
                               key === "lastModifiedDate"
-                              ? applicant[key]
-                                ? format(new Date(applicant[key]), "MMM dd, yyyy")
-                                : "N/A"
-                              : "N/A" // Handle other cases or provide a default value
-                        : key === "applicantType"
-                          ? applicant.applicantType &&
-                          applicant.applicantType[key]
+                            ? applicant[key]
+                              ? format(new Date(applicant[key]), "MMM dd, yyyy")
+                              : "N/A"
+                            : "N/A" // Handle other cases or provide a default value
+                          : key === "applicantType"
+                          ? (applicant.applicantType &&
+                              applicant.applicantType[key]) ||
+                            applicant.applicantType
                           : key === "disclaimer"
-                            ? applicant[key]?.content != null
-                              ? "Yes"
-                              : "No"
-                            : key === "esignatureRequiredOnEachPage" ||
-                              key === "esignatureRequired"
-                              ? applicant[key] === true
-                                ? "Required"
-                                : "NA"
-                              : key === "createdDate"
-                                ? format(new Date(applicant[key]), "MMM dd, yyyy")
-                                : key === "lastModifiedDate" ||
-                                  key === "lastModifiedData"
-                                  ? applicant[key]
-                                    ? format(new Date(applicant[key]), "MMM dd, yyyy")
-                                    : "N/A"
-                                  : key === "departmentName"
-                                    ? applicant.departmentName
-                                      ? applicant.departmentName.name
-                                      : "N/A"
-                                    : applicant[key] || "N/A"}
-                    </td>
-                  ))}
-                  <td className={style.actions} height="100%">
-                    <img
-                      src={EditHcFolder}
-                      alt="Edit"
-                      className={style.actionIcon}
-                      onClick={() => handleEditClick(applicant)}
-                    />
-                    <img
-                      src={DeleteHcFolder}
-                      alt="Delete"
-                      className={style.actionIcon}
-                      onClick={() => handleDelete(applicant.id)}
-                    />
-                    {/* <DragHandleIcon className={style.actionIcon} /> */}
-                  </td>
-                </tr>
-                {applicant.sub &&
-                  applicant.sub.map((subApplicant) => (
-                    <tr
-                      key={subApplicant.id}
-                      className={`${style.subApplicantItem} ${style.subItem}`}
-                    >
-                      {tableDataKeys.map((key, keyIndex) => (
-                        <td
-                          key={keyIndex}
-                          className={`${keyIndex === 0
-                            ? style.leftAligned
-                            : style.centerAligned
-                            } ${keyIndex === 0 ? style.firstColumn : ""}`}
-                        >
-                          {subApplicant.key}
-                        </td>
-                      ))}
-                      <td className={style.actions}>
-                        <img
-                          src={EditHcFolder}
-                          alt="Edit"
-                          className={style.actionIcon}
-                        />
-                        <img
-                          src={DeleteHcFolder}
-                          alt="Delete"
-                          className={style.actionIcon}
-                        />
-                        {/* <DragHandleIcon className={style.actionIcon} /> */}
+                          ? applicant[key]?.content != null
+                            ? "Yes"
+                            : "No"
+                          : key === "esignatureRequiredOnEachPage" ||
+                            key === "esignatureRequired"
+                          ? applicant[key] === true
+                            ? "Required"
+                            : "NA"
+                          : key === "createdDate"
+                          ? format(new Date(applicant[key]), "MMM dd, yyyy")
+                          : key === "lastModifiedDate" ||
+                            key === "lastModifiedData"
+                          ? applicant[key]
+                            ? format(new Date(applicant[key]), "MMM dd, yyyy")
+                            : "N/A"
+                          : key === "departmentName"
+                          ? applicant.departmentName
+                            ? applicant.departmentName.name
+                            : "N/A"
+                          : applicant[key] || "N/A"}
                       </td>
-                    </tr>
-                  ))}
-              </React.Fragment>
-            ))
+                    ))}
+                    <td className={style.actions} height="100%">
+                      <img
+                        src={EditHcFolder}
+                        alt="Edit"
+                        className={style.actionIcon}
+                        onClick={() => handleEditClick(applicant)}
+                      />
+                      <img
+                        src={DeleteHcFolder}
+                        alt="Delete"
+                        className={style.actionIcon}
+                        onClick={() => handleDelete(applicant.id)}
+                      />
+                      {/* <DragHandleIcon className={style.actionIcon} /> */}
+                      {/* {tileType === "PrivilegeListManager" ? (
+                        <img
+                          src={ThreeDots}
+                          alt="More"
+                          className={style.actionIcon}
+                        />
+                      ) : (
+                        <>
+                          <img
+                            src={EditHcFolder}
+                            alt="Edit"
+                            className={style.actionIcon}
+                            onClick={() => handleEditClick(applicant)}
+                          />
+                          <img
+                            src={DeleteHcFolder}
+                            alt="Delete"
+                            className={style.actionIcon}
+                            onClick={() => handleDelete(applicant.id)}
+                          />
+                        </>
+                      )} */}
+                    </td>
+                  </tr>
+                  {applicant.sub &&
+                    applicant.sub.map((subApplicant) => (
+                      <tr
+                        key={subApplicant.id}
+                        className={`${style.subApplicantItem} ${style.subItem}`}
+                      >
+                        {tableDataKeys.map((key, keyIndex) => (
+                          <td
+                            key={keyIndex}
+                            className={`${
+                              keyIndex === 0
+                                ? style.leftAligned
+                                : style.centerAligned
+                            } ${keyIndex === 0 ? style.firstColumn : ""}`}
+                          >
+                            {subApplicant.key}
+                          </td>
+                        ))}
+                        <td className={style.actions}>
+                          <img
+                            src={EditHcFolder}
+                            alt="Edit"
+                            className={style.actionIcon}
+                          />
+                          <img
+                            src={DeleteHcFolder}
+                            alt="Delete"
+                            className={style.actionIcon}
+                          />
+                          {/* <DragHandleIcon className={style.actionIcon} /> */}
+                          {/* {tileType === "PrivilegeListManager" ? (
+                            <img
+                              src={ThreeDots}
+                              alt="More"
+                              className={style.actionIcon}
+                            />
+                          ) : (
+                            <>
+                              <img
+                                src={EditHcFolder}
+                                alt="Edit"
+                                className={style.actionIcon}
+                              />
+                              <img
+                                src={DeleteHcFolder}
+                                alt="Delete"
+                                className={style.actionIcon}
+                              />
+                            </>
+                          )} */}
+                        </td>
+                      </tr>
+                    ))}
+                </React.Fragment>
+              ))
             : ""}
         </tbody>
       </table>
@@ -292,6 +362,17 @@ const ReferenceListCommonTable = ({
           documents={documents}
           isEdit={true}
           handleClose={handleCloseDialog}
+        />
+      )}
+      {selectedApplicant && tileType == "PrivilegeListMaster" && openDialog && (
+        <PrivilegeListDialog
+          open={openDialog}
+          onClose={handleCloseDialog}
+          selectedAcknowledgement={selectedApplicant}
+          documents={documents}
+          isEdit={openDialog}
+          handleClose={handleCloseDialog}
+          tileType={tileType}
         />
       )}
     </div>

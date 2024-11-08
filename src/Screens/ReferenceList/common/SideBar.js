@@ -23,9 +23,13 @@ const ApplicantSideBar = ({
     setActiveIndex(index);
     onSelectSite(site);
   };
+  const sideBarClass =
+    tileType === "PrivilegeListManager"
+      ? `${style.sideBar} ${style.privilegeManagerHeight}`
+      : style.sideBar;
 
   return (
-    <div className={style.sideBar}>
+    <div className={sideBarClass}>
       <div>
         {/* {siteDropdown ? (
           <select
