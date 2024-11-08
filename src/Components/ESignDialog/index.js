@@ -8,6 +8,7 @@ import { ErrorToaster, SuccessToaster } from '../../utils/toaster';
 import style from './index.module.scss'
 import CommonSelectField from '../CommonFields/CommonSelectField';
 import { getValueByPath } from '../../utils/formatting';
+import { useParams } from 'react-router-dom';
 
 const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, basicForm, setBasicForm, getPreApplication }) => {
     const [isContinue, setIsContinue] = useState(false);
@@ -17,9 +18,11 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
     const sigCanvas = useRef({});
     const contentRef = useRef(null);
     const [applicantProfile, setApplicantProfile] = useState();
-    let eSignImg = getValueByPath(basicForm, 'forms[0].data.setUpYourSignature.file');
-    let eSignTypeContent = getValueByPath(basicForm, 'forms[0].data.setUpYourSignature.type.text');
-    let eSignTypeContentStyle = getValueByPath(basicForm, 'forms[0].data.setUpYourSignature.type.style');
+    const [formIndex, setFormIndex] = useState();
+    const { section, step } = useParams()
+    let eSignImg = getValueByPath(basicForm, `forms[${formIndex}].data.setUpYourSignature.file`);
+    let eSignTypeContent = getValueByPath(basicForm, `forms[${formIndex}].data.setUpYourSignature.type.text`);
+    let eSignTypeContentStyle = getValueByPath(basicForm, `forms[${formIndex}].data.setUpYourSignature.type.style`);
     const [selectedESignTypeStyle, setSelectedESignTypeStyle] = useState(eSignTypeContentStyle !== undefined ? eSignTypeContentStyle : 'calgary-script-ot');
     const [eSignType, setESignType] = useState(eSignTypeContent !== undefined ? eSignTypeContent : '');
     console.log(eSignTypeContent, eSignType)
@@ -38,6 +41,10 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
     useEffect(() => {
         getApplicantProfile()
     }, [applicationId])
+
+    useEffect(() => {
+        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
+    }, [basicForm, step])
 
     const getApplicantProfile = async () => {
         const { data: profile } = await GET(
@@ -117,11 +124,11 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
 
     const handleSubmitApplicationReq = async (data) => {
         let temp = {
-            schemaId: basicForm?.forms?.[0]?.schemaId,
+            schemaId: basicForm?.forms?.[formIndex]?.schemaId,
             data: data
         }
         console.log(temp, data)
-        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[0]?.id}`, temp)
+        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
             .then(response => {
                 console.log(response)
                 setBasicForm(response?.data)
@@ -165,7 +172,7 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                     </div>
                     {selectedESignFormat === 'DRAW' ? (
                         <div className={`${style.eSignBox} ${style.marginTop} ${style.cursorPointer}`} onClick={!isShowDrawCanvas ? () => setIsShowDrawCanvas(true) : () => { }}>
-                            {(eSignImg !== undefined && !isShowDrawCanvas && basicForm?.forms?.[0]?.data !== null) ? (
+                            {(eSignImg !== undefined && !isShowDrawCanvas && basicForm?.forms?.[formIndex]?.data !== null) ? (
                                 <div>
                                     <img src={eSignImg?.fileURL} alt="ESign" className={style.eSignImg} />
                                 </div>

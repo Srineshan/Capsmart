@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import style from './index.module.scss';
 import ApplicationHeader from '../../../../Components/ApplicationHeader';
-import { GET } from '../../../dataSaver';
+import { GET, POST } from '../../../dataSaver';
 import { useNavigate, useParams } from 'react-router-dom';
 import PdfViewer from '../../pdfViewer';
 import CryptoJS from 'crypto-js';
@@ -10,10 +10,13 @@ import CommonCheckBox from '../../../../Components/CommonFields/CommonCheckBox';
 import { Tooltip } from '@mui/material';
 import ESignature from '../../../../Components/ESignature';
 import { format } from 'date-fns';
+import Cookie from 'universal-cookie';
+import jwt from 'jwt-decode';
 
 const MedicalDirectivesAttest = () => {
     const { applicationId, section, step, medicalDirectivesId } = useParams();
     const [medicalDirectives, setMedicalDirectives] = useState()
+    const [medicalDirectivesAttestationLog, setMedicalDirectivesAttestationLog] = useState()
     const iframeRef = useRef(null);
     const navigate = useNavigate()
     const [numPages, setNumPages] = useState(0);
@@ -29,13 +32,20 @@ const MedicalDirectivesAttest = () => {
     const [isScrolledToBottom, setIsScrolledToBottom] = useState(false);
     const [medicalDirectivesAttestation, setMedicalDirectivesAttestation] = useState(false);
     const [formIndex, setFormIndex] = useState();
-
+    const [userData, setUserData] = useState();
+    let cookie = new Cookie();
+    let userDetails = cookie.get('user');
+    const users = jwt(userDetails);
     useEffect(() => {
         getMedicalDirectives()
     }, [medicalDirectivesId])
 
     useEffect(() => {
         getApplication()
+    }, [applicationId])
+
+    useEffect(() => {
+        getAttestationLog()
     }, [applicationId])
 
     useEffect(() => {
@@ -51,6 +61,15 @@ const MedicalDirectivesAttest = () => {
             setIsScrolledToBottom(true)
         }
     }, [medicalDirectivesAttestation])
+
+    useEffect(() => {
+        setUserDetails();
+    }, [users?.id])
+
+    const setUserDetails = async () => {
+        const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
+        setUserData(userData)
+    }
 
     // useEffect(() => {
     //     const iframe = iframeRef.current;
@@ -91,9 +110,52 @@ const MedicalDirectivesAttest = () => {
             const { data: medicalDirectives } = await GET(
                 `medical-directive-service/medicalDirectives/${medicalDirectivesId}`
             );
-            setMedicalDirectives(medicalDirectives)
+            setMedicalDirectives(medicalDirectives);
             console.log(medicalDirectives, 'medicalDirectives')
         }
+    }
+
+    const getAttestationLog = async () => {
+        if (medicalDirectivesId !== undefined && applicationId !== undefined) {
+            const { data: medicalDirectivesAttestationLog } = await GET(
+                `medical-directive-service/attestationLog?applicationId=${applicationId}&medicalDirectiveId=${medicalDirectivesId}`
+            );
+            setMedicalDirectivesAttestationLog(medicalDirectivesAttestationLog)
+            console.log(medicalDirectivesAttestationLog, 'medicalDirectivesAttestationLog')
+            if ((medicalDirectivesAttestationLog?.[0]?.esign?.esign !== '' && medicalDirectivesAttestationLog?.[0]?.esign?.esign !== undefined)) {
+                setMedicalDirectivesAttestation((medicalDirectivesAttestationLog?.[0]?.esign?.esign !== '' && medicalDirectivesAttestationLog?.[0]?.esign?.esign !== undefined) ? true : false);
+                setEncryptedText(medicalDirectivesAttestationLog?.[0]?.esign?.esign)
+                setCurrentDate(medicalDirectivesAttestationLog?.[0]?.esign?.signedDate);
+                setIsSigned((medicalDirectivesAttestationLog?.[0]?.esign?.esign !== '' && medicalDirectivesAttestationLog?.[0]?.esign?.esign !== undefined) ? true : false);
+            }
+        }
+    }
+
+    const handleSubmitAttest = async () => {
+        let temp = {
+            user: {
+                id: userData?.id,
+                name: userData?.name,
+                email: userData?.email
+            },
+            application: {
+                id: applicationId
+            },
+            esign: {
+                esign: isSigned ? encryptedText : '',
+                name: isSigned ? `${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} ` : '',
+                signedDate: isSigned ? currentDate : ''
+            }
+        }
+        await POST(`medical-directive-service/medicalDirectives/${medicalDirectivesId}/attest`, temp)
+            .then(response => {
+                // navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex]?.formCategory}/${basicForm?.forms[formIndex]?.schemaCategory}`)
+                getAttestationLog();
+                console.log(response, response?.response?.data)
+            })
+            .catch((error) => {
+                console.log(error)
+            })
     }
 
     const getApplication = async () => {
@@ -181,13 +243,15 @@ const MedicalDirectivesAttest = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className={`${style.continue} ${style.marginTop} ${isScrolledToBottom ? '' : style.disabled}`} onClick={isScrolledToBottom ? () => { } : () => { }}>SUBMIT</div>
+                                    <div className={`${style.continue} ${style.marginTop} ${(isScrolledToBottom && isSigned) ? '' : style.disabled}`} onClick={(isScrolledToBottom && isSigned) ? () => { handleSubmitAttest() } : () => { }}>SUBMIT</div>
                                 </>
                             )}
                         </div>
                         <div className={`${style.medicalDirectivesCard} ${style.marginTop}`}>
                             <div className={style.title}><strong>{`My Attestation Log`} </strong></div>
-                            <div className={`${style.marginTop10} ${style.description}`}>October 1, 2024</div>
+                            {medicalDirectivesAttestationLog?.map(data => (
+                                <div className={`${style.marginTop10} ${style.description}`}>{format(new Date(data?.createdDate), 'MMM dd, yyyy')}</div>
+                            ))}
                         </div>
                     </div>
                 </div>

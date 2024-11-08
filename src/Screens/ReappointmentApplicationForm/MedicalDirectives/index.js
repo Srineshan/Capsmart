@@ -22,6 +22,8 @@ import CommonCheckBox from '../../../Components/CommonFields/CommonCheckBox';
 import { format } from 'date-fns';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
 import TableTwo from '../../../Components/TableDesignTwo';
+import Cookie from 'universal-cookie';
+import jwt from 'jwt-decode';
 
 const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFormat, name }) => {
     const [formSchema, setFormSchema] = useState();
@@ -33,6 +35,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
     const [warningFields, setWarningFields] = useState([]);
     const [showMedicalDirectives, setShowMedicalDirectives] = useState(false)
     const [medicalDirectives, setMedicalDirectives] = useState([])
+    const [allMedicalDirectives, setAllMedicalDirectives] = useState([])
     const { section, step } = useParams()
     const [formIndex, setFormIndex] = useState();
     const navigate = useNavigate()
@@ -46,12 +49,16 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
     const [encryptedText, setEncryptedText] = useState(CryptoJS.AES.encrypt(name + dateTime, publicKey).toString());
     // const [decryptedText, setDecryptedText] = useState(CryptoJS.AES.decrypt(encryptedText, publicKey).toString(CryptoJS.enc.Utf8));
     const [currentDate, setCurrentDate] = useState(format(new Date(), dateFormat));
+    const [userData, setUserData] = useState();
+    let cookie = new Cookie();
+    let userDetails = cookie.get('user');
+    const users = jwt(userDetails);
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? '/applicationForm/Form/PODCheck' : `/applicationForm/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/PODCheck` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
         }
         setIsSigned((basicForm?.forms?.[formIndex]?.esign?.esign !== undefined && basicForm?.forms?.[formIndex]?.acknowledged) ? true : false);
         setIsChecked(basicForm?.forms?.[formIndex]?.acknowledged);
@@ -68,6 +75,17 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
     useEffect(() => {
         getMedicalDirectives()
     }, [applicationId, basicForm])
+
+    useEffect(() => {
+        setUserDetails();
+    }, [users?.id])
+
+    const setUserDetails = async () => {
+        const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
+        setUserData(userData)
+    }
+
+
 
     const getIsValidationDialogOpen = (value) => {
         setShowValidationDialog(value);
@@ -125,10 +143,39 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
             const { data: medicalDirectives } = await GET(
                 `medical-directive-service/medicalDirectives/application/${applicationId}?isNewAppointment=${basicForm?.creationType !== 'REAPPOINTMENT'}&isReAppointment=${basicForm?.creationType === 'REAPPOINTMENT'}`
             );
-            let temp = [...medicalDirectives?.completed, ...medicalDirectives?.pending, ...medicalDirectives?.reviewInprogress, ...medicalDirectives?.pastDue]
+            setAllMedicalDirectives(medicalDirectives)
+            let temp = [...medicalDirectives?.pending, ...medicalDirectives?.reviewInprogress, ...medicalDirectives?.pastDue]
             setMedicalDirectives(temp)
             console.log(medicalDirectives, 'medicalDirectives')
         }
+    }
+
+    const handleSubmitAttestBulk = async () => {
+        let temp = {
+            user: {
+                id: userData?.id,
+                name: userData?.name,
+                email: userData?.email
+            },
+            application: {
+                id: applicationId
+            },
+            medicalDirectiveIds: medicalDirectives?.map(innerData => ({ id: innerData?.medicalDirective?.id })),
+            esign: {
+                esign: encryptedText,
+                name: `${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `,
+                signedDate: currentDate
+            }
+        }
+        await POST(`medical-directive-service/medicalDirectives/attest/bulk`, temp)
+            .then(response => {
+                getMedicalDirectives();
+                // navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex]?.formCategory}/${basicForm?.forms[formIndex]?.schemaCategory}`)
+                console.log(response, response?.response?.data)
+            })
+            .catch((error) => {
+                console.log(error)
+            })
     }
 
     const getIsSubmitClicked = (value, data, skip) => {
@@ -212,13 +259,40 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
         // } 
     }
 
-    const handleContinue = () => {
-        if (sessionStorage.getItem('fromSummary') === "true") {
-            navigate(-1);
+    const handleContinue = async () => {
+        if (isSigned) {
+            let temp = {
+                schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+                data: !isEdited ? basicForm?.forms?.[formIndex]?.data : { esignDate: isSigned ? name + " " + currentDate : '' },
+                acknowledged: isSigned,
+                esign: { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
+            }
+            await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
+                .then(response => {
+                    console.log(response)
+                    getPreApplication()
+                    SuccessToaster("Application Updated Successfully");
+                    if (sessionStorage.getItem('fromSummary') === "true") {
+                        navigate(-1);
+                    }
+                    else {
+                        navigate(navigateURL)
+
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                    ErrorToaster("Unexpected Error Updating Application");
+                });
         }
         else {
-            navigate(navigateURL)
+            if (sessionStorage.getItem('fromSummary') === "true") {
+                navigate(-1);
+            }
+            else {
+                navigate(navigateURL)
 
+            }
         }
     }
 
@@ -229,21 +303,24 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
     };
 
     const handleEdit = (data) => {
-        navigate(`/applicationForm/${basicForm?.forms[formIndex]?.formCategory}/${basicForm?.forms[formIndex]?.schemaCategory}/${data?.id}`)
+        navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex]?.formCategory}/${basicForm?.forms[formIndex]?.schemaCategory}/${data?.id}`)
     }
 
     const getMedicalDirectiveTable = () => {
         let temp = [];
         temp.push({
             "type": "icon", "icon": medicalDirectives?.map(innerData =>
-                <div className={`${style.iconBackgroundColor} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 20, color: '#FFFFFF' }} /></div>
+                <div className={`${innerData?.status === 'COMPLETED' ? style.iconBackgroundColorGreen : innerData?.status === 'INPROGRESS' ? style.iconBackgroundColorYellow : innerData?.status === 'PAST_DUE' ? style.iconBackgroundColorRed : style.iconBackgroundColor} 
+                ${style.verticalAlignCenter} ${style.justifyCenter}`}>
+                    <WarningAmberIcon sx={{ fontSize: 20, color: '#FFFFFF' }} />
+                </div>
                 // <img src={BlueSign} alt="" className={style.blueSignImgStyle} onClick={() => { }} />
             ), 'isShowHoverText': false
         });
-        temp.push({ "type": "text", "value": medicalDirectives?.map(innerData => innerData?.title), 'onClickFunction': handleEdit });
-        temp.push({ "type": "text", "value": medicalDirectives?.map(innerData => innerData?.mdID), 'onClickFunction': handleEdit });
-        temp.push({ "type": "text", "value": medicalDirectives?.map(innerData => innerData?.mdID), 'onClickFunction': handleEdit });
-        temp.push({ "type": "text", "value": medicalDirectives?.map(innerData => innerData?.mdID), 'onClickFunction': handleEdit });
+        temp.push({ "type": "text", "value": medicalDirectives?.map(innerData => innerData?.medicalDirective?.title), 'onClickFunction': handleEdit });
+        temp.push({ "type": "text", "value": medicalDirectives?.map(innerData => innerData?.medicalDirective?.mdID), 'onClickFunction': handleEdit });
+        temp.push({ "type": "text", "value": medicalDirectives?.map(innerData => innerData?.medicalDirective?.mdID), 'onClickFunction': handleEdit });
+        temp.push({ "type": "text", "value": medicalDirectives?.map(innerData => innerData?.medicalDirective?.mdID), 'onClickFunction': handleEdit });
 
         temp.push({
             "type": "icon", "icon": medicalDirectives?.map(innerData =>
@@ -267,29 +344,35 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
                     <div className={style.applicationCardStyle}>
-                        {showMedicalDirectives ? (
+                        {!showMedicalDirectives ? (
                             <>
                                 <div className={`${style.completedCard} ${style.marginTop} ${style.displayInRow}`}>
                                     <div className={`${style.iconBackgroundCompleted} ${style.verticalAlignCenter} ${style.justifyCenter}`}><CheckCircleOutlineIcon sx={{ fontSize: 18, color: '#FFFFFF' }} /></div>
-                                    <div className={style.marginLeft}>{12} Completed</div>
+                                    <div className={style.marginLeft}> {medicalDirectives?.length === 0 ? 'All Current & Up-To-Date' : `${allMedicalDirectives?.completed?.length} Completed`}</div>
                                 </div>
-                                <div className={`${style.pendingCard} ${style.marginTop} ${style.displayInRow}`}>
-                                    <div className={`${style.iconBackgroundPending} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 18, color: '#FFFFFF' }} /></div>
-                                    <div className={style.marginLeft}>{4} Pending</div>
-                                </div>
-                                <div className={`${style.reviewInProgressCard} ${style.marginTop} ${style.displayInRow}`}>
-                                    <div className={`${style.iconBackgroundReviewInProgress} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 18, color: '#FFFFFF' }} /></div>
-                                    <div className={style.marginLeft}>{5} Review In- Progress</div>
-                                </div>
-                                <div className={`${style.pastDueCard} ${style.marginTop} ${style.displayInRow}`}>
-                                    <div className={`${style.iconBackgroundPastDue} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 18, color: '#FFFFFF' }} /></div>
-                                    <div className={style.marginLeft}>{2} Past Due</div>
-                                </div>
+                                {allMedicalDirectives?.pending?.length !== 0 && (
+                                    <div className={`${style.pendingCard} ${style.marginTop} ${style.displayInRow} ${style.cursorPointer}`} onClick={() => setShowMedicalDirectives(true)}>
+                                        <div className={`${style.iconBackgroundPending} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 18, color: '#FFFFFF' }} /></div>
+                                        <div className={style.marginLeft}>{allMedicalDirectives?.pending?.length} Pending</div>
+                                    </div>
+                                )}
+                                {allMedicalDirectives?.reviewInprogress?.length !== 0 && (
+                                    <div className={`${style.reviewInProgressCard} ${style.marginTop} ${style.displayInRow} ${style.cursorPointer}`} onClick={() => setShowMedicalDirectives(true)}>
+                                        <div className={`${style.iconBackgroundReviewInProgress} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 18, color: '#FFFFFF' }} /></div>
+                                        <div className={style.marginLeft}>{allMedicalDirectives?.reviewInprogress?.length} Review In- Progress</div>
+                                    </div>
+                                )}
+                                {allMedicalDirectives?.pastDue?.length !== 0 && (
+                                    <div className={`${style.pastDueCard} ${style.marginTop} ${style.displayInRow} ${style.cursorPointer}`} onClick={() => setShowMedicalDirectives(true)}>
+                                        <div className={`${style.iconBackgroundPastDue} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 18, color: '#FFFFFF' }} /></div>
+                                        <div className={style.marginLeft}>{allMedicalDirectives?.pastDue?.length} Past Due</div>
+                                    </div>
+                                )}
                             </>
                         ) : (
                             <>
                                 <div className={`${style.medicalDirectivesText} ${style.marginTop10}`}>Medical Directives to Attest</div>
-                                <div className={`${style.attestButton} ${style.marginTop} ${style.displayInRow} ${style.verticalAlignCenter} ${style.justifyCenter}`}><img src={WhiteSign} alt="" className={`${style.whiteSignIcon} ${style.marginRight}`} />Attest To All</div>
+                                <div className={`${style.attestButton} ${style.marginTop} ${style.displayInRow} ${style.verticalAlignCenter} ${style.justifyCenter} ${medicalDirectives?.length !== 0 ? '' : style.disabledButton}`} onClick={medicalDirectives?.length !== 0 ? () => { handleSubmitAttestBulk() } : () => { }}><img src={WhiteSign} alt="" className={`${style.whiteSignIcon} ${style.marginRight}`} />Attest To All</div>
                                 <div className={style.marginTop}>
                                     <TableTwo
                                         tableHeaderValues={[
@@ -312,20 +395,21 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                 </div>
                             </>
                         )}
-                        {/* <div className={`${style.marginTop}`}>
+                        {/* <div className={`${style.description} ${style.marginTop}`}>You have no Medical Directives that requires your review and attestation at this time.</div> */}
+                        <div className={`${style.marginTop}`}>
                             <div>
                                 <div className={`${style.checkGrid}`}>
                                     {formContent?.disclaimer?.content !== null && (
-                                        <CommonCheckBox checked={isChecked} onChange={(e) => handleIsChecked(e.target.checked)} bigCheckbox={true} />
+                                        <CommonCheckBox checked={isChecked} onChange={(e) => { handleIsChecked(e.target.checked) }} bigCheckbox={true} />
                                     )}
                                     <div
-                                        className={`${style.leftAlign} ${style.marginTop10}`}
+                                        className={`${style.leftAlign} ${style.marginTop}`}
                                         dangerouslySetInnerHTML={{ __html: formContent?.disclaimer?.content }}
                                     />
                                 </div>
                                 {formSchemaWholeObject?.esignatureRequired && (
                                     <div className={style.twoCol}>
-                                        <div onClick={() => { setIsSigned(!isSigned); setIsEdited(true) }}
+                                        <div onClick={isChecked ? () => { setIsSigned(!isSigned); setIsEdited(true) } : () => { }}
                                         >
                                             <ESignature
                                                 userName={isSigned ? name : ""}
@@ -343,7 +427,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                     </div>
                                 )}
                             </div>
-                        </div> */}
+                        </div>
                     </div>
                 </div>
                 <div>
@@ -351,7 +435,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                     <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={showMedicalDirectives ? () => { setShowMedicalDirectives(false) } : () => handleContinue()}>CONTINUE</div>
                     </div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
