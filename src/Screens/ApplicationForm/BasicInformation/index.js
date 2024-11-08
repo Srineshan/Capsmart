@@ -1,25 +1,26 @@
-import React, { useEffect, useState } from 'react';
-import ProgressCard from '../../../Components/ProgressCard';
-import ApplicationUserCard from '../../../Components/ApplicationUserCard';
-import ApplicationAssistanceCard from '../../../Components/ApplicationAssistanceCard';
-import CommonDivider from '../../../Components/CommonFields/CommonDivider';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
-import CommonCheckBox from '../../../Components/CommonFields/CommonCheckBox';
-import { GET, PUT } from '../../dataSaver';
-import { useNavigate } from 'react-router-dom';
-import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
+import React, { useEffect, useState } from "react";
+import ProgressCard from "../../../Components/ProgressCard";
+import ApplicationUserCard from "../../../Components/ApplicationUserCard";
+import ApplicationAssistanceCard from "../../../Components/ApplicationAssistanceCard";
+import CommonDivider from "../../../Components/CommonFields/CommonDivider";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import ApplicationFieldCard from "../../../Components/ApplicationFieldCard";
+import CommonCheckBox from "../../../Components/CommonFields/CommonCheckBox";
+import { GET, PUT } from "../../dataSaver";
+import { useNavigate } from "react-router-dom";
+import { ErrorToaster, SuccessToaster } from "../../../utils/toaster";
 
-import style from './index.module.scss';
-import AIAssistantDialog from '../../../Components/AIAssistantDialog';
-import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
-import ValidationDialog from '../../../Components/validationDialog';
+import style from "./index.module.scss";
+import AIAssistantDialog from "../../../Components/AIAssistantDialog";
+import SaveInProgressDialog from "../../../Components/SaveInProgressDialog";
+import ValidationDialog from "../../../Components/validationDialog";
+import { FormatPhoneNumber } from "../../../utils/formatting";
 
 const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplication }) => {
   const [form1, setForm1] = useState();
   const [formSchemaWholeObject, setFormSchemaWholeObject] = useState();
   const [form2, setForm2] = useState();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(true);
   const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
   const [fieldPaths, setFieldPaths] = useState([]);
@@ -27,39 +28,41 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
   const [labels, setLabels] = useState([]);
   const [warningFields, setWarningFields] = useState([]);
   const [showValidationDialog, setShowValidationDialog] = useState(false);
+
+  console.log("basicForm", basicForm);
   useEffect(() => {
-    getBasicForm()
-  }, [])
+    getBasicForm();
+  }, []);
 
   const getIsOpen = (value) => {
     setIsOpen(value);
-  }
+  };
 
   const getIsValidationDialogOpen = (value) => {
     setShowValidationDialog(value);
-  }
+  };
 
   const getAllPath = (data) => {
     let temp = metadata;
     if (!temp?.includes(data)) {
-      console.log(temp, data, 'Metadata')
+      console.log(temp, data, "Metadata");
       temp.push(data);
     }
     setMetadata(temp);
-  }
+  };
 
   const getAllLabels = (data) => {
     let tempLabels = labels;
     if (!tempLabels?.includes(data)) {
-      console.log(tempLabels, data, 'Metadata')
+      console.log(tempLabels, data, "Metadata");
       tempLabels.push(data);
     }
     setLabels(tempLabels);
-  }
+  };
 
   const getIsSaveInProgressOpen = (value) => {
     setIsSaveInProgressOpen(value);
-  }
+  };
 
   const getBasicForm = async () => {
     const { data: basicForm } = await GET(
@@ -71,124 +74,132 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
       );
       let temp = form1?.schema;
       if (temp.properties.applicant.properties !== null) {
-        delete temp.properties.applicant.properties['applicantType']
-        delete temp.properties.applicant.properties['startDate']
+        delete temp.properties.applicant.properties["applicantType"];
+        delete temp.properties.applicant.properties["startDate"];
       }
-      setForm1(form1?.schema)
-      setFormSchemaWholeObject(form1)
+      setForm1(form1?.schema);
+      setFormSchemaWholeObject(form1);
     }
-  }
-
-  // const validateSchema = (schema, formData) => {
-  //     let errors = {};
-
-  //     // Function to validate individual fields based on schema
-  //     const validateField = (key, fieldSchema, value) => {
-  //         // Check if field is required
-  //         console.log(key, fieldSchema, value, 'validationCheck')
-  //         if (schema.required && schema.required.includes(key) && !value) {
-  //             errors[key] = `${key} is required.`;
-  //         }
-
-  //         // Validate field type
-  //         if (fieldSchema.type && typeof value !== fieldSchema.type) {
-  //             errors[key] = `${key} must be of type ${fieldSchema.type}.`;
-  //         }
-
-  //         // Validate minimum and maximum values (for numeric fields)
-  //         if (fieldSchema.minimum && value < fieldSchema.minimum) {
-  //             errors[key] = `${key} must be greater than or equal to ${fieldSchema.minimum}.`;
-  //         }
-  //         if (fieldSchema.maximum && value > fieldSchema.maximum) {
-  //             errors[key] = `${key} must be less than or equal to ${fieldSchema.maximum}.`;
-  //         }
-
-  //         // Validate enum (if the value must match one from a list)
-  //         if (fieldSchema.enum && !fieldSchema.enum.includes(value)) {
-  //             errors[key] = `${key} must be one of ${fieldSchema.enum.join(', ')}.`;
-  //         }
-
-  //         // Validate format (e.g., email)
-  //         if (fieldSchema.format === 'email' && !/^\S+@\S+\.\S+$/.test(value)) {
-  //             errors[key] = `${key} must be a valid email address.`;
-  //         }
-  //     };
-
-  //     // Recursive function to traverse the schema
-  //     const traverseSchema = (schema, data, parentKey = "") => {
-  //         console.log(schema, data, parentKey = "", 'validationCheck')
-  //         for (let key in schema.properties) {
-  //             console.log(key, 'validationCheck')
-  //             const fieldSchema = schema.properties[key];
-  //             const fieldPath = parentKey ? `${parentKey}.${key}` : key;
-  //             const value = data[fieldPath];
-  //             console.log(fieldPath, 'validationCheck')
-  //             if (fieldSchema.type === "object" && fieldSchema.properties) {
-  //                 traverseSchema(fieldSchema, value || {}, fieldPath);
-  //             } else {
-  //                 validateField(fieldPath, fieldSchema, value);
-  //             }
-  //         }
-  //     };
-
-  //     // Start traversing the schema
-  //     traverseSchema(schema, formData);
-
-  //     return errors;
-  // };
+  };
 
   const getSkipClicked = (value) => {
     if (value) {
-      handleSubmitApplicationReq()
+      handleSubmitApplicationReq();
     }
-  }
+  };
 
   const getMissingFields = () => {
     let missingKeys = [];
     let keyValuePair = [];
     metadata?.map((data, index) => {
-      keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index] })
-    })
-    keyValuePair?.map(data => {
-      if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
-        missingKeys.push(data)
+      keyValuePair.push({
+        key: data,
+        value: getValueByPath(basicForm, data),
+        label: labels[index],
+      });
+    });
+    const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/; // Example for formatted phone number
+
+    keyValuePair?.map((data) => {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (
+        data?.value === "" ||
+        data?.value === null ||
+        data?.value === undefined ||
+        data?.value === 0 ||
+        (data?.key === "basicDetails.applicant.email.officialEmail" &&
+          !emailRegex.test(data?.value))
+      ) {
+        if (
+          data.key === "basicDetails.applicant.email.officialEmail" &&
+          !emailRegex.test(data.value)
+        ) {
+          setBasicForm((prevForm) => ({
+            ...prevForm,
+            basicDetails: {
+              ...prevForm.basicDetails,
+              applicant: {
+                ...prevForm.basicDetails.applicant,
+                email: {
+                  ...prevForm.basicDetails.applicant.email,
+                  officialEmail: "",
+                },
+              },
+            },
+          }));
+        }
+        if (
+          basicForm.basicDetails.applicant.cellPhone &&
+          !phoneRegex.test(basicForm.basicDetails.applicant.cellPhone)
+        ) {
+          missingKeys.push({
+            key: "basicDetails.applicant.cellPhone",
+            label: "Cell Phone",
+            error: "Invalid phone number format",
+          });
+          setBasicForm((prevForm) => ({
+            ...prevForm,
+            basicDetails: {
+              ...prevForm.basicDetails,
+              applicant: {
+                ...prevForm.basicDetails.applicant,
+                cellPhone: "",
+              },
+            },
+          }));
+        }
+        missingKeys.push(data);
       }
-    })
-    if (!formSchemaWholeObject?.schema?.properties?.departmentSpecialty?.dependencies?.department?.oneOf?.map(data => data?.properties?.department?.enum[0])?.includes(getValueByPath(basicForm, 'basicDetails.departmentSpecialty.department'))) {
-      let temp = missingKeys?.filter(data => !['basicDetails.departmentSpecialty.specialty']?.includes(data?.key));
+    });
+    if (
+      !formSchemaWholeObject?.schema?.properties?.departmentSpecialty?.dependencies?.department?.oneOf
+        ?.map((data) => data?.properties?.department?.enum[0])
+        ?.includes(
+          getValueByPath(
+            basicForm,
+            "basicDetails.departmentSpecialty.department"
+          )
+        )
+    ) {
+      let temp = missingKeys?.filter(
+        (data) =>
+          !["basicDetails.departmentSpecialty.specialty"]?.includes(data?.key)
+      );
       missingKeys = temp;
     }
     if (missingKeys?.length !== 0) {
-      setShowValidationDialog(true)
+      setShowValidationDialog(true);
     } else {
-      handleSubmitApplicationReq()
+      handleSubmitApplicationReq();
     }
-    setWarningFields(missingKeys)
-    console.log(keyValuePair, 'Metadata', missingKeys)
-  }
+    setWarningFields(missingKeys);
+  };
 
   const handleSubmitApplicationReq = async () => {
     // const errors = validateSchema(form1, basicForm?.basicDetails);
     // console.log(errors)
     let data = basicForm;
-    console.log(data)
-    await PUT(`application-management-service/application/${applicationId}`, data)
-      .then(response => {
-        console.log(response)
-        setBasicForm(response?.data)
+    console.log(data);
+    await PUT(
+      `application-management-service/application/${applicationId}`,
+      data
+    )
+      .then((response) => {
+        console.log(response);
+        setBasicForm(response?.data);
         SuccessToaster("Staff Member Application Updated Successfully");
         getPreApplication();
-        if (sessionStorage.getItem('fromSummary') === "true") {
+        if (sessionStorage.getItem("fromSummary") === "true") {
           navigate(-1);
         } else {
           navigate(`/applicationForm/${data?.forms[0]?.formCategory}/${data?.forms[0]?.schemaCategory}`)
         }
       })
       .catch((error) => {
-        console.log(error)
+        console.log(error);
         ErrorToaster("Unexpected Error Updating Staff Member Application");
       });
-  }
+  };
 
   const addPath = (newPath) => {
     setFieldPaths((prevPaths) => {
@@ -200,12 +211,25 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
 
   const getValueByPath = (obj, path) => {
     const keys = path.split(/[\.\[\]]+/).filter(Boolean);
-    console.log(path, keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm), basicForm, 'if')
-    return keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm);
+    console.log(
+      path,
+      keys.reduce(
+        (acc, key) => acc && acc[isNaN(key) ? key : Number(key)],
+        basicForm
+      ),
+      basicForm,
+      "if"
+    );
+    return keys.reduce(
+      (acc, key) => acc && acc[isNaN(key) ? key : Number(key)],
+      basicForm
+    );
   };
 
-  console.log(getValueByPath(basicForm, 'basicDetails.departmentSpecialty.department'), fieldPaths)
-  console.log('Metadata', metadata);
+  console.log(
+    getValueByPath(basicForm, "basicDetails.departmentSpecialty.department"),
+    fieldPaths
+  );
   return (
     <div>
       <div className={`${style.applicationScreenGrid} `}>
@@ -218,9 +242,7 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
             timeText={"Min"}
             progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`}
           />
-          <div
-            className={`${style.applicationCardStyle}  ${style.marginTop}`}
-          >
+          <div className={`${style.applicationCardStyle}  ${style.marginTop}`}>
             {/* <CommonMailingAddress label={'Business Mailing Address*'} onChangeAddressLine1={() => { }} placeholderAddressLine1={'123 Street'} maxLengthAddressLine1={25} valueAddressLine1={''}
                             onChangeAddressLine2={() => { }} placeholderAddressLine2={'Apartment 5'} maxLengthAddressLine2={25} valueAddressLine2={''} onChangeCity={() => { }} placeholderCity={'City'} maxLengthCity={25}
                             valueCity={''} onChangeState={() => { }} placeholderState={'Province'} maxLengthState={25} valueState={''} onChangeZipcode={() => { }} placeholderZipcode={'Zipcode'} maxLengthZipcode={15} valueZipcode={''} /> */}
@@ -387,6 +409,6 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
       )}
     </div>
   );
-}
+};
 
 export default BasicInformation;

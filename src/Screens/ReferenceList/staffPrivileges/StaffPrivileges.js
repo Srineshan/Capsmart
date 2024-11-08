@@ -167,6 +167,7 @@ const StaffPrivileges = () => {
                     setIsDialogOpen(true);
                     setEditData(data);
                   }}
+                  refetchData={() => getStaffPrivileges(applicantId)} // Pass the refetch function
                 />
               )}
               <ReferenceListActionButton

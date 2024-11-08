@@ -2150,6 +2150,158 @@ const ClientAdminDashboard = () => {
                         )}
                       </div>
                     </Link>
+                    <Link
+                      to="/referenceList/privilegeListMaster"
+                      className={style.linkStyle}
+                    >
+                      <div className={style.dashboardCardStyle}>
+                        <h5 className={`${style.headingForReferenceList}`}>
+                          Privilige list Master
+                        </h5>
+                        {lastUpdatedDate?.terminationReason?.standardList ===
+                          true &&
+                        lastUpdatedDate?.terminationReason?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol}`}
+                          >
+                            <span className={style.dashboardCardColorOption1}>
+                              STANDARD LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.terminationReason?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.terminationReason?.standardList ===
+                          false &&
+                        lastUpdatedDate?.terminationReason?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
+                          >
+                            <span
+                              className={`${style.dashboardCardColorOption3}`}
+                            >
+                              MY CUSTOM LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.terminationReason?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.terminationReason?.lastModified ===
+                        null ? (
+                          <div
+                            className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
+                          >
+                            <span className={style.dashboardCardColorOption4}>
+                              SETUP REQUIRED
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </Link>
+                    <Link
+                      to="/referenceList/privilegeListManager"
+                      className={style.linkStyle}
+                    >
+                      <div className={style.dashboardCardStyle}>
+                        <h5 className={`${style.headingForReferenceList}`}>
+                          Privilige list Manager
+                        </h5>
+                        {lastUpdatedDate?.terminationReason?.standardList ===
+                          true &&
+                        lastUpdatedDate?.terminationReason?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol}`}
+                          >
+                            <span className={style.dashboardCardColorOption1}>
+                              STANDARD LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.terminationReason?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.terminationReason?.standardList ===
+                          false &&
+                        lastUpdatedDate?.terminationReason?.lastModified !==
+                          null ? (
+                          <div
+                            className={`${style.optionsStyle} ${style.displayInCol} ${style.marginBottom10}`}
+                          >
+                            <span
+                              className={`${style.dashboardCardColorOption3}`}
+                            >
+                              MY CUSTOM LIST IN USE
+                            </span>
+                            <span className={style.dashboardCardColorOption2}>
+                              {`LAST UPDATED ON ${new Date(
+                                lastUpdatedDate.terminationReason?.lastModified
+                              )
+                                .toLocaleString("en-US", {
+                                  timeZone: "America/New_York",
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .toUpperCase()}`}
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        {lastUpdatedDate?.terminationReason?.lastModified ===
+                        null ? (
+                          <div
+                            className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
+                          >
+                            <span className={style.dashboardCardColorOption4}>
+                              SETUP REQUIRED
+                            </span>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </Link>
                     {/* <Link
                       to="/referenceList/contractTerminationReasonForCustomer"
                       className={style.linkStyle}

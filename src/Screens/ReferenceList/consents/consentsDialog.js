@@ -18,6 +18,9 @@ import { Switch, makeStyles } from "@material-ui/core";
 import WritingFile from "./../../../images/writing-file.svg";
 import Editor from "../common/Editor";
 import CommonInputField from "../../../Components/CommonFields/CommonInputField";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
 
 const useStyles = makeStyles({
   switch: {
@@ -64,26 +67,6 @@ const ConsentsDialog = ({
     getApplicantType();
   }, []);
 
-  // useEffect(() => {
-  //   if (isEdit) {
-  //     setCurrentEntityType(siteTypeId);
-  //     setTerminationId(selectedTermination?.id);
-  //     setTerminationBy(selectedTermination?.terminationBy);
-  //     setPrimaryReason(selectedTermination?.primary_reason);
-  //     setCreatedDate(selectedTermination?.createdDate);
-  //     setNoticePeriod(selectedTermination?.noticePeriodInDays);
-  //     setCurePeriod(selectedTermination?.curePeriodInDays);
-  //     setWrittenNotice(selectedTermination?.writtenNoticeServed);
-  //     setSecondaryReasonList(selectedTermination?.secondary_reasons);
-  //     setAddSubReasons(
-  //       selectedTermination?.secondary_reasons?.length > 0 ? true : false
-  //     );
-  //     if (isSecondary) {
-  //       setSecondaryReason(selectedTermination?.secondary_reasons[0]);
-  //     }
-  //   }
-  // }, [selectedTermination]);
-
   useEffect(() => {
     if (isEdit) {
       let temp = [];
@@ -114,10 +97,6 @@ const ConsentsDialog = ({
     }
   }, [applicantType]);
 
-  // useEffect(() => {
-  //   getSubReasons();
-  // }, [secondaryReasonList]);
-
   const getEntityData = async () => {
     const { data: types } = await GET("entity-service/entity/entityType");
     setEntityTypes(types);
@@ -133,123 +112,8 @@ const ConsentsDialog = ({
     console.log(data);
   };
 
-  // const handleSubReasonValue = (i, value) => {
-  //   let temp = secondaryReasonList;
-  //   temp[i] = value;
-  //   setSecondaryReasonList(temp);
-  //   setSecondaryReason(value);
-  //   // getSubReasons();
-  //   // console.log(temp, value, secondaryReasonList);
-  // };
-
-  // const getSubReasons = () => {
-  //   // console.log('entered', secondaryReasonList)
-  //   let temp = [];
-  //   for (let i = 0; i < secondaryReasonList?.length; i++) {
-  //     // console.log(i);
-  //     temp[i] = (
-  //       <div
-  //         className={`${style.editHealthCareGrid2}`}
-  //         key={`${i}${secondaryReasonList[i]}`}
-  //       >
-  //         <div className={style.entityLableStyle}>
-  //           Sub-Reason For Termination {i + 1}*
-  //         </div>
-  //         <div className={style.displayInRow}>
-  //           <InputGroup
-  //             defaultValue={secondaryReasonList[i]}
-  //             className={style.fullWidth}
-  //             onChange={(e) => handleSubReasonValue(i, e.target.value)}
-  //           />
-  //         </div>
-  //       </div>
-  //     );
-  //   }
-  //   setSubReasonFields(temp);
-  // };
-
-  // const SaveSubmitHandler = async (type) => {
-  //   // let SecondaryReasonData = [];
-  //   // if (selectedTermination?.secondary_reasons) {
-  //   //     SecondaryReasonData = [...selectedTermination.secondary_reasons];
-  //   // } else {
-  //   //     SecondaryReasonData = [];
-  //   // }
-  //   // if (secondaryReason !== "") {
-  //   //     SecondaryReasonData.push(secondaryReason);
-  //   // }
-
-  //   if (currentEntityType === "") {
-  //     ErrorToaster("Enter All Mandatory Data");
-  //     return;
-  //   }
-
-  //   const data = {
-  //     ...(isEdit && { id: terminationId }),
-  //     ...(isEdit && { createdDate: createdDate }),
-  //     ...(isEdit && { lastModifiedDate: new Date() }),
-  //     terminationBy: terminationBy,
-  //     primary_reason: primaryReason,
-  //     secondary_reasons:
-  //       secondaryReasonList[secondaryReasonList.length - 1] === ""
-  //         ? secondaryReasonList.splice(0, secondaryReasonList.length - 1)
-  //         : secondaryReasonList,
-  //     siteTypeId: {
-  //       id: currentEntityType,
-  //     },
-  //     entityId: {
-  //       id: TenantID,
-  //     },
-  //     noticePeriodInDays: noticePeriod,
-  //     curePeriodInDays: curePeriod,
-  //     customized: true,
-  //     writtenNoticeServed: writtenNotice,
-  //   };
-
-  //   // console.log(data);
-
-  //   if (!isEdit) {
-  //     await POST("entity-service/terminationReason", JSON.stringify([data]))
-  //       .then((response) => {
-  //         SuccessToaster("Termination Added Successfully");
-  //         getTerminationReasonData();
-  //         getAddEntityDialog(false);
-  //       })
-  //       .catch((error) => {
-  //         ErrorToaster(error);
-  //       });
-  //   } else {
-  //     await PUT(
-  //       `entity-service/terminationReason/${terminationId}`,
-  //       JSON.stringify(data)
-  //     )
-  //       .then((response) => {
-  //         SuccessToaster("Termination Updated Successfully");
-  //         getTerminationReasonData();
-  //         getAddEntityDialog(false);
-  //       })
-  //       .catch((error) => {
-  //         ErrorToaster(error);
-  //       });
-  //   }
-
-  //   // if (type !== "Add More") {
-  //   //   getAddEntityDialog(false);
-  //   // } else {
-  //   //   setPrimaryReason("");
-  //   //   setSecondaryReason("");
-  //   //   document.getElementById("primaryReasonEl").focus();
-  //   // }
-  // };
-
   const handleSaveConsentForm = async () => {
     console.log(currentApplicantType);
-
-    // var temp = applicantTypeList
-    //   .filter((data) => {
-    //     data.id === currentApplicantType;
-    //   })
-    //   ?.map((data) => data)[0];
 
     const data = {
       applicantType: {
@@ -262,21 +126,6 @@ const ConsentsDialog = ({
       esignatureRequired: signatureRequired,
       alertNoteRequired: alertNote,
     };
-
-    // {
-    //   applicantTypes: selectedApplicantType,
-    //   title: title,
-    //   content: {
-    //     content: content,
-    //   },
-    //   file: file,
-    //   contentType: "Text",
-    //   disclaimer: {
-    //     content: disclaimer,
-    //   },
-    //   einitialRequiredOnEachPage: eInitialRequired,
-    //   esignatureRequiredOnEachPage: signatureRequired,
-    // };
 
     console.log(data);
     if (!isEdit) {
@@ -303,27 +152,9 @@ const ConsentsDialog = ({
     }
   };
 
-  // const handleAddMore = () => {
-  //   let temp = secondaryReasonList;
-  //   temp.push("");
-  //   // console.log(temp);
-  //   setSecondaryReasonList(temp);
-  //   getSubReasons();
-  // };
-
   const handleEditorChange = (content) => {
     setConsent(content);
   };
-
-  // const SaveSubmitHandler = async () => {
-  //   console.log("Current Entity Type:", currentApplicantType);
-  //   console.log("Consent Title:", consentTitle);
-  //   console.log("Consent Contents:", consentConsents);
-  //   console.log("Alert Note Required:", alertNote);
-  //   console.log("Alert Notice:", alertNote);
-  //   console.log("Applicant e-Signature Required:", signature);
-  //   handleClose();
-  // };
 
   const handleChange = (event) => {
     const selectedValue = event.target.value;
@@ -340,8 +171,6 @@ const ConsentsDialog = ({
 
   return (
     <Dialog
-      // isOpen={getAddEntityDialog}
-      // onClose={() => getAddEntityDialog(false)}
       isOpen={open}
       onClose={handleClose}
       className={`${style.healthCareDialogStyle} ${style.dialogPaddingBottom}`}
@@ -363,10 +192,6 @@ const ConsentsDialog = ({
                 size={30}
                 intent={Intent.DANGER}
                 className={style.dialogCrossStyle}
-                // onClick={() => {
-                //   getAddEntityDialog(false);
-                //   getTerminationReasonData();
-                // }}
                 onClick={handleClose}
               />
             </div>
@@ -376,7 +201,7 @@ const ConsentsDialog = ({
         <div className={`${style.addHealthCareBoxStyle}`}>
           <div>
             <div className={style.entityLableStyle}>APPLICANT TYPE*</div>
-            <select
+            {/* <select
               value={currentApplicantType.id}
               className={style.fullWidth}
               onChange={handleChange}
@@ -387,7 +212,24 @@ const ConsentsDialog = ({
                   {type.applicantType}
                 </option>
               ))}
-            </select>
+            </select> */}
+            <FormControl fullWidth size="small">
+              <Select
+                labelId="consents-type-checkbox"
+                id="consents-type-checkbox"
+                value={currentApplicantType.id}
+                onChange={handleChange}
+                SelectDisplayProps={{
+                  style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 },
+                }}
+              >
+                {applicantTypeList?.map((type, index) => (
+                  <MenuItem key={type.id} value={type.id}>
+                    {type.applicantType}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </div>
           <div
             className={`${style.ReferenceListEntityBorder} ${style.marginTop20}`}
@@ -467,8 +309,6 @@ const ConsentsDialog = ({
                 className={style.outlinedButton}
                 onClick={() => {
                   handleClose();
-                  // getAddEntityDialog(false);
-                  // getTerminationReasonData();
                 }}
               >
                 BULK UPLOAD
@@ -479,7 +319,6 @@ const ConsentsDialog = ({
                 className={style.outlinedButton}
                 onClick={() => {
                   handleClose();
-                  // getTerminationReasonData();
                 }}
               >
                 CANCEL

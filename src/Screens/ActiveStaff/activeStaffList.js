@@ -1,28 +1,39 @@
-import React, { useState, useEffect, createRef, useCallback, useRef } from 'react';
-import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
-import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
-import NoteAltOutlinedIcon from '@mui/icons-material/NoteAltOutlined';
-import CapSmartTransparent from './../../images/capSmartTransparent.png';
-import ActionStaffTiles from './activeStaffTiles';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
-import RemoveIcon from '@mui/icons-material/Remove';
-import AddIcon from '@mui/icons-material/Add';
+import React, {
+  useState,
+  useEffect,
+  createRef,
+  useCallback,
+  useRef,
+} from "react";
+import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
+import TextSnippetOutlinedIcon from "@mui/icons-material/TextSnippetOutlined";
+import NoteAltOutlinedIcon from "@mui/icons-material/NoteAltOutlined";
+import CapSmartTransparent from "./../../images/capSmartTransparent.png";
+import ActionStaffTiles from "./activeStaffTiles";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
+import RemoveIcon from "@mui/icons-material/Remove";
+import AddIcon from "@mui/icons-material/Add";
 import CircularProgress from "@mui/material/CircularProgress";
-import { format } from 'date-fns';
-import TableTwo from '../../Components/TableDesignTwo';
-import PublicIcon from '@mui/icons-material/Public';
-import PermIdentityIcon from '@mui/icons-material/PermIdentity';
-import style from './index.module.scss';
-import SideBar from '../../Components/Sidebar';
+import { format } from "date-fns";
+import TableTwo from "../../Components/TableDesignTwo";
+import PublicIcon from "@mui/icons-material/Public";
+import PermIdentityIcon from "@mui/icons-material/PermIdentity";
+import style from "./index.module.scss";
+import SideBar from "../../Components/Sidebar";
 import ProgressBar from "@ramonak/react-progress-bar";
-import { useNavigate } from 'react-router-dom';
-import { GET, PUT, POST, TenantID } from '../dataSaver';
-import CircleIcon from '@mui/icons-material/Circle';
-import { SuccessToaster } from '../../utils/toaster';
-import { ErrorToaster } from '../../utils/toaster';
+import { useNavigate } from "react-router-dom";
+import { GET, PUT, POST, TenantID } from "../dataSaver";
+import CircleIcon from "@mui/icons-material/Circle";
+import { SuccessToaster } from "../../utils/toaster";
+import { ErrorToaster } from "../../utils/toaster";
 
-const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCounts }) => {
+const ActiveStaffList = ({
+  isLoading,
+  getSelectedTab,
+  selectedTab,
+  getTitleCounts,
+}) => {
   const PDFRef = createRef();
   const navigate = useNavigate();
   const componentRef = useRef(null);
@@ -38,13 +49,13 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
     totalRejections: 0,
     appointmentRequestsDenied: 0,
     applicationsRejected: 0,
-    applicationsApprovedButDenied: 0
+    applicationsApprovedButDenied: 0,
   });
 
   const [tableData, setTableData] = useState([]);
   const [rejectionListData, setRejectionListData] = useState([]);
-  const [sortField, setSortField] = useState('DEFAULT');
-  const [sortValue, setSortValue] = useState('ASCENDING');
+  const [sortField, setSortField] = useState("DEFAULT");
+  const [sortValue, setSortValue] = useState("ASCENDING");
 
   const permanentHeaderValues = ["", "Applicant Name", "Applicant ID", "Applicant Type", "Docs", "Notes", "Last Updated", "Action"];
   const locumHeaderValues = ["", "Applicant Name", "Applicant ID", "Applicant Type", "CR", "COS", "CC", "CC Date", "Last Updated", "Action"];
@@ -57,23 +68,23 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
   const temporaryStaffColSortValues = [false, false, false, false, false, false];
   const approvedColSortValues = [false, false, false, false, false, false, false, false, false];
 
-
   const [isPrintClicked, setIsPrintClicked] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
-  const [showApplicationRejectionDialog, setShowApplicationRejectionDialog] = useState(false);
-  const [reFetchMetaData, setReFetchMetaData] = useState(false)
+  const [showApplicationRejectionDialog, setShowApplicationRejectionDialog] =
+    useState(false);
+  const [reFetchMetaData, setReFetchMetaData] = useState(false);
 
   const getApplicationRejectionDialog = (value) => {
     setShowApplicationRejectionDialog(value);
-    setRejectionTab("rejected")
-  }
+    setRejectionTab("rejected");
+  };
 
   // const onClickViewAndVerifyFunction = (data) => {
   //   getActiveApplicationView(true);
   // }
 
   const onClickReappointmentFunction = (data) => {
-    reappointmentApplication(data?.id)
+    reappointmentApplication(data?.id);
     sessionStorage.setItem("applicationId", data?.id);
   };
 
@@ -89,21 +100,21 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
 
   const getReFetchMetaData = (value) => {
     setReFetchMetaData(value);
-  }
+  };
 
   const reappointmentApplication = async (id) => {
     await POST(`application-management-service/staff/${id}/reappoint`)
-      .then(response => {
-        SuccessToaster('Reappoint Application Send as Email Successfully');
+      .then((response) => {
+        SuccessToaster("Reappoint Application Send as Email Successfully");
         console.log(response?.data);
         getActiveUserData();
         setReFetchMetaData(true);
         getTitleCounts();
       })
-      .catch(error => {
-        console.log(error)
-      })
-  }
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const getActiveUserData = async () => {
     try {
@@ -122,60 +133,61 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
   };
 
   const getHandleSort = (value, sortBy) => {
-    if (sortBy === 'ASCENDING') {
-      setSortField(value)
-      setSortValue('DESCENDING')
-    } else if (sortBy === 'DESCENDING') {
-      setSortField('DEFAULT')
-      setSortValue('ASCENDING')
-    } else if (sortBy === 'NONE') {
-      setSortField(value)
-      setSortValue('ASCENDING')
+    if (sortBy === "ASCENDING") {
+      setSortField(value);
+      setSortValue("DESCENDING");
+    } else if (sortBy === "DESCENDING") {
+      setSortField("DEFAULT");
+      setSortValue("ASCENDING");
+    } else if (sortBy === "NONE") {
+      setSortField(value);
+      setSortValue("ASCENDING");
     }
-  }
-
+  };
 
   const getRejectionData = async () => {
     try {
-      const response = await GET(`application-management-service/application/workflowUser?tab=${rejectionTab}`);
-      console.log('Rejection data', response?.data?.applications);
+      const response = await GET(
+        `application-management-service/application/workflowUser?tab=${rejectionTab}`
+      );
+      console.log("Rejection data", response?.data?.applications);
       setRejectionListData(response?.data?.applications);
       return response?.data.applications || [];
     } catch (error) {
-      console.error('Error fetching applications:', error);
+      console.error("Error fetching applications:", error);
       return [];
     }
   };
 
   const getSentConfirmationCount = async () => {
-    await GET('application-management-service/application/sentToApplicant/status')
-      .then(response => {
+    await GET(
+      "application-management-service/application/sentToApplicant/status"
+    )
+      .then((response) => {
         setSentCompletion(response?.data.totalApplicationsSent || 0);
       })
-      .catch(error => {
-        console.error('Error fetching request appointment count:', error);
-
+      .catch((error) => {
+        console.error("Error fetching request appointment count:", error);
       });
   };
 
   const getRequestAppointmentCount = async () => {
-    await GET('application-management-service/preApplication')
-      .then(response => {
+    await GET("application-management-service/preApplication")
+      .then((response) => {
         setRequestAppointment(response?.data.numberOfElements || 0);
       })
-      .catch(error => {
-        console.error('Error fetching request appointment count:', error);
-
+      .catch((error) => {
+        console.error("Error fetching request appointment count:", error);
       });
   };
 
   const getRejectionCounts = async () => {
-    await GET('application-management-service/application/rejected/meta')
-      .then(response => {
+    await GET("application-management-service/application/rejected/meta")
+      .then((response) => {
         setApplicationRejected(response?.data);
       })
-      .catch(error => {
-        console.error('Error fetching rejection counts:', error);
+      .catch((error) => {
+        console.error("Error fetching rejection counts:", error);
       });
   };
 
@@ -310,8 +322,9 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
             : "grey"
       );
       applicantName.push(
-        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
-        " "
+        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() +
+        data?.applicant?.name?.firstName.slice(1).toLowerCase()
+        },  ${data?.applicant?.name?.lastName.toUpperCase()}` || " "
       );
       // applicantId.push(data?.displayId || "123");
       applicantId.push("123");
@@ -341,7 +354,9 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
       // } else {
       //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FEC106` }}/>);
       // }
-      docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FEC106` }} />);
+      docsIcon.push(
+        <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FEC106` }} />
+      );
       // dataStatus.push(data?.dataStatus || "green");
       // dataStatus.push(data?.dataStatus === "REVIEW_INPROGRESS"
       //   ? "yellow"
@@ -454,8 +469,9 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
             : "grey"
       );
       applicantName.push(
-        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
-        " "
+        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() +
+        data?.applicant?.name?.firstName.slice(1).toLowerCase()
+        },  ${data?.applicant?.name?.lastName.toUpperCase()}` || " "
       );
       // applicantType.push(data?.providerType.serviceProviderType);
       applicantType.push("Doctor");
@@ -503,7 +519,7 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
       //     format(new Date(data?.logs[data.logs.length - 2].createdDate), "MMM dd, yyyy")
       //   )
       // } else { ccdate.push("-") }
-      ccdate.push("-")
+      ccdate.push("-");
       lastUpdatedOn.push(
         format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
       );
@@ -553,8 +569,9 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
 
     tableData?.map((data) => {
       applicantName.push(
-        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
-        " "
+        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() +
+        data?.applicant?.name?.firstName.slice(1).toLowerCase()
+        },  ${data?.applicant?.name?.lastName.toUpperCase()}` || " "
       );
       applicantId.push(data?.displayId || "123");
       applicantType.push(data?.providerType?.serviceProviderType || "Dentist");
@@ -606,7 +623,6 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
     ];
   };
 
-
   const getApprovedValues = () => {
     dot = [];
     applicantName = [];
@@ -615,55 +631,90 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
     lastUpdatedOn = [];
     action = [];
 
-    tableData?.map(data => {
+    tableData?.map((data) => {
       dot.push(data?.subStatus);
-      applicantName.push(`${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` || '');
+      applicantName.push(
+        `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
+        ""
+      );
       applicantType.push(data?.providerType.serviceProviderType);
       approvedNotes.push(data?.approvedNotes);
-      lastUpdatedOn.push(format(new Date(data?.lastModifiedDate), 'MMM dd, yyyy'));
+      lastUpdatedOn.push(
+        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+      );
       action.push(true);
-    })
+    });
 
     return [
-      { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
-      { "type": "text", "value": applicantName },
-      { "type": "text", "value": applicantType },
-      { "type": "text", "value": approvedNotes },
-      { "type": "text", "value": lastUpdatedOn },
-      { "type": "action", "value": action },
+      { type: "dot", value: dot, tooltipValue: dotTooltipValues },
+      { type: "text", value: applicantName },
+      { type: "text", value: applicantType },
+      { type: "text", value: approvedNotes },
+      { type: "text", value: lastUpdatedOn },
+      { type: "action", value: action },
     ];
-  }
+  };
 
   const permanentActionsData = [
-    { 'data': 'Create Reappointment Application', 'requiredValue': 'boolean', onClick: onClickReappointmentFunction },
+    {
+      data: "Create Reappointment Application",
+      requiredValue: "boolean",
+      onClick: onClickReappointmentFunction,
+    },
     // { 'data': 'Send for Committee Review', 'requiredValue': 'boolean', "onClick": '' },
     // { 'data': 'Send Reminder for Required Documents', 'requiredValue': 'boolean', "onClick": '' },
     // { 'data': 'Request for Clarification', 'requiredValue': 'boolean', "onClick": '' },
     // { 'data': 'From Applicant', 'requiredValue': 'boolean', "onClick": '' },
     // { 'data': 'From Internal Approver', 'requiredValue': 'boolean', "onClick": '' },
     // { 'data': 'From Institution', 'requiredValue': 'boolean', "onClick": '' },
-  ]
+  ];
 
   const approvedActionsData = [
-    { 'data': 'Add as active staff', 'requiredValue': 'boolean', onClick: onClickReappointmentFunction },
-    { 'data': 'Send follow up disclosures', 'requiredValue': 'boolean', "onClick": '' },
-  ]
+    {
+      data: "Add as active staff",
+      requiredValue: "boolean",
+      onClick: onClickReappointmentFunction,
+    },
+    {
+      data: "Send follow up disclosures",
+      requiredValue: "boolean",
+      onClick: "",
+    },
+  ];
 
   const locumActionsData = [
-    { 'data': 'Create Reappointment Application', 'requiredValue': 'boolean', onClick: onClickReappointmentFunction },
+    {
+      data: "Create Reappointment Application",
+      requiredValue: "boolean",
+      onClick: onClickReappointmentFunction,
+    },
     // { 'data': 'Send for Committee Review', 'requiredValue': 'boolean', "onClick": '' },
     // { 'data': 'Send Reminder for Required Documents', 'requiredValue': 'boolean', "onClick": '' },
     // { 'data': 'Request for Clarification', 'requiredValue': 'boolean', "onClick": '' },
     // { 'data': 'From Applicant', 'requiredValue': 'boolean', "onClick": '' },
     // { 'data': 'From Internal Approver', 'requiredValue': 'boolean', "onClick": '' },
     // { 'data': 'From Institution', 'requiredValue': 'boolean', "onClick": '' },
-  ]
+  ];
   const getIsExpanded = (value) => {
     setIsExpanded(value);
-  }
+  };
 
-  let tableHeaderValues = selectedTab === 'PERMANENT' ? permanentHeaderValues : selectedTab === 'LOCUM' ? locumHeaderValues : selectedTab === 'PROVISIONAL' ? temporaryStaffHeaderValues : approvedHeaderValues;
-  let tableSortValues = selectedTab === 'PERMANENT' ? permanentColSortValues : selectedTab === 'LOCUM' ? locumColSortValues : selectedTab === 'PROVISIONAL' ? temporaryStaffColSortValues : approvedColSortValues;
+  let tableHeaderValues =
+    selectedTab === "PERMANENT"
+      ? permanentHeaderValues
+      : selectedTab === "LOCUM"
+        ? locumHeaderValues
+        : selectedTab === "PROVISIONAL"
+          ? temporaryStaffHeaderValues
+          : approvedHeaderValues;
+  let tableSortValues =
+    selectedTab === "PERMANENT"
+      ? permanentColSortValues
+      : selectedTab === "LOCUM"
+        ? locumColSortValues
+        : selectedTab === "PROVISIONAL"
+          ? temporaryStaffColSortValues
+          : approvedColSortValues;
   // let tableDataValues = selectedTab !== 'applicantsToProcess' ? getApplicantValues() : selectedTab === 'level-1' ? getApplicationValues() : selectedTab === 'level-1' ? getApplicationValues() : getApplicationValues();
   let tableDataValues =
     selectedTab === "PERMANENT"
@@ -672,12 +723,26 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
         ? getLocumValues()
         : selectedTab === "PROVISIONAL"
           ? getTemporaryStaffValues()
-          // :[];
+          : // :[];
 
           // : getApprovedValues();
-          : getPermanentValues();
-  let actions = selectedTab === 'PERMANENT' ? permanentActionsData : selectedTab === 'LOCUM' ? locumActionsData : selectedTab === 'PROVISIONAL' ? locumActionsData : approvedActionsData;
-  let gridStyle = selectedTab === 'PERMANENT' ? style.permanentStaffGrid : selectedTab === 'LOCUM' ? style.locumStaffGrid : selectedTab === 'PROVISIONAL' ? style.temporaryStaffGrid : style.approvedStaffGrid;
+          getPermanentValues();
+  let actions =
+    selectedTab === "PERMANENT"
+      ? permanentActionsData
+      : selectedTab === "LOCUM"
+        ? locumActionsData
+        : selectedTab === "PROVISIONAL"
+          ? locumActionsData
+          : approvedActionsData;
+  let gridStyle =
+    selectedTab === "PERMANENT"
+      ? style.permanentStaffGrid
+      : selectedTab === "LOCUM"
+        ? style.locumStaffGrid
+        : selectedTab === "PROVISIONAL"
+          ? style.temporaryStaffGrid
+          : style.approvedStaffGrid;
 
   return (
     <div className={style.margin20}>
@@ -876,8 +941,6 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
                 </>)
               }
             </div> */}
-
-
           </SideBar>
         </div>
         <div>
@@ -885,27 +948,55 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
             {`STAFF MANAGER > ACTIVE STAFF`}
           </div>
 
-          <div className={`${style.spaceBetween} ${style.marginTop20} ${style.marginLeft30} `}>
-            <ActionStaffTiles getSelectedTab={getSelectedTab} selectedTab={selectedTab} reFetchMetaData={reFetchMetaData} getReFetchMetadata={getReFetchMetaData} />
+          <div
+            className={`${style.spaceBetween} ${style.marginTop20} ${style.marginLeft30} `}
+          >
+            <ActionStaffTiles
+              getSelectedTab={getSelectedTab}
+              selectedTab={selectedTab}
+              reFetchMetaData={reFetchMetaData}
+              getReFetchMetadata={getReFetchMetaData}
+            />
 
             <div className={`${style.spaceBetween} ${style.marginLeft} `}>
-              <div className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`} >
-                <SearchOutlinedIcon sx={{ fontSize: isPrintClicked ? 20 : 25, color: isPrintClicked ? '#fff' : '#0e5197' }} />
+              <div
+                className={`${isPrintClicked && style.addStyle} ${style.alignCenter
+                  } ${style.cursorPointer} ${style.marginRight20}`}
+              >
+                <SearchOutlinedIcon
+                  sx={{
+                    fontSize: isPrintClicked ? 20 : 25,
+                    color: isPrintClicked ? "#fff" : "#0e5197",
+                  }}
+                />
               </div>
-              <div className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginRight}`} >
-                <PrintOutlinedIcon sx={{ fontSize: isPrintClicked ? 20 : 25, color: isPrintClicked ? '#fff' : '#0e5197' }} />
+              <div
+                className={`${isPrintClicked && style.addStyle} ${style.alignCenter
+                  } ${style.cursorPointer} ${style.marginRight}`}
+              >
+                <PrintOutlinedIcon
+                  sx={{
+                    fontSize: isPrintClicked ? 20 : 25,
+                    color: isPrintClicked ? "#fff" : "#0e5197",
+                  }}
+                />
               </div>
-
             </div>
           </div>
 
           <div className={`${style.bigCardStyle}`}>
-            {isLoading ?
-              <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
+            {isLoading ? (
+              <div
+                className={`${style.verticalAlignCenter} ${style.justifyCenter}`}
+              >
                 <CircularProgress sx={{ color: "#0e5197" }} />
-              </div> :
+              </div>
+            ) : (
               <div ref={componentRef}>
-                <div className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`} ref={PDFRef}>
+                <div
+                  className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`}
+                  ref={PDFRef}
+                >
                   <TableTwo
                     tableHeaderValues={tableHeaderValues}
                     tableDataValues={tableDataValues}
@@ -914,27 +1005,32 @@ const ActiveStaffList = ({ isLoading, getSelectedTab, selectedTab, getTitleCount
                     actions={actions}
                     scrollStyle={style.contractScrollStyle}
                     tableSortValues={tableSortValues}
-                    heading={'There are no Record for you to manage'}
+                    heading={"There are no Record for you to manage"}
                     onClickFunction={() => { }}
                     getHandleSort={getHandleSort}
                     sortValue={{ sortBy: sortValue, sortByField: sortField }}
                   />
                 </div>
               </div>
-            }
+            )}
           </div>
         </div>
-      </div >
+      </div>
       <div className={style.spaceBetween}>
         <div className={`${style.displayInRow}`}>
-          <p className={`${style.poweredBy} ${style.marginTop10}`}>Powered by</p>
-          <img src={CapSmartTransparent} alt="footer" className={`${style.footerIconStyle} ${style.marginLeft10}`} />
+          <p className={`${style.poweredBy} ${style.marginTop10}`}>
+            Powered by
+          </p>
+          <img
+            src={CapSmartTransparent}
+            alt="footer"
+            className={`${style.footerIconStyle} ${style.marginLeft10}`}
+          />
         </div>
         <p className={style.poweredBy}>© {new Date().getFullYear()} Hapicare</p>
       </div>
-
-    </div >
-  )
-}
+    </div>
+  );
+};
 
 export default ActiveStaffList;

@@ -18,160 +18,160 @@ import style from './index.module.scss';
 import AIAssistantDialog from '../../../Components/AIAssistantDialog';
 
 const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
-    const [form, setForm] = useState();
-    const [form2, setForm2] = useState();
-    const navigate = useNavigate()
-    const [isOpen, setIsOpen] = useState(true);
-    const itemsToProcessConditionCheckCategories = ['Education', 'WorkExperience', 'References']
-    const id = sessionStorage.getItem('applicationId');
-    useEffect(() => {
-        sessionStorage.setItem('fromSummary', false);
-        getPreApplication();
-    }, [])
+  const [form, setForm] = useState();
+  const [form2, setForm2] = useState();
+  const navigate = useNavigate()
+  const [isOpen, setIsOpen] = useState(true);
+  const itemsToProcessConditionCheckCategories = ['Education', 'WorkExperience', 'References']
+  const id = sessionStorage.getItem('applicationId');
+  useEffect(() => {
+    sessionStorage.setItem('fromSummary', false);
+    getPreApplication();
+  }, [])
 
-    // useEffect(() => {
-    //     getBasicForm()
-    // }, [])
+  // useEffect(() => {
+  //     getBasicForm()
+  // }, [])
 
-    const getIsOpen = (value) => {
-        setIsOpen(value);
-    }
+  const getIsOpen = (value) => {
+    setIsOpen(value);
+  }
 
-    const getPreApplication = async () => {
-        const { data: basicForm } = await GET(
-            `application-management-service/application/${id}`
-        );
-        setForm(basicForm)
-    }
+  const getPreApplication = async () => {
+    const { data: basicForm } = await GET(
+      `application-management-service/application/${id}`
+    );
+    setForm(basicForm)
+  }
 
-    const handleContinue = () => {
-        navigate(`/applicationForm/${basicForm?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[0]?.formCategory}/${basicForm?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[0]?.schemaCategory}`);
-    }
+  const handleContinue = () => {
+    navigate(`/applicationForm/${basicForm?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[0]?.formCategory}/${basicForm?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[0]?.schemaCategory}`);
+  }
 
-    console.log('form', form)
+  console.log('form', form)
 
-    return (
-        <div>
-            <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
-                <div className={`${style.applicationCardStyle}  ${style.marginTop}`}>
-                    <div className={`${style.displayInRow}${style.marginTop20}`}>
-                        <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}>
-                            <span className={`${style.tableHeaderHeadingTextStyle}`}>Overall Status Of Data & Documents Required For This Application</span>
-                            <div className={`${style.greyDotStyle}`}></div>
-                        </div>
+  return (
+    <div>
+      <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
+        <div className={`${style.applicationCardStyle}  ${style.marginTop}`}>
+          <div className={`${style.displayInRow}${style.marginTop20}`}>
+            <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}>
+              <span className={`${style.tableHeaderHeadingTextStyle}`}>Overall Status Of Data & Documents Required For This Application</span>
+              <div className={`${style.greyDotStyle}`}></div>
+            </div>
+          </div>
+          <div className={` ${style.marginTop10} ${style.tableHeaderGridStyle} `}>
+            <div></div>
+            <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+              <div className={form?.forms.every(item => item.acknowledged === true) ? style.greenDotStyle : style.yellowDotStyle}></div>
+            </div>
+            <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+              <div className={form?.forms.every(item => item.acknowledged === true) ? style.greenDotStyle : style.yellowDotStyle}></div>
+            </div>
+            <div></div>
+          </div>
+          <div className={`${style.tableHeaderStyle} ${style.marginTop10} ${style.tableHeaderGridStyle} `}>
+            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+              <div className={`${style.tableHeaderTextStyle} ${style.marginLeft20}`}>POD Verification Check</div>
+            </div>
+            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+              <div className={`${style.tableHeaderTextStyle}`}
+              >
+                <img src={DataStatusIcon} alt="" style={{
+                  width: "18px",
+                  height: "20px"
+                }} />
+
+              </div>
+            </div>
+            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+              <div className={`${style.tableHeaderTextStyle}`}
+              >
+                <img src={DocumentIcon} alt=""
+                  style={{
+                    width: "18px",
+                    height: "20px"
+                  }} />
+
+              </div>
+            </div>
+            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+              <div className={`${style.tableHeaderTextStyle}`}>Items To Address</div>
+            </div>
+          </div>
+          <div className={`${style.tableDataStyle} ${style.marginTop5} ${style.tableValueGridStyle} `}>
+            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+              <div className={`${style.marginLeft5} ${style.tableDataFontDisabledStyle1}}`}></div>
+            </div>
+            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+              <div className={`${style.tableDataFontStyle1}`}> Applicant Profile Information</div>
+              <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/Form/BasicInformation`); }} />
+            </div>
+            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+              <div className={`${style.greenDotStyle} `}></div>
+            </div>
+            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+              <div className={`${style.greenDotStyle} `}></div>
+            </div>
+            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+            </div>
+          </div>
+          <div>
+
+            {
+              form?.formSchemas?.filter(data => data?.formCategory === 'Form')?.map((data, index) => (
+                <div className={`${style.tableDataStyle} ${style.marginTop5} ${style.tableValueGridStyle} `}>
+                  <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                    {index !== 0 && (
+                      <div className={`${style.marginLeft5} ${style.tableDataFontDisabledStyle1}`}>{data?.title || ''}</div>
+                    )}
+                  </div>
+                  <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                    <div className={`${style.tableDataFontStyle1}`}>{data?.description}</div>
+                    <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/${data?.formCategory}/${data?.schemaCategory}`) }} />
+                  </div>
+                  <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                    {/* <div className={`${style.greyDotStyle} `}></div> */}
+                    <div className={`${form?.forms[index]?.acknowledged === true ? style.greenDotStyle : style.yellowDotStyle}`}></div>
+                    {/* <div className={data?.acknowledged ? style.greenDotStyle : style.yellowDotStyle}></div> */}
+
+                  </div>
+                  <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                    {/* <div className={`${style.greyDotStyle} `}></div> */}
+                    <div className={`${form?.forms[index]?.acknowledged === true ? style.greenDotStyle : style.yellowDotStyle}`}></div>
+                  </div>
+                  <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                    <div className={`${style.marginLeft5} ${style.tableDataFontDisabledStyle1}`}>
+                      {(itemsToProcessConditionCheckCategories?.includes(form?.forms?.filter(data => data?.formCategory === 'Form')[index]?.schemaCategory) && form?.forms[index]?.unFilledFields?.length !== 0) ? 'Missing mandatory fields. Please complete.' : form?.forms[index]?.unFilledFields?.join(', ')}
                     </div>
-                    <div className={` ${style.marginTop10} ${style.tableHeaderGridStyle} `}>
-                        <div></div>
-                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                            <div className={form?.forms.every(item => item.acknowledged === true) ? style.greenDotStyle : style.yellowDotStyle}></div>
-                        </div>
-                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                            <div className={form?.forms.every(item => item.acknowledged === true) ? style.greenDotStyle : style.yellowDotStyle}></div>
-                        </div>
-                        <div></div>
-                    </div>
-                    <div className={`${style.tableHeaderStyle} ${style.marginTop10} ${style.tableHeaderGridStyle} `}>
-                        <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                            <div className={`${style.tableHeaderTextStyle} ${style.marginLeft20}`}>POD Verification Check</div>
-                        </div>
-                        <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                            <div className={`${style.tableHeaderTextStyle}`}
-                            >
-                                <img src={DataStatusIcon} alt="" style={{
-                                    width: "18px",
-                                    height: "20px"
-                                }} />
-
-                            </div>
-                        </div>
-                        <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                            <div className={`${style.tableHeaderTextStyle}`}
-                            >
-                                <img src={DocumentIcon} alt=""
-                                    style={{
-                                        width: "18px",
-                                        height: "20px"
-                                    }} />
-
-                            </div>
-                        </div>
-                        <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                            <div className={`${style.tableHeaderTextStyle}`}>Items To Address</div>
-                        </div>
-                    </div>
-                    <div className={`${style.tableDataStyle} ${style.marginTop5} ${style.tableValueGridStyle} `}>
-                        <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                            <div className={`${style.marginLeft5} ${style.tableDataFontDisabledStyle1}}`}></div>
-                        </div>
-                        <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                            <div className={`${style.tableDataFontStyle1}`}> Applicant Profile Information</div>
-                            <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/Form/BasicInformation`); }} />
-                        </div>
-                        <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                            <div className={`${style.greenDotStyle} `}></div>
-                        </div>
-                        <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                            <div className={`${style.greenDotStyle} `}></div>
-                        </div>
-                        <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                        </div>
-                    </div>
-                    <div>
-
-                        {
-                            form?.formSchemas?.filter(data => data?.formCategory === 'Form')?.map((data, index) => (
-                                <div className={`${style.tableDataStyle} ${style.marginTop5} ${style.tableValueGridStyle} `}>
-                                    <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                        {index !== 0 && (
-                                            <div className={`${style.marginLeft5} ${style.tableDataFontDisabledStyle1}`}>{data?.title || ''}</div>
-                                        )}
-                                    </div>
-                                    <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                        <div className={`${style.tableDataFontStyle1}`}>{data?.description}</div>
-                                        <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/${data?.formCategory}/${data?.schemaCategory}`) }} />
-                                    </div>
-                                    <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                        {/* <div className={`${style.greyDotStyle} `}></div> */}
-                                        <div className={`${form?.forms[index]?.acknowledged === true ? style.greenDotStyle : style.yellowDotStyle}`}></div>
-                                        {/* <div className={data?.acknowledged ? style.greenDotStyle : style.yellowDotStyle}></div> */}
-
-                                    </div>
-                                    <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                        {/* <div className={`${style.greyDotStyle} `}></div> */}
-                                        <div className={`${form?.forms[index]?.acknowledged === true ? style.greenDotStyle : style.yellowDotStyle}`}></div>
-                                    </div>
-                                    <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                        <div className={`${style.marginLeft5} ${style.tableDataFontDisabledStyle1}`}>
-                                            {(itemsToProcessConditionCheckCategories?.includes(form?.forms?.filter(data => data?.formCategory === 'Form')[index]?.schemaCategory) && form?.forms[index]?.unFilledFields?.length !== 0) ? 'Missing mandatory fields. Please complete.' : form?.forms[index]?.unFilledFields?.join(', ')}
-                                        </div>
-                                    </div>
-                                </div>
-                            ))
-                        }
-                    </div>
-
-
+                  </div>
                 </div>
-                <div className={style.marginTop}>
-                    <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
-                    <div className={style.marginTop10}>
-                        <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-                    </div>
-                    <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
-                    <div className={style.twoColForButton}>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
-                    </div>
-                    {/* <div className={style.marginTop}>
+              ))
+            }
+          </div>
+
+
+        </div>
+        <div className={style.marginTop}>
+          <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
+          <div className={style.marginTop10}>
+            <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
+          </div>
+          <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
+          <div className={style.twoColForButton}>
+            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
+          </div>
+          {/* <div className={style.marginTop}>
                             <ApplicationReferenceDocuments />
                         </div> */}
-                </div>
-                {/* {isOpen && (
+        </div>
+        {/* {isOpen && (
                 <AIAssistantDialog getIsOpen={getIsOpen} />
             )} */}
-            </div>
-        </div>
-    )
+      </div>
+    </div>
+  )
 }
 
 export default PODCheck;
