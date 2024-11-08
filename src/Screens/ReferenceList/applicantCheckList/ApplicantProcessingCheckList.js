@@ -1,17 +1,25 @@
 import React, { Fragment, useState, useEffect } from "react";
 import Navbar from "../../../Components/Navbar";
+import { Checkbox, Icon, Intent } from "@blueprintjs/core";
 import style from "./../index.module.scss";
-import { GET, POST, TenantID } from "../../dataSaver";
+import { GET, DELETE, POST, TenantID } from "../../dataSaver";
+import AddNewDepartments from "../addNewDepartments";
+import { SuccessToaster, ErrorToaster } from "../../../utils/toaster";
+import { format } from "date-fns";
 import LevelTwoHeader from "../../../Components/LevelTwoHeader";
+import CommonCheckBox from "../../../Components/CommonFields/CommonCheckBox";
+import CommonPurpleCheckBox from "../../../Components/CommonFields/CommonPurpleCheckBox";
+import SearchBar from "../../../Components/SearchBar";
 import { formatInTimeZone } from "date-fns-tz";
 import { siteTimeZone, timeZoneAbbreviation } from "../../../utils/formatting";
-import ReferenceListCommonTable from "../common/Table";
+import ApplicantTable from "../common/Table";
 import ApplicantSideBar from "../common/SideBar";
 import { ReferenceListActionButton } from "../common/ReferenceListActionButton";
-import { Typography } from "@material-ui/core";
-import StaffPrivilegeDialog from "./staffPrivilegeDialog";
+import Breadcrumbs from "@mui/material/Breadcrumbs";
+import Typography from "@mui/material/Typography";
+import CheckListDialog from "./CheckListDialog";
 
-const StaffPrivileges = () => {
+const ApplicantProcessingCheckList = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [entityId, setEntityId] = useState("");
   const [lastUpdatedDate, setLastUpdatedDate] = useState("");
@@ -19,12 +27,16 @@ const StaffPrivileges = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [applicantTypeList, setApplicantTypeList] = useState([]);
   const [applicantId, setApplicantId] = useState("");
-  const [staffPrivilegesForm, setStaffPrivilegesForm] = useState([]);
+  const [applicantTypeEntityForm, setApplicantTypeEntityForm] = useState([]);
   const [editData, setEditData] = useState();
   const [isRefetch, setIsRefetch] = useState(false);
 
-  const tableHeadKeys = ["CATEGORY", "LAST UPDATED"];
-  const tableDataKeys = ["applicantType", "lastModifiedDate"];
+  const tableHeadKeys = [
+    "ACTION REQUIRED",
+    "TASK/ACTIVTY TITLE",
+    "LAST UPDATED",
+  ];
+  const tableDataKeys = ["taskAction", "taskName", "lastModifiedDate"];
 
   useEffect(() => {
     getApplicantType();
@@ -76,12 +88,13 @@ const StaffPrivileges = () => {
   };
 
   const getStaffPrivileges = async (id) => {
-    if (id) {
-      const { data: staffPrivilegesForm } = await GET(
-        `entity-service/staffPrivilege?applicantTypeId=${id}`
+    if (id !== "") {
+      const { data: applicantTypeForm } = await GET(
+        `entity-service/checklist?applicantTypeId=${id}`
       );
       setIsRefetch(false);
-      setStaffPrivilegesForm(staffPrivilegesForm);
+      console.log("applicantTypeForm", applicantTypeForm);
+      setApplicantTypeEntityForm(applicantTypeForm);
     }
   };
 
@@ -106,6 +119,12 @@ const StaffPrivileges = () => {
     setIsRefetch(needRefetch);
   };
 
+  const onAddClick = () => {
+    setIsEdit(false); // Set to false for adding a new entry
+    setEditData(null); // Reset editData for new entry
+    setIsDialogOpen(true);
+  };
+
   return (
     <Fragment>
       <Navbar />
@@ -113,15 +132,13 @@ const StaffPrivileges = () => {
         <div className={style.padding20}>
           <div>
             <LevelTwoHeader
-              heading={
-                "Staff Privileges for department & service areas by applicant types"
-              }
+              heading={"Application Processing Checklist by applicant"}
               updatedTime={`UPDATED ON ${lastUpdatedDate}`}
               path={"/Screens/ReferenceList/customerAdminDashboard"}
               callingFrom={"Customer Admin"}
               needHeader={false}
-              tileType={"StaffPrivileges"}
-              onAddClick={() => setIsDialogOpen(true)}
+              tileType={"CheckList"}
+              onAddClick={onAddClick} // Use the updated function here
               onCloseLevel2={() => setIsDialogOpen(false)}
             />
           </div>
@@ -133,7 +150,7 @@ const StaffPrivileges = () => {
               siteType={applicantTypeList?.map((data) => data?.siteType)}
               selectedTile={getSelectedTile}
               onSelectSite={handleSiteClick}
-              tileType={"StaffPrivileges"}
+              tileType={"CheckList"}
               sideBarList={applicantTypeList}
               siteDropdown={true}
             />
@@ -148,28 +165,26 @@ const StaffPrivileges = () => {
                   {">"}
                 </Typography>
                 <Typography className={style.tableTitleContent}>
-                  All StaffPrivileges Form
+                  All Applicant Form
                 </Typography>
               </div>
-              {staffPrivilegesForm && (
-                <ReferenceListCommonTable
-                  applicantTypes={staffPrivilegesForm}
-                  applicantNotice={
-                    "Applicant types are ordered as they will appear on forms. To change the order, click and drag "
-                  }
-                  tableDataKeys={tableDataKeys}
-                  tableHeadKeys={tableHeadKeys}
-                  tileType={"StaffPrivileges"}
-                  groupFirstTwoColumn={true}
-                  onEditClick={(data) => {
-                    console.log(data);
-                    setIsEdit(true);
-                    setIsDialogOpen(true);
-                    setEditData(data);
-                  }}
-                  refetchData={() => getStaffPrivileges(applicantId)} // Pass the refetch function
-                />
-              )}
+              <ApplicantTable
+                applicantTypes={applicantTypeEntityForm}
+                applicantNotice={
+                  "Applicant types are ordered as they will appear on forms. To change the order, click and drag "
+                }
+                tableDataKeys={tableDataKeys}
+                tableHeadKeys={tableHeadKeys}
+                tileType={"CheckList"}
+                groupFirstTwoColumn={true}
+                onEditClick={(data) => {
+                  setIsEdit(true);
+                  setIsDialogOpen(true);
+                  setEditData(data);
+                }}
+                applicantId={applicantId}
+                refetchStaffPrivileges={getStaffPrivileges} // Pass the fetch function as a prop
+              />
               <ReferenceListActionButton
                 button1={"Save In-Progress"}
                 button2={" Mark as Done"}
@@ -179,7 +194,7 @@ const StaffPrivileges = () => {
         </div>
       </div>
       {isDialogOpen && (
-        <StaffPrivilegeDialog
+        <CheckListDialog
           open={isDialogOpen}
           handleClose={handleCloseDialog}
           selectedApplicant={editData}
@@ -190,4 +205,4 @@ const StaffPrivileges = () => {
   );
 };
 
-export default StaffPrivileges;
+export default ApplicantProcessingCheckList;
