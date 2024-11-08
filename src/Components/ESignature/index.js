@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import style from "./index.module.scss";
 import { getValueByPath } from "../../utils/formatting";
 import { useParams } from "react-router-dom";

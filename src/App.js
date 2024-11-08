@@ -127,7 +127,9 @@ const ContractedServiceProvidedByIndustries = React.lazy(() =>
 const DisclosureIndustries = React.lazy(() =>
   import("./Screens/ReferenceList/disclosureByIndustries/DisclosureIndustries")
 );
-
+const PrivilegeListMaster = React.lazy(() =>
+  import("./Screens/ReferenceList/privilegeListMaster/PrivilegeListMaster")
+);
 const FunctionalTitles = React.lazy(() =>
   import("./Screens/ReferenceList/functionalTitles")
 );

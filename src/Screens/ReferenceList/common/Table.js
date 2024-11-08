@@ -13,7 +13,6 @@ import DisclosureByIndustriesDialog from "../disclosureByIndustries/disclosureBy
 import { format } from "date-fns";
 import PrivilegeListDialog from "../privilegeListMaster/PrivilegesListDialog";
 import { ErrorToaster, SuccessToaster } from "../../../utils/toaster";
-import PrivilegeListDialog from "../privilegeListManager/PrivilegesListDialog";
 
 const ReferenceListCommonTable = ({
   applicantTypes,
@@ -168,16 +167,15 @@ const ReferenceListCommonTable = ({
             {tableHeadKeys &&
               tableHeadKeys.map((head, index) => (
                 <th
-                  className={`${
-                    index === 0
-                      ? tileType === "CheckList"
-                        ? style.firstmaxWidth
-                        : tileType === "PrivilegeListMaster" ||
-                          tileType === "PrivilegeListManager"
+                  className={`${index === 0
+                    ? tileType === "CheckList"
+                      ? style.firstmaxWidth
+                      : tileType === "PrivilegeListMaster" ||
+                        tileType === "PrivilegeListManager"
                         ? style.firstColumnPrivilegeListMaster
                         : style.firstColumn
-                      : style.centerAligned
-                  } ${gridStyle}`}
+                    : style.centerAligned
+                    } ${gridStyle}`}
                   key={index}
                 >
                   {head}
@@ -197,77 +195,75 @@ const ReferenceListCommonTable = ({
             .map((applicant, index) => (
               <React.Fragment key={applicant.id}>
                 <tr
-                  className={`${style.applicantItem} ${
-                    index % 2 === 0 ? "" : style.sideNonActiveBackground
-                  }`}
+                  className={`${style.applicantItem} ${index % 2 === 0 ? "" : style.sideNonActiveBackground
+                    }`}
                 >
                   {tableDataKeys.map((key, keyIndex) => (
                     <td
                       key={keyIndex}
-                      className={`${
-                        keyIndex === 0
-                          ? tileType === "PrivilegeListMaster" ||
-                            tileType === "PrivilegeListManager"
-                            ? `${style.leftAligned} ${style.firstColumnPrivilegeListMaster}`
-                            : `${style.leftAligned} ${style.firstColumn}`
-                          : style.centerAligned
-                      }`}
+                      className={`${keyIndex === 0
+                        ? tileType === "PrivilegeListMaster" ||
+                          tileType === "PrivilegeListManager"
+                          ? `${style.leftAligned} ${style.firstColumnPrivilegeListMaster}`
+                          : `${style.leftAligned} ${style.firstColumn}`
+                        : style.centerAligned
+                        }`}
                     >
                       {key === "applicantType"
                         ? tileType === "CheckList"
                           ? applicant.applicantTypes
-                              .map((type) => `${type.applicantType}`)
-                              .join(", ")
+                            .map((type) => `${type.applicantType}`)
+                            .join(", ")
                           : Array.isArray(applicant.applicantType)
-                          ? applicant.applicantType.join(", ")
-                          : "N/A"
-                        : key === "lastUpdated" || key === "lastModifiedDate"
-                        ? applicant[key]
-                          ? format(new Date(applicant[key]), "MMM dd, yyyy")
-                          : "N/A"
-                        : tileType === "ApplicantType"
-                        ? key === "category"
-                          ? applicant.category
-                            ? applicant.category.category
+                            ? applicant.applicantType.join(", ")
                             : "N/A"
-                          : key === "applicantType"
-                          ? applicant.applicantType || "N/A"
-                          : key === "lastUpdated" || key === "lastModifiedDate"
+                        : key === "lastUpdated" || key === "lastModifiedDate"
                           ? applicant[key]
                             ? format(new Date(applicant[key]), "MMM dd, yyyy")
                             : "N/A"
-                          : "N/A"
-                        : key === "applicantType"
-                        ? (applicant.applicantType &&
-                            applicant.applicantType[key]) ||
-                          applicant.applicantType
-                        : key === "disclaimer"
-                        ? applicant[key]?.content != null
-                          ? "Yes"
-                          : "No"
-                        : key === "esignatureRequiredOnEachPage" ||
-                          key === "esignatureRequired"
-                        ? applicant[key] === true
-                          ? "Required"
-                          : "NA"
-                        : key === "createdDate"
-                        ? format(new Date(applicant[key]), "MMM dd, yyyy")
-                        : key === "lastModifiedDate" ||
-                          key === "lastModifiedData"
-                        ? applicant[key]
-                          ? format(new Date(applicant[key]), "MMM dd, yyyy")
-                          : "N/A"
-                        : key === "departmentName"
-                        ? applicant.departmentName
-                          ? applicant.departmentName.name
-                          : "N/A"
-                        : key === "taskAction"
-                        ? applicant.taskAction
-                          ? toCamelCaseWithSpaces(applicant.taskAction)
-                          : "N/A"
-                        : key === "taskName"
-                        ? applicant.taskName || "N/A"
-                        : applicant[key] || "N/A"}
+                          : tileType === "ApplicantType"
+                            ? key === "category"
+                              ? applicant.category
+                                ? applicant.category.category
+                                : "N/A"
+                              : key === "applicantType"
+                                ? applicant.applicantType || "N/A"
+                                : key === "lastUpdated" || key === "lastModifiedDate"
+                                  ? applicant[key]
+                                    ? format(new Date(applicant[key]), "MMM dd, yyyy")
+                                    : "N/A"
+                                  : "N/A"
+                            : key === "applicantType"
+                              ? (applicant.applicantType &&
+                                applicant.applicantType[key]) ||
+                              applicant.applicantType
+                              : key === "disclaimer"
+                                ? applicant[key]?.content != null
+                                  ? "Yes"
+                                  : "No"
+                                : key === "esignatureRequiredOnEachPage" ||
+                                  key === "esignatureRequired"
+                                  ? applicant[key] === true
+                                    ? "Required"
+                                    : "NA"
+                                  : key === "createdDate"
+                                    ? format(new Date(applicant[key]), "MMM dd, yyyy")
+                                    : key === "lastModifiedDate" ||
+                                      key === "lastModifiedData"
+                                      ? applicant[key]
+                                        ? format(new Date(applicant[key]), "MMM dd, yyyy")
+                                        : "N/A"
+                                      : key === "departmentName"
+                                        ? applicant.departmentName
+                                          ? applicant.departmentName.name
+                                          : "N/A"
+                                        : key === "taskAction"
+                                          ? applicant.taskAction
+                                            ? toCamelCaseWithSpaces(applicant.taskAction)
+                                            : "N/A"
+                                          : key === "taskName"
+                                            ? applicant.taskName || "N/A"
+                                            : applicant[key] || "N/A"}
                     </td>
                   ))}
 
@@ -295,11 +291,10 @@ const ReferenceListCommonTable = ({
                       {tableDataKeys.map((key, keyIndex) => (
                         <td
                           key={keyIndex}
-                          className={`${
-                            keyIndex === 0
-                              ? style.leftAligned
-                              : style.centerAligned
-                          } ${keyIndex === 0 ? style.firstColumn : ""}`}
+                          className={`${keyIndex === 0
+                            ? style.leftAligned
+                            : style.centerAligned
+                            } ${keyIndex === 0 ? style.firstColumn : ""}`}
                         >
                           {subApplicant[key] || "N/A"}
                         </td>
