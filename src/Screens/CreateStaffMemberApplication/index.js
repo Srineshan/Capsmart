@@ -23,6 +23,7 @@ const CreateStaffMemberApplication = () => {
   const user = jwt(userDetails);
   const [form, setForm] = useState();
   const [isLoading, setIsLoading] = useState(false);
+  const [formSchemaWholeObject, setFormSchemaWholeObject] = useState();
   const [isNextpage, setIsNextPage] = useState(false);
   const [isShowMailSendDialog, setIsShowMailSendDialog] = useState(false);
   const [applicationId, setApplicationId] = useState("");
@@ -179,8 +180,14 @@ const CreateStaffMemberApplication = () => {
     setLabels(tempLabels);
   };
 
+  const validateEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
   const getMissingFields = () => {
     setIsLoading(true);
+
     let missingKeys = [];
     let keyValuePair = [];
     metadata?.map((data, index) => {
@@ -195,11 +202,53 @@ const CreateStaffMemberApplication = () => {
         data?.value === "" ||
         data?.value === null ||
         data?.value === undefined ||
-        data?.value === 0
+        data?.value === 0 ||
+        (data.key === "basicDetails.applicant.email.officialEmail" &&
+          !validateEmail(data.value))
       ) {
-        missingKeys.push(data);
+        if (
+          data.key === "basicDetails.applicant.email.officialEmail" &&
+          !validateEmail(data.value)
+        ) {
+          setBasicForm((prevForm) => ({
+            ...prevForm,
+            basicDetails: {
+              ...prevForm.basicDetails,
+              applicant: {
+                ...prevForm.basicDetails.applicant,
+                email: {
+                  officialEmail: "", 
+                },
+              },
+            },
+          }));
+        }
+        missingKeys.push({
+          ...data,
+          error:
+            data.key === "basicDetails.applicant.email.officialEmail" &&
+            !validateEmail(data.value)
+              ? "Invalid email format"
+              : "",
+        });
       }
     });
+    if (
+      !formSchemaWholeObject?.schema?.properties?.departmentSpecialty?.dependencies?.department?.oneOf
+        ?.map((data) => data?.properties?.department?.enum[0])
+        ?.includes(
+          getValueByPath(
+            basicForm,
+            "basicDetails.departmentSpecialty.department"
+          )
+        )
+    ) {
+      let temp = missingKeys?.filter(
+        (data) =>
+          !["basicDetails.departmentSpecialty.specialty"]?.includes(data?.key)
+      );
+      missingKeys = temp;
+    }
     if (missingKeys?.length !== 0) {
       setShowValidationDialog(true);
     } else {
@@ -236,6 +285,7 @@ const CreateStaffMemberApplication = () => {
         delete temp.properties.applicant.properties["curriculumVitae"];
       }
       setForm(form?.schema);
+      setFormSchemaWholeObject(form);
       // } else {
       //     const { data: form } = await GET(
       //         `application-management-service/formSchema/${basicForm?.generalSchemas?.[2]?.id}`
@@ -354,6 +404,7 @@ const CreateStaffMemberApplication = () => {
                   getAllPath={getAllPath}
                   getAllLabels={getAllLabels}
                   warningFields={warningFields}
+                  formSchema={formSchemaWholeObject}
                 />
               )}
               {form !== undefined &&
@@ -368,6 +419,7 @@ const CreateStaffMemberApplication = () => {
                     getAllPath={getAllPath}
                     getAllLabels={getAllLabels}
                     warningFields={warningFields}
+                    formSchema={formSchemaWholeObject}
                   />
                 )}
               {form !== undefined &&
@@ -382,6 +434,7 @@ const CreateStaffMemberApplication = () => {
                     getAllPath={getAllPath}
                     getAllLabels={getAllLabels}
                     warningFields={warningFields}
+                    formSchema={formSchemaWholeObject}
                   />
                 )}
               {/* {form !== undefined && 'regionalCallResponsibilities' in form?.properties && (
