@@ -303,7 +303,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
     };
 
     const handleEdit = (data) => {
-        navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex]?.formCategory}/${basicForm?.forms[formIndex]?.schemaCategory}/${data?.id}`)
+        navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex]?.formCategory}/${basicForm?.forms[formIndex]?.schemaCategory}/${data?.medicalDirective?.id}`)
     }
 
     const getMedicalDirectiveTable = () => {
@@ -395,7 +395,9 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                 </div>
                             </>
                         )}
-                        {/* <div className={`${style.description} ${style.marginTop}`}>You have no Medical Directives that requires your review and attestation at this time.</div> */}
+                        {medicalDirectives?.length === 0 && (
+                            <div className={`${style.description} ${style.marginTop}`}>You have no Medical Directives that requires your review and attestation at this time.</div>
+                        )}
                         <div className={`${style.marginTop}`}>
                             <div>
                                 <div className={`${style.checkGrid}`}>

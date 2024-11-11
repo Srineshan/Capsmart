@@ -195,30 +195,32 @@ const MedicalDirectivesAttest = () => {
                         <div className={`${style.medicalDirectivesCard} ${style.marginTop}`}>
                             <div className={style.title}><strong>{`Medical Directive Attestation`} </strong></div>
                             <div className={`${style.marginTop10} ${style.description}`}>You have to review and attest to this Medical Directive that has been assigned to you.</div>
-                            {!isScrolledToBottom ? (
+                            {(!isScrolledToBottom) ? (
                                 <Tooltip title="Scroll to the end of the document" arrow>
-                                    <div className={` ${style.marginTop} ${style.leftAlign} ${style.disabled}`}>
-                                        <CommonCheckBox checked={medicalDirectivesAttestation} label={'I certify that I have read the Medical Directive assigned to me and have a good understanding of them.'} onChange={() => { }} />
-                                    </div>
-                                    <div className={style.disabled}>
-                                        <div onClick={() => { }}
-                                        >
-                                            <ESignature
-                                                userName={isSigned ? `${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} ` : ""}
-                                                encData={isSigned ? encryptedText : ''}
-                                                showData={isSigned}
-                                                showDatais={true}
-                                                removePadding={true}
-                                            />
+                                    <div>
+                                        <div className={` ${style.marginTop} ${style.leftAlign} ${style.disabled}`}>
+                                            <CommonCheckBox checked={medicalDirectivesAttestation} label={'I certify that I have read the Medical Directive assigned to me and have a good understanding of them.'} />
                                         </div>
-                                        <div className={style.verticalAlignCenter}>
-                                            <div className={style.displayInRow}>
-                                                <div className={`${style.dateTitle}`}>Date: </div>
-                                                <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? (basicForm?.forms?.[formIndex]?.esign?.signedDate !== '' && basicForm?.forms?.[formIndex]?.esign?.signedDate !== undefined) ? basicForm?.forms?.[formIndex]?.esign?.signedDate : currentDate : ""}</div>
+                                        <div className={style.disabled}>
+                                            <div
+                                            >
+                                                <ESignature
+                                                    userName={isSigned ? `${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} ` : ""}
+                                                    encData={isSigned ? encryptedText : ''}
+                                                    showData={isSigned}
+                                                    showDatais={true}
+                                                    removePadding={true}
+                                                />
+                                            </div>
+                                            <div className={style.verticalAlignCenter}>
+                                                <div className={style.displayInRow}>
+                                                    <div className={`${style.dateTitle}`}>Date: </div>
+                                                    <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? (basicForm?.forms?.[formIndex]?.esign?.signedDate !== '' && basicForm?.forms?.[formIndex]?.esign?.signedDate !== undefined) ? basicForm?.forms?.[formIndex]?.esign?.signedDate : currentDate : ""}</div>
+                                                </div>
                                             </div>
                                         </div>
+                                        <div className={`${style.continue} ${style.marginTop} ${style.disabled}`}>SUBMIT</div>
                                     </div>
-                                    <div className={`${style.continue} ${style.marginTop} ${style.disabled}`} onClick={() => { }}>SUBMIT</div>
                                 </Tooltip>
                             ) : (
                                 <>
