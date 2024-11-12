@@ -16,12 +16,14 @@ import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 import ValidationDialog from '../../../Components/validationDialog';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
 import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
+import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
 
 const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
     const [formSchemaWholeObject, setFormSchemaWholeObject] = useState();
     const [form2, setForm2] = useState();
     const navigate = useNavigate()
+    const [uniqueLabels, setUniqueLabels] = useState([]);
     const { applicationId, section, step } = useParams();
     const [isOpen, setIsOpen] = useState(true);
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
@@ -82,6 +84,111 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         setLabels(tempLabels);
     }
 
+    const addObjectIfNotPresent = (array, newObject) => {
+        const objectExists = array.some((obj) =>
+            Object.keys(newObject).every((key) => obj[key] === newObject[key])
+        );
+
+        if (!objectExists) {
+            array.push(newObject);
+        }
+
+        return array;
+    };
+
+    const getAllLabelsContactAddress = (data) => {
+        let tempLabels = addObjectIfNotPresent(uniqueLabels, data);
+        setUniqueLabels(tempLabels)
+        console.log("tempLabelsssss", tempLabels, uniqueLabels, data)
+    }
+
+    const getMissingFieldsBasicInfo = () => {
+        let missingKeys = [];
+        let keyValuePair = [];
+        metadata?.map((data, index) => {
+            keyValuePair.push({
+                key: data,
+                value: getValueByPath(basicForm, data),
+                label: labels[index],
+            });
+        });
+        const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/; // Example for formatted phone number
+
+        keyValuePair?.map((data) => {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (
+                data?.value === "" ||
+                data?.value === null ||
+                data?.value === undefined ||
+                data?.value === 0 ||
+                (data?.key === "basicDetails.applicant.email.officialEmail" &&
+                    !emailRegex.test(data?.value))
+            ) {
+                if (
+                    data.key === "basicDetails.applicant.email.officialEmail" &&
+                    !emailRegex.test(data.value)
+                ) {
+                    setBasicForm((prevForm) => ({
+                        ...prevForm,
+                        basicDetails: {
+                            ...prevForm.basicDetails,
+                            applicant: {
+                                ...prevForm.basicDetails.applicant,
+                                email: {
+                                    ...prevForm.basicDetails.applicant.email,
+                                    officialEmail: "",
+                                },
+                            },
+                        },
+                    }));
+                }
+                if (
+                    basicForm.basicDetails.applicant.cellPhone &&
+                    !phoneRegex.test(basicForm.basicDetails.applicant.cellPhone)
+                ) {
+                    missingKeys.push({
+                        key: "basicDetails.applicant.cellPhone",
+                        label: "Cell Phone",
+                        error: "Invalid phone number format",
+                    });
+                    setBasicForm((prevForm) => ({
+                        ...prevForm,
+                        basicDetails: {
+                            ...prevForm.basicDetails,
+                            applicant: {
+                                ...prevForm.basicDetails.applicant,
+                                cellPhone: "",
+                            },
+                        },
+                    }));
+                }
+                missingKeys.push(data);
+            }
+        });
+        if (
+            !formSchemaWholeObject?.schema?.properties?.departmentSpecialty?.dependencies?.department?.oneOf
+                ?.map((data) => data?.properties?.department?.enum[0])
+                ?.includes(
+                    getValueByPath(
+                        basicForm,
+                        "basicDetails.departmentSpecialty.department"
+                    )
+                )
+        ) {
+            let temp = missingKeys?.filter(
+                (data) =>
+                    !["basicDetails.departmentSpecialty.specialty"]?.includes(data?.key)
+            );
+            missingKeys = temp;
+        }
+        if (missingKeys?.length !== 0) {
+            setShowValidationDialog(true);
+        } else {
+            handleSubmitApplicationReq();
+        }
+        setWarningFields(missingKeys);
+    };
+
     const getIsSaveInProgressOpen = (value) => {
         setIsSaveInProgressOpen(value);
     }
@@ -114,24 +221,96 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         let missingKeys = [];
         let keyValuePair = [];
         metadata?.map((data, index) => {
-            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index] })
+            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: uniqueLabels?.filter(labelData => labelData?.path === data)[0]?.label })
         })
+        const validateBusinessPhone = (phone) => {
+            const phoneRegex = /^[0-9]{10}$/; // Example: validate if phone is a 10-digit number
+            return phoneRegex.test(phone);
+        };
+        const validateBusinessWebsite = (website) => {
+            const websiteRegex =
+                /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}([\/\w .-]*)*\/?$/; // Simple URL validation
+            return websiteRegex.test(website);
+        };
+
         keyValuePair?.map(data => {
-            if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
+            if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0 ||
+                (data?.key === `forms[${formIndex}].data.contactAddress3.business.businessPhone` &&
+                    !validateBusinessPhone(data?.value)) ||
+                (data?.key ===
+                    `forms[${formIndex}].data.contactAddress3.business.businessWebsite` &&
+                    !validateBusinessWebsite(data?.value))
+            ) {
+                if (
+                    data?.key ===
+                    `forms[${formIndex}].data.contactAddress3.business.businessPhone` &&
+                    !validateBusinessPhone(data?.value)
+                ) {
+                    setBasicForm((prevForm) => ({
+                        ...prevForm,
+                        forms: prevForm.forms.map((form) => {
+                            if (form.schemaId === basicForm.forms[formIndex].schemaId) {
+                                return {
+                                    ...form,
+                                    data: {
+                                        ...form.data,
+                                        contactAddress3: {
+                                            ...form.data.contactAddress3,
+                                            business: {
+                                                ...form.data.contactAddress3.business,
+                                                businessPhone: "",
+                                            },
+                                        },
+                                    },
+                                };
+                            }
+                            return form;
+                        }),
+                    }));
+                }
+                if (
+                    data?.key ===
+                    `forms[${formIndex}].data.contactAddress3.business.businessWebsite` &&
+                    !validateBusinessWebsite(data?.value)
+                ) {
+                    setBasicForm((prevForm) => ({
+                        ...prevForm,
+                        forms: prevForm.forms.map((form) => {
+                            if (form.schemaId === basicForm.forms[formIndex].schemaId) {
+                                return {
+                                    ...form,
+                                    data: {
+                                        ...form.data,
+                                        contactAddress3: {
+                                            ...form.data.contactAddress3,
+                                            business: {
+                                                ...form.data.contactAddress3.business,
+                                                businessWebsite: "",
+                                            },
+                                        },
+                                    },
+                                };
+                            }
+                            return form;
+                        }),
+                    }));
+                }
                 missingKeys.push(data)
             }
         })
-        if (!formSchemaWholeObject?.schema?.properties?.departmentSpecialty?.dependencies?.department?.oneOf?.map(data => data?.properties?.department?.enum[0])?.includes(getValueByPath(basicForm, 'basicDetails.departmentSpecialty.department'))) {
-            let temp = missingKeys?.filter(data => !['basicDetails.departmentSpecialty.specialty']?.includes(data?.key));
+        if (!getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) && getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) !== undefined && getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) !== null) {
+            let registeredBusinessAddressKeys = [`forms[${formIndex}].data.contactAddress3.business.businessName`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.streetName`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.pinCode`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.city`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.province`, `forms[${formIndex}].data.contactAddress3.business.businessPhone`, `forms[${formIndex}].data.contactAddress3.business.businessWebsite`]
+            let temp = missingKeys?.filter(data => !registeredBusinessAddressKeys?.includes(data?.key));
             missingKeys = temp;
         }
+        setWarningFields(missingKeys)
         if (missingKeys?.length !== 0) {
             setShowValidationDialog(true)
         } else {
-            handleSubmitApplicationReq()
+            setShowContactInfo(false);
+            // handleSubmitApplicationReq()
         }
-        setWarningFields(missingKeys)
-        console.log(keyValuePair, 'Metadata', missingKeys)
+        console.log(keyValuePair, 'Metadata', missingKeys, getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`))
     }
 
     const handleSubmitApplicationReq = async () => {
@@ -250,7 +429,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                 setIsEdited={setIsDemographicInfoEdited}
                                 getAllPath={getAllPath}
                                 getAllLabels={getAllLabels}
-                                getIsSubmitClicked={getIsSubmitClicked}
+                                getIsSubmitClicked={getMissingFieldsBasicInfo}
                                 warningFields={warningFields}
                                 formSchema={formSchemaWholeObject}
                                 isReappointment={true}
@@ -267,37 +446,141 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                             </div> */}
                         </div>
                     )}
-                    {formSchema !== undefined && "contactAddress1" in formSchema?.properties && (
-                        <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
-                            {/* {showDemographicInfo && ( */}
-                            <ApplicationFieldCard
-                                object={formSchema?.properties?.contactAddress1}
-                                gridStyle={style.homeMailingAddressGrid}
-                                baseKey={"contactAddress1"}
-                                basicForm={basicForm}
-                                setBasicForm={setBasicForm}
-                                stepPath={`forms[${formIndex}].data`}
-                                isEdited={isContactInfoEdited}
-                                setIsEdited={setIsContactInfoEdited}
-                                getAllPath={getAllPath}
-                                getAllLabels={getAllLabels}
-                                getIsSubmitClicked={getIsSubmitClickedForContact}
-                                warningFields={warningFields}
-                                formSchema={formSchemaWholeObject}
-                                isReappointment={true}
-                                dataChangedObject={formSchema?.properties?.isAddressChanged}
-                                isChanged={showContactInfo}
-                                setIsChanged={setShowContactInfo}
-                                isView={viewContactInfo}
-                                setIsView={setViewContactInfo}
-                            />
-                            {/* )}
-                            <div className={style.displayInRow}>
-                                <div className={`${style.yesButton}`}><div className={`${style.verticalAlignCenter} ${style.justifyCenter}`} onClick={() => setShowDemographicInfo(true)}>YES</div></div>
-                                <div className={`${style.noButton} ${style.marginLeft}`}><div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>NO</div></div>
-                            </div> */}
-                        </div>
-                    )}
+
+                    <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
+                        <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.isAddressChanged?.label}</div>
+                        {showContactInfo ? (
+                            <div className={`${style.reappointmentCard} ${style.padding20} ${style.marginTop}`}>
+                                {/* <div
+                                    className={style.addMoreText}
+                                    dangerouslySetInnerHTML={{ __html: object?.items?.label }}
+                                /> */}
+                                {formSchema !== undefined && "contactAddress1" in formSchema?.properties && (
+                                    <div>
+                                        <div className={` ${style.marginTop}`}>
+                                            {/* {showDemographicInfo && ( */}
+                                            <ApplicationFieldCard
+                                                object={formSchema?.properties?.contactAddress1}
+                                                gridStyle={style.homeMailingAddressGrid}
+                                                baseKey={"contactAddress1"}
+                                                basicForm={basicForm}
+                                                setBasicForm={setBasicForm}
+                                                stepPath={`forms[${formIndex}].data`}
+                                                isEdited={isContactInfoEdited}
+                                                setIsEdited={setIsContactInfoEdited}
+                                                getAllPath={getAllPath}
+                                                getAllLabels={getAllLabelsContactAddress}
+                                                getIsSubmitClicked={getIsSubmitClickedForContact}
+                                                warningFields={warningFields}
+                                                formSchema={formSchemaWholeObject}
+                                            />
+
+                                        </div>
+                                        <div className={` ${style.marginTop}`}>
+                                            {/* {showDemographicInfo && ( */}
+                                            <ApplicationFieldCard
+                                                object={formSchema?.properties?.contactAddress2}
+                                                gridStyle={style.mailingAddressGrid}
+                                                baseKey={"contactAddress2"}
+                                                basicForm={basicForm}
+                                                setBasicForm={setBasicForm}
+                                                stepPath={`forms[${formIndex}].data`}
+                                                isEdited={isContactInfoEdited}
+                                                setIsEdited={setIsContactInfoEdited}
+                                                getAllPath={getAllPath}
+                                                getAllLabels={getAllLabelsContactAddress}
+                                                getIsSubmitClicked={getIsSubmitClickedForContact}
+                                                warningFields={warningFields}
+                                                formSchema={formSchemaWholeObject}
+                                            />
+
+                                        </div>
+                                        <div className={` ${style.marginTop}`}>
+                                            {/* {showDemographicInfo && ( */}
+                                            <ApplicationFieldCard
+                                                object={formSchema?.properties?.contactAddress3}
+                                                gridStyle={style.businessMailingAddressGrid}
+                                                baseKey={"contactAddress3"}
+                                                basicForm={basicForm}
+                                                setBasicForm={setBasicForm}
+                                                stepPath={`forms[${formIndex}].data`}
+                                                isEdited={isContactInfoEdited}
+                                                setIsEdited={setIsContactInfoEdited}
+                                                getAllPath={getAllPath}
+                                                getAllLabels={getAllLabelsContactAddress}
+                                                getIsSubmitClicked={getIsSubmitClickedForContact}
+                                                warningFields={warningFields}
+                                                formSchema={formSchemaWholeObject}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+                                {!viewContactInfo ? (
+                                    <div
+                                        className={`${style.displayInRowRev} ${style.marginTop}`}
+                                    >
+                                        <div className={style.marginLeft}>
+                                            <div
+                                                className={`${style.reappointmentButton} ${isContactInfoEdited ? '' : style.disabledButtonLook}`}
+                                                onClick={isContactInfoEdited ? () => {
+                                                    // setShowContactInfo(false);
+                                                    getMissingFields()
+                                                    // getIsSubmitClickedForContact(true)
+                                                } : () => { }}
+                                            >
+                                                UPDATE
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div
+                                                className={`${style.reappointmentButtonOutlined}`}
+                                                onClick={() => {
+                                                    setShowContactInfo(false)
+                                                }}
+                                            >
+                                                CANCEL
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div
+                                        className={`${style.displayInRowRev} ${style.marginTop}`}
+                                    >
+                                        <div>
+                                            <div
+                                                className={`${style.reappointmentButton}`}
+                                                onClick={() => {
+                                                    setShowContactInfo(false); setViewContactInfo(false);
+                                                }}
+                                            >
+                                                CLOSE
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <>
+                                <div className={`${style.viewMyInfoText} ${style.cursorPointer} ${style.marginTop}`} onClick={() => { setShowContactInfo(true); setViewContactInfo(true) }}>View my information on file</div>
+                                <div
+                                    className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
+                                >
+                                    <div
+                                        className={`${style.reappointmentButtonOutlined}`}
+                                        onClick={() => setShowContactInfo(true)}
+                                    >
+                                        Yes
+                                    </div>
+                                    <div
+                                        className={`${style.reappointmentButton} ${style.marginLeft}`}
+                                        onClick={() => setShowContactInfo(false)}
+                                    >
+                                        NO
+                                    </div>
+                                </div>
+                            </>
+                        )}
+                    </div>
                 </div>
                 <div>
                     <ApplicationAssistanceCard
@@ -335,9 +618,9 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                         </div> */}
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
                     </div>
-                    {/* <div className={style.marginTop}>
-                            <ApplicationReferenceDocuments />
-                        </div> */}
+                    <div className={style.marginTop}>
+                        <ApplicationReferenceDocuments />
+                    </div>
                 </div>
             </div>
             {/* {isOpen && <AIAssistantDialog getIsOpen={getIsOpen} />} */}

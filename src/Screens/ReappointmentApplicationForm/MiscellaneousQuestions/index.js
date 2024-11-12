@@ -17,7 +17,7 @@ import ReappointmentProgressCard from '../../../Components/ReappointmentProgress
 import { format } from 'date-fns';
 import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
 
-const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
+const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
     const [formSchemaWholeObject, setFormSchemaWholeObject] = useState();
     const [metadata, setMetadata] = useState([]);
@@ -30,16 +30,24 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formIndex, setFormIndex] = useState();
     const { applicationId, section, step } = useParams();
     const [navigateURL, setNavigateURL] = useState();
-    const [yesOrNo, setYesOrNo] = useState('');
-    const [updatedDate, setUpdatedDate] = useState('');
+    const [yesOrNoLMS, setYesOrNoLMS] = useState('');
+    const [updatedDateLMS, setUpdatedDateLMS] = useState('');
+    const [yesOrNoSuboxone, setYesOrNoSuboxone] = useState('');
+    const [updatedDateSuboxone, setUpdatedDateSuboxone] = useState('');
+    const [yesOrNoMRP, setYesOrNoMRP] = useState('');
+    const [updatedDateMRP, setUpdatedDateMRP] = useState('');
     const [showJourneyDialog, setShowJourneyDialog] = useState(false);
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setYesOrNo(basicForm?.forms?.[formIndex]?.data?.yesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.yesOrNo : '');
-            setUpdatedDate(basicForm?.forms?.[formIndex]?.data?.updatedDate !== undefined ? basicForm?.forms?.[formIndex]?.data?.updatedDate : '');
+            setYesOrNoLMS(basicForm?.forms?.[formIndex]?.data?.lms?.yesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.lms?.yesOrNo : '');
+            setUpdatedDateLMS(basicForm?.forms?.[formIndex]?.data?.lms?.updatedDate !== undefined ? basicForm?.forms?.[formIndex]?.data?.lms?.updatedDate : '');
+            setYesOrNoSuboxone(basicForm?.forms?.[formIndex]?.data?.suboxone?.yesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.suboxone?.yesOrNo : '');
+            setUpdatedDateSuboxone(basicForm?.forms?.[formIndex]?.data?.suboxone?.updatedDate !== undefined ? basicForm?.forms?.[formIndex]?.data?.suboxone?.updatedDate : '');
+            setYesOrNoMRP(basicForm?.forms?.[formIndex]?.data?.mrp?.yesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.mrp?.yesOrNo : '');
+            setUpdatedDateMRP(basicForm?.forms?.[formIndex]?.data?.mrp?.updatedDate !== undefined ? basicForm?.forms?.[formIndex]?.data?.mrp?.updatedDate : '');
             setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/PODCheck` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
         }
     }, [basicForm, formIndex])
@@ -97,8 +105,14 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
 
     const getMissingFields = () => {
         let missingKeys = [];
-        if (yesOrNo === '') {
+        if (yesOrNoLMS === '') {
             missingKeys.push({ label: 'Have you completed all of the CMH assigned LMS Modules for your reappointment?' })
+        }
+        if (yesOrNoSuboxone === '') {
+            missingKeys.push({ label: 'Do you prescribe Suboxone?' })
+        }
+        if (yesOrNoMRP === '') {
+            missingKeys.push({ label: 'Do you wish to be MRP for your patients in the Nursery?' })
         }
         if (missingKeys?.length !== 0) {
             setShowValidationDialog(true)
@@ -113,7 +127,11 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
         // if (isEdited) {
         let temp = {
             schemaId: basicForm?.forms?.[formIndex]?.schemaId,
-            data: { yesOrNo: yesOrNo, updatedDate: updatedDate },
+            data: {
+                lms: { yesOrNo: yesOrNoLMS, updatedDate: updatedDateLMS },
+                suboxone: { yesOrNo: yesOrNoSuboxone, updatedDate: updatedDateSuboxone },
+                mrp: { yesOrNo: yesOrNoMRP, updatedDate: updatedDateMRP }
+            },
             unFilledFields: warningFields?.map(data => data?.label),
             acknowledged: data === "skipped" ? false : true
         }
@@ -165,34 +183,108 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
                 <div>
                     <div className={`${style.applicationCardStyle}`}>
                         <div className={style.cardTitle}>
-                            Have you completed all of the CMH assigned LMS Modules for your reappointment?
+                            {formSchema?.properties?.isModulesForReAppointmentCompleted?.label}
                         </div>
-                        {yesOrNo === '' ? (
+                        {yesOrNoLMS === '' ? (
                             <div
                                 className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
                             >
                                 <div
                                     className={`${style.reappointmentButtonOutlined}`}
-                                    onClick={() => { setYesOrNo('Yes'); setUpdatedDate(format(new Date(), 'yyyy-MM-dd')) }}
+                                    onClick={() => { setYesOrNoLMS('Yes'); setUpdatedDateLMS(format(new Date(), 'yyyy-MM-dd')) }}
                                 >
                                     Yes
                                 </div>
                                 <div
                                     className={`${style.reappointmentButton} ${style.marginLeft}`}
-                                    onClick={() => { setYesOrNo('No'); setUpdatedDate(format(new Date(), 'yyyy-MM-dd')) }}
+                                    onClick={() => { setYesOrNoLMS('No'); setUpdatedDateLMS(format(new Date(), 'yyyy-MM-dd')) }}
                                 >
                                     NO
                                 </div>
                             </div>
                         ) : (
                             <>
-                                <div className={`${style.markedAsText} ${style.marginTop}`}><strong>Marked as <span className={yesOrNo === 'Yes' ? style.yesText : style.noText}>{yesOrNo}</span></strong> on {format(new Date(), "MMM dd, yyyy")}</div>
+                                <div className={`${style.markedAsText} ${style.marginTop}`}><strong>Marked as <span className={yesOrNoLMS === 'Yes' ? style.yesText : style.noText}>{yesOrNoLMS}</span></strong> on {format(new Date(updatedDateLMS), "MMM dd, yyyy")}</div>
                                 <div
                                     className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
                                 >
                                     <div
                                         className={`${style.reappointmentButtonEdit}`}
-                                        onClick={() => setYesOrNo('')}
+                                        onClick={() => setYesOrNoLMS('')}
+                                    >
+                                        Edit
+                                    </div>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                    <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
+                        <div className={style.cardTitle}>
+                            {formSchema?.properties?.doYouPrescribeSuboxone?.label}
+                        </div>
+                        {yesOrNoSuboxone === '' ? (
+                            <div
+                                className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
+                            >
+                                <div
+                                    className={`${style.reappointmentButtonOutlined}`}
+                                    onClick={() => { setYesOrNoSuboxone('Yes'); setUpdatedDateSuboxone(format(new Date(), 'yyyy-MM-dd')) }}
+                                >
+                                    Yes
+                                </div>
+                                <div
+                                    className={`${style.reappointmentButton} ${style.marginLeft}`}
+                                    onClick={() => { setYesOrNoSuboxone('No'); setUpdatedDateSuboxone(format(new Date(), 'yyyy-MM-dd')) }}
+                                >
+                                    NO
+                                </div>
+                            </div>
+                        ) : (
+                            <>
+                                <div className={`${style.markedAsText} ${style.marginTop}`}><strong>Marked as <span className={yesOrNoSuboxone === 'Yes' ? style.yesText : style.noText}>{yesOrNoSuboxone}</span></strong> on {format(new Date(updatedDateSuboxone), "MMM dd, yyyy")}</div>
+                                <div
+                                    className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
+                                >
+                                    <div
+                                        className={`${style.reappointmentButtonEdit}`}
+                                        onClick={() => setYesOrNoSuboxone('')}
+                                    >
+                                        Edit
+                                    </div>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                    <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
+                        <div className={style.cardTitle}>
+                            {formSchema?.properties?.wishToBeMRP?.label}
+                        </div>
+                        {yesOrNoMRP === '' ? (
+                            <div
+                                className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
+                            >
+                                <div
+                                    className={`${style.reappointmentButtonOutlined}`}
+                                    onClick={() => { setYesOrNoMRP('Yes'); setUpdatedDateMRP(format(new Date(), 'yyyy-MM-dd')) }}
+                                >
+                                    Yes
+                                </div>
+                                <div
+                                    className={`${style.reappointmentButton} ${style.marginLeft}`}
+                                    onClick={() => { setYesOrNoMRP('No'); setUpdatedDateMRP(format(new Date(), 'yyyy-MM-dd')) }}
+                                >
+                                    NO
+                                </div>
+                            </div>
+                        ) : (
+                            <>
+                                <div className={`${style.markedAsText} ${style.marginTop}`}><strong>Marked as <span className={yesOrNoMRP === 'Yes' ? style.yesText : style.noText}>{yesOrNoMRP}</span></strong> on {format(new Date(updatedDateMRP), "MMM dd, yyyy")}</div>
+                                <div
+                                    className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
+                                >
+                                    <div
+                                        className={`${style.reappointmentButtonEdit}`}
+                                        onClick={() => setYesOrNoMRP('')}
                                     >
                                         Edit
                                     </div>
@@ -207,7 +299,7 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
                         {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop10} ${(yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') ? '' : style.disabledButton}`} onClick={(yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') ? () => getMissingFields() : () => { }}>CONTINUE</div>
                     </div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
@@ -229,4 +321,4 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
     )
 }
 
-export default LMSModules;
+export default MiscellaneousQuestions;

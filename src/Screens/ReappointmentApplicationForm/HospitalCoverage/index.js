@@ -97,23 +97,20 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
     }
 
     const getMissingFields = () => {
-        // let missingKeys = [];
-        // let keyValuePair = [];
-        // metadata?.map((data, index) => {
-        //     keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index] })
-        // })
-        // keyValuePair?.map(data => {
-        //     if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
-        //         missingKeys.push(data)
-        //     }
-        // })
-        // if (missingKeys?.length !== 0) {
-        //     setShowValidationDialog(true)
-        // } else {
-        handleSubmitApplicationReq()
-        // }
-        // setWarningFields(missingKeys)
-        // console.log(keyValuePair, 'Metadata', missingKeys)
+        let missingKeys = [];
+        if (whoCovers === '') {
+            missingKeys.push({ label: 'Who covers your hospital patients when you are not available?' })
+        }
+        if (whoCoversObstetrics === '') {
+            missingKeys.push({ label: 'If You Are Practicing Obstetrics, Who Covers Your Patients When You Are Not Available?' })
+        }
+        if (missingKeys?.length !== 0) {
+            setShowValidationDialog(true)
+        } else {
+            handleSubmitApplicationReq()
+        }
+        setWarningFields(missingKeys)
+        console.log('Metadata', missingKeys)
     }
 
     const handleSubmitApplicationReq = async (data) => {
@@ -172,7 +169,7 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
                 <div>
                     <div className={`${style.applicationCardStyle}`}>
                         <div className={`${style.warningCard} ${style.marginTop10}`}>
-                            <div className={style.warningText}>Twenty-four hour coverage of hospital patients, including those in the ER, is a requirement of Professional Staff responsibilities. The physician must provide an acceptable method to respond to hospital calls.</div>
+                            <div className={style.warningText}>24 hours coverage of hospital patients, including those in the ER, is a requirement of Professional Staff responsibilities. The physician must provide an acceptable method to respond to hospital calls.</div>
                         </div>
                         <div className={style.marginTop}>
                             <CommonTextField
@@ -182,7 +179,9 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
                                 placeholder={'Enter Here'}
                                 label={'Who covers your hospital patients when you are not available?'}
                                 required={true}
-
+                                warning={warningFields
+                                    ?.map((data) => data?.label)
+                                    ?.includes(`Who covers your hospital patients when you are not available?`)}
                             />
                         </div>
                         <div className={style.marginTop}>
@@ -207,9 +206,9 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
                         {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
                     </div>
-                    {/* <div className={style.marginTop}>
+                    <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
-                    </div> */}
+                    </div>
                 </div>
             </div>
             {

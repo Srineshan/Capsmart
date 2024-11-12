@@ -6,6 +6,7 @@ import style from './index.module.scss'
 import { logout } from '../../utils/auth';
 import { POST } from '../../Screens/dataSaver';
 import { ErrorToaster, SuccessToaster } from '../../utils/toaster';
+import WarningIcon from '@mui/icons-material/Warning';
 import { useParams } from 'react-router-dom';
 import ApplicationSubmitDialog from '../../Components/ApplicationSubmitDialog';
 
@@ -14,7 +15,7 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
     const { applicationId, section, step } = useParams();
     const [showSubmitDialog, setShowSubmitDialog] = useState(false);
     const entityName = sessionStorage.getItem('title')
-
+    const [disclosureList, setDisclosureList] = useState(['ProfessionalConduct', 'CriminalHistory', 'MedicalHistory'])
     const getIsShowSubmitDialog = (value) => {
         setShowSubmitDialog(value);
     }
@@ -45,10 +46,36 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
                             <div className={style.verticalSpaceBetween}>
                                 <div>
                                     {basicForm?.forms?.map((data, index) => (formIndex >= index) && (
-                                        <div className={style.spaceBetween}>
-                                            <div className={style.completedItemsText}>{data?.title}</div>
-                                            <div><CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /></div>
-                                        </div>
+                                        <>
+                                            {data?.schemaCategory === 'ProfessionalConduct' && (
+                                                <>
+                                                    <div className={style.spaceBetween}>
+                                                        <div className={`${style.completedItemsText}`}>Disclosures</div>
+                                                        <div>{data?.acknowledged ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> : <WarningIcon style={{ fontSize: 20, color: `#FFAA00` }} />}</div>
+                                                    </div>
+                                                </>
+                                            )}
+                                            <div className={style.spaceBetween}>
+                                                <div className={`${style.completedItemsText} ${disclosureList?.includes(data?.schemaCategory) ? style.marginLeft : ''}`}>{data?.title}</div>
+                                                <div>{data?.acknowledged ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> : <WarningIcon style={{ fontSize: 20, color: `#FFAA00` }} />}</div>
+                                            </div>
+                                            {data?.schemaCategory === 'MISCELLANEOUS_QUESTIONS' && (
+                                                <>
+                                                    <div className={style.spaceBetween}>
+                                                        <div className={`${style.completedItemsText} ${style.marginLeft}`}>LMS</div>
+                                                        <div>{data?.acknowledged ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> : <WarningIcon style={{ fontSize: 20, color: `#FFAA00` }} />}</div>
+                                                    </div>
+                                                    <div className={style.spaceBetween}>
+                                                        <div className={`${style.completedItemsText} ${style.marginLeft}`}>Prescribe Suboxone</div>
+                                                        <div>{data?.acknowledged ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> : <WarningIcon style={{ fontSize: 20, color: `#FFAA00` }} />}</div>
+                                                    </div>
+                                                    <div className={style.spaceBetween}>
+                                                        <div className={`${style.completedItemsText} ${style.marginLeft}`}>MRP</div>
+                                                        <div>{data?.acknowledged ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> : <WarningIcon style={{ fontSize: 20, color: `#FFAA00` }} />}</div>
+                                                    </div>
+                                                </>
+                                            )}
+                                        </>
                                     ))}
                                 </div>
                                 <div className={style.marginTop}>

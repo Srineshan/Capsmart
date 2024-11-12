@@ -116,7 +116,7 @@
 }
 
 .progressStyleBackground {
-    background: transparent linear-gradient(90deg, $primarycolor 0%, $primarycolor 21%, #E9E9F0 25%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(90deg, $primarycolor 0%, $primarycolor 70%, #E9E9F0 75%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
 }
 
 .siteDisplayCard {
@@ -440,4 +440,11 @@
 
 .leftAlign {
     text-align: left;
+}
+
+.cardTitle {
+    text-align: left;
+    font: normal normal bold 20px/26px proxima-nova;
+    letter-spacing: 0px;
+    color: #52575D;
 }

@@ -20,6 +20,7 @@ import ApplicantAcknowledgement from './ApplicantAcknowledgement';
 import AdditionalPrivilegeSelection from './AdditionalPrivilegeSelection';
 import CME from './CME';
 import MedicalDirectives from './MedicalDirectives';
+import MiscellaneousQuestions from './MiscellaneousQuestions';
 
 const ReappointmentApplicationForm = () => {
     let cookie = new Cookie();
@@ -92,6 +93,8 @@ const ReappointmentApplicationForm = () => {
                 return <HospitalCoverage basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />
             case 'SUBOXONE':
                 return <PrescribeSuboxone basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />
+            case 'MISCELLANEOUS_QUESTIONS':
+                return <MiscellaneousQuestions basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />
             case 'ApplicantAcknowledgement':
                 return <ApplicantAcknowledgement dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
             default:

@@ -2184,7 +2184,7 @@ const ApplicationFieldCard = ({
                                                     <div
                                                         className={`${style.reappointmentButton} ${isEdited ? '' : style.disabledButtonLook}`}
                                                         onClick={isEdited ? () => {
-                                                            setIsChanged(false); handleReappointmentUpdate()
+                                                            handleReappointmentUpdate()
                                                         } : () => { }}
                                                     >
                                                         UPDATE

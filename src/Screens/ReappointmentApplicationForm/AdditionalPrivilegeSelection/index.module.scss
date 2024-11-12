@@ -403,10 +403,17 @@
 }
 
 .privilegeCard {
-    background: #14358F0A 0% 0% no-repeat padding-box;
+    background: #14358F00 0% 0% no-repeat padding-box;
     box-shadow: 0px 0px 8px #040B2014;
     border: 0.4000000059604645px solid #5087D9;
     border-radius: 5px;
+    padding: 10px;
+}
+
+.privilegeContentCard {
+    background: #1D24370A 0% 0% no-repeat padding-box;
+    box-shadow: 0px 0px 8px #040B2014;
+    border-radius: 8px;
     padding: 10px;
 }
 
@@ -519,4 +526,9 @@
     min-width: 200px;
     font: normal normal bold 15px/15px proxima-nova;
     cursor: pointer;
+}
+
+.noText {
+    font: italic normal bold 18px/24px proxima-nova;
+    color: #FF5555;
 }

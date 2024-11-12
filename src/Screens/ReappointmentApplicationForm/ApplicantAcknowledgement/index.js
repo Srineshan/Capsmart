@@ -17,6 +17,7 @@ import ESignature from '../../../Components/ESignature';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
 import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
 import ApplicationSubmitDialog from '../../../Components/ApplicationSubmitDialog';
+import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
 
 const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApplication }) => {
     const [isChecked, setIsChecked] = useState(false);
@@ -238,6 +239,9 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)} >CONTINUE</div>
+                    </div>
+                    <div className={style.marginTop}>
+                        <ApplicationReferenceDocuments />
                     </div>
                 </div>
                 {showJourneyDialog && (

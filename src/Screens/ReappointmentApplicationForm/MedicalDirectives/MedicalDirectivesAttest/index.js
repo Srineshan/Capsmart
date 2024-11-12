@@ -252,7 +252,7 @@ const MedicalDirectivesAttest = () => {
                         <div className={`${style.medicalDirectivesCard} ${style.marginTop}`}>
                             <div className={style.title}><strong>{`My Attestation Log`} </strong></div>
                             {medicalDirectivesAttestationLog?.map(data => (
-                                <div className={`${style.marginTop10} ${style.description}`}>{format(new Date(data?.createdDate), 'MMM dd, yyyy')}</div>
+                                <div className={`${style.marginTop10} ${style.description}`}>{format(new Date(data?.createdDate), 'MMM dd, yyyy HH:mm')}</div>
                             ))}
                         </div>
                     </div>

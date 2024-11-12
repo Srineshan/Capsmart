@@ -102,7 +102,7 @@
 }
 
 .progressStyleBackground {
-    background: transparent linear-gradient(90deg, $primarycolor 0%, $primarycolor 36%, #E9E9F0 39%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(90deg, $primarycolor 0%, $primarycolor 75%, #E9E9F0 85%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
 }
 
 .siteDisplayCard {
@@ -198,4 +198,14 @@
     font: italic normal medium 16px/24px proxima-nova;
     letter-spacing: 0px;
     color: #1D2437;
+}
+
+.yesText {
+    font: italic normal bold 18px/24px proxima-nova;
+    color: #14B15A;
+}
+
+.noText {
+    font: italic normal bold 18px/24px proxima-nova;
+    color: #FF5555;
 }

@@ -21,10 +21,9 @@
 
 .cardTitle {
     text-align: left;
-    font: normal normal 600 17px/28px proxima-nova;
+    font: normal normal bold 20px/26px proxima-nova;
     letter-spacing: 0px;
     color: #52575D;
-    text-transform: capitalize;
 }
 
 .saveInProgress {
@@ -87,7 +86,7 @@
 }
 
 .progressStyleBackground {
-    background: transparent linear-gradient(90deg, $primarycolor 0%, $primarycolor 2%, #E9E9F0 5%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(90deg, $primarycolor 0%, $primarycolor 30%, #E9E9F0 40%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
 }
 
 .siteDisplayCard {
@@ -196,6 +195,102 @@
     grid-column: span 3;
 }
 
+.homeMailingAddressGrid> :nth-child(7) {
+    grid-column: span 3;
+}
+
+.mailingAddressGrid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+}
+
+.mailingAddressGrid> :nth-child(1) {
+    grid-column: span 6;
+}
+
+.mailingAddressGrid> :nth-child(2) {
+    grid-column: span 3;
+}
+
+.mailingAddressGrid> :nth-child(3) {
+    grid-column: span 3;
+}
+
+.mailingAddressGrid> :nth-child(4) {
+    grid-column: span 3;
+}
+
+.mailingAddressGrid> :nth-child(5) {
+    grid-column: span 3;
+}
+
+.mailingAddressGrid> :nth-child(6) {
+    grid-column: span 3;
+}
+
+.mailingAddressGrid> :nth-child(7) {
+    grid-column: span 3;
+}
+
+.mailingAddressGrid> :nth-child(8) {
+    grid-column: span 3;
+}
+
+.businessMailingAddressGrid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 10px;
+}
+
+.businessMailingAddressGrid> :nth-child(1) {
+    grid-column: span 5;
+}
+
+.businessMailingAddressGrid> :nth-child(2) {
+    grid-column: span 7;
+}
+
+.businessMailingAddressGrid> :nth-child(3) {
+    grid-column: span 12;
+}
+
+.businessMailingAddressGrid> :nth-child(4) {
+    grid-column: span 6;
+}
+
+.businessMailingAddressGrid> :nth-child(5) {
+    grid-column: span 6;
+}
+
+.businessMailingAddressGrid> :nth-child(6) {
+    grid-column: span 6;
+}
+
+.businessMailingAddressGrid> :nth-child(7) {
+    grid-column: span 6;
+}
+
+.businessMailingAddressGrid> :nth-child(8) {
+    grid-column: span 6;
+}
+
+.businessMailingAddressGrid> :nth-child(9) {
+    grid-column: span 6;
+}
+
+.businessMailingAddressGrid> :nth-child(10) {
+    grid-column: span 6;
+}
+
+.businessMailingAddressGrid> :nth-child(11) {
+    grid-column: span 6;
+}
+
+.businessMailingAddressGrid> :nth-child(12) {
+    grid-column: span 6;
+}
+
 .yesButton {
     background: $secondarycolor 0% 0% no-repeat padding-box;
     border-radius: 10px;
@@ -227,4 +322,58 @@
 .justifyCenter {
     display: flex;
     justify-content: center;
+}
+
+.reappointmentCard {
+    background: #F5F7FB 0% 0% no-repeat padding-box;
+    border: 1px solid $secondarycolor;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+
+.addMoreText {
+    text-align: left;
+    font: normal normal normal 15px/25px proxima-nova;
+    letter-spacing: 0px;
+    color: #52575D;
+    max-width: 95%;
+}
+
+.displayInRowRev {
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.reappointmentButton {
+    background: $primarycolor 0% 0% no-repeat padding-box;
+    border-radius: 8px;
+    padding: 10px 15px;
+    color: #fff;
+    min-width: 120px !important;
+    font: normal normal bold 15px/15px proxima-nova;
+    cursor: pointer;
+}
+
+.reappointmentButtonOutlined {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    border-radius: 8px;
+    border: 1px solid $primarycolor;
+    padding: 10px 15px;
+    color: $primarycolor;
+    min-width: 120px;
+    font: normal normal bold 15px/15px proxima-nova;
+    cursor: pointer;
+}
+
+.viewMyInfoText {
+    text-align: left;
+    font: normal normal bold 16px/20px proxima-nova;
+    letter-spacing: 0px;
+    color: $primarycolor;
+}
+
+.disabledButtonLook {
+    opacity: 0.5;
+    cursor: not-allowed !important;
 }
