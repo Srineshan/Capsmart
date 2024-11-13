@@ -3,7 +3,11 @@ import { Dialog, Classes } from '@blueprintjs/core';
 import CrossPink from "../../images/crossPink.png";
 import ThirdPartyDialog from '../../Components/ThirdPartyDialog';
 
-import style from './index.module.scss'
+import { loadStripe } from '@stripe/stripe-js';
+import style from './index.module.scss';
+
+const stripePromise = loadStripe('pk_test_51OPIp6SJfzua1uDJrMdrq3o5Sfq9wWdv7y3Ev62RkNJEHGrHdMRcrLrxzNMMXiQTCvi9eR3QuvzxqY1OTMPv9mnp003pgscIaj');
+
 
 const PaymentDialog = ({ getIsOpen, continueClickFunc }) => {
     const [isContinue, setIsContinue] = useState(false);
@@ -12,6 +16,23 @@ const PaymentDialog = ({ getIsOpen, continueClickFunc }) => {
     const getIsShowThirdPartyDialog = (value) => {
         setShowThirdPartyDialog(value);
     }
+
+    const handleClick = async (event) => {
+        // When the customer clicks on the button, redirect them to Checkout.
+        const stripe = await stripePromise;
+        const { error } = await stripe.redirectToCheckout({
+            lineItems: [{
+                price: 'price_1QKXO1SJfzua1uDJrkF7cVWQ', // Replace with the ID of your price
+                quantity: 1,
+            }],
+            mode: 'payment',
+            successUrl: 'https://example.com/success',
+            cancelUrl: 'https://example.com/cancel',
+        });
+        // If `redirectToCheckout` fails due to a browser or network
+        // error, display the localized error message to your customer
+        // using `error.message`.
+    };
 
 
     return (
@@ -43,7 +64,10 @@ const PaymentDialog = ({ getIsOpen, continueClickFunc }) => {
                         <div className={`${style.spaceBetween} ${style.marginTop}`}>
                             <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>CANCEL</div>
                             {/* <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(false); continueClickFunc(); }}>CONTINUE</div> */}
-                            <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(true); setShowThirdPartyDialog(true) }}>CONTINUE</div>
+                            <div className={`${style.continue} ${style.marginLeft}`} onClick={() => {
+                                // getIsOpen(true); setShowThirdPartyDialog(true)
+                                handleClick()
+                            }}>CONTINUE</div>
                         </div>
                     </div>
 
