@@ -60,7 +60,7 @@
 }
 
 .progressStyleBackground {
-    background: transparent linear-gradient(90deg, $primarycolor 0%, $primarycolor 4%, #E9E9F0 7%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(90deg, $primarycolor 0%, $primarycolor 20%, #E9E9F0 30%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
 }
 
 .titleText {
@@ -215,7 +215,7 @@
 
 .gridStyle {
     display: grid;
-    grid-template-columns: 3% 23% 5% 32% 14% 7% 5% 3%;
+    grid-template-columns: 3% 23% 5% 32% 14% 8% 5% 2%;
     gap: 1%;
 }
 
@@ -255,15 +255,10 @@
     color: $primarycolor;
     font: normal normal 600 20px/26px proxima-nova;
     text-align: right;
-    visibility: hidden;
 }
 
 .setupCompleteCard:hover {
     background-color: $secondarycolor;
-
-    .editOrUpdateESign {
-        visibility: visible;
-    }
 }
 
 .setupCompletedText {

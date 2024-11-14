@@ -32,7 +32,7 @@ const TileApplication = ({
   smallNum2SelectedColor,
   smallNum3SelectedColor,
   isDisabled,
-  getTabFilter
+  getTabFilter,
 }) => {
   const isSelected = selectedTab === currentTile;
   const handleClick = () => {
@@ -40,7 +40,7 @@ const TileApplication = ({
       getSelectedTab(currentTile);
     }
   };
-  console.log(selectedTab, currentTile)
+  console.log(selectedTab, currentTile);
 
   return (
     <div
@@ -64,6 +64,7 @@ const TileApplication = ({
         </div>
       </div>
     </div >
+
   );
 };
 

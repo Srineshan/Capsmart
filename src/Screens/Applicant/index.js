@@ -8,6 +8,7 @@ import { CookiesProvider, Cookies } from 'react-cookie';
 import style from './index.module.scss';
 import jwt from 'jwt-decode';
 import CircularProgress from "@mui/material/CircularProgress";
+import LoadingScreen from '../../Components/LoadingScreen';
 const accessToken = Auth();
 
 const Applicant = () => {
@@ -31,7 +32,11 @@ const Applicant = () => {
             console.log('Inside UseEffect', applicationForm);
             cookies.remove('entityId', { path: '/' })
             cookies.set('entityId', applicationForm?.[applicationForm?.length - 1]?.tenant?.id, { path: '/' });
-            navigate(applicationForm?.[applicationForm?.length - 1]?.creationType === 'REAPPOINTMENT' ? `/reappointmentApplicationForm/${applicationForm?.[applicationForm?.length - 1]?.id}` : `/applicationForm/${applicationForm?.[applicationForm?.length - 1]?.id}`);
+            if (applicationForm?.[applicationForm?.length - 1]?.lastSavedSection !== null && applicationForm?.[applicationForm?.length - 1]?.lastSavedSection !== "") {
+                navigate(applicationForm?.[applicationForm?.length - 1]?.creationType === 'REAPPOINTMENT' ? `/reappointmentApplicationForm/${applicationForm?.[applicationForm?.length - 1]?.id}/${JSON.parse(applicationForm?.[applicationForm?.length - 1]?.lastSavedSection)}` : `/applicationForm/${applicationForm?.[applicationForm?.length - 1]?.id}`);
+            } else {
+                navigate(applicationForm?.[applicationForm?.length - 1]?.creationType === 'REAPPOINTMENT' ? `/reappointmentApplicationForm/${applicationForm?.[applicationForm?.length - 1]?.id}` : `/applicationForm/${applicationForm?.[applicationForm?.length - 1]?.id}`);
+            }
         }
     }, [applicationForm, applicationForm?.length])
 
@@ -65,7 +70,8 @@ const Applicant = () => {
             {
                 isLoading && (
                     <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
-                        <CircularProgress sx={{ color: "#0e5197" }} />
+                        {/* <CircularProgress sx={{ color: "#0e5197" }} /> */}
+                        <LoadingScreen />
                     </div>
                 )
             }

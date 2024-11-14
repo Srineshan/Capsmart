@@ -22,16 +22,49 @@ const DepartmentDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
   const [serviceName, setServiceName] = useState([]);
   const [speciality, setSpeciality] = useState(false);
 
-  console.log("selectedApplicantselectedApplicant", selectedApplicant);
+  const resetFormFields = () => {
+    setDepartName("");
+    setAliasName1("");
+    setAliasName2("");
+    setServiceName("");
+    setSpeciality(false);
+  };
 
   useEffect(() => {
-    if (selectedApplicant) {
-      setDepartName(selectedApplicant.departmentName.name);
-      setServiceName(selectedApplicant.serviceAreas[0].name);
+    if (open) {
+      if (isEdit && selectedApplicant) {
+        // Populate form fields in edit mode
+        setDepartName(selectedApplicant.departmentName?.name || "");
+        setAliasName1(selectedApplicant.aliasName1 || "");
+        setAliasName2(selectedApplicant.aliasName2 || "");
+        setServiceName(selectedApplicant.serviceAreas[0]?.name || "");
+      } else {
+        setDepartName("");
+        setAliasName1("");
+        setAliasName2("");
+        setServiceName("");
+        setSpeciality(false);
+      }
+    } else {
+      setDepartName("");
+      setAliasName1("");
+      setAliasName2("");
+      setServiceName("");
+      setSpeciality(false);
     }
-  }, [selectedApplicant]);
+  }, [open, isEdit, selectedApplicant]);
 
-  const handleSubmit = async () => {
+  useEffect(() => {
+    if (!isEdit) {
+      setDepartName("");
+      setAliasName1("");
+      setAliasName2("");
+      setServiceName("");
+      setSpeciality(false);
+    }
+  }, [isEdit]);
+
+  const SaveSubmitHandler = async (isSaveAndExit) => {
     const formattedData = {
       departmentName: {
         name: departName,
@@ -48,6 +81,10 @@ const DepartmentDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
       await POST("entity-service/department", JSON.stringify(dataToSend))
         .then((response) => {
           SuccessToaster("Applicant Type Added Successfully");
+          resetFormFields();
+          if (isSaveAndExit) {
+            handleClose(true);
+          }
         })
         .catch((error) => {
           ErrorToaster(error);
@@ -57,11 +94,24 @@ const DepartmentDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
       await PUT(`entity-service/department/${id}`, JSON.stringify(dataToSend))
         .then((response) => {
           SuccessToaster("Applicant Type Updated Successfully");
+          resetFormFields();
+          if (isSaveAndExit) {
+            handleClose(true);
+          }
         })
         .catch((error) => {
           ErrorToaster(error);
         });
     }
+  };
+
+  const handleDialogClose = () => {
+    setDepartName("");
+    setAliasName1("");
+    setAliasName2("");
+    setServiceName("");
+    setSpeciality(false);
+    handleClose();
   };
 
   return (
@@ -90,7 +140,7 @@ const DepartmentDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                 size={30}
                 intent={Intent.DANGER}
                 className={style.dialogCrossStyle}
-                onClick={handleClose}
+                onClick={handleDialogClose} // Call the new close handler
               />
             </div>
           </div>
@@ -215,13 +265,13 @@ const DepartmentDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
           <div className={`${style.floatRight} ${style.marginTop30}`}>
             <button
               className={style.outlinedButton}
-              onClick={handleSubmit} // Trigger handleSubmit on click
+              onClick={() => SaveSubmitHandler(false)}
             >
               SAVE & ADD More
             </button>
             <button
               className={`${style.buttonStyle} ${style.marginLeft20}`}
-              onClick={handleSubmit} // Trigger handleSubmit on click
+              onClick={() => SaveSubmitHandler(true)}
             >
               SAVE & CLOSE
             </button>

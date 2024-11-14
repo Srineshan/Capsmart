@@ -3,7 +3,7 @@ import { Dialog, Classes, Icon, Intent } from "@blueprintjs/core";
 import style from "./../index.module.scss";
 import { Radio, Switch, makeStyles } from "@material-ui/core";
 import WritingFile from "./../../../images/writing-file.svg";
-import { Box } from "@mui/material";
+import { Box, Divider } from "@mui/material";
 import { POST, GET, PUT } from "./../../dataSaver";
 import { ErrorToaster, SuccessToaster } from "../../../utils/toaster";
 import Editor from "../common/Editor";
@@ -12,6 +12,8 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import MarkdownEditor from "../../../Components/MarkdownEditor";
+import { TextField } from "@mui/material";
+import CommonInputField from "../../../Components/CommonFields/CommonInputField";
 
 const useStyles = makeStyles({
   switch: {
@@ -41,6 +43,13 @@ const StaffPrivilegeDialog = ({
   const [saveData, setSaveData] = useState({});
   const [isProofOfDocumentRequired, setIsProofOfDocumentRequired] =
     useState(false);
+  const [aliasName1, setAliasName1] = useState("");
+  const [aliasName2, setAliasName2] = useState("");
+  const [writtenNotice, setWrittenNotice] = useState(false);
+  const [advancedSwitch, setAdvancedSwitch] = useState(false);
+  const [evidenceRequired, setEvidenceRequired] = useState(false);
+  const [competencyRequired, setCompetencyRequired] = useState(false);
+  const [showCard, setShowCard] = useState(false);
 
   const PrivilegeSpecificationType1 = "DescriptiveDocument";
   const PrivilegeSpecificationType2 = "DiscreteItemList";
@@ -230,6 +239,10 @@ const StaffPrivilegeDialog = ({
     setAdvancePrivilegeContent("");
   };
 
+  const handleAddMoreClick = () => {
+    setShowCard(true);
+  };
+
   return (
     <Dialog
       isOpen={open}
@@ -387,11 +400,12 @@ const StaffPrivilegeDialog = ({
               placeholder={"Enter GENERAL INSTRUCTION Here"}
             />
           </div>
+
           <div className={`${style.marginTop20} ${style.verticalAlignCenter}`}>
             <div className={style.entityLableStyle}>
               ADVANCED PRIVILEGES REQUIRED?
             </div>
-            <div className={style.marginLeft10}>
+            <div className={`${style.marginLeft10} ${style.marignbottom90}`}>
               <FormControlLabel
                 control={
                   <Switch
@@ -409,8 +423,9 @@ const StaffPrivilegeDialog = ({
             </div>
             <div></div>
           </div>
+
           {isPrivilagesRequired && (
-            <div className={style.marginTop20}>
+            <div className={`${style.marginTop20} ${style.padding5}`}>
               <div className={style.entityLableStyle}>
                 ADVANCED PRIVILEGES SECTION INSTRUCTION TEXT
               </div>
@@ -425,7 +440,248 @@ const StaffPrivilegeDialog = ({
               />
             </div>
           )}
+          <div className={`${style.Borderthick} `}></div>
+
+          <div className={style.marginTop20}>
+            <div className={style.entityLableStyle}>BASIC PRIVILEGE</div>
+
+            <div>
+              {showCard && (
+                <div
+                  className={` ${style.cardContainer} ${style.padding10} `}
+                  style={{ backgroundColor: "#bbb5f1" }}
+                >
+                  <div className={style.imageCard}>
+                    <span className={style.categoryLabel}>(category)</span>
+                    <div className={style.cardContent}>
+                      <h3>12 Lorem ipsum dolor sit amet</h3>
+                      <p>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                        sed diam nonummy nibh euismod tincidunt ut laoreet
+                        dolore magna.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div
+                className={` ${style.verticalAlignCenter} ${style.padding5}`}
+              >
+                <div
+                  className={`${style.displayInRow}  ${style.entityLableStyle} `}
+                >
+                  CATERGORY?
+                </div>
+
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={writtenNotice}
+                      onChange={(e) => setWrittenNotice(e.target.checked)}
+                      className={classes.switch}
+                    />
+                  }
+                  className={`${style.entityLableStyle} ${style.marginLeft20}`}
+                  label={writtenNotice ? "YES" : "NONE"}
+                  labelPlacement="start"
+                />
+
+                <div
+                  style={{
+                    marginLeft: "10px",
+
+                    width: "100%",
+                    overflow: "hidden",
+                  }}
+                >
+                  {writtenNotice && (
+                    <TextField
+                      variant="outlined"
+                      size="medium"
+                      placeholder="Add Category Title"
+                      className={`${style.inputField} `}
+                      fullWidth
+                    />
+                  )}
+                </div>
+              </div>
+
+              <div className={style.displayIn}>
+                <div className={style.columnLayout}>
+                  <div className={style.entityLabelStyle}>PRIVILEGE ID *</div>
+                  <CommonInputField
+                    placeholder="00"
+                    className={style.inputField}
+                    fullWidth
+                  />
+                </div>
+
+                {/* PRIVILEGE TITLE Section */}
+                <div className={style.columnLayout}>
+                  <div className={style.entityLabelStyle}>
+                    PRIVILEGE TITLE *
+                  </div>
+                  <CommonInputField
+                    placeholder="Add Privilege Title"
+                    className={style.inputField}
+                    fullWidth
+                  />
+                </div>
+              </div>
+
+              {/* </div> */}
+              <div className={style.entityLableStyle}>
+                PRIVILEGE DESCRIPITION *
+              </div>
+              <CommonInputField
+                // value={aliasName2}
+                // onChange={(e) => setAliasName2(e.target.value)}
+                className={`${style.inputField} `}
+                fullWidth
+              />
+              <div
+                className={`${style.floatRight} ${style.marginTop90} ${style.padding10}`}
+              >
+                <button
+                  className={`${style.outlinedButton} ${style.borderRadius10}`}
+                  onClick={handleAddMoreClick}
+                >
+                  ADD MORE
+                </button>
+              </div>
+            </div>
+          </div>
+          <div
+            className={`${style.Borderthick} ${style.marginTop60} ${style.padding10}`}
+          />
+
+          <div className={style.marginTop190}>
+            <div className={style.entityLableStyle}>ADVANCED PRIVILEGE</div>
+
+            <div>
+              <div className={`  ${style.verticalAlignCenter}`}>
+                <div
+                  className={`${style.displayInRow}  ${style.entityLableStyle}`}
+                >
+                  CATERGORY?
+                </div>
+
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={advancedSwitch}
+                      onChange={(e) => setAdvancedSwitch(e.target.checked)}
+                      className={classes.switch}
+                    />
+                  }
+                  className={`${style.entityLableStyle} ${style.marginLeft20}`}
+                  label={advancedSwitch ? "YES" : "NONE"}
+                  style={{ marginRight: "30px" }}
+                  labelPlacement="start"
+                />
+
+                <div
+                  style={{
+                    marginLeft: "10px",
+
+                    transition: "width 0.3s",
+                    overflow: "hidden",
+                  }}
+                >
+                  {advancedSwitch && (
+                    <TextField
+                      variant="outlined"
+                      placeholder="Add Category Title"
+                      fullWidth
+                    />
+                  )}
+                </div>
+              </div>
+
+              <div className={style.displayIn}>
+                <div className={style.columnLayout}>
+                  <div className={style.entityLabelStyle}>PRIVILEGE ID *</div>
+                  <CommonInputField
+                    placeholder="00"
+                    className={style.inputField}
+                    fullWidth
+                  />
+                </div>
+
+                <div className={style.columnLayout}>
+                  <div className={style.entityLabelStyle}>
+                    PRIVILEGE TITLE *
+                  </div>
+                  <CommonInputField
+                    placeholder="Add Privilege Title"
+                    className={style.inputField}
+                    fullWidth
+                  />
+                </div>
+              </div>
+              <div className={style.entityLableStyle}>
+                PRIVILEGE DESCRIPITION *
+              </div>
+              <CommonInputField
+                // value={aliasName2}
+                // onChange={(e) => setAliasName2(e.target.value)}
+                className={`${style.inputField} `}
+                fullWidth
+              />
+              <div className={`${style.floatRight} ${style.marginTop20}`}>
+                <button
+                  className={`${style.outlinedButton} ${style.borderRadius10}`}
+                >
+                  ADD MORE
+                </button>
+              </div>
+            </div>
+          </div>
+          <div className={`${style.marginTop20} ${style.verticalAlignCenter}`}>
+            <div className={style.entityLableStyle}>
+              EVIDENCE OF QUALIFICATION AND COMPETENCY
+            </div>
+            <div className={style.marginLeft10}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={evidenceRequired}
+                    onChange={(e) => {
+                      setEvidenceRequired(e.target.checked);
+                    }}
+                    className={classes.switch}
+                  />
+                }
+                className={`${style.switchFontStyle}`}
+                label={evidenceRequired ? "Yes" : "No"}
+                labelPlacement="start"
+              />
+            </div>
+          </div>
+          <div className={`${style.marginTop20} ${style.verticalAlignCenter}`}>
+            <div className={style.entityLableStyle}>
+              COMPETENCY DISCLOSURE NOTES
+            </div>
+            <div className={style.marginLeft10}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={competencyRequired}
+                    onChange={(e) => {
+                      setCompetencyRequired(e.target.checked);
+                    }}
+                    className={classes.switch}
+                  />
+                }
+                className={`${style.switchFontStyle}`}
+                label={competencyRequired ? "Yes" : "No"}
+                labelPlacement="start"
+              />
+            </div>
+            <div></div>
+          </div>
         </div>
+
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <div className={`${style.marginTop20} `} style={{ float: "left" }}>
             <button
@@ -433,6 +689,12 @@ const StaffPrivilegeDialog = ({
               //   onClick={() => getAddEntityDialog(false)}
             >
               BULK UPLOAD
+            </button>
+            <button
+              className={`${style.outlinedButton} ${style.borderRadius10} ${style.marginLeft20}`}
+              //   onClick={() => getAddEntityDialog(false)}
+            >
+              PREVIEW
             </button>
           </div>
           <div className={`${style.floatRight} ${style.marginTop20}`}>

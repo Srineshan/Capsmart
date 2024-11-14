@@ -79,6 +79,15 @@
     cursor: pointer;
 }
 
+.signatureWithoutPadding {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    font-family: Arial, sans-serif;
+    padding: 20px 0px;
+    cursor: pointer;
+}
+
 .border {
     display: flex;
     align-items: center;
@@ -121,6 +130,11 @@
     padding-left: 110px;
 }
 
+.eSignImg {
+    max-width: 90px;
+    height: auto;
+   
+}
 
 .border:before {
     content: "";

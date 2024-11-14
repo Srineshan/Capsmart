@@ -3,14 +3,19 @@ import CheckIcon from '@mui/icons-material/Check';
 import FilePresentRoundedIcon from '@mui/icons-material/FilePresentRounded';
 import style from './index.module.scss'
 import { GET } from '../../Screens/dataSaver';
+import { useParams } from 'react-router-dom';
 
 const ApplicationReferenceDocuments = () => {
     const [basicForm, setBasicForm] = useState({})
     const applicationId = sessionStorage.getItem('applicationId')
-
+    const [formIndex, setFormIndex] = useState();
     useEffect(() => {
         getPreApplication()
     }, [])
+
+    useEffect(() => {
+        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc'))
+    }, [basicForm])
 
     const getPreApplication = async () => {
         const { data: basicForm } = await GET(
@@ -18,10 +23,12 @@ const ApplicationReferenceDocuments = () => {
         );
         setBasicForm(basicForm)
     }
+
+    console.log(basicForm?.forms?.[formIndex]?.data?.table, formIndex)
     return (
         <div className={style.referenceDocumentParentCard}>
             <div className={style.referenceDocumentTitle}>Your Reference Documents</div>
-            {basicForm?.forms?.[0]?.data?.table?.map((data, index) => (
+            {basicForm?.forms?.[formIndex]?.data?.table?.map((data, index) => (
                 <div className={`${style.referenceDocumentCard} ${style.verticalAlignCenter} ${style.marginTop10}`} key={index}>
                     <div className={style.fullWidth}>
                         <div className={style.spaceBetween}>

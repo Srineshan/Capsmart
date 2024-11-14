@@ -90,24 +90,25 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
         }
     }
 
+
     const getMissingFields = () => {
-        // let missingKeys = [];
-        // let keyValuePair = [];
-        // metadata?.map((data, index) => {
-        //     keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index] })
-        // })
-        // keyValuePair?.map(data => {
-        //     if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
-        //         missingKeys.push(data)
-        //     }
-        // })
-        // if (missingKeys?.length !== 0) {
-        //     setShowValidationDialog(true)
-        // } else {
-        handleSubmitApplicationReq()
-        // }
-        // setWarningFields(missingKeys)
-        // console.log(keyValuePair, 'Metadata', missingKeys)
+        let missingKeys = [];
+        let keyValuePair = [];
+        metadata?.map((data, index) => {
+            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index] })
+        })
+        keyValuePair?.map(data => {
+            if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
+                missingKeys.push(data)
+            }
+        })
+        if (missingKeys?.length !== 0) {
+            setShowValidationDialog(true)
+        } else {
+            handleSubmitApplicationReq()
+        }
+        setWarningFields(missingKeys)
+        console.log(keyValuePair, 'Metadata', missingKeys)
     }
 
     const handleSubmitApplicationReq = async (data) => {
@@ -180,11 +181,12 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
                     <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div>
+                        {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
                     </div>
-                    {/* <div className={style.marginTop}>
+                    <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
-                    </div> */}
+                    </div>
                 </div>
             </div>
             {

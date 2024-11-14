@@ -25,8 +25,9 @@ import LoginDialog from "./Components/LoginDialog";
 import Departments from "./Screens/ReferenceList/department/Department";
 import ApplicantTypesByEntity from "./Screens/ReferenceList/applicantTypeByEntity/applicantTypesByEntity";
 import Speciality from "./Screens/ReferenceList/speciality/Speciality";
-
-
+import AcknowledgementReview from "./Screens/ApplicationForm/AcknowledgementReview";
+import ApplicantProcessingCheckList from "./Screens/ReferenceList/applicantCheckList/ApplicantProcessingCheckList";
+import { PrivilegeListManager } from "./Screens/ReferenceList/privilegeListManager/PrivilegeListManager";
 
 const ReportType = React.lazy(() => import("./Screens/Reports/reportType"));
 const ReportTypeOverview = React.lazy(() =>
@@ -126,7 +127,9 @@ const ContractedServiceProvidedByIndustries = React.lazy(() =>
 const DisclosureIndustries = React.lazy(() =>
   import("./Screens/ReferenceList/disclosureByIndustries/DisclosureIndustries")
 );
-
+const PrivilegeListMaster = React.lazy(() =>
+  import("./Screens/ReferenceList/privilegeListMaster/PrivilegeListMaster")
+);
 const FunctionalTitles = React.lazy(() =>
   import("./Screens/ReferenceList/functionalTitles")
 );
@@ -186,9 +189,6 @@ const StaffPrivilegesByDepartment = React.lazy(() =>
   import("./Screens/ReferenceList/staffPrivileges/StaffPrivileges")
 );
 
-
-
-
 const Consent = React.lazy(() =>
   import("./Screens/ReferenceList/consents/Consents")
 );
@@ -236,11 +236,12 @@ const ClientAdminDashboard = React.lazy(() =>
   import("./Screens/ReferenceList/customerAdminDashboard")
 );
 const ApplicationSummary = React.lazy(() =>
-  import("./Screens/ApplicationForm/ApplicationSummary"));
+  import("./Screens/ApplicationForm/ApplicationSummary")
+);
 const ApplicationAcknowledgement = React.lazy(() =>
-  import("./Screens/ApplicationForm/ApplicationAcknowledgement"));
-const PODCheck = React.lazy(() =>
-  import("./Screens/ApplicationForm/PODCheck"));
+  import("./Screens/ApplicationForm/ApplicationAcknowledgement")
+);
+const PODCheck = React.lazy(() => import("./Screens/ApplicationForm/PODCheck"));
 // const ApplicantTypesByEntity = React.lazy(() =>
 //   import("./Screens/ReferenceList//referenceList/contractServiceProviderBySiteType")
 // );
@@ -254,6 +255,7 @@ const Thankyou = React.lazy(() =>
 );
 const ApplicationForm = React.lazy(() => import("./Screens/ApplicationForm"));
 const ReappointmentApplicationForm = React.lazy(() => import("./Screens/ReappointmentApplicationForm"));
+const MedicalDirectivesAttest = React.lazy(() => import("./Screens/ReappointmentApplicationForm/MedicalDirectives/MedicalDirectivesAttest"));
 const ApplicationFormRequirement = React.lazy(() =>
   import("./Screens/ApplicationForm/ApplicationFormRequirement")
 );
@@ -293,7 +295,7 @@ const App = ({ props }) => {
   // useEffect(() => {
   //   if (cookie.get('entityId') === undefined || cookie.get('entityId') === null) {
   //     getEntityId();
-  //   }
+  //   }  
   // }, [])
 
   // useEffect(() => {
@@ -523,18 +525,17 @@ const App = ({ props }) => {
 
   const getEntityId = async () => {
     let hostname = window.location.hostname;
-    let requestHeader = hostname.includes('acme-hospital') ? {
-      method: "GET",
-      headers: { "X-subdomain": "acme-hospital" },
-    } : { method: 'GET' }
-    await axios(
-      `${baseUrl()}/entity-service/entityID`,
-      requestHeader
-    )
+    let requestHeader = hostname.includes("acme-hospital")
+      ? {
+        method: "GET",
+        headers: { "X-subdomain": "acme-hospital" },
+      }
+      : { method: "GET" };
+    await axios(`${baseUrl()}/entity-service/entityID`, requestHeader)
       .then((response) => {
-        cookie.set("entityId", response?.data?.id, { path: '/' });
+        cookie.set("entityId", response?.data?.id, { path: "/" });
         setEntityId(response?.data?.id);
-        if (cookie.get('user') === undefined || cookie.get('user') === null) {
+        if (cookie.get("user") === undefined || cookie.get("user") === null) {
           login(response?.data?.id);
         }
       })
@@ -551,13 +552,10 @@ const App = ({ props }) => {
         "X-tenantID": id,
       },
     };
-    fetch(
-      `${baseUrl()}/user-management-service/auth/login`,
-      requestOptions
-    )
+    fetch(`${baseUrl()}/user-management-service/auth/login`, requestOptions)
       .then((response) => response.json())
       .then((data) => {
-        cookie.set("user", data?.accessToken, { path: '/' });
+        cookie.set("user", data?.accessToken, { path: "/" });
       });
     return true;
   };
@@ -637,7 +635,6 @@ const App = ({ props }) => {
       window.location.href = "/";
       return <Login />;
     } else if (isContractManager) {
-
       window.location.pathname = "/app/contracts";
       // navigate("/contracts");
       // window.location.reload();
@@ -648,9 +645,9 @@ const App = ({ props }) => {
       // window.location.reload();
       return <Home />;
     } else if (isStaffManager) {
-      window.location.pathname = "/app/staffs"
+      window.location.pathname = "/app/staffs";
     } else if (isApplicant) {
-      window.location.pathname = "/app/applicant"
+      window.location.pathname = "/app/applicant";
     } else {
       window.location.pathname = "/app/entitySitePortal";
       // navigate("/entitySitePortal");
@@ -674,6 +671,19 @@ const App = ({ props }) => {
               <Route path="/staffs" element={<StaffManager />} />
               <Route path="/applications" element={<StaffApplication />} />
               <Route path="/activeStaff" element={<ActiveStaff />} />
+              {/* <Route
+                path="/privilegeListManager"
+                element={<PrivilegeListMaster />}
+              /> */}
+              <Route
+                path="/referenceList/privilegeListMaster"
+                element={<PrivilegeListMaster />}
+              />
+              <Route
+                path="/referenceList/privilegeListManager"
+                element={<PrivilegeListManager />}
+              />
+
               <Route path="/profile" element={<Profile />} />
               <Route path="/notifyUser" element={<Notify />} />
               <Route path="/applicant" element={<Applicant />} />
@@ -708,9 +718,10 @@ const App = ({ props }) => {
                 element={<ApplicationAcknowledgement />}
               />
               <Route
-                path="/applicationForm/podcheck"
-                element={<PODCheck />}
+                path="/applicationForm/acknowledgementReview"
+                element={<AcknowledgementReview />}
               />
+              <Route path="/applicationForm/podcheck" element={<PODCheck />} />
               <Route path="/welcome" element={<Welcome />} />
               <Route path="/entitySetup/:id/:page" element={<EntitySetup />} />
               <Route
@@ -750,6 +761,7 @@ const App = ({ props }) => {
                 path="/referenceList/industriesWithEntityTypes"
                 element={<IndustriesWithEntityTypes />}
               />
+
               <Route
                 path="/referenceList/departmentsByEntityTypes"
                 element={<DepartmentsByEntityTypes />}
@@ -790,7 +802,6 @@ const App = ({ props }) => {
                 path="/referenceList/disclosureByIndustries/disclosureIndustries"
                 element={<DisclosureIndustries />}
               />
-
               <Route
                 path="/referenceList/contractedServiceProviderByIndustries"
                 element={<ContractedServiceProvidedByIndustries />}
@@ -831,7 +842,6 @@ const App = ({ props }) => {
                 path="/referenceList/departmentsForCustomers"
                 element={<DepartmentsForCustomers />}
               /> */}
-
               <Route
                 path="/referenceList/departmentsForCustomerMultiSite"
                 element={<DepartmentsForCustomersMultiSite />}
@@ -892,11 +902,15 @@ const App = ({ props }) => {
                 path="/referenceList/department/department"
                 element={<Departments />}
               />
-
               <Route
                 path="/referenceList/staffPrivilegesByDepartment"
                 element={<StaffPrivilegesByDepartment />}
               />
+              <Route
+                path="/referenceList/applicantCheckList/applicantProcessingCheckList"
+                element={<ApplicantProcessingCheckList />}
+              />
+
               <Route
                 path="/referenceList/speciality/Speciality"
                 element={<Speciality />}
@@ -932,6 +946,10 @@ const App = ({ props }) => {
               <Route
                 path="/reappointmentApplicationForm/:applicationId/:section/:step"
                 element={<ReappointmentApplicationForm />}
+              />
+              <Route
+                path="/reappointmentApplicationForm/:applicationId/:section/:step/:medicalDirectivesId"
+                element={<MedicalDirectivesAttest />}
               />
               <Route
                 path="/applicationForm/:applicationId"

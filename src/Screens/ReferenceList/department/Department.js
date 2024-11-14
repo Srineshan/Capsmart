@@ -50,6 +50,7 @@ const Departments = () => {
   const [applicantId, setApplicantId] = useState("");
   const [departmentForms, setDepartmentForms] = useState([]);
   const [editData, setEditData] = useState();
+  const [isRefetch, setIsRefetch] = useState(false);
 
   const tableHeadKeys = [
     // "ID",
@@ -76,8 +77,10 @@ const Departments = () => {
   };
 
   useEffect(() => {
-    getStaffPrivileges(applicantId);
-  }, [applicantId]);
+    if (isRefetch) {
+      getStaffPrivileges(applicantId);
+    }
+  }, [isRefetch]);
 
   const getEntity = async () => {
     const { data: entity } = await GET(`entity-service/entity`);
@@ -178,10 +181,10 @@ const Departments = () => {
   const handleSiteClick = (siteName) => {
     setSelectedApplicantType(siteName);
   };
-  console.log(tableData);
 
-  const handleCloseDialog = () => {
+  const handleCloseDialog = (needRefetch = false) => {
     setIsDialogOpen(false);
+    setIsRefetch(needRefetch);
   };
 
   useEffect(() => {
@@ -195,6 +198,7 @@ const Departments = () => {
       const { data: staffPrivilegesForm } = await GET(
         `entity-service/department?applicantTypeId=${id}`
       );
+      setIsRefetch(false);
       setDepartmentForms(staffPrivilegesForm);
     }
   };

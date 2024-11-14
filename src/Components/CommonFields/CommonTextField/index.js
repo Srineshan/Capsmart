@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import TextField from '@mui/material/TextField';
 import { preventNegativeValues } from '../../../utils/formatting';
 import style from './index.module.scss';
@@ -7,7 +7,10 @@ const CommonTextField = ({ value, onChange, readOnly, className, type, maxLength
     const contractStatus = sessionStorage.getItem('Selected Contract Status');
     const warningCheck = type === 'number' ? (value === 0 || (isNaN(value) && value !== undefined) || value === '') : (value === '' || value === null || value === undefined);
     console.log(value, isNaN(value), warningCheck, type)
-
+    const [touched, setTouched] = useState(false); 
+     const handleBlur = () => {
+        setTouched(true);
+    };
     return (
         <div>
             <div className={`${style.lableStyle}`}>{label}{required && '*'}</div>
@@ -31,9 +34,11 @@ const CommonTextField = ({ value, onChange, readOnly, className, type, maxLength
                 key={key}
                 defaultValue={defaultValue}
                 onKeyDown={(type === 'number' || type === 'tel') ? preventNegativeValues : () => { }}
-                color={(warning && warningCheck) ? 'error' : ''}
+                color={(warning && warningCheck) || (touched && warningCheck) ? 'error' : ''}
+                focused={(warning && warningCheck) || (touched && warningCheck) ? true : false}
+                onBlur={handleBlur} 
                 // helperText={warningCheck ? (<div className={`${style.helperText} ${required ? style.errorColor : style.warningColor}`}>Could not find data</div>) : ''}
-                focused={(warning && warningCheck) ? true : false}
+
             />
         </div>
     )

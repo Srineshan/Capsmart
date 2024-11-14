@@ -16,6 +16,9 @@ import { SuccessToaster, ErrorToaster } from '../../../utils/toaster';
 import ESignature from '../../../Components/ESignature';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
 import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
+import ApplicationSubmitDialog from '../../../Components/ApplicationSubmitDialog';
+import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
+import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 
 const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApplication }) => {
     const [isChecked, setIsChecked] = useState(false);
@@ -34,6 +37,7 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
     const [formIndex, setFormIndex] = useState();
     const { applicationId, section, step } = useParams();
     const [showJourneyDialog, setShowJourneyDialog] = useState(false);
+    const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
@@ -71,6 +75,10 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
 
     const getIsShowReappointmentJourneyDialog = (value) => {
         setShowJourneyDialog(value);
+    }
+
+    const getIsSaveInProgressOpen = (value) => {
+        setIsSaveInProgressOpen(value);
     }
 
     const addNewDocument = async (file) => {
@@ -232,14 +240,20 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleDownload()}>SAVE IN PROGRESS</div>
+                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)} >CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => { handleSubmitApplicationReq(); setShowJourneyDialog(true) }} >CONTINUE</div>
+                    </div>
+                    <div className={style.marginTop}>
+                        <ApplicationReferenceDocuments />
                     </div>
                 </div>
                 {showJourneyDialog && (
-                    <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Mission Accomplished! You're A Champion`} img={JourneyStep10} formIndex={formIndex} basicForm={basicForm} continueClick={handleSubmitApplicationReq} />
+                    <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Mission Accomplished! You're A Champion`} img={JourneyStep10} formIndex={formIndex} basicForm={basicForm} continueClick={() => { }} />
+                )}
+                {isSaveInProgressOpen && (
+                    <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
                 )}
             </div>
         </div>

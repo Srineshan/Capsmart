@@ -95,6 +95,8 @@ const PrescribeSuboxone = ({ basicForm, setBasicForm, getPreApplication }) => {
         }
     }
 
+
+
     const getMissingFields = () => {
         // let missingKeys = [];
         // let keyValuePair = [];
@@ -192,7 +194,7 @@ const PrescribeSuboxone = ({ basicForm, setBasicForm, getPreApplication }) => {
                             </div>
                         ) : (
                             <>
-                                <div className={`${style.markedAsText} ${style.marginTop}`}><strong>Marked as {yesOrNo}</strong> on {format(new Date(), "MMM dd, yyyy")}</div>
+                                <div className={`${style.markedAsText} ${style.marginTop}`}><strong>Marked as <span className={yesOrNo === 'Yes' ? style.yesText : style.noText}>{yesOrNo}</span></strong> on {format(new Date(), "MMM dd, yyyy")}</div>
                                 <div
                                     className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
                                 >
@@ -212,11 +214,12 @@ const PrescribeSuboxone = ({ basicForm, setBasicForm, getPreApplication }) => {
                     <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div>
+                        {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
                     </div>
-                    {/* <div className={style.marginTop}>
+                    <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
-                    </div> */}
+                    </div>
                 </div>
             </div>
             {

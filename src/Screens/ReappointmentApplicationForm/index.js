@@ -18,6 +18,9 @@ import MRP from './MRP';
 import PrescribeSuboxone from './PrescribeSuboxone';
 import ApplicantAcknowledgement from './ApplicantAcknowledgement';
 import AdditionalPrivilegeSelection from './AdditionalPrivilegeSelection';
+import CME from './CME';
+import MedicalDirectives from './MedicalDirectives';
+import MiscellaneousQuestions from './MiscellaneousQuestions';
 
 const ReappointmentApplicationForm = () => {
     let cookie = new Cookie();
@@ -78,6 +81,10 @@ const ReappointmentApplicationForm = () => {
                 return <CriminalHistory basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'UploadYourDoc':
                 return <UploadYourDoc basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+            case 'MEDICAL_DIRECTIVES':
+                return <MedicalDirectives basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} />
+            case 'CME':
+                return <CME basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} />
             case 'LMS':
                 return <LMSModules basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />
             case 'MRP':
@@ -86,6 +93,8 @@ const ReappointmentApplicationForm = () => {
                 return <HospitalCoverage basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />
             case 'SUBOXONE':
                 return <PrescribeSuboxone basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />
+            case 'MISCELLANEOUS_QUESTIONS':
+                return <MiscellaneousQuestions basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />
             case 'ApplicantAcknowledgement':
                 return <ApplicantAcknowledgement dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
             default:

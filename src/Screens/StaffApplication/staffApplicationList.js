@@ -1759,7 +1759,7 @@ const StaffApplicationList = ({
                 {applicationType === "REAPPOINTMENT" ? "TRIGGER NEW REAPPOINTMENTS" : "CREATE NEW APPLICATION"}
               </div>
               <div className={`${style.displayInRow} ${style.marginLeft20} `}>
-                <AddCircleOutlineIcon sx={{ fontSize: 20, color: "white" }} />
+                <AddCircleOutlineIcon sx={{ fontSize: 20, color: "white" }} onClick={() => navigate("/createStaffMemberApplication")}/>
               </div>
             </div>
 
