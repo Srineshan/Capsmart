@@ -36,10 +36,13 @@ const StaffApplicationList = ({
   isLoading,
   getSelectedTab,
   selectedTab,
+  // applicationCreationType,
+  // getApplicationCreationType,
   getActiveApplicationView,
   getActiveApplicationTask,
   getNotesCommentBox,
-  getTitleCounts
+  getTitleCounts,
+  setSelectedTab
 }) => {
   const PDFRef = createRef();
   const navigate = useNavigate();
@@ -289,6 +292,10 @@ const StaffApplicationList = ({
     useState(false);
   const [showCheckListDialog, setShowCheckListDialog] = useState(false);
   const [reFetchMetaData, setReFetchMetaData] = useState(false)
+  const [applicationCreationType, setApplicationCreationType] = useState('NEW');
+  const [applicationType, setApplicationType] = useState(() =>
+    sessionStorage.getItem('applicationCreationType') || ''
+  );
   // const [counts, setCounts] = useState({
   //   chiefOfStaff: 0,
   //   credentialingCommittee: 0,
@@ -310,6 +317,25 @@ const StaffApplicationList = ({
   // }
 
   useEffect(() => {
+    const intervalId = setInterval(() => {
+      const currentValue = sessionStorage.getItem('applicationCreationType');
+      if (currentValue !== applicationType) {
+        setApplicationType(currentValue);
+      }
+    });
+
+  }, [applicationType]);
+
+  useEffect(() => {
+    if (applicationType) {
+      getWorkflowUserData();
+      getSentConfirmationCount();
+      getRejectionCounts();
+      getDeclineData();
+    }
+  }, [applicationType]);
+
+  useEffect(() => {
     setUserDetails();
   }, [users?.id])
 
@@ -322,6 +348,10 @@ const StaffApplicationList = ({
 
   const getReFetchMetaData = (value) => {
     setReFetchMetaData(value);
+  }
+
+  const getApplicationCreationType = (value) => {
+    setApplicationCreationType(value);
   }
 
   const getApplicationRejectionDialog = (value) => {
@@ -349,7 +379,7 @@ const StaffApplicationList = ({
   // };
   const onClickProcessingTaskFunction = (data) => {
     getActiveApplicationTask(true);
-    sessionStorage.setItem("applicationId", data?.id);
+    sessionStorage.setItem("applicationId", data?.id)
   };
 
   const onClickMoveToNextFunction = (data) => {
@@ -360,7 +390,7 @@ const StaffApplicationList = ({
   const onClickStartTheWorkFlowFunction = (data) => {
     getApplicationStart(data?.id);
     sessionStorage.setItem("applicationId", data?.id);
-  }; 
+  };
 
   const onClickMoveToActiveStaffFunction = (data) => {
     ActiveStaffApplication(data?.id)
@@ -384,7 +414,7 @@ const StaffApplicationList = ({
     // let role;
     let notes;
 
-    // if (selectedTab === 'level-2') {
+    // if (selectedTab === 'level-2'); {
     //   role = "Department Head";
     //   notes = "Send"
     // } else if (selectedTab === 'level-3') {
@@ -413,7 +443,7 @@ const StaffApplicationList = ({
         console.log('successfull')
         getWorkflowUserData();
         setReFetchMetaData(true)
-      })  
+      })
       .catch((error) => {
         console.log(error)
       });
@@ -468,20 +498,30 @@ const StaffApplicationList = ({
     getWorkflowUserData(selectedTab);
   }, [selectedTab, sortField, sortValue]);
 
+  // useEffect(() => {
+  //   getApplicationCreationType();
+  // }, [applicationCreationType]);
+
 
   useEffect(() => {
     getRejectionData(rejectionTab);
   }, [rejectionTab, showApplicationRejectionDialog]);
+
+  useEffect(() => {
+    getDeclineData();
+  }, [showApplicationRejectionDialog]);
+
 
   const handleIconClick = () => {
     setShowCardDetails((prev) => !prev);
   };
 
   const getWorkflowUserData = async () => {
+    // const applicationCreationType = selectedTab === 'NewApplicants' ? 'NEW' : 'REAPPOINTMENT';
     try {
       const response = await GET(
         // `application-management-service/application/workflowUser?tab=${selectedTab}`
-        `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=NEW&limit=20`
+        `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=20`
       );
       console.log("Application data", response?.data.applications);
       setTableData(response?.data?.applications);
@@ -511,7 +551,7 @@ const StaffApplicationList = ({
   const getRejectionData = async () => {
     try {
       const response = await GET(
-        `application-management-service/application/workflowUser?tab=${rejectionTab}`
+        `application-management-service/application/workflowUser?tab=${rejectionTab}&applicationCreationType=${applicationType}`
       );
       console.log("Rejection data", response?.data?.applications);
       setRejectionListData(response?.data?.applications);
@@ -522,9 +562,35 @@ const StaffApplicationList = ({
     }
   };
 
+  const getDeclineData = async () => {
+    try {
+      const response = await GET(
+        `application-management-service/application?tenantId=${TenantID}&applicationStatus=DECLINED&applicationCreationType=${applicationType}`
+        // `application-management-service/application/workflowUser?tab=${rejectionTab}&applicationCreationType=${applicationType}`
+      );
+      console.log("Rejection data", response?.data?.applications);
+      setRejectionListData(response?.data?.applications);
+      return response?.data.applications || [];
+    } catch (error) {
+      console.error("Error fetching applications:", error);
+      return [];
+    }
+  };
+
+  const handleClick = async () => {
+    await getDeclineData();
+    setShowApplicationRejectionDialog(true);
+  };
+
+  useEffect(() => {
+    if (showApplicationRejectionDialog) {
+      getDeclineData();
+    }
+  }, [showApplicationRejectionDialog]);
+
   const getSentConfirmationCount = async () => {
     await GET(
-      "application-management-service/application/sentToApplicant/status"
+      `application-management-service/application/sentToApplicant/status?applicationCreationType=${applicationType}`
     )
       .then((response) => {
         setSentCompletion(response?.data || null);
@@ -559,7 +625,7 @@ const StaffApplicationList = ({
   });
 
   const getRejectionCounts = async () => {
-    await GET("application-management-service/application/rejected/meta")
+    await GET(`application-management-service/application/rejected/meta?applicationCreationType=${applicationType}`)
       .then((response) => {
         setApplicationRejected(response?.data);
         setShowCardDetails(
@@ -573,6 +639,11 @@ const StaffApplicationList = ({
         console.error("Error fetching rejection counts:", error);
       });
   };
+
+
+  // const userWorkflow = tableData?.completedWorkflows.find(workflow => workflow.role === userRole);
+  // console.log("userWorkflowwwwwwwwwwwwwwwwwwwwwwww" + userWorkflow)
+
 
   let dot = [];
   let dotTooltipValues = [];
@@ -637,13 +708,38 @@ const StaffApplicationList = ({
     action = [];
 
     tableData?.map((data) => {
-      dot.push(
-        data?.currentLevelCompleted === false
-          ? "yellow"
-          : data?.currentLevelCompleted === true
-            ? "green"
-            : "grey"
-      );
+      // dot.push(
+      //   data?.currentLevelCompleted === false
+      //     ? "yellow"
+      //     : data?.currentLevelCompleted === true
+      //       ? "green"
+      //       : "grey"
+      // );
+
+      const workflow = data?.completedWorkflows?.find(workflow => userRole?.includes(workflow.role));
+
+      // For debugging the userRole
+      // data?.completedWorkflows?.forEach((workflow, index) => {
+      //     const isRoleMatch = userRole?.includes(workflow.role);
+      //     console.log(`Workflow ${index}:`, {
+      //         workflowRole: workflow.role,
+      //         hasMatchingRole: isRoleMatch,
+      //         status: isRoleMatch ? workflow.currentLevelStatus : 'N/A'
+      //     });
+      // });
+
+      // Check currentLevelStatus and set color if workflow is found
+      if (workflow) {
+        const color = workflow.currentLevelStatus === "IN_PROGRESS" ? "yellow"
+          : workflow.currentLevelStatus === "COMPLETED" ? "green"
+            : "grey";
+        dot.push(color);
+        console.log("Matching workflow found:", {
+          role: workflow.role,
+          status: workflow.currentLevelStatus,
+          assignedColor: color
+        });
+      }
       applicantName.push(
         `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
         " "
@@ -783,16 +879,29 @@ const StaffApplicationList = ({
     action = [];
 
     tableData?.map((data) => {
-      dot.push(
-        data?.currentLevelCompleted == false
-          ? "yellow"
-          : data?.currentLevelCompleted == true
-            ? "green"
-            : "grey"
-      );
+      // dot.push(
+      //   data?.currentLevelCompleted == false
+      //     ? "yellow"
+      //     : data?.currentLevelCompleted == true
+      //       ? "green"
+      //       : "grey"
+      // );
+
+      const workflow = data?.completedWorkflows?.find(workflow => userRole?.includes(workflow.role));
+      if (workflow) {
+        const color = workflow.currentLevelStatus === "IN_PROGRESS" ? "yellow"
+          : workflow.currentLevelStatus === "COMPLETED" ? "green"
+            : "grey";
+        dot.push(color);
+        console.log("Matching workflow found:", {
+          role: workflow.role,
+          status: workflow.currentLevelStatus,
+          assignedColor: color
+        });
+      }
 
       console.log("data?.currentLevelCompleted" + data?.currentLevelCompleted);
-      
+
       applicantName.push(
         `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
         " "
@@ -919,13 +1028,27 @@ const StaffApplicationList = ({
     action = [];
 
     tableData?.map((data) => {
-      dot.push(
-        data?.status === "REVIEW_INPROGRESS"
-          ? "yellow"
-          : data?.status === "APPROVED"
-            ? "green"
-            : "grey"
-      );
+      // dot.push(
+      //   data?.status === "REVIEW_INPROGRESS"
+      //     ? "yellow"
+      //     : data?.status === "APPROVED"
+      //       ? "green"
+      //       : "grey"
+      // );
+
+      const workflow = data?.completedWorkflows?.find(workflow => userRole?.includes(workflow.role));
+      if (workflow) {
+        const color = workflow.currentLevelStatus === "IN_PROGRESS" ? "yellow"
+          : workflow.currentLevelStatus === "COMPLETED" ? "green"
+            : "grey";
+        dot.push(color);
+        console.log("Matching workflow found:", {
+          role: workflow.role,
+          status: workflow.currentLevelStatus,
+          assignedColor: color
+        });
+      }
+
       applicantName.push(
         `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
         " "
@@ -1334,7 +1457,7 @@ const StaffApplicationList = ({
 
   const departmentHeadActionsData = [
     {
-      data: "View & Verify",
+      data: userRole?.includes("Staff Manager") ? "View" : "View & Verify",
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyFunction,
     },
@@ -1343,22 +1466,25 @@ const StaffApplicationList = ({
     //   requiredValue: "boolean",
     //   onClick: "",
     // },
-    {
-      data: "Move To Cred Comm for Review",
-      requiredValue: "boolean",
-      onClick: onClickMoveToNextFunction,
-      //  onClick: onClickViewAndVerifyFunction,
-    },
+    // {
+    //   data: "Move To Cred Comm for Review",
+    //   requiredValue: "boolean",
+    //   onClick: onClickMoveToNextFunction,
+    //   //  onClick: onClickViewAndVerifyFunction,
+    //   hideForRoles: userRole,
+    // },
     {
       data: "Request For Clarification",
       requiredValue: "boolean",
       isParagraph: true,
+      hideForRoles: "Staff Manager",
+      showForRoles: "Chief Of Staff",
+      showForRoles2: "Department Head",
     },
-    { data: "From Applicant", requiredValue: "boolean", onClick: "", isIndent: true },
-    { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true },
-    { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true },
+    { data: "From Applicant", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", showForRoles2: "Chief Of Staff", showForRoles: "Department Head", },
+    { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", showForRoles2: "Chief Of Staff", showForRoles: "Department Head", },
+    { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", showForRoles2: "Chief Of Staff", showForRoles: "Department Head", },
   ];
-
 
   const applicationActionsData = [
     // { data: "View & Verify", requiredValue: "boolean", onClick: "" },
@@ -1380,32 +1506,40 @@ const StaffApplicationList = ({
     //   requiredValue: "boolean",
     //   onClick: onClickMoveToNextFunction,
     // },
-    { data: "Review & Approve", requiredValue: "boolean", onClick: onClickViewAndVerifyLevelFunction },
-    { data: "Move to MAC", requiredValue: "boolean", onClick: onClickMoveToNextFunction },
+    { data: userRole?.includes("Staff Manager") || userRole?.includes("Department Head") ? "View" : "Review & Approve", requiredValue: "boolean", onClick: onClickViewAndVerifyLevelFunction },
+    // { data: "Move to MAC", requiredValue: "boolean", onClick: onClickMoveToNextFunction, hideForRoles: userRole, },
     // { data: "Review & Approve", requiredValue: "boolean", onClick: "" },
     // { data: "Move to MAC", requiredValue: "boolean", onClick: "" },
     {
       data: "Request For Clarification",
       requiredValue: "boolean",
       isParagraph: true,
+      hideForRoles: "Staff Manager",
+      hideForRoles2: "Department Head",
+      // showForRoles: "Chief Of Staff",
+      // showForRoles2: "Credentialing Committee",
     },
     {
       data: `From ${userRole}`,
       requiredValue: "boolean",
       onClick: "",
-      isIndent: true
+      isIndent: true,
+      hideForRoles: "Staff Manager",
+      hideForRoles2: "Department Head",
+      // showForRoles: "Chief Of Staff",
+      // showForRoles: ["Chief Of Staff","Credentialing Committee"],
     },
-    { data: "From Applicant", requiredValue: "boolean", onClick: "", isIndent: true },
-    { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true },
-    { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true },
+    { data: "From Applicant", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", hideForRoles2: "Department Head", },
+    { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", hideForRoles2: "Department Head", },
+    { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", hideForRoles2: "Department Head", },
   ];
 
   const macActionsData = [
-    {
-      data: "View & Verify",
-      requiredValue: "boolean",
-      onClick: onClickViewAndVerifyFunction,
-    },
+    // {
+    //   data: "View & Verify",
+    //   requiredValue: "boolean",
+    //   onClick: onClickViewAndVerifyFunction,
+    // },
     // {
     //   data: "Send for board Review",
     //   requiredValue: "boolean",
@@ -1416,24 +1550,27 @@ const StaffApplicationList = ({
     //   requiredValue: "boolean",
     //   onClick: "",
     // },
-    { data: "Move to BOD", requiredValue: "boolean", onClick: onClickMoveToNextFunction, },
+    // { data: "Move to BOD", requiredValue: "boolean", onClick: onClickMoveToNextFunction, },
     // { data: "Move to BOD", requiredValue: "boolean", onClick: "" },
-    {
-      data: "Request For Clarification",
-      requiredValue: "boolean",
-      isParagraph: true,
-    },
-    { data: "MAC Approval", requiredValue: "boolean", onClick: "", isIndent: true },
-    { data: "Print Summary For MAC", requiredValue: "boolean", onClick: "", isIndent: true },
-    { data: "Applicant Processing Tasks", requiredValue: "boolean", onClick: "", isIndent: true },
+    // {
+    //   data: "Request For Clarification",
+    //   requiredValue: "boolean",
+    //   isParagraph: true,
+    // },
+    // { data: "MAC Approval", requiredValue: "boolean", onClick: "", isIndent: true },
+    // { data: "Print Summary For MAC", requiredValue: "boolean", onClick: "", isIndent: true },
+    // { data: "Applicant Processing Tasks", requiredValue: "boolean", onClick: "", isIndent: true },
+    { data: userRole?.includes("Department Head") || userRole?.includes("Credentialing Committee") ? "MAC View" : "MAC Approval", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
+    { data: "Print Summary For MAC", requiredValue: "boolean", onClick: "", hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
+    { data: "Applicant Processing Tasks", requiredValue: "boolean", onClick: "", hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
   ];
 
   const bodActionsData = [
-    {
-      data: "View & Verify",
-      requiredValue: "boolean",
-      onClick: onClickViewAndVerifyFunction,
-    },
+    // {
+    //   data: "View & Verify",
+    //   requiredValue: "boolean",
+    //   onClick: onClickViewAndVerifyFunction,
+    // },
     // {
     //   data: "Send for Committee Review",
     //   requiredValue: "boolean",
@@ -1445,9 +1582,9 @@ const StaffApplicationList = ({
     //   onClick: "",
     // },
     // { data: "BOD Move Approval Status", requiredValue: "boolean", onClick: onClickMoveToNextFunction },
-    { data: "BOD Approval Status", requiredValue: "boolean", onClick: "" },
-    { data: "Print Summary For BOD", requiredValue: "boolean", onClick: "" },
-    { data: "Applicant Processing Tasks", requiredValue: "boolean", onClick: "" },
+    { data: userRole?.includes("Department Head") || userRole?.includes("Credentialing Committee") ? "BOD View" : "BOD Approval Status", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction },
+    { data: "Print Summary For BOD", requiredValue: "boolean", onClick: "", hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
+    { data: "Applicant Processing Tasks", requiredValue: "boolean", onClick: "", hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
   ];
   const clarificationActionsData = [
     { data: "View & Verify", requiredValue: "boolean", onClick: "" },
@@ -1509,38 +1646,38 @@ const StaffApplicationList = ({
   let tableHeaderValues =
     selectedTab === "level-1"
       ? applicantHeaderValues
-        : selectedTab === "level-2"
-          ? departmentHeadHeaderValues
-           : selectedTab === "level-3"
-            ? applicationHeaderValues
-            : selectedTab === "level-4"
-              ? macHeaderValues
-              : selectedTab === "level-5"
-                ? bodHeaderValues
-                : selectedTab === "clarificationsRequired"
-                  ? applicantHeaderValues
-                  : selectedTab === "rejected"
-                    ? rejectedHeaderValues
-                    // :[];
+      : selectedTab === "level-2"
+        ? departmentHeadHeaderValues
+        : selectedTab === "level-3"
+          ? applicationHeaderValues
+          : selectedTab === "level-4"
+            ? macHeaderValues
+            : selectedTab === "level-5"
+              ? bodHeaderValues
+              : selectedTab === "clarificationsRequired"
+                ? applicantHeaderValues
+                : selectedTab === "rejected"
+                  ? rejectedHeaderValues
+                  // :[];
 
                   // : approvedHeaderValues;
                   : applicantHeaderValues;
   let tableSortValues =
     selectedTab === "level-1"
       ? applicantColSortValues
-        :  selectedTab === "level-2"
-         ? departmentHeadColSortValues
-          : selectedTab === "level-3"
-            ? applicationColSortValues
-            : selectedTab === "level-4"
-              ? macColSortValues
-              : selectedTab === "level-5"
-                ? bodColSortValues
-                : selectedTab === "clarificationsRequired"
-                  ? applicantColSortValues
-                  : selectedTab === "rejected"
-                    ? rejectedColSortValues
-                    // :[];
+      : selectedTab === "level-2"
+        ? departmentHeadColSortValues
+        : selectedTab === "level-3"
+          ? applicationColSortValues
+          : selectedTab === "level-4"
+            ? macColSortValues
+            : selectedTab === "level-5"
+              ? bodColSortValues
+              : selectedTab === "clarificationsRequired"
+                ? applicantColSortValues
+                : selectedTab === "rejected"
+                  ? rejectedColSortValues
+                  // :[];
 
                   // : approvedColSortValues;
                   : applicantColSortValues;
@@ -1549,17 +1686,17 @@ const StaffApplicationList = ({
       ? getApplicantValues()
       : selectedTab === "level-2"
         ? getDepartmentHeadValues()
-          : selectedTab === "level-3"
-            ? getApplicationValues()
-            : selectedTab === "level-4"
-              ? getMacValues()
-              : selectedTab === "level-5"
-                ? getBodValues()
-                : selectedTab === "clarificationsRequired"
-                  ? getApplicantValues()
-                  : selectedTab === "rejected"
-                    ? getRejectedValues()
-                    // :[];
+        : selectedTab === "level-3"
+          ? getApplicationValues()
+          : selectedTab === "level-4"
+            ? getMacValues()
+            : selectedTab === "level-5"
+              ? getBodValues()
+              : selectedTab === "clarificationsRequired"
+                ? getApplicantValues()
+                : selectedTab === "rejected"
+                  ? getRejectedValues()
+                  // :[];
 
                   // : getApprovedValues();
                   : getApplicantValues();
@@ -1568,36 +1705,36 @@ const StaffApplicationList = ({
       ? applicantActionsData
       : selectedTab === "level-2"
         ? departmentHeadActionsData
-          : selectedTab === "level-3"
-            ? applicationActionsData
-            : selectedTab === "level-4"
-              ? macActionsData
-              : selectedTab === "level-5"
-                ? bodActionsData
-                : selectedTab === "clarificationsRequired"
-                  ? clarificationActionsData
-                  : selectedTab === "rejected"
-                    ? rejectedActionsData
-                    // :[];
+        : selectedTab === "level-3"
+          ? applicationActionsData
+          : selectedTab === "level-4"
+            ? macActionsData
+            : selectedTab === "level-5"
+              ? bodActionsData
+              : selectedTab === "clarificationsRequired"
+                ? clarificationActionsData
+                : selectedTab === "rejected"
+                  ? rejectedActionsData
+                  // :[];
 
                   : approvedActionsData;
   // : applicantActionsData;
   let gridStyle =
     selectedTab === "level-1"
       ? style.applicantStaffGrid
-      :selectedTab === "level-2"
-      ? style.departmentHeadStaffGrid
-      : selectedTab === "level-3"
-        ? style.applicationStaffGrid
-        : selectedTab === "level-4"
-          ? style.macStaffGrid
-          : selectedTab === "level-5"
-            ? style.bodStaffGrid
-            : selectedTab === "clarificationsRequired"
-              ? style.applicantStaffGrid
-              : selectedTab === "rejected"
-                ? style.rejectedStaffGrid
-                // :[];
+      : selectedTab === "level-2"
+        ? style.departmentHeadStaffGrid
+        : selectedTab === "level-3"
+          ? style.applicationStaffGrid
+          : selectedTab === "level-4"
+            ? style.macStaffGrid
+            : selectedTab === "level-5"
+              ? style.bodStaffGrid
+              : selectedTab === "clarificationsRequired"
+                ? style.applicantStaffGrid
+                : selectedTab === "rejected"
+                  ? style.rejectedStaffGrid
+                  // :[];
 
                   // : style.approvedStaffGrid;
                   : style.applicantStaffGrid;
@@ -1612,12 +1749,18 @@ const StaffApplicationList = ({
             >
               <div
                 className={`${style.displayInRow} ${style.marginLeftRight10} `}
-                onClick={() => navigate("/createStaffMemberApplication")}
+                // onClick={() => navigate("/createStaffMemberApplication) }
+                onClick={() =>
+                  applicationType === "NEW"
+                    ? navigate("/createStaffMemberApplication")
+                    // : navigate("/createStaffReapplication")
+                    : navigate("/createStaffMemberApplication")
+                }
               >
-                CREATE NEW APPLICATION
+                {applicationType === "REAPPOINTMENT" ? "TRIGGER NEW REAPPOINTMENTS" : "CREATE NEW APPLICATION"}
               </div>
               <div className={`${style.displayInRow} ${style.marginLeft20} `}>
-                <AddCircleOutlineIcon sx={{ fontSize: 20, color: "white" }} onClick={() => navigate("/createStaffMemberApplication")}/>
+                <AddCircleOutlineIcon sx={{ fontSize: 20, color: "white" }} onClick={() => navigate("/createStaffMemberApplication")} />
               </div>
             </div>
 
@@ -1843,17 +1986,20 @@ const StaffApplicationList = ({
                   <div
                     className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}
                     onClick={() => {
-                      setShowApplicationRejectionDialog(true);
+                      handleClick();
                     }}
                   >
                     Applicants Rejected (
-                    {applicationRejected.applicationsRejected})
+                    {applicationRejected.appointmentRequestsDenied})
                   </div>
                   <div
                     className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}
+                    onClick={() => {
+                      setShowApplicationRejectionDialog(true);
+                    }}
                   >
                     Approved But Declined (
-                    {applicationRejected.applicationsApprovedButDenied})
+                    {applicationRejected.totalRejections})
                   </div>
                 </>
               )}
@@ -1870,6 +2016,8 @@ const StaffApplicationList = ({
             <StaffApplicationTopTiles
               getSelectedTab={getSelectedTab}
               selectedTab={selectedTab}
+              applicationCreationType={applicationCreationType}
+              getApplicationCreationType={getApplicationCreationType}
             />
           </div>
           <div className={`${style.borderStyleTiles}`}></div>
@@ -1884,7 +2032,9 @@ const StaffApplicationList = ({
               getSelectedTab={getSelectedTab}
               selectedTab={selectedTab}
               reFetchMetaData={reFetchMetaData}
-              getReFetchMetadata = {getReFetchMetaData}
+              getReFetchMetadata={getReFetchMetaData}
+            // applicationCreationType={applicationCreationType}
+            // getApplicationCreationType = {getApplicationCreationType}
             />
 
             <div className={`${style.spaceBetween} ${style.marginLeft} `}>
@@ -1960,7 +2110,7 @@ const StaffApplicationList = ({
         <ApplicationRejection
           getApplicationRejectionDialog={getApplicationRejectionDialog}
           rejectionListData={rejectionListData}
-          rejectedCount={applicationRejected.applicationsRejected}
+          rejectedCount={applicationRejected.appointmentRequestsDenied}
         />
       )}
       {showCheckListDialog && (

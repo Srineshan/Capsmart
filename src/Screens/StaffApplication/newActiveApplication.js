@@ -138,6 +138,7 @@ const NewActiveApplication = ({
   const [userRole, setUserRole] = useState('');
   const [taskCount, setTaskCount] = useState(0);
   const [isApproved, setIsApproved] = useState(false);
+  const [logDetails, setLogDetails] = useState([]);
   const [statusStyle, setStatusStyle] = useState();
   const canadaData =
     sessionStorage.getItem("canadaData") !== "undefined"
@@ -165,7 +166,7 @@ const NewActiveApplication = ({
     borderColor: "rgb(102, 102, 102)",
     borderStyle: "dashed",
     borderRadius: 5,
-  };
+};
   useEffect(() => {
     getPreApplication();
     getPreApplicationTask();
@@ -173,21 +174,21 @@ const NewActiveApplication = ({
 
   const handleDateChange = (date, field) => {
     const formattedDate = date
-      ? format(new Date(date), "yyyy-MM-dd'T'HH:mm:ss'Z'")
-      : format(new Date(date), 'yyyy-MM-dd');
+    ? format(new Date(date), "yyyy-MM-dd'T'HH:mm:ss'Z'")
+    : format(new Date(date), 'yyyy-MM-dd');
 
 
     if (field === 'BOD') {
       setSelectedDateForBod(formattedDate);
     } else if (field === 'Reappoint') {
       setSelectedDateForReappoint(formattedDate);
-    } else if (field === 'MAC') {
+    }else if (field === 'MAC') {
       setSelectedDateForMac(formattedDate);
     }
-
+  
     setCalendarStart(false);
-    setIsButtonDisabled(false);
-
+    setIsButtonDisabled(false); 
+   
   };
 
   useEffect(() => {
@@ -210,13 +211,13 @@ const NewActiveApplication = ({
       `application-management-service/application/${applicationId}`
     );
     setForm(basicForm);
-    console.log("basicFormmmm" + JSON.stringify(basicForm));
-
+    console.log("basicFormmmm"+ JSON.stringify(basicForm));
+    
   };
 
   // const isApproved = form?.forms[index]?.status === "APPROVED";
 
-
+ 
 
   // useEffect(() => {
   //   if (form?.formSchemas) {
@@ -226,44 +227,57 @@ const NewActiveApplication = ({
   //       console.log(`Form ${index} isApproved:`, isFormApproved);
   //       return isFormApproved;
   //     });
-
+      
   //     setIsApproved(approvalStatuses);
   //   }
   // }, [form]);
 
   useEffect(() => {
-    if (form?.formSchemas) {
+    if (form?.formSchemas)  {
+
+      const relevantSchemas = form?.forms?.filter(schema => schema?.schemaCategory !== "UploadYourDoc");
+
+      console.log("relevantSchemas" + JSON.stringify(relevantSchemas));
+      
       // Check if all forms are approved
-      const areAllFormsApproved = form.formSchemas.every((_, index) =>
-        form?.forms[index]?.status === "APPROVED"
+      const areAllFormsApproved = relevantSchemas.every((index) => 
+       
+          form?.forms[index]?.status === "APPROVED" 
       );
-
+      
       setIsApproved(areAllFormsApproved);
-
+      
       // Debug logging
-      form.formSchemas.forEach((_, index) => {
+      relevantSchemas.forEach((_, index) => {
         console.log(`Form ${index} status:`, form?.forms[index]?.status);
         console.log(`Form ${index} isApproved:`, form?.forms[index]?.status === "APPROVED");
       });
 
-      const approvalStatuses = form.formSchemas.map((_, index) =>
+      const approvalStatuses = form.formSchemas.map((_, index) => 
         form?.forms[index]?.status === "APPROVED"
       );
-      // Check if any form is approved
-      const hasAnyApproved = approvalStatuses.some(status => status);
-      // Check if all forms are approved
-      const hasAllApproved = approvalStatuses.every(status => status);
-
-      if (hasAllApproved) {
-        setStatusStyle(style.greenBigDotStyle);
-      } else if (hasAnyApproved) {
-        setStatusStyle(style.yellowBigDotStyle);
-      } else {
-        setStatusStyle(style.greyBigDotStyle);
-      }
+        // Check if any form is approved
+        const hasAnyApproved = approvalStatuses.some(status => status);
+        // Check if all forms are approved
+        const hasAllApproved = approvalStatuses.every(status => status);
+  
+        if (hasAllApproved) {
+          setStatusStyle(style.greenBigDotStyle);
+        } else if (hasAnyApproved) {
+          setStatusStyle(style.yellowBigDotStyle);
+        } else {
+          setStatusStyle(style.greyBigDotStyle);
+        }
     }
   }, [form]);
 
+  // const filteredSchemas = form.formSchemas.filter(data =>
+  //   (data?.formCategory === "Form" || data?.formCategory === "Disclosure") &&
+  //   data?.schemaCategory !== "UploadYourDoc"
+  // );
+
+  // console.log('Filtered Schemas:', filteredSchemas);
+  
 
   const getPreApplicationTask = async () => {
     const { data: tasks } = await GET(`application-management-service/application/${applicationId}/tasks`);
@@ -306,7 +320,7 @@ const NewActiveApplication = ({
 
   console.log(contractSelected, prevContractData, "selected contract");
 
-
+ 
 
   useEffect(() => {
     getFileData();
@@ -341,7 +355,8 @@ const NewActiveApplication = ({
   }, [contractSelected]);
 
   useEffect(() => {
-    approveView();
+    approveView(userRole);
+    getLog();
   }, []);
 
   useEffect(() => {
@@ -357,11 +372,11 @@ const NewActiveApplication = ({
 
   const isLableEmpty = (data) => {
     if (data === "" || data === null) {
-      return true;
+        return true;
     } else {
-      return false;
+        return false;
     }
-  };
+};
 
 
   const getPrevContractData = async () => {
@@ -420,9 +435,9 @@ const NewActiveApplication = ({
       fileNameArray.push({ "fileName": file?.name });
       formData.append('documents', file);
     });
-
-
-
+    
+    
+    
 
     formData.append('files', new Blob([JSON.stringify(fileNameArray)], {
       type: "application/json"
@@ -435,14 +450,14 @@ const NewActiveApplication = ({
     console.log("file?.name" + JSON.stringify(fileNameArray));
     console.log(fileNameArray)
     console.log(event?.name);
-
+    
     try {
       const response = await POST(`application-management-service/application/${applicationId}/files/bulk?isLLMRequired=${false}`, formData);
       SuccessToaster('File Uploaded Successfully');
       console.log(response?.data?.fileName);
 
-
-
+      
+    
       setIsLoading(false);
       return response?.data;
     } catch (error) {
@@ -558,8 +573,57 @@ const NewActiveApplication = ({
   };
 
   const handleStepsVerify = async (formId) => {
+    // let role;
+    // let notes;
+
+    // if (selectedTab === 'level-2') {
+    //   role = "Department Head";
+    //   notes = "Send"
+    // } else if (selectedTab === 'level-3') {
+    //   role = "Credentialing Committee";
+    //   notes = "Send"
+    // } else if (selectedTab === 'level-4') {
+    //   role = "Advisory Committee";
+    //   notes = "Send"
+    // } else if (selectedTab === 'level-5') {
+    //   role = "Board";
+    //   notes = "Send"
+    // } 
+
+    // let temp = {
+    //   role: role,
+    //   notes: notes
+    // };
+
+    let role;
+
+    switch (selectedTab) {
+      case 'level-2':
+        role = "Department Head";
+        break;
+      case 'level-3':
+        role = "Chief Of Staff";
+        break;
+      case 'level-4':
+        role = "Advisory Committee";
+        break;
+      case 'level-5':
+        role = "Board";
+        break;
+      case 'level-1':
+        role = "Staff Manager";
+        break;
+      default:
+        role = "";
+    }
+
+    // const isDelegate = selectedTab === 'level-2' || selectedTab === 'level-3' || selectedTab === 'level-4' || selectedTab === 'level-5' ? true : false;
+    // const requestData = isDelegate === true ? temp : {};
+
+    const isDelegate = userRole?.includes(role) ? false : true;
+    const requestData = isDelegate ? { role: role } : {};
     await PUT(
-      `application-management-service/application/${applicationId}/form/${formId}/APPROVED`
+      `application-management-service/application/${applicationId}/form/${formId}/APPROVED?isDelegate=${isDelegate}`, requestData
     )
       .then((response) => {
         console.log("success");
@@ -624,28 +688,36 @@ const NewActiveApplication = ({
     getPreApplication();
   };
 
-  const approveView = async () => {
+  const approveView = async (userRole) => {
     const roleMap = {
-      'level-1': "Chief Of Staff",
-      'level-2': "Department Head",
-      'level-3': "Credentialing Committee",
-      'level-4': "Advisory Committee",
-      'level-5': "Board"
-    };
-    console.log("roleMap" + roleMap);
+        'level-1': "Staff Manager",
+        'level-2': "Department Head",
+        'level-3': "Credentialing Committee",
+        'level-4': "Advisory Committee",
+        'level-5': "Board"
+      };
+      console.log("roleMap" + roleMap);
+      
 
+      const role = roleMap[selectedTab];
+      // const role = userRole;
+      // console.log("roleeeeee1" + userRole);
 
-    const role = roleMap[selectedTab];
-    console.log("roleeeeee1" + role);
+      console.log("roleApproval" + role)
+      
 
-
-    const { data: basicApproval } = await GET(
-      `application-management-service/application/${applicationId}/approvalRequiredForms?role=${role}`
-    );
-    setCredApproval(basicApproval)
-    console.log("basicApproval" + JSON.stringify(credApproval));
+        const { data: basicApproval } = await GET(
+          `application-management-service/application/${applicationId}/approvalRequiredForms?role=${role}`
+        );
+        setCredApproval(basicApproval)  
+        console.log("basicApproval" + JSON.stringify(credApproval));     
   }
 
+
+  const getLog = async () => {
+    const { data: basicLog } = await GET(`application-management-service/application/${applicationId}/logs`);
+    setLogDetails(basicLog);
+  };
   const onClickApprovalFunction = () => {
     getApprovalNotesCommentBox(true);
   };
@@ -653,7 +725,7 @@ const NewActiveApplication = ({
   const onClickCheckListFunction = () => {
     getActiveApplicationTask(true);
   };
-
+  
   const onClickEmailDialogFunction = () => {
     getEmailDialogBox(true);
   };
@@ -678,7 +750,7 @@ const NewActiveApplication = ({
     } else if (selectedTab === 'level-5') {
       role = "Board";
       notes = "Send"
-    }
+    } 
 
     let temp = {
       role: role,
@@ -732,7 +804,7 @@ const NewActiveApplication = ({
     );
   };
 
-
+ 
 
   const toggleExpand = (section) => {
     setExpandStates((prevStates) => ({
@@ -793,7 +865,7 @@ const NewActiveApplication = ({
     setCurrentPage(value);
   };
 
-
+  
 
   const getFileFields = (value) => {
     console.log(value);
@@ -834,6 +906,55 @@ const NewActiveApplication = ({
   const onClose = () => {
     getActiveApplicationView(false);
   };
+
+const filteredData = form?.formSchemas?.filter((data) => data?.formCategory === "Acknowledgement");
+console.log("filteredDataaaaaaaaaaa" +JSON.stringify(filteredData));
+
+const relevantForm = form?.forms?.filter(schema => schema?.schemaCategory !== "UploadYourDoc");
+
+console.log("relevantForm" +JSON.stringify(relevantForm))
+
+// // Check if logDetails.logs is an array before calling forEach
+// if (logDetails?.logs && Array.isArray(logDetails?.logs)) {
+//   logDetails.logs.forEach(log => {
+//     if (log.form && log.form.id) {
+//       console.log("form id: " + log.form.id);
+//       const isMatch = form?.forms?.some(f => f.id === log.form.id);
+//       console.log(isMatch ? "true" : "false");
+
+//       if (isMatch) {
+//         console.log("Rolesssss: " + userRole?.includes(log?.role));
+
+//         // Define role based on selectedTab
+//         let selectedTabRole;
+//         if (selectedTab === 'level-2') {
+//           selectedTabRole = "Department Head";
+//         } else if (selectedTab === 'level-3') {
+//           selectedTabRole = "Chief Of Staff";
+//         } else if (selectedTab === 'level-4') {
+//           selectedTabRole = "Advisory Committee";
+//         } else if (selectedTab === 'level-5') {
+//           selectedTabRole = "Board";
+//         } else if (selectedTab === 'level-1') {
+//           selectedTabRole = "Staff Manager";
+//         }
+
+//         // Check if selectedTabRole matches log.role
+//         if (selectedTabRole === log.role) {
+//           console.log("Selected tab role matches log role: " + log.role);
+//         } else {
+//           console.log("Selected tab role does NOT match log role");
+//         }
+//       }
+//     }
+//   });
+// } else {
+//   console.error("logDetails.logs is not an array or is undefined.");
+// }
+
+// logDetails?.logs?.forEach((log, index) => {
+//   console.log(`Role at index ${index}: ${log?.role}`);
+// });
 
   const renderFieldsBasedOnStep = (data) => {
     switch (data?.schemaCategory) {
@@ -1516,7 +1637,7 @@ const NewActiveApplication = ({
   return (
     <>
       <div className={style.screenBackground}></div>
-
+  
       <ApplicationHeader
         title={`New ${form?.basicDetails?.applicant?.applicantType !== undefined
           ? form?.basicDetails?.applicant?.applicantType
@@ -1549,2865 +1670,2924 @@ const NewActiveApplication = ({
         </div>
         <div className={style.grid2}>
           <>
-            {userRole.includes('Staff Manager') || userRole.includes('Chief Of Staff') || userRole.includes('Credentialing Committee') || userRole.includes('Department Head') ? (
-              <>
-                <div>
-                  <div className={style.grid5and1}>
-                    <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
-                      <div className={style.spaceBetween}>
-                        <div className={style.displayInRow}>
-                          <div className={`${style.photoBorderStyle} ${style.marginLeftRight10}`}>
-                            <div className={style.photoCardStyle}>
-                              <span>Photo</span>
-                            </div>
-                          </div>
-                          <div className={`${style.displayInCol} ${style.textAlignLeft}`}>
-                            <div className={style.marginTop10}>
-                              <span className={`${style.cardTextBoldStyle} ${style.marginTop10}`}>
-                                {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.middleName || ""} {form?.basicDetails?.applicant?.name?.lastName || ""}
-                              </span>
-                              <span className={`${style.cardTextNormalStyle} ${style.marginTop10} ${style.marginLeft10}`}>
-                                {form?.displayId || ""}
-                              </span>
-                            </div>
-                            <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
-                              {form?.providerType?.serviceProviderType || ""} Applying As {form?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || ""}
-                            </div>
-                            <div className={style.spaceBetween}>
-                              <span className={`${style.cardTextBoldStyle} ${style.marginTop30}`}>
-                                {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
-                              </span>
-                              <span className={`${style.emailTextBoldStyle} ${style.marginTop30} ${style.marginLeft20}`}>
-                                {form?.basicDetails?.applicant?.email?.officialEmail || ""}
-                              </span>
-                            </div>
-                          </div>
+        {userRole.includes('Staff Manager') || userRole.includes('Chief Of Staff') || userRole.includes('Credentialing Committee') || userRole.includes('Department Head') ? (
+            <>
+            <div>
+              <div className={style.grid5and1}>
+                <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
+                  <div className={style.spaceBetween}>
+                    <div className={style.displayInRow}>
+                      <div className={`${style.photoBorderStyle} ${style.marginLeftRight10}`}>
+                        <div className={style.photoCardStyle}>
+                          <span>Photo</span>
                         </div>
-                        <div className={`${style.displayInRow} ${style.marginRight20}`}>
-                          <div className={style.displayInCol}>
-                            <div className={style.marginTop15}>
-                              <span className={style.rightAlignTextStyle}>
-                                Days To Complete:
-                              </span>
-                              <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
-                                15
-                              </span>
-                            </div>
-                          </div>
+                      </div>
+                      <div className={`${style.displayInCol} ${style.textAlignLeft}`}>
+                        <div className={style.marginTop10}>
+                          <span className={`${style.cardTextBoldStyle} ${style.marginTop10}`}>
+                            {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.middleName || ""} {form?.basicDetails?.applicant?.name?.lastName || ""}
+                          </span>
+                          <span className={`${style.cardTextNormalStyle} ${style.marginTop10} ${style.marginLeft10}`}>
+                          {form?.displayId || ""}
+                          </span>
+                        </div>
+                        <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
+                        {form?.providerType?.serviceProviderType || ""} Applying As {form?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || ""} 
+                        </div>
+                        <div className={style.spaceBetween}>
+                          <span className={`${style.cardTextBoldStyle} ${style.marginTop30}`}>
+                            {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
+                          </span>
+                          <span className={`${style.emailTextBoldStyle} ${style.marginTop30} ${style.marginLeft20}`}>
+                            {form?.basicDetails?.applicant?.email?.officialEmail || ""}
+                          </span>
                         </div>
                       </div>
                     </div>
-                    <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
-                      <div className={`${statusStyle} ${style.marginCenter}`}></div>
-                      <div className={style.greyDotTextStyle}>
-                        Overall Verification & Acceptance Status
-                      </div>
-                    </div>
-                  </div>
-                  <>
-                    {((userRole?.includes('Staff Manager') && selectedTab === "level-1") || (userRole?.includes('Chief Of Staff') && selectedTab === "level-1")) ? (
-                      <div
-                        className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}
-                      >
-
-                        <div>
-                          <div
-                            className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle} `}
-                          >
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                            >
-                              <div
-                                className={`${style.marginLeft30} ${style.tableHeaderTextStyle}`}
-                              ></div>
-                            </div>
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                            >
-                              <div className={`${style.tableHeaderTextStyle}`}>
-                                Required Data & POD Verification
-                              </div>
-                            </div>
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                            >
-                              <div
-                                className={`${style.tableHeaderTextStyle}`}
-                                aria-owns={open ? "mouse-over-popover" : undefined}
-                                aria-haspopup="true"
-                                onMouseEnter={handlePopoverOpen}
-                                onMouseLeave={handlePopoverClose}
-                              >
-                                <img
-                                  src={DataStatusIcon}
-                                  alt=""
-                                  style={{
-                                    width: "18px",
-                                    height: "20px",
-                                  }}
-                                />
-                                <Popover
-                                  id={"mouse-over-popover"}
-                                  sx={{
-                                    pointerEvents: "none",
-                                  }}
-                                  open={open}
-                                  anchorEl={anchorEl}
-                                  anchorOrigin={{
-                                    vertical: "bottom",
-                                    horizontal: "center",
-                                  }}
-                                  transformOrigin={{
-                                    vertical: "top",
-                                    horizontal: "center",
-                                  }}
-                                  onClose={handlePopoverClose}
-                                  PaperProps={{
-                                    style: {
-                                      backgroundColor: "transparent",
-                                      boxShadow: "none",
-                                      borderRadius: 0,
-                                    },
-                                  }}
-                                  disableRestoreFocus
-                                >
-                                  <div className={style.multipleOptionsCard}>
-                                    <div
-                                      className={`${style.specificActionCard} ${style.cursorPointer}`}
-                                    >
-                                      Data Quality Status
-                                    </div>
-                                  </div>
-                                </Popover>
-                              </div>
-                            </div>
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                            >
-                              <div
-                                className={`${style.tableHeaderTextStyle}`}
-                                aria-owns={
-                                  openTextWithHover ? "mouse-over-popover" : undefined
-                                }
-                                aria-haspopup="true"
-                                onMouseEnter={handlePopoverTextOpen}
-                                onMouseLeave={handlePopoverTextClose}
-                              >
-                                <img
-                                  src={DocumentIcon}
-                                  alt=""
-                                  style={{
-                                    width: "18px",
-                                    height: "20px",
-                                  }}
-                                />
-                                <Popover
-                                  id={"mouse-over-popover"}
-                                  sx={{
-                                    pointerEvents: "none",
-                                  }}
-                                  open={openTextWithHover}
-                                  anchorEl={anchorTextEl}
-                                  anchorOrigin={{
-                                    vertical: "bottom",
-                                    horizontal: "center",
-                                  }}
-                                  transformOrigin={{
-                                    vertical: "top",
-                                    horizontal: "center",
-                                  }}
-                                  onClose={handlePopoverTextClose}
-                                  PaperProps={{
-                                    style: {
-                                      backgroundColor: "transparent",
-                                      boxShadow: "none",
-                                      borderRadius: 0,
-                                    },
-                                  }}
-                                  disableRestoreFocus
-                                >
-                                  <div className={style.multipleOptionsCard}>
-                                    <div
-                                      className={`${style.specificActionCard} ${style.cursorPointer}`}
-                                    >
-                                      Document Status
-                                    </div>
-                                  </div>
-                                </Popover>
-                              </div>
-                            </div>
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                            >
-                              <div className={`${style.tableHeaderTextStyle}`}>
-                                Documents
-                              </div>
-                            </div>
-                          </div>
-                          <div>
-                            <div
-                              className={` ${style.marginTop5} ${expand?.status && expand?.index === 0
-                                ? style.tableDataStyle1
-                                : style.tableDataStyle
-                                }`}
-                            >
-                              <div
-                                className={` ${expand?.status && expand?.index === 0
-                                  ? style.tableHeaderGridStyleForm
-                                  : style.tableHeaderGridStyle
-                                  } ${style.marginTop10}`}
-                              >
-                                <div
-                                  className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                                >
-                                  <div
-                                    className={`${style.marginLeft10} ${style.justifySpaceAround
-                                      } ${form?.basicInformationStatus
-                                        ? style.greenDotStyle
-                                        : style.greyDotStyle
-                                      }`}
-                                  ></div>
-                                </div>
-                                <div
-                                  className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                >
-                                  <div
-                                    className={`${expand?.status && expand?.index === 0
-                                      ? style.tableHeaderTextStyle
-                                      : style.tableDataFontStyle1
-                                      }`}
-                                  >
-                                    Applicant Profile Information
-                                  </div>
-                                </div>
-                                {expand?.status && expand?.index === 0 ? (
-                                  <>
-                                    {!form?.basicInformationStatus ? (
-                                      <div
-                                        className={`${style.purpleButton} ${style.cursorPointer} `}
-                                      >
-                                        <div
-                                          className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                          onClick={() => handleVerify()}
-                                        >
-                                          Verify
-                                        </div>
-                                      </div>
-                                    ) : (
-                                      <div
-                                        className={`${style.greenButton}  ${style.cursorPointer} `}
-                                      >
-                                        <div
-                                          className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                        >
-                                          Verified
-                                        </div>
-                                      </div>
-                                    )}
-                                  </>
-                                ) : (
-                                  <>
-                                    <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                    >
-                                      <div
-                                        className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}
-                                      ></div>
-                                    </div>
-                                    <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                    >
-                                      <div
-                                        className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}
-                                      ></div>
-                                    </div>
-                                    <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                    >
-                                      <div
-                                        className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                      >
-                                        -
-                                      </div>
-                                    </div>
-                                  </>
-                                )}
-
-                                <div
-                                  className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                >
-                                  <div
-                                    className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                  >
-                                    {expand?.status && expand?.index === 0 ? (
-                                      <RemoveIcon
-                                        sx={{
-                                          fontSize: 20,
-                                          color: "#94979A",
-                                          cursor: "pointer",
-                                        }}
-                                        onClick={() =>
-                                          setExpand({ status: false, index: 0 })
-                                        }
-                                      />
-                                    ) : (
-                                      <AddIcon
-                                        sx={{
-                                          fontSize: 20,
-                                          color: "#94979A",
-                                          cursor: "pointer",
-                                        }}
-                                        onClick={() =>
-                                          setExpand({ status: true, index: 0 })
-                                        }
-                                      />
-                                    )}{" "}
-                                  </div>
-                                </div>
-                              </div>
-                              {expand?.status && expand?.index === 0 && (
-                                <div
-                                  className={`${style.marginTop} ${style.screenPadding}`}
-                                >
-
-                                  {form1 !== undefined &&
-                                    "applicant" in form1?.properties && (
-                                      <ApplicationFieldCard
-                                        object={form1?.properties?.applicant}
-                                        gridStyle={style.applicantGrid}
-                                        baseKey={"applicant"}
-                                        basicForm={form}
-                                        setBasicForm={setForm}
-                                        isBasicPath={true}
-                                        isPOD={true}
-                                      />
-                                    )}
-                                  {form1 !== undefined &&
-                                    "credentialingPrivilegeCategory" in
-                                    form1?.properties && (
-                                      <ApplicationFieldCard
-                                        object={
-                                          form1?.properties?.credentialingPrivilegeCategory
-                                        }
-                                        gridStyle={style.credentialingGrid}
-                                        baseKey={"credentialingPrivilegeCategory"}
-                                        basicForm={form}
-                                        setBasicForm={setForm}
-                                        isBasicPath={true}
-                                        isPOD={true}
-                                      />
-                                    )}
-                                  {form1 !== undefined &&
-                                    "departmentSpecialty" in form1?.properties && (
-                                      <ApplicationFieldCard
-                                        object={form1?.properties?.departmentSpecialty}
-                                        gridStyle={style.twoCol}
-                                        baseKey={"departmentSpecialty"}
-                                        basicForm={form}
-                                        setBasicForm={setForm}
-                                        isBasicPath={true}
-                                        isPOD={true}
-                                      />
-                                    )}
-                                  {form1 !== undefined &&
-                                    getValueByPath(
-                                      form,
-                                      "basicDetails.departmentSpecialty.department"
-                                    ) ===
-                                    form1.if.properties.departmentSpecialty.properties
-                                      .department.const &&
-                                    form1.if.properties.departmentSpecialty.properties.specialty.enum?.includes(
-                                      getValueByPath(
-                                        form,
-                                        "basicDetails.departmentSpecialty.specialty"
-                                      )
-                                    ) &&
-                                    form1 !== undefined &&
-                                    "regionalCallResponsibilities" in form1?.properties && (
-                                      <ApplicationFieldCard
-                                        object={
-                                          form1?.properties?.regionalCallResponsibilities
-                                        }
-                                        gridStyle={""}
-                                        baseKey={"regionalCallResponsibilities"}
-                                        basicForm={form}
-                                        setBasicForm={setForm}
-                                        isBasicPath={true}
-                                        isPOD={true}
-                                      />
-                                    )}
-                                  {form1 !== undefined &&
-                                    "billingNumber" in form1?.properties && (
-                                      <ApplicationFieldCard
-                                        object={form1?.properties?.billingNumber}
-                                        gridStyle={style.twoCol}
-                                        baseKey={"billingNumber"}
-                                        basicForm={form}
-                                        setBasicForm={setForm}
-                                        isBasicPath={true}
-                                        isPOD={true}
-                                      />
-                                    )}
-                                </div>
-                              )}
-                            </div>
-
-                            {form?.formSchemas
-                              ?.filter(
-                                (data) =>
-                                  (data?.formCategory === "Form" ||
-                                    data?.formCategory === "Disclosure") &&
-                                  data?.schemaCategory !== "UploadYourDoc"
-                              )
-                              ?.map((data, index) => (
-                                <div
-                                  className={` ${style.marginTop5} ${expand?.status && expand?.index === index + 1
-                                    ? style.tableDataStyle1
-                                    : style.tableDataStyle
-                                    }`}
-                                >
-                                  <div
-                                    className={` ${expand?.index === index + 1
-                                      ? style.tableHeaderGridStyleForm
-                                      : style.tableHeaderGridStyle
-                                      } ${style.marginTop10}`}
-                                  >
-                                    <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                                    >
-                                      <div
-                                        className={`${style.marginLeft10} ${style.justifySpaceAround
-                                          } ${form?.forms[index]?.status !== "APPROVED"
-                                            ? style.greyDotStyle
-                                            : style.greenDotStyle
-                                          }`}
-                                      ></div>
-                                    </div>
-                                    <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                    >
-                                      <div className={`${style.tableDataFontStyle1}`}>
-                                        {data?.description}
-                                      </div>
-                                    </div>
-                                    {expand?.status && expand?.index === index + 1 ? (
-                                      <>
-                                        {form?.forms[index]?.status !== "APPROVED" ? (
-                                          <div
-                                            className={`${style.purpleButton} ${style.cursorPointer} `}
-                                          >
-                                            <div
-                                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                              onClick={() =>
-                                                handleStepsVerify(form?.forms[index]?.id)
-                                              }
-                                            >
-                                              Verify
-                                            </div>
-                                          </div>
-                                        ) : (
-                                          <div
-                                            className={`${style.greenButton}  ${style.cursorPointer} `}
-                                          >
-                                            <div
-                                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                            >
-                                              Verified
-                                            </div>
-                                          </div>
-                                        )}
-                                      </>
-                                    ) : (
-                                      <>
-                                        <div
-                                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                        >
-                                          <div
-                                            className={`${style.marginLeft10}${style.justifySpaceAround
-                                              } ${form?.forms[index]?.status !== "APPROVED"
-                                                ? style.greyDotStyle
-                                                : style.greenDotStyle
-                                              }`}
-                                          ></div>
-                                        </div>
-                                        <div
-                                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                        >
-                                          <div
-                                            className={`${style.marginLeft10}${style.justifySpaceAround
-                                              } ${form?.forms[index]?.status !== "APPROVED"
-                                                ? style.greyDotStyle
-                                                : style.greenDotStyle
-                                              }`}
-                                          ></div>
-                                        </div>
-                                        <div
-                                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                        >
-                                          <div
-                                            className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                          >
-                                            {form?.forms
-                                              ?.filter(
-                                                (formData, formIndex) => formIndex === index
-                                              )
-                                              ?.map(
-                                                (data) => data?.uploadedFiles?.length || 0
-                                              )}
-                                          </div>
-                                        </div>
-                                      </>
-                                    )}
-                                    <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                    >
-                                      <div
-                                        className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                      >
-                                        {expand?.status && expand?.index === index + 1 ? (
-                                          <RemoveIcon
-                                            sx={{
-                                              fontSize: 20,
-                                              color: "#94979A",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={() => {
-                                              setExpand({ status: false, index: 0 });
-                                              setFormSchemaId("");
-                                            }}
-                                          />
-                                        ) : (
-                                          <AddIcon
-                                            sx={{
-                                              fontSize: 20,
-                                              color: "#94979A",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={() => {
-                                              setExpand({ status: true, index: index + 1 });
-                                              setFormSchemaId(data?.id);
-                                            }}
-                                          />
-                                        )}
-                                      </div>
-                                    </div>
-                                  </div>
-                                  {expand?.status && expand?.index === index + 1 && (
-                                    <div
-                                      className={`${style.marginTop} ${style.screenPadding}`}
-                                    >
-                                      {renderFieldsBasedOnStep(data)}
-                                    </div>
-                                  )}
-                                </div>
-                              ))}
-                          </div>
-
-                          <div>
-                            <div
-                              className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle1} `}
-                            >
-                              <div
-                                className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                              >
-                                <div
-                                  className={`${style.marginLeft10} ${style.tableHeaderTextStyle}`}
-                                ></div>
-                              </div>
-                              <div
-                                className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                              >
-                                <div className={`${style.tableHeaderTextStyle}`}>
-                                  Requested Form Completeness Check
-                                </div>
-                              </div>
-                            </div>
-                            {form?.formSchemas
-                              ?.filter((data) => data?.formCategory === "Acknowledgement")
-                              ?.map((data, index) => (
-                                <div
-                                  className={` ${style.marginTop5} ${expandAcknowledgement?.status &&
-                                    expandAcknowledgement?.index === index
-                                    ? style.tableDataStyle1
-                                    : style.tableDataStyle
-                                    }`}
-                                >
-                                  <div
-                                    className={` ${style.marginTop10} ${expandAcknowledgement?.status &&
-                                      expandAcknowledgement?.index === index
-                                      ? style.tableHeaderGridStyleForm
-                                      : style.tableHeaderGridStyle1
-                                      }`}
-                                  >
-                                    <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                                    >
-                                      <div
-                                        className={`${style.marginLeft10} ${style.justifySpaceAround
-                                          } ${form?.forms?.filter(
-                                            (data) =>
-                                              data?.formCategory === "Acknowledgement"
-                                          )[index]?.status !== "APPROVED"
-                                            ? style.greyDotStyle
-                                            : style.greenDotStyle
-                                          }`}
-                                      ></div>
-                                    </div>
-                                    <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                    >
-                                      <div className={`${style.tableDataFontStyle1}`}>
-                                        {data?.description}
-                                      </div>
-                                    </div>
-                                    {expandAcknowledgement?.status &&
-                                      expandAcknowledgement?.index === index && (
-                                        <>
-                                          {form?.forms?.filter(
-                                            (data) =>
-                                              data?.formCategory === "Acknowledgement"
-                                          )[index]?.status !== "APPROVED" ? (
-                                            <div
-                                              className={`${style.purpleButton} ${style.cursorPointer} `}
-                                            >
-                                              <div
-                                                className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                onClick={() =>
-                                                  handleStepsVerify(
-                                                    form?.forms?.filter(
-                                                      (data) =>
-                                                        data?.formCategory ===
-                                                        "Acknowledgement"
-                                                    )[index]?.id
-                                                  )
-                                                }
-                                              >
-                                                Verify
-                                              </div>
-                                            </div>
-                                          ) : (
-                                            <div
-                                              className={`${style.greenButton}  ${style.cursorPointer} `}
-                                            >
-                                              <div
-                                                className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                              >
-                                                Verified
-                                              </div>
-                                            </div>
-                                          )}
-                                        </>
-                                      )}
-                                    <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                    >
-                                      <div
-                                        className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                      >
-                                        {expandAcknowledgement?.status &&
-                                          expandAcknowledgement?.index === index ? (
-                                          <RemoveIcon
-                                            sx={{
-                                              fontSize: 20,
-                                              color: "#94979A",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={() => {
-                                              setExpandAcknowledgement({
-                                                status: false,
-                                                index: 0,
-                                              });
-                                              setFormSchemaId("");
-                                            }}
-                                          />
-                                        ) : (
-                                          <AddIcon
-                                            sx={{
-                                              fontSize: 20,
-                                              color: "#94979A",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={() => {
-                                              setExpandAcknowledgement({
-                                                status: true,
-                                                index: index,
-                                              });
-                                              setFormSchemaId(data?.id);
-                                            }}
-                                          />
-                                        )}
-                                      </div>
-                                    </div>
-                                  </div>
-                                  {expandAcknowledgement?.status &&
-                                    expandAcknowledgement?.index === index && (
-                                      <div
-                                        className={`${style.marginTop} ${style.screenPadding}`}
-                                      >
-                                        {form?.forms?.filter(
-                                          (data) => data?.formCategory === "Acknowledgement"
-                                        )[index]?.uploadedFiles?.length !== 0 && (
-                                            <>
-                                              <iframe
-                                                src={
-                                                  form?.forms?.filter(
-                                                    (data) =>
-                                                      data?.formCategory === "Acknowledgement"
-                                                  )[index]?.uploadedFiles[
-                                                    form?.forms?.filter(
-                                                      (data) =>
-                                                        data?.formCategory ===
-                                                        "Acknowledgement"
-                                                    )[index]?.uploadedFiles?.length - 1
-                                                  ]?.fileURL
-                                                }
-                                                width="100%"
-                                                height="600px"
-                                              ></iframe>
-                                              {(data?.description ===
-                                                "Statement of Confidentiality and Non-Disclosure" ||
-                                                data?.description ===
-                                                "Conflict Of Interest Policy") && (
-                                                  <div className={style.grid2}>
-                                                    <div
-                                                      onClick={
-                                                        form?.forms[index]?.staffEsign === null
-                                                          ? () =>
-                                                            handleStaffEsign(
-                                                              form?.forms?.filter(
-                                                                (data) =>
-                                                                  data?.formCategory ===
-                                                                  "Acknowledgement"
-                                                              )[index]?.id
-                                                            )
-                                                          : () => { }
-                                                      }
-                                                    >
-                                                      <ESignature
-                                                        userName={
-                                                          form?.forms?.filter(
-                                                            (data) =>
-                                                              data?.formCategory ===
-                                                              "Acknowledgement"
-                                                          )[index]?.staffEsign !== null
-                                                            ? form?.forms?.filter(
-                                                              (data) =>
-                                                                data?.formCategory ===
-                                                                "Acknowledgement"
-                                                            )[index]?.staffEsign?.name
-                                                            : ""
-                                                        }
-                                                        encData={
-                                                          form?.forms?.filter(
-                                                            (data) =>
-                                                              data?.formCategory ===
-                                                              "Acknowledgement"
-                                                          )[index]?.staffEsign !== null
-                                                            ? form?.forms?.filter(
-                                                              (data) =>
-                                                                data?.formCategory ===
-                                                                "Acknowledgement"
-                                                            )[index]?.staffEsign?.esign
-                                                            : ""
-                                                        }
-                                                        showData={
-                                                          form?.forms?.filter(
-                                                            (data) =>
-                                                              data?.formCategory ===
-                                                              "Acknowledgement"
-                                                          )[index]?.staffEsign !== null
-                                                            ? true
-                                                            : false
-                                                        }
-                                                        showDatais={true}
-                                                      />
-                                                    </div>
-                                                    <div className={style.verticalAlignCenter}>
-                                                      <div className={style.displayInRow}>
-                                                        <div className={style.dateTitle}>
-                                                          Date:{" "}
-                                                        </div>
-                                                        <div
-                                                          className={`${style.date} ${style.marginLeft}`}
-                                                        >
-                                                          {form?.forms?.filter(
-                                                            (data) =>
-                                                              data?.formCategory ===
-                                                              "Acknowledgement"
-                                                          )[index]?.staffEsign !== null
-                                                            ? format(
-                                                              new Date(
-                                                                form?.forms?.filter(
-                                                                  (data) =>
-                                                                    data?.formCategory ===
-                                                                    "Acknowledgement"
-                                                                )[
-                                                                  index
-                                                                ]?.staffEsign?.signedDate
-                                                              ),
-                                                              canadaData?.dateFormat ||
-                                                              "dd/MM/yyyy"
-                                                            )
-                                                            : ""}
-                                                        </div>
-                                                      </div>
-                                                    </div>
-                                                  </div>
-                                                )}
-                                            </>
-                                          )}
-                                      </div>
-                                    )}
-                                </div>
-                              ))}
-                          </div>
-                          <div className={style.marginBottom20}></div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop10}`}>
-                        <div>
-
-
-                          <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyleCred1} `}>
-
-                            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                              <div className={`${style.tableHeaderTextStyleCred}`}> POD Verification Check </div>
-                            </div>
-
-                          </div>
-                          <div>
-                            <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === 0) ? style.tableDataStyle1 : style.tableDataStyle}`}>
-                              <div className={` ${(expand?.status && expand?.index === 0) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred1} ${style.marginTop10}`}>
-
-                                <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                                  <div className={`${(expand?.status && expand?.index === 0) ? style.tableHeaderTextStyleCred : style.tableDataFontStyleCred}`}>Applicant Profile Information</div>
-                                </div>
-
-
-                                {(expand?.status && expand?.index === 0) ? (
-                                  <>
-                                    {!form?.basicInformationStatus ? (
-                                      <div className={`${style.purpleButton} ${style.cursorPointer} `}>
-                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleVerify()}>Approve</div>
-                                      </div>
-                                    ) : (
-                                      <div className={`${style.greenButton}  ${style.cursorPointer} `}>
-                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Approved</div>
-                                      </div>
-                                    )}
-                                  </>
-                                ) : (
-                                  " "
-                                )}
-
-                                <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                                  <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
-                                    {
-                                      (expand?.status && expand?.index === 0) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => setExpand({ status: false, index: 0 })} />)
-                                        : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => setExpand({ status: true, index: 0 })} />)
-                                    }                    </div>
-                                </div>
-                              </div>
-                              {expand?.status && expand?.index === 0 &&
-                                <div className={`${style.marginTop} ${style.screenPadding}`}>
-
-                                  {form1 !== undefined && 'applicant' in form1?.properties && (
-                                    <ApplicationFieldCard object={form1?.properties?.applicant} gridStyle={style.applicantGrid} baseKey={'applicant'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
-                                  )}
-                                  {form1 !== undefined && 'credentialingPrivilegeCategory' in form1?.properties && (
-                                    <ApplicationFieldCard object={form1?.properties?.credentialingPrivilegeCategory} gridStyle={style.credentialingGrid} baseKey={'credentialingPrivilegeCategory'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
-                                  )}
-                                  {form1 !== undefined && 'departmentSpecialty' in form1?.properties && (
-                                    <ApplicationFieldCard object={form1?.properties?.departmentSpecialty} gridStyle={style.twoCol} baseKey={'departmentSpecialty'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
-                                  )}
-                                  {form1 !== undefined && (getValueByPath(form, 'basicDetails.departmentSpecialty.department') === form1.if.properties.departmentSpecialty.properties.department.const && form1.if.properties.departmentSpecialty.properties.specialty.enum?.includes(getValueByPath(form, 'basicDetails.departmentSpecialty.specialty'))) && (
-                                    form1 !== undefined && 'regionalCallResponsibilities' in form1?.properties && (
-                                      <ApplicationFieldCard object={form1?.properties?.regionalCallResponsibilities} gridStyle={''} baseKey={'regionalCallResponsibilities'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
-                                    )
-                                  )}
-                                  {form1 !== undefined && 'billingNumber' in form1?.properties && (
-                                    <ApplicationFieldCard object={form1?.properties?.billingNumber} gridStyle={style.twoCol} baseKey={'billingNumber'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
-                                  )}
-                                </div>
-                              }
-
-
-                            </div>
-
-                            {
-                              form?.formSchemas?.filter(data => (data?.formCategory === 'Form' || data?.formCategory === 'Disclosure') && data?.schemaCategory !== "UploadYourDoc")?.map((data, index) => (
-
-                                <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === index + 1) ? style.tableDataStyle1 : style.tableDataStyle}`}>
-                                  <div className={` ${expand?.index === index + 1 ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred} ${style.marginTop10}`}>
-
-                                    <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                                      <div className={`${style.tableDataFontStyleCred}`}>{data?.description}</div>
-                                    </div>
-                                    {!(expand?.status && expand?.index === index + 1) && (
-                                      <>
-                                        {form?.forms[index]?.status === "APPROVED" ? (
-                                          <div className={`${style.approvedButtonStyle} ${style.ApprovedTextStyle}`}>Approved</div>
-                                        ) : (
-                                          <div className={`${style.assessInCred} ${style.assessTextStyle}`}>4 to Assess</div>
-                                        )}
-                                      </>
-                                    )}
-                                    {expand?.status && expand?.index === index + 1 && (
-                                      <>
-                                        {credApproval?.filter(
-                                          (newData) => {
-                                            console.log("newData.schema:", newData.schemaId);
-                                            console.log("data.id:", data.id);
-                                            return newData.schemaId === data.id
-                                          }
-                                        )[0]?.approvalRequired === true ? (
-                                          <>
-                                            {form?.forms[index]?.status !== "APPROVED" ? (
-                                              <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                <div
-                                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                  onClick={() => handleStepsVerify(form?.forms[index]?.id)}
-                                                >
-                                                  Approve
-                                                </div>
-                                              </div>
-                                            ) : (
-                                              <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                  Approved
-                                                </div>
-                                              </div>
-                                            )}
-                                          </>
-                                        ) : (""
-                                        )}
-                                      </>
-                                    )}
-                                    <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                                      <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
-                                        {
-                                          (expand?.status && expand?.index === index + 1) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: false, index: 0 }); setFormSchemaId('') }} />)
-                                            : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: true, index: index + 1 }); setFormSchemaId(data?.id) }} />)
-                                        }
-
-                                      </div>
-                                    </div>
-                                  </div>
-                                  {expand?.status && expand?.index === index + 1 &&
-                                    <div className={`${style.marginTop} ${style.screenPadding}`}>
-                                      {renderFieldsBasedOnStep(data)}
-                                    </div>
-                                  }
-                                </div>))}
-
-                          </div>
-
-                          <div>
-                            <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderStyleCred} `}>
-                              <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                <div className={`${style.marginLeft10} ${style.tableHeaderTextStyle}`}></div>
-                              </div>
-                              <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                <div className={`${style.tableHeaderTextStyleCred}`}>Requested Form Completeness Check</div>
-                              </div>
-                            </div>
-                            {form?.formSchemas?.filter(data => data?.formCategory === 'Acknowledgement')?.map((data, index) => (
-                              <div className={` ${style.marginTop5} ${(expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? style.tableDataStyle1 : style.tableDataStyle}`}>
-                                <div className={` ${style.marginTop10} ${(expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred1}`}>
-
-                                  <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                                    <div className={`${style.tableDataFontStyleCred}`}>{data?.description}</div>
-                                  </div>
-                                  {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
-                                    <>
-                                      {form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.status !== "APPROVED" ? (
-                                        <div className={`${style.purpleButton} ${style.cursorPointer} `}>
-                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleStepsVerify(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.id)}>Approve</div>
-                                        </div>
-                                      ) : (
-                                        <div className={`${style.greenButton}  ${style.cursorPointer} `}>
-                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Approved</div>
-                                        </div>
-                                      )}
-                                    </>
-                                  )}
-                                  <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                                    <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
-                                      {
-                                        (expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpandAcknowledgement({ status: false, index: 0 }); setFormSchemaId('') }} />)
-                                          : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpandAcknowledgement({ status: true, index: index }); setFormSchemaId(data?.id) }} />)
-                                      }
-                                    </div>
-                                  </div>
-                                </div>
-                                {expandAcknowledgement?.status && expandAcknowledgement?.index === index &&
-                                  <div className={`${style.marginTop} ${style.screenPadding}`}>
-                                    {form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles?.length !== 0 && (
-                                      <>
-                                        <iframe src={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles[form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles?.length - 1]?.fileURL} width="100%" height="600px"></iframe>
-                                        {(data?.description === 'Statement of Confidentiality and Non-Disclosure' || data?.description === 'Conflict Of Interest Policy') && (
-                                          <div className={style.grid2}>
-                                            <div onClick={form?.forms[index]?.staffEsign === null ? () => handleStaffEsign(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.id) : () => { }} >
-                                              <ESignature
-                                                userName={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.name : ""}
-                                                encData={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.esign : ''}
-                                                showData={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? true : false}
-                                                showDatais={true}
-                                              />
-                                            </div>
-                                            <div className={style.verticalAlignCenter}>
-                                              <div className={style.displayInRow}>
-                                                <div className={style.dateTitle}>Date: </div>
-                                                <div className={`${style.date} ${style.marginLeft}`}>{form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? format(new Date(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.signedDate), canadaData?.dateFormat || 'dd/MM/yyyy') : ""}</div>
-                                              </div>
-                                            </div>
-                                          </div>
-                                        )}
-                                      </>
-                                    )}
-                                  </div>
-                                }
-                              </div>))}
-                          </div>
-                          <div className={style.marginBottom20}></div>
-                        </div>
-                      </div>
-                    )}
-                  </>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className={`${style.displayInCol}`}>
-                  <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
-                    <div className={style.spaceBetween}>
-                      <div className={style.displayInRow}>
-                        <div className={`${style.photoBorderStyle} ${style.marginLeftRight10}`}>
-                          <div className={style.photoCardStyle}>
-                            <span>Photo</span>
-                          </div>
-                        </div>
-                        <div className={`${style.displayInCol} ${style.textAlignLeft}`}>
-                          <div className={style.marginTop10}>
-                            <span className={`${style.cardTextBoldStyle} ${style.marginTop10}`}>
-                              {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.middleName || ""} {form?.basicDetails?.applicant?.name?.lastName || ""}
-                            </span>
-                            <span className={`${style.cardTextNormalStyle} ${style.marginTop10} ${style.marginLeft10}`}>
-                              {form?.displayId || ""}
-                            </span>
-                          </div>
-                          <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
-                            {form?.providerType?.serviceProviderType || ""} Applying As {form?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || ""}
-                          </div>
-                          <div className={style.spaceBetween}>
-                            <span className={`${style.cardTextBoldStyle} ${style.marginTop30}`}>
-                              {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
-                            </span>
-                            <span className={`${style.emailTextBoldStyle} ${style.marginTop30} ${style.marginLeft20}`}>
-                              {form?.basicDetails?.applicant?.email?.officialEmail || ""}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className={`${style.displayInRow} ${style.marginRight20}`}>
-                        <div className={style.displayInCol}>
-                          <div className={style.marginTop15}>
-                            <span className={style.rightAlignTextStyle}>
-                              Days To Complete:
-                            </span>
-                            <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
-                              15
-                            </span>
-                          </div>
+                    <div className={`${style.displayInRow} ${style.marginRight20}`}>
+                      <div className={style.displayInCol}>
+                        <div className={style.marginTop15}>
+                          <span className={style.rightAlignTextStyle}>
+                            Days To Complete:
+                          </span>
+                          <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
+                            15
+                          </span>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <>
-                    {userRole?.includes('Staff Manager') ? (
-                      <div
-                        className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}
-                      >
-
-                        <div>
-                          <div
-                            className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle} `}
-                          >
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                            >
-                              <div
-                                className={`${style.marginLeft30} ${style.tableHeaderTextStyle}`}
-                              ></div>
-                            </div>
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                            >
-                              <div className={`${style.tableHeaderTextStyle}`}>
-                                Required Data & POD Verification
-                              </div>
-                            </div>
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                            >
-                              <div
-                                className={`${style.tableHeaderTextStyle}`}
-                                aria-owns={open ? "mouse-over-popover" : undefined}
-                                aria-haspopup="true"
-                                onMouseEnter={handlePopoverOpen}
-                                onMouseLeave={handlePopoverClose}
-                              >
-                                <img
-                                  src={DataStatusIcon}
-                                  alt=""
-                                  style={{
-                                    width: "18px",
-                                    height: "20px",
-                                  }}
-                                />
-                                <Popover
-                                  id={"mouse-over-popover"}
-                                  sx={{
-                                    pointerEvents: "none",
-                                  }}
-                                  open={open}
-                                  anchorEl={anchorEl}
-                                  anchorOrigin={{
-                                    vertical: "bottom",
-                                    horizontal: "center",
-                                  }}
-                                  transformOrigin={{
-                                    vertical: "top",
-                                    horizontal: "center",
-                                  }}
-                                  onClose={handlePopoverClose}
-                                  PaperProps={{
-                                    style: {
-                                      backgroundColor: "transparent",
-                                      boxShadow: "none",
-                                      borderRadius: 0,
-                                    },
-                                  }}
-                                  disableRestoreFocus
-                                >
-                                  <div className={style.multipleOptionsCard}>
-                                    <div
-                                      className={`${style.specificActionCard} ${style.cursorPointer}`}
-                                    >
-                                      Data Quality Status
-                                    </div>
-                                  </div>
-                                </Popover>
-                              </div>
-                            </div>
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                            >
-                              <div
-                                className={`${style.tableHeaderTextStyle}`}
-                                aria-owns={
-                                  openTextWithHover ? "mouse-over-popover" : undefined
-                                }
-                                aria-haspopup="true"
-                                onMouseEnter={handlePopoverTextOpen}
-                                onMouseLeave={handlePopoverTextClose}
-                              >
-                                <img
-                                  src={DocumentIcon}
-                                  alt=""
-                                  style={{
-                                    width: "18px",
-                                    height: "20px",
-                                  }}
-                                />
-                                <Popover
-                                  id={"mouse-over-popover"}
-                                  sx={{
-                                    pointerEvents: "none",
-                                  }}
-                                  open={openTextWithHover}
-                                  anchorEl={anchorTextEl}
-                                  anchorOrigin={{
-                                    vertical: "bottom",
-                                    horizontal: "center",
-                                  }}
-                                  transformOrigin={{
-                                    vertical: "top",
-                                    horizontal: "center",
-                                  }}
-                                  onClose={handlePopoverTextClose}
-                                  PaperProps={{
-                                    style: {
-                                      backgroundColor: "transparent",
-                                      boxShadow: "none",
-                                      borderRadius: 0,
-                                    },
-                                  }}
-                                  disableRestoreFocus
-                                >
-                                  <div className={style.multipleOptionsCard}>
-                                    <div
-                                      className={`${style.specificActionCard} ${style.cursorPointer}`}
-                                    >
-                                      Document Status
-                                    </div>
-                                  </div>
-                                </Popover>
-                              </div>
-                            </div>
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                            >
-                              <div className={`${style.tableHeaderTextStyle}`}>
-                                Documents
-                              </div>
-                            </div>
-                          </div>
-                          <div>
-                            <div
-                              className={` ${style.marginTop5} ${expand?.status && expand?.index === 0
-                                ? style.tableDataStyle1
-                                : style.tableDataStyle
-                                }`}
-                            >
-                              <div
-                                className={` ${expand?.status && expand?.index === 0
-                                  ? style.tableHeaderGridStyleForm
-                                  : style.tableHeaderGridStyle
-                                  } ${style.marginTop10}`}
-                              >
-                                <div
-                                  className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                                >
-                                  <div
-                                    className={`${style.marginLeft10} ${style.justifySpaceAround
-                                      } ${form?.basicInformationStatus
-                                        ? style.greenDotStyle
-                                        : style.greyDotStyle
-                                      }`}
-                                  ></div>
-                                </div>
-                                <div
-                                  className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                >
-                                  <div
-                                    className={`${expand?.status && expand?.index === 0
-                                      ? style.tableHeaderTextStyle
-                                      : style.tableDataFontStyle1
-                                      }`}
-                                  >
-                                    Applicant Profile Information
-                                  </div>
-                                </div>
-                                {expand?.status && expand?.index === 0 ? (
-                                  <>
-                                    {!form?.basicInformationStatus ? (
-                                      <div
-                                        className={`${style.purpleButton} ${style.cursorPointer} `}
-                                      >
-                                        <div
-                                          className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                          onClick={() => handleVerify()}
-                                        >
-                                          Verify
-                                        </div>
-                                      </div>
-                                    ) : (
-                                      <div
-                                        className={`${style.greenButton}  ${style.cursorPointer} `}
-                                      >
-                                        <div
-                                          className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                        >
-                                          Verified
-                                        </div>
-                                      </div>
-                                    )}
-                                  </>
-                                ) : (
-                                  <>
-                                    <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                    >
-                                      <div
-                                        className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}
-                                      ></div>
-                                    </div>
-                                    <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                    >
-                                      <div
-                                        className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}
-                                      ></div>
-                                    </div>
-                                    <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                    >
-                                      <div
-                                        className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                      >
-                                        -
-                                      </div>
-                                    </div>
-                                  </>
-                                )}
-
-                                <div
-                                  className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                >
-                                  <div
-                                    className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                  >
-                                    {expand?.status && expand?.index === 0 ? (
-                                      <RemoveIcon
-                                        sx={{
-                                          fontSize: 20,
-                                          color: "#94979A",
-                                          cursor: "pointer",
-                                        }}
-                                        onClick={() =>
-                                          setExpand({ status: false, index: 0 })
-                                        }
-                                      />
-                                    ) : (
-                                      <AddIcon
-                                        sx={{
-                                          fontSize: 20,
-                                          color: "#94979A",
-                                          cursor: "pointer",
-                                        }}
-                                        onClick={() =>
-                                          setExpand({ status: true, index: 0 })
-                                        }
-                                      />
-                                    )}{" "}
-                                  </div>
-                                </div>
-                              </div>
-                              {expand?.status && expand?.index === 0 && (
-                                <div
-                                  className={`${style.marginTop} ${style.screenPadding}`}
-                                >
-
-                                  {form1 !== undefined &&
-                                    "applicant" in form1?.properties && (
-                                      <ApplicationFieldCard
-                                        object={form1?.properties?.applicant}
-                                        gridStyle={style.applicantGrid}
-                                        baseKey={"applicant"}
-                                        basicForm={form}
-                                        setBasicForm={setForm}
-                                        isBasicPath={true}
-                                        isPOD={true}
-                                      />
-                                    )}
-                                  {form1 !== undefined &&
-                                    "credentialingPrivilegeCategory" in
-                                    form1?.properties && (
-                                      <ApplicationFieldCard
-                                        object={
-                                          form1?.properties?.credentialingPrivilegeCategory
-                                        }
-                                        gridStyle={style.credentialingGrid}
-                                        baseKey={"credentialingPrivilegeCategory"}
-                                        basicForm={form}
-                                        setBasicForm={setForm}
-                                        isBasicPath={true}
-                                        isPOD={true}
-                                      />
-                                    )}
-                                  {form1 !== undefined &&
-                                    "departmentSpecialty" in form1?.properties && (
-                                      <ApplicationFieldCard
-                                        object={form1?.properties?.departmentSpecialty}
-                                        gridStyle={style.twoCol}
-                                        baseKey={"departmentSpecialty"}
-                                        basicForm={form}
-                                        setBasicForm={setForm}
-                                        isBasicPath={true}
-                                        isPOD={true}
-                                      />
-                                    )}
-                                  {form1 !== undefined &&
-                                    getValueByPath(
-                                      form,
-                                      "basicDetails.departmentSpecialty.department"
-                                    ) ===
-                                    form1.if.properties.departmentSpecialty.properties
-                                      .department.const &&
-                                    form1.if.properties.departmentSpecialty.properties.specialty.enum?.includes(
-                                      getValueByPath(
-                                        form,
-                                        "basicDetails.departmentSpecialty.specialty"
-                                      )
-                                    ) &&
-                                    form1 !== undefined &&
-                                    "regionalCallResponsibilities" in form1?.properties && (
-                                      <ApplicationFieldCard
-                                        object={
-                                          form1?.properties?.regionalCallResponsibilities
-                                        }
-                                        gridStyle={""}
-                                        baseKey={"regionalCallResponsibilities"}
-                                        basicForm={form}
-                                        setBasicForm={setForm}
-                                        isBasicPath={true}
-                                        isPOD={true}
-                                      />
-                                    )}
-                                  {form1 !== undefined &&
-                                    "billingNumber" in form1?.properties && (
-                                      <ApplicationFieldCard
-                                        object={form1?.properties?.billingNumber}
-                                        gridStyle={style.twoCol}
-                                        baseKey={"billingNumber"}
-                                        basicForm={form}
-                                        setBasicForm={setForm}
-                                        isBasicPath={true}
-                                        isPOD={true}
-                                      />
-                                    )}
-                                </div>
-                              )}
-                            </div>
-
-                            {form?.formSchemas
-                              ?.filter(
-                                (data) =>
-                                  (data?.formCategory === "Form" ||
-                                    data?.formCategory === "Disclosure") &&
-                                  data?.schemaCategory !== "UploadYourDoc"
-                              )
-                              ?.map((data, index) => (
-                                <div
-                                  className={` ${style.marginTop5} ${expand?.status && expand?.index === index + 1
-                                    ? style.tableDataStyle1
-                                    : style.tableDataStyle
-                                    }`}
-                                >
-                                  <div
-                                    className={` ${expand?.index === index + 1
-                                      ? style.tableHeaderGridStyleForm
-                                      : style.tableHeaderGridStyle
-                                      } ${style.marginTop10}`}
-                                  >
-                                    <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                                    >
-                                      <div
-                                        className={`${style.marginLeft10} ${style.justifySpaceAround
-                                          } ${form?.forms[index]?.status !== "APPROVED"
-                                            ? style.greyDotStyle
-                                            : style.greenDotStyle
-                                          }`}
-                                      ></div>
-                                    </div>
-                                    <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                    >
-                                      <div className={`${style.tableDataFontStyle1}`}>
-                                        {data?.description}
-                                      </div>
-                                    </div>
-                                    {expand?.status && expand?.index === index + 1 ? (
-                                      <>
-                                        {form?.forms[index]?.status !== "APPROVED" ? (
-                                          <div
-                                            className={`${style.purpleButton} ${style.cursorPointer} `}
-                                          >
-                                            <div
-                                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                              onClick={() =>
-                                                handleStepsVerify(form?.forms[index]?.id)
-                                              }
-                                            >
-                                              Verify
-                                            </div>
-                                          </div>
-                                        ) : (
-                                          <div
-                                            className={`${style.greenButton}  ${style.cursorPointer} `}
-                                          >
-                                            <div
-                                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                            >
-                                              Verified
-                                            </div>
-                                          </div>
-                                        )}
-                                      </>
-                                    ) : (
-                                      <>
-                                        <div
-                                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                        >
-                                          <div
-                                            className={`${style.marginLeft10}${style.justifySpaceAround
-                                              } ${form?.forms[index]?.status !== "APPROVED"
-                                                ? style.greyDotStyle
-                                                : style.greenDotStyle
-                                              }`}
-                                          ></div>
-                                        </div>
-                                        <div
-                                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                        >
-                                          <div
-                                            className={`${style.marginLeft10}${style.justifySpaceAround
-                                              } ${form?.forms[index]?.status !== "APPROVED"
-                                                ? style.greyDotStyle
-                                                : style.greenDotStyle
-                                              }`}
-                                          ></div>
-                                        </div>
-                                        <div
-                                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                        >
-                                          <div
-                                            className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                          >
-                                            {form?.forms
-                                              ?.filter(
-                                                (formData, formIndex) => formIndex === index
-                                              )
-                                              ?.map(
-                                                (data) => data?.uploadedFiles?.length || 0
-                                              )}
-                                          </div>
-                                        </div>
-                                      </>
-                                    )}
-                                    <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                    >
-                                      <div
-                                        className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                      >
-                                        {expand?.status && expand?.index === index + 1 ? (
-                                          <RemoveIcon
-                                            sx={{
-                                              fontSize: 20,
-                                              color: "#94979A",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={() => {
-                                              setExpand({ status: false, index: 0 });
-                                              setFormSchemaId("");
-                                            }}
-                                          />
-                                        ) : (
-                                          <AddIcon
-                                            sx={{
-                                              fontSize: 20,
-                                              color: "#94979A",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={() => {
-                                              setExpand({ status: true, index: index + 1 });
-                                              setFormSchemaId(data?.id);
-                                            }}
-                                          />
-                                        )}
-                                      </div>
-                                    </div>
-                                  </div>
-                                  {expand?.status && expand?.index === index + 1 && (
-                                    <div
-                                      className={`${style.marginTop} ${style.screenPadding}`}
-                                    >
-                                      {renderFieldsBasedOnStep(data)}
-                                    </div>
-                                  )}
-                                </div>
-                              ))}
-                          </div>
-
-                          <div>
-                            <div
-                              className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle1} `}
-                            >
-                              <div
-                                className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                              >
-                                <div
-                                  className={`${style.marginLeft10} ${style.tableHeaderTextStyle}`}
-                                ></div>
-                              </div>
-                              <div
-                                className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                              >
-                                <div className={`${style.tableHeaderTextStyle}`}>
-                                  Requested Form Completeness Check
-                                </div>
-                              </div>
-                            </div>
-                            {form?.formSchemas
-                              ?.filter((data) => data?.formCategory === "Acknowledgement")
-                              ?.map((data, index) => (
-                                <div
-                                  className={` ${style.marginTop5} ${expandAcknowledgement?.status &&
-                                    expandAcknowledgement?.index === index
-                                    ? style.tableDataStyle1
-                                    : style.tableDataStyle
-                                    }`}
-                                >
-                                  <div
-                                    className={` ${style.marginTop10} ${expandAcknowledgement?.status &&
-                                      expandAcknowledgement?.index === index
-                                      ? style.tableHeaderGridStyleForm
-                                      : style.tableHeaderGridStyle1
-                                      }`}
-                                  >
-                                    <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                                    >
-                                      <div
-                                        className={`${style.marginLeft10} ${style.justifySpaceAround
-                                          } ${form?.forms?.filter(
-                                            (data) =>
-                                              data?.formCategory === "Acknowledgement"
-                                          )[index]?.status !== "APPROVED"
-                                            ? style.greyDotStyle
-                                            : style.greenDotStyle
-                                          }`}
-                                      ></div>
-                                    </div>
-                                    <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                    >
-                                      <div className={`${style.tableDataFontStyle1}`}>
-                                        {data?.description}
-                                      </div>
-                                    </div>
-                                    {expandAcknowledgement?.status &&
-                                      expandAcknowledgement?.index === index && (
-                                        <>
-                                          {form?.forms?.filter(
-                                            (data) =>
-                                              data?.formCategory === "Acknowledgement"
-                                          )[index]?.status !== "APPROVED" ? (
-                                            <div
-                                              className={`${style.purpleButton} ${style.cursorPointer} `}
-                                            >
-                                              <div
-                                                className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                onClick={() =>
-                                                  handleStepsVerify(
-                                                    form?.forms?.filter(
-                                                      (data) =>
-                                                        data?.formCategory ===
-                                                        "Acknowledgement"
-                                                    )[index]?.id
-                                                  )
-                                                }
-                                              >
-                                                Verify
-                                              </div>
-                                            </div>
-                                          ) : (
-                                            <div
-                                              className={`${style.greenButton}  ${style.cursorPointer} `}
-                                            >
-                                              <div
-                                                className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                              >
-                                                Verified
-                                              </div>
-                                            </div>
-                                          )}
-                                        </>
-                                      )}
-                                    <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                    >
-                                      <div
-                                        className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                      >
-                                        {expandAcknowledgement?.status &&
-                                          expandAcknowledgement?.index === index ? (
-                                          <RemoveIcon
-                                            sx={{
-                                              fontSize: 20,
-                                              color: "#94979A",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={() => {
-                                              setExpandAcknowledgement({
-                                                status: false,
-                                                index: 0,
-                                              });
-                                              setFormSchemaId("");
-                                            }}
-                                          />
-                                        ) : (
-                                          <AddIcon
-                                            sx={{
-                                              fontSize: 20,
-                                              color: "#94979A",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={() => {
-                                              setExpandAcknowledgement({
-                                                status: true,
-                                                index: index,
-                                              });
-                                              setFormSchemaId(data?.id);
-                                            }}
-                                          />
-                                        )}
-                                      </div>
-                                    </div>
-                                  </div>
-                                  {expandAcknowledgement?.status &&
-                                    expandAcknowledgement?.index === index && (
-                                      <div
-                                        className={`${style.marginTop} ${style.screenPadding}`}
-                                      >
-                                        {form?.forms?.filter(
-                                          (data) => data?.formCategory === "Acknowledgement"
-                                        )[index]?.uploadedFiles?.length !== 0 && (
-                                            <>
-                                              <iframe
-                                                src={
-                                                  form?.forms?.filter(
-                                                    (data) =>
-                                                      data?.formCategory === "Acknowledgement"
-                                                  )[index]?.uploadedFiles[
-                                                    form?.forms?.filter(
-                                                      (data) =>
-                                                        data?.formCategory ===
-                                                        "Acknowledgement"
-                                                    )[index]?.uploadedFiles?.length - 1
-                                                  ]?.fileURL
-                                                }
-                                                width="100%"
-                                                height="600px"
-                                              ></iframe>
-                                              {(data?.description ===
-                                                "Statement of Confidentiality and Non-Disclosure" ||
-                                                data?.description ===
-                                                "Conflict Of Interest Policy") && (
-                                                  <div className={style.grid2}>
-                                                    <div
-                                                      onClick={
-                                                        form?.forms[index]?.staffEsign === null
-                                                          ? () =>
-                                                            handleStaffEsign(
-                                                              form?.forms?.filter(
-                                                                (data) =>
-                                                                  data?.formCategory ===
-                                                                  "Acknowledgement"
-                                                              )[index]?.id
-                                                            )
-                                                          : () => { }
-                                                      }
-                                                    >
-                                                      <ESignature
-                                                        userName={
-                                                          form?.forms?.filter(
-                                                            (data) =>
-                                                              data?.formCategory ===
-                                                              "Acknowledgement"
-                                                          )[index]?.staffEsign !== null
-                                                            ? form?.forms?.filter(
-                                                              (data) =>
-                                                                data?.formCategory ===
-                                                                "Acknowledgement"
-                                                            )[index]?.staffEsign?.name
-                                                            : ""
-                                                        }
-                                                        encData={
-                                                          form?.forms?.filter(
-                                                            (data) =>
-                                                              data?.formCategory ===
-                                                              "Acknowledgement"
-                                                          )[index]?.staffEsign !== null
-                                                            ? form?.forms?.filter(
-                                                              (data) =>
-                                                                data?.formCategory ===
-                                                                "Acknowledgement"
-                                                            )[index]?.staffEsign?.esign
-                                                            : ""
-                                                        }
-                                                        showData={
-                                                          form?.forms?.filter(
-                                                            (data) =>
-                                                              data?.formCategory ===
-                                                              "Acknowledgement"
-                                                          )[index]?.staffEsign !== null
-                                                            ? true
-                                                            : false
-                                                        }
-                                                        showDatais={true}
-                                                      />
-                                                    </div>
-                                                    <div className={style.verticalAlignCenter}>
-                                                      <div className={style.displayInRow}>
-                                                        <div className={style.dateTitle}>
-                                                          Date:{" "}
-                                                        </div>
-                                                        <div
-                                                          className={`${style.date} ${style.marginLeft}`}
-                                                        >
-                                                          {form?.forms?.filter(
-                                                            (data) =>
-                                                              data?.formCategory ===
-                                                              "Acknowledgement"
-                                                          )[index]?.staffEsign !== null
-                                                            ? format(
-                                                              new Date(
-                                                                form?.forms?.filter(
-                                                                  (data) =>
-                                                                    data?.formCategory ===
-                                                                    "Acknowledgement"
-                                                                )[
-                                                                  index
-                                                                ]?.staffEsign?.signedDate
-                                                              ),
-                                                              canadaData?.dateFormat ||
-                                                              "dd/MM/yyyy"
-                                                            )
-                                                            : ""}
-                                                        </div>
-                                                      </div>
-                                                    </div>
-                                                  </div>
-                                                )}
-                                            </>
-                                          )}
-                                      </div>
-                                    )}
-                                </div>
-                              ))}
-                          </div>
-                          <div className={style.marginBottom20}></div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop10}`}>
-                        <div>
-
-
-                          <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyleCred1} `}>
-
-                            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                              <div className={`${style.tableHeaderTextStyleCred}`}> POD Verification Check </div>
-                            </div>
-
-                          </div>
-                          <div>
-                            <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === 0) ? style.tableDataStyle1 : style.tableDataStyle}`}>
-                              <div className={` ${(expand?.status && expand?.index === 0) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred1} ${style.marginTop10}`}>
-
-                                <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                                  <div className={`${(expand?.status && expand?.index === 0) ? style.tableHeaderTextStyleCred : style.tableDataFontStyleCred}`}>Applicant Profile Information</div>
-                                </div>
-
-
-                                {(expand?.status && expand?.index === 0) ? (
-                                  <>
-                                    {!form?.basicInformationStatus ? (
-                                      <div className={`${style.purpleButton} ${style.cursorPointer} `}>
-                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleVerify()}>Approve</div>
-                                      </div>
-                                    ) : (
-                                      <div className={`${style.greenButton}  ${style.cursorPointer} `}>
-                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Approved</div>
-                                      </div>
-                                    )}
-                                  </>
-                                ) : (
-                                  " "
-                                )}
-
-                                <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                                  <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
-                                    {
-                                      (expand?.status && expand?.index === 0) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => setExpand({ status: false, index: 0 })} />)
-                                        : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => setExpand({ status: true, index: 0 })} />)
-                                    }                    </div>
-                                </div>
-                              </div>
-                              {expand?.status && expand?.index === 0 &&
-                                <div className={`${style.marginTop} ${style.screenPadding}`}>
-
-                                  {form1 !== undefined && 'applicant' in form1?.properties && (
-                                    <ApplicationFieldCard object={form1?.properties?.applicant} gridStyle={style.applicantGrid} baseKey={'applicant'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
-                                  )}
-                                  {form1 !== undefined && 'credentialingPrivilegeCategory' in form1?.properties && (
-                                    <ApplicationFieldCard object={form1?.properties?.credentialingPrivilegeCategory} gridStyle={style.credentialingGrid} baseKey={'credentialingPrivilegeCategory'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
-                                  )}
-                                  {form1 !== undefined && 'departmentSpecialty' in form1?.properties && (
-                                    <ApplicationFieldCard object={form1?.properties?.departmentSpecialty} gridStyle={style.twoCol} baseKey={'departmentSpecialty'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
-                                  )}
-                                  {form1 !== undefined && (getValueByPath(form, 'basicDetails.departmentSpecialty.department') === form1.if.properties.departmentSpecialty.properties.department.const && form1.if.properties.departmentSpecialty.properties.specialty.enum?.includes(getValueByPath(form, 'basicDetails.departmentSpecialty.specialty'))) && (
-                                    form1 !== undefined && 'regionalCallResponsibilities' in form1?.properties && (
-                                      <ApplicationFieldCard object={form1?.properties?.regionalCallResponsibilities} gridStyle={''} baseKey={'regionalCallResponsibilities'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
-                                    )
-                                  )}
-                                  {form1 !== undefined && 'billingNumber' in form1?.properties && (
-                                    <ApplicationFieldCard object={form1?.properties?.billingNumber} gridStyle={style.twoCol} baseKey={'billingNumber'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
-                                  )}
-                                </div>
-                              }
-
-
-                            </div>
-
-                            {
-                              form?.formSchemas?.filter(data => (data?.formCategory === 'Form' || data?.formCategory === 'Disclosure') && data?.schemaCategory !== "UploadYourDoc")?.map((data, index) => (
-
-                                <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === index + 1) ? style.tableDataStyle1 : style.tableDataStyle}`}>
-                                  <div className={` ${expand?.index === index + 1 ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred} ${style.marginTop10}`}>
-
-                                    <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                                      <div className={`${style.tableDataFontStyleCred}`}>{data?.description}</div>
-                                    </div>
-                                    {!(expand?.status && expand?.index === index + 1) && (
-                                      <>
-                                        {form?.forms[index]?.status === "APPROVED" ? (
-                                          <div className={`${style.approvedButtonStyle} ${style.ApprovedTextStyle}`}>Approved</div>
-                                        ) : (
-                                          <div className={`${style.assessInCred} ${style.assessTextStyle}`}>4 to Assess</div>
-                                        )}
-                                      </>
-                                    )}
-                                    {expand?.status && expand?.index === index + 1 && (
-                                      <>
-                                        {credApproval?.filter(
-                                          (newData) => {
-                                            console.log("newData.schema:", newData.schemaId);
-                                            console.log("data.id:", data.id);
-                                            return newData.schemaId === data.id
-                                          }
-                                        )[0]?.approvalRequired === true ? (
-                                          <>
-                                            {form?.forms[index]?.status !== "APPROVED" ? (
-                                              <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                <div
-                                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                  onClick={() => handleStepsVerify(form?.forms[index]?.id)}
-                                                >
-                                                  Approve
-                                                </div>
-                                              </div>
-                                            ) : (
-                                              <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                  Approved
-                                                </div>
-                                              </div>
-                                            )}
-                                          </>
-                                        ) : (""
-                                        )}
-                                      </>
-                                    )}
-                                    <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                                      <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
-                                        {
-                                          (expand?.status && expand?.index === index + 1) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: false, index: 0 }); setFormSchemaId('') }} />)
-                                            : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: true, index: index + 1 }); setFormSchemaId(data?.id) }} />)
-                                        }
-
-                                      </div>
-                                    </div>
-                                  </div>
-                                  {expand?.status && expand?.index === index + 1 &&
-                                    <div className={`${style.marginTop} ${style.screenPadding}`}>
-                                      {renderFieldsBasedOnStep(data)}
-                                    </div>
-                                  }
-                                </div>))}
-
-                          </div>
-
-                          <div>
-                            <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderStyleCred} `}>
-                              <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                <div className={`${style.marginLeft10} ${style.tableHeaderTextStyle}`}></div>
-                              </div>
-                              <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                <div className={`${style.tableHeaderTextStyleCred}`}>Requested Form Completeness Check</div>
-                              </div>
-                            </div>
-                            {form?.formSchemas?.filter(data => data?.formCategory === 'Acknowledgement')?.map((data, index) => (
-                              <div className={` ${style.marginTop5} ${(expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? style.tableDataStyle1 : style.tableDataStyle}`}>
-                                <div className={` ${style.marginTop10} ${(expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred1}`}>
-
-                                  <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                                    <div className={`${style.tableDataFontStyleCred}`}>{data?.description}</div>
-                                  </div>
-                                  {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
-                                    <>
-                                      {form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.status !== "APPROVED" ? (
-                                        <div className={`${style.purpleButton} ${style.cursorPointer} `}>
-                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleStepsVerify(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.id)}>Approve</div>
-                                        </div>
-                                      ) : (
-                                        <div className={`${style.greenButton}  ${style.cursorPointer} `}>
-                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Approved</div>
-                                        </div>
-                                      )}
-                                    </>
-                                  )}
-                                  <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                                    <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
-                                      {
-                                        (expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpandAcknowledgement({ status: false, index: 0 }); setFormSchemaId('') }} />)
-                                          : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpandAcknowledgement({ status: true, index: index }); setFormSchemaId(data?.id) }} />)
-                                      }
-                                    </div>
-                                  </div>
-                                </div>
-                                {expandAcknowledgement?.status && expandAcknowledgement?.index === index &&
-                                  <div className={`${style.marginTop} ${style.screenPadding}`}>
-                                    {form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles?.length !== 0 && (
-                                      <>
-                                        <iframe src={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles[form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles?.length - 1]?.fileURL} width="100%" height="600px"></iframe>
-                                        {(data?.description === 'Statement of Confidentiality and Non-Disclosure' || data?.description === 'Conflict Of Interest Policy') && (
-                                          <div className={style.grid2}>
-                                            <div onClick={form?.forms[index]?.staffEsign === null ? () => handleStaffEsign(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.id) : () => { }} >
-                                              <ESignature
-                                                userName={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.name : ""}
-                                                encData={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.esign : ''}
-                                                showData={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? true : false}
-                                                showDatais={true}
-                                              />
-                                            </div>
-                                            <div className={style.verticalAlignCenter}>
-                                              <div className={style.displayInRow}>
-                                                <div className={style.dateTitle}>Date: </div>
-                                                <div className={`${style.date} ${style.marginLeft}`}>{form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? format(new Date(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.signedDate), canadaData?.dateFormat || 'dd/MM/yyyy') : ""}</div>
-                                              </div>
-                                            </div>
-                                          </div>
-                                        )}
-                                      </>
-                                    )}
-                                  </div>
-                                }
-                              </div>))}
-                          </div>
-                          <div className={style.marginBottom20}></div>
-                        </div>
-                      </div>
-                    )}
-                  </>
                 </div>
-                <>
-                  {userRole?.includes('Staff Manager') ? (
-                    <div
-                      className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}
+                <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
+                  <div className={`${statusStyle} ${style.marginCenter}`}></div>
+                  <div className={style.greyDotTextStyle}>
+                    Overall Verification & Acceptance Status
+                  </div>
+                </div>
+              </div>
+              <>
+              {((userRole?.includes('Staff Manager') &&  selectedTab === "level-1") || (userRole?.includes('Chief Of Staff') && selectedTab === "level-1"))? (
+            <div
+            className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}
+          >
+  
+            <div>
+              <div
+                className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle} `}
+              >
+                <div
+                  className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                >
+                  <div
+                    className={`${style.marginLeft30} ${style.tableHeaderTextStyle}`}
+                  ></div>
+                </div>
+                <div
+                  className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                >
+                  <div className={`${style.tableHeaderTextStyle}`}>
+                    Required Data & POD Verification
+                  </div>
+                </div>
+                <div
+                  className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                >
+                  <div
+                    className={`${style.tableHeaderTextStyle}`}
+                    aria-owns={open ? "mouse-over-popover" : undefined}
+                    aria-haspopup="true"
+                    onMouseEnter={handlePopoverOpen}
+                    onMouseLeave={handlePopoverClose}
+                  >
+                    <img
+                      src={DataStatusIcon}
+                      alt=""
+                      style={{
+                        width: "18px",
+                        height: "20px",
+                      }}
+                    />
+                    <Popover
+                      id={"mouse-over-popover"}
+                      sx={{
+                        pointerEvents: "none",
+                      }}
+                      open={open}
+                      anchorEl={anchorEl}
+                      anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "center",
+                      }}
+                      transformOrigin={{
+                        vertical: "top",
+                        horizontal: "center",
+                      }}
+                      onClose={handlePopoverClose}
+                      PaperProps={{
+                        style: {
+                          backgroundColor: "transparent",
+                          boxShadow: "none",
+                          borderRadius: 0,
+                        },
+                      }}
+                      disableRestoreFocus
                     >
-
-                      <div>
+                      <div className={style.multipleOptionsCard}>
                         <div
-                          className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle} `}
+                          className={`${style.specificActionCard} ${style.cursorPointer}`}
+                        >
+                          Data Quality Status
+                        </div>
+                      </div>
+                    </Popover>
+                  </div>
+                </div>
+                <div
+                  className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                >
+                  <div
+                    className={`${style.tableHeaderTextStyle}`}
+                    aria-owns={
+                      openTextWithHover ? "mouse-over-popover" : undefined
+                    }
+                    aria-haspopup="true"
+                    onMouseEnter={handlePopoverTextOpen}
+                    onMouseLeave={handlePopoverTextClose}
+                  >
+                    <img
+                      src={DocumentIcon}
+                      alt=""
+                      style={{
+                        width: "18px",
+                        height: "20px",
+                      }}
+                    />
+                    <Popover
+                      id={"mouse-over-popover"}
+                      sx={{
+                        pointerEvents: "none",
+                      }}
+                      open={openTextWithHover}
+                      anchorEl={anchorTextEl}
+                      anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "center",
+                      }}
+                      transformOrigin={{
+                        vertical: "top",
+                        horizontal: "center",
+                      }}
+                      onClose={handlePopoverTextClose}
+                      PaperProps={{
+                        style: {
+                          backgroundColor: "transparent",
+                          boxShadow: "none",
+                          borderRadius: 0,
+                        },
+                      }}
+                      disableRestoreFocus
+                    >
+                      <div className={style.multipleOptionsCard}>
+                        <div
+                          className={`${style.specificActionCard} ${style.cursorPointer}`}
+                        >
+                          Document Status
+                        </div>
+                      </div>
+                    </Popover>
+                  </div>
+                </div>
+                <div
+                  className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                >
+                  <div className={`${style.tableHeaderTextStyle}`}>
+                    Documents
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div
+                  className={` ${style.marginTop5} ${expand?.status && expand?.index === 0
+                    ? style.tableDataStyle1
+                    : style.tableDataStyle
+                    }`}
+                >
+                  <div
+                    className={` ${expand?.status && expand?.index === 0
+                      ? style.tableHeaderGridStyleForm
+                      : style.tableHeaderGridStyle
+                      } ${style.marginTop10}`}
+                  >
+                    <div
+                      className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                    >
+                      <div
+                        className={`${style.marginLeft10} ${style.justifySpaceAround
+                          } ${form?.basicInformationStatus
+                            ? style.greenDotStyle
+                            : style.greyDotStyle
+                          }`}
+                      ></div>
+                    </div>
+                    <div
+                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                    >
+                      <div
+                        className={`${expand?.status && expand?.index === 0
+                          ? style.tableHeaderTextStyle
+                          : style.tableDataFontStyle1
+                          }`}
+                      >
+                        Applicant Profile Information
+                      </div>
+                    </div>
+                    {expand?.status && expand?.index === 0 ? (
+                      <>
+                        {!form?.basicInformationStatus ? (
+                          <div
+                            className={`${style.purpleButton} ${style.cursorPointer} `}
+                          >
+                            <div
+                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                              onClick={() => handleVerify()}
+                            >
+                              Verify
+                            </div>
+                          </div>
+                        ) : (
+                          <div
+                            className={`${style.greenButton}  ${style.cursorPointer} `}
+                          >
+                            <div
+                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                            >
+                              Verified
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <div
+                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                         >
                           <div
-                            className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                          >
-                            <div
-                              className={`${style.marginLeft30} ${style.tableHeaderTextStyle}`}
-                            ></div>
-                          </div>
+                            className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}
+                          ></div>
+                        </div>
+                        <div
+                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                        >
                           <div
-                            className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                          >
-                            <div className={`${style.tableHeaderTextStyle}`}>
-                              Required Data & POD Verification
-                            </div>
-                          </div>
+                            className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}
+                          ></div>
+                        </div>
+                        <div
+                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                        >
                           <div
-                            className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                            className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
                           >
-                            <div
-                              className={`${style.tableHeaderTextStyle}`}
-                              aria-owns={open ? "mouse-over-popover" : undefined}
-                              aria-haspopup="true"
-                              onMouseEnter={handlePopoverOpen}
-                              onMouseLeave={handlePopoverClose}
-                            >
-                              <img
-                                src={DataStatusIcon}
-                                alt=""
-                                style={{
-                                  width: "18px",
-                                  height: "20px",
-                                }}
-                              />
-                              <Popover
-                                id={"mouse-over-popover"}
-                                sx={{
-                                  pointerEvents: "none",
-                                }}
-                                open={open}
-                                anchorEl={anchorEl}
-                                anchorOrigin={{
-                                  vertical: "bottom",
-                                  horizontal: "center",
-                                }}
-                                transformOrigin={{
-                                  vertical: "top",
-                                  horizontal: "center",
-                                }}
-                                onClose={handlePopoverClose}
-                                PaperProps={{
-                                  style: {
-                                    backgroundColor: "transparent",
-                                    boxShadow: "none",
-                                    borderRadius: 0,
-                                  },
-                                }}
-                                disableRestoreFocus
-                              >
-                                <div className={style.multipleOptionsCard}>
-                                  <div
-                                    className={`${style.specificActionCard} ${style.cursorPointer}`}
-                                  >
-                                    Data Quality Status
-                                  </div>
-                                </div>
-                              </Popover>
-                            </div>
-                          </div>
-                          <div
-                            className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                          >
-                            <div
-                              className={`${style.tableHeaderTextStyle}`}
-                              aria-owns={
-                                openTextWithHover ? "mouse-over-popover" : undefined
-                              }
-                              aria-haspopup="true"
-                              onMouseEnter={handlePopoverTextOpen}
-                              onMouseLeave={handlePopoverTextClose}
-                            >
-                              <img
-                                src={DocumentIcon}
-                                alt=""
-                                style={{
-                                  width: "18px",
-                                  height: "20px",
-                                }}
-                              />
-                              <Popover
-                                id={"mouse-over-popover"}
-                                sx={{
-                                  pointerEvents: "none",
-                                }}
-                                open={openTextWithHover}
-                                anchorEl={anchorTextEl}
-                                anchorOrigin={{
-                                  vertical: "bottom",
-                                  horizontal: "center",
-                                }}
-                                transformOrigin={{
-                                  vertical: "top",
-                                  horizontal: "center",
-                                }}
-                                onClose={handlePopoverTextClose}
-                                PaperProps={{
-                                  style: {
-                                    backgroundColor: "transparent",
-                                    boxShadow: "none",
-                                    borderRadius: 0,
-                                  },
-                                }}
-                                disableRestoreFocus
-                              >
-                                <div className={style.multipleOptionsCard}>
-                                  <div
-                                    className={`${style.specificActionCard} ${style.cursorPointer}`}
-                                  >
-                                    Document Status
-                                  </div>
-                                </div>
-                              </Popover>
-                            </div>
-                          </div>
-                          <div
-                            className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                          >
-                            <div className={`${style.tableHeaderTextStyle}`}>
-                              Documents
-                            </div>
+                            -
                           </div>
                         </div>
-                        <div>
+                      </>
+                    )}
+
+                    <div
+                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                    >
+                      <div
+                        className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                      >
+                        {expand?.status && expand?.index === 0 ? (
+                          <RemoveIcon
+                            sx={{
+                              fontSize: 20,
+                              color: "#94979A",
+                              cursor: "pointer",
+                            }}
+                            onClick={() =>
+                              setExpand({ status: false, index: 0 })
+                            }
+                          />
+                        ) : (
+                          <AddIcon
+                            sx={{
+                              fontSize: 20,
+                              color: "#94979A",
+                              cursor: "pointer",
+                            }}
+                            onClick={() =>
+                              setExpand({ status: true, index: 0 })
+                            }
+                          />
+                        )}{" "}
+                      </div>
+                    </div>
+                  </div>
+                  {expand?.status && expand?.index === 0 && (
+                    <div
+                      className={`${style.marginTop} ${style.screenPadding}`}
+                    >
+                     
+                      {form1 !== undefined &&
+                        "applicant" in form1?.properties && (
+                          <ApplicationFieldCard
+                            object={form1?.properties?.applicant}
+                            gridStyle={style.applicantGrid}
+                            baseKey={"applicant"}
+                            basicForm={form}
+                            setBasicForm={setForm}
+                            isBasicPath={true}
+                            isPOD={true}
+                          />
+                        )}
+                      {form1 !== undefined &&
+                        "credentialingPrivilegeCategory" in
+                        form1?.properties && (
+                          <ApplicationFieldCard
+                            object={
+                              form1?.properties?.credentialingPrivilegeCategory
+                            }
+                            gridStyle={style.credentialingGrid}
+                            baseKey={"credentialingPrivilegeCategory"}
+                            basicForm={form}
+                            setBasicForm={setForm}
+                            isBasicPath={true}
+                            isPOD={true}
+                          />
+                        )}
+                      {form1 !== undefined &&
+                        "departmentSpecialty" in form1?.properties && (
+                          <ApplicationFieldCard
+                            object={form1?.properties?.departmentSpecialty}
+                            gridStyle={style.twoCol}
+                            baseKey={"departmentSpecialty"}
+                            basicForm={form}
+                            setBasicForm={setForm}
+                            isBasicPath={true}
+                            isPOD={true}
+                          />
+                        )}
+                      {form1 !== undefined &&
+                        getValueByPath(
+                          form,
+                          "basicDetails.departmentSpecialty.department"
+                        ) ===
+                        form1.if.properties.departmentSpecialty.properties
+                          .department.const &&
+                        form1.if.properties.departmentSpecialty.properties.specialty.enum?.includes(
+                          getValueByPath(
+                            form,
+                            "basicDetails.departmentSpecialty.specialty"
+                          )
+                        ) &&
+                        form1 !== undefined &&
+                        "regionalCallResponsibilities" in form1?.properties && (
+                          <ApplicationFieldCard
+                            object={
+                              form1?.properties?.regionalCallResponsibilities
+                            }
+                            gridStyle={""}
+                            baseKey={"regionalCallResponsibilities"}
+                            basicForm={form}
+                            setBasicForm={setForm}
+                            isBasicPath={true}
+                            isPOD={true}
+                          />
+                        )}
+                      {form1 !== undefined &&
+                        "billingNumber" in form1?.properties && (
+                          <ApplicationFieldCard
+                            object={form1?.properties?.billingNumber}
+                            gridStyle={style.twoCol}
+                            baseKey={"billingNumber"}
+                            basicForm={form}
+                            setBasicForm={setForm}
+                            isBasicPath={true}
+                            isPOD={true}
+                          />
+                        )}
+                    </div>
+                  )}
+                </div>
+
+                {form?.formSchemas
+                  ?.filter(
+                    (data) =>
+                      (data?.formCategory === "Form" ||
+                        data?.formCategory === "Disclosure") &&
+                      data?.schemaCategory !== "UploadYourDoc"
+                  )
+                  ?.map((data, index) => (
+                    <div
+                      className={` ${style.marginTop5} ${expand?.status && expand?.index === index + 1
+                        ? style.tableDataStyle1
+                        : style.tableDataStyle
+                        }`}
+                    >
+                      <div
+                        className={` ${expand?.index === index + 1
+                          ? style.tableHeaderGridStyleForm
+                          : style.tableHeaderGridStyle
+                          } ${style.marginTop10}`}
+                      >
+                        <div 
+                          className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                        >
                           <div
-                            className={` ${style.marginTop5} ${expand?.status && expand?.index === 0
-                              ? style.tableDataStyle1
-                              : style.tableDataStyle
+                            className={`${style.marginLeft10} ${style.justifySpaceAround
+                              } ${form?.forms[index]?.status !== "APPROVED"
+                                ? style.greyDotStyle
+                                : style.greenDotStyle
                               }`}
-                          >
-                            <div
-                              className={` ${expand?.status && expand?.index === 0
-                                ? style.tableHeaderGridStyleForm
-                                : style.tableHeaderGridStyle
-                                } ${style.marginTop10}`}
-                            >
-                              <div
-                                className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                              >
-                                <div
-                                  className={`${style.marginLeft10} ${style.justifySpaceAround
-                                    } ${form?.basicInformationStatus
-                                      ? style.greenDotStyle
-                                      : style.greyDotStyle
-                                    }`}
-                                ></div>
-                              </div>
-                              <div
-                                className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                              >
-                                <div
-                                  className={`${expand?.status && expand?.index === 0
-                                    ? style.tableHeaderTextStyle
-                                    : style.tableDataFontStyle1
-                                    }`}
-                                >
-                                  Applicant Profile Information
-                                </div>
-                              </div>
-                              {expand?.status && expand?.index === 0 ? (
-                                <>
-                                  {!form?.basicInformationStatus ? (
-                                    <div
-                                      className={`${style.purpleButton} ${style.cursorPointer} `}
-                                    >
+                          ></div>
+                        </div>
+                        <div
+                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                        >
+                          <div className={`${style.tableDataFontStyle1}`}>
+                            {data?.description}
+                          </div>
+                        </div>
+                        {expand?.status && expand?.index === index + 1 ? (
+                       <>
+                          {credApproval?.filter((newData) => {
+                              console.log("newData.schema:", newData.schemaId);
+                              console.log("data.id:", data.id);
+                              return newData.schemaId === data.id;
+                          })[0]?.approvalRequired === true && (
+                          <>
+                          {logDetails?.logs && Array.isArray(logDetails?.logs) ? (
+                            (() => {
+                              let isMatch = false;
+
+                              logDetails.logs.forEach((log) => {
+                                if (log.form && log.form.id) {
+                                  console.log("form id: " + log.form.id);
+                                  
+                                  if (form?.forms?.some(f => f.id === log.form.id)) {
+                                    console.log("form match found, setting isMatch to true");
+                                    isMatch = true;
+                              
+                                    // Check if userRole includes log.role
+                                    if (userRole?.includes(log?.role)) {
+                                      console.log("Role matches user role: " + log.role);
+                                      isMatch = true;
+                                    } else {
+                                      console.log("Role does NOT match user role: " + log.role);
+                                      isMatch = false;
+                                    }
+                              
+                                    // Determine selectedTabRole
+                                    let selectedTabRole;
+                                    if (selectedTab === 'level-2') {
+                                      selectedTabRole = "Department Head";
+                                    } else if (selectedTab === 'level-3') {
+                                      selectedTabRole = "Chief Of Staff";
+                                    } else if (selectedTab === 'level-4') {
+                                      selectedTabRole = "Advisory Committee";
+                                    } else if (selectedTab === 'level-5') {
+                                      selectedTabRole = "Board";
+                                    } else if (selectedTab === 'level-1') {
+                                      selectedTabRole = "Staff Manager";
+                                    }
+                              
+                                    // Check if selectedTabRole matches log.role
+                                    if (selectedTabRole === log.role) {
+                                      console.log("Selected tab role matches log role: " + log.role);
+                                      isMatch = true;
+                                    } else {
+                                      console.log("Selected tab role does NOT match log role: " + log.role);
+                                      isMatch = false;
+                                    }
+                                  } else {
+                                    console.log("form match NOT found, setting isMatch to false");
+                                    isMatch = false;
+                                  }
+                                }
+                              });
+
+                              return isMatch && (
+                                <div>
+                                  {form?.forms[index]?.status !== "APPROVED" ? (
+                                    <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                       <div
                                         className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                        onClick={() => handleVerify()}
+                                        onClick={() => handleStepsVerify(form?.forms[index]?.id)}
                                       >
                                         Verify
                                       </div>
                                     </div>
                                   ) : (
-                                    <div
-                                      className={`${style.greenButton}  ${style.cursorPointer} `}
-                                    >
-                                      <div
-                                        className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                      >
+                                    <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                      <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
                                         Verified
                                       </div>
                                     </div>
                                   )}
-                                </>
-                              ) : (
-                                <>
-                                  <div
-                                    className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                  >
-                                    <div
-                                      className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}
-                                    ></div>
-                                  </div>
-                                  <div
-                                    className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                  >
-                                    <div
-                                      className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}
-                                    ></div>
-                                  </div>
-                                  <div
-                                    className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                  >
-                                    <div
-                                      className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                    >
-                                      -
-                                    </div>
-                                  </div>
-                                </>
-                              )}
-
-                              <div
-                                className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                              >
-                                <div
-                                  className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                >
-                                  {expand?.status && expand?.index === 0 ? (
-                                    <RemoveIcon
-                                      sx={{
-                                        fontSize: 20,
-                                        color: "#94979A",
-                                        cursor: "pointer",
-                                      }}
-                                      onClick={() =>
-                                        setExpand({ status: false, index: 0 })
-                                      }
-                                    />
-                                  ) : (
-                                    <AddIcon
-                                      sx={{
-                                        fontSize: 20,
-                                        color: "#94979A",
-                                        cursor: "pointer",
-                                      }}
-                                      onClick={() =>
-                                        setExpand({ status: true, index: 0 })
-                                      }
-                                    />
-                                  )}{" "}
                                 </div>
-                              </div>
-                            </div>
-                            {expand?.status && expand?.index === 0 && (
-                              <div
-                                className={`${style.marginTop} ${style.screenPadding}`}
-                              >
+                              );
+                            })()
+                          ) : null}
+                        </>
+                      )}
 
-                                {form1 !== undefined &&
-                                  "applicant" in form1?.properties && (
-                                    <ApplicationFieldCard
-                                      object={form1?.properties?.applicant}
-                                      gridStyle={style.applicantGrid}
-                                      baseKey={"applicant"}
-                                      basicForm={form}
-                                      setBasicForm={setForm}
-                                      isBasicPath={true}
-                                      isPOD={true}
-                                    />
-                                  )}
-                                {form1 !== undefined &&
-                                  "credentialingPrivilegeCategory" in
-                                  form1?.properties && (
-                                    <ApplicationFieldCard
-                                      object={
-                                        form1?.properties?.credentialingPrivilegeCategory
-                                      }
-                                      gridStyle={style.credentialingGrid}
-                                      baseKey={"credentialingPrivilegeCategory"}
-                                      basicForm={form}
-                                      setBasicForm={setForm}
-                                      isBasicPath={true}
-                                      isPOD={true}
-                                    />
-                                  )}
-                                {form1 !== undefined &&
-                                  "departmentSpecialty" in form1?.properties && (
-                                    <ApplicationFieldCard
-                                      object={form1?.properties?.departmentSpecialty}
-                                      gridStyle={style.twoCol}
-                                      baseKey={"departmentSpecialty"}
-                                      basicForm={form}
-                                      setBasicForm={setForm}
-                                      isBasicPath={true}
-                                      isPOD={true}
-                                    />
-                                  )}
-                                {form1 !== undefined &&
-                                  getValueByPath(
-                                    form,
-                                    "basicDetails.departmentSpecialty.department"
-                                  ) ===
-                                  form1.if.properties.departmentSpecialty.properties
-                                    .department.const &&
-                                  form1.if.properties.departmentSpecialty.properties.specialty.enum?.includes(
-                                    getValueByPath(
-                                      form,
-                                      "basicDetails.departmentSpecialty.specialty"
-                                    )
-                                  ) &&
-                                  form1 !== undefined &&
-                                  "regionalCallResponsibilities" in form1?.properties && (
-                                    <ApplicationFieldCard
-                                      object={
-                                        form1?.properties?.regionalCallResponsibilities
-                                      }
-                                      gridStyle={""}
-                                      baseKey={"regionalCallResponsibilities"}
-                                      basicForm={form}
-                                      setBasicForm={setForm}
-                                      isBasicPath={true}
-                                      isPOD={true}
-                                    />
-                                  )}
-                                {form1 !== undefined &&
-                                  "billingNumber" in form1?.properties && (
-                                    <ApplicationFieldCard
-                                      object={form1?.properties?.billingNumber}
-                                      gridStyle={style.twoCol}
-                                      baseKey={"billingNumber"}
-                                      basicForm={form}
-                                      setBasicForm={setForm}
-                                      isBasicPath={true}
-                                      isPOD={true}
-                                    />
-                                  )}
-                              </div>
-                            )}
-                          </div>
-
-                          {form?.formSchemas
-                            ?.filter(
-                              (data) =>
-                                (data?.formCategory === "Form" ||
-                                  data?.formCategory === "Disclosure") &&
-                                data?.schemaCategory !== "UploadYourDoc"
-                            )
-                            ?.map((data, index) => (
-                              <div
-                                className={` ${style.marginTop5} ${expand?.status && expand?.index === index + 1
-                                  ? style.tableDataStyle1
-                                  : style.tableDataStyle
-                                  }`}
-                              >
-                                <div
-                                  className={` ${expand?.index === index + 1
-                                    ? style.tableHeaderGridStyleForm
-                                    : style.tableHeaderGridStyle
-                                    } ${style.marginTop10}`}
-                                >
-                                  <div
-                                    className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                                  >
-                                    <div
-                                      className={`${style.marginLeft10} ${style.justifySpaceAround
-                                        } ${form?.forms[index]?.status !== "APPROVED"
-                                          ? style.greyDotStyle
-                                          : style.greenDotStyle
-                                        }`}
-                                    ></div>
-                                  </div>
-                                  <div
-                                    className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                  >
-                                    <div className={`${style.tableDataFontStyle1}`}>
-                                      {data?.description}
-                                    </div>
-                                  </div>
-                                  {expand?.status && expand?.index === index + 1 ? (
-                                    <>
-                                      {form?.forms[index]?.status !== "APPROVED" ? (
-                                        <div
-                                          className={`${style.purpleButton} ${style.cursorPointer} `}
-                                        >
-                                          <div
-                                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                            onClick={() =>
-                                              handleStepsVerify(form?.forms[index]?.id)
-                                            }
-                                          >
-                                            Verify
-                                          </div>
-                                        </div>
-                                      ) : (
-                                        <div
-                                          className={`${style.greenButton}  ${style.cursorPointer} `}
-                                        >
-                                          <div
-                                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                          >
-                                            Verified
-                                          </div>
-                                        </div>
-                                      )}
-                                    </>
-                                  ) : (
-                                    <>
-                                      <div
-                                        className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                      >
-                                        <div
-                                          className={`${style.marginLeft10}${style.justifySpaceAround
-                                            } ${form?.forms[index]?.status !== "APPROVED"
-                                              ? style.greyDotStyle
-                                              : style.greenDotStyle
-                                            }`}
-                                        ></div>
-                                      </div>
-                                      <div
-                                        className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                      >
-                                        <div
-                                          className={`${style.marginLeft10}${style.justifySpaceAround
-                                            } ${form?.forms[index]?.status !== "APPROVED"
-                                              ? style.greyDotStyle
-                                              : style.greenDotStyle
-                                            }`}
-                                        ></div>
-                                      </div>
-                                      <div
-                                        className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                      >
-                                        <div
-                                          className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                        >
-                                          {form?.forms
-                                            ?.filter(
-                                              (formData, formIndex) => formIndex === index
-                                            )
-                                            ?.map(
-                                              (data) => data?.uploadedFiles?.length || 0
-                                            )}
-                                        </div>
-                                      </div>
-                                    </>
-                                  )}
-                                  <div
-                                    className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                  >
-                                    <div
-                                      className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                    >
-                                      {expand?.status && expand?.index === index + 1 ? (
-                                        <RemoveIcon
-                                          sx={{
-                                            fontSize: 20,
-                                            color: "#94979A",
-                                            cursor: "pointer",
-                                          }}
-                                          onClick={() => {
-                                            setExpand({ status: false, index: 0 });
-                                            setFormSchemaId("");
-                                          }}
-                                        />
-                                      ) : (
-                                        <AddIcon
-                                          sx={{
-                                            fontSize: 20,
-                                            color: "#94979A",
-                                            cursor: "pointer",
-                                          }}
-                                          onClick={() => {
-                                            setExpand({ status: true, index: index + 1 });
-                                            setFormSchemaId(data?.id);
-                                          }}
-                                        />
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
-                                {expand?.status && expand?.index === index + 1 && (
-                                  <div
-                                    className={`${style.marginTop} ${style.screenPadding}`}
-                                  >
-                                    {renderFieldsBasedOnStep(data)}
-                                  </div>
-                                )}
-                              </div>
-                            ))}
-                        </div>
-
-                        <div>
-                          <div
-                            className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle1} `}
-                          >
+                     </>
+                        ) : (
+                          <>
                             <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                             >
                               <div
-                                className={`${style.marginLeft10} ${style.tableHeaderTextStyle}`}
+                                className={`${style.marginLeft10}${style.justifySpaceAround
+                                  } ${form?.forms[index]?.status !== "APPROVED"
+                                    ? style.greyDotStyle
+                                    : style.greenDotStyle
+                                  }`}
                               ></div>
                             </div>
                             <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                             >
-                              <div className={`${style.tableHeaderTextStyle}`}>
-                                Requested Form Completeness Check
+                              <div
+                                className={`${style.marginLeft10}${style.justifySpaceAround
+                                  } ${form?.forms[index]?.status !== "APPROVED"
+                                    ? style.greyDotStyle
+                                    : style.greenDotStyle
+                                  }`}
+                              ></div>
+                            </div>
+                            <div
+                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                            >
+                              <div
+                                className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                              >
+                                {form?.forms
+                                  ?.filter(
+                                    (formData, formIndex) => formIndex === index
+                                  )
+                                  ?.map(
+                                    (data) => data?.uploadedFiles?.length || 0
+                                  )}
                               </div>
                             </div>
+                          </>
+                        )}
+                        <div
+                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                        >
+                          <div
+                            className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                          >
+                            {expand?.status && expand?.index === index + 1 ? (
+                              <RemoveIcon
+                                sx={{
+                                  fontSize: 20,
+                                  color: "#94979A",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => {
+                                  setExpand({ status: false, index: 0 });
+                                  setFormSchemaId("");
+                                }}
+                              />
+                            ) : (
+                              <AddIcon
+                                sx={{
+                                  fontSize: 20,
+                                  color: "#94979A",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => {
+                                  setExpand({ status: true, index: index + 1 });
+                                  setFormSchemaId(data?.id);
+                                }}
+                              />
+                            )}
                           </div>
-                          {form?.formSchemas
-                            ?.filter((data) => data?.formCategory === "Acknowledgement")
-                            ?.map((data, index) => (
-                              <div
-                                className={` ${style.marginTop5} ${expandAcknowledgement?.status &&
-                                  expandAcknowledgement?.index === index
-                                  ? style.tableDataStyle1
-                                  : style.tableDataStyle
-                                  }`}
-                              >
+                        </div>
+                      </div>
+                      {expand?.status && expand?.index === index + 1 && (
+                        <div
+                          className={`${style.marginTop} ${style.screenPadding}`}
+                        >
+                          {renderFieldsBasedOnStep(data)}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+              </div>
+
+              <div>
+                <div
+                  className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle1} `}
+                >
+                  <div
+                    className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                  >
+                    <div
+                      className={`${style.marginLeft10} ${style.tableHeaderTextStyle}`}
+                    ></div>
+                  </div>
+                  <div
+                    className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                  >
+                    <div className={`${style.tableHeaderTextStyle}`}>
+                      Requested Form Completeness Check
+                    </div>
+                  </div>
+                </div>
+                {form?.formSchemas
+                  ?.filter((data) => data?.formCategory === "Acknowledgement")
+                  ?.map((data, index) => (
+                    <div
+                      className={` ${style.marginTop5} ${expandAcknowledgement?.status &&
+                        expandAcknowledgement?.index === index
+                        ? style.tableDataStyle1
+                        : style.tableDataStyle
+                        }`}
+                    >
+                      <div
+                        className={` ${style.marginTop10} ${expandAcknowledgement?.status &&
+                          expandAcknowledgement?.index === index
+                          ? style.tableHeaderGridStyleForm
+                          : style.tableHeaderGridStyle1
+                          }`}
+                      >
+                        <div
+                          className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                        >
+                          <div
+                            className={`${style.marginLeft10} ${style.justifySpaceAround
+                              } ${form?.forms?.filter(
+                                (data) =>
+                                  data?.formCategory === "Acknowledgement"
+                              )[index]?.status !== "APPROVED"
+                                ? style.greyDotStyle
+                                : style.greenDotStyle
+                              }`}
+                          ></div>
+                        </div>
+                        <div
+                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                        >
+                          <div className={`${style.tableDataFontStyle1}`}>
+                            {data?.description}
+                          </div>
+                        </div>
+                        {expandAcknowledgement?.status &&
+                          expandAcknowledgement?.index === index && (
+                            <>
+                              {form?.forms?.filter(
+                                (data) =>
+                                  data?.formCategory === "Acknowledgement"
+                              )[index]?.status !== "APPROVED" ? (
                                 <div
-                                  className={` ${style.marginTop10} ${expandAcknowledgement?.status &&
-                                    expandAcknowledgement?.index === index
-                                    ? style.tableHeaderGridStyleForm
-                                    : style.tableHeaderGridStyle1
-                                    }`}
+                                  className={`${style.purpleButton} ${style.cursorPointer} `}
                                 >
                                   <div
-                                    className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                                  >
-                                    <div
-                                      className={`${style.marginLeft10} ${style.justifySpaceAround
-                                        } ${form?.forms?.filter(
+                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                    onClick={() =>
+                                      handleStepsVerify(
+                                        form?.forms?.filter(
                                           (data) =>
-                                            data?.formCategory === "Acknowledgement"
-                                        )[index]?.status !== "APPROVED"
-                                          ? style.greyDotStyle
-                                          : style.greenDotStyle
-                                        }`}
-                                    ></div>
+                                            data?.formCategory ===
+                                            "Acknowledgement"
+                                        )[index]?.id
+                                      )
+                                    }
+                                  >
+                                    Verify
                                   </div>
+                                </div>
+                              ) : (
+                                <div
+                                  className={`${style.greenButton}  ${style.cursorPointer} `}
+                                >
                                   <div
-                                    className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
                                   >
-                                    <div className={`${style.tableDataFontStyle1}`}>
-                                      {data?.description}
-                                    </div>
+                                    Verified
                                   </div>
-                                  {expandAcknowledgement?.status &&
-                                    expandAcknowledgement?.index === index && (
-                                      <>
-                                        {form?.forms?.filter(
+                                </div>
+                              )}
+                            </>
+                          )}
+                        <div
+                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                        >
+                          <div
+                            className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                          >
+                            {expandAcknowledgement?.status &&
+                              expandAcknowledgement?.index === index ? (
+                              <RemoveIcon
+                                sx={{
+                                  fontSize: 20,
+                                  color: "#94979A",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => {
+                                  setExpandAcknowledgement({
+                                    status: false,
+                                    index: 0,
+                                  });
+                                  setFormSchemaId("");
+                                }}
+                              />
+                            ) : (
+                              <AddIcon
+                                sx={{
+                                  fontSize: 20,
+                                  color: "#94979A",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => {
+                                  setExpandAcknowledgement({
+                                    status: true,
+                                    index: index,
+                                  });
+                                  setFormSchemaId(data?.id);
+                                }}
+                              />
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      {expandAcknowledgement?.status &&
+                        expandAcknowledgement?.index === index && (
+                          <div
+                            className={`${style.marginTop} ${style.screenPadding}`}
+                          >
+                            {form?.forms?.filter(
+                              (data) => data?.formCategory === "Acknowledgement"
+                            )[index]?.uploadedFiles?.length !== 0 && (
+                                <>
+                                  <iframe
+                                    src={
+                                      form?.forms?.filter(
+                                        (data) =>
+                                          data?.formCategory === "Acknowledgement"
+                                      )[index]?.uploadedFiles[
+                                        form?.forms?.filter(
                                           (data) =>
-                                            data?.formCategory === "Acknowledgement"
-                                        )[index]?.status !== "APPROVED" ? (
-                                          <div
-                                            className={`${style.purpleButton} ${style.cursorPointer} `}
-                                          >
-                                            <div
-                                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                              onClick={() =>
-                                                handleStepsVerify(
+                                            data?.formCategory ===
+                                            "Acknowledgement"
+                                        )[index]?.uploadedFiles?.length - 1
+                                      ]?.fileURL
+                                    }
+                                    width="100%"
+                                    height="600px"
+                                  ></iframe>
+                                  {(data?.description ===
+                                    "Statement of Confidentiality and Non-Disclosure" ||
+                                    data?.description ===
+                                    "Conflict Of Interest Policy") && (
+                                      <div className={style.grid2}>
+                                        <div
+                                          onClick={
+                                            form?.forms[index]?.staffEsign === null
+                                              ? () =>
+                                                handleStaffEsign(
                                                   form?.forms?.filter(
                                                     (data) =>
                                                       data?.formCategory ===
                                                       "Acknowledgement"
                                                   )[index]?.id
                                                 )
-                                              }
-                                            >
-                                              Verify
+                                              : () => { }
+                                          }
+                                        >
+                                          <ESignature
+                                            userName={
+                                              form?.forms?.filter(
+                                                (data) =>
+                                                  data?.formCategory ===
+                                                  "Acknowledgement"
+                                              )[index]?.staffEsign !== null
+                                                ? form?.forms?.filter(
+                                                  (data) =>
+                                                    data?.formCategory ===
+                                                    "Acknowledgement"
+                                                )[index]?.staffEsign?.name
+                                                : ""
+                                            }
+                                            encData={
+                                              form?.forms?.filter(
+                                                (data) =>
+                                                  data?.formCategory ===
+                                                  "Acknowledgement"
+                                              )[index]?.staffEsign !== null
+                                                ? form?.forms?.filter(
+                                                  (data) =>
+                                                    data?.formCategory ===
+                                                    "Acknowledgement"
+                                                )[index]?.staffEsign?.esign
+                                                : ""
+                                            }
+                                            showData={
+                                              form?.forms?.filter(
+                                                (data) =>
+                                                  data?.formCategory ===
+                                                  "Acknowledgement"
+                                              )[index]?.staffEsign !== null
+                                                ? true
+                                                : false
+                                            }
+                                            showDatais={true}
+                                          />
+                                        </div>
+                                        <div className={style.verticalAlignCenter}>
+                                          <div className={style.displayInRow}>
+                                            <div className={style.dateTitle}>
+                                              Date:{" "}
                                             </div>
-                                          </div>
-                                        ) : (
-                                          <div
-                                            className={`${style.greenButton}  ${style.cursorPointer} `}
-                                          >
                                             <div
-                                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                              className={`${style.date} ${style.marginLeft}`}
                                             >
-                                              Verified
+                                              {form?.forms?.filter(
+                                                (data) =>
+                                                  data?.formCategory ===
+                                                  "Acknowledgement"
+                                              )[index]?.staffEsign !== null
+                                                ? format(
+                                                  new Date(
+                                                    form?.forms?.filter(
+                                                      (data) =>
+                                                        data?.formCategory ===
+                                                        "Acknowledgement"
+                                                    )[
+                                                      index
+                                                    ]?.staffEsign?.signedDate
+                                                  ),
+                                                  canadaData?.dateFormat ||
+                                                  "dd/MM/yyyy"
+                                                )
+                                                : ""}
                                             </div>
                                           </div>
-                                        )}
-                                      </>
+                                        </div>
+                                      </div>
                                     )}
-                                  <div
-                                    className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                  >
-                                    <div
-                                      className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                    >
-                                      {expandAcknowledgement?.status &&
-                                        expandAcknowledgement?.index === index ? (
-                                        <RemoveIcon
-                                          sx={{
-                                            fontSize: 20,
-                                            color: "#94979A",
-                                            cursor: "pointer",
-                                          }}
-                                          onClick={() => {
-                                            setExpandAcknowledgement({
-                                              status: false,
-                                              index: 0,
-                                            });
-                                            setFormSchemaId("");
-                                          }}
-                                        />
-                                      ) : (
-                                        <AddIcon
-                                          sx={{
-                                            fontSize: 20,
-                                            color: "#94979A",
-                                            cursor: "pointer",
-                                          }}
-                                          onClick={() => {
-                                            setExpandAcknowledgement({
-                                              status: true,
-                                              index: index,
-                                            });
-                                            setFormSchemaId(data?.id);
-                                          }}
-                                        />
-                                      )}
+                                </>
+                              )}
+                          </div>
+                        )}
+                    </div>
+                  ))}
+              </div>
+              <div className={style.marginBottom20}></div>
+            </div>
+          </div>
+          ) : (
+             <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop10}`}>
+            <div>
+             
+                
+              <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyleCred1} `}>
+               
+                <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                  <div className={`${style.tableHeaderTextStyleCred}`}> POD Verification Check </div>
+                </div>
+              
+              </div>
+              <div>
+                <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === 0) ? style.tableDataStyle1 : style.tableDataStyle}`}>
+                  <div className={` ${(expand?.status && expand?.index === 0) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred1} ${style.marginTop10}`}>
+                   
+                    <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                      <div className={`${(expand?.status && expand?.index === 0) ? style.tableHeaderTextStyleCred : style.tableDataFontStyleCred}`}>Applicant Profile Information</div>
+                    </div>
+ 
+
+                    {(expand?.status && expand?.index === 0) ? (
+                      <>
+                        {!form?.basicInformationStatus ? (
+                          <div className={`${style.purpleButton} ${style.cursorPointer} `}>
+                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleVerify()}>Approve</div>
+                          </div>
+                        ) : (
+                          <div className={`${style.greenButton}  ${style.cursorPointer} `}>
+                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Approved</div>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      " "
+                    )}
+
+                    <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                      <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
+                        {
+                          (expand?.status && expand?.index === 0) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => setExpand({ status: false, index: 0 })} />)
+                            : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => setExpand({ status: true, index: 0 })} />)
+                        }                    </div>
+                    </div>
+                  </div>
+                  {expand?.status && expand?.index === 0 &&
+                    <div className={`${style.marginTop} ${style.screenPadding}`}>
+                     
+                      {form1 !== undefined && 'applicant' in form1?.properties && (
+                        <ApplicationFieldCard object={form1?.properties?.applicant} gridStyle={style.applicantGrid} baseKey={'applicant'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
+                      )}
+                      {form1 !== undefined && 'credentialingPrivilegeCategory' in form1?.properties && (
+                        <ApplicationFieldCard object={form1?.properties?.credentialingPrivilegeCategory} gridStyle={style.credentialingGrid} baseKey={'credentialingPrivilegeCategory'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
+                      )}
+                      {form1 !== undefined && 'departmentSpecialty' in form1?.properties && (
+                        <ApplicationFieldCard object={form1?.properties?.departmentSpecialty} gridStyle={style.twoCol} baseKey={'departmentSpecialty'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
+                      )}
+                      {form1 !== undefined && (getValueByPath(form, 'basicDetails.departmentSpecialty.department') === form1.if.properties.departmentSpecialty.properties.department.const && form1.if.properties.departmentSpecialty.properties.specialty.enum?.includes(getValueByPath(form, 'basicDetails.departmentSpecialty.specialty'))) && (
+                        form1 !== undefined && 'regionalCallResponsibilities' in form1?.properties && (
+                          <ApplicationFieldCard object={form1?.properties?.regionalCallResponsibilities} gridStyle={''} baseKey={'regionalCallResponsibilities'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
+                        )
+                      )}
+                      {form1 !== undefined && 'billingNumber' in form1?.properties && (
+                        <ApplicationFieldCard object={form1?.properties?.billingNumber} gridStyle={style.twoCol} baseKey={'billingNumber'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
+                      )}
+                    </div>
+                  }
+
+
+                </div>
+
+                {
+                  form?.formSchemas?.filter(data => (data?.formCategory === 'Form' || data?.formCategory === 'Disclosure') && data?.schemaCategory !== "UploadYourDoc")?.map((data, index) => (
+
+                    <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === index + 1) ? style.tableDataStyle1 : style.tableDataStyle}`}>
+                      <div className={` ${expand?.index === index + 1 ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred} ${style.marginTop10}`}>
+                      
+                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                          <div className={`${style.tableDataFontStyleCred}`}>{data?.description}</div>
+                        </div>
+                        {!(expand?.status && expand?.index === index + 1) && (
+                          <>
+                            {form?.forms[index]?.status === "APPROVED" ? (
+                              <div className={`${style.approvedButtonStyle} ${style.ApprovedTextStyle}`}>Approved</div>
+                            ) : (
+                              <div className={`${style.assessInCred} ${style.assessTextStyle}`}>4 to Assess</div>
+                            )}
+                          </>
+                        )}
+                        {expand?.status && expand?.index === index + 1 && (
+                            <>
+                                {credApproval?.filter(
+                                (newData) =>{console.log("newData.schema:", newData.schemaId);
+                                    console.log("data.id:", data.id);
+                                   return newData.schemaId === data.id
+                                }
+                                )[0]?.approvalRequired === true ? (
+                                <>
+                                    {form?.forms[index]?.status !== "APPROVED" ? (
+                                    <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                        <div
+                                        className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                        onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                        >
+                                        Approve
+                                        </div>
                                     </div>
+                                    ) : (
+                                    <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                        Approved
+                                        </div>
+                                    </div>
+                                    )}
+                                </>
+                                ) : (""
+                                )}
+                            </>
+                            )}
+                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                          <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
+                            {
+                              (expand?.status && expand?.index === index + 1) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: false, index: 0 }); setFormSchemaId('') }} />)
+                                : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: true, index: index + 1 }); setFormSchemaId(data?.id) }} />)
+                            }
+
+                          </div>
+                        </div>
+                      </div>
+                      {expand?.status && expand?.index === index + 1 &&
+                        <div className={`${style.marginTop} ${style.screenPadding}`}>
+                          {renderFieldsBasedOnStep(data)}
+                        </div>
+                      }
+                    </div>))}
+
+              </div>
+
+              <div>
+                <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderStyleCred} `}>
+                  <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                    <div className={`${style.marginLeft10} ${style.tableHeaderTextStyle}`}></div>
+                  </div>
+                  <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                    <div className={`${style.tableHeaderTextStyleCred}`}>Requested Form Completeness Check</div>
+                  </div>
+                </div>
+                {form?.formSchemas?.filter(data => data?.formCategory === 'Acknowledgement')?.map((data, index) => (
+                  <div className={` ${style.marginTop5} ${(expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? style.tableDataStyle1 : style.tableDataStyle}`}>
+                    <div className={` ${style.marginTop10} ${(expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred1}`}>
+                     
+                      <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                        <div className={`${style.tableDataFontStyleCred}`}>{data?.description}</div>
+                      </div>
+                      {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
+                        <>
+                          {form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.status !== "APPROVED" ? (
+                            <div className={`${style.purpleButton} ${style.cursorPointer} `}>
+                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleStepsVerify(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.id)}>Approve</div>
+                            </div>
+                          ) : (
+                            <div className={`${style.greenButton}  ${style.cursorPointer} `}>
+                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Approved</div>
+                            </div>
+                          )}
+                        </>
+                      )}
+                      <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                        <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
+                          {
+                            (expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpandAcknowledgement({ status: false, index: 0 }); setFormSchemaId('') }} />)
+                              : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpandAcknowledgement({ status: true, index: index }); setFormSchemaId(data?.id) }} />)
+                          }
+                        </div>
+                      </div>
+                    </div>
+                    {expandAcknowledgement?.status && expandAcknowledgement?.index === index &&
+                      <div className={`${style.marginTop} ${style.screenPadding}`}>
+                        {form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles?.length !== 0 && (
+                          <>
+                            <iframe src={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles[form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles?.length - 1]?.fileURL} width="100%" height="600px"></iframe>
+                            {(data?.description === 'Statement of Confidentiality and Non-Disclosure' || data?.description === 'Conflict Of Interest Policy') && (
+                              <div className={style.grid2}>
+                                <div onClick={form?.forms[index]?.staffEsign === null ? () => handleStaffEsign(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.id) : () => { }} >
+                                  <ESignature
+                                    userName={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.name : ""}
+                                    encData={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.esign : ''}
+                                    showData={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? true : false}
+                                    showDatais={true}
+                                  />
+                                </div>
+                                <div className={style.verticalAlignCenter}>
+                                  <div className={style.displayInRow}>
+                                    <div className={style.dateTitle}>Date: </div>
+                                    <div className={`${style.date} ${style.marginLeft}`}>{form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? format(new Date(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.signedDate), canadaData?.dateFormat || 'dd/MM/yyyy') : ""}</div>
                                   </div>
                                 </div>
-                                {expandAcknowledgement?.status &&
-                                  expandAcknowledgement?.index === index && (
-                                    <div
-                                      className={`${style.marginTop} ${style.screenPadding}`}
-                                    >
-                                      {form?.forms?.filter(
-                                        (data) => data?.formCategory === "Acknowledgement"
-                                      )[index]?.uploadedFiles?.length !== 0 && (
-                                          <>
-                                            <iframe
-                                              src={
-                                                form?.forms?.filter(
-                                                  (data) =>
-                                                    data?.formCategory === "Acknowledgement"
-                                                )[index]?.uploadedFiles[
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    }
+                  </div>))}
+              </div>
+              <div className={style.marginBottom20}></div>
+            </div>
+          </div>
+          )}
+          </>
+              </div>
+            </>
+          ) : (
+            <>
+            <div className={`${style.displayInCol}`}>
+              <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
+                <div className={style.spaceBetween}>
+                  <div className={style.displayInRow}>
+                    <div className={`${style.photoBorderStyle} ${style.marginLeftRight10}`}>
+                      <div className={style.photoCardStyle}>
+                        <span>Photo</span>
+                      </div>
+                    </div>
+                    <div className={`${style.displayInCol} ${style.textAlignLeft}`}>
+                      <div className={style.marginTop10}>
+                        <span className={`${style.cardTextBoldStyle} ${style.marginTop10}`}>
+                          {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.middleName || ""} {form?.basicDetails?.applicant?.name?.lastName || ""}
+                        </span>
+                        <span className={`${style.cardTextNormalStyle} ${style.marginTop10} ${style.marginLeft10}`}>
+                         {form?.displayId || ""}
+                        </span>
+                      </div>
+                      <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
+                      {form?.providerType?.serviceProviderType || ""} Applying As {form?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || ""} 
+                      </div>
+                      <div className={style.spaceBetween}>
+                        <span className={`${style.cardTextBoldStyle} ${style.marginTop30}`}>
+                          {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
+                        </span>
+                        <span className={`${style.emailTextBoldStyle} ${style.marginTop30} ${style.marginLeft20}`}>
+                          {form?.basicDetails?.applicant?.email?.officialEmail || ""}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className={`${style.displayInRow} ${style.marginRight20}`}>
+                    <div className={style.displayInCol}>
+                      <div className={style.marginTop15}>
+                        <span className={style.rightAlignTextStyle}>
+                          Days To Complete:
+                        </span>
+                        <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
+                          15
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <>
+          {userRole?.includes('Staff Manager') ? (
+            <div
+            className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}
+          >
+  
+            <div>
+              <div
+                className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle} `}
+              >
+                <div
+                  className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                >
+                  <div
+                    className={`${style.marginLeft30} ${style.tableHeaderTextStyle}`}
+                  ></div>
+                </div>
+                <div
+                  className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                >
+                  <div className={`${style.tableHeaderTextStyle}`}>
+                    Required Data & POD Verification
+                  </div>
+                </div>
+                <div
+                  className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                >
+                  <div
+                    className={`${style.tableHeaderTextStyle}`}
+                    aria-owns={open ? "mouse-over-popover" : undefined}
+                    aria-haspopup="true"
+                    onMouseEnter={handlePopoverOpen}
+                    onMouseLeave={handlePopoverClose}
+                  >
+                    <img
+                      src={DataStatusIcon}
+                      alt=""
+                      style={{
+                        width: "18px",
+                        height: "20px",
+                      }}
+                    />
+                    <Popover
+                      id={"mouse-over-popover"}
+                      sx={{
+                        pointerEvents: "none",
+                      }}
+                      open={open}
+                      anchorEl={anchorEl}
+                      anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "center",
+                      }}
+                      transformOrigin={{
+                        vertical: "top",
+                        horizontal: "center",
+                      }}
+                      onClose={handlePopoverClose}
+                      PaperProps={{
+                        style: {
+                          backgroundColor: "transparent",
+                          boxShadow: "none",
+                          borderRadius: 0,
+                        },
+                      }}
+                      disableRestoreFocus
+                    >
+                      <div className={style.multipleOptionsCard}>
+                        <div
+                          className={`${style.specificActionCard} ${style.cursorPointer}`}
+                        >
+                          Data Quality Status
+                        </div>
+                      </div>
+                    </Popover>
+                  </div>
+                </div>
+                <div
+                  className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                >
+                  <div
+                    className={`${style.tableHeaderTextStyle}`}
+                    aria-owns={
+                      openTextWithHover ? "mouse-over-popover" : undefined
+                    }
+                    aria-haspopup="true"
+                    onMouseEnter={handlePopoverTextOpen}
+                    onMouseLeave={handlePopoverTextClose}
+                  >
+                    <img
+                      src={DocumentIcon}
+                      alt=""
+                      style={{
+                        width: "18px",
+                        height: "20px",
+                      }}
+                    />
+                    <Popover
+                      id={"mouse-over-popover"}
+                      sx={{
+                        pointerEvents: "none",
+                      }}
+                      open={openTextWithHover}
+                      anchorEl={anchorTextEl}
+                      anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "center",
+                      }}
+                      transformOrigin={{
+                        vertical: "top",
+                        horizontal: "center",
+                      }}
+                      onClose={handlePopoverTextClose}
+                      PaperProps={{
+                        style: {
+                          backgroundColor: "transparent",
+                          boxShadow: "none",
+                          borderRadius: 0,
+                        },
+                      }}
+                      disableRestoreFocus
+                    >
+                      <div className={style.multipleOptionsCard}>
+                        <div
+                          className={`${style.specificActionCard} ${style.cursorPointer}`}
+                        >
+                          Document Status
+                        </div>
+                      </div>
+                    </Popover>
+                  </div>
+                </div>
+                <div
+                  className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                >
+                  <div className={`${style.tableHeaderTextStyle}`}>
+                    Documents
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div
+                  className={` ${style.marginTop5} ${expand?.status && expand?.index === 0
+                    ? style.tableDataStyle1
+                    : style.tableDataStyle
+                    }`}
+                >
+                  <div
+                    className={` ${expand?.status && expand?.index === 0
+                      ? style.tableHeaderGridStyleForm
+                      : style.tableHeaderGridStyle
+                      } ${style.marginTop10}`}
+                  >
+                    <div
+                      className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                    >
+                      <div
+                        className={`${style.marginLeft10} ${style.justifySpaceAround
+                          } ${form?.basicInformationStatus
+                            ? style.greenDotStyle
+                            : style.greyDotStyle
+                          }`}
+                      ></div>
+                    </div>
+                    <div
+                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                    >
+                      <div
+                        className={`${expand?.status && expand?.index === 0
+                          ? style.tableHeaderTextStyle
+                          : style.tableDataFontStyle1
+                          }`}
+                      >
+                        Applicant Profile Information
+                      </div>
+                    </div>
+                    {expand?.status && expand?.index === 0 ? (
+                      <>
+                        {!form?.basicInformationStatus ? (
+                          <div
+                            className={`${style.purpleButton} ${style.cursorPointer} `}
+                          >
+                            <div
+                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                              onClick={() => handleVerify()}
+                            >
+                              Verify
+                            </div>
+                          </div>
+                        ) : (
+                          <div
+                            className={`${style.greenButton}  ${style.cursorPointer} `}
+                          >
+                            <div
+                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                            >
+                              Verified
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <div
+                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                        >
+                          <div
+                            className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}
+                          ></div>
+                        </div>
+                        <div
+                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                        >
+                          <div
+                            className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}
+                          ></div>
+                        </div>
+                        <div
+                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                        >
+                          <div
+                            className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                          >
+                            -
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    <div
+                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                    >
+                      <div
+                        className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                      >
+                        {expand?.status && expand?.index === 0 ? (
+                          <RemoveIcon
+                            sx={{
+                              fontSize: 20,
+                              color: "#94979A",
+                              cursor: "pointer",
+                            }}
+                            onClick={() =>
+                              setExpand({ status: false, index: 0 })
+                            }
+                          />
+                        ) : (
+                          <AddIcon
+                            sx={{
+                              fontSize: 20,
+                              color: "#94979A",
+                              cursor: "pointer",
+                            }}
+                            onClick={() =>
+                              setExpand({ status: true, index: 0 })
+                            }
+                          />
+                        )}{" "}
+                      </div>
+                    </div>
+                  </div>
+                  {expand?.status && expand?.index === 0 && (
+                    <div
+                      className={`${style.marginTop} ${style.screenPadding}`}
+                    >
+                     
+                      {form1 !== undefined &&
+                        "applicant" in form1?.properties && (
+                          <ApplicationFieldCard
+                            object={form1?.properties?.applicant}
+                            gridStyle={style.applicantGrid}
+                            baseKey={"applicant"}
+                            basicForm={form}
+                            setBasicForm={setForm}
+                            isBasicPath={true}
+                            isPOD={true}
+                          />
+                        )}
+                      {form1 !== undefined &&
+                        "credentialingPrivilegeCategory" in
+                        form1?.properties && (
+                          <ApplicationFieldCard
+                            object={
+                              form1?.properties?.credentialingPrivilegeCategory
+                            }
+                            gridStyle={style.credentialingGrid}
+                            baseKey={"credentialingPrivilegeCategory"}
+                            basicForm={form}
+                            setBasicForm={setForm}
+                            isBasicPath={true}
+                            isPOD={true}
+                          />
+                        )}
+                      {form1 !== undefined &&
+                        "departmentSpecialty" in form1?.properties && (
+                          <ApplicationFieldCard
+                            object={form1?.properties?.departmentSpecialty}
+                            gridStyle={style.twoCol}
+                            baseKey={"departmentSpecialty"}
+                            basicForm={form}
+                            setBasicForm={setForm}
+                            isBasicPath={true}
+                            isPOD={true}
+                          />
+                        )}
+                      {form1 !== undefined &&
+                        getValueByPath(
+                          form,
+                          "basicDetails.departmentSpecialty.department"
+                        ) ===
+                        form1.if.properties.departmentSpecialty.properties
+                          .department.const &&
+                        form1.if.properties.departmentSpecialty.properties.specialty.enum?.includes(
+                          getValueByPath(
+                            form,
+                            "basicDetails.departmentSpecialty.specialty"
+                          )
+                        ) &&
+                        form1 !== undefined &&
+                        "regionalCallResponsibilities" in form1?.properties && (
+                          <ApplicationFieldCard
+                            object={
+                              form1?.properties?.regionalCallResponsibilities
+                            }
+                            gridStyle={""}
+                            baseKey={"regionalCallResponsibilities"}
+                            basicForm={form}
+                            setBasicForm={setForm}
+                            isBasicPath={true}
+                            isPOD={true}
+                          />
+                        )}
+                      {form1 !== undefined &&
+                        "billingNumber" in form1?.properties && (
+                          <ApplicationFieldCard
+                            object={form1?.properties?.billingNumber}
+                            gridStyle={style.twoCol}
+                            baseKey={"billingNumber"}
+                            basicForm={form}
+                            setBasicForm={setForm}
+                            isBasicPath={true}
+                            isPOD={true}
+                          />
+                        )}
+                    </div>
+                  )}
+                </div>
+
+                {form?.formSchemas
+                  ?.filter(
+                    (data) =>
+                      (data?.formCategory === "Form" ||
+                        data?.formCategory === "Disclosure") &&
+                      data?.schemaCategory !== "UploadYourDoc"
+                  )
+                  ?.map((data, index) => (
+                    <div
+                      className={` ${style.marginTop5} ${expand?.status && expand?.index === index + 1
+                        ? style.tableDataStyle1
+                        : style.tableDataStyle
+                        }`}
+                    >
+                      <div
+                        className={` ${expand?.index === index + 1
+                          ? style.tableHeaderGridStyleForm
+                          : style.tableHeaderGridStyle
+                          } ${style.marginTop10}`}
+                      >
+                        <div
+                          className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                        >
+                          <div
+                            className={`${style.marginLeft10} ${style.justifySpaceAround
+                              } ${form?.forms[index]?.status !== "APPROVED"
+                                ? style.greyDotStyle
+                                : style.greenDotStyle
+                              }`}
+                          ></div>
+                        </div>
+                        <div
+                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                        >
+                          <div className={`${style.tableDataFontStyle1}`}>
+                            {data?.description}
+                          </div>
+                        </div>
+                        {expand?.status && expand?.index === index + 1 ? (
+                          <>
+                            {form?.forms[index]?.status !== "APPROVED" ? (
+                              <div
+                                className={`${style.purpleButton} ${style.cursorPointer} `}
+                              >
+                                <div
+                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                  onClick={() =>
+                                    handleStepsVerify(form?.forms[index]?.id)
+                                  }
+                                >
+                                  Verify
+                                </div>
+                              </div>
+                            ) : (
+                              <div
+                                className={`${style.greenButton}  ${style.cursorPointer} `}
+                              >
+                                <div
+                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                >
+                                  Verified
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            <div
+                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                            >
+                              <div
+                                className={`${style.marginLeft10}${style.justifySpaceAround
+                                  } ${form?.forms[index]?.status !== "APPROVED"
+                                    ? style.greyDotStyle
+                                    : style.greenDotStyle
+                                  }`}
+                              ></div>
+                            </div>
+                            <div
+                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                            >
+                              <div
+                                className={`${style.marginLeft10}${style.justifySpaceAround
+                                  } ${form?.forms[index]?.status !== "APPROVED"
+                                    ? style.greyDotStyle
+                                    : style.greenDotStyle
+                                  }`}
+                              ></div>
+                            </div>
+                            <div
+                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                            >
+                              <div
+                                className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                              >
+                                {form?.forms
+                                  ?.filter(
+                                    (formData, formIndex) => formIndex === index
+                                  )
+                                  ?.map(
+                                    (data) => data?.uploadedFiles?.length || 0
+                                  )}
+                              </div>
+                            </div>
+                          </>
+                        )}
+                        <div
+                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                        >
+                          <div
+                            className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                          >
+                            {expand?.status && expand?.index === index + 1 ? (
+                              <RemoveIcon
+                                sx={{
+                                  fontSize: 20,
+                                  color: "#94979A",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => {
+                                  setExpand({ status: false, index: 0 });
+                                  setFormSchemaId("");
+                                }}
+                              />
+                            ) : (
+                              <AddIcon
+                                sx={{
+                                  fontSize: 20,
+                                  color: "#94979A",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => {
+                                  setExpand({ status: true, index: index + 1 });
+                                  setFormSchemaId(data?.id);
+                                }}
+                              />
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      {expand?.status && expand?.index === index + 1 && (
+                        <div
+                          className={`${style.marginTop} ${style.screenPadding}`}
+                        >
+                          {renderFieldsBasedOnStep(data)}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+              </div>
+
+              <div>
+                <div
+                  className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle1} `}
+                >
+                  <div
+                    className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                  >
+                    <div
+                      className={`${style.marginLeft10} ${style.tableHeaderTextStyle}`}
+                    ></div>
+                  </div>
+                  <div
+                    className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                  >
+                    <div className={`${style.tableHeaderTextStyle}`}>
+                      Requested Form Completeness Check
+                    </div>
+                  </div>
+                </div>
+                {form?.formSchemas
+                  ?.filter((data) => data?.formCategory === "Acknowledgement")
+                  ?.map((data, index) => (
+                    <div
+                      className={` ${style.marginTop5} ${expandAcknowledgement?.status &&
+                        expandAcknowledgement?.index === index
+                        ? style.tableDataStyle1
+                        : style.tableDataStyle
+                        }`}
+                    >
+                      <div
+                        className={` ${style.marginTop10} ${expandAcknowledgement?.status &&
+                          expandAcknowledgement?.index === index
+                          ? style.tableHeaderGridStyleForm
+                          : style.tableHeaderGridStyle1
+                          }`}
+                      >
+                        <div
+                          className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                        >
+                          <div
+                            className={`${style.marginLeft10} ${style.justifySpaceAround
+                              } ${form?.forms?.filter(
+                                (data) =>
+                                  data?.formCategory === "Acknowledgement"
+                              )[index]?.status !== "APPROVED"
+                                ? style.greyDotStyle
+                                : style.greenDotStyle
+                              }`}
+                          ></div>
+                        </div>
+                        <div
+                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                        >
+                          <div className={`${style.tableDataFontStyle1}`}>
+                            {data?.description}
+                          </div>
+                        </div>
+                        {expandAcknowledgement?.status &&
+                          expandAcknowledgement?.index === index && (
+                            <>
+                              {form?.forms?.filter(
+                                (data) =>
+                                  data?.formCategory === "Acknowledgement"
+                              )[index]?.status !== "APPROVED" ? (
+                                <div
+                                  className={`${style.purpleButton} ${style.cursorPointer} `}
+                                >
+                                  <div
+                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                    onClick={() =>
+                                      handleStepsVerify(
+                                        form?.forms?.filter(
+                                          (data) =>
+                                            data?.formCategory ===
+                                            "Acknowledgement"
+                                        )[index]?.id
+                                      )
+                                    }
+                                  >
+                                    Verify
+                                  </div>
+                                </div>
+                              ) : (
+                                <div
+                                  className={`${style.greenButton}  ${style.cursorPointer} `}
+                                >
+                                  <div
+                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                  >
+                                    Verified
+                                  </div>
+                                </div>
+                              )}
+                            </>
+                          )}
+                        <div
+                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                        >
+                          <div
+                            className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                          >
+                            {expandAcknowledgement?.status &&
+                              expandAcknowledgement?.index === index ? (
+                              <RemoveIcon
+                                sx={{
+                                  fontSize: 20,
+                                  color: "#94979A",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => {
+                                  setExpandAcknowledgement({
+                                    status: false,
+                                    index: 0,
+                                  });
+                                  setFormSchemaId("");
+                                }}
+                              />
+                            ) : (
+                              <AddIcon
+                                sx={{
+                                  fontSize: 20,
+                                  color: "#94979A",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => {
+                                  setExpandAcknowledgement({
+                                    status: true,
+                                    index: index,
+                                  });
+                                  setFormSchemaId(data?.id);
+                                }}
+                              />
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      {expandAcknowledgement?.status &&
+                        expandAcknowledgement?.index === index && (
+                          <div
+                            className={`${style.marginTop} ${style.screenPadding}`}
+                          >
+                            {form?.forms?.filter(
+                              (data) => data?.formCategory === "Acknowledgement"
+                            )[index]?.uploadedFiles?.length !== 0 && (
+                                <>
+                                  <iframe
+                                    src={
+                                      form?.forms?.filter(
+                                        (data) =>
+                                          data?.formCategory === "Acknowledgement"
+                                      )[index]?.uploadedFiles[
+                                        form?.forms?.filter(
+                                          (data) =>
+                                            data?.formCategory ===
+                                            "Acknowledgement"
+                                        )[index]?.uploadedFiles?.length - 1
+                                      ]?.fileURL
+                                    }
+                                    width="100%"
+                                    height="600px"
+                                  ></iframe>
+                                  {(data?.description ===
+                                    "Statement of Confidentiality and Non-Disclosure" ||
+                                    data?.description ===
+                                    "Conflict Of Interest Policy") && (
+                                      <div className={style.grid2}>
+                                        <div
+                                          onClick={
+                                            form?.forms[index]?.staffEsign === null
+                                              ? () =>
+                                                handleStaffEsign(
                                                   form?.forms?.filter(
                                                     (data) =>
                                                       data?.formCategory ===
                                                       "Acknowledgement"
-                                                  )[index]?.uploadedFiles?.length - 1
-                                                ]?.fileURL
-                                              }
-                                              width="100%"
-                                              height="600px"
-                                            ></iframe>
-                                            {(data?.description ===
-                                              "Statement of Confidentiality and Non-Disclosure" ||
-                                              data?.description ===
-                                              "Conflict Of Interest Policy") && (
-                                                <div className={style.grid2}>
-                                                  <div
-                                                    onClick={
-                                                      form?.forms[index]?.staffEsign === null
-                                                        ? () =>
-                                                          handleStaffEsign(
-                                                            form?.forms?.filter(
-                                                              (data) =>
-                                                                data?.formCategory ===
-                                                                "Acknowledgement"
-                                                            )[index]?.id
-                                                          )
-                                                        : () => { }
-                                                    }
-                                                  >
-                                                    <ESignature
-                                                      userName={
-                                                        form?.forms?.filter(
-                                                          (data) =>
-                                                            data?.formCategory ===
-                                                            "Acknowledgement"
-                                                        )[index]?.staffEsign !== null
-                                                          ? form?.forms?.filter(
-                                                            (data) =>
-                                                              data?.formCategory ===
-                                                              "Acknowledgement"
-                                                          )[index]?.staffEsign?.name
-                                                          : ""
-                                                      }
-                                                      encData={
-                                                        form?.forms?.filter(
-                                                          (data) =>
-                                                            data?.formCategory ===
-                                                            "Acknowledgement"
-                                                        )[index]?.staffEsign !== null
-                                                          ? form?.forms?.filter(
-                                                            (data) =>
-                                                              data?.formCategory ===
-                                                              "Acknowledgement"
-                                                          )[index]?.staffEsign?.esign
-                                                          : ""
-                                                      }
-                                                      showData={
-                                                        form?.forms?.filter(
-                                                          (data) =>
-                                                            data?.formCategory ===
-                                                            "Acknowledgement"
-                                                        )[index]?.staffEsign !== null
-                                                          ? true
-                                                          : false
-                                                      }
-                                                      showDatais={true}
-                                                    />
-                                                  </div>
-                                                  <div className={style.verticalAlignCenter}>
-                                                    <div className={style.displayInRow}>
-                                                      <div className={style.dateTitle}>
-                                                        Date:{" "}
-                                                      </div>
-                                                      <div
-                                                        className={`${style.date} ${style.marginLeft}`}
-                                                      >
-                                                        {form?.forms?.filter(
-                                                          (data) =>
-                                                            data?.formCategory ===
-                                                            "Acknowledgement"
-                                                        )[index]?.staffEsign !== null
-                                                          ? format(
-                                                            new Date(
-                                                              form?.forms?.filter(
-                                                                (data) =>
-                                                                  data?.formCategory ===
-                                                                  "Acknowledgement"
-                                                              )[
-                                                                index
-                                                              ]?.staffEsign?.signedDate
-                                                            ),
-                                                            canadaData?.dateFormat ||
-                                                            "dd/MM/yyyy"
-                                                          )
-                                                          : ""}
-                                                      </div>
-                                                    </div>
-                                                  </div>
-                                                </div>
-                                              )}
-                                          </>
-                                        )}
+                                                  )[index]?.id
+                                                )
+                                              : () => { }
+                                          }
+                                        >
+                                          <ESignature
+                                            userName={
+                                              form?.forms?.filter(
+                                                (data) =>
+                                                  data?.formCategory ===
+                                                  "Acknowledgement"
+                                              )[index]?.staffEsign !== null
+                                                ? form?.forms?.filter(
+                                                  (data) =>
+                                                    data?.formCategory ===
+                                                    "Acknowledgement"
+                                                )[index]?.staffEsign?.name
+                                                : ""
+                                            }
+                                            encData={
+                                              form?.forms?.filter(
+                                                (data) =>
+                                                  data?.formCategory ===
+                                                  "Acknowledgement"
+                                              )[index]?.staffEsign !== null
+                                                ? form?.forms?.filter(
+                                                  (data) =>
+                                                    data?.formCategory ===
+                                                    "Acknowledgement"
+                                                )[index]?.staffEsign?.esign
+                                                : ""
+                                            }
+                                            showData={
+                                              form?.forms?.filter(
+                                                (data) =>
+                                                  data?.formCategory ===
+                                                  "Acknowledgement"
+                                              )[index]?.staffEsign !== null
+                                                ? true
+                                                : false
+                                            }
+                                            showDatais={true}
+                                          />
+                                        </div>
+                                        <div className={style.verticalAlignCenter}>
+                                          <div className={style.displayInRow}>
+                                            <div className={style.dateTitle}>
+                                              Date:{" "}
+                                            </div>
+                                            <div
+                                              className={`${style.date} ${style.marginLeft}`}
+                                            >
+                                              {form?.forms?.filter(
+                                                (data) =>
+                                                  data?.formCategory ===
+                                                  "Acknowledgement"
+                                              )[index]?.staffEsign !== null
+                                                ? format(
+                                                  new Date(
+                                                    form?.forms?.filter(
+                                                      (data) =>
+                                                        data?.formCategory ===
+                                                        "Acknowledgement"
+                                                    )[
+                                                      index
+                                                    ]?.staffEsign?.signedDate
+                                                  ),
+                                                  canadaData?.dateFormat ||
+                                                  "dd/MM/yyyy"
+                                                )
+                                                : ""}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    )}
+                                </>
+                              )}
+                          </div>
+                        )}
+                    </div>
+                  ))}
+              </div>
+              <div className={style.marginBottom20}></div>
+            </div>
+          </div>
+          ) : (
+             <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop10}`}>
+            <div>
+             
+                
+              <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyleCred1} `}>
+               
+                <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                  <div className={`${style.tableHeaderTextStyleCred}`}> POD Verification Check </div>
+                </div>
+              
+              </div>
+              <div>
+                <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === 0) ? style.tableDataStyle1 : style.tableDataStyle}`}>
+                  <div className={` ${(expand?.status && expand?.index === 0) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred1} ${style.marginTop10}`}>
+                   
+                    <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                      <div className={`${(expand?.status && expand?.index === 0) ? style.tableHeaderTextStyleCred : style.tableDataFontStyleCred}`}>Applicant Profile Information</div>
+                    </div>
+ 
+
+                    {(expand?.status && expand?.index === 0) ? (
+                      <>
+                        {!form?.basicInformationStatus ? (
+                          <div className={`${style.purpleButton} ${style.cursorPointer} `}>
+                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleVerify()}>Approve</div>
+                          </div>
+                        ) : (
+                          <div className={`${style.greenButton}  ${style.cursorPointer} `}>
+                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Approved</div>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      " "
+                    )}
+
+                    <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                      <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
+                        {
+                          (expand?.status && expand?.index === 0) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => setExpand({ status: false, index: 0 })} />)
+                            : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => setExpand({ status: true, index: 0 })} />)
+                        }                    </div>
+                    </div>
+                  </div>
+                  {expand?.status && expand?.index === 0 &&
+                    <div className={`${style.marginTop} ${style.screenPadding}`}>
+                     
+                      {form1 !== undefined && 'applicant' in form1?.properties && (
+                        <ApplicationFieldCard object={form1?.properties?.applicant} gridStyle={style.applicantGrid} baseKey={'applicant'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
+                      )}
+                      {form1 !== undefined && 'credentialingPrivilegeCategory' in form1?.properties && (
+                        <ApplicationFieldCard object={form1?.properties?.credentialingPrivilegeCategory} gridStyle={style.credentialingGrid} baseKey={'credentialingPrivilegeCategory'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
+                      )}
+                      {form1 !== undefined && 'departmentSpecialty' in form1?.properties && (
+                        <ApplicationFieldCard object={form1?.properties?.departmentSpecialty} gridStyle={style.twoCol} baseKey={'departmentSpecialty'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
+                      )}
+                      {form1 !== undefined && (getValueByPath(form, 'basicDetails.departmentSpecialty.department') === form1.if.properties.departmentSpecialty.properties.department.const && form1.if.properties.departmentSpecialty.properties.specialty.enum?.includes(getValueByPath(form, 'basicDetails.departmentSpecialty.specialty'))) && (
+                        form1 !== undefined && 'regionalCallResponsibilities' in form1?.properties && (
+                          <ApplicationFieldCard object={form1?.properties?.regionalCallResponsibilities} gridStyle={''} baseKey={'regionalCallResponsibilities'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
+                        )
+                      )}
+                      {form1 !== undefined && 'billingNumber' in form1?.properties && (
+                        <ApplicationFieldCard object={form1?.properties?.billingNumber} gridStyle={style.twoCol} baseKey={'billingNumber'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
+                      )}
+                    </div>
+                  }
+
+
+                </div>
+
+                {
+                  form?.formSchemas?.filter(data => (data?.formCategory === 'Form' || data?.formCategory === 'Disclosure') && data?.schemaCategory !== "UploadYourDoc")?.map((data, index) => (
+
+                    <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === index + 1) ? style.tableDataStyle1 : style.tableDataStyle}`}>
+                      <div className={` ${expand?.index === index + 1 ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred} ${style.marginTop10}`}>
+                      
+                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                          <div className={`${style.tableDataFontStyleCred}`}>{data?.description}</div>
+                        </div>
+                        {!(expand?.status && expand?.index === index + 1) && (
+                          <>
+                            {form?.forms[index]?.status === "APPROVED" ? (
+                              <div className={`${style.approvedButtonStyle} ${style.ApprovedTextStyle}`}>Approved</div>
+                            ) : (
+                              <div className={`${style.assessInCred} ${style.assessTextStyle}`}>4 to Assess</div>
+                            )}
+                          </>
+                        )}
+                        {expand?.status && expand?.index === index + 1 && (
+                            <>
+                                {credApproval?.filter(
+                                (newData) =>{console.log("newData.schema:", newData.schemaId);
+                                    console.log("data.id:", data.id);
+                                   return newData.schemaId === data.id
+                                }
+                                )[0]?.approvalRequired === true ? (
+                                <>
+                                    {form?.forms[index]?.status !== "APPROVED" ? (
+                                    <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                        <div
+                                        className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                        onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                        >
+                                        Approve
+                                        </div>
+                                    </div>
+                                    ) : (
+                                    <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                        Approved
+                                        </div>
+                                    </div>
+                                    )}
+                                </>
+                                ) : (""
+                                )}
+                            </>
+                            )}
+                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                          <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
+                            {
+                              (expand?.status && expand?.index === index + 1) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: false, index: 0 }); setFormSchemaId('') }} />)
+                                : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: true, index: index + 1 }); setFormSchemaId(data?.id) }} />)
+                            }
+
+                          </div>
+                        </div>
+                      </div>
+                      {expand?.status && expand?.index === index + 1 &&
+                        <div className={`${style.marginTop} ${style.screenPadding}`}>
+                          {renderFieldsBasedOnStep(data)}
+                        </div>
+                      }
+                    </div>))}
+
+              </div>
+
+              <div>
+                <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderStyleCred} `}>
+                  <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                    <div className={`${style.marginLeft10} ${style.tableHeaderTextStyle}`}></div>
+                  </div>
+                  <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                    <div className={`${style.tableHeaderTextStyleCred}`}>Requested Form Completeness Check</div>
+                  </div>
+                </div>
+                {form?.formSchemas?.filter(data => data?.formCategory === 'Acknowledgement')?.map((data, index) => (
+                  <div className={` ${style.marginTop5} ${(expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? style.tableDataStyle1 : style.tableDataStyle}`}>
+                    <div className={` ${style.marginTop10} ${(expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred1}`}>
+                     
+                      <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                        <div className={`${style.tableDataFontStyleCred}`}>{data?.description}</div>
+                      </div>
+                      {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
+                        <>
+                          {form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.status !== "APPROVED" ? (
+                            <div className={`${style.purpleButton} ${style.cursorPointer} `}>
+                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleStepsVerify(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.id)}>Approve</div>
+                            </div>
+                          ) : (
+                            <div className={`${style.greenButton}  ${style.cursorPointer} `}>
+                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Approved</div>
+                            </div>
+                          )}
+                        </>
+                      )}
+                      <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                        <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
+                          {
+                            (expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpandAcknowledgement({ status: false, index: 0 }); setFormSchemaId('') }} />)
+                              : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpandAcknowledgement({ status: true, index: index }); setFormSchemaId(data?.id) }} />)
+                          }
+                        </div>
+                      </div>
+                    </div>
+                    {expandAcknowledgement?.status && expandAcknowledgement?.index === index &&
+                      <div className={`${style.marginTop} ${style.screenPadding}`}>
+                        {form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles?.length !== 0 && (
+                          <>
+                            <iframe src={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles[form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles?.length - 1]?.fileURL} width="100%" height="600px"></iframe>
+                            {(data?.description === 'Statement of Confidentiality and Non-Disclosure' || data?.description === 'Conflict Of Interest Policy') && (
+                              <div className={style.grid2}>
+                                <div onClick={form?.forms[index]?.staffEsign === null ? () => handleStaffEsign(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.id) : () => { }} >
+                                  <ESignature
+                                    userName={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.name : ""}
+                                    encData={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.esign : ''}
+                                    showData={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? true : false}
+                                    showDatais={true}
+                                  />
+                                </div>
+                                <div className={style.verticalAlignCenter}>
+                                  <div className={style.displayInRow}>
+                                    <div className={style.dateTitle}>Date: </div>
+                                    <div className={`${style.date} ${style.marginLeft}`}>{form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? format(new Date(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.signedDate), canadaData?.dateFormat || 'dd/MM/yyyy') : ""}</div>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    }
+                  </div>))}
+              </div>
+              <div className={style.marginBottom20}></div>
+            </div>
+          </div>
+          )}
+          </>
+            </div>
+                 <>
+          {userRole?.includes('Staff Manager') ? (
+            <div
+            className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}
+          >
+  
+            <div>
+              <div
+                className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle} `}
+              >
+                <div
+                  className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                >
+                  <div
+                    className={`${style.marginLeft30} ${style.tableHeaderTextStyle}`}
+                  ></div>
+                </div>
+                <div
+                  className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                >
+                  <div className={`${style.tableHeaderTextStyle}`}>
+                    Required Data & POD Verification
+                  </div>
+                </div>
+                <div
+                  className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                >
+                  <div
+                    className={`${style.tableHeaderTextStyle}`}
+                    aria-owns={open ? "mouse-over-popover" : undefined}
+                    aria-haspopup="true"
+                    onMouseEnter={handlePopoverOpen}
+                    onMouseLeave={handlePopoverClose}
+                  >
+                    <img
+                      src={DataStatusIcon}
+                      alt=""
+                      style={{
+                        width: "18px",
+                        height: "20px",
+                      }}
+                    />
+                    <Popover
+                      id={"mouse-over-popover"}
+                      sx={{
+                        pointerEvents: "none",
+                      }}
+                      open={open}
+                      anchorEl={anchorEl}
+                      anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "center",
+                      }}
+                      transformOrigin={{
+                        vertical: "top",
+                        horizontal: "center",
+                      }}
+                      onClose={handlePopoverClose}
+                      PaperProps={{
+                        style: {
+                          backgroundColor: "transparent",
+                          boxShadow: "none",
+                          borderRadius: 0,
+                        },
+                      }}
+                      disableRestoreFocus
+                    >
+                      <div className={style.multipleOptionsCard}>
+                        <div
+                          className={`${style.specificActionCard} ${style.cursorPointer}`}
+                        >
+                          Data Quality Status
+                        </div>
+                      </div>
+                    </Popover>
+                  </div>
+                </div>
+                <div
+                  className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                >
+                  <div
+                    className={`${style.tableHeaderTextStyle}`}
+                    aria-owns={
+                      openTextWithHover ? "mouse-over-popover" : undefined
+                    }
+                    aria-haspopup="true"
+                    onMouseEnter={handlePopoverTextOpen}
+                    onMouseLeave={handlePopoverTextClose}
+                  >
+                    <img
+                      src={DocumentIcon}
+                      alt=""
+                      style={{
+                        width: "18px",
+                        height: "20px",
+                      }}
+                    />
+                    <Popover
+                      id={"mouse-over-popover"}
+                      sx={{
+                        pointerEvents: "none",
+                      }}
+                      open={openTextWithHover}
+                      anchorEl={anchorTextEl}
+                      anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "center",
+                      }}
+                      transformOrigin={{
+                        vertical: "top",
+                        horizontal: "center",
+                      }}
+                      onClose={handlePopoverTextClose}
+                      PaperProps={{
+                        style: {
+                          backgroundColor: "transparent",
+                          boxShadow: "none",
+                          borderRadius: 0,
+                        },
+                      }}
+                      disableRestoreFocus
+                    >
+                      <div className={style.multipleOptionsCard}>
+                        <div
+                          className={`${style.specificActionCard} ${style.cursorPointer}`}
+                        >
+                          Document Status
+                        </div>
+                      </div>
+                    </Popover>
+                  </div>
+                </div>
+                <div
+                  className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                >
+                  <div className={`${style.tableHeaderTextStyle}`}>
+                    Documents
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div
+                  className={` ${style.marginTop5} ${expand?.status && expand?.index === 0
+                    ? style.tableDataStyle1
+                    : style.tableDataStyle
+                    }`}
+                >
+                  <div
+                    className={` ${expand?.status && expand?.index === 0
+                      ? style.tableHeaderGridStyleForm
+                      : style.tableHeaderGridStyle
+                      } ${style.marginTop10}`}
+                  >
+                    <div
+                      className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                    >
+                      <div
+                        className={`${style.marginLeft10} ${style.justifySpaceAround
+                          } ${form?.basicInformationStatus
+                            ? style.greenDotStyle
+                            : style.greyDotStyle
+                          }`}
+                      ></div>
+                    </div>
+                    <div
+                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                    >
+                      <div
+                        className={`${expand?.status && expand?.index === 0
+                          ? style.tableHeaderTextStyle
+                          : style.tableDataFontStyle1
+                          }`}
+                      >
+                        Applicant Profile Information
+                      </div>
+                    </div>
+                    {expand?.status && expand?.index === 0 ? (
+                      <>
+                        {!form?.basicInformationStatus ? (
+                          <div
+                            className={`${style.purpleButton} ${style.cursorPointer} `}
+                          >
+                            <div
+                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                              onClick={() => handleVerify()}
+                            >
+                              Verify
+                            </div>
+                          </div>
+                        ) : (
+                          <div
+                            className={`${style.greenButton}  ${style.cursorPointer} `}
+                          >
+                            <div
+                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                            >
+                              Verified
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <div
+                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                        >
+                          <div
+                            className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}
+                          ></div>
+                        </div>
+                        <div
+                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                        >
+                          <div
+                            className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}
+                          ></div>
+                        </div>
+                        <div
+                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                        >
+                          <div
+                            className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                          >
+                            -
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    <div
+                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                    >
+                      <div
+                        className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                      >
+                        {expand?.status && expand?.index === 0 ? (
+                          <RemoveIcon
+                            sx={{
+                              fontSize: 20,
+                              color: "#94979A",
+                              cursor: "pointer",
+                            }}
+                            onClick={() =>
+                              setExpand({ status: false, index: 0 })
+                            }
+                          />
+                        ) : (
+                          <AddIcon
+                            sx={{
+                              fontSize: 20,
+                              color: "#94979A",
+                              cursor: "pointer",
+                            }}
+                            onClick={() =>
+                              setExpand({ status: true, index: 0 })
+                            }
+                          />
+                        )}{" "}
+                      </div>
+                    </div>
+                  </div>
+                  {expand?.status && expand?.index === 0 && (
+                    <div
+                      className={`${style.marginTop} ${style.screenPadding}`}
+                    >
+                     
+                      {form1 !== undefined &&
+                        "applicant" in form1?.properties && (
+                          <ApplicationFieldCard
+                            object={form1?.properties?.applicant}
+                            gridStyle={style.applicantGrid}
+                            baseKey={"applicant"}
+                            basicForm={form}
+                            setBasicForm={setForm}
+                            isBasicPath={true}
+                            isPOD={true}
+                          />
+                        )}
+                      {form1 !== undefined &&
+                        "credentialingPrivilegeCategory" in
+                        form1?.properties && (
+                          <ApplicationFieldCard
+                            object={
+                              form1?.properties?.credentialingPrivilegeCategory
+                            }
+                            gridStyle={style.credentialingGrid}
+                            baseKey={"credentialingPrivilegeCategory"}
+                            basicForm={form}
+                            setBasicForm={setForm}
+                            isBasicPath={true}
+                            isPOD={true}
+                          />
+                        )}
+                      {form1 !== undefined &&
+                        "departmentSpecialty" in form1?.properties && (
+                          <ApplicationFieldCard
+                            object={form1?.properties?.departmentSpecialty}
+                            gridStyle={style.twoCol}
+                            baseKey={"departmentSpecialty"}
+                            basicForm={form}
+                            setBasicForm={setForm}
+                            isBasicPath={true}
+                            isPOD={true}
+                          />
+                        )}
+                      {form1 !== undefined &&
+                        getValueByPath(
+                          form,
+                          "basicDetails.departmentSpecialty.department"
+                        ) ===
+                        form1.if.properties.departmentSpecialty.properties
+                          .department.const &&
+                        form1.if.properties.departmentSpecialty.properties.specialty.enum?.includes(
+                          getValueByPath(
+                            form,
+                            "basicDetails.departmentSpecialty.specialty"
+                          )
+                        ) &&
+                        form1 !== undefined &&
+                        "regionalCallResponsibilities" in form1?.properties && (
+                          <ApplicationFieldCard
+                            object={
+                              form1?.properties?.regionalCallResponsibilities
+                            }
+                            gridStyle={""}
+                            baseKey={"regionalCallResponsibilities"}
+                            basicForm={form}
+                            setBasicForm={setForm}
+                            isBasicPath={true}
+                            isPOD={true}
+                          />
+                        )}
+                      {form1 !== undefined &&
+                        "billingNumber" in form1?.properties && (
+                          <ApplicationFieldCard
+                            object={form1?.properties?.billingNumber}
+                            gridStyle={style.twoCol}
+                            baseKey={"billingNumber"}
+                            basicForm={form}
+                            setBasicForm={setForm}
+                            isBasicPath={true}
+                            isPOD={true}
+                          />
+                        )}
+                    </div>
+                  )}
+                </div>
+
+                {form?.formSchemas
+                  ?.filter(
+                    (data) =>
+                      (data?.formCategory === "Form" ||
+                        data?.formCategory === "Disclosure") &&
+                      data?.schemaCategory !== "UploadYourDoc"
+                  )
+                  ?.map((data, index) => (
+                    <div
+                      className={` ${style.marginTop5} ${expand?.status && expand?.index === index + 1
+                        ? style.tableDataStyle1
+                        : style.tableDataStyle
+                        }`}
+                    >
+                      <div
+                        className={` ${expand?.index === index + 1
+                          ? style.tableHeaderGridStyleForm
+                          : style.tableHeaderGridStyle
+                          } ${style.marginTop10}`}
+                      >
+                        <div
+                          className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                        >
+                          <div
+                            className={`${style.marginLeft10} ${style.justifySpaceAround
+                              } ${form?.forms[index]?.status !== "APPROVED" &&
+                                  form?.forms[index]?.schemaCategory !== "UploadYourDoc"
+                                ? style.greyDotStyle
+                                : style.greenDotStyle
+                              }`}
+                          ></div>
+                        </div>
+                        <div
+                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                        >
+                          <div className={`${style.tableDataFontStyle1}`}>
+                            {data?.description}
+                          </div>
+                        </div>
+                        {expand?.status && expand?.index === index + 1 ? (
+                          <>
+                            {form?.forms[index]?.status !== "APPROVED" &&
+                             form?.forms[index]?.schemaCategory !== "UploadYourDoc" ? (
+                              <div
+                                className={`${style.purpleButton} ${style.cursorPointer} `}
+                              >
+                               {form?.forms[index]?.schemaCategory !== "UploadYourDoc" && (
+                                    <div
+                                      className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                      onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                    >
+                                      Verify
                                     </div>
                                   )}
                               </div>
-                            ))}
+                            ) : (
+                              <div
+                                className={`${style.greenButton}  ${style.cursorPointer} `}
+                              >
+                                <div
+                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                >
+                                  Verified
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            <div
+                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                            >
+                              <div
+                                className={`${style.marginLeft10}${style.justifySpaceAround
+                                  } ${form?.forms[index]?.status !== "APPROVED" &&
+                                      form?.forms[index]?.schemaCategory !== "UploadYourDoc"
+                                    ? style.greyDotStyle
+                                    : style.greenDotStyle
+                                  }`}
+                              ></div>
+                            </div>
+                            <div
+                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                            >
+                              <div
+                                className={`${style.marginLeft10}${style.justifySpaceAround
+                                  } ${form?.forms[index]?.status !== "APPROVED" &&
+                                      form?.forms[index]?.schemaCategory !== "UploadYourDoc"
+                                    ? style.greyDotStyle
+                                    : style.greenDotStyle
+                                  }`}
+                              ></div>
+                            </div>
+                            <div
+                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                            >
+                              <div
+                                className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                              >
+                                {form?.forms
+                                  ?.filter(
+                                    (formData, formIndex) => formIndex === index
+                                  )
+                                  ?.map(
+                                    (data) => data?.uploadedFiles?.length || 0
+                                  )}
+                              </div>
+                            </div>
+                          </>
+                        )}
+                        <div
+                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                        >
+                          <div
+                            className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                          >
+                            {expand?.status && expand?.index === index + 1 ? (
+                              <RemoveIcon
+                                sx={{
+                                  fontSize: 20,
+                                  color: "#94979A",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => {
+                                  setExpand({ status: false, index: 0 });
+                                  setFormSchemaId("");
+                                }}
+                              />
+                            ) : (
+                              <AddIcon
+                                sx={{
+                                  fontSize: 20,
+                                  color: "#94979A",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => {
+                                  setExpand({ status: true, index: index + 1 });
+                                  setFormSchemaId(data?.id);
+                                }}
+                              />
+                            )}
+                          </div>
                         </div>
-                        <div className={style.marginBottom20}></div>
                       </div>
+                      {expand?.status && expand?.index === index + 1 && (
+                        <div
+                          className={`${style.marginTop} ${style.screenPadding}`}
+                        >
+                          {renderFieldsBasedOnStep(data)}
+                        </div>
+                      )}
                     </div>
-                  ) : (
-                    ""
-                  )}
-                </>
-              </>
-            )}
+                  ))}
+              </div>
+
+              <div>
+                <div
+                  className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle1} `}
+                >
+                  <div
+                    className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                  >
+                    <div
+                      className={`${style.marginLeft10} ${style.tableHeaderTextStyle}`}
+                    ></div>
+                  </div>
+                  <div
+                    className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                  >
+                    <div className={`${style.tableHeaderTextStyle}`}>
+                      Requested Form Completeness Check
+                    </div>
+                  </div>
+                </div>
+                {form?.formSchemas
+                  ?.filter((data) => data?.formCategory === "Acknowledgement")
+                  ?.map((data, index) => (
+                    <div
+                      className={` ${style.marginTop5} ${expandAcknowledgement?.status &&
+                        expandAcknowledgement?.index === index
+                        ? style.tableDataStyle1
+                        : style.tableDataStyle
+                        }`}
+                    >
+                      <div
+                        className={` ${style.marginTop10} ${expandAcknowledgement?.status &&
+                          expandAcknowledgement?.index === index
+                          ? style.tableHeaderGridStyleForm
+                          : style.tableHeaderGridStyle1
+                          }`}
+                      >
+                        <div
+                          className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                        >
+                          <div
+                            className={`${style.marginLeft10} ${style.justifySpaceAround
+                              } ${form?.forms?.filter(
+                                (data) =>
+                                  data?.formCategory === "Acknowledgement"
+                              )[index]?.status !== "APPROVED"
+                                ? style.greyDotStyle
+                                : style.greenDotStyle
+                              }`}
+                          ></div>
+                        </div>
+                        <div
+                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                        >
+                          <div className={`${style.tableDataFontStyle1}`}>
+                            {data?.description}
+                          </div>
+                        </div>
+                        {expandAcknowledgement?.status &&
+                          expandAcknowledgement?.index === index && (
+                            <>
+                              {form?.forms?.filter(
+                                (data) =>
+                                  data?.formCategory === "Acknowledgement"
+                              )[index]?.status !== "APPROVED" ? (
+                                <div
+                                  className={`${style.purpleButton} ${style.cursorPointer} `}
+                                >
+                                  <div
+                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                    onClick={() =>
+                                      handleStepsVerify(
+                                        form?.forms?.filter(
+                                          (data) =>
+                                            data?.formCategory ===
+                                            "Acknowledgement"
+                                        )[index]?.id
+                                      )
+                                    }
+                                  >
+                                    Verify
+                                  </div>
+                                </div>
+                              ) : (
+                                <div
+                                  className={`${style.greenButton}  ${style.cursorPointer} `}
+                                >
+                                  <div
+                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                  >
+                                    Verified
+                                  </div>
+                                </div>
+                              )}
+                            </>
+                          )}
+                        <div
+                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                        >
+                          <div
+                            className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                          >
+                            {expandAcknowledgement?.status &&
+                              expandAcknowledgement?.index === index ? (
+                              <RemoveIcon
+                                sx={{
+                                  fontSize: 20,
+                                  color: "#94979A",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => {
+                                  setExpandAcknowledgement({
+                                    status: false,
+                                    index: 0,
+                                  });
+                                  setFormSchemaId("");
+                                }}
+                              />
+                            ) : (
+                              <AddIcon
+                                sx={{
+                                  fontSize: 20,
+                                  color: "#94979A",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => {
+                                  setExpandAcknowledgement({
+                                    status: true,
+                                    index: index,
+                                  });
+                                  setFormSchemaId(data?.id);
+                                }}
+                              />
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      {expandAcknowledgement?.status &&
+                        expandAcknowledgement?.index === index && (
+                          <div
+                            className={`${style.marginTop} ${style.screenPadding}`}
+                          >
+                            {form?.forms?.filter(
+                              (data) => data?.formCategory === "Acknowledgement"
+                            )[index]?.uploadedFiles?.length !== 0 && (
+                                <>
+                                  <iframe
+                                    src={
+                                      form?.forms?.filter(
+                                        (data) =>
+                                          data?.formCategory === "Acknowledgement"
+                                      )[index]?.uploadedFiles[
+                                        form?.forms?.filter(
+                                          (data) =>
+                                            data?.formCategory ===
+                                            "Acknowledgement"
+                                        )[index]?.uploadedFiles?.length - 1
+                                      ]?.fileURL
+                                    }
+                                    width="100%"
+                                    height="600px"
+                                  ></iframe>
+                                  {(data?.description ===
+                                    "Statement of Confidentiality and Non-Disclosure" ||
+                                    data?.description ===
+                                    "Conflict Of Interest Policy") && (
+                                      <div className={style.grid2}>
+                                        <div
+                                          onClick={
+                                            form?.forms[index]?.staffEsign === null
+                                              ? () =>
+                                                handleStaffEsign(
+                                                  form?.forms?.filter(
+                                                    (data) =>
+                                                      data?.formCategory ===
+                                                      "Acknowledgement"
+                                                  )[index]?.id
+                                                )
+                                              : () => { }
+                                          }
+                                        >
+                                          <ESignature
+                                            userName={
+                                              form?.forms?.filter(
+                                                (data) =>
+                                                  data?.formCategory ===
+                                                  "Acknowledgement"
+                                              )[index]?.staffEsign !== null
+                                                ? form?.forms?.filter(
+                                                  (data) =>
+                                                    data?.formCategory ===
+                                                    "Acknowledgement"
+                                                )[index]?.staffEsign?.name
+                                                : ""
+                                            }
+                                            encData={
+                                              form?.forms?.filter(
+                                                (data) =>
+                                                  data?.formCategory ===
+                                                  "Acknowledgement"
+                                              )[index]?.staffEsign !== null
+                                                ? form?.forms?.filter(
+                                                  (data) =>
+                                                    data?.formCategory ===
+                                                    "Acknowledgement"
+                                                )[index]?.staffEsign?.esign
+                                                : ""
+                                            }
+                                            showData={
+                                              form?.forms?.filter(
+                                                (data) =>
+                                                  data?.formCategory ===
+                                                  "Acknowledgement"
+                                              )[index]?.staffEsign !== null
+                                                ? true
+                                                : false
+                                            }
+                                            showDatais={true}
+                                          />
+                                        </div>
+                                        <div className={style.verticalAlignCenter}>
+                                          <div className={style.displayInRow}>
+                                            <div className={style.dateTitle}>
+                                              Date:{" "}
+                                            </div>
+                                            <div
+                                              className={`${style.date} ${style.marginLeft}`}
+                                            >
+                                              {form?.forms?.filter(
+                                                (data) =>
+                                                  data?.formCategory ===
+                                                  "Acknowledgement"
+                                              )[index]?.staffEsign !== null
+                                                ? format(
+                                                  new Date(
+                                                    form?.forms?.filter(
+                                                      (data) =>
+                                                        data?.formCategory ===
+                                                        "Acknowledgement"
+                                                    )[
+                                                      index
+                                                    ]?.staffEsign?.signedDate
+                                                  ),
+                                                  canadaData?.dateFormat ||
+                                                  "dd/MM/yyyy"
+                                                )
+                                                : ""}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    )}
+                                </>
+                              )}
+                          </div>
+                        )}
+                    </div>
+                  ))}
+              </div>
+              <div className={style.marginBottom20}></div>
+            </div>
+          </div>
+          ) : (
+          ""
+          )}
+          </>
+            </>
+          )}
           </>
           <div>
             {userRole.includes('Staff Manager') || userRole.includes('Chief Of Staff') || userRole.includes('Credentialing Committee') || userRole.includes('Department Head') ? (
               <>
-                {selectedTab !== "level-4" && selectedTab !== "level-5" && (
-                  <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
-                    <div className={`${style.buttonCardStyle} `}>
-                      <div
-                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                      >
-                        SAVE IN PROGRESS
-                      </div>
-                    </div>
-                    <div
-                      className={`${style.buttonCardStyle} ${style.cursorPointer}`}
-                    >
-                      <div
-                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                        onClick={() => {
-                          setShowApplicationDeclineDialog(true);
-                        }}
-                      >
-                        REJECT
-                      </div>
-                    </div>
-                  </div>
-                )}
-                <div className={`${style.marginTop20} ${style.marginBottom20}`}>
+              {selectedTab !== "level-4" && selectedTab !== "level-5" && (
+              <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
+              <div className={`${style.buttonCardStyle} `}>
+                <div
+                  className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                >
+                  SAVE IN PROGRESS
+                </div>
+              </div>
+              <div
+                className={`${style.buttonCardStyle} ${style.cursorPointer}`}
+              >
+                <div
+                  className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                  onClick={() => {
+                    setShowApplicationDeclineDialog(true);
+                  }}
+                >
+                  REJECT
+                </div>
+              </div>
+            </div>
+              )}
+            <div className={`${style.marginTop20} ${style.marginBottom20}`}>
 
-                  {userRole?.includes('Staff Manager') && selectedTab !== "level-4" && selectedTab !== "level-5" && (
-                    <div
-                      className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
-                      style={{ opacity: isApproved ? 1 : 0.5 }}
-                    >
-                      <div
+                {userRole?.includes('Staff Manager') && selectedTab !== "level-4" && selectedTab !== "level-5" && (
+                     <div 
+                     className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
+                     style={{ opacity: isApproved ? 1 : 0.5 }}
+                   >
+                      <div 
                         className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
                         onClick={isApproved ? onClickApproveFunction : undefined}
                       >
-                        {selectedTab === 'level-1' ? 'VERIFY FOR DEPT. HEAD' : selectedTab === 'level-2' ? 'VERIFY FOR CRED COMM REVIEW' : selectedTab === 'level-3' ? 'NOT READY FOR MAC' : selectedTab === 'level-4' ? ' MAC APPROVED' : selectedTab === 'level-5' ? ' BOD APPROVED' : " "}
+                         {selectedTab === 'level-1' ? 'VERIFY FOR DEPT. HEAD' : selectedTab === 'level-2' ? 'VERIFY FOR CRED COMM REVIEW' : selectedTab === 'level-3' ? 'NOT READY FOR MAC' : selectedTab === 'level-4' ? ' MAC APPROVED' : selectedTab === 'level-5' ? ' BOD APPROVED' : " " }
                       </div>
                     </div>
                   )}
 
-                  {userRole?.includes('Department Head') && selectedTab === 'level-2' && (
+                  {userRole?.includes('Department Head') && selectedTab === 'level-2' &&  (
                     <div className={`${style.bigButtonStyle} ${style.cursorPointer}`}>
-                      <div
+                      <div 
                         className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
                         onClick={onClickApproveFunction}
                       >
@@ -4421,7 +4601,7 @@ const NewActiveApplication = ({
                       {selectedTab === "level-3" && (
                         <>
                           <div className={`${style.bigButtonStyle} ${style.cursorPointer}`}>
-                            <div
+                            <div 
                               className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
                               onClick={onClickApprovalFunction}
                             >
@@ -4429,7 +4609,7 @@ const NewActiveApplication = ({
                             </div>
                           </div>
                           <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
-                            <div
+                            <div 
                               className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
                               onClick={onClickApprovalFunction}
                             >
@@ -4440,45 +4620,45 @@ const NewActiveApplication = ({
                       )}
                       {(selectedTab === "level-1") && (
                         <>
-                          <div
-                            className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
-                            style={{ opacity: isApproved ? 1 : 0.5 }}
-                          >
-                            <div
-                              className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                              onClick={isApproved ? onClickApproveFunction : undefined}
-                            >
-                              VERIFY FOR DEPT. HEAD
-                            </div>
-                          </div>
-                          <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
-                            <div
-                              className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                         <div 
+                     className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
+                     style={{ opacity: isApproved ? 1 : 0.5 }}
+                   >
+                      <div 
+                        className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                        onClick={isApproved ? onClickApproveFunction : undefined}
+                      >
+                         VERIFY FOR DEPT. HEAD
+                      </div>
+                    </div>
+                        <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
+                          <div 
+                            className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
                             // onClick={onClickApprovalFunction}
-                            >
-                              OVERRIDE FOR TEMPORARY PRIVILEGES
-                            </div>
+                          >
+                            OVERRIDE FOR TEMPORARY PRIVILEGES
                           </div>
+                        </div>
                         </>
                       )}
-                      {(selectedTab === "level-2") && (
+                       {(selectedTab === "level-2") && (
                         <>
-                          <div className={`${style.bigButtonStyle} ${style.cursorPointer}`}>
-                            <div
-                              className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                              onClick={onClickApproveFunction}
-                            >
-                              ACCEPT FOR CRED. COMM. REVIEW
-                            </div>
+                        <div className={`${style.bigButtonStyle} ${style.cursorPointer}`}>
+                          <div 
+                            className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                            onClick={onClickApproveFunction}
+                          >
+                            ACCEPT FOR CRED. COMM. REVIEW
                           </div>
-                          <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
-                            <div
-                              className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                        </div>
+                        <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
+                          <div 
+                            className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
                             // onClick={onClickApprovalFunction}
-                            >
-                              OVERRIDE FOR TEMPORARY PRIVILEGES
-                            </div>
+                          >
+                            OVERRIDE FOR TEMPORARY PRIVILEGES
                           </div>
+                        </div>
                         </>
                       )}
                     </>
@@ -4486,7 +4666,7 @@ const NewActiveApplication = ({
 
                   {((userRole?.includes('Credentialing Committee') && selectedTab === 'level-3') || (userRole?.includes('Department Head') && selectedTab === 'level-3')) && (
                     <div className={`${style.bigButtonStyle} ${style.cursorPointer}`}>
-                      <div
+                      <div 
                         className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
                         onClick={onClickApprovalFunction}
                       >
@@ -4495,519 +4675,519 @@ const NewActiveApplication = ({
                     </div>
                   )}
 
-                  {((userRole?.includes('Credentialing Committee') && selectedTab === 'level-3') || (userRole?.includes('Chief Of Staff') && selectedTab === "level-3") || (userRole?.includes('Staff Manager') && selectedTab === "level-3") || (userRole?.includes('Department Head') && selectedTab === "level-3")) ? (
-                    <div className={`${style.statusCard} ${style.marginTop20} ${style.marginBottom20}`}>
+                  {((userRole?.includes('Credentialing Committee')&& selectedTab === 'level-3') || (userRole?.includes('Chief Of Staff') && selectedTab === "level-3") || (userRole?.includes('Staff Manager') && selectedTab === "level-3") || (userRole?.includes('Department Head') && selectedTab === "level-3")) ? (
+                      <div className={`${style.statusCard} ${style.marginTop20} ${style.marginBottom20}`}>
                       <div className={`${style.statusCardTextStyle1} ${style.marginTop20}`}>Review and Approval Status</div>
                       <div className={`${style.spaceEvenly} ${style.marginTop20}`}>
-                        <div className={`${style.displayInCol}`}>
-                          <div className={`${style.statusStartTextStyle}`}>Not Started Yet</div>
-                          <div className={`${style.statusRoleTextStyle}`}>CHIEF OF STAFF / DEPUTY</div>
-                        </div>
-                        <div className={`${style.displayInCol}`}>
-                          <div className={`${style.statusStartTextStyle}`}>Not Started Yet</div>
-                          <div className={`${style.statusRoleTextStyle}`}>CREDENTIALING COMMITTEE</div>
-                        </div>
+                      <div className={`${style.displayInCol}`}>
+                        <div className={`${style.statusStartTextStyle}`}>Not Started Yet</div>
+                        <div className={`${style.statusRoleTextStyle}`}>CHIEF OF STAFF / DEPUTY</div>
+                      </div>
+                      <div className={`${style.displayInCol}`}>
+                        <div className={`${style.statusStartTextStyle}`}>Not Started Yet</div>
+                        <div className={`${style.statusRoleTextStyle}`}>CREDENTIALING COMMITTEE</div>
+                      </div>
                       </div>
                     </div>
-                  ) : null}
-                  {/* <div
+                    ) : null }
+                {/* <div
                   className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
                   onClick={handleApplicationAccept}
                 >
                   ACCEPT APPLICATION
                 </div> */}
-
+              
+            </div>
+            <>
+            {selectedTab !== "level-4" && selectedTab !== "level-5" && (
+            <>
+            <div className={style.cardLeftStyle}>
+              <div className={`${style.displayInRow}${style.marginTop20}`}>
+                <div
+                  className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
+                >
+                  <div
+                    className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                  >
+                    <span className={`${style.tableHeaderHeadingTextStyle}`}>
+                      Notes
+                    </span>
+                    <div
+                      className={`${style.marginTop5} ${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                    >
+                      <img
+                        src={EditBlue}
+                        alt="EditBlue"
+                        className={style.colorFileStyle}
+                      />
+                    </div>
+                  </div>
+                  <div
+                    className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                  >
+                    <div
+                      className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                    >
+                      <AddIcon
+                        sx={{
+                          fontSize: 20,
+                          color: "#94979A",
+                          cursor: "pointer",
+                        }}
+                      />
+                    </div>
+                  </div>
                 </div>
-                <>
-                  {selectedTab !== "level-4" && selectedTab !== "level-5" && (
-                    <>
-                      <div className={style.cardLeftStyle}>
-                        <div className={`${style.displayInRow}${style.marginTop20}`}>
-                          <div
-                            className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
-                          >
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                            >
-                              <span className={`${style.tableHeaderHeadingTextStyle}`}>
-                                Notes
-                              </span>
-                              <div
-                                className={`${style.marginTop5} ${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                              >
-                                <img
-                                  src={EditBlue}
-                                  alt="EditBlue"
-                                  className={style.colorFileStyle}
-                                />
-                              </div>
-                            </div>
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                            >
-                              <div
-                                className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                              >
-                                <AddIcon
-                                  sx={{
-                                    fontSize: 20,
-                                    color: "#94979A",
-                                    cursor: "pointer",
-                                  }}
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
-                        <div className={`${style.displayInRow}${style.marginTop20}`}>
-                          <div
-                            className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
-                          >
-                            <span className={`${style.tableHeaderHeadingTextStyle}`}>
-                              RFCs & Doc Clarification
-                            </span>
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                            >
-                              <div
-                                className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section1")}
-                              >
-                                {expandStates.section1 ? (
-                                  <RemoveIcon
-                                    sx={{
-                                      fontSize: 20,
-                                      color: "#94979A",
-                                      cursor: "pointer",
-                                    }}
-                                  />
-                                ) : (
-                                  <AddIcon
-                                    sx={{
-                                      fontSize: 20,
-                                      color: "#94979A",
-                                      cursor: "pointer",
-                                    }}
-                                  />
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                          {expandStates.section1 && (
-                            <>
-                              <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}>
-                                <div>Proof of Qualifications</div>
-                                <RemoveIcon
-                                  sx={{
-                                    fontSize: 20,
-                                    color: "#94979A",
-                                    cursor: "pointer",
-                                  }}
-                                />
-                              </div>
-                              <div className={`${style.marginBottom20} ${style.clarificationCardStyle}`}>
-                                <div className={`${style.gridGap3}`}>
-                                  <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
-                                  <div className={`${style.sideHeadingFontStyle}`}>Queen's University Clarification Title To Address</div>
-                                  <AddIcon
-                                    sx={{
-                                      fontSize: 20,
-                                      color: "#94979A",
-                                      cursor: "pointer",
-                                    }}
-                                  />
-                                </div>
-                              </div>
-                            </>
-                          )}
-                        </div>
-
-                        <div className={style.marginBottom20}></div>
-                      </div>
-                      <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
-                        <div className={`${style.displayInRow}${style.marginTop20}`}>
-                          <div
-                            className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
-                          >
-                            <span className={`${style.tableHeaderHeadingTextStyle}`}>
-                              Reference Feedback Status
-                            </span>
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                            >
-                              <div
-                                className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section2")}
-                              >
-                                {expandStates.section2 ? (
-                                  <RemoveIcon
-                                    sx={{
-                                      fontSize: 20,
-                                      color: "#94979A",
-                                      cursor: "pointer",
-                                    }}
-                                  />
-                                ) : (
-                                  <AddIcon
-                                    sx={{
-                                      fontSize: 20,
-                                      color: "#94979A",
-                                      cursor: "pointer",
-                                    }}
-                                  />
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                          {expandStates.section2 && (
-                            <>
-                              <div className={`${style.marginBottom20} ${style.referenceCardStyle}`}>
-
-                                <div className={`${style.gridGap}`}>
-                                  <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
-                                  <div>
-                                    <div className={style.displayInRow}>
-                                      <div>
-                                        <div className={`${style.sideHeadingFontStyle}`}>Professional Reference Name For Special Priv.</div>
-                                        <div className={`${style.sideHeadingRefFrontStyle}`}>Reference Questionnaire Sent On Oct 11, 2024</div>
-                                      </div>
-                                      {/* <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer}`} onClick={onClickEmailDialogFunction}>Send</div> */}
-                                      <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer}`}>Send</div>
-                                    </div>
-                                    <CommonDivider />
-                                  </div>
-                                </div>
-                                <div className={`${style.gridGap1}`}>
-                                  <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
-                                  <div className={`${style.sideHeadingFontStyle}`}>Marked As Favourable By Dept. Head On Oct 12, 2024</div>
-                                  <div className={`${style.viewTextStyle} ${style.viewButton} `}>Review</div>
-                                </div>
-                              </div>
-                            </>
-                          )}
-                        </div>
-                        <div className={style.marginBottom20}></div>
-                      </div>
-                      <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
-                        <div className={`${style.displayInRow}${style.marginTop20}`}>
-                          <div
-                            className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
-                          >
-                            <span className={`${style.tableHeaderHeadingTextStyle}`}>
-                              Immunization History Review
-                            </span>
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                            >
-                              <div
-                                className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section3")}
-                              >
-                                {expandStates.section3 ? (
-                                  <RemoveIcon
-                                    sx={{
-                                      fontSize: 20,
-                                      color: "#94979A",
-                                      cursor: "pointer",
-                                    }}
-                                  />
-                                ) : (
-                                  <AddIcon
-                                    sx={{
-                                      fontSize: 20,
-                                      color: "#94979A",
-                                      cursor: "pointer",
-                                    }}
-                                  />
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                          {expandStates.section3 && (
-                            <>
-                              <div className={`${style.marginBottom20} ${style.referenceCardStyle}`}>
-
-                                <div className={`${style.gridGap}`}>
-                                  <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
-                                  <div>
-                                    <div className={`${style.sideHeadingFontStyle}`}>Immunization History</div>
-                                    <div className={`${style.sideHeadingRefFrontStyle}`}>Approved By Safety & Wellness On Oct 11, 2024</div>
-                                  </div>
-                                </div>
-                              </div>
-                            </>
-                          )}
-                        </div>
-                        <div className={style.marginBottom20}></div>
-                      </div>
-                    </>
+              </div>
+            </div>
+            <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
+              <div className={`${style.displayInRow}${style.marginTop20}`}>
+                <div
+                  className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
+                >
+                  <span className={`${style.tableHeaderHeadingTextStyle}`}>
+                    RFCs & Doc Clarification
+                  </span>
+                  <div
+                    className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                  >
+                    <div
+                      className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section1")}
+                    >
+                    {expandStates.section1 ? (
+                          <RemoveIcon
+                            sx={{
+                              fontSize: 20,
+                              color: "#94979A",
+                              cursor: "pointer",
+                            }}
+                          />
+                        ) : (
+                          <AddIcon
+                            sx={{
+                              fontSize: 20,
+                              color: "#94979A",
+                              cursor: "pointer",
+                            }}
+                          />
+                        )}
+                    </div>
+                  </div>
+                </div>
+                {expandStates.section1 && (
+                  <>
+                  <div  className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}>
+                  <div>Proof of Qualifications</div>
+                  <RemoveIcon
+                            sx={{
+                              fontSize: 20,
+                              color: "#94979A",
+                              cursor: "pointer",
+                            }}
+                          />
+                  </div>
+                  <div className={`${style.marginBottom20} ${style.clarificationCardStyle}`}>
+                    <div className={`${style.gridGap3}`}>
+                      <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
+                      <div className={`${style.sideHeadingFontStyle}`}>Queen's University Clarification Title To Address</div>
+                      <AddIcon
+                            sx={{
+                              fontSize: 20,
+                              color: "#94979A",
+                              cursor: "pointer",
+                            }}
+                          />
+                    </div>
+                  </div>
+                 </>
                   )}
-                </>
+              </div>
+           
+              <div className={style.marginBottom20}></div>
+            </div>
+            <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
+              <div className={`${style.displayInRow}${style.marginTop20}`}>
+                <div
+                  className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
+                >
+                  <span className={`${style.tableHeaderHeadingTextStyle}`}>
+                   Reference Feedback Status
+                  </span>
+                  <div
+                    className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                  >
+                    <div
+                      className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section2")}
+                    >
+                    {expandStates.section2 ? (
+                          <RemoveIcon
+                            sx={{
+                              fontSize: 20,
+                              color: "#94979A",
+                              cursor: "pointer",
+                            }}
+                          />
+                        ) : (
+                          <AddIcon
+                            sx={{
+                              fontSize: 20,
+                              color: "#94979A",
+                              cursor: "pointer",
+                            }}
+                          />
+                        )}
+                    </div>
+                  </div>
+                </div>
+                {expandStates.section2  && (
+                  <>
+                  <div className={`${style.marginBottom20} ${style.referenceCardStyle}`}>
+                
+                    <div className={`${style.gridGap}`}>
+                      <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
+                       <div>
+                        <div className={style.displayInRow}>
+                          <div>
+                          <div className={`${style.sideHeadingFontStyle}`}>Professional Reference Name For Special Priv.</div>
+                          <div className={`${style.sideHeadingRefFrontStyle}`}>Reference Questionnaire Sent On Oct 11, 2024</div>
+                          </div>
+                         <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer}`} onClick={onClickEmailDialogFunction}>Send</div>
+                         {/* <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer}`}>Send</div> */}
+                         </div>   
+                         <CommonDivider />
+                       </div>
+                    </div>
+                    <div className={`${style.gridGap1}`}>
+                      <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
+                      <div className={`${style.sideHeadingFontStyle}`}>Marked As Favourable By Dept. Head On Oct 12, 2024</div>
+                      <div className={`${style.viewTextStyle} ${style.viewButton} `}>Review</div>   
+                    </div>
+                  </div>
+                  </>
+                  )}
+              </div>
+              <div className={style.marginBottom20}></div>
+            </div>
+            <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
+              <div className={`${style.displayInRow}${style.marginTop20}`}>
+                <div
+                  className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
+                >
+                  <span className={`${style.tableHeaderHeadingTextStyle}`}>
+                    Immunization History Review
+                  </span>
+                  <div
+                    className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                  >
+                    <div
+                      className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section3")}
+                    >
+                    {expandStates.section3 ? (
+                          <RemoveIcon
+                            sx={{
+                              fontSize: 20,
+                              color: "#94979A",
+                              cursor: "pointer",
+                            }}
+                          />
+                        ) : (
+                          <AddIcon
+                            sx={{
+                              fontSize: 20,
+                              color: "#94979A",
+                              cursor: "pointer",
+                            }}
+                          />
+                        )}
+                    </div>
+                  </div>
+                </div>
+                {expandStates.section3 && (
+                  <>
+                  <div className={`${style.marginBottom20} ${style.referenceCardStyle}`}>
+              
+                    <div className={`${style.gridGap}`}>
+                      <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
+                       <div>
+                         <div className={`${style.sideHeadingFontStyle}`}>Immunization History</div>
+                         <div className={`${style.sideHeadingRefFrontStyle}`}>Approved By Safety & Wellness On Oct 11, 2024</div>
+                       </div>
+                    </div>
+                  </div>
+                  </>
+                  )}
+              </div>
+              <div className={style.marginBottom20}></div>
+            </div>
+            </>
+            )}
+           </>
               </>
             ) : null
             }
-            {selectedTab === 'level-4' ? (
-              <>
-                <div className={`${style.cardLeftStyle2}`}>
-                  <div className={`${style.displayInRow}${style.marginTop20}`}>
-                    <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20}`}>
-                      <span className={`${style.tableHeaderHeadingTextStyle}`}>MAC Meeting Date*</span>
-                    </div>
-                    <CommonDateField
-                      className={style.dateWidth}
-                      onChange={(date) => handleDateChange(date, 'MAC')}
-                      open={calendarStart}
-                      onOpen={() => setCalendarStart(true)}
-                      onClose={() => setCalendarStart(false)}
-                      minDate={sub(new Date(), { years: 3 })}
-                      maxDate={new Date()}
-                      value={selectedDateForMac}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          inputProps={{
-                            ...params.inputProps,
-                            placeholder: 'Start Date',
-                          }}
-                          variant="outlined"
-                          margin="normal"
-                          fullWidth
-                        />
-                      )}
-                    />
-                  </div>
-                  <div className={style.marginBottom20}></div>
-                  <>
-                    <div className={`${style.buttonCardStyle2} ${style.cursorPointer}`}>
-                      <div className={`${style.buttonTextStyle} ${style.alignCenter}`}>REJECT</div>
-                    </div>
-                    <div
-                      className={`${style.bigButtonStyle2} ${style.cursorPointer}`}
-                      style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
-                      onClick={isButtonDisabled ? undefined : onClickApproveFunction}
-                    >
-                      <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
-                        MAC APPROVED
-                      </div>
-                    </div>
-                  </>
-                  {userRole?.includes('Chief Of Staff') && (
-                    <div className={`${style.bigButtonStyle2} ${style.cursorPointer}`}>
-                      <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
-                        OVERRIDE FOR TEMPORARY PRIVILEGES
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </>
-            ) : selectedTab === 'level-5' ? (
-              <>
-                <div className={`${style.cardLeftStyle2}`}>
-                  <div className={`${style.displayInCol}`}>
-                    <div
-                      className={`${style.spaceBetween} ${style.marginLeftRight20}`}
-                    >
-                      <span className={`${style.tableHeaderHeadingTextStyle} ${style.marginTop20}`}>
-                        BOD Approval Date
-                      </span>
-                    </div>
-                    <CommonDateField
-                      className={style.dateWidth}
-                      onChange={(date) => handleDateChange(date, 'BOD')}
-                      open={calendarStart}
-                      onOpen={() => setCalendarStart(true)}
-                      onClose={() => setCalendarStart(false)}
-
-                      minDate={sub(new Date(), { years: 3 })}
-                      maxDate={new Date()}
-                      value={selectedDateForBod}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          inputProps={{
-                            ...params.inputProps,
-                            placeholder: 'Start Date',
-                          }}
-                          variant="outlined"
-                          margin="normal"
-                          fullWidth
-                        />
-                      )}
-                    />
-                  </div>
-                  <div className={style.marginBottom20}></div>
-                  <div className={`${style.displayInRow}${style.marginTop20}`}>
-                    <div
-                      className={`${style.spaceBetween} ${style.marginLeftRight20}`}
-                    >
-                      <span className={`${style.tableHeaderHeadingTextStyle}`}>
-                        Reappointment Credentialing Application Creation Date
-                      </span>
-                    </div>
-                    <CommonDateField
-                      className={style.dateWidth}
-                      onChange={(date) => handleDateChange(date, 'Reappoint')}
-                      open={calendarStart}
-                      onOpen={() => setCalendarStart(true)}
-                      onClose={() => setCalendarStart(false)}
-
-                      minDate={sub(new Date(), { years: 3 })}
-                      maxDate={new Date()}
-                      value={selectedDateForReappoint}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          inputProps={{
-                            ...params.inputProps,
-                            placeholder: 'Start Date',
-                          }}
-                          variant="outlined"
-                          margin="normal"
-                          fullWidth
-                        />
-                      )}
-                    />
-                  </div>
-                  <div
-                    className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
-                  >
-                    <span className={`${style.tableHeaderHeadingTextStyle}`}>
-                      Upload Privilege request Approval from BOD
-                    </span>
-                  </div>
-                  <div className={`${style.twoColFile} ${style.marginTop} ${style.cursorPointer}`}>
-
-                    <>
-
-                      <Dropzone
-                        style={dropzoneStyle}
-                        onDrop={(acceptedFiles) => changeHandler(acceptedFiles)}
-                        accept={{
-                          'image/jpeg': [],
-                          'image/png': [],
-                          'image/jpg': [],
-                          'application/pdf': []
-                        }}
-                      >
-                        {({ getRootProps, getInputProps }) => (
-                          <section>
-                            <div {...getRootProps()}>
-                              <input {...getInputProps()} />
-                              <div className={style.uploadBorderStyle}>
-                                <p className={style.uploadTextStyle}>
-                                  Upload Your Documents
-                                </p>
-                                <p className={style.uploadDescriptionText}>
-                                  Upload your files or drag & drop from your file cabinet (Computer / Online Drive)
-                                </p>
+             {selectedTab === 'level-4' ? (
+                      <>
+                        <div className={`${style.cardLeftStyle2}`}>
+                          <div className={`${style.displayInRow}${style.marginTop20}`}>
+                            <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20}`}>
+                              <span className={`${style.tableHeaderHeadingTextStyle}`}>MAC Meeting Date*</span>
+                            </div>
+                            <CommonDateField
+                              className={style.dateWidth}
+                              onChange={(date) => handleDateChange(date, 'MAC')}
+                              open={calendarStart}
+                              onOpen={() => setCalendarStart(true)}
+                              onClose={() => setCalendarStart(false)}
+                              minDate={sub(new Date(), { years: 3 })}
+                              maxDate={new Date()}
+                              value={selectedDateForMac}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  inputProps={{
+                                    ...params.inputProps,
+                                    placeholder: 'Start Date',
+                                  }}
+                                  variant="outlined"
+                                  margin="normal"
+                                  fullWidth
+                                />
+                              )}
+                            />
+                          </div>
+                          <div className={style.marginBottom20}></div>
+                          <>
+                            <div className={`${style.buttonCardStyle2} ${style.cursorPointer}`}>
+                              <div className={`${style.buttonTextStyle} ${style.alignCenter}`}>REJECT</div>
+                            </div>
+                            <div
+                              className={`${style.bigButtonStyle2} ${style.cursorPointer}`}
+                              style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
+                              onClick={isButtonDisabled ? undefined : onClickApproveFunction}
+                            >
+                              <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
+                                MAC APPROVED
                               </div>
                             </div>
-                          </section>
-                        )}
-                      </Dropzone>
-
-
-                      <Dropzone
-                        style={dropzoneStyle}
-                        onDrop={(acceptedFiles) => changeHandler(acceptedFiles)}
-                        accept="image/*"
-                      >
-                        {({ getRootProps, getInputProps }) => (
-                          <section>
-                            <div {...getRootProps()}>
-                              <input {...getInputProps()} />
-                              <div className={style.uploadBorderStyle}>
-                                <p className={style.uploadTextStyle}>
-                                  Upload A Photo
-                                </p>
-                                <p className={style.uploadDescriptionText}>
-                                  Click a picture of the document with your camera and Upload or Upload from your photo gallery.
-                                </p>
+                          </>
+                          {userRole?.includes('Chief Of Staff') && (
+                            <div className={`${style.bigButtonStyle2} ${style.cursorPointer}`}>
+                              <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
+                               OVERRIDE FOR TEMPORARY PRIVILEGES
                               </div>
                             </div>
-                          </section>
-                        )}
-                      </Dropzone>
-                    </>
-
-                  </div>
-                  <div className={`${style.displayInRow} ${style.referenceCardStyle} ${style.alignItem}  ${style.marginTop10}`}>
-                    <DescriptionIcon className={`${style.docsIcon}`} />
-                    {files.length > 0 ? (
-                      files.map((file, index) => (
-                        <div key={index} className={`${style.marginLeft20}`}>{file.name}</div>
-                      ))
-                    ) : (
-                      <div className={`${style.marginLeft20}`}>No documents uploaded</div>
-                    )}
-                  </div>
-                  <>
-                    {taskCount > 0 ? (
-                      <>
-                        <div className={`${style.displayInRow} ${style.alignContent} ${style.marginTop10}`}>
-                          <WarningIcon className={style.warning} />
-                          <div className={`${style.marginLeft20} ${style.alignItem}`}>ChecklistList Item Pending Completion <span className={style.checkListitem}> {taskCount} items </span></div>
-                        </div>
-
-                      </>
-                    ) : (
-                      <>
-                        <div className={`${style.displayInRow} ${style.alignContent} ${style.marginTop10}`}>
-                          <TaskAltIcon className={style.correcticon} />
-                          <div className={`${style.marginLeft20} ${style.alignItem}`}>All checklist items are completed</div>
+                          )}
                         </div>
                       </>
-                    )}
-                    <div
-                      className={`${style.bigButtonStyle2} ${style.cursorPointer}`}
-                    >
-                      <div
-                        className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20} ${style.paddingButton}`}
-                        onClick={onClickCheckListFunction}
-                      >
-                        SAVE & VIEW CHECKLIST
-                      </div>
-                      <div className={`${style.marginTop20} ${style.marginBottom20}`}></div>
-                    </div>
-                    <div
-                      className={`${style.buttonCardStyle2} ${style.cursorPointer} ${style.marginTop20} ${style.paddingButton}`}
-                    >
-                      <div
-                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                    ) :  selectedTab === 'level-5' ? (
+                                <>
+                                    <div className={`${style.cardLeftStyle2}`}>
+                                    <div className={`${style.displayInCol}`}>
+                                      <div
+                                        className={`${style.spaceBetween} ${style.marginLeftRight20}`}
+                                      >
+                                        <span className={`${style.tableHeaderHeadingTextStyle} ${style.marginTop20}`}>
+                                        BOD Approval Date
+                                        </span>
+                                      </div>
+                                      <CommonDateField
+                                            className={style.dateWidth}
+                                            onChange={(date) => handleDateChange(date, 'BOD')}
+                                            open={calendarStart}
+                                            onOpen={() => setCalendarStart(true)}
+                                            onClose={() => setCalendarStart(false)}
+                                          
+                                            minDate={sub(new Date(), { years: 3 })}
+                                            maxDate={new Date()}
+                                            value={selectedDateForBod}
+                                            renderInput={(params) => (
+                                              <TextField
+                                                {...params}
+                                                inputProps={{
+                                                  ...params.inputProps,
+                                                  placeholder: 'Start Date',
+                                                }}
+                                                variant="outlined"
+                                                margin="normal"
+                                                fullWidth
+                                              />
+                                            )}
+                                          />
+                                    </div>
+                                    <div className={style.marginBottom20}></div>
+                                    <div className={`${style.displayInRow}${style.marginTop20}`}>
+                                      <div
+                                        className={`${style.spaceBetween} ${style.marginLeftRight20}`}
+                                      >
+                                        <span className={`${style.tableHeaderHeadingTextStyle}`}>
+                                        Reappointment Credentialing Application Creation Date
+                                        </span>
+                                      </div>
+                                      <CommonDateField
+                                            className={style.dateWidth}
+                                            onChange={(date) => handleDateChange(date, 'Reappoint')}
+                                            open={calendarStart}
+                                            onOpen={() => setCalendarStart(true)}
+                                            onClose={() => setCalendarStart(false)}
+                                          
+                                            minDate={sub(new Date(), { years: 3 })}
+                                            maxDate={new Date()}
+                                            value={selectedDateForReappoint}
+                                            renderInput={(params) => (
+                                              <TextField
+                                                {...params}
+                                                inputProps={{
+                                                  ...params.inputProps,
+                                                  placeholder: 'Start Date',
+                                                }}
+                                                variant="outlined"
+                                                margin="normal"
+                                                fullWidth
+                                              />
+                                            )}
+                                          />
+                                    </div>
+                                    <div
+                                        className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
+                                      >
+                                        <span className={`${style.tableHeaderHeadingTextStyle}`}>
+                                        Upload Privilege request Approval from BOD
+                                        </span>
+                                      </div>
+                                      <div className={`${style.twoColFile} ${style.marginTop} ${style.cursorPointer}`}>
+                                  
+                                            <>
+                          
+                                  <Dropzone
+                                      style={dropzoneStyle}
+                                      onDrop={(acceptedFiles) => changeHandler(acceptedFiles)}
+                                      accept={{
+                                          'image/jpeg': [],
+                                          'image/png': [],
+                                          'image/jpg': [],
+                                          'application/pdf': []
+                                      }}
+                                  >
+                                      {({ getRootProps, getInputProps }) => (
+                                          <section>
+                                              <div {...getRootProps()}>
+                                                  <input {...getInputProps()} />
+                                                  <div className={style.uploadBorderStyle}>
+                                                      <p className={style.uploadTextStyle}>
+                                                          Upload Your Documents
+                                                      </p>
+                                                      <p className={style.uploadDescriptionText}>
+                                                          Upload your files or drag & drop from your file cabinet (Computer / Online Drive)
+                                                      </p>
+                                                  </div>
+                                              </div>
+                                          </section>
+                                      )}
+                                  </Dropzone>
 
-                      >
-                        REJECT
-                      </div>
-                    </div>
-                    <div
-                    >
-                      {/* <div
+
+                                  <Dropzone
+                                      style={dropzoneStyle}
+                                      onDrop={(acceptedFiles) => changeHandler(acceptedFiles)}
+                                      accept="image/*"
+                                  >
+                                      {({ getRootProps, getInputProps }) => (
+                                          <section>
+                                              <div {...getRootProps()}>
+                                                  <input {...getInputProps()} />
+                                                  <div className={style.uploadBorderStyle}>
+                                                      <p className={style.uploadTextStyle}>
+                                                          Upload A Photo
+                                                      </p>
+                                                      <p className={style.uploadDescriptionText}>
+                                                          Click a picture of the document with your camera and Upload or Upload from your photo gallery.
+                                                      </p>
+                                                  </div>
+                                              </div>
+                                          </section>
+                                      )}
+                                  </Dropzone>
+                              </>
+
+                                  </div>
+                                  <div className={`${style.displayInRow} ${style.referenceCardStyle} ${style.alignItem}  ${style.marginTop10}`}>
+                                    <DescriptionIcon className={`${style.docsIcon}`}/>
+                                      {files.length > 0 ? (
+                                          files.map((file, index) => (
+                                              <div key={index} className= {`${style.marginLeft20}`}>{file.name}</div>
+                                          ))
+                                      ) : (
+                                          <div className= {`${style.marginLeft20}`}>No documents uploaded</div>
+                                      )}
+                                  </div>
+                                    <>
+                                    {taskCount > 0 ? (
+                                      <>
+                                      <div className={`${style.displayInRow} ${style.alignContent} ${style.marginTop10}`}>
+                                        <WarningIcon className={style.warning} />
+                                        <div className= {`${style.marginLeft20} ${style.alignItem}`}>ChecklistList Item Pending Completion <span className={style.checkListitem}> {taskCount} items </span></div>
+                                        </div>
+                                
+                                        </>
+                                      ) : (
+                                        <>
+                                        <div className={`${style.displayInRow} ${style.alignContent} ${style.marginTop10}`}>
+                                        <TaskAltIcon className={style.correcticon} />
+                                        <div className= {`${style.marginLeft20} ${style.alignItem}`}>All checklist items are completed</div>
+                                        </div>
+                                        </>
+                                      )}
+                                    <div
+                                        className={`${style.bigButtonStyle2} ${style.cursorPointer}`}
+                                      >
+                                        <div
+                                          className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20} ${style.paddingButton}`}
+                                          onClick={onClickCheckListFunction}
+                                        >
+                                          SAVE & VIEW CHECKLIST
+                                        </div>
+                                        <div className={`${style.marginTop20} ${style.marginBottom20}`}></div>
+                                        </div>
+                                        <div
+                                      className={`${style.buttonCardStyle2} ${style.cursorPointer} ${style.marginTop20} ${style.paddingButton}`}
+                                      >
+                                        <div
+                                          className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                                  
+                                        >
+                                          REJECT
+                                        </div>
+                                        </div>
+                                        <div
+                                      >
+                                      {/* <div
                                         className={`${allTasksCompleted  ? style.bigButtonGreyStyle2 : style.bigButtonStyle2} ${style.cursorPointer}`}
                                       > */}
-                      <div
-                        className={` ${style.bigButtonStyle2} ${style.cursorPointer}`}
-                      >
-                        <div
-                          className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}
-                          //  onClick={allTasksCompleted ? handleApplicationAccept : null}
-                          onClick={onClickApproveFunction}
-                        >
-                          BOD APPROVED
-                        </div>
-                      </div>
-                      <div className={style.marginBottom20}></div>
-                    </div>
-                  </>
-                  {userRole?.includes('Chief Of Staff') && (
-                    <div className={`${style.bigButtonStyle2} ${style.cursorPointer}`}>
-                      <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
-                        OVERRIDE FOR TEMPORARY PRIVILEGES
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </>
-            ) : " "}
-          </div>
+                                        <div
+                                        className={` ${style.bigButtonStyle2} ${style.cursorPointer}`}
+                                      >
+                                        <div
+                                          className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}
+                                          //  onClick={allTasksCompleted ? handleApplicationAccept : null}
+                                          onClick={onClickApproveFunction}
+                                        >
+                                          BOD APPROVED
+                                        </div>
+                                        </div>
+                                        <div className={style.marginBottom20}></div>
+                                        </div>
+                                        </> 
+                                        {userRole?.includes('Chief Of Staff') && (
+                                          <div className={`${style.bigButtonStyle2} ${style.cursorPointer}`}>
+                                            <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
+                                            OVERRIDE FOR TEMPORARY PRIVILEGES
+                                            </div>
+                                          </div>
+                                        )}
+                                    </div>
+                                    </>
+                    ): " "}
+          </div>  
         </div>
         <div className={style.marginTop50}></div>
         {showApplicationDeclineDialog && (

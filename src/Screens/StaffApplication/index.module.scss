@@ -470,15 +470,16 @@ body::-webkit-scrollbar {
 .multipleOptionsCard {
   background: $primarycolor 0% 0% no-repeat padding-box;
   border: none;
+
 }
 
 .specificActionCard {
-  min-height: 35px;
+  min-height: 30px;
   padding: 10px;
   display: flex;
   align-items: center;
   color: #F5F9FD;
-  max-width: 250px;
+  max-width: 200px;
 }
 
 .tableHeaderTextStyle {
@@ -770,6 +771,16 @@ body::-webkit-scrollbar {
 .displayInRow {
   display: flex;
   flex-direction: row;
+}
+
+.displayInRowDecline {
+  display: flex;
+  flex-direction: row;
+  height: fit-content;
+}
+
+.textAlign{
+  align-items: center;
 }
 
 .displayInGrid {
@@ -2945,7 +2956,7 @@ input[type="file"] {
 }
 
 .specificActionCard {
-  height: 35px;
+  // height: 35px;
   padding: 0 10px;
   display: flex;
   align-items: center;
@@ -3270,6 +3281,8 @@ input[type="number"] {
   grid-template-columns: 1fr 1fr;
   grid-gap: 20px;
 }
+
+
 
 .serviceSpecificationGridActive {
   display: grid;
