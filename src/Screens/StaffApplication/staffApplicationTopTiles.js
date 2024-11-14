@@ -12,63 +12,64 @@ const StaffApplicationTopTiles = () => {
   //   const [counts, setCounts] = useState({});
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-    // const getTitleCounts = async () => {
-    //   await GET(`application-management-service/application/workflowUser/meta?applicationCreationType=${applicationCreationType}`)
-    //     .then(response => {
-    //       setCounts(response?.data);
-    //     })
-    //     .catch(error => {
-    //       console.log('error', error);
-    //     })
-    // };
+  // const getTitleCounts = async () => {
+  //   await GET(`application-management-service/application/workflowUser/meta?applicationCreationType=${applicationCreationType}`)
+  //     .then(response => {
+  //       setCounts(response?.data);
+  //     })
+  //     .catch(error => {
+  //       console.log('error', error);
+  //     })
+  // };
 
-    // const getApplicationCreationType = (value) => {
-    //   setApplicationCreationType(value);
-    // }
+  // const getApplicationCreationType = (value) => {
+  //   setApplicationCreationType(value);
+  // }
 
-    useEffect(() => {
-      const storedApplicationType = sessionStorage.getItem('applicationCreationType');
-      if (storedApplicationType) {
-        setApplicationCreationType(storedApplicationType);
-        const initialTab = storedApplicationType === 'NEW' ? 'NewApplicants' : 'StaffReappointments';
-        setSelectedTab(initialTab);
-      }
-    }, []);
+  useEffect(() => {
+    sessionStorage.setItem('applicationCreationType', 'NEW')
+    const storedApplicationType = sessionStorage.getItem('applicationCreationType');
+    if (storedApplicationType) {
+      setApplicationCreationType(storedApplicationType);
+      const initialTab = storedApplicationType === 'NEW' ? 'NewApplicants' : 'StaffReappointments';
+      setSelectedTab(initialTab);
+    }
+  }, []);
 
-    // useEffect(() => {
-    //   getTitleCounts();
-    // }, [applicationCreationType]);
+  // useEffect(() => {
+  //   getTitleCounts();
+  // }, [applicationCreationType]);
 
-    // const getSelectedTab = (tab) => {
-    //   setSelectedTab(tab);
-    //   // if (tab === "StaffReappointments") {
-    //   //   setIsDialogOpen(true);  
-    //   // }
-    // };
+  // const getSelectedTab = (tab) => {
+  //   setSelectedTab(tab);
+  //   // if (tab === "StaffReappointments") {
+  //   //   setIsDialogOpen(true);  
+  //   // }
+  // };
 
-    // const getSelectedTab = (tab) => {
-    //   setSelectedTab(tab);
-    //   if (selectedTab === 'StaffReappointments') {
-    //     setApplicationCreationType('REAPPOINTMENT');
-    //     // setIsDialogOpen(true); 
-    //   } else {
-    //     setApplicationCreationType('NEW');
-    //   }
-    //   console.log("setApplicationCreationType" + applicationCreationType)
-    // };
+  // const getSelectedTab = (tab) => {
+  //   setSelectedTab(tab);
+  //   if (selectedTab === 'StaffReappointments') {
+  //     setApplicationCreationType('REAPPOINTMENT');
+  //     // setIsDialogOpen(true); 
+  //   } else {
+  //     setApplicationCreationType('NEW');
+  //   }
+  //   console.log("setApplicationCreationType" + applicationCreationType)
+  // };
 
-    const getSelectedTab = (tab) => {
-      setSelectedTab(tab);
-      const newType = tab === 'NewApplicants' ? 'NEW' : 'REAPPOINTMENT';
-      setApplicationCreationType(newType);
-      sessionStorage.setItem('applicationCreationType', newType);
-      console.log("setApplicationCreationType" + newType)
-    };
+  const getSelectedTab = (tab) => {
+    setSelectedTab(tab);
+    const newType = tab === 'NewApplicants' ? 'NEW' : 'REAPPOINTMENT';
+    setApplicationCreationType(newType);
+    sessionStorage.setItem('applicationCreationType', newType);
+    console.log("setApplicationCreationType" + newType)
+  };
 
-    // useEffect(() => {
-    //   getSelectedTab();
-    //   sessionStorage.setItem('applicationCreationType', applicationCreationType);
-    // }, []);
+  // useEffect(() => {
+  //   getSelectedTab();
+  //   sessionStorage.setItem('applicationCreationType', applicationCreationType);
+  // }, []);
 
   return (
     <div className={`${style.tabs}`} >

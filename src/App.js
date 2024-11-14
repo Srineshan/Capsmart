@@ -971,7 +971,7 @@ const App = ({ props }) => {
                 path="/createStaffMemberApplication"
                 element={<CreateStaffMemberApplication />}
               />
-                <Route
+              <Route
                 path="/createStaffReapplication"
                 element={<CreateStaffReapplication />}
               />
