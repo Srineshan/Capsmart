@@ -294,7 +294,7 @@ const StaffApplicationList = ({
   const [reFetchMetaData, setReFetchMetaData] = useState(false)
   const [applicationCreationType, setApplicationCreationType] = useState('NEW');
   const [applicationType, setApplicationType] = useState(() =>
-    sessionStorage.getItem('applicationCreationType') || ''
+    sessionStorage.getItem('applicationCreationType') || 'NEW'
   );
   // const [counts, setCounts] = useState({
   //   chiefOfStaff: 0,
