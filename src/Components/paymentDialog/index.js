@@ -1,17 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, Classes } from '@blueprintjs/core';
 import CrossPink from "../../images/crossPink.png";
 import ThirdPartyDialog from '../../Components/ThirdPartyDialog';
 
 import { loadStripe } from '@stripe/stripe-js';
 import style from './index.module.scss';
+import { useParams } from 'react-router-dom';
+import { GET } from '../../Screens/dataSaver';
 
 const stripePromise = loadStripe('pk_test_51OPIp6SJfzua1uDJrMdrq3o5Sfq9wWdv7y3Ev62RkNJEHGrHdMRcrLrxzNMMXiQTCvi9eR3QuvzxqY1OTMPv9mnp003pgscIaj');
 
 
 const PaymentDialog = ({ getIsOpen, continueClickFunc }) => {
+    const [formIndex, setFormIndex] = useState();
     const [isContinue, setIsContinue] = useState(false);
     const [showThirdPartyDialog, setShowThirdPartyDialog] = useState(false);
+    const { applicationId, section, step } = useParams()
+    const [basicForm, setBasicForm] = useState({})
+
+    useEffect(() => {
+        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
+    }, [basicForm, step])
+
+    useEffect(() => {
+        getPreApplication()
+    }, [applicationId])
+
+    const getPreApplication = async () => {
+        if (applicationId !== '') {
+            const { data: basicForm } = await GET(
+                `application-management-service/application/${applicationId}`
+            );
+            setBasicForm(basicForm)
+        }
+    }
 
     const getIsShowThirdPartyDialog = (value) => {
         setShowThirdPartyDialog(value);
@@ -26,8 +48,8 @@ const PaymentDialog = ({ getIsOpen, continueClickFunc }) => {
                 quantity: 1,
             }],
             mode: 'payment',
-            successUrl: 'https://example.com/success',
-            cancelUrl: 'https://example.com/cancel',
+            successUrl: `${window.location.origin}/app/reappointmentApplicationForm/${applicationId}/${basicForm?.forms?.[formIndex + 1]?.formCategory}/${basicForm?.forms?.[formIndex + 1]?.schemaCategory}`,
+            cancelUrl: `${window.location.origin}/app/reappointmentApplicationForm/${applicationId}/${section}/${step}`,
         });
         // If `redirectToCheckout` fails due to a browser or network
         // error, display the localized error message to your customer
