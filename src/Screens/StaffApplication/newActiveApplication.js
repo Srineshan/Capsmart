@@ -138,6 +138,7 @@ const NewActiveApplication = ({
   const [userRole, setUserRole] = useState('');
   const [taskCount, setTaskCount] = useState(0);
   const [isApproved, setIsApproved] = useState(false);
+  const [logDetails, setLogDetails] = useState([]);
   const [statusStyle, setStatusStyle] = useState();
   const canadaData =
     sessionStorage.getItem("canadaData") !== "undefined"
@@ -232,16 +233,22 @@ const NewActiveApplication = ({
   // }, [form]);
 
   useEffect(() => {
-    if (form?.formSchemas) {
+    if (form?.formSchemas)  {
+
+      const relevantSchemas = form?.forms?.filter(schema => schema?.schemaCategory !== "UploadYourDoc");
+
+      console.log("relevantSchemas" + JSON.stringify(relevantSchemas));
+      
       // Check if all forms are approved
-      const areAllFormsApproved = form.formSchemas.every((_, index) => 
-        form?.forms[index]?.status === "APPROVED"
+      const areAllFormsApproved = relevantSchemas.every((index) => 
+       
+          form?.forms[index]?.status === "APPROVED" 
       );
       
       setIsApproved(areAllFormsApproved);
       
       // Debug logging
-      form.formSchemas.forEach((_, index) => {
+      relevantSchemas.forEach((_, index) => {
         console.log(`Form ${index} status:`, form?.forms[index]?.status);
         console.log(`Form ${index} isApproved:`, form?.forms[index]?.status === "APPROVED");
       });
@@ -263,6 +270,13 @@ const NewActiveApplication = ({
         }
     }
   }, [form]);
+
+  // const filteredSchemas = form.formSchemas.filter(data =>
+  //   (data?.formCategory === "Form" || data?.formCategory === "Disclosure") &&
+  //   data?.schemaCategory !== "UploadYourDoc"
+  // );
+
+  // console.log('Filtered Schemas:', filteredSchemas);
   
 
   const getPreApplicationTask = async () => {
@@ -341,7 +355,8 @@ const NewActiveApplication = ({
   }, [contractSelected]);
 
   useEffect(() => {
-    approveView();
+    approveView(userRole);
+    getLog();
   }, []);
 
   useEffect(() => {
@@ -558,8 +573,57 @@ const NewActiveApplication = ({
   };
 
   const handleStepsVerify = async (formId) => {
+    // let role;
+    // let notes;
+
+    // if (selectedTab === 'level-2') {
+    //   role = "Department Head";
+    //   notes = "Send"
+    // } else if (selectedTab === 'level-3') {
+    //   role = "Credentialing Committee";
+    //   notes = "Send"
+    // } else if (selectedTab === 'level-4') {
+    //   role = "Advisory Committee";
+    //   notes = "Send"
+    // } else if (selectedTab === 'level-5') {
+    //   role = "Board";
+    //   notes = "Send"
+    // } 
+
+    // let temp = {
+    //   role: role,
+    //   notes: notes
+    // };
+
+    let role;
+
+    switch (selectedTab) {
+      case 'level-2':
+        role = "Department Head";
+        break;
+      case 'level-3':
+        role = "Chief Of Staff";
+        break;
+      case 'level-4':
+        role = "Advisory Committee";
+        break;
+      case 'level-5':
+        role = "Board";
+        break;
+      case 'level-1':
+        role = "Staff Manager";
+        break;
+      default:
+        role = "";
+    }
+
+    // const isDelegate = selectedTab === 'level-2' || selectedTab === 'level-3' || selectedTab === 'level-4' || selectedTab === 'level-5' ? true : false;
+    // const requestData = isDelegate === true ? temp : {};
+
+    const isDelegate = userRole?.includes(role) ? false : true;
+    const requestData = isDelegate ? { role: role } : {};
     await PUT(
-      `application-management-service/application/${applicationId}/form/${formId}/APPROVED`
+      `application-management-service/application/${applicationId}/form/${formId}/APPROVED?isDelegate=${isDelegate}`, requestData
     )
       .then((response) => {
         console.log("success");
@@ -624,28 +688,36 @@ const NewActiveApplication = ({
     getPreApplication();
   };
 
-  const approveView = async () => {
-    // const roleMap = {
-    //     'level-1': "Chief Of Staff",
-    //     'level-2': "Department Head",
-    //     'level-3': "Credentialing Committee",
-    //     'level-4': "Advisory Committee",
-    //     'level-5': "Board"
-    //   };
-    //   console.log("roleMap" + roleMap);
+  const approveView = async (userRole) => {
+    const roleMap = {
+        'level-1': "Staff Manager",
+        'level-2': "Department Head",
+        'level-3': "Credentialing Committee",
+        'level-4': "Advisory Committee",
+        'level-5': "Board"
+      };
+      console.log("roleMap" + roleMap);
       
 
-    //   const role = roleMap[selectedTab];
-    //   console.log("roleeeeee1" + role);
+      const role = roleMap[selectedTab];
+      // const role = userRole;
+      // console.log("roleeeeee1" + userRole);
+
+      console.log("roleApproval" + role)
       
 
         const { data: basicApproval } = await GET(
-          `application-management-service/application/${applicationId}/approvalRequiredForms?role=${userRole}`
+          `application-management-service/application/${applicationId}/approvalRequiredForms?role=${role}`
         );
         setCredApproval(basicApproval)  
         console.log("basicApproval" + JSON.stringify(credApproval));     
   }
 
+
+  const getLog = async () => {
+    const { data: basicLog } = await GET(`application-management-service/application/${applicationId}/logs`);
+    setLogDetails(basicLog);
+  };
   const onClickApprovalFunction = () => {
     getApprovalNotesCommentBox(true);
   };
@@ -834,6 +906,55 @@ const NewActiveApplication = ({
   const onClose = () => {
     getActiveApplicationView(false);
   };
+
+const filteredData = form?.formSchemas?.filter((data) => data?.formCategory === "Acknowledgement");
+console.log("filteredDataaaaaaaaaaa" +JSON.stringify(filteredData));
+
+const relevantForm = form?.forms?.filter(schema => schema?.schemaCategory !== "UploadYourDoc");
+
+console.log("relevantForm" +JSON.stringify(relevantForm))
+
+// // Check if logDetails.logs is an array before calling forEach
+// if (logDetails?.logs && Array.isArray(logDetails?.logs)) {
+//   logDetails.logs.forEach(log => {
+//     if (log.form && log.form.id) {
+//       console.log("form id: " + log.form.id);
+//       const isMatch = form?.forms?.some(f => f.id === log.form.id);
+//       console.log(isMatch ? "true" : "false");
+
+//       if (isMatch) {
+//         console.log("Rolesssss: " + userRole?.includes(log?.role));
+
+//         // Define role based on selectedTab
+//         let selectedTabRole;
+//         if (selectedTab === 'level-2') {
+//           selectedTabRole = "Department Head";
+//         } else if (selectedTab === 'level-3') {
+//           selectedTabRole = "Chief Of Staff";
+//         } else if (selectedTab === 'level-4') {
+//           selectedTabRole = "Advisory Committee";
+//         } else if (selectedTab === 'level-5') {
+//           selectedTabRole = "Board";
+//         } else if (selectedTab === 'level-1') {
+//           selectedTabRole = "Staff Manager";
+//         }
+
+//         // Check if selectedTabRole matches log.role
+//         if (selectedTabRole === log.role) {
+//           console.log("Selected tab role matches log role: " + log.role);
+//         } else {
+//           console.log("Selected tab role does NOT match log role");
+//         }
+//       }
+//     }
+//   });
+// } else {
+//   console.error("logDetails.logs is not an array or is undefined.");
+// }
+
+// logDetails?.logs?.forEach((log, index) => {
+//   console.log(`Role at index ${index}: ${log?.role}`);
+// });
 
   const renderFieldsBasedOnStep = (data) => {
     switch (data?.schemaCategory) {
@@ -1972,7 +2093,7 @@ const NewActiveApplication = ({
                           : style.tableHeaderGridStyle
                           } ${style.marginTop10}`}
                       >
-                        <div
+                        <div 
                           className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                         >
                           <div
@@ -1991,32 +2112,89 @@ const NewActiveApplication = ({
                           </div>
                         </div>
                         {expand?.status && expand?.index === index + 1 ? (
+                       <>
+                          {credApproval?.filter((newData) => {
+                              console.log("newData.schema:", newData.schemaId);
+                              console.log("data.id:", data.id);
+                              return newData.schemaId === data.id;
+                          })[0]?.approvalRequired === true && (
                           <>
-                            {form?.forms[index]?.status !== "APPROVED" ? (
-                              <div
-                                className={`${style.purpleButton} ${style.cursorPointer} `}
-                              >
-                                <div
-                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                  onClick={() =>
-                                    handleStepsVerify(form?.forms[index]?.id)
+                          {logDetails?.logs && Array.isArray(logDetails?.logs) ? (
+                            (() => {
+                              let isMatch = false;
+
+                              logDetails.logs.forEach((log) => {
+                                if (log.form && log.form.id) {
+                                  console.log("form id: " + log.form.id);
+                                  
+                                  if (form?.forms?.some(f => f.id === log.form.id)) {
+                                    console.log("form match found, setting isMatch to true");
+                                    isMatch = true;
+                              
+                                    // Check if userRole includes log.role
+                                    if (userRole?.includes(log?.role)) {
+                                      console.log("Role matches user role: " + log.role);
+                                      isMatch = true;
+                                    } else {
+                                      console.log("Role does NOT match user role: " + log.role);
+                                      isMatch = false;
+                                    }
+                              
+                                    // Determine selectedTabRole
+                                    let selectedTabRole;
+                                    if (selectedTab === 'level-2') {
+                                      selectedTabRole = "Department Head";
+                                    } else if (selectedTab === 'level-3') {
+                                      selectedTabRole = "Chief Of Staff";
+                                    } else if (selectedTab === 'level-4') {
+                                      selectedTabRole = "Advisory Committee";
+                                    } else if (selectedTab === 'level-5') {
+                                      selectedTabRole = "Board";
+                                    } else if (selectedTab === 'level-1') {
+                                      selectedTabRole = "Staff Manager";
+                                    }
+                              
+                                    // Check if selectedTabRole matches log.role
+                                    if (selectedTabRole === log.role) {
+                                      console.log("Selected tab role matches log role: " + log.role);
+                                      isMatch = true;
+                                    } else {
+                                      console.log("Selected tab role does NOT match log role: " + log.role);
+                                      isMatch = false;
+                                    }
+                                  } else {
+                                    console.log("form match NOT found, setting isMatch to false");
+                                    isMatch = false;
                                   }
-                                >
-                                  Verify
+                                }
+                              });
+
+                              return isMatch && (
+                                <div>
+                                  {form?.forms[index]?.status !== "APPROVED" ? (
+                                    <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                      <div
+                                        className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                        onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                      >
+                                        Verify
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                      <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                        Verified
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
-                              </div>
-                            ) : (
-                              <div
-                                className={`${style.greenButton}  ${style.cursorPointer} `}
-                              >
-                                <div
-                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                >
-                                  Verified
-                                </div>
-                              </div>
-                            )}
-                          </>
+                              );
+                            })()
+                          ) : null}
+                        </>
+                      )}
+
+                     </>
                         ) : (
                           <>
                             <div
@@ -3967,7 +4145,8 @@ const NewActiveApplication = ({
                         >
                           <div
                             className={`${style.marginLeft10} ${style.justifySpaceAround
-                              } ${form?.forms[index]?.status !== "APPROVED"
+                              } ${form?.forms[index]?.status !== "APPROVED" &&
+                                  form?.forms[index]?.schemaCategory !== "UploadYourDoc"
                                 ? style.greyDotStyle
                                 : style.greenDotStyle
                               }`}
@@ -3982,18 +4161,19 @@ const NewActiveApplication = ({
                         </div>
                         {expand?.status && expand?.index === index + 1 ? (
                           <>
-                            {form?.forms[index]?.status !== "APPROVED" ? (
+                            {form?.forms[index]?.status !== "APPROVED" &&
+                             form?.forms[index]?.schemaCategory !== "UploadYourDoc" ? (
                               <div
                                 className={`${style.purpleButton} ${style.cursorPointer} `}
                               >
-                                <div
-                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                  onClick={() =>
-                                    handleStepsVerify(form?.forms[index]?.id)
-                                  }
-                                >
-                                  Verify
-                                </div>
+                               {form?.forms[index]?.schemaCategory !== "UploadYourDoc" && (
+                                    <div
+                                      className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                      onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                    >
+                                      Verify
+                                    </div>
+                                  )}
                               </div>
                             ) : (
                               <div
@@ -4014,7 +4194,8 @@ const NewActiveApplication = ({
                             >
                               <div
                                 className={`${style.marginLeft10}${style.justifySpaceAround
-                                  } ${form?.forms[index]?.status !== "APPROVED"
+                                  } ${form?.forms[index]?.status !== "APPROVED" &&
+                                      form?.forms[index]?.schemaCategory !== "UploadYourDoc"
                                     ? style.greyDotStyle
                                     : style.greenDotStyle
                                   }`}
@@ -4025,7 +4206,8 @@ const NewActiveApplication = ({
                             >
                               <div
                                 className={`${style.marginLeft10}${style.justifySpaceAround
-                                  } ${form?.forms[index]?.status !== "APPROVED"
+                                  } ${form?.forms[index]?.status !== "APPROVED" &&
+                                      form?.forms[index]?.schemaCategory !== "UploadYourDoc"
                                     ? style.greyDotStyle
                                     : style.greenDotStyle
                                   }`}
@@ -4669,8 +4851,8 @@ const NewActiveApplication = ({
                           <div className={`${style.sideHeadingFontStyle}`}>Professional Reference Name For Special Priv.</div>
                           <div className={`${style.sideHeadingRefFrontStyle}`}>Reference Questionnaire Sent On Oct 11, 2024</div>
                           </div>
-                         {/* <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer}`} onClick={onClickEmailDialogFunction}>Send</div> */}
-                         <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer}`}>Send</div>
+                         <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer}`} onClick={onClickEmailDialogFunction}>Send</div>
+                         {/* <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer}`}>Send</div> */}
                          </div>   
                          <CommonDivider />
                        </div>

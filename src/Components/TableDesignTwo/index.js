@@ -16,9 +16,9 @@ import PODIcon from '../../images/PODIcon.png'
 import DataFieldIcon from '../../images/DataFieldIcon.png'
 import style from './index.module.scss';
 import CommonDivider from '../CommonFields/CommonDivider';
-// import { GET } from "../../Screens/dataSaver";
-// import Cookie from 'universal-cookie';
-// import jwt from 'jwt-decode';
+import { GET } from "../../Screens/dataSaver";
+import Cookie from 'universal-cookie';
+import jwt from 'jwt-decode';
 
 const useStyles = makeStyles(theme => ({
     popover: {
@@ -42,10 +42,10 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
     const [anchorElCountWithHover, setAnchorElCountWithHover] = useState(null);
     const openCountWithHover = Boolean(anchorElCountWithHover);
     const [anchorElTextWithHover, setAnchorElTextWithHover] = useState(null);
-    // const [userRole, setUserRole] = useState('');
-    // let cookie = new Cookie();
-    // let userDetails = cookie.get('user');
-    // const users = jwt(userDetails);
+    const [userRole, setUserRole] = useState('');
+    let cookie = new Cookie();
+    let userDetails = cookie.get('user');
+    const users = jwt(userDetails);
     const openTextWithHover = Boolean(anchorElTextWithHover);
     const open = Boolean(anchorEl);
     const [anchorElSite, setAnchorElSite] = useState(null);
@@ -150,16 +150,16 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
 
     const classes = useStyles();
 
-    // useEffect(() => {
-    //     setUserDetails();
-    //   }, [users?.id])
+    useEffect(() => {
+        setUserDetails();
+      }, [users?.id])
     
-    //   const setUserDetails = async () => {
-    //     const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
-    //     console.log("userdataaaa" + JSON.stringify(userData))
-    //     sessionStorage.setItem('user', JSON.stringify(userData))
-    //     setUserRole(userData?.roles?.map((data) => data?.roleName));
-    //   }
+      const setUserDetails = async () => {
+        const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
+        console.log("userdataaaa" + JSON.stringify(userData))
+        sessionStorage.setItem('user', JSON.stringify(userData))
+        setUserRole(userData?.roles?.map((data) => data?.roleName));
+      }
 
     function useOptionsHide(ref) {
         useEffect(() => {
@@ -536,10 +536,53 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
                                                     </div> */}
                                                     <div className={style.actionsCard} ref={menuRef}>
                                                         {actions?.map((actionsData, actionsIndex) => {
-                                                            // Check if the action should be hidden for the current user's role
-                                                            if (actionsData.hideForRoles?.includes("Staff Manager")) {
-                                                            return null;
-                                                            }
+                                                           
+                                                            // if ((actionsData.hideForRoles?.includes("Staff Manager")) || actionsData.hideForRoles?.includes("Department Head")) {
+                                                            // return null;
+                                                            // }
+
+
+                                                            console.log("hideForRoles" + actionsData.hideForRoles);
+
+                                                            const checkRoleVisibility = (actionsData, userRole) => {
+                                                                
+                                                                if (!actionsData.hideForRoles && 
+                                                                    !actionsData.hideForRoles2 && 
+                                                                    !actionsData.showForRoles && 
+                                                                    !actionsData.showForRoles2) {
+                                                                  return true;
+                                                                }
+                                                              
+                                                                
+                                                                if (actionsData.hideForRoles?.includes(userRole)) {
+                                                                  return false;
+                                                                }
+                                                              
+                                                                if (actionsData.hideForRoles2?.includes(userRole)) {
+                                                                  return false;
+                                                                }
+                                                              
+                                                            
+                                                                if (actionsData.showForRoles && actionsData.showForRoles.includes(userRole)) {
+                                                                  return true;
+                                                                }
+                                                              
+                                                                if (actionsData.showForRoles2 && actionsData.showForRoles2.includes(userRole)) {
+                                                                  return true;
+                                                                }
+
+                                                                if (actionsData.showForRoles || actionsData.showForRoles2 || actionsData.showForRoles3) {
+                                                                  return false;
+                                                                }
+                                                              
+                                                                return true;
+                                                              };
+                                                              
+                                                              // Usage
+                                                              if (!checkRoleVisibility(actionsData, userRole)) {
+                                                                return null;
+                                                              }
+                                                            
 
                                                             return actionsData?.isParagraph ? (
                                                             <>

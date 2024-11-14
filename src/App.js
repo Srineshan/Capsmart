@@ -270,6 +270,10 @@ const CreateStaffMemberApplication = React.lazy(() =>
   import("./Screens/CreateStaffMemberApplication")
 );
 
+const CreateStaffReapplication = React.lazy(() =>
+  import("./Screens/CreateStaffReapplication")
+);
+
 const ApplicationSetup = React.lazy(() =>
   import("./Screens/ApplicationSetup/ApplicationConfiguration")
 );
@@ -948,6 +952,10 @@ const App = ({ props }) => {
               <Route
                 path="/createStaffMemberApplication"
                 element={<CreateStaffMemberApplication />}
+              />
+                <Route
+                path="/createStaffReapplication"
+                element={<CreateStaffReapplication />}
               />
               <Route path="/loginPage" element={<LoginDialog />} />
             </Routes>

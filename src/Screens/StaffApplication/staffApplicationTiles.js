@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import TileApplication from '../../Components/TileApplication';
 import style from './index.module.scss';
@@ -21,27 +22,37 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
   });
   const [userFlow, setUserFlow] = useState('');
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
+  const [applicationType, setApplicationType] = useState(() => 
+    sessionStorage.getItem('applicationCreationType') || 'NEW'
+  );
   const applicationId = "66dc44ec788741fedc982b01";
 
+  // Listen for session storage changes
   useEffect(() => {
-    getTitleCounts();
-    setUserDetails();
-    getUserRoleType();
-  }, []);
-  useEffect(() =>{
-    if(reFetchMetaData === true){
+    const intervalId = setInterval(() => {
+      const currentValue = sessionStorage.getItem('applicationCreationType');
+      if (currentValue !== applicationType) {
+        setApplicationType(currentValue);
+      }
+    });
+
+  }, [applicationType]);
+
+  useEffect(() => {
+    if (applicationType) {
       getTitleCounts();
     }
-  },[reFetchMetaData] )
-
+  }, [applicationType]);
 
   const getTitleCounts = async () => {
     try {
-      const response = await GET('application-management-service/application/workflowUser/meta?applicationCreationType=NEW');
+      const response = await GET(
+        `application-management-service/application/workflowUser/meta?applicationCreationType=${applicationType}`
+      );
       setCounts(response?.data);
       getReFetchMetaData(false);
     } catch (error) {
-      console.error('Error fetching title counts', error);
+      console.error('Error fetching title counts:', error);
     }
   };
 
@@ -51,57 +62,60 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
       sessionStorage.setItem('user', JSON.stringify(userData));
       setUserRole(userData?.roles?.map((data) => data?.roleName) || []);
     } catch (error) {
-      console.error('Error fetching user details', error);
+      console.error('Error fetching user details:', error);
     }
   };
 
   const getUserRoleType = async () => {
     try {
-      const response = await GET(`application-management-service/applicantType/approvalFlow?applicantTypeId=${applicationId}`);
+      const response = await GET(
+        `application-management-service/applicantType/approvalFlow?applicantTypeId=${applicationId}`
+      );
       setUserFlow(response?.data?.approvalFlowMap);
-      console.log("flowssss", JSON.stringify(response?.data?.approvalFlowMap));
     } catch (error) {
-      console.error('Error fetching user role type', error);
+      console.error('Error fetching user role type:', error);
     }
   };
 
+  // Initial data fetching
+  useEffect(() => {
+    setUserDetails();
+    getUserRoleType();
+  }, []);
+
+  // Handle refetch metadata changes
   useEffect(() => {
     if (reFetchMetaData === true) {
       getTitleCounts();
     }
   }, [reFetchMetaData]);
-  
+
+  // Handle user flow and role updates
   useEffect(() => {
     const UserFlowType = userFlow?.workflow || [];
     
-    // Determine if the user is a  staff manager or chief of staff
     const isManagerOrChief = userRole?.includes("Staff Manager") || userRole?.includes("Chief Of Staff");
     
-    // Calculate currentRoleIndex based on userFlowArray
     const newCurrentRoleIndex = isManagerOrChief
       ? 0 
       : Object.entries(UserFlowType).findIndex(([key, value]) => {
           const details = value?.flowDetails;
           return (
             details &&
-            details.some((detail) => {
-              return detail?.role && userRole?.includes(detail?.role?.roleName);
-            })
+            details.some((detail) => detail?.role && userRole?.includes(detail?.role?.roleName))
           );
       });
-      if (userRole.length > 0 && !initialTabSet) {
-        const initialTab = isManagerOrChief
-          ? 'level-1'
-          : `level-${Object.keys(UserFlowType)[newCurrentRoleIndex]}`;
-        getSelectedTab(initialTab);
-        setInitialTabSet(true); // Set the initial tab
-      }
+
+    if (userRole.length > 0 && !initialTabSet) {
+      const initialTab = isManagerOrChief
+        ? 'level-1'
+        : `level-${Object.keys(UserFlowType)[newCurrentRoleIndex]}`;
+      getSelectedTab(initialTab);
+      setInitialTabSet(true);
+    }
     
     setCurrentRoleIndex(newCurrentRoleIndex);
-  
-  }, [userFlow, userRole,getSelectedTab, initialTabSet]);
-  
-  console.log("currentRoleIndex" + currentRoleIndex);
+  }, [userFlow, userRole, getSelectedTab, initialTabSet]);
 
   const UserFlowType = userFlow?.workflow || [];
 
@@ -114,7 +128,6 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
   const handleTabClick = (tab) => {
     getSelectedTab(tab);
   };
-  
 
   return (
     <div className={`${style.tabs}`}>

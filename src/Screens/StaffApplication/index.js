@@ -15,6 +15,7 @@ const StaffApplication = () => {
     const [activeApplicationView, setActiveApplicationView] = useState(false);
     const [credCommApplicationView, setCredCommApplicationView] = useState(false);
     const [activeApplicationTask, setActiveApplicationTask] = useState(false);
+    // const [activeApplicationTaskReappoint, setActiveApplicationTaskReappoint] = useState(false);
     const [notesCommentsBox, setNotesCommentBox] = useState(false);
     const [approvalnotesCommentsBox, setApprovalNotesCommentBox] = useState(false);
     const [emailDialogBox, setEmailDialogBox] = useState(false);

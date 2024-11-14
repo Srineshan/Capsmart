@@ -28,7 +28,7 @@ export const baseUrl = () => {
   // }
 
   if (hostname === 'localhost') {
-    response = 'http://ec2-15-157-205-106.ca-central-1.compute.amazonaws.com';
+    response = 'http://ec2-107-23-66-238.compute-1.amazonaws.com';
   } else {
     response = window.location.origin;
   }
