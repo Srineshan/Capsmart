@@ -5,6 +5,7 @@ import CrossPink from "../../images/crossPink.png";
 import style from './index.module.scss'
 
 const ValidationDialog = ({ getIsOpen, labelList, getSkipClicked }) => {
+  console.log(labelList, 'Metadata')
   return (
     <Dialog isOpen={getIsOpen} onClose={() => getIsOpen(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
       <div>

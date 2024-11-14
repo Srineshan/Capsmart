@@ -149,7 +149,7 @@ const MedicalDirectivesAttest = () => {
         }
         await POST(`medical-directive-service/medicalDirectives/${medicalDirectivesId}/attest`, temp)
             .then(response => {
-                // navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex]?.formCategory}/${basicForm?.forms[formIndex]?.schemaCategory}`)
+                navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex]?.formCategory}/${basicForm?.forms[formIndex]?.schemaCategory}`)
                 getAttestationLog();
                 console.log(response, response?.response?.data)
             })
@@ -189,7 +189,7 @@ const MedicalDirectivesAttest = () => {
                     </div>
                     <div>
                         <div className={style.medicalDirectivesCard}>
-                            <div className={style.title}>{`Attestation Required In {43} Days`} </div>
+                            <div className={style.title}>{`Attestation Required In 43 Days`} </div>
                             <div className={`${style.marginTop10} ${style.attestationRequiredText}`}>You need to scroll to the end of the document before you can certify the Directive</div>
                         </div>
                         <div className={`${style.medicalDirectivesCard} ${style.marginTop}`}>

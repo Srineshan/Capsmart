@@ -238,14 +238,14 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
                     <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleDownload()}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)} >CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => { handleSubmitApplicationReq(); setShowJourneyDialog(true) }} >CONTINUE</div>
                     </div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
                     </div>
                 </div>
                 {showJourneyDialog && (
-                    <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Mission Accomplished! You're A Champion`} img={JourneyStep10} formIndex={formIndex} basicForm={basicForm} continueClick={handleSubmitApplicationReq} />
+                    <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Mission Accomplished! You're A Champion`} img={JourneyStep10} formIndex={formIndex} basicForm={basicForm} continueClick={() => { }} />
                 )}
             </div>
         </div>

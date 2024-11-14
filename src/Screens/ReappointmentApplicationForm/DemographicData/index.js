@@ -31,6 +31,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [metadata, setMetadata] = useState([]);
     const [labels, setLabels] = useState([]);
     const [warningFields, setWarningFields] = useState([]);
+    const [warningFieldsContact, setWarningFieldsContact] = useState([]);
     const [showValidationDialog, setShowValidationDialog] = useState(false);
     const [showDemographicInfo, setShowDemographicInfo] = useState(false);
     const [showContactInfo, setShowContactInfo] = useState(false);
@@ -41,6 +42,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formIndex, setFormIndex] = useState();
     const [navigateURL, setNavigateURL] = useState();
     const [showJourneyDialog, setShowJourneyDialog] = useState(false);
+    const [updateFrom, setUpdateFrom] = useState('');
     useEffect(() => {
         if (basicForm && !formSchema) {
             getBasicForm()
@@ -103,6 +105,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     }
 
     const getMissingFieldsBasicInfo = () => {
+        setUpdateFrom('')
         let missingKeys = [];
         let keyValuePair = [];
         metadata?.map((data, index) => {
@@ -142,26 +145,26 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                         },
                     }));
                 }
-                if (
-                    basicForm.basicDetails.applicant.cellPhone &&
-                    !phoneRegex.test(basicForm.basicDetails.applicant.cellPhone)
-                ) {
-                    missingKeys.push({
-                        key: "basicDetails.applicant.cellPhone",
-                        label: "Cell Phone",
-                        error: "Invalid phone number format",
-                    });
-                    setBasicForm((prevForm) => ({
-                        ...prevForm,
-                        basicDetails: {
-                            ...prevForm.basicDetails,
-                            applicant: {
-                                ...prevForm.basicDetails.applicant,
-                                cellPhone: "",
-                            },
-                        },
-                    }));
-                }
+                // if (
+                //     basicForm.basicDetails.applicant.cellPhone &&
+                //     !phoneRegex.test(basicForm.basicDetails.applicant.cellPhone)
+                // ) {
+                //     missingKeys.push({
+                //         key: "basicDetails.applicant.cellPhone",
+                //         label: "Cell Phone",
+                //         error: "Invalid phone number format",
+                //     });
+                //     setBasicForm((prevForm) => ({
+                //         ...prevForm,
+                //         basicDetails: {
+                //             ...prevForm.basicDetails,
+                //             applicant: {
+                //                 ...prevForm.basicDetails.applicant,
+                //                 cellPhone: "",
+                //             },
+                //         },
+                //     }));
+                // }
                 missingKeys.push(data);
             }
         });
@@ -181,11 +184,12 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
             );
             missingKeys = temp;
         }
-        if (missingKeys?.length !== 0) {
+        if (missingKeys?.length !== 0 && missingKeys?.filter(data => data?.label !== undefined)?.length !== 0) {
             setShowValidationDialog(true);
         } else {
             handleSubmitApplicationReq();
         }
+        console.log(missingKeys, 'Metadata', updateFrom)
         setWarningFields(missingKeys);
     };
 
@@ -215,9 +219,18 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         if (value) {
             handleSubmitApplicationReq()
         }
+        setUpdateFrom('')
+    }
+
+    const getContactSkipClicked = (value, data, skip) => {
+        if (value) {
+            handleContactAddressSubmit('skipped')
+        }
+        setUpdateFrom('')
     }
 
     const getMissingFields = () => {
+        setUpdateFrom('')
         let missingKeys = [];
         let keyValuePair = [];
         metadata?.map((data, index) => {
@@ -303,12 +316,12 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
             let temp = missingKeys?.filter(data => !registeredBusinessAddressKeys?.includes(data?.key));
             missingKeys = temp;
         }
-        setWarningFields(missingKeys)
-        if (missingKeys?.length !== 0) {
+        setWarningFieldsContact(missingKeys)
+        if (missingKeys?.length !== 0 && missingKeys?.filter(data => data?.label !== undefined)?.length !== 0) {
             setShowValidationDialog(true)
         } else {
             setShowContactInfo(false);
-            // handleSubmitApplicationReq()
+            getIsSubmitClickedForContact(true);
         }
         console.log(keyValuePair, 'Metadata', missingKeys, getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`))
     }
@@ -525,7 +538,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                                 onClick={isContactInfoEdited ? () => {
                                                     // setShowContactInfo(false);
                                                     getMissingFields()
-                                                    // getIsSubmitClickedForContact(true)
+                                                    setUpdateFrom('contact')
                                                 } : () => { }}
                                             >
                                                 UPDATE
@@ -630,8 +643,8 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
             {showValidationDialog && (
                 <ValidationDialog
                     getIsOpen={getIsValidationDialogOpen}
-                    labelList={warningFields}
-                    getSkipClicked={getSkipClicked}
+                    labelList={updateFrom === 'contact' ? warningFieldsContact : warningFields}
+                    getSkipClicked={updateFrom === 'contact' ? getContactSkipClicked : getSkipClicked}
                 />
             )}
             {showJourneyDialog && (

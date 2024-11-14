@@ -328,34 +328,36 @@ const ApplicationFieldCard = ({
         return result;
     };
 
-    let isMailingAddressSameAsHomeAddress = getValueByPath(basicForm, 'forms[1].data.contactAddress2.isMailingAddressSameAsHomeAddress');
-    let isBusinessAddressSameAsHomeAddressOrMailingAddress = getValueByPath(basicForm, 'forms[1].data.contactAddress3.isBusinessAddressSameAsHomeAddressOrMailingAddress');
-    let isHomeAddressPincodeEntered = getValueByPath(basicForm, 'forms[1].data.contactAddress1.homeAddress.pinCode');
-    let isMailingAddressPincodeEntered = getValueByPath(basicForm, 'forms[1].data.contactAddress2.mailingAddress.pinCode');
-    let isBusinessAddressPincodeEntered = getValueByPath(basicForm, 'forms[1].data.contactAddress3.business.businessAddress.pinCode');
-    let registeredBusinessAddress = getValueByPath(basicForm, 'forms[1].data.contactAddress3.registeredBusinessAddress');
-    let department = getValueByPath(basicForm, 'basicDetails.departmentSpecialty.department');
+    let addressPageIndex = basicForm?.forms?.findIndex(data => basicForm?.creationType === 'REAPPOINTMENT' ? data?.schemaCategory === 'DemographicData' : data?.schemaCategory === 'ContactAddress')
+
+    let isMailingAddressSameAsHomeAddress = getValueByPath(basicForm, `forms[${addressPageIndex}].data.contactAddress2.isMailingAddressSameAsHomeAddress`);
+    let isBusinessAddressSameAsHomeAddressOrMailingAddress = getValueByPath(basicForm, `forms[${addressPageIndex}].data.contactAddress3.isBusinessAddressSameAsHomeAddressOrMailingAddress`);
+    let isHomeAddressPincodeEntered = getValueByPath(basicForm, `forms[${addressPageIndex}].data.contactAddress1.homeAddress.pinCode`);
+    let isMailingAddressPincodeEntered = getValueByPath(basicForm, `forms[${addressPageIndex}].data.contactAddress2.mailingAddress.pinCode`);
+    let isBusinessAddressPincodeEntered = getValueByPath(basicForm, `forms[${addressPageIndex}].data.contactAddress3.business.businessAddress.pinCode`);
+    let registeredBusinessAddress = getValueByPath(basicForm, `forms[${addressPageIndex}].data.contactAddress3.registeredBusinessAddress`);
+    let department = getValueByPath(basicForm, `basicDetails.departmentSpecialty.department`);
     console.log(isMailingAddressSameAsHomeAddress, isBusinessAddressSameAsHomeAddressOrMailingAddress)
     useEffect(() => {
         if (isMailingAddressSameAsHomeAddress !== undefined && isMailingAddressSameAsHomeAddress !== null && !isPOD && (baseKey?.split('.')[0] === 'contactAddress1' || baseKey?.split('.')[0] === 'contactAddress2' || baseKey?.split('.')[0] === 'contactAddress3')) {
             setBasicForm(prevData => {
                 let tempBasicForm = { ...prevData };
-                if (tempBasicForm?.forms[1]?.data?.contactAddress2?.mailingAddress === undefined) {
-                    tempBasicForm.forms[1].data.contactAddress2.mailingAddress = {}
+                if (tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress2?.mailingAddress === undefined) {
+                    tempBasicForm.forms[addressPageIndex].data.contactAddress2.mailingAddress = {}
                 }
                 tempBasicForm.contactAddress2 = { mailingAddress: {} }
                 if (isMailingAddressSameAsHomeAddress) {
-                    tempBasicForm.forms[1].data.contactAddress2.mailingAddress.streetName = tempBasicForm?.forms[1]?.data?.contactAddress1?.homeAddress?.streetName !== undefined ? tempBasicForm?.forms[1]?.data?.contactAddress1?.homeAddress?.streetName : '';
-                    tempBasicForm.forms[1].data.contactAddress2.mailingAddress.pinCode = tempBasicForm?.forms[1]?.data?.contactAddress1?.homeAddress?.pinCode !== undefined ? tempBasicForm?.forms[1]?.data?.contactAddress1?.homeAddress?.pinCode : '';
-                    tempBasicForm.forms[1].data.contactAddress2.mailingAddress.city = tempBasicForm?.forms[1]?.data?.contactAddress1?.homeAddress?.city !== undefined ? tempBasicForm?.forms[1]?.data?.contactAddress1?.homeAddress?.city : '';
-                    tempBasicForm.forms[1].data.contactAddress2.mailingAddress.province = tempBasicForm?.forms[1]?.data?.contactAddress1?.homeAddress?.province !== undefined ? tempBasicForm?.forms[1]?.data?.contactAddress1?.homeAddress?.province : '';
+                    tempBasicForm.forms[addressPageIndex].data.contactAddress2.mailingAddress.streetName = tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress1?.homeAddress?.streetName !== undefined ? tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress1?.homeAddress?.streetName : '';
+                    tempBasicForm.forms[addressPageIndex].data.contactAddress2.mailingAddress.pinCode = tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress1?.homeAddress?.pinCode !== undefined ? tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress1?.homeAddress?.pinCode : '';
+                    tempBasicForm.forms[addressPageIndex].data.contactAddress2.mailingAddress.city = tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress1?.homeAddress?.city !== undefined ? tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress1?.homeAddress?.city : '';
+                    tempBasicForm.forms[addressPageIndex].data.contactAddress2.mailingAddress.province = tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress1?.homeAddress?.province !== undefined ? tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress1?.homeAddress?.province : '';
                 } else {
-                    tempBasicForm.forms[1].data.contactAddress2.mailingAddress.streetName = '';
-                    tempBasicForm.forms[1].data.contactAddress2.mailingAddress.pinCode = '';
-                    tempBasicForm.forms[1].data.contactAddress2.mailingAddress.city = '';
-                    tempBasicForm.forms[1].data.contactAddress2.mailingAddress.province = '';
+                    tempBasicForm.forms[addressPageIndex].data.contactAddress2.mailingAddress.streetName = '';
+                    tempBasicForm.forms[addressPageIndex].data.contactAddress2.mailingAddress.pinCode = '';
+                    tempBasicForm.forms[addressPageIndex].data.contactAddress2.mailingAddress.city = '';
+                    tempBasicForm.forms[addressPageIndex].data.contactAddress2.mailingAddress.province = '';
                 }
-                tempBasicForm.contactAddress2.mailingAddress = tempBasicForm.forms[1].data.contactAddress2.mailingAddress
+                tempBasicForm.contactAddress2.mailingAddress = tempBasicForm.forms[addressPageIndex].data.contactAddress2.mailingAddress
                 return tempBasicForm;
             });
         }
@@ -365,33 +367,33 @@ const ApplicationFieldCard = ({
         if (isBusinessAddressSameAsHomeAddressOrMailingAddress !== undefined && isBusinessAddressSameAsHomeAddressOrMailingAddress !== null && !isPOD && (baseKey?.split('.')[0] === 'contactAddress1' || baseKey?.split('.')[0] === 'contactAddress2' || baseKey?.split('.')[0] === 'contactAddress3')) {
             setBasicForm(prevData => {
                 let tempContactAddress3 = { ...prevData };
-                if (tempContactAddress3?.forms[1]?.data?.contactAddress3?.business === undefined) {
-                    tempContactAddress3.forms[1].data.contactAddress3.business = {}
+                if (tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress3?.business === undefined) {
+                    tempContactAddress3.forms[addressPageIndex].data.contactAddress3.business = {}
                 }
-                if (tempContactAddress3?.forms[1]?.data?.contactAddress3?.business?.businessAddress === undefined) {
-                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress = {}
+                if (tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress3?.business?.businessAddress === undefined) {
+                    tempContactAddress3.forms[addressPageIndex].data.contactAddress3.business.businessAddress = {}
                 }
                 if (isBusinessAddressSameAsHomeAddressOrMailingAddress === "Same as Home Address") {
                     tempContactAddress3.contactAddress3 = { business: { businessAddress: {} } }
-                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.streetName = tempContactAddress3?.forms[1]?.data?.contactAddress1?.homeAddress?.streetName !== undefined ? tempContactAddress3?.forms[1]?.data?.contactAddress1?.homeAddress?.streetName : '';
-                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.pinCode = tempContactAddress3?.forms[1]?.data?.contactAddress1?.homeAddress?.pinCode !== undefined ? tempContactAddress3?.forms[1]?.data?.contactAddress1?.homeAddress?.pinCode : '';
-                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.city = tempContactAddress3?.forms[1]?.data?.contactAddress1?.homeAddress?.city !== undefined ? tempContactAddress3?.forms[1]?.data?.contactAddress1?.homeAddress?.city : '';
-                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.province = tempContactAddress3?.forms[1]?.data?.contactAddress1?.homeAddress?.province !== undefined ? tempContactAddress3?.forms[1]?.data?.contactAddress1?.homeAddress?.province : '';
-                    tempContactAddress3.contactAddress3 = { business: { businessAddress: tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress } }
+                    tempContactAddress3.forms[addressPageIndex].data.contactAddress3.business.businessAddress.streetName = tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress1?.homeAddress?.streetName !== undefined ? tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress1?.homeAddress?.streetName : '';
+                    tempContactAddress3.forms[addressPageIndex].data.contactAddress3.business.businessAddress.pinCode = tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress1?.homeAddress?.pinCode !== undefined ? tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress1?.homeAddress?.pinCode : '';
+                    tempContactAddress3.forms[addressPageIndex].data.contactAddress3.business.businessAddress.city = tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress1?.homeAddress?.city !== undefined ? tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress1?.homeAddress?.city : '';
+                    tempContactAddress3.forms[addressPageIndex].data.contactAddress3.business.businessAddress.province = tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress1?.homeAddress?.province !== undefined ? tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress1?.homeAddress?.province : '';
+                    tempContactAddress3.contactAddress3 = { business: { businessAddress: tempContactAddress3.forms[addressPageIndex].data.contactAddress3.business.businessAddress } }
                 } else if (isBusinessAddressSameAsHomeAddressOrMailingAddress === "Same as Mailing Address") {
                     tempContactAddress3.contactAddress3 = { business: { businessAddress: {} } }
-                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.streetName = tempContactAddress3?.forms[1]?.data.contactAddress2?.mailingAddress?.streetName !== undefined ? tempContactAddress3?.forms[1]?.data.contactAddress2?.mailingAddress?.streetName : '';
-                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.pinCode = tempContactAddress3?.forms[1]?.data.contactAddress2?.mailingAddress?.pinCode !== undefined ? tempContactAddress3?.forms[1]?.data.contactAddress2?.mailingAddress?.pinCode : '';
-                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.city = tempContactAddress3?.forms[1]?.data.contactAddress2?.mailingAddress?.city !== undefined ? tempContactAddress3?.forms[1]?.data.contactAddress2?.mailingAddress?.city : '';
-                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.province = tempContactAddress3?.forms[1]?.data.contactAddress2?.mailingAddress?.province !== undefined ? tempContactAddress3?.forms[1]?.data.contactAddress2?.mailingAddress?.province : '';
-                    tempContactAddress3.contactAddress3 = { business: { businessAddress: tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress } }
+                    tempContactAddress3.forms[addressPageIndex].data.contactAddress3.business.businessAddress.streetName = tempContactAddress3?.forms[addressPageIndex]?.data.contactAddress2?.mailingAddress?.streetName !== undefined ? tempContactAddress3?.forms[addressPageIndex]?.data.contactAddress2?.mailingAddress?.streetName : '';
+                    tempContactAddress3.forms[addressPageIndex].data.contactAddress3.business.businessAddress.pinCode = tempContactAddress3?.forms[addressPageIndex]?.data.contactAddress2?.mailingAddress?.pinCode !== undefined ? tempContactAddress3?.forms[addressPageIndex]?.data.contactAddress2?.mailingAddress?.pinCode : '';
+                    tempContactAddress3.forms[addressPageIndex].data.contactAddress3.business.businessAddress.city = tempContactAddress3?.forms[addressPageIndex]?.data.contactAddress2?.mailingAddress?.city !== undefined ? tempContactAddress3?.forms[addressPageIndex]?.data.contactAddress2?.mailingAddress?.city : '';
+                    tempContactAddress3.forms[addressPageIndex].data.contactAddress3.business.businessAddress.province = tempContactAddress3?.forms[addressPageIndex]?.data.contactAddress2?.mailingAddress?.province !== undefined ? tempContactAddress3?.forms[addressPageIndex]?.data.contactAddress2?.mailingAddress?.province : '';
+                    tempContactAddress3.contactAddress3 = { business: { businessAddress: tempContactAddress3.forms[addressPageIndex].data.contactAddress3.business.businessAddress } }
                 } else {
                     tempContactAddress3.contactAddress3 = { business: { businessAddress: {} } }
-                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.streetName = '';
-                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.pinCode = '';
-                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.city = '';
-                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.province = '';
-                    tempContactAddress3.contactAddress3 = { business: { businessAddress: tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress } }
+                    tempContactAddress3.forms[addressPageIndex].data.contactAddress3.business.businessAddress.streetName = '';
+                    tempContactAddress3.forms[addressPageIndex].data.contactAddress3.business.businessAddress.pinCode = '';
+                    tempContactAddress3.forms[addressPageIndex].data.contactAddress3.business.businessAddress.city = '';
+                    tempContactAddress3.forms[addressPageIndex].data.contactAddress3.business.businessAddress.province = '';
+                    tempContactAddress3.contactAddress3 = { business: { businessAddress: tempContactAddress3.forms[addressPageIndex].data.contactAddress3.business.businessAddress } }
                 }
                 return tempContactAddress3;
             });
@@ -402,23 +404,23 @@ const ApplicationFieldCard = ({
         if (registeredBusinessAddress !== undefined && registeredBusinessAddress !== null && !registeredBusinessAddress && !isPOD && (baseKey?.split('.')[0] === 'contactAddress1' || baseKey?.split('.')[0] === 'contactAddress2' || baseKey?.split('.')[0] === 'contactAddress3')) {
             setBasicForm(prevData => {
                 let tempContactAddress3 = { ...prevData };
-                if (tempContactAddress3?.forms[1]?.data?.contactAddress3?.business === undefined) {
-                    tempContactAddress3.forms[1].data.contactAddress3.business = {}
+                if (tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress3?.business === undefined) {
+                    tempContactAddress3.forms[addressPageIndex].data.contactAddress3.business = {}
                 }
-                if (tempContactAddress3?.forms[1]?.data?.contactAddress3?.business?.businessAddress === undefined) {
-                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress = {}
+                if (tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress3?.business?.businessAddress === undefined) {
+                    tempContactAddress3.forms[addressPageIndex].data.contactAddress3.business.businessAddress = {}
                 }
 
                 tempContactAddress3.contactAddress3 = { business: { businessAddress: {} } }
-                tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.streetName = '';
-                tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.pinCode = '';
-                tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.city = '';
-                tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.province = '';
-                tempContactAddress3.forms[1].data.contactAddress3.business.businessName = '';
-                tempContactAddress3.forms[1].data.contactAddress3.business.businessPhone = '';
-                tempContactAddress3.forms[1].data.contactAddress3.business.businessWebsite = '';
-                tempContactAddress3.forms[1].data.contactAddress3.isBusinessAddressSameAsHomeAddressOrMailingAddress = '';
-                tempContactAddress3.contactAddress3 = { business: { businessAddress: tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress }, isBusinessAddressSameAsHomeAddressOrMailingAddress: '' }
+                tempContactAddress3.forms[addressPageIndex].data.contactAddress3.business.businessAddress.streetName = '';
+                tempContactAddress3.forms[addressPageIndex].data.contactAddress3.business.businessAddress.pinCode = '';
+                tempContactAddress3.forms[addressPageIndex].data.contactAddress3.business.businessAddress.city = '';
+                tempContactAddress3.forms[addressPageIndex].data.contactAddress3.business.businessAddress.province = '';
+                tempContactAddress3.forms[addressPageIndex].data.contactAddress3.business.businessName = '';
+                tempContactAddress3.forms[addressPageIndex].data.contactAddress3.business.businessPhone = '';
+                tempContactAddress3.forms[addressPageIndex].data.contactAddress3.business.businessWebsite = '';
+                tempContactAddress3.forms[addressPageIndex].data.contactAddress3.isBusinessAddressSameAsHomeAddressOrMailingAddress = '';
+                tempContactAddress3.contactAddress3 = { business: { businessAddress: tempContactAddress3.forms[addressPageIndex].data.contactAddress3.business.businessAddress }, isBusinessAddressSameAsHomeAddressOrMailingAddress: '' }
                 return tempContactAddress3;
             });
         }
@@ -445,8 +447,8 @@ const ApplicationFieldCard = ({
                 console.log(data)
                 setBasicForm(prevData => {
                     let tempContactAddress1 = { ...prevData };
-                    tempContactAddress1.forms[1].data.contactAddress1.homeAddress.city = (data?.standard?.city || "");
-                    tempContactAddress1.forms[1].data.contactAddress1.homeAddress.province = (data?.standard?.prov || "");
+                    tempContactAddress1.forms[addressPageIndex].data.contactAddress1.homeAddress.city = (data?.standard?.city || "");
+                    tempContactAddress1.forms[addressPageIndex].data.contactAddress1.homeAddress.province = (data?.standard?.prov || "");
                     return tempContactAddress1;
                 });
             } catch (error) {
@@ -459,7 +461,7 @@ const ApplicationFieldCard = ({
             } else {
                 setBasicForm(prevData => {
                     let tempContactAddress1 = { ...prevData };
-                    tempContactAddress1.forms[1].data.contactAddress1.homeAddress.pinCode = "";
+                    tempContactAddress1.forms[addressPageIndex].data.contactAddress1.homeAddress.pinCode = "";
                     return tempContactAddress1;
                 });
             }
@@ -474,8 +476,8 @@ const ApplicationFieldCard = ({
                 console.log(data)
                 setBasicForm(prevData => {
                     let tempContactAddress2 = { ...prevData };
-                    tempContactAddress2.forms[1].data.contactAddress2.mailingAddress.city = (data?.standard?.city || "");
-                    tempContactAddress2.forms[1].data.contactAddress2.mailingAddress.province = (data?.standard?.prov || "");
+                    tempContactAddress2.forms[addressPageIndex].data.contactAddress2.mailingAddress.city = (data?.standard?.city || "");
+                    tempContactAddress2.forms[addressPageIndex].data.contactAddress2.mailingAddress.province = (data?.standard?.prov || "");
                     return tempContactAddress2;
                 });
             } catch (error) {
@@ -488,7 +490,7 @@ const ApplicationFieldCard = ({
             } else {
                 setBasicForm(prevData => {
                     let tempContactAddress2 = { ...prevData };
-                    tempContactAddress2.forms[1].data.contactAddress2.mailingAddress.pinCode = "";
+                    tempContactAddress2.forms[addressPageIndex].data.contactAddress2.mailingAddress.pinCode = "";
                     return tempContactAddress2;
                 });
             }
@@ -503,8 +505,8 @@ const ApplicationFieldCard = ({
                 console.log(data)
                 setBasicForm(prevData => {
                     let tempContactAddress3 = { ...prevData };
-                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.city = (data?.standard?.city || "");
-                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.province = (data?.standard?.prov || "");
+                    tempContactAddress3.forms[addressPageIndex].data.contactAddress3.business.businessAddress.city = (data?.standard?.city || "");
+                    tempContactAddress3.forms[addressPageIndex].data.contactAddress3.business.businessAddress.province = (data?.standard?.prov || "");
                     return tempContactAddress3;
                 });
             } catch (error) {
@@ -517,7 +519,7 @@ const ApplicationFieldCard = ({
             } else {
                 setBasicForm(prevData => {
                     let tempContactAddress3 = { ...prevData };
-                    tempContactAddress3.forms[1].data.contactAddress3.business.businessAddress.pinCode = "";
+                    tempContactAddress3.forms[addressPageIndex].data.contactAddress3.business.businessAddress.pinCode = "";
                     return tempContactAddress3;
                 });
             }
