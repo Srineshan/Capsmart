@@ -57,7 +57,7 @@ const ActiveStaffList = ({
   const [sortField, setSortField] = useState("DEFAULT");
   const [sortValue, setSortValue] = useState("ASCENDING");
 
-  const permanentHeaderValues = ["", "Staff Name", "Staff ID", "Staff Type", "Docs", "CRs", "Notes", "Last Updated", "Action"];
+  const permanentHeaderValues = ["", "Staff Name", "Staff ID", "Staff Type", "Docs", "Notes", "Last Updated", "Action"];
   const locumHeaderValues = ["", "Staff Name", "Staff ID", "Staff Type", "CR", "COS", "CC", "CC Date", "Last Updated", "Action"];
   const temporaryStaffHeaderValues = ["Staff Name", "Staff ID", "Staff Type", "CC Approval", "COS Approval", "Last Updated"];
   const approvedHeaderValues = ["", "Staff Name", "Type", "Notes", "Last Updated On", ""];
