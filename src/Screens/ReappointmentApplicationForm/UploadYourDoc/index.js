@@ -37,6 +37,7 @@ import FileDisplayDialog from '../../../Components/fileDisplayDialog';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
 import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
 import ESignConfirmationDialog from '../../../Components/ESignConfirmation';
+import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 
 const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplication }) => {
     const { section, step } = useParams()
@@ -62,6 +63,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     const navigate = useNavigate()
     const [navigateURL, setNavigateURL] = useState();
     const [showJourneyDialog, setShowJourneyDialog] = useState(false);
+    const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
     useEffect(() => {
         if (basicForm) {
             getFormSchema()
@@ -96,6 +98,10 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
 
     const getIsOpen = (value) => {
         setIsShowESignDialog(value);
+    }
+
+    const getIsSaveInProgressOpen = (value) => {
+        setIsSaveInProgressOpen(value);
     }
 
     const getIsOpenESignConfirmation = (value) => {
@@ -682,7 +688,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         contactNumber={"{Contact Number}"}
                         email={"{Email}"}
                     />
-                    <div className={`${style.saveInProgress} ${style.marginTop}`}>
+                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>
                         SAVE IN PROGRESS
                     </div>
                     {/* <div
@@ -868,6 +874,11 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                     </div>
                 </div>
             </Dialog>
+            {
+                isSaveInProgressOpen && (
+                    <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
+                )
+            }
         </div>
     );
 }

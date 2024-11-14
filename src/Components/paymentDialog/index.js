@@ -48,7 +48,8 @@ const PaymentDialog = ({ getIsOpen, continueClickFunc }) => {
                 quantity: 1,
             }],
             mode: 'payment',
-            successUrl: `${window.location.origin}/app/reappointmentApplicationForm/${applicationId}/${basicForm?.forms?.[formIndex + 1]?.formCategory}/${basicForm?.forms?.[formIndex + 1]?.schemaCategory}`,
+            // successUrl: `${window.location.origin}/app/reappointmentApplicationForm/${applicationId}/${basicForm?.forms?.[formIndex + 1]?.formCategory}/${basicForm?.forms?.[formIndex + 1]?.schemaCategory}`,
+            successUrl: `${window.location.origin}/app/reappointmentApplicationForm/${applicationId}/Form/UploadYourDoc`,
             cancelUrl: `${window.location.origin}/app/reappointmentApplicationForm/${applicationId}/${section}/${step}`,
         });
         // If `redirectToCheckout` fails due to a browser or network

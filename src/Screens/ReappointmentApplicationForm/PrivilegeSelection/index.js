@@ -46,6 +46,7 @@ import ReappointmentJourneyDialog from '../../../Components/reappointmentJourney
 import CommonTextField from '../../../Components/CommonFields/CommonTextField';
 import PaymentDialog from '../../../Components/paymentDialog';
 import AdditionalPrivilegeSelection from '../AdditionalPrivilegeSelection';
+import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 
 const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [isSigned, setIsSigned] = useState(false);
@@ -93,6 +94,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
     const title = sessionStorage.getItem('title')
     const [selectedPrivilegesForCourtesy, setSelectedPrivilegesForCourtesy] = useState('');
     const [prevHospitalName, setPrevHospitalName] = useState('');
+    const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
     const theme = createTheme({
         palette: {
             error: {
@@ -200,6 +202,10 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
 
     const getIsShowReappointmentJourneyDialog = (value) => {
         setShowJourneyDialog(value);
+    }
+
+    const getIsSaveInProgressOpen = (value) => {
+        setIsSaveInProgressOpen(value);
     }
 
     const getIsShowPaymentDialog = (value) => {
@@ -1215,7 +1221,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-                    <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
+                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowPaymentDialog(true)}>CONTINUE</div>
@@ -1277,6 +1283,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
             )}
             {showJourneyDialog && (
                 <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`You've Started Your Reappointment Journey. Let's See How Long It Takes You!`} img={JourneyStep1} formIndex={formIndex} basicForm={basicForm} continueClick={handleContinue} />
+            )}
+            {isSaveInProgressOpen && (
+                <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
             )}
             {isAlertOpen && <AlertDialog isOpen={isAlertOpen} getIsOpen={getIsAlertOpen} title={'Are you sure?'} description={'Do you want to really change the privilege set?'} />}
             {isOpen && <AdditionalPrivilegesDialog getIsOpen={getIsOpen} primaryPrivilege={selectedPrivilege} getSelectedPrivilegeList={getSelectedPrivilegeList} basicForm={basicForm} selectedAdditionalPrivilegeForEdit={selectedAdditionalPrivilegeForEdit} applicationId={applicationId} />}

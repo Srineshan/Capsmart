@@ -602,20 +602,20 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                         contactNumber={"{Contact Number}"}
                         email={"{Email}"}
                     />
-                    <div className={style.twoColForButton}>
+                    {/* <div className={style.twoColForButton}>
                         <div
                             className={`${style.saveInProgress} ${style.marginTop}`}
                             onClick={() => getIsSaveInProgressOpen(true)}
                         >
                             SKIP FOR NOW
-                        </div>
-                        <div
-                            className={`${style.saveInProgress} ${style.marginTop}`}
-                            onClick={() => getIsSaveInProgressOpen(true)}
-                        >
-                            SAVE IN PROGRESS
-                        </div>
+                        </div> */}
+                    <div
+                        className={`${style.saveInProgress} ${style.marginTop}`}
+                        onClick={() => getIsSaveInProgressOpen(true)}
+                    >
+                        SAVE IN PROGRESS
                     </div>
+                    {/* </div> */}
                     <div className={style.twoColForButton}>
                         <div
                             className={`${style.continue} ${style.marginTop10}`}
