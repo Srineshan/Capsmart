@@ -112,21 +112,21 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
     const isCellPhoneInvalid = !validateBusinessPhone(cellPhone);
     const isEmailInvalid = !emailRegex.test(emailId);
 
-    if (isCellPhoneInvalid) {
-      missingKeys.push({
-        key: "cellPhone",
-        value: cellPhone,
-        label: "Cell Phone is invalid",
-      });
-    }
+    // if (isCellPhoneInvalid) {
+    //   missingKeys.push({
+    //     key: "cellPhone",
+    //     value: cellPhone,
+    //     label: "Cell Phone is invalid",
+    //   });
+    // }
 
-    if (isEmailInvalid) {
-      missingKeys.push({
-        key: "emailId",
-        value: emailId,
-        label: "Email ID is invalid",
-      });
-    }
+    // if (isEmailInvalid) {
+    //   missingKeys.push({
+    //     key: "emailId",
+    //     value: emailId,
+    //     label: "Email ID is invalid",
+    //   });
+    // }
 
     // Check other fields for missing values
     keyValuePair?.forEach((data) => {
@@ -141,53 +141,53 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
     });
 
     // Reset fields if invalid
-    if (isCellPhoneInvalid) {
-      setBasicForm((prevForm) => ({
-        ...prevForm,
-        forms: prevForm.forms.map((form) => {
-          if (form.schemaId === basicForm.forms[formIndex].schemaId) {
-            return {
-              ...form,
-              data: {
-                ...form.data,
-                impactingPractice: {
-                  ...form.data.impactingPractice,
-                  medicalHistory: {
-                    ...form.data.impactingPractice.medicalHistory,
-                    cellPhone: "", // Reset cell phone if invalid
-                  },
-                },
-              },
-            };
-          }
-          return form;
-        }),
-      }));
-    }
+    // if (isCellPhoneInvalid) {
+    //   setBasicForm((prevForm) => ({
+    //     ...prevForm,
+    //     forms: prevForm.forms.map((form) => {
+    //       if (form.schemaId === basicForm.forms[formIndex].schemaId) {
+    //         return {
+    //           ...form,
+    //           data: {
+    //             ...form.data,
+    //             impactingPractice: {
+    //               ...form.data.impactingPractice,
+    //               medicalHistory: {
+    //                 ...form.data.impactingPractice.medicalHistory,
+    //                 cellPhone: "",
+    //               },
+    //             },
+    //           },
+    //         };
+    //       }
+    //       return form;
+    //     }),
+    //   }));
+    // }
 
-    if (isEmailInvalid) {
-      setBasicForm((prevForm) => ({
-        ...prevForm,
-        forms: prevForm.forms.map((form) => {
-          if (form.schemaId === basicForm.forms[formIndex].schemaId) {
-            return {
-              ...form,
-              data: {
-                ...form.data,
-                impactingPractice: {
-                  ...form.data.impactingPractice,
-                  medicalHistory: {
-                    ...form.data.impactingPractice.medicalHistory,
-                    emailId: "", // Reset email ID if invalid
-                  },
-                },
-              },
-            };
-          }
-          return form;
-        }),
-      }));
-    }
+    // if (isEmailInvalid) {
+    //   setBasicForm((prevForm) => ({
+    //     ...prevForm,
+    //     forms: prevForm.forms.map((form) => {
+    //       if (form.schemaId === basicForm.forms[formIndex].schemaId) {
+    //         return {
+    //           ...form,
+    //           data: {
+    //             ...form.data,
+    //             impactingPractice: {
+    //               ...form.data.impactingPractice,
+    //               medicalHistory: {
+    //                 ...form.data.impactingPractice.medicalHistory,
+    //                 emailId: "",
+    //               },
+    //             },
+    //           },
+    //         };
+    //       }
+    //       return form;
+    //     }),
+    //   }));
+    // }
 
     if (missingKeys.length !== 0) {
       setShowValidationDialog(true);

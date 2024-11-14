@@ -142,7 +142,7 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
                   </div>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                     <div className={`${style.marginLeft5} ${style.tableDataFontDisabledStyle1}`}>
-                      {(itemsToProcessConditionCheckCategories?.includes(form?.forms?.filter(data => data?.formCategory === 'Form')[index]?.schemaCategory) && form?.forms[index]?.unFilledFields?.length !== 0) ? 'Missing mandatory fields. Please complete.' : form?.forms[index]?.unFilledFields?.join(', ')}
+                      {(itemsToProcessConditionCheckCategories?.includes(form?.forms?.filter(data => data?.formCategory === 'Form')[index]?.schemaCategory) && form?.forms[index]?.unFilledFields?.length !== 0) ? 'Missing mandatory fields.' : form?.forms[index]?.unFilledFields?.join(', ')}
                     </div>
                   </div>
                 </div>
