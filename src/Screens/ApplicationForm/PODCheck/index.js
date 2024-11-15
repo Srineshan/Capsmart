@@ -16,6 +16,7 @@ import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import ApplicationHeader from '../../../Components/ApplicationHeader';
 import style from './index.module.scss';
 import AIAssistantDialog from '../../../Components/AIAssistantDialog';
+import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 
 const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
   const [form, setForm] = useState();
@@ -23,6 +24,7 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
   const navigate = useNavigate()
   const [isOpen, setIsOpen] = useState(true);
   const itemsToProcessConditionCheckCategories = ['Education', 'WorkExperience', 'References']
+  const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
   const id = sessionStorage.getItem('applicationId');
   useEffect(() => {
     sessionStorage.setItem('fromSummary', false);
@@ -45,8 +47,12 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
   }
 
   const handleContinue = () => {
-    navigate(`/applicationForm/${basicForm?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[0]?.formCategory}/${basicForm?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[0]?.schemaCategory}`);
+    navigate(`/applicationForm/${applicationId}/${basicForm?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[0]?.formCategory}/${basicForm?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[0]?.schemaCategory}`);
   }
+
+  const getIsSaveInProgressOpen = (value) => {
+    setIsSaveInProgressOpen(value);
+  };
 
   console.log('form', form)
 
@@ -105,7 +111,7 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
             </div>
             <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
               <div className={`${style.tableDataFontStyle1}`}> Applicant Profile Information</div>
-              <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/Form/BasicInformation`); }} />
+              <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/${applicationId}/Form/BasicInformation`); }} />
             </div>
             <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
               <div className={`${style.greenDotStyle} `}></div>
@@ -128,7 +134,7 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
                   </div>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                     <div className={`${style.tableDataFontStyle1}`}>{data?.description}</div>
-                    <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/${data?.formCategory}/${data?.schemaCategory}`) }} />
+                    <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/${applicationId}/${data?.formCategory}/${data?.schemaCategory}`) }} />
                   </div>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                     {/* <div className={`${style.greyDotStyle} `}></div> */}
@@ -157,7 +163,7 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
           <div className={style.marginTop10}>
             <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
           </div>
-          <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
+          <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
           <div className={style.twoColForButton}>
             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
@@ -170,6 +176,9 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
                 <AIAssistantDialog getIsOpen={getIsOpen} />
             )} */}
       </div>
+      {isSaveInProgressOpen && (
+        <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
+      )}
     </div>
   )
 }

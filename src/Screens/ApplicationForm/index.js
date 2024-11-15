@@ -53,9 +53,9 @@ const ApplicationForm = () => {
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const user = jwt(userDetails);
-    const { section, step } = useParams();
+    const { applicationId, section, step } = useParams();
     const [basicForm, setBasicForm] = useState({})
-    const applicationId = sessionStorage.getItem('applicationId')
+    // const applicationId = sessionStorage.getItem('applicationId')
     const [isOpen, setIsOpen] = useState(true);
     const [acknowledgementForms, setAcknowledgementForms] = useState([]);
     const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};

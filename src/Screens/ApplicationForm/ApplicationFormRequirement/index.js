@@ -90,7 +90,7 @@ const ApplicationFormRequirement = () => {
         await PUT(`application-management-service/application/${applicationId}`, basicForm)
             .then(response => {
                 console.log(response)
-                navigate('/applicationForm/Form/BasicInformation')
+                navigate(`/applicationForm/${applicationId}/Form/BasicInformation`)
                 SuccessToaster("Application Updated Successfully");
             })
             .catch((error) => {

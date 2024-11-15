@@ -10,9 +10,8 @@ const ApplicationUserCard = ({ user, applyingFor }) => {
   // console.log(userDetails)
   const [basicForm, setBasicForm] = useState({});
   const [profilePic, setProfilePic] = useState("");
-  const applicationId = sessionStorage.getItem("applicationId");
   const [formIndex, setFormIndex] = useState();
-  const { section, step } = useParams()
+  const { applicationId, section, step } = useParams()
   useEffect(() => {
     getPreApplication();
   }, []);

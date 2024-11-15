@@ -44,25 +44,22 @@ const AcknowledgementReview = ({ basicForm, setBasicForm, applicationId }) => {
   console.log("form", form);
 
   const handleContinue = () => {
-    navigate("/applicationForm/section1/acknowledgementStep1");
+    navigate(`/applicationForm/${applicationId}/section1/acknowledgementStep1`);
   };
 
   return (
     <div className={style.screenBackground}>
       <ApplicationHeader
-        title={`New ${
-          form?.basicDetails?.applicant?.applicantType !== undefined
-            ? form?.basicDetails?.applicant?.applicantType
-            : "{Applicant Type}"
-        } Application For ${
-          form?.basicDetails?.applicant?.name?.firstName !== undefined
+        title={`New ${form?.basicDetails?.applicant?.applicantType !== undefined
+          ? form?.basicDetails?.applicant?.applicantType
+          : "{Applicant Type}"
+          } Application For ${form?.basicDetails?.applicant?.name?.firstName !== undefined
             ? form?.basicDetails?.applicant?.name?.firstName
             : "{First Name}"
-        } ${
-          form?.basicDetails?.applicant?.name?.lastName !== undefined
+          } ${form?.basicDetails?.applicant?.name?.lastName !== undefined
             ? form?.basicDetails?.applicant?.name?.lastName
             : "{Last Name}"
-        }`}
+          }`}
       />
 
       <div className={style.screenPadding}>
@@ -124,11 +121,10 @@ const AcknowledgementReview = ({ basicForm, setBasicForm, applicationId }) => {
                 ?.filter((data) => data?.formCategory !== "Form")
                 ?.map((data, index) => (
                   <div
-                    className={`${
-                      index % 2 !== 0
-                        ? style.tableDataStyle
-                        : style.tableDataStyle1
-                    } ${style.marginTop5} ${style.tableValueGridStyle} `}
+                    className={`${index % 2 !== 0
+                      ? style.tableDataStyle
+                      : style.tableDataStyle1
+                      } ${style.marginTop5} ${style.tableValueGridStyle} `}
                   >
                     <div
                       className={`${style.displayInRow} ${style.verticalAlignCenter} `}

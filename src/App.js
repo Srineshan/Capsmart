@@ -940,7 +940,7 @@ const App = ({ props }) => {
                 element={<ReportTypeOverview />}
               />
               <Route
-                path="/applicationForm/:section/:step"
+                path="/applicationForm/:applicationId/:section/:step"
                 element={<ApplicationForm />}
               />
               <Route

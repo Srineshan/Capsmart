@@ -22,6 +22,7 @@ import pdf5 from "../../../images/CodeofConduct5.png";
 import pdf6 from "../../../images/CodeofConduct6.png";
 import pdf7 from "../../../images/CodeofConduct7.png";
 import PdfViewer from '../pdfViewer';
+import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 
 
 const CodeOfConduct = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApplication, applicationId }) => {
@@ -40,6 +41,7 @@ const CodeOfConduct = ({ acknowledgementForm, dateFormat, name, basicForm, getPr
     const [navigateURL, setNavigateURL] = useState();
     const { section, step } = useParams()
     const [formIndex, setFormIndex] = useState();
+    const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
     const [signText, setSignText] = useState(name + " " + currentDate);
     const [initialArray, setInitialArray] = useState([])
 
@@ -62,7 +64,7 @@ const CodeOfConduct = ({ acknowledgementForm, dateFormat, name, basicForm, getPr
         setIsSigned((basicForm?.forms?.[formIndex]?.esign?.esign !== undefined && basicForm?.forms?.[formIndex]?.acknowledged) ? true : false);
         // setDecryptedText(CryptoJS.AES.decrypt(basicForm?.forms?.[formIndex]?.esign?.esign, publicKey).toString(CryptoJS.enc.Utf8))
         if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateURL((basicForm?.forms?.length === (formIndex + 1)) ? '/applicationForm/Acknowledgement/AcknowledgementCheck' : `/applicationForm/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
+            setNavigateURL((basicForm?.forms?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Acknowledgement/AcknowledgementCheck` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
         }
     }, [basicForm, formIndex])
 
@@ -89,6 +91,10 @@ const CodeOfConduct = ({ acknowledgementForm, dateFormat, name, basicForm, getPr
         );
         setFormContent(content)
     }
+
+    const getIsSaveInProgressOpen = (value) => {
+        setIsSaveInProgressOpen(value);
+    };
 
     const addNewDocument = async (file) => {
         console.log(file, file?.name, 'Test')
@@ -219,7 +225,7 @@ const CodeOfConduct = ({ acknowledgementForm, dateFormat, name, basicForm, getPr
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleDownload()}>SAVE IN PROGRESS</div>
+                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()} >CONTINUE</div>
@@ -275,6 +281,9 @@ const CodeOfConduct = ({ acknowledgementForm, dateFormat, name, basicForm, getPr
                     </div>
                 </div>
             </div> */}
+            {isSaveInProgressOpen && (
+                <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
+            )}
         </div>
     )
 }

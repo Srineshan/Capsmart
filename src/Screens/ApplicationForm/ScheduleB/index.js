@@ -14,6 +14,7 @@ import ESign from '../../../Components/ESign';
 import { format } from 'date-fns';
 import { SuccessToaster, ErrorToaster } from '../../../utils/toaster';
 import ESignature from '../../../Components/ESignature';
+import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 
 const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApplication, applicationId }) => {
   const [isChecked, setIsChecked] = useState(false);
@@ -33,7 +34,7 @@ const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
   const { section, step } = useParams()
   const [formIndex, setFormIndex] = useState();
   const [signText, setSignText] = useState(name + " " + currentDate);
-
+  const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
   useEffect(() => {
     if (dateFormat) {
       setCurrentDate(format(new Date(), dateFormat))
@@ -50,7 +51,7 @@ const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
     setIsSigned((basicForm?.forms?.[formIndex]?.esign?.esign !== undefined && basicForm?.forms?.[formIndex]?.acknowledged) ? true : false);
     // setDecryptedText(CryptoJS.AES.decrypt(basicForm?.forms?.[formIndex]?.esign?.esign, publicKey).toString(CryptoJS.enc.Utf8))
     if (basicForm !== undefined && formIndex !== undefined) {
-      setNavigateURL((basicForm?.forms?.length === (formIndex + 1)) ? '/applicationForm/Acknowledgement/AcknowledgementCheck' : `/applicationForm/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
+      setNavigateURL((basicForm?.forms?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Acknowledgement/AcknowledgementCheck` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
     }
   }, [basicForm, formIndex])
 
@@ -79,6 +80,10 @@ const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
     );
     setFormContent(content)
   }
+
+  const getIsSaveInProgressOpen = (value) => {
+    setIsSaveInProgressOpen(value);
+  };
 
   const addNewDocument = async (file) => {
     console.log(file, file?.name, 'Test')
@@ -245,13 +250,16 @@ const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
         </div>
         <div>
           <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-          <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleDownload()}>SAVE IN PROGRESS</div>
+          <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
           <div className={style.twoColForButton}>
             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()} >CONTINUE</div>
           </div>
         </div>
       </div>
+      {isSaveInProgressOpen && (
+        <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
+      )}
     </div>
   )
 }
