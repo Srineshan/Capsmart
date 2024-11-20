@@ -50,6 +50,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
   const [isLoading, setIsLoading] = useState(false);
   const [isShowUploadValidation, setIsShowUploadValidation] = useState(false);
   const [formIndex, setFormIndex] = useState();
+  const [applicantProfile, setApplicantProfile] = useState();
   let eSignTitle = getValueByPath(basicForm, `forms[${formIndex}].data.setUpYourSignature.title`);
   let eSignInitial = getValueByPath(basicForm, `forms[${formIndex}].data.setUpYourSignature.initial`)
   let showRedBorderForESign = ((eSignTitle === '' || eSignTitle === undefined) || (eSignInitial === '' || eSignInitial === undefined))
@@ -70,6 +71,10 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
     setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
   }, [basicForm, step])
 
+  useEffect(() => {
+    getApplicantProfile()
+  }, [applicationId])
+
 
   const getFormSchema = async () => {
     const { data: form } = await GET(
@@ -84,6 +89,14 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
 
   const getIsShowFileDialog = (value) => {
     setShowFileDisplayDialog(value);
+  }
+
+  const getApplicantProfile = async () => {
+    const { data: profile } = await GET(
+      `application-management-service/application/${applicationId}/profile`
+    );
+    console.log(profile, 'profile')
+    setApplicantProfile(profile)
   }
 
   const handleFileUpload = async (e, id) => {
@@ -179,6 +192,18 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
         } catch (error) {
           console.log(error);
         }
+      }
+      let profilePicture = table?.filter(data => data?.documentType === 'Profile Picture')
+      if (profilePicture?.length !== 0) {
+        let updatedApplicantProfile = applicantProfile;
+        updatedApplicantProfile.profilePicture = profilePicture?.[0];
+        await PUT(`application-management-service/application/${applicationId}/profile`, updatedApplicantProfile)
+          .then(response => {
+            console.log(response)
+          })
+          .catch((error) => {
+            console.log(error)
+          });
       }
       handleSubmitApplicationReq(table)
       setIsLoading(false);
