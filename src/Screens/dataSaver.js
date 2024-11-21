@@ -9,7 +9,7 @@ export const TenantID = GetEntityDetails();
 const accessToken = Auth();
 const roles = GetRoles();
 
-export const isSuperAdminAccess = roles.includes('Super Sys Admin') || roles.includes('Distributor Admin') ? true : false;
+export const isSuperAdminAccess = roles?.includes('Super Sys Admin') || roles?.includes('Distributor Admin') ? true : false;
 let cookie = new Cookie();
 let tenantId = cookie.get("entityId");
 const headers = {

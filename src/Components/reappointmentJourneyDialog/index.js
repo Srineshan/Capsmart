@@ -3,16 +3,17 @@ import { Dialog, Classes } from '@blueprintjs/core';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 
 import style from './index.module.scss'
-import { logout } from '../../utils/auth';
 import { POST } from '../../Screens/dataSaver';
 import { ErrorToaster, SuccessToaster } from '../../utils/toaster';
 import WarningIcon from '@mui/icons-material/Warning';
 import { useParams } from 'react-router-dom';
 import ApplicationSubmitDialog from '../../Components/ApplicationSubmitDialog';
+import { useDescope } from '@descope/react-sdk';
 
 const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, img, continueClick }) => {
     const [isContinue, setIsContinue] = useState(false);
     const { applicationId, section, step } = useParams();
+    const { logout } = useDescope();
     const [showSubmitDialog, setShowSubmitDialog] = useState(false);
     const entityName = sessionStorage.getItem('title')
     const [disclosureList, setDisclosureList] = useState(['ProfessionalConduct', 'CriminalHistory', 'MedicalHistory'])

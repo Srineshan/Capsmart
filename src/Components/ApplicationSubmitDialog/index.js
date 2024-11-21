@@ -5,23 +5,12 @@ import Cookies from "universal-cookie";
 import style from './index.module.scss'
 import { PUT } from '../../Screens/dataSaver';
 import { ErrorToaster } from '../../utils/toaster';
+import { useDescope } from '@descope/react-sdk';
+// import { Logout } from '../../utils/auth';
 
-const ApplicationSubmitDialog = ({ getIsOpen,title,description }) => {
-    const logout = async () => {
-        const cookies = new Cookies();
-        await PUT(`logout`, null)
-            .then((response) => {
-                const logouturi = response.headers["location"] || "";
-                cookies.remove("user", { path: "/" });
-                cookies.remove("entityId", { path: "/" });
-                if (logouturi) {
-                    window.location.href = logouturi;
-                }
-            })
-            .catch((error) => {
-                ErrorToaster("Unexpected Error");
-            });
-    };
+const ApplicationSubmitDialog = ({ getIsOpen, title, description }) => {
+    const { logout } = useDescope();
+
     return (
         <Dialog isOpen={getIsOpen} onClose={() => getIsOpen(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
             <div>

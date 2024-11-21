@@ -5,12 +5,14 @@ import CrossPink from "../../images/crossPink.png";
 import style from './index.module.scss'
 import { PUT } from '../../Screens/dataSaver';
 import { useParams } from 'react-router-dom';
-import { logout } from '../../utils/auth';
 import { ErrorToaster } from '../../utils/toaster';
+import { useDescope } from '@descope/react-sdk';
 
 const SaveInProgressDialog = ({ getIsOpen }) => {
     const [isContinue, setIsContinue] = useState(false);
     const { applicationId, section, step } = useParams()
+    const { logout } = useDescope();
+
 
     const handleSubmit = async () => {
         await PUT(

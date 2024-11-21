@@ -46,8 +46,9 @@ import PACSAdminStep6 from './PACSAdminStep6';
 import LoginDialog from '../../Components/LoginDialog';
 import PODCheck from './PODCheck';
 import AcknowledgementCheck from './AcknowledgementCheck';
-import { logout } from '../../utils/auth';
+// import { Logout } from '../../utils/auth';
 import MiscellaneousQuestions from './MiscellaneousQuestions';
+import { useDescope } from '@descope/react-sdk';
 
 
 const ApplicationForm = () => {
@@ -55,6 +56,7 @@ const ApplicationForm = () => {
     let userDetails = cookie.get('user');
     const user = jwt(userDetails);
     const { applicationId, section, step } = useParams();
+    const { logout } = useDescope();
     const [basicForm, setBasicForm] = useState({})
     // const applicationId = sessionStorage.getItem('applicationId')
     const [isOpen, setIsOpen] = useState(true);
@@ -77,6 +79,17 @@ const ApplicationForm = () => {
     useEffect(() => {
         setUserDetails();
     }, [user?.id])
+
+    // const Logout = async () => {
+    //     logout()
+    //         .then(() => {
+    //             console.log("User logged out successfully");
+    //             window.location.href = "/login"; // Redirect to login or home page
+    //         })
+    //         .catch((error) => {
+    //             console.error("Failed to logout:", error);
+    //         });
+    // };
 
     const setUserDetails = async () => {
         const { data: userData } = await GET(`user-management-service/user/${user?.id}`);
@@ -188,7 +201,7 @@ const ApplicationForm = () => {
 
     return (
         <div className={style.screenBackground}>
-            <ApplicationHeader title={`New ${basicForm?.basicDetails?.applicant?.applicantType !== undefined ? basicForm?.basicDetails?.applicant?.applicantType : '{Applicant Type}'} Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={logout} />
+            <ApplicationHeader title={`New ${basicForm?.basicDetails?.applicant?.applicantType !== undefined ? basicForm?.basicDetails?.applicant?.applicantType : '{Applicant Type}'} Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={() => logout()} />
             <div className={style.screenPadding}>
                 {/* <div className={style.applicationScreenGrid}> */}
                 {StepDisplay()}

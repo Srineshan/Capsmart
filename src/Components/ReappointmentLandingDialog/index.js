@@ -17,7 +17,6 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControl from '@mui/material/FormControl';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CommonRadio from "../CommonFields/CommonRadio";
-import { logout } from "../../utils/auth";
 import { GET, PUT } from "../../Screens/dataSaver";
 import { format } from "date-fns";
 import { ErrorToaster, SuccessToaster } from "../../utils/toaster";
@@ -25,6 +24,7 @@ import { ErrorToaster, SuccessToaster } from "../../utils/toaster";
 const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
   // const { login, register, sendOTP, verifyOTP } = useDescope();
   const descopeSdk = useDescope();
+  const { logout } = useDescope();
   const [isContinue, setIsContinue] = useState(false);
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);

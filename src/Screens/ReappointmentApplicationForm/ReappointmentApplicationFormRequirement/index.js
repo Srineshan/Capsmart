@@ -11,7 +11,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import WelcomeCard from '../../../Components/WelcomeCard';
 import DaysToComplete from '../../../Components/DaysToCompleteCard';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useSession } from '@descope/react-sdk';
+import { useDescope, useSession } from '@descope/react-sdk';
 import LoginDialog from '../../../Components/LoginDialog';
 import RequiredDocumentCard from '../../../Components/RequiredDocumentCard';
 import { GET, PUT } from '../../dataSaver';
@@ -20,7 +20,7 @@ import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import Cookie from "universal-cookie";
 import { differenceInDays } from 'date-fns';
-import { logout } from '../../../utils/auth';
+// import { Logout } from '../../../utils/auth';
 import ReappointmentLandingDialog from '../../../Components/ReappointmentLandingDialog';
 import DoItLaterDialog from '../../../Components/DoItLaterDialog';
 
@@ -29,6 +29,7 @@ const ReappointmentApplicationFormRequirement = () => {
     let userDetails = cookie.get('user');
     const user = jwt(userDetails);
     const { applicationId } = useParams();
+    const { logout } = useDescope();
     const { isAuthenticated, isSessionLoading } = useSession();
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(true);
@@ -123,7 +124,7 @@ const ReappointmentApplicationFormRequirement = () => {
 
     return (
         <div className={style.screenBackground}>
-            <ApplicationHeader title={`Reappointment Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={logout} />
+            <ApplicationHeader title={`Reappointment Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={() => logout()} />
             <div className={style.screenPadding}>
                 <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                     <div>
