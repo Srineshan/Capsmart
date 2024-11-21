@@ -1,4 +1,5 @@
 @import "../../../index.scss";
+
 .uploadTextStyle {
     text-align: center;
     font: normal normal 600 20px/28px proxima-nova;
@@ -28,4 +29,8 @@
     font: normal normal normal 14px/18px proxima-nova;
     color: #52575D;
     padding: 0 80px;
+}
+
+.cursorPointer {
+    cursor: pointer !important;
 }
