@@ -133,7 +133,7 @@ const Acknowledgement = ({ basicForm, setBasicForm, applicationId }) => {
                                         </div>
                                         <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                                             <div className={`${style.tableDataFontStyle1}`}>{data?.description}</div>
-                                            <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/section1/acknowledgementStep${index + 1}`) }} />
+                                            <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/${applicationId}/section1/acknowledgementStep${index + 1}`) }} />
                                         </div>
                                         <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                                             <div className={`${form?.forms?.filter(data => data?.formCategory !== 'Form')[index]?.acknowledged ? style.greenDotStyle : style.yellowDotStyle} `}></div>

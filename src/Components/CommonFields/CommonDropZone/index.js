@@ -35,7 +35,7 @@ const CommonDropZone = ({ title, description, changeHandler, files, accept }) =>
                     <div {...getRootProps()}>
                         <input {...getInputProps()} />
                         {/* {files?.length === 0 ? ( */}
-                        <div className={style.uploadBorderStyle}>
+                        <div className={`${style.uploadBorderStyle} ${style.cursorPointer}`}>
                             <p className={style.uploadTextStyle}>
                                 {title}
                             </p>

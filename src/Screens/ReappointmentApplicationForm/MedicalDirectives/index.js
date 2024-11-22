@@ -374,6 +374,9 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                         <div className={style.marginLeft}>{allMedicalDirectives?.pastDue?.length} Past Due</div>
                                     </div>
                                 )}
+                                {medicalDirectives?.length === 0 && (
+                                    <div className={`${style.description} ${style.marginTop}`}>You have no Medical Directives that requires your review and attestation at this time.</div>
+                                )}
                             </>
                         ) : (
                             <>
@@ -399,43 +402,40 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                         onClickFunction={() => { }}
                                     />
                                 </div>
-                            </>
-                        )}
-                        {medicalDirectives?.length === 0 && (
-                            <div className={`${style.description} ${style.marginTop}`}>You have no Medical Directives that requires your review and attestation at this time.</div>
-                        )}
-                        <div className={`${style.marginTop}`}>
-                            <div>
-                                <div className={`${style.checkGrid}`}>
-                                    {formContent?.disclaimer?.content !== null && (
-                                        <CommonCheckBox checked={isChecked} onChange={(e) => { handleIsChecked(e.target.checked) }} bigCheckbox={true} />
-                                    )}
-                                    <div
-                                        className={`${style.leftAlign} ${style.marginTop}`}
-                                        dangerouslySetInnerHTML={{ __html: formContent?.disclaimer?.content }}
-                                    />
-                                </div>
-                                {formSchemaWholeObject?.esignatureRequired && (
-                                    <div className={style.twoCol}>
-                                        <div onClick={isChecked ? () => { setIsSigned(!isSigned); setIsEdited(true) } : () => { }}
-                                        >
-                                            <ESignature
-                                                userName={isSigned ? name : ""}
-                                                encData={isSigned ? encryptedText : ''}
-                                                showData={isSigned}
-                                                showDatais={true}
+                                <div className={`${style.marginTop}`}>
+                                    <div>
+                                        <div className={`${style.checkGrid}`}>
+                                            {formContent?.disclaimer?.content !== null && (
+                                                <CommonCheckBox checked={isChecked} onChange={(e) => { handleIsChecked(e.target.checked) }} bigCheckbox={true} />
+                                            )}
+                                            <div
+                                                className={`${style.leftAlign} ${style.marginTop}`}
+                                                dangerouslySetInnerHTML={{ __html: formContent?.disclaimer?.content }}
                                             />
                                         </div>
-                                        <div className={style.verticalAlignCenter}>
-                                            <div className={style.displayInRow}>
-                                                <div className={style.dateTitle}>Date: </div>
-                                                <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? (basicForm?.forms?.[formIndex]?.esign?.signedDate !== '' && basicForm?.forms?.[formIndex]?.esign?.signedDate !== undefined) ? basicForm?.forms?.[formIndex]?.esign?.signedDate : currentDate : ""}</div>
+                                        {formSchemaWholeObject?.esignatureRequired && (
+                                            <div className={style.twoCol}>
+                                                <div onClick={isChecked ? () => { setIsSigned(!isSigned); setIsEdited(true) } : () => { }}
+                                                >
+                                                    <ESignature
+                                                        userName={isSigned ? name : ""}
+                                                        encData={isSigned ? encryptedText : ''}
+                                                        showData={isSigned}
+                                                        showDatais={true}
+                                                    />
+                                                </div>
+                                                <div className={style.verticalAlignCenter}>
+                                                    <div className={style.displayInRow}>
+                                                        <div className={style.dateTitle}>Date: </div>
+                                                        <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? (basicForm?.forms?.[formIndex]?.esign?.signedDate !== '' && basicForm?.forms?.[formIndex]?.esign?.signedDate !== undefined) ? basicForm?.forms?.[formIndex]?.esign?.signedDate : currentDate : ""}</div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
+                                        )}
                                     </div>
-                                )}
-                            </div>
-                        </div>
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
                 <div>
@@ -443,7 +443,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                     <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10} ${isSigned ? '' : style.disabledButton}`} onClick={isSigned ? showMedicalDirectives ? () => { setShowMedicalDirectives(false) } : () => handleContinue() : () => { }}>CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={showMedicalDirectives ? () => { setShowMedicalDirectives(false) } : () => handleContinue()}>CONTINUE</div>
                     </div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />

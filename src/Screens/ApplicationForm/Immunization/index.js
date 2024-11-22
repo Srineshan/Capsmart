@@ -16,6 +16,7 @@ import CommonTextField from '../../../Components/CommonFields/CommonTextField';
 import CommonSelectField from '../../../Components/CommonFields/CommonSelectField';
 import CommonDateField from '../../../Components/CommonFields/CommonDateField';
 import { TextField } from '@mui/material';
+import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 
 const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
@@ -27,13 +28,14 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
     const [files, setFiles] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [calendarStart, setCalendarStart] = useState(false);
+    const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
     const navigate = useNavigate()
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? '/applicationForm/Form/PODCheck' : `/applicationForm/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/PODCheck` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
         }
     }, [basicForm, formIndex])
 
@@ -53,6 +55,10 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
             handleSubmitApplicationReq(data)
         }
     }
+
+    const getIsSaveInProgressOpen = (value) => {
+        setIsSaveInProgressOpen(value);
+    };
 
     const handleSubmitApplicationReq = async (data) => {
         let temp = {
@@ -334,16 +340,19 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-                    <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
+                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate('/applicationForm/section1/acknowledgementStep1')} >CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(`/applicationForm/${applicationId}/section1/acknowledgementStep1`)} >CONTINUE</div>
                     </div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
                     </div>
                 </div>
             </div>
+            {isSaveInProgressOpen && (
+                <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
+            )}
         </div>
     )
 }

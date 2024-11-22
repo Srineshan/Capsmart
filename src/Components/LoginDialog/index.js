@@ -226,6 +226,7 @@ const LoginDialog = ({ getIsOpen, days }) => {
               className={`${style.continue} ${style.marginTop}`}
               onClick={() => {
                 setIsContinue(true);
+                getIsOpen(false);
               }}
             >
               CONTINUE

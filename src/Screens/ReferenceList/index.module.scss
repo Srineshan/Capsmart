@@ -19,6 +19,7 @@
 .top70 {
   top: 70%;
 }
+
 .dropzoneStyle {
   display: flex;
   justify-content: space-between;
@@ -29,12 +30,14 @@
   background-color: #f5f5f8;
   color: #484c51;
 }
+
 .completedIconStyle {
   height: 25px;
   width: 25px;
   object-fit: contain;
   // margin-top: 18px;
 }
+
 .completedIconStyle2 {
   height: 18px;
   width: 20px;
@@ -308,10 +311,7 @@
 }
 
 .crossStyle {
-  color: linear-gradient($primarycolor
-
-
-, #ff6562) !important;
+  color: linear-gradient($primarycolor, #ff6562) !important;
   margin-bottom: 15px;
   cursor: pointer;
   position: absolute;
@@ -468,10 +468,7 @@
 }
 
 .dashboardCardColorOption3 {
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
 }
 
 .dashboardCardColorOption4 {
@@ -564,10 +561,7 @@
 .addMoreTextStyle {
   font: normal normal medium 20px/34px proxima-nova;
   letter-spacing: 0px;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
   text-transform: uppercase;
 }
 
@@ -620,10 +614,7 @@
   width: 50px;
   height: 30px;
   background: transparent 0% 0% no-repeat padding-box;
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   opacity: 1;
 }
 
@@ -1187,10 +1178,7 @@
   text-align: left;
   font: normal normal normal 11px/14px proxima-nova;
   letter-spacing: 0px;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
   opacity: 1;
   margin: 5px 0 0 10px;
 }
@@ -1221,10 +1209,7 @@
   text-align: left;
   font: normal normal bold 18px/20px proxima-nova;
   letter-spacing: 0px;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
   text-transform: capitalize;
   opacity: 1;
 }
@@ -1233,10 +1218,7 @@
   text-align: left;
   font: normal normal bold 20px/18px proxima-nova;
   letter-spacing: 0px;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
   text-transform: capitalize;
 }
 
@@ -1282,19 +1264,13 @@
 }
 
 .dialogCrossStyle {
-  color: linear-gradient($primarycolor
-
-
-, #ff6562) !important;
+  color: linear-gradient($primarycolor, #ff6562) !important;
   margin-bottom: 15px;
   cursor: pointer;
 }
 
 .crossStyle {
-  color: linear-gradient($primarycolor
-
-
-, #ff6562) !important;
+  color: linear-gradient($primarycolor, #ff6562) !important;
   margin-bottom: 25px;
   cursor: pointer;
   position: absolute;
@@ -1345,10 +1321,7 @@
 
 .podHeader {
   background: $secondarycolor 0% 0% no-repeat padding-box;
-  border: 0.4000000059604645px solid $primarycolor
-
-
-;
+  border: 0.4000000059604645px solid $primarycolor;
   border-radius: 6px;
   height: 40px;
   width: 100%;
@@ -1380,10 +1353,7 @@
 }
 
 .activeRadioStyle {
-  background: $primarycolor
-
-
- 0% 0% no-repeat padding-box;
+  background: $primarycolor 0% 0% no-repeat padding-box;
   box-shadow: 0px 1px 3px #11111112;
   border-radius: 50%;
   height: 17px;
@@ -1410,10 +1380,7 @@
   text-align: center;
   font: normal normal 600 28px/34px proxima-nova;
   width: 50px;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
   text-transform: uppercase;
 }
 
@@ -1460,20 +1427,14 @@
   border: 1px solid #e9e9f0;
   border-radius: 4px;
   padding: 7px 10px;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
 }
 
 .addNewDataButton {
   background: #f0eeee 0% 0% no-repeat padding-box;
   border: 0.4000000059604645px solid #cecaf5;
   border-radius: 6px;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
   width: 100%;
   padding: 10px 0;
   text-align: center;
@@ -1501,10 +1462,7 @@
 }
 
 .nestedDataTextStyle:hover {
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
 }
 
 .nestedCardReducedPadding {
@@ -1535,10 +1493,7 @@
 }
 
 .addStyle {
-  background: $primarycolor
-
-
- 0% 0% no-repeat padding-box;
+  background: $primarycolor 0% 0% no-repeat padding-box;
   box-shadow: 0px 0px 6px #00000029;
   border-radius: 8px;
   height: 33px;
@@ -1586,6 +1541,7 @@
   color: #52575d;
   margin-top: 5px;
 }
+
 .entityLableStyle4 {
   text-align: left;
   font: normal normal normal 14px/20px proxima-nova;
@@ -1593,6 +1549,7 @@
   color: #52575d;
   margin-top: 5px;
 }
+
 .entityLableStyle3 {
   text-align: left;
   font: normal normal normal 13px/20px proxima-nova;
@@ -1608,6 +1565,7 @@
   color: #52575d;
   opacity: 0.5;
 }
+
 .ApplicantStyle {
   display: grid;
   grid-template-columns: 7% 20% 10% 8% 12% 18% 18%;
@@ -1670,10 +1628,7 @@
   font-size: 14px;
   line-height: 1.25;
   background-color: #f1f2f3;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
   border: none;
   position: relative;
   top: 7px;
@@ -1681,10 +1636,7 @@
 
 .outlinedButton {
   background-color: white;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
   border: 1px solid $primarycolor;
   height: 40px;
   width: 140px;
@@ -1693,15 +1645,9 @@
 }
 
 .buttonStyle {
-  background-color: $primarycolor
-
-
-;
+  background-color: $primarycolor;
   color: white;
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   height: 40px;
   width: 140px;
   margin-bottom: -20px;
@@ -1709,15 +1655,9 @@
 }
 
 .buttonStyle2 {
-  background-color: $primarycolor
-
-
-;
+  background-color: $primarycolor;
   color: white;
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   font: normal normal bold 16px/17px proxima-nova;
   letter-spacing: 1.5px;
   height: 40px;
@@ -1729,15 +1669,9 @@
 }
 
 .buttonStyle3 {
-  background-color: $primarycolor
-
-
-;
+  background-color: $primarycolor;
   color: white;
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   height: 40px;
   width: 140px;
   border-radius: 10px;
@@ -2250,6 +2184,7 @@
   grid-template-columns: 170px 1fr 1fr;
   grid-gap: 20px;
 }
+
 .PrivilegesListManager {
   display: grid;
   grid-template-columns: 15% 15% 15% 15% 15% 15% 15%;
@@ -2287,10 +2222,7 @@
 
 .holidayScheduleHeader1 {
   background: $secondarycolor 0% 0% no-repeat padding-box;
-  border: 0.4000000059604645px solid $primarycolor
-
-
-;
+  border: 0.4000000059604645px solid $primarycolor;
   border-radius: 6px;
   opacity: 0.75;
   min-height: 50px;
@@ -2325,14 +2257,8 @@
 .customersAdminCardStyle2 {
   height: 70px;
   width: 80px;
-  background: $primarycolor
-
-
- 0% 0% no-repeat padding-box;
-  box-shadow: 0px 3px 11px $primarycolor
-
-
-;
+  background: $primarycolor 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 11px $primarycolor;
   border-radius: 8px;
   opacity: 1;
   margin-top: 200px;
@@ -2355,14 +2281,8 @@
 .customersAdminCardStyle4 {
   height: 70px;
   width: 80px;
-  background: $primarycolor
-
-
- 0% 0% no-repeat padding-box;
-  box-shadow: 0px 3px 11px $primarycolor
-
-
-;
+  background: $primarycolor 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 11px $primarycolor;
   border-radius: 8px;
   opacity: 1;
   margin-top: auto;
@@ -2553,7 +2473,7 @@
 }
 
 .customersAdminBackground3 {
-  background:$secondarycolor 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
 }
 
 .customersAdminTableFontStyle {
@@ -3006,20 +2926,16 @@
 }
 
 .labelTextAlignColor {
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
 }
 
-.inputGroupText > input {
+.inputGroupText>input {
   text-align: center;
 }
 
 .selectDropdownInputBox {
   border-radius: 4px;
-  background: transparent url("../../images/arrowDown.png") 0% 0% no-repeat
-    padding-box;
+  background: transparent url("../../images/arrowDown.png") 0% 0% no-repeat padding-box;
   border: 1px solid #e9e9f0;
   background-position: right center;
   background-repeat: no-repeat;
@@ -3038,6 +2954,7 @@
 .headerStyle {
   align-items: center;
 }
+
 .grayRow {
   background-color: gray;
 }
@@ -3050,10 +2967,7 @@
   width: 50px;
   height: 30px;
   background: transparent 0% 0% no-repeat padding-box;
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   opacity: 1;
 }
 
@@ -3183,7 +3097,8 @@
 
 .applicantTableContainer {
   width: 100%;
-  max-height: 500px; /* Set your desired max-height */
+  max-height: 500px;
+  /* Set your desired max-height */
   overflow-y: auto;
 }
 
@@ -3228,12 +3143,13 @@
   min-width: 400px;
   padding: 10px 20px;
 }
+
 .firstColumnPrivilegeListMaster {
   width: 100px;
   text-align: center;
   padding: 15px 20px;
 }
-  
+
 .firstmaxWidth {
   max-width: 200px;
   padding: 10px 20px;
@@ -3244,12 +3160,12 @@
   padding: 10px;
 }
 
-.applicantItem > td {
+.applicantItem>td {
   vertical-align: middle;
   height: 30px;
 }
 
-.applicantItem > tr {
+.applicantItem>tr {
   vertical-align: middle;
   height: 30px;
 }
@@ -3267,13 +3183,14 @@
   padding: 10px 20px;
 }
 
- .departmentGrid {
-   display: grid;
-   grid-template-rows: 15% 15% 20% 10% 10% 10% 20%;
-   grid-gap: 10px;
-   padding: 10px;
-   text-align: center;
- }
+.departmentGrid {
+  display: grid;
+  grid-template-rows: 15% 15% 20% 10% 10% 10% 20%;
+  grid-gap: 10px;
+  padding: 10px;
+  text-align: center;
+}
+
 .Department {
   display: grid;
   grid-template-columns: 15% 15% 20% 10% 10% 10% 20%;
@@ -3372,10 +3289,7 @@
 }
 
 .backgroundBlue {
-  background-color: $primarycolor
-
-
-;
+  background-color: $primarycolor;
 }
 
 .backgroundWhite {
@@ -3395,10 +3309,7 @@
 }
 
 .textColurBlue {
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
 }
 
 .borderNone {
@@ -3423,10 +3334,7 @@
   width: 40px;
   height: 20px;
   background: transparent 0% 0% no-repeat padding-box;
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   opacity: 1;
 }
 
@@ -3442,10 +3350,7 @@
 }
 
 .departmentCrossStyle {
-  color: linear-gradient($primarycolor
-
-
-, #ff6562) !important;
+  color: linear-gradient($primarycolor, #ff6562) !important;
   cursor: pointer;
 }
 
@@ -3471,8 +3376,9 @@
 .validation {
   display: flex;
   align-items: center;
+
   .bp4-control {
-    input:checked ~ .bp4-control-indicator {
+    input:checked~.bp4-control-indicator {
       background-color: #7165e3 !important;
     }
   }
@@ -3480,10 +3386,7 @@
 
 .dialogOutlinedButton {
   background-color: white;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
   border: 1px solid $primarycolor ;
   height: 40px;
   width: 140px;
@@ -3492,15 +3395,9 @@
 }
 
 .dialogButtonStyle {
-  background-color: $primarycolor
-
-
-;
+  background-color: $primarycolor;
   color: white;
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   height: 40px;
   width: 140px;
   margin-bottom: -20px;
@@ -3593,11 +3490,11 @@
   border-radius: 50%;
 }
 
-.switch input:checked + .slider {
+.switch input:checked+.slider {
   background-color: #2196f3;
 }
 
-.switch input:checked + .slider:before {
+.switch input:checked+.slider:before {
   transform: translateX(20px);
 }
 
@@ -3625,13 +3522,13 @@
 }
 
 .saveAddMoreButton {
-  background-color:$primarycolor ;
+  background-color: $primarycolor ;
   border: none;
   color: #ffffff;
   margin-left: 10px;
 
   &:hover {
-    background-color:$primarycolor;
+    background-color: $primarycolor;
   }
 }
 
@@ -3690,11 +3587,11 @@
   border-radius: 50%;
 }
 
-input:checked + .slider {
+input:checked+.slider {
   background-color: #4caf50;
 }
 
-input:checked + .slider:before {
+input:checked+.slider:before {
   transform: translateX(14px);
 }
 
@@ -3847,6 +3744,7 @@ input:checked + .slider:before {
   justify-content: space-evenly;
   align-items: center;
 }
+
 .imageSpaceAlignment2 {
   width: 25%;
   display: flex;
@@ -3933,18 +3831,20 @@ input:checked + .slider:before {
 //   text-align: left;
 //   font: normal normal 600 17px/21px proxima-nova;
 //   letter-spacing: 0px;
-//   color: #52575D;
+//   color: #2C2C2C;
 //   text-transform: uppercase;
 // }
 
 .marginTop60 {
   margin-top: 60px;
 }
+
 .placeholderGap {
   min-height: 190px;
 
   margin-top: 90px;
 }
+
 .Borderthick {
   border-top: 2px solid rgb(117, 94, 247);
 

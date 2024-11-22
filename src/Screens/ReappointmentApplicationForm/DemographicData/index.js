@@ -585,7 +585,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                         Yes
                                     </div>
                                     <div
-                                        className={`${style.reappointmentButton} ${style.marginLeft}`}
+                                        className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
                                         onClick={() => setShowContactInfo(false)}
                                     >
                                         NO

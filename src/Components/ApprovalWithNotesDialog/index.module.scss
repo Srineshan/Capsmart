@@ -1,11 +1,10 @@
-
 @import "../../index.scss";
+
 .heading {
   text-align: left;
   font: normal normal bold 24px Proxima Nova;
   letter-spacing: 0px;
-  color: $primarycolor
-;
+  color: $primarycolor;
   text-transform: capitalize;
   opacity: 1;
 
@@ -72,9 +71,8 @@
   cursor: pointer;
 }
 
-.Resend{
-  color: $primarycolor
-;
+.Resend {
+  color: $primarycolor;
   font: normal normal bold 14px Proxima Nova;
   text-align: right;
   border: none;
@@ -82,7 +80,7 @@
   cursor: pointer;
 }
 
-.sentstatus{
+.sentstatus {
   text-align: left;
   font: normal normal bold 14px Proxima Nova;
   letter-spacing: 0px;
@@ -90,24 +88,25 @@
   opacity: 1;
 }
 
-.sentto{
+.sentto {
   font: italic normal normal 12px Proxima Nova;
   color: #171338;
   opacity: 0.5;
 }
 
-.task{
+.task {
   font: normal normal bold 16px Proxima Nova;
   opacity: 1;
 }
 
-.correcticon{
+.correcticon {
   text-align: left;
   font: normal normal normal 27px la-solid-900;
   color: #14B15A;
   opacity: 1;
   place-self: center;
 }
+
 .shadowdown {
   background: var(---ffffff) 0% 0% no-repeat padding-box;
   border: 1px solid var(--unnamed-color-ededf3);
@@ -129,15 +128,15 @@
   padding: 10px;
 }
 
-.option{
+.option {
   width: 100%;
 }
 
-.selectoption{
-  background-color: #ffffff ;
+.selectoption {
+  background-color: #ffffff;
 }
 
-.date{
+.date {
   text-align: left;
   font: italic normal normal 14px Proxima Nova;
   letter-spacing: 0px;
@@ -145,7 +144,7 @@
   opacity: 0.5;
 }
 
-.fontstyleassociate{
+.fontstyleassociate {
   text-align: left;
   font: normal normal bold 14px Proxima Nova;
   letter-spacing: 0px;
@@ -153,7 +152,7 @@
   text-transform: uppercase;
 }
 
-.referenceFont{
+.referenceFont {
   text-align: left;
   font: normal normal bold 12px Proxima Nova;
   letter-spacing: 0px;
@@ -161,33 +160,32 @@
   opacity: 0.5;
 }
 
-.marginRight30{
+.marginRight30 {
   margin-right: 30px;
 }
 
-.copyicon{
+.copyicon {
   text-align: left;
   // font-size: normal 10px;
   font: normal normal normal 5px !important;
   letter-spacing: 0.9px;
-  color: $primarycolor
-;
+  color: $primarycolor;
   opacity: 1;
   margin-top: 5px;
   margin-left: 5px;
   cursor: pointer;
 }
 
-.warning{
+.warning {
   color: var(--unnamed-color-f94848);
-text-align: left;
-font: normal normal normal 27px la-solid-900;
-letter-spacing: 0px;
-color: #F94848;
-opacity: 1;
+  text-align: left;
+  font: normal normal normal 27px la-solid-900;
+  letter-spacing: 0px;
+  color: #F94848;
+  opacity: 1;
 }
 
-.progress{
+.progress {
   color: var(--unnamed-color-fec106);
   text-align: left;
   font: normal normal normal 27px/45px la-solid-900;
@@ -196,15 +194,14 @@ opacity: 1;
   opacity: 1;
 }
 
-.requestForm{
+.requestForm {
   text-align: left;
-text-decoration: underline;
-font: normal normal normal 12px Proxima Nova;
-cursor: pointer;
-color: $primarycolor
-;
-opacity: 1;
-margin-top: 5px;
+  text-decoration: underline;
+  font: normal normal normal 12px Proxima Nova;
+  cursor: pointer;
+  color: $primarycolor;
+  opacity: 1;
+  margin-top: 5px;
 }
 
 @media print {
@@ -217,59 +214,60 @@ margin-top: 5px;
 
   .pagebreak:nth-child(odd) {
     background-color: #ffffff;
-}
-.pagebreak:nth-child(even) {
+  }
+
+  .pagebreak:nth-child(even) {
     background-color: #ffffff;
-}
+  }
 }
 
-.cardStyle{
+.cardStyle {
 
   border: 1px solid var(---7165e3);
-background: #DBD8FA 0% 0% no-repeat padding-box;
-box-shadow: 0px 3px 18px #0F0B3129;
-border: 1px solid #173790;
-border-radius: 8px;
-opacity: 0.5;
+  background: #DBD8FA 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 18px #0F0B3129;
+  border: 1px solid #173790;
+  border-radius: 8px;
+  opacity: 0.5;
 }
 
-.fontstyle{
+.fontstyle {
   color: var(--unnamed-color-52575d);
   text-align: left;
   font: normal normal bold 24px/30px Proxima Nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #2C2C2C;
   opacity: 1;
 }
 
-.namefontstyle{
+.namefontstyle {
   text-align: left;
   font: normal normal bold 24px/30px Proxima Nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #2C2C2C;
   opacity: 1;
   margin-left: 10px;
 }
 
-.displayIdFontStyle{
+.displayIdFontStyle {
   text-align: center;
   font: normal normal bold 14px/18px Proxima Nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #2C2C2C;
   opacity: 0.8;
 }
 
-.applicantTypeFontStyle{
+.applicantTypeFontStyle {
   text-align: left;
   font: normal normal medium 20px/24px Proxima Nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #2C2C2C;
   text-transform: uppercase;
   opacity: 0.9;
   margin-left: 10px;
 }
 
-.grid{
+.grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   margin-left: 10px;
@@ -280,19 +278,19 @@ opacity: 0.5;
   margin-left: 10px;
 }
 
-.rightSideFontStyle{
+.rightSideFontStyle {
 
   text-align: left;
   font: normal normal medium 20px/24px Proxima Nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #2C2C2C;
   text-transform: capitalize;
   opacity: 1;
   margin-left: 15px;
 }
 
-.notesBorderStyle{
-  border: 0.4px solid var(---7165e3) ;
+.notesBorderStyle {
+  border: 0.4px solid var(---7165e3);
   background: #FFFFFF 0% 0% no-repeat padding-box;
   border: 0.4000000059604645px solid #173790 !important;
   border-radius: 4px;
@@ -301,28 +299,28 @@ opacity: 0.5;
   // height: 100px !important;
 }
 
-.commentsNotesHeadingFontStyle{
+.commentsNotesHeadingFontStyle {
 
   text-align: left;
-font: normal normal 600 22px/27px Proxima Nova;
-letter-spacing: 0px;
-color: #52575D;
-text-transform: capitalize;
-opacity: 1;
+  font: normal normal 600 22px/27px Proxima Nova;
+  letter-spacing: 0px;
+  color: #2C2C2C;
+  text-transform: capitalize;
+  opacity: 1;
 }
 
-.commentsNotesFontStyle{
+.commentsNotesFontStyle {
   text-align: left;
   font: normal normal medium 18px/25px Proxima Nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #2C2C2C;
   opacity: 0.7;
   padding: 10px;
   line-height: 1.5;
 }
 
-.buttonStyle{
-text-align: center;
+.buttonStyle {
+  text-align: center;
 }
 
 .reviewButtonStyle {
@@ -360,7 +358,7 @@ text-align: center;
 //   text-align: center;
 // }
 
-.cancelButton{
+.cancelButton {
   background: #FFFFFF 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
   border: 0.5px solid $primarycolor;
@@ -403,10 +401,10 @@ text-align: center;
   height: 100%;
 }
 
-.disclaimer{
+.disclaimer {
   text-align: left;
-font: normal normal bold 22px/34px Proxima Nova;
-letter-spacing: 0px;
-color: #52575D;
-opacity: 1;
+  font: normal normal bold 22px/34px Proxima Nova;
+  letter-spacing: 0px;
+  color: #2C2C2C;
+  opacity: 1;
 }

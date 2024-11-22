@@ -295,7 +295,7 @@ const App = ({ props }) => {
   // useEffect(() => {
   //   if (cookie.get('entityId') === undefined || cookie.get('entityId') === null) {
   //     getEntityId();
-  //   }  
+  //   }
   // }, [])
 
   // useEffect(() => {
@@ -940,7 +940,7 @@ const App = ({ props }) => {
                 element={<ReportTypeOverview />}
               />
               <Route
-                path="/applicationForm/:section/:step"
+                path="/applicationForm/:applicationId/:section/:step"
                 element={<ApplicationForm />}
               />
               <Route
@@ -971,7 +971,7 @@ const App = ({ props }) => {
                 path="/createStaffMemberApplication"
                 element={<CreateStaffMemberApplication />}
               />
-                <Route
+              <Route
                 path="/createStaffReapplication"
                 element={<CreateStaffReapplication />}
               />

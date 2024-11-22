@@ -33,6 +33,7 @@ import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import { getValueByPath } from '../../../utils/formatting';
 import FileDisplayDialog from '../../../Components/fileDisplayDialog';
+import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 
 const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) => {
   const { section, step } = useParams()
@@ -49,24 +50,30 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
   const [isLoading, setIsLoading] = useState(false);
   const [isShowUploadValidation, setIsShowUploadValidation] = useState(false);
   const [formIndex, setFormIndex] = useState();
+  const [applicantProfile, setApplicantProfile] = useState();
   let eSignTitle = getValueByPath(basicForm, `forms[${formIndex}].data.setUpYourSignature.title`);
   let eSignInitial = getValueByPath(basicForm, `forms[${formIndex}].data.setUpYourSignature.initial`)
   let showRedBorderForESign = ((eSignTitle === '' || eSignTitle === undefined) || (eSignInitial === '' || eSignInitial === undefined))
   let tempValue = basicForm?.forms?.[formIndex]?.data === null ? { setUpYourSignature: {}, table: [] } : basicForm?.forms?.[formIndex]?.data;
   const navigate = useNavigate()
   const [navigateURL, setNavigateURL] = useState();
+  const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
   useEffect(() => {
     if (basicForm) {
       getFormSchema()
     }
     if (basicForm !== undefined && formIndex !== undefined) {
-      setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? '/applicationForm/Form/PODCheck' : `/applicationForm/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
+      setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/PODCheck` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
     }
   }, [basicForm, formIndex])
 
   useEffect(() => {
     setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
   }, [basicForm, step])
+
+  useEffect(() => {
+    getApplicantProfile()
+  }, [applicationId])
 
 
   const getFormSchema = async () => {
@@ -82,6 +89,14 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
 
   const getIsShowFileDialog = (value) => {
     setShowFileDisplayDialog(value);
+  }
+
+  const getApplicantProfile = async () => {
+    const { data: profile } = await GET(
+      `application-management-service/application/${applicationId}/profile`
+    );
+    console.log(profile, 'profile')
+    setApplicantProfile(profile)
   }
 
   const handleFileUpload = async (e, id) => {
@@ -177,6 +192,18 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
         } catch (error) {
           console.log(error);
         }
+      }
+      let profilePicture = table?.filter(data => data?.documentType === 'Profile Picture')
+      if (profilePicture?.length !== 0) {
+        let updatedApplicantProfile = applicantProfile;
+        updatedApplicantProfile.profilePicture = profilePicture?.[0];
+        await PUT(`application-management-service/application/${applicationId}/profile`, updatedApplicantProfile)
+          .then(response => {
+            console.log(response)
+          })
+          .catch((error) => {
+            console.log(error)
+          });
       }
       handleSubmitApplicationReq(table)
       setIsLoading(false);
@@ -297,6 +324,10 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
     console.log(temp, array, basicForm?.documentsRequired?.map(data => data?.document?.name))
     return temp;
   }
+
+  const getIsSaveInProgressOpen = (value) => {
+    setIsSaveInProgressOpen(value);
+  };
 
   const handleReplace = (data) => {
     let index = tempValue?.table?.findIndex(fileData => fileData?.documentType === data?.documentType);
@@ -636,7 +667,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
             contactNumber={"{Contact Number}"}
             email={"{Email}"}
           />
-          <div className={`${style.saveInProgress} ${style.marginTop}`}>
+          <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>
             SAVE IN PROGRESS
           </div>
           <div
@@ -810,6 +841,9 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
           </div>
         </div>
       </Dialog>
+      {isSaveInProgressOpen && (
+        <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
+      )}
     </div>
   );
 }

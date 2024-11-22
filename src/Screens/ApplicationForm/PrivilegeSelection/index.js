@@ -29,6 +29,7 @@ import CommonSelectField from '../../../Components/CommonFields/CommonSelectFiel
 import ESignature from '../../../Components/ESignature';
 import CommonRadio from '../../../Components/CommonFields/CommonRadio';
 import AlertDialog from '../../../Components/AlertDialog';
+import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 
 const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreApplication }) => {
     const [isSigned, setIsSigned] = useState(false);
@@ -57,6 +58,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
     const [formIndex, setFormIndex] = useState();
     const navigate = useNavigate()
     const [navigateURL, setNavigateURL] = useState();
+    const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
     useEffect(() => {
         getApplication();
     }, [])
@@ -77,7 +79,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
             setSelectedPrivilege(basicForm?.privileges?.obligatedPrivileges?.[0]?.id)
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? '/applicationForm/Form/PODCheck' : `/applicationForm/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/PODCheck` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
         }
         setSelectedAdditionalPrivilegeForDisplay(basicForm?.privileges?.additionalPrivileges)
         setSelectedPrivilegeForDisplay(basicForm?.privileges?.obligatedPrivileges)
@@ -130,6 +132,10 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
         );
         setApplicationData(form);
     }
+
+    const getIsSaveInProgressOpen = (value) => {
+        setIsSaveInProgressOpen(value);
+    };
 
     const startsWithVowel = (str) => /^[aeiouAEIOU]/.test(str);
 
@@ -974,7 +980,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-                    <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
+                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue(true)}>CONTINUE</div>
@@ -986,6 +992,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
             </div>
             {isAlertOpen && <AlertDialog isOpen={isAlertOpen} getIsOpen={getIsAlertOpen} title={'Are you sure?'} description={'Do you want to really change the privilege set?'} />}
             {isOpen && <AdditionalPrivilegesDialog getIsOpen={getIsOpen} primaryPrivilege={selectedPrivilege} getSelectedPrivilegeList={getSelectedPrivilegeList} basicForm={basicForm} selectedAdditionalPrivilegeForEdit={selectedAdditionalPrivilegeForEdit} applicationId={applicationId} />}
+            {isSaveInProgressOpen && (
+                <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
+            )}
         </div >
     )
 }

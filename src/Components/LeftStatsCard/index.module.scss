@@ -1,4 +1,5 @@
 @import "../../index.scss";
+
 .bigCardStyle {
     height: calc(100vh - 255px);
     overflow: scroll;
@@ -60,7 +61,7 @@
 .statisticsProgress {
     font: normal normal normal 10px/11px proxima-nova;
     letter-spacing: -0.3px;
-    color: #52575D;
+    color: #2C2C2C;
     opacity: 1;
     text-align: left;
     margin-bottom: 1px !important;
@@ -69,7 +70,7 @@
 .viewStyle {
     font: normal normal normal 9px/15px proxima-nova;
     letter-spacing: -0.3px;
-    color: #52575D;
+    color: #2C2C2C;
     opacity: 1;
 }
 

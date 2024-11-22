@@ -49,7 +49,7 @@ const PaymentDialog = ({ getIsOpen, continueClickFunc }) => {
             }],
             mode: 'payment',
             // successUrl: `${window.location.origin}/app/reappointmentApplicationForm/${applicationId}/${basicForm?.forms?.[formIndex + 1]?.formCategory}/${basicForm?.forms?.[formIndex + 1]?.schemaCategory}`,
-            successUrl: `${window.location.origin}/app/reappointmentApplicationForm/${applicationId}/Form/UploadYourDoc`,
+            successUrl: `${window.location.origin}/app/reappointmentApplicationForm/${applicationId}/Form/UploadYourDoc?session_id={CHECKOUT_SESSION_ID}`,
             cancelUrl: `${window.location.origin}/app/reappointmentApplicationForm/${applicationId}/${section}/${step}`,
         });
         // If `redirectToCheckout` fails due to a browser or network
@@ -74,7 +74,7 @@ const PaymentDialog = ({ getIsOpen, continueClickFunc }) => {
                                 />
                             </div>
                         </div>
-                        <p className={`${style.description} ${style.marginTop}`}>For the Privilege category you have selected for your reappointment there is an application processing fee of CAD$ 50.</p>
+                        <p className={`${style.description} ${style.marginTop}`}>For the Privilege category you have selected for your reappointment there is an application processing fee of CA $50.</p>
                         <p className={`${style.description} ${style.marginTop}`}>Payment is required before you can complete the rest of your application.</p>
                         <div className={style.paymentGrid}>
                             <div className={`${style.description} ${style.marginTop}`}>Your Purchase</div>
@@ -82,7 +82,7 @@ const PaymentDialog = ({ getIsOpen, continueClickFunc }) => {
                         </div>
                         <div className={style.paymentGrid}>
                             <div className={`${style.description} ${style.marginTop10}`}>Amount</div>
-                            <div className={`${style.description} ${style.marginTop10}`}><strong>CAD $50</strong></div>
+                            <div className={`${style.description} ${style.marginTop10}`}><strong>CA $50</strong></div>
                         </div>
                         <div className={`${style.spaceBetween} ${style.marginTop}`}>
                             <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>CANCEL</div>
