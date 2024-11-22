@@ -105,7 +105,7 @@ body::-webkit-scrollbar {
 }
 
 .buttonCardStyle {
-  height: 50px;
+  height: 70px;
   width: 270px;
   background: #FFFFFF 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
@@ -697,6 +697,10 @@ body::-webkit-scrollbar {
 
 .spaceBetween {
   display: flex;
+  justify-content: space-between;
+}
+
+.spaceBetweenOnly{
   justify-content: space-between;
 }
 
@@ -1653,7 +1657,7 @@ select {
 }
 
 .bigButtonStyle {
-  height: 50px;
+  height: 70px;
   /* UI Properties */
   background: $primarycolor 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
@@ -4070,7 +4074,7 @@ input[type="number"] {
 
 .tableHeaderGridStyleCred {
   display: grid;
-  grid-template-columns: 75% 15% 10%;
+  grid-template-columns: 91% 10%;
   grid-gap: 10px;
 }
 
@@ -4100,7 +4104,7 @@ input[type="number"] {
 
 .tableHeaderGridStyleFormCred {
   display: grid;
-  grid-template-columns: 77% 16% 4%;
+  grid-template-columns: 70% 21% 9%;
   grid-gap: 1%;
 }
 
@@ -4451,4 +4455,11 @@ input[type="number"] {
 
 .paddingButton {
   padding: 10px;
+}
+
+.textAreaStyle {
+  border: none; 
+  outline: none;
+  resize: none; 
+  padding: 10px; 
 }

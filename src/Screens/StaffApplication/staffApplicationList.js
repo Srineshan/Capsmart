@@ -293,7 +293,7 @@ const StaffApplicationList = ({
   const [showCheckListDialog, setShowCheckListDialog] = useState(false);
   const [reFetchMetaData, setReFetchMetaData] = useState(false)
   const [applicationCreationType, setApplicationCreationType] = useState('NEW');
-  const [applicationType, setApplicationType] = useState(() =>
+  const [applicationType, setApplicationType] = useState(() => 
     sessionStorage.getItem('applicationCreationType') || 'NEW'
   );
   // const [counts, setCounts] = useState({
@@ -322,8 +322,8 @@ const StaffApplicationList = ({
       if (currentValue !== applicationType) {
         setApplicationType(currentValue);
       }
-    });
-
+    },500);
+    
   }, [applicationType]);
 
   useEffect(() => {
@@ -1754,13 +1754,13 @@ const StaffApplicationList = ({
                   applicationType === "NEW"
                     ? navigate("/createStaffMemberApplication")
                     // : navigate("/createStaffReapplication")
-                    : navigate("/createStaffMemberApplication")
+                    : navigate("/createStaffReapplication")
                 }
               >
                 {applicationType === "REAPPOINTMENT" ? "TRIGGER NEW REAPPOINTMENTS" : "CREATE NEW APPLICATION"}
               </div>
               <div className={`${style.displayInRow} ${style.marginLeft20} `}>
-                <AddCircleOutlineIcon sx={{ fontSize: 20, color: "white" }} onClick={() => navigate("/createStaffMemberApplication")} />
+                <AddCircleOutlineIcon sx={{ fontSize: 20, color: "white" }} onClick={() => applicationType === "NEW" ? navigate("/createStaffMemberApplication") : navigate("/createStaffReapplication")}/>
               </div>
             </div>
 
@@ -1961,7 +1961,7 @@ const StaffApplicationList = ({
                   <span
                     className={`${style.numberBackground} ${style.marginLeft} ${style.redSmallNumberSelected}`}
                   >
-                    {applicationRejected.totalRejections}
+                    {applicationRejected.totalRejections + applicationRejected.appointmentRequestsDenied }
                   </span>
                 </div>
                 <div className={`${style.marginLeft10} `}>
@@ -2010,7 +2010,7 @@ const StaffApplicationList = ({
           <div
             className={`${style.displayInRow} ${style.spaceBetween} ${style.headingForStaffs} ${style.bottomTextStyle}`}
           >
-            {`STAFF MANAGER >> APPLICATIONS`}
+            {`STAFF MANAGER > STAFF APPLICATIONS`}
           </div>
           <div className={`${style.marginTop20}`}>
             <StaffApplicationTopTiles
